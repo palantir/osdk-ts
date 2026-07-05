@@ -242,10 +242,10 @@ describe("OverviewTab", () => {
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
     expect(
-      screen.getByRole("button", { name: /object types/i }).textContent
+      screen.getByRole("region", { name: /object types/i }).textContent
     ).toContain("2");
     expect(
-      screen.getByRole("button", { name: /action types/i }).textContent
+      screen.getByRole("region", { name: /action types/i }).textContent
     ).toContain("1");
   });
 
@@ -279,55 +279,8 @@ describe("OverviewTab", () => {
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
     expect(
-      screen.getByRole("button", { name: /object types/i }).textContent
+      screen.getByRole("region", { name: /object types/i }).textContent
     ).toContain("1");
-  });
-
-  it("switches to the Debugging tab when the object-types count is clicked", () => {
-    const store = createMockMonitorStore();
-    const setActiveTab = vi.fn();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useOsdkObject",
-            queryParams: {
-              type: "object",
-              objectType: "Employee",
-              primaryKey: "1",
-              entityKind: "object",
-            },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-    fireEvent.click(screen.getByRole("button", { name: /object types/i }));
-
-    expect(setActiveTab).toHaveBeenCalledWith("debugging");
-  });
-
-  it("switches to the Debugging tab when the action-types count is clicked", () => {
-    const store = createMockMonitorStore();
-    const setActiveTab = vi.fn();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useOsdkAction",
-            queryParams: { type: "action", actionName: "createEmployee" },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-    fireEvent.click(screen.getByRole("button", { name: /action types/i }));
-
-    expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 
   it("shows a distinct interface count for interface-kind bindings", () => {
@@ -369,33 +322,8 @@ describe("OverviewTab", () => {
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
     expect(
-      screen.getByRole("button", { name: /interfaces/i }).textContent
+      screen.getByRole("region", { name: /interfaces/i }).textContent
     ).toContain("2");
-  });
-
-  it("switches to the Debugging tab when the interfaces count is clicked", () => {
-    const store = createMockMonitorStore();
-    const setActiveTab = vi.fn();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useOsdkObjects",
-            queryParams: {
-              type: "list",
-              objectType: "Named",
-              entityKind: "interface",
-            },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-    fireEvent.click(screen.getByRole("button", { name: /interfaces/i }));
-
-    expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 
   it("shows a distinct link count for useLinks bindings", () => {
@@ -437,33 +365,8 @@ describe("OverviewTab", () => {
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
     expect(
-      screen.getByRole("button", { name: /links/i }).textContent
+      screen.getByRole("region", { name: /links/i }).textContent
     ).toContain("2");
-  });
-
-  it("switches to the Debugging tab when the links count is clicked", () => {
-    const store = createMockMonitorStore();
-    const setActiveTab = vi.fn();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useLinks",
-            queryParams: {
-              type: "links",
-              sourceObject: "Employee",
-              linkName: "manager",
-            },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-    fireEvent.click(screen.getByRole("button", { name: /links/i }));
-
-    expect(setActiveTab).toHaveBeenCalledWith("debugging");
   });
 
   it("renders each ontology/metrics section collapsed-toggle and collapses on click", () => {
@@ -493,16 +396,16 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /cache hit rate/i })
+        screen.getByRole("region", { name: /cache hit rate/i })
       ).not.toBeNull();
       expect(
-        screen.getByRole("button", { name: /network requests/i })
+        screen.getByRole("region", { name: /network requests/i })
       ).not.toBeNull();
       expect(
-        screen.getByRole("button", { name: /avg response/i })
+        screen.getByRole("region", { name: /avg response/i })
       ).not.toBeNull();
       expect(
-        screen.getByRole("button", { name: /duplicate requests/i })
+        screen.getByRole("region", { name: /duplicate requests/i })
       ).not.toBeNull();
     });
 
@@ -514,7 +417,7 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /cache hit rate/i }).textContent
+        screen.getByRole("region", { name: /cache hit rate/i }).textContent
       ).toContain("75%");
     });
 
@@ -526,7 +429,7 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /network requests/i }).textContent
+        screen.getByRole("region", { name: /network requests/i }).textContent
       ).toContain("5");
     });
 
@@ -537,7 +440,7 @@ describe("OverviewTab", () => {
 
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
-      const tile = screen.getByRole("button", { name: /avg response/i });
+      const tile = screen.getByRole("region", { name: /avg response/i });
       expect(tile.textContent).toContain("120ms");
       expect(tile.textContent).not.toMatch(/p95|percentile/i);
     });
@@ -550,22 +453,19 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /duplicate requests/i }).textContent
+        screen.getByRole("region", { name: /duplicate requests/i }).textContent
       ).toContain("4");
     });
 
-    it.each([
-      /cache hit rate/i,
-      /network requests/i,
-      /avg response/i,
-      /duplicate requests/i,
-    ])("switches to the Performance tab when %s is clicked", (name) => {
+    it("navigates to the Performance tab from a metric footer link", () => {
       const store = createMockMonitorStore();
       const setActiveTab = vi.fn();
       populateOneObject(store);
 
       render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-      fireEvent.click(screen.getByRole("button", { name }));
+      fireEvent.click(
+        screen.getAllByRole("button", { name: /view in performance/i })[0]
+      );
 
       expect(setActiveTab).toHaveBeenCalledWith("performance");
     });
@@ -579,10 +479,10 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /overfetching/i })
+        screen.getByRole("region", { name: /overfetching/i })
       ).not.toBeNull();
       expect(
-        screen.getByRole("button", { name: /errors & warnings/i })
+        screen.getByRole("region", { name: /errors & warnings/i })
       ).not.toBeNull();
     });
 
@@ -594,7 +494,7 @@ describe("OverviewTab", () => {
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("button", { name: /overfetching/i }).textContent
+        screen.getByRole("region", { name: /overfetching/i }).textContent
       ).toContain("3");
     });
 
@@ -613,29 +513,18 @@ describe("OverviewTab", () => {
 
       // 2 window errors + 2 console (error + warn); log/info excluded → 4.
       expect(
-        screen.getByRole("button", { name: /errors & warnings/i }).textContent
+        screen.getByRole("region", { name: /errors & warnings/i }).textContent
       ).toContain("4");
     });
 
-    it("switches to the Debugging tab when overfetching is clicked", () => {
-      const store = createMockMonitorStore();
-      const setActiveTab = vi.fn();
-      populateOneObject(store);
-
-      render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
-      fireEvent.click(screen.getByRole("button", { name: /overfetching/i }));
-
-      expect(setActiveTab).toHaveBeenCalledWith("debugging");
-    });
-
-    it("switches to the Debugging tab when errors & warnings is clicked", () => {
+    it("navigates to the Debugging tab from a metric footer link", () => {
       const store = createMockMonitorStore();
       const setActiveTab = vi.fn();
       populateOneObject(store);
 
       render(<OverviewTab monitorStore={store} setActiveTab={setActiveTab} />);
       fireEvent.click(
-        screen.getByRole("button", { name: /errors & warnings/i })
+        screen.getAllByRole("button", { name: /view in debugging/i })[0]
       );
 
       expect(setActiveTab).toHaveBeenCalledWith("debugging");

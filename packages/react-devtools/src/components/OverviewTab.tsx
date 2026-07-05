@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { NonIdealState, Tag } from "@blueprintjs/core";
+import { Classes, Icon, Intent, NonIdealState, Tag } from "@blueprintjs/core";
+import classNames from "classnames";
 import React from "react";
 
 import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
@@ -22,9 +23,9 @@ import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
 import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatNumber, formatTime } from "../utils/format.js";
-import { MetricTile } from "./MetricTile.js";
+import { Metric } from "./Metric.js";
+import { Metrics } from "./Metrics.js";
 import type { MonitoringTab } from "./MonitoringPanel.js";
-import { OntologyCount } from "./OntologyCount.js";
 import { OverviewSection } from "./OverviewSection.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -56,6 +57,13 @@ export function OverviewTab({
   const performance = usePerformanceTiles(monitorStore);
   const debugging = useDebuggingTiles(monitorStore);
 
+  const cacheHitIntent: Intent =
+    performance.cacheHitRate > 0.7
+      ? Intent.SUCCESS
+      : performance.cacheHitRate > 0.4
+        ? Intent.WARNING
+        : Intent.DANGER;
+
   return (
     <div className={styles.overviewTab}>
       {usage.isEmpty ? (
@@ -75,64 +83,102 @@ export function OverviewTab({
         />
       ) : (
         <OverviewSection title="Ontology">
-          <div className={styles.metricGroupContent}>
-            <OntologyCount
-              label="Object types"
-              count={usage.objectTypeCount}
-              onClick={() => setActiveTab("debugging")}
-            />
-            <OntologyCount
-              label="Interfaces"
-              count={usage.interfaceCount}
-              onClick={() => setActiveTab("debugging")}
-            />
-            <OntologyCount
-              label="Action types"
-              count={usage.actionTypeCount}
-              onClick={() => setActiveTab("debugging")}
-            />
-            <OntologyCount
-              label="Links"
-              count={usage.linkCount}
-              onClick={() => setActiveTab("debugging")}
-            />
-          </div>
+          <Metrics columns={2}>
+            <Metric title="Object types" value={usage.objectTypeCount} />
+            <Metric title="Interfaces" value={usage.interfaceCount} />
+            <Metric title="Action types" value={usage.actionTypeCount} />
+            <Metric title="Links" value={usage.linkCount} />
+          </Metrics>
         </OverviewSection>
       )}
       {!usage.isEmpty && (
         <OverviewSection title="Metrics">
-          <div className={styles.metricGroupContent}>
-            <MetricTile
-              label="Cache hit rate"
+          <Metrics columns={2}>
+            <Metric
+              title="Cache hit rate"
               value={`${Math.round(performance.cacheHitRate * 100)}%`}
-              onClick={() => setActiveTab("performance")}
+              intent={cacheHitIntent}
+              footer={
+                <button
+                  type="button"
+                  className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                  onClick={() => setActiveTab("performance")}
+                >
+                  View in Performance
+                  <Icon icon="arrow-right" size={14} />
+                </button>
+              }
             />
-            <MetricTile
-              label="Network requests"
+            <Metric
+              title="Network requests"
               value={formatNumber(performance.networkRequests)}
-              onClick={() => setActiveTab("performance")}
+              footer={
+                <button
+                  type="button"
+                  className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                  onClick={() => setActiveTab("performance")}
+                >
+                  View in Performance
+                  <Icon icon="arrow-right" size={14} />
+                </button>
+              }
             />
-            <MetricTile
-              label="Avg response time"
+            <Metric
+              title="Avg response time"
               value={formatTime(performance.averageResponseTime)}
-              onClick={() => setActiveTab("performance")}
+              footer={
+                <button
+                  type="button"
+                  className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                  onClick={() => setActiveTab("performance")}
+                >
+                  View in Performance
+                  <Icon icon="arrow-right" size={14} />
+                </button>
+              }
             />
-            <MetricTile
-              label="Duplicate requests"
+            <Metric
+              title="Duplicate requests"
               value={formatNumber(performance.duplicateRequests)}
-              onClick={() => setActiveTab("performance")}
+              intent={
+                performance.duplicateRequests > 0 ? Intent.DANGER : Intent.NONE
+              }
             />
-            <MetricTile
-              label="Overfetching"
+            <Metric
+              title="Overfetching"
               value={formatNumber(debugging.overfetchingCount)}
-              onClick={() => setActiveTab("debugging")}
+              intent={
+                debugging.overfetchingCount > 0 ? Intent.DANGER : Intent.NONE
+              }
+              footer={
+                <button
+                  type="button"
+                  className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                  onClick={() => setActiveTab("debugging")}
+                >
+                  View in Debugging
+                  <Icon icon="arrow-right" size={14} />
+                </button>
+              }
             />
-            <MetricTile
-              label="Errors & warnings"
+            <Metric
+              title="Errors & warnings"
               value={formatNumber(debugging.errorWarningCount)}
-              onClick={() => setActiveTab("debugging")}
+              intent={
+                debugging.errorWarningCount > 0 ? Intent.DANGER : Intent.NONE
+              }
+              footer={
+                <button
+                  type="button"
+                  className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                  onClick={() => setActiveTab("debugging")}
+                >
+                  View in Debugging
+                  <Icon icon="arrow-right" size={14} />
+                </button>
+              }
             />
-          </div>
+          </Metrics>
         </OverviewSection>
       )}
     </div>

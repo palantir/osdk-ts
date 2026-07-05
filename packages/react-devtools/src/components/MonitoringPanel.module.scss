@@ -267,12 +267,6 @@
     // Give the body a surface fill so the section stands out from the darker
     // panel base instead of blending into it.
     background: t.$bg-surface;
-
-    // Tiles sit edge-to-edge in the Overview (scoped so PerformanceTab's grid,
-    // which reuses .metricGroupContent, keeps its gap).
-    .metricGroupContent {
-      gap: 0;
-    }
   }
 }
 
@@ -283,22 +277,63 @@
   box-shadow: none;
 }
 
-.ontologyCount {
+// The `Metrics` grid: one rounded border with 1px hairline dividers between
+// cells (the gap reveals the border-colored background beneath the cells).
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: t.$border-default;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+}
+
+// A single `Metric` cell — borderless; the grid draws the dividers around it.
+.metricItem {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px;
+  gap: 4px;
+  padding: 12px;
   background: t.$bg-surface;
-  border: 1px solid t.$border-subtle;
-  border-radius: t.$radius-md;
+}
+
+.metricItemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.metricItemLabel {
+  // Regular body size; color comes from Blueprint's `.bp6-text-muted`.
+  font-size: t.$font-size-md;
+}
+
+.metricHelp {
+  flex-shrink: 0;
+  color: t.$text-tertiary;
+  cursor: help;
+}
+
+.metricFooter {
+  margin-top: 2px;
+}
+
+// Footer "View in …" link: a native button with no chrome so its text aligns
+// flush-left with the metric title/value. Color comes from `.bp6-text-muted`.
+.metricLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
   font: inherit;
-  color: inherit;
-  text-align: left;
   cursor: pointer;
 
   &:hover {
-    background: t.$bg-raised;
-    border-color: t.$border-default;
+    text-decoration: underline;
   }
 }
 
