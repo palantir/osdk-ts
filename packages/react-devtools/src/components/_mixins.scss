@@ -87,44 +87,6 @@
   margin: 0;
 }
 
-// Tab bar container
-@mixin dt-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid t.$border-default;
-  background: transparent;
-  overflow-x: auto;
-  @include dt-scrollbar;
-}
-
-// Tab button (inactive)
-@mixin dt-tab-button {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: t.$text-tertiary;
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-semi;
-  letter-spacing: t.$letter-spacing-tab;
-  text-transform: uppercase;
-  padding: 8px 12px 6px;
-  margin-bottom: -1px;
-  cursor: pointer;
-  transition: color t.$transition-fast, border-color t.$transition-fast;
-  white-space: nowrap;
-  flex-shrink: 0;
-
-  &:hover {
-    color: t.$text-secondary;
-  }
-}
-
-// Tab button (active)
-@mixin dt-tab-active {
-  color: t.$blue;
-  border-bottom-color: t.$blue;
-}
-
 // List item row
 @mixin dt-list-item {
   display: flex;

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { clearPersistedState } from "../hooks/usePersistedState.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -39,6 +40,9 @@ const { MonitoringPanel } = await import("./MonitoringPanel.js");
 describe("MonitoringPanel", () => {
   afterEach(() => {
     cleanup();
+    // Clear persisted state so tab/collapse state
+    // from one test does not leak into the next.
+    clearPersistedState();
   });
 
   it("renders the panel with title and tabs", () => {
@@ -78,5 +82,52 @@ describe("MonitoringPanel", () => {
     expect(overviewTab?.getAttribute("aria-selected")).toBe("true");
     // Empty registry → the Overview lands on the "No ontology" empty state.
     expect(screen.queryByText("No ontology linked")).not.toBeNull();
+  });
+
+  it("selects a tab and surfaces its panel when activated", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Compute" }));
+
+    expect(
+      screen.getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+    // The single visible tabpanel is the one owned by the Compute tab.
+    expect(
+      screen.getByRole("tabpanel").getAttribute("aria-labelledby")
+    ).toContain("compute");
+  });
+
+  it("keeps all five tab panels mounted across a tab switch", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    // hidden: true includes the aria-hidden inactive panels that stay mounted.
+    expect(screen.getAllByRole("tabpanel", { hidden: true })).toHaveLength(5);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Debugging" }));
+
+    expect(screen.getAllByRole("tabpanel", { hidden: true })).toHaveLength(5);
+  });
+
+  it("preserves the selected tab across a minimize and reopen cycle", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Compute" }));
+    expect(
+      screen.getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Minimize devtools panel" })
+    );
+    expect(screen.queryByRole("tablist")).toBeNull();
+
+    // Reopen via the minimized affordance.
+    fireEvent.click(screen.getByLabelText("View OSDK Devtools"));
+
+    expect(screen.queryByRole("tablist")).not.toBeNull();
   });
 });

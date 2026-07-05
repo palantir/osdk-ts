@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Button, Classes, Tooltip } from "@blueprintjs/core";
+import type { TabId } from "@blueprintjs/core";
+import { Button, Classes, Tab, Tabs, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -90,13 +91,16 @@ const UI_CONSTANTS = {
   MAX_DOCKED_RIGHT_WIDTH: 800,
 };
 
+const DEVTOOLS_TAB_IDS = [
+  "overview",
+  "performance",
+  "compute",
+  "intercept",
+  "debugging",
+] as const;
+
 /** The selectable tabs in the monitoring panel, in display order. */
-export type MonitoringTab =
-  | "overview"
-  | "performance"
-  | "compute"
-  | "intercept"
-  | "debugging";
+export type MonitoringTab = (typeof DEVTOOLS_TAB_IDS)[number];
 
 export interface MonitoringPanelProps {
   /** The MonitorStore instance that provides all metrics, compute, and component tracking data. */
@@ -110,6 +114,11 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
   const [activeTab, setActiveTab] = useState<MonitoringTab>("overview");
+  const onActiveTabChange = useCallback((newTabId: TabId) => {
+    if (isDevtoolsTabId(newTabId)) {
+      setActiveTab(newTabId);
+    }
+  }, []);
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
     {
@@ -409,6 +418,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         <div
           className={styles.minimized}
           data-dt-theme={resolvedTheme}
+          aria-label="View OSDK Devtools"
           onClick={() => setPosition((prev) => ({ ...prev, collapsed: false }))}
         >
           <span className={styles.minimizedIcon}>&lt;/&gt;</span>
@@ -420,6 +430,8 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   const panelClassName = classNames(
     styles.panel,
+    // Class needed to remove the useless outline added on tabs/buttons
+    Classes.FOCUS_DISABLED,
     resolvedTheme === "dark" ? Classes.DARK : undefined,
     {
       [styles.floating]: position.dockMode === "floating",
@@ -534,89 +546,55 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         </div>
       </div>
 
-      <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-        {(
-          [
-            "overview",
-            "performance",
-            "compute",
-            "intercept",
-            "debugging",
-          ] as const
-        ).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab}
-            className={classNames(
-              styles.tabButton,
-              activeTab === tab && styles.tabButtonActive
-            )}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
-
       <div className={styles.content}>
         {(!fiberCapabilities.hookInstalled ||
           !fiberCapabilities.fiberAccessWorking) && (
           <DegradationNotice onRetry={() => validateFiberAccess()} />
         )}
 
-        <div
-          className={
-            activeTab === "overview"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
+        <Tabs
+          className={styles.tabs}
+          selectedTabId={activeTab}
+          onChange={onActiveTabChange}
         >
-          <OverviewTab
-            monitorStore={monitorStore}
-            setActiveTab={setActiveTab}
+          <Tab
+            id="overview"
+            title="Overview"
+            panel={
+              <OverviewTab
+                monitorStore={monitorStore}
+                setActiveTab={setActiveTab}
+              />
+            }
           />
-        </div>
-        <div
-          className={
-            activeTab === "performance"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <PerformanceTab
-            metricsStore={metricsStore}
-            monitorStore={monitorStore}
+          <Tab
+            id="performance"
+            title="Performance"
+            panel={
+              <PerformanceTab
+                metricsStore={metricsStore}
+                monitorStore={monitorStore}
+              />
+            }
           />
-        </div>
-        <div
-          className={
-            activeTab === "compute"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <ComputeTab computeStore={computeStore} />
-        </div>
-        <div
-          className={
-            activeTab === "intercept"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
-        </div>
-        <div
-          className={
-            activeTab === "debugging"
-              ? styles.tabContentVisible
-              : styles.tabContentHidden
-          }
-        >
-          <DebuggingTab monitorStore={monitorStore} />
-        </div>
+          <Tab
+            id="compute"
+            title="Compute"
+            panel={<ComputeTab computeStore={computeStore} />}
+          />
+          <Tab
+            id="intercept"
+            title="Intercept"
+            panel={
+              <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
+            }
+          />
+          <Tab
+            id="debugging"
+            title="Debugging"
+            panel={<DebuggingTab monitorStore={monitorStore} />}
+          />
+        </Tabs>
       </div>
     </div>,
     document.body
@@ -628,3 +606,7 @@ export const SafeMonitoringPanel: React.FC<MonitoringPanelProps> = (props) => (
     <MonitoringPanel {...props} />
   </MonitorErrorBoundary>
 );
+
+function isDevtoolsTabId(id: string | number): id is MonitoringTab {
+  return DEVTOOLS_TAB_IDS.some((tabId) => tabId === id);
+}
