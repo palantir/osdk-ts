@@ -415,6 +415,11 @@
   &.danger {
     color: t.$red;
   }
+
+  // No data yet — muted, so it reads as absent rather than a real measurement.
+  &.na {
+    color: t.$text-tertiary;
+  }
 }
 
 .metricSubtext {

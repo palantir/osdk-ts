@@ -19,8 +19,12 @@ import { useErrorWarningCount } from "./useErrorWarningCount.js";
 import { useUnusedFieldAnalysis } from "./useUnusedFieldAnalysis.js";
 
 export interface DebuggingTiles {
-  /** Components requesting fields they never read (unused-field report's inefficient-component count). */
-  overfetchingCount: number;
+  /**
+   * Components requesting fields they never read (unused-field report's
+   * inefficient-component count). `null` when no report has been produced yet
+   * (no components analyzed), so the Overview renders "N/A".
+   */
+  overfetchingCount: number | null;
   /** Live count of window errors plus console `error`/`warn` entries. */
   errorWarningCount: number;
 }
@@ -34,7 +38,7 @@ export function useDebuggingTiles(monitorStore: MonitorStore): DebuggingTiles {
   const { report } = useUnusedFieldAnalysis(monitorStore);
   const errorWarningCount = useErrorWarningCount(monitorStore);
   return {
-    overfetchingCount: report?.inefficientComponents ?? 0,
+    overfetchingCount: report != null ? report.inefficientComponents : null,
     errorWarningCount,
   };
 }

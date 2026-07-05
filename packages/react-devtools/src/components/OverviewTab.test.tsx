@@ -164,13 +164,27 @@ describe("OverviewTab", () => {
     vi.restoreAllMocks();
   });
 
-  it("shows the 'No ontology' empty state when the registry has no active components", () => {
+  it("shows the 'No ontology' empty state inside the Ontology section when the registry has no active components", () => {
     const store = createMockMonitorStore();
 
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
-    expect(screen.queryByText("No ontology linked")).not.toBeNull();
-    expect(screen.queryByText("No ontology found")).not.toBeNull();
+    expect(screen.queryByText("No ontology usage detected")).not.toBeNull();
+  });
+
+  it("always renders the Ontology and Metrics sections, even with no ontology", () => {
+    const store = createMockMonitorStore();
+
+    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
+
+    // Both section headers render, and the empty state sits inside Ontology.
+    expect(screen.queryByText("Ontology")).not.toBeNull();
+    expect(screen.queryByText("Metrics")).not.toBeNull();
+    expect(screen.queryByText("No ontology usage detected")).not.toBeNull();
+    // The Metrics grid still renders its tiles, as "N/A" while there is no data.
+    expect(
+      screen.getByRole("region", { name: /cache hit rate/i }).textContent
+    ).toContain("N/A");
   });
 
   it("links to the OSDK docs from the empty state", () => {
@@ -178,8 +192,8 @@ describe("OverviewTab", () => {
 
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
-    const link = screen.getByRole("link");
-    expect(link.getAttribute("href")).toContain("palantir.com");
+    const docs = screen.getByRole("button", { name: /view documentation/i });
+    expect(docs.getAttribute("href")).toContain("palantir.github.io");
   });
 
   it("does not show the empty state when the registry has active components", () => {
@@ -190,7 +204,7 @@ describe("OverviewTab", () => {
 
     render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
-    expect(screen.queryByText("No ontology linked")).toBeNull();
+    expect(screen.queryByText("No ontology usage detected")).toBeNull();
   });
 
   it("shows distinct object-type and action-type counts for a populated registry", () => {
@@ -389,24 +403,22 @@ describe("OverviewTab", () => {
   });
 
   describe("performance tiles", () => {
-    it("renders all four performance tiles even when every metric is zero", () => {
+    it("shows N/A for every performance tile when there is no activity", () => {
       const store = createMockMonitorStore();
       populateOneObject(store);
 
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
-      expect(
-        screen.getByRole("region", { name: /cache hit rate/i })
-      ).not.toBeNull();
-      expect(
-        screen.getByRole("region", { name: /network requests/i })
-      ).not.toBeNull();
-      expect(
-        screen.getByRole("region", { name: /avg response/i })
-      ).not.toBeNull();
-      expect(
-        screen.getByRole("region", { name: /duplicate requests/i })
-      ).not.toBeNull();
+      for (const name of [
+        /cache hit rate/i,
+        /network requests/i,
+        /avg response/i,
+        /duplicate requests/i,
+      ]) {
+        expect(screen.getByRole("region", { name }).textContent).toContain(
+          "N/A"
+        );
+      }
     });
 
     it("renders the object-based cache hit rate as a percentage", () => {
@@ -440,7 +452,10 @@ describe("OverviewTab", () => {
     it("labels average response time 'avg', never a percentile", () => {
       const store = createMockMonitorStore();
       populateOneObject(store);
-      setMetrics(store, { rates: { averageResponseTime: 120 } });
+      setMetrics(store, {
+        aggregates: { cacheMisses: 1 },
+        rates: { averageResponseTime: 120 },
+      });
 
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
@@ -476,15 +491,15 @@ describe("OverviewTab", () => {
   });
 
   describe("debugging tiles", () => {
-    it("renders both debugging tiles even at zero", () => {
+    it("shows N/A for overfetching when no unused-field report exists yet", () => {
       const store = createMockMonitorStore();
       populateOneObject(store);
 
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 
       expect(
-        screen.getByRole("region", { name: /overfetching/i })
-      ).not.toBeNull();
+        screen.getByRole("region", { name: /overfetching/i }).textContent
+      ).toContain("N/A");
       expect(
         screen.getByRole("region", { name: /errors & warnings/i })
       ).not.toBeNull();

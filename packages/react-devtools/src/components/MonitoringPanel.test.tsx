@@ -81,7 +81,7 @@ describe("MonitoringPanel", () => {
       .find((tab) => tab.textContent === "Overview");
     expect(overviewTab?.getAttribute("aria-selected")).toBe("true");
     // Empty registry → the Overview lands on the "No ontology" empty state.
-    expect(screen.queryByText("No ontology linked")).not.toBeNull();
+    expect(screen.queryByText("No ontology usage detected")).not.toBeNull();
   });
 
   it("selects a tab and surfaces its panel when activated", () => {

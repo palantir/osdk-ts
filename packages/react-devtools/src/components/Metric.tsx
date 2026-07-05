@@ -24,11 +24,15 @@ import styles from "./MonitoringPanel.module.scss";
 export interface MetricProps {
   /** The metric label, e.g. "Cache hit rate". */
   title: string;
-  /** The formatted value to display, e.g. "74%", "340ms", or a count. */
-  value: string | number;
+  /**
+   * The formatted value to display, e.g. "74%", "340ms", or a count. Pass
+   * `null`/`undefined` when there is no data yet — the cell renders a muted
+   * "N/A" and ignores `intent`.
+   */
+  value: string | number | null | undefined;
   /**
    * Colors the value via Blueprint's `Intent`; defaults to `"none"` (no color).
-   * Only `success`/`warning`/`danger` are colored.
+   * Only `success`/`warning`/`danger` are colored. Ignored when `value` is empty.
    */
   intent?: Intent;
   /** When set, renders a top-right "?" icon with this text as its tooltip. */
@@ -49,6 +53,7 @@ export function Metric({
   help,
   footer,
 }: MetricProps): React.JSX.Element {
+  const isEmpty = value == null || value === "";
   return (
     <section className={styles.metricItem} aria-label={title}>
       <div className={styles.metricItemHeader}>
@@ -68,8 +73,13 @@ export function Metric({
           </Tooltip>
         )}
       </div>
-      <span className={classNames(styles.metricValue, styles[intent])}>
-        {value}
+      <span
+        className={classNames(
+          styles.metricValue,
+          isEmpty ? styles.na : styles[intent]
+        )}
+      >
+        {isEmpty ? "N/A" : value}
       </span>
       {footer != null && <div className={styles.metricFooter}>{footer}</div>}
     </section>
