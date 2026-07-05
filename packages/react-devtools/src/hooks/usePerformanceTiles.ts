@@ -15,10 +15,14 @@
  */
 
 import type { MonitorStore } from "../store/MonitorStore.js";
+import { objectCacheHitRate } from "../utils/cacheHitRate.js";
 import { useMetrics } from "./useMetrics.js";
 
 export interface PerformanceTiles {
-  /** Cache hit rate as a fraction in `[0, 1]` (snapshot `rates.cacheHitRate`). */
+  /**
+   * Object-based cache hit rate as a fraction in `[0, 1]` — the same value the
+   * Performance tab's cache metrics show (see `objectCacheHitRate`).
+   */
   cacheHitRate: number;
   /** Network requests: snapshot `aggregates.cacheMisses + aggregates.revalidations`. */
   networkRequests: number;
@@ -38,7 +42,7 @@ export function usePerformanceTiles(
 ): PerformanceTiles {
   const { aggregates, rates } = useMetrics(monitorStore.getMetricsStore());
   return {
-    cacheHitRate: rates.cacheHitRate,
+    cacheHitRate: objectCacheHitRate(aggregates),
     networkRequests: aggregates.cacheMisses + aggregates.revalidations,
     averageResponseTime: rates.averageResponseTime,
     duplicateRequests: aggregates.deduplications,

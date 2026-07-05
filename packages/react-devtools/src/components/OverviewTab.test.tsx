@@ -409,10 +409,14 @@ describe("OverviewTab", () => {
       ).not.toBeNull();
     });
 
-    it("renders the cache hit rate as a percentage from snapshot rates", () => {
+    it("renders the object-based cache hit rate as a percentage", () => {
       const store = createMockMonitorStore();
       populateOneObject(store);
-      setMetrics(store, { rates: { cacheHitRate: 0.75 } });
+      // 3 of 4 objects served from cache → 75% (object-based, like the
+      // Performance tab), not the store's operation-based rates.cacheHitRate.
+      setMetrics(store, {
+        aggregates: { totalObjectsFromCache: 3, totalObjectsFromNetwork: 1 },
+      });
 
       render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
 

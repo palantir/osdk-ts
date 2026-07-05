@@ -18,6 +18,7 @@ import classNames from "classnames";
 import React from "react";
 
 import type { MetricsSnapshot } from "../types/index.js";
+import { objectCacheHitRate } from "../utils/cacheHitRate.js";
 import { formatNumber, formatTime } from "../utils/format.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -33,10 +34,7 @@ export const CacheMetrics: React.FC<CacheMetricsProps> = ({ metrics }) => {
   const totalObjects =
     metrics.aggregates.totalObjectsFromCache +
     metrics.aggregates.totalObjectsFromNetwork;
-  const objectBasedRate =
-    totalObjects > 0
-      ? metrics.aggregates.totalObjectsFromCache / totalObjects
-      : 0;
+  const objectBasedRate = objectCacheHitRate(metrics.aggregates);
   const rateClass =
     objectBasedRate >= CACHE_HIT_EXCELLENT
       ? styles.success
