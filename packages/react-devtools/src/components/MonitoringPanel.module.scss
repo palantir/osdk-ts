@@ -128,7 +128,7 @@
   justify-content: space-between;
   padding: 6px 12px;
   border-bottom: 1px solid t.$border-default;
-  background: t.$bg-raised;
+  background: var(--bp-palette-dark-gray-2);
   cursor: move;
   user-select: none;
   pointer-events: auto;
@@ -145,7 +145,6 @@
   gap: 8px;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-semi;
-  text-transform: uppercase;
   letter-spacing: 1px;
   color: t.$text-secondary;
   margin: 0;
