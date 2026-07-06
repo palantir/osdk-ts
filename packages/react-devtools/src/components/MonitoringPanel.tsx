@@ -117,7 +117,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     }
   }, []);
   const [position, setPosition] = usePersistedState<PanelPosition>(
-    "osdk-monitor-position",
+    `monitor-position`,
     {
       x: window.innerWidth - UI_CONSTANTS.DEFAULT_PANEL_RIGHT_OFFSET,
       y: UI_CONSTANTS.DEFAULT_PANEL_TOP_OFFSET,
@@ -130,7 +130,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   const [themePreference, setThemePreference] = usePersistedState<
     "light" | "dark" | "auto"
-  >("osdk-devtools-theme", "dark");
+  >("devtools-theme", "dark");
 
   const systemPrefersDark = React.useSyncExternalStore(
     subscribeDarkMode,
@@ -546,7 +546,9 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       <div className={styles.content}>
         {(!fiberCapabilities.hookInstalled ||
           !fiberCapabilities.fiberAccessWorking) && (
-          <DegradationNotice onRetry={() => validateFiberAccess()} />
+          <div className={styles.notice}>
+            <DegradationNotice onRetry={() => validateFiberAccess()} />
+          </div>
         )}
 
         <Tabs

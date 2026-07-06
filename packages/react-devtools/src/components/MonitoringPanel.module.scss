@@ -211,6 +211,7 @@
 
 .tabs {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -220,6 +221,14 @@
       flex-shrink: 0;
       padding: 4px 12px 0;
       border-bottom: 1px solid t.$border-default;
+      overflow-x: auto;
+      overflow-y: hidden;
+      // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
+      scrollbar-width: none;
+
+       &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     .bp6-tab-panel {
@@ -231,6 +240,43 @@
     }
   }
 }
+
+.tabs {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  // Panel chrome surface (Blueprint dark-gray-2). The tab-list strip and tab
+  // panels are transparent, so this is the single source for the tabs-region
+  // background — no per-child overrides needed.
+  background: var(--bp-palette-dark-gray-2);
+
+  :global {
+    .bp6-tab-list {
+      flex-shrink: 0;
+      padding: 4px 12px 0;
+      border-bottom: 1px solid t.$border-default;
+      overflow-x: auto;
+      overflow-y: hidden;
+      // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .bp6-tab-panel {
+      flex: 1;
+      min-height: 0;
+      margin-top: 0;
+      overflow: auto;
+      @include m.dt-scrollbar;
+    }
+  }
+}
+
 
 .metricsGrid {
   display: flex;
