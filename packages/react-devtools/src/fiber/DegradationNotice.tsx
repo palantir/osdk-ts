@@ -46,6 +46,8 @@ const FEATURE_DESCRIPTIONS: Record<FiberFeature, string> = {
 export interface DegradationNoticeProps {
   onRetry?: () => void;
   showWhenHealthy?: boolean;
+  /** Applied to the rendered `Callout` so callers can adjust its layout. */
+  className?: string;
 }
 
 function subscribeToCapabilities(onStoreChange: () => void): () => void {
@@ -74,6 +76,7 @@ function getCapabilitiesSnapshot(): FiberCapabilities {
 export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   onRetry,
   showWhenHealthy = false,
+  className,
 }) => {
   const capabilities = React.useSyncExternalStore(
     subscribeToCapabilities,
@@ -92,6 +95,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!hasIssues && showWhenHealthy) {
     return (
       <Callout
+        className={className}
         intent={Intent.SUCCESS}
         icon="tick-circle"
         title="Fiber Access Healthy"
@@ -110,6 +114,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.hookInstalled) {
     return (
       <Callout
+        className={className}
         intent={Intent.WARNING}
         icon="warning-sign"
         title="DevTools Hook Not Installed"
@@ -129,6 +134,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.rendererDetected) {
     return (
       <Callout
+        className={className}
         intent={Intent.PRIMARY}
         icon="time"
         title="Waiting for React"
@@ -155,6 +161,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.fiberAccessWorking) {
     return (
       <Callout
+        className={className}
         intent={Intent.DANGER}
         icon="error"
         title="Fiber Access Unavailable"
@@ -182,6 +189,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
 
   return (
     <Callout
+      className={className}
       intent={Intent.WARNING}
       icon="warning-sign"
       title="Some Features Disabled"
@@ -202,7 +210,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
           <Tag
             key={feature}
             intent={Intent.WARNING}
-            minimal
+            minimal={true}
             title={FEATURE_DESCRIPTIONS[feature]}
           >
             {FEATURE_LABELS[feature]}

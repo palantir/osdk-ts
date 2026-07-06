@@ -546,9 +546,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       <div className={styles.content}>
         {(!fiberCapabilities.hookInstalled ||
           !fiberCapabilities.fiberAccessWorking) && (
-          <div className={styles.notice}>
-            <DegradationNotice onRetry={() => validateFiberAccess()} />
-          </div>
+          <DegradationNotice
+            className={styles.notice}
+            onRetry={() => validateFiberAccess()}
+          />
         )}
 
         <Tabs
@@ -559,6 +560,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <Tab
             id="performance"
             title="Performance"
+            panelClassName={styles.tabPanel}
             panel={
               <PerformanceTab
                 metricsStore={metricsStore}
@@ -569,11 +571,13 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <Tab
             id="compute"
             title="Compute"
+            panelClassName={styles.tabPanel}
             panel={<ComputeTab computeStore={computeStore} />}
           />
           <Tab
             id="intercept"
             title="Intercept"
+            panelClassName={styles.tabPanel}
             panel={
               <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
             }
@@ -581,6 +585,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <Tab
             id="debugging"
             title="Debugging"
+            panelClassName={styles.tabPanel}
             panel={<DebuggingTab monitorStore={monitorStore} />}
           />
         </Tabs>

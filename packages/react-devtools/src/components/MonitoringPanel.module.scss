@@ -204,41 +204,7 @@
 .notice {
   // Blueprint's Callout is width: 100%; combined with its inline margin that
   // overflows the panel on the right. Let it size to the padded width instead.
-  :global(.bp6-callout) {
-    width: auto;
-  }
-}
-
-.tabs {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-
-  :global {
-    .bp6-tab-list {
-      flex-shrink: 0;
-      padding: 4px 12px 0;
-      border-bottom: 1px solid t.$border-default;
-      overflow-x: auto;
-      overflow-y: hidden;
-      // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
-      scrollbar-width: none;
-
-       &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-
-    .bp6-tab-panel {
-      flex: 1;
-      min-height: 0;
-      margin-top: 0;
-      overflow: auto;
-      @include m.dt-scrollbar;
-    }
-  }
+  width: auto;
 }
 
 .tabs {
@@ -252,31 +218,29 @@
   // background — no per-child overrides needed.
   background: var(--bp-palette-dark-gray-2);
 
-  :global {
-    .bp6-tab-list {
-      flex-shrink: 0;
-      padding: 4px 12px 0;
-      border-bottom: 1px solid t.$border-default;
-      overflow-x: auto;
-      overflow-y: hidden;
-      // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
-      scrollbar-width: none;
+  // Blueprint v6 exposes no className prop for the tab-list strip so using :global
+  :global(.bp6-tab-list) {
+    flex-shrink: 0;
+    padding: 4px 12px 0;
+    border-bottom: 1px solid t.$border-default;
+    overflow-x: auto;
+    overflow-y: hidden;
+    // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
+    scrollbar-width: none;
 
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-
-    .bp6-tab-panel {
-      flex: 1;
-      min-height: 0;
-      margin-top: 0;
-      overflow: auto;
-      @include m.dt-scrollbar;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 }
 
+.tabPanel {
+  flex: 1;
+  min-height: 0;
+  margin-top: 0;
+  overflow: auto;
+  @include m.dt-scrollbar;
+}
 
 .metricsGrid {
   display: flex;
