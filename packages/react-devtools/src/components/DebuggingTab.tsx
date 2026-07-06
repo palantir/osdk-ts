@@ -24,7 +24,6 @@ import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 import { formatTime } from "../utils/format.js";
-import { CacheInspectorTab } from "./CacheInspectorTab.js";
 import { ComponentCard } from "./ComponentCard.js";
 import { ImprovementsTab } from "./ImprovementsTab.js";
 import { IssueCard } from "./IssueCard.js";
@@ -186,7 +185,6 @@ function collectIssues(monitorStore: MonitorStore, now: number): Issue[] {
 
 export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [cacheExpanded, setCacheExpanded] = useState(false);
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [improvementsExpanded, setImprovementsExpanded] = useState(true);
 
@@ -207,20 +205,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const issues =
     React.useSyncExternalStore(issueStore.subscribe, issueStore.getSnapshot) ??
     [];
-
-  const cacheCountStore = React.useMemo(
-    () =>
-      createPollingStore(async () => {
-        const entries = await monitorStore.loadCacheEntries();
-        return entries.length;
-      }, 5000),
-    [monitorStore]
-  );
-  const cacheCount =
-    React.useSyncExternalStore(
-      cacheCountStore.subscribe,
-      cacheCountStore.getSnapshot
-    ) ?? 0;
 
   const searchFilter = useCallback(
     (issue: Issue) => {
@@ -445,23 +429,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
           {improvementsExpanded && (
             <ImprovementsTab monitorStore={monitorStore} />
           )}
-        </div>
-
-        <div className={styles.section}>
-          <button
-            type="button"
-            className={styles.sectionHeaderButton}
-            onClick={() => setCacheExpanded(!cacheExpanded)}
-          >
-            <span>Cache</span>
-            <span className={styles.sectionCount}>{cacheCount} entries</span>
-            <Icon
-              icon={cacheExpanded ? "chevron-down" : "chevron-right"}
-              size={14}
-              className={styles.sectionChevron}
-            />
-          </button>
-          {cacheExpanded && <CacheInspectorTab monitorStore={monitorStore} />}
         </div>
       </div>
     </div>

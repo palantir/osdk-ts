@@ -27,6 +27,7 @@ import { validateFiberAccess } from "../fiber/validation.js";
 import { usePersistedState } from "../hooks/usePersistedState.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
+import { CacheInspectorTab } from "./CacheInspectorTab.js";
 import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
@@ -102,7 +103,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
   const [activeTab, setActiveTab] = useState<
-    "performance" | "compute" | "intercept" | "debugging"
+    "performance" | "compute" | "intercept" | "debugging" | "cache"
   >("performance");
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
@@ -537,23 +538,29 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         </div>
 
         <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-          {(["performance", "compute", "intercept", "debugging"] as const).map(
-            (tab) => (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === tab}
-                className={classNames(
-                  styles.tabButton,
-                  activeTab === tab && styles.tabButtonActive
-                )}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            )
-          )}
+          {(
+            [
+              "performance",
+              "cache",
+              "compute",
+              "intercept",
+              "debugging",
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              className={classNames(
+                styles.tabButton,
+                activeTab === tab && styles.tabButtonActive
+              )}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
         <div className={styles.content}>
@@ -600,6 +607,15 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             }
           >
             <DebuggingTab monitorStore={monitorStore} />
+          </div>
+          <div
+            className={
+              activeTab === "cache"
+                ? styles.tabContentVisible
+                : styles.tabContentHidden
+            }
+          >
+            <CacheInspectorTab monitorStore={monitorStore} />
           </div>
         </div>
       </div>
