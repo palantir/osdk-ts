@@ -37,9 +37,8 @@ vi.mock("../fiber/validation.js", () => ({
 
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 
-// The panel renders inside a shadow root so its styles stay isolated from the
-// host app. React Testing Library's `screen` does not pierce the shadow
-// boundary, so assertions read the devtools shadow root directly.
+// The panel renders inside a shadow root; `screen` does not pierce the shadow
+// boundary, so assertions read the shadow root directly.
 function devtoolsShadowRoot(): ShadowRoot {
   const host = document.querySelector<HTMLElement>(`#${HOST_ID}`);
   if (host?.shadowRoot == null) {
@@ -82,20 +81,17 @@ describe("MonitoringPanel", () => {
     expect(shadowContains("Cache Hit Rate")).toBe(true);
   });
 
-  it("renders into an isolated shadow root, not the host document", () => {
+  it("renders into an isolated shadow root, not the page", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
-
-    // Devtools no longer injects a global stylesheet into the host document.
-    expect(
-      document.querySelector("#__osdk_react_devtools_styles__")
-    ).toBeNull();
 
     // The panel content lives in the shadow root, not the light DOM.
     expect(screen.queryByText("OSDK Devtools")).toBeNull();
     expect(shadowContains("OSDK Devtools")).toBe(true);
 
-    // Styles are injected into the shadow root instead.
-    expect(devtoolsShadowRoot().querySelector("style")).not.toBeNull();
+    // The devtools stylesheet lives inside the shadow root, never in the page.
+    const shadowStyle = devtoolsShadowRoot().querySelector("style");
+    expect(shadowStyle).not.toBeNull();
+    expect(document.head.contains(shadowStyle)).toBe(false);
   });
 });

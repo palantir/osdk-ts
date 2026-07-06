@@ -33,8 +33,8 @@ export interface OsdkDevToolsOptions {
   verbose?: boolean;
 
   /**
-   * @deprecated No longer used. Devtools styles are injected into an isolated
-   * shadow root at runtime, so nothing is added to the host page.
+   * @deprecated No longer used. Devtools styles load into a shadow root at
+   * runtime, so nothing is added to the page.
    */
   injectCSS?: boolean;
 }

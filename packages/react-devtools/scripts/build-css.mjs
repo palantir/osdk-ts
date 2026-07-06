@@ -80,10 +80,8 @@ function readPackageCss(specifier) {
   return fs.readFile(resolved, "utf-8");
 }
 
-// Emits the module that exports the shadow-scoped devtools stylesheet as a
-// string. It has NO document.head side effect: src/shadow/ShadowHost.ts
-// injects this string into the devtools shadow root so it never touches the
-// host app's styles.
+// Emits the module that exports the shadow-scoped stylesheet as a string, with
+// no document.head side effect. ShadowHost.ts injects it into the shadow root.
 function buildRuntimeInjectionSource(css) {
   return `/*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
@@ -107,19 +105,16 @@ export const devtoolsCss = ${JSON.stringify(css)};
 `;
 }
 
-// Rewrites document-scoped base selectors (:root, html, body) to :host so the
-// bundled Blueprint CSS applies inside the devtools shadow root, where :root /
-// html / body match nothing. Blueprint's `:root { --bp-* }` variable blocks
-// and its html/body typography rules must land on the shadow host to cascade
-// into the tree. walkRules also descends into @media / @supports, catching the
-// :root block nested under `@supports (color: oklch(...))`.
+// Rewrites :root/html/body selectors to :host. Inside a shadow root those
+// selectors match nothing, so Blueprint's `:root { --bp-* }` tokens and its
+// html/body typography must land on :host to cascade into the tree. walkRules
+// descends into @media/@supports, catching the :root under @supports (oklch).
 async function rewriteForShadow(css) {
   const result = await postcss([
     {
       postcssPlugin: "osdk-devtools-shadow-scope",
       Once(root) {
-        // `@charset` is ignored inside a <style> element and would otherwise
-        // sit mid-bundle (invalid position) after the prepended :host rule.
+        // `@charset` is invalid inside a <style> element; strip it.
         root.walkAtRules("charset", (rule) => rule.remove());
         root.walkRules((rule) => {
           rule.selectors = rule.selectors.map((selector) =>
@@ -203,27 +198,27 @@ async function main() {
     combinedModuleCss,
   ].join("\n\n");
 
-  // Shadow-scoped bundle actually consumed at runtime. `:host { all: initial }`
-  // resets inherited properties at the shadow boundary (app -> devtools), while
-  // the later :host rules (from the :root/html/body rewrite) re-declare
-  // devtools' own tokens and base styles, winning by source order.
+  // Shadow-scoped bundle consumed at runtime. `:host { all: initial }` resets
+  // styles inherited from the page; the rewritten :host rules that follow
+  // re-declare devtools' own tokens, winning by source order.
+  const rewrittenBundle = await rewriteForShadow(
+    [
+      "/* @blueprintjs/core */",
+      blueprintCoreCss,
+      "/* @blueprintjs/icons */",
+      blueprintIconsCss,
+      combinedModuleCss,
+    ].join("\n\n")
+  );
   const shadowCss = [
     "/* @osdk/react-devtools - Shadow-scoped styles */",
     ":host { all: initial; }",
-    "/* @blueprintjs/core */",
-    await rewriteForShadow(blueprintCoreCss),
-    "/* @blueprintjs/icons */",
-    await rewriteForShadow(blueprintIconsCss),
-    // No :root/html/body in the devtools modules; this only strips the stray
-    // @charset sass emits, keeping the shadow bundle clean.
-    await rewriteForShadow(combinedModuleCss),
+    rewrittenBundle,
   ].join("\n\n");
 
-  // Fail the build loudly if the :root -> :host rewrite stopped matching
-  // Blueprint's token blocks (e.g. a future Blueprint release emits
-  // `:root:where(...)` that the rewrite regex misses). Without this, the tokens
-  // would land on :root, match nothing in the shadow root, and the panel would
-  // lose its Blueprint theme with no error.
+  // If a Blueprint upgrade changes its `:root` token selectors so the rewrite
+  // stops matching, the tokens would silently stay on :root (dead in the shadow
+  // root) and the panel would lose its theme. Fail the build instead.
   if (!/:host\s*\{[^}]*--bp-/u.test(shadowCss)) {
     throw new Error(
       "build-css: shadow bundle has no `:host { --bp-* }` block; the " +

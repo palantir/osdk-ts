@@ -22,16 +22,13 @@ const MOUNT_ATTR = "data-osdk-devtools-mount";
 let cachedMount: HTMLElement | null = null;
 
 /**
- * Returns the single mount element for the devtools UI, living inside a shadow
- * root so devtools styles never touch the host app and app styles never reach
- * the devtools.
+ * Returns the single mount element for the devtools UI. It lives in a shadow
+ * root so devtools CSS and the page's CSS can't affect each other.
  *
  * The host `<div>` is a zero-size fixed anchor with a very high z-index: it
- * establishes a top-level stacking context (keeping the panel above app
- * content) without intercepting pointer events. Inheritance protection and base
- * styling live in the shadow stylesheet (`:host { all: initial }` plus the
- * Blueprint `:host` rules), not inline, so Blueprint's own `:host` base styles
- * still win by source order.
+ * gives the panel a top-level stacking context without covering the page.
+ * Style resets live in the shadow stylesheet (`:host { all: initial }`), not
+ * inline, so Blueprint's `:host` base rules still win by source order.
  */
 export function getDevtoolsShadowMount(): HTMLElement {
   if (cachedMount != null) {

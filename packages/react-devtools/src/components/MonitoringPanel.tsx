@@ -32,7 +32,6 @@ import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
-import { PanelContainerContext } from "./PanelContainerContext.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -136,13 +135,12 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     [themePreference, systemPrefersDark]
   );
 
-  // The devtools UI renders into a shadow root so its styles (Blueprint +
-  // devtools CSS) stay fully isolated from the host app in both directions.
+  // Renders inside a shadow root so the bundled Blueprint + devtools CSS can't
+  // leak into the page, and the page's CSS can't leak in.
   const [shadowMount] = useState(getDevtoolsShadowMount);
 
-  // A callback-ref-driven state (not a plain ref) so the context Provider
-  // re-renders with the panel element once it mounts — descendants portal
-  // overlays into it. See PanelContainerContext.
+  // Callback-ref state so a re-render fires once the panel mounts; overlays
+  // portal into it (see PortalProvider below) so the panel-scoped styles apply.
   const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
@@ -434,130 +432,123 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     }
   );
   return createPortal(
-    <PortalProvider portalContainer={shadowMount}>
-      <PanelContainerContext.Provider value={panelEl}>
-        <div
-          ref={setPanelEl}
-          className={panelClassName}
-          data-dt-theme={resolvedTheme}
-          style={{
-            left:
-              effectivePosition.dockMode === "docked-bottom"
-                ? 0
-                : effectivePosition.x,
-            top:
-              effectivePosition.dockMode === "docked-right"
-                ? 0
-                : effectivePosition.y,
-            width: effectivePosition.width,
-            height: effectivePosition.height,
-            right:
-              effectivePosition.dockMode === "docked-right" ? 0 : undefined,
-            bottom:
-              effectivePosition.dockMode === "docked-bottom" ? 0 : undefined,
-          }}
-        >
-          {(position.dockMode === "floating"
-            ? [
-                { cls: [styles.horizontal, styles.top], handle: "top" },
-                { cls: [styles.horizontal, styles.bottom], handle: "bottom" },
-                { cls: [styles.vertical, styles.left], handle: "left" },
-                { cls: [styles.vertical, styles.right], handle: "right" },
-                { cls: [styles.corner, styles.topLeft], handle: "topLeft" },
-                { cls: [styles.corner, styles.topRight], handle: "topRight" },
-                {
-                  cls: [styles.corner, styles.bottomLeft],
-                  handle: "bottomLeft",
-                },
-                {
-                  cls: [styles.corner, styles.bottomRight],
-                  handle: "bottomRight",
-                },
-              ]
-            : position.dockMode === "docked-bottom"
-              ? [{ cls: [styles.horizontal, styles.top], handle: "top" }]
-              : position.dockMode === "docked-right"
-                ? [{ cls: [styles.vertical, styles.left], handle: "left" }]
-                : []
-          ).map(({ cls, handle }) => (
-            <div
-              key={handle}
-              className={classNames(styles.resizeHandle, ...cls)}
-              onMouseDown={(e) => handleResizeMouseDown(e, handle)}
-            />
-          ))}
-
-          <div className={styles.header} onMouseDown={handleMouseDown}>
-            <h3 className={styles.title}>
-              OSDK Devtools
-              <span className={styles.badge}>Beta</span>
-            </h3>
-            <div className={styles.controls}>
-              <Button
-                variant="minimal"
-                size="small"
-                icon={
-                  themePreference === "dark"
-                    ? "moon"
-                    : themePreference === "light"
-                      ? "flash"
-                      : "automatic-updates"
-                }
-                onClick={() =>
-                  setThemePreference(
-                    themePreference === "dark"
-                      ? "light"
-                      : themePreference === "light"
-                        ? "auto"
-                        : "dark"
-                  )
-                }
-                title={`Theme: ${themePreference} (click to cycle)`}
-                aria-label={`Theme: ${themePreference}. Click to cycle.`}
-              />
-              <Button
-                variant="minimal"
-                size="small"
-                icon={
-                  position.dockMode === "floating"
-                    ? "widget"
-                    : position.dockMode === "docked-bottom"
-                      ? "layout-sorted-clusters"
-                      : "layout-hierarchy"
-                }
-                onClick={handleDockToggle}
-                title={`Dock mode: ${position.dockMode} (click to cycle)`}
-                aria-label={`Dock mode: ${position.dockMode}. Click to cycle.`}
-              />
-              <Button
-                variant="minimal"
-                size="small"
-                icon="reset"
-                onClick={() => metricsStore.reset()}
-                title="Reset metrics"
-                aria-label="Reset metrics"
-              />
-              <Button
-                variant="minimal"
-                size="small"
-                icon="minimize"
-                onClick={() =>
-                  setPosition((prev) => ({ ...prev, collapsed: true }))
-                }
-                title="Minimize"
-                aria-label="Minimize devtools panel"
-              />
-            </div>
-          </div>
-
+    <PortalProvider portalContainer={panelEl ?? shadowMount}>
+      <div
+        ref={setPanelEl}
+        className={panelClassName}
+        data-dt-theme={resolvedTheme}
+        style={{
+          left:
+            effectivePosition.dockMode === "docked-bottom"
+              ? 0
+              : effectivePosition.x,
+          top:
+            effectivePosition.dockMode === "docked-right"
+              ? 0
+              : effectivePosition.y,
+          width: effectivePosition.width,
+          height: effectivePosition.height,
+          right: effectivePosition.dockMode === "docked-right" ? 0 : undefined,
+          bottom:
+            effectivePosition.dockMode === "docked-bottom" ? 0 : undefined,
+        }}
+      >
+        {(position.dockMode === "floating"
+          ? [
+              { cls: [styles.horizontal, styles.top], handle: "top" },
+              { cls: [styles.horizontal, styles.bottom], handle: "bottom" },
+              { cls: [styles.vertical, styles.left], handle: "left" },
+              { cls: [styles.vertical, styles.right], handle: "right" },
+              { cls: [styles.corner, styles.topLeft], handle: "topLeft" },
+              { cls: [styles.corner, styles.topRight], handle: "topRight" },
+              {
+                cls: [styles.corner, styles.bottomLeft],
+                handle: "bottomLeft",
+              },
+              {
+                cls: [styles.corner, styles.bottomRight],
+                handle: "bottomRight",
+              },
+            ]
+          : position.dockMode === "docked-bottom"
+            ? [{ cls: [styles.horizontal, styles.top], handle: "top" }]
+            : position.dockMode === "docked-right"
+              ? [{ cls: [styles.vertical, styles.left], handle: "left" }]
+              : []
+        ).map(({ cls, handle }) => (
           <div
-            className={styles.tabs}
-            role="tablist"
-            aria-label="Devtools tabs"
-          >
-            {(
-              ["performance", "compute", "intercept", "debugging"] as const
-            ).map((tab) => (
+            key={handle}
+            className={classNames(styles.resizeHandle, ...cls)}
+            onMouseDown={(e) => handleResizeMouseDown(e, handle)}
+          />
+        ))}
+
+        <div className={styles.header} onMouseDown={handleMouseDown}>
+          <h3 className={styles.title}>
+            OSDK Devtools
+            <span className={styles.badge}>Beta</span>
+          </h3>
+          <div className={styles.controls}>
+            <Button
+              variant="minimal"
+              size="small"
+              icon={
+                themePreference === "dark"
+                  ? "moon"
+                  : themePreference === "light"
+                    ? "flash"
+                    : "automatic-updates"
+              }
+              onClick={() =>
+                setThemePreference(
+                  themePreference === "dark"
+                    ? "light"
+                    : themePreference === "light"
+                      ? "auto"
+                      : "dark"
+                )
+              }
+              title={`Theme: ${themePreference} (click to cycle)`}
+              aria-label={`Theme: ${themePreference}. Click to cycle.`}
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon={
+                position.dockMode === "floating"
+                  ? "widget"
+                  : position.dockMode === "docked-bottom"
+                    ? "layout-sorted-clusters"
+                    : "layout-hierarchy"
+              }
+              onClick={handleDockToggle}
+              title={`Dock mode: ${position.dockMode} (click to cycle)`}
+              aria-label={`Dock mode: ${position.dockMode}. Click to cycle.`}
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon="reset"
+              onClick={() => metricsStore.reset()}
+              title="Reset metrics"
+              aria-label="Reset metrics"
+            />
+            <Button
+              variant="minimal"
+              size="small"
+              icon="minimize"
+              onClick={() =>
+                setPosition((prev) => ({ ...prev, collapsed: true }))
+              }
+              title="Minimize"
+              aria-label="Minimize devtools panel"
+            />
+          </div>
+        </div>
+
+        <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
+          {(["performance", "compute", "intercept", "debugging"] as const).map(
+            (tab) => (
               <button
                 key={tab}
                 type="button"
@@ -571,57 +562,57 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
-            ))}
+            )
+          )}
+        </div>
+
+        <div className={styles.content}>
+          {(!fiberCapabilities.hookInstalled ||
+            !fiberCapabilities.fiberAccessWorking) && (
+            <DegradationNotice onRetry={() => validateFiberAccess()} />
+          )}
+
+          <div
+            className={
+              activeTab === "performance"
+                ? styles.tabContentVisible
+                : styles.tabContentHidden
+            }
+          >
+            <PerformanceTab
+              metricsStore={metricsStore}
+              monitorStore={monitorStore}
+            />
           </div>
-
-          <div className={styles.content}>
-            {(!fiberCapabilities.hookInstalled ||
-              !fiberCapabilities.fiberAccessWorking) && (
-              <DegradationNotice onRetry={() => validateFiberAccess()} />
-            )}
-
-            <div
-              className={
-                activeTab === "performance"
-                  ? styles.tabContentVisible
-                  : styles.tabContentHidden
-              }
-            >
-              <PerformanceTab
-                metricsStore={metricsStore}
-                monitorStore={monitorStore}
-              />
-            </div>
-            <div
-              className={
-                activeTab === "compute"
-                  ? styles.tabContentVisible
-                  : styles.tabContentHidden
-              }
-            >
-              <ComputeTab computeStore={computeStore} />
-            </div>
-            <div
-              className={
-                activeTab === "intercept"
-                  ? styles.tabContentVisible
-                  : styles.tabContentHidden
-              }
-            >
-              <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
-            </div>
-            <div
-              className={
-                activeTab === "debugging"
-                  ? styles.tabContentVisible
-                  : styles.tabContentHidden
-              }
-            >
-              <DebuggingTab monitorStore={monitorStore} />
-            </div>
+          <div
+            className={
+              activeTab === "compute"
+                ? styles.tabContentVisible
+                : styles.tabContentHidden
+            }
+          >
+            <ComputeTab computeStore={computeStore} />
+          </div>
+          <div
+            className={
+              activeTab === "intercept"
+                ? styles.tabContentVisible
+                : styles.tabContentHidden
+            }
+          >
+            <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
+          </div>
+          <div
+            className={
+              activeTab === "debugging"
+                ? styles.tabContentVisible
+                : styles.tabContentHidden
+            }
+          >
+            <DebuggingTab monitorStore={monitorStore} />
           </div>
         </div>
-      </PanelContainerContext.Provider>
+      </div>
     </PortalProvider>,
     shadowMount
   );

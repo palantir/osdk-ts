@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-// Placeholder. scripts/build-css.mjs replaces the transpiled
-// build/esm/styles.js with the compiled devtools stylesheet (Blueprint +
-// devtools CSS, rewritten for a shadow root). src/shadow/ShadowHost.ts imports
-// this string and injects it into the devtools shadow root; it is never added
-// to document.head.
+// Placeholder. scripts/build-css.mjs overwrites the transpiled
+// build/esm/styles.js with the compiled shadow-scoped stylesheet, which
+// ShadowHost.ts injects into the shadow root (never into document.head).
 export const devtoolsCss = "";
