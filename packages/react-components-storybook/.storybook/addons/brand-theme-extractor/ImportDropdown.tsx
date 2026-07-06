@@ -69,6 +69,19 @@ const Chevron = styled.span({
   lineHeight: 1,
 });
 
+// Matches the "Beta" tag badge used across the Storybook sidebar/toolbar
+// (see .storybook/manager.ts).
+const BetaBadge = styled.span(({ theme }) => ({
+  backgroundColor: "rgba(143, 153, 168, .15)",
+  color: "#1c2127",
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 999,
+  fontSize: 11,
+  fontWeight: 700,
+  lineHeight: 1,
+  padding: "3px 8px",
+}));
+
 // Rendered through a portal to document.body with fixed positioning so it can't
 // be clipped by the addon panel when it's docked in the narrow right sidebar.
 const Menu = styled.div(({ theme }) => ({
@@ -283,6 +296,9 @@ export function ImportDropdown({
         aria-haspopup="dialog"
       >
         Import
+        <BetaBadge title="This feature is in beta and may change">
+          Beta
+        </BetaBadge>
         <Chevron>{open ? "▴" : "▾"}</Chevron>
       </TriggerButton>
       {open &&
