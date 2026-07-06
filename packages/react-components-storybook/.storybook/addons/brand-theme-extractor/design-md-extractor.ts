@@ -93,7 +93,7 @@ function emptyParsed(): ParsedDesign {
 
 /** Pull the text between the leading `---` fences, or null if there isn't one. */
 function extractFrontmatter(markdown: string): string | null {
-  const match = markdown.match(/^﻿?---\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/);
+  const match = markdown.match(/^﻿?---\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/u);
   return match ? match[1] : null;
 }
 
@@ -111,7 +111,7 @@ function parseFrontmatter(front: string): ParsedDesign {
   let subKey: string | null = null;
 
   for (const rawLine of front.split("\n")) {
-    const line = rawLine.replace(/\r$/, "");
+    const line = rawLine.replace(/\r$/u, "");
     if (line.trim() === "" || line.trim().startsWith("#")) continue;
 
     const indent = line.length - line.trimStart().length;
@@ -266,8 +266,8 @@ function tokenMapFromParsed(parsed: ParsedDesign): CssTokenMap {
     if (body.fontFamily) map["font-family"] = body.fontFamily;
     const size = firstPx(body.fontSize);
     if (size != null) map["font-size-medium"] = String(size);
-    const lh = body.lineHeight?.replace(/px$/, "").trim();
-    if (lh && /^\d+(\.\d+)?$/.test(lh)) map["line-height"] = lh;
+    const lh = body.lineHeight?.replace(/px$/u, "").trim();
+    if (lh && /^\d+(\.\d+)?$/u.test(lh)) map["line-height"] = lh;
   }
   const mono = pickMonoFamily(parsed.typography);
   if (mono != null) map["font-family-mono"] = mono;
@@ -300,7 +300,7 @@ function pickBodyTypography(
   if (keys.length === 0) return null;
   const exact = keys.find((k) => k.toLowerCase() === "body");
   if (exact) return typography[exact];
-  const bodyish = keys.find((k) => /^body/i.test(k));
+  const bodyish = keys.find((k) => /^body/iu.test(k));
   if (bodyish) return typography[bodyish];
   // Otherwise the smallest text role is the best body proxy.
   return typography[keys[0]];
@@ -311,7 +311,7 @@ function pickMonoFamily(
 ): string | null {
   for (const [role, props] of Object.entries(typography)) {
     const family = props.fontFamily;
-    if (family && (/mono|code/i.test(role) || /mono/i.test(family))) {
+    if (family && (/mono|code/iu.test(role) || /mono/iu.test(family))) {
       return family;
     }
   }
@@ -321,10 +321,10 @@ function pickMonoFamily(
 /** Resolve a button component's `rounded: "{rounded.X}"` reference to px. */
 function buttonRadiusFromComponents(parsed: ParsedDesign): number | null {
   for (const [name, props] of Object.entries(parsed.components)) {
-    if (!/button/i.test(name)) continue;
+    if (!/button/iu.test(name)) continue;
     const ref = props.rounded;
     if (!ref) continue;
-    const token = ref.match(/\{rounded\.([\w-]+)\}/)?.[1];
+    const token = ref.match(/\{rounded\.([\w-]+)\}/u)?.[1];
     const value = token != null ? parsed.rounded[token] : ref;
     const px = firstPx(value);
     if (px != null) return px;
@@ -342,7 +342,7 @@ function lowerKeys(obj: Record<string, string>): Record<string, string> {
 
 function firstPx(value: string | undefined): number | null {
   if (value == null) return null;
-  const match = value.match(/-?\d+(\.\d+)?/);
+  const match = value.match(/-?\d+(\.\d+)?/u);
   if (!match) return null;
   const n = Number(match[0]);
   return Number.isFinite(n) ? Math.round(n) : null;
@@ -361,14 +361,14 @@ function firstNumericValue(obj: Record<string, string>): number | null {
 function normalizeColor(raw: string): string | null {
   const value = raw.trim().toLowerCase();
 
-  const short = value.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/);
+  const short = value.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/u);
   if (short)
     return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`;
 
-  const long = value.match(/^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/);
+  const long = value.match(/^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/u);
   if (long) return `#${long[1]}`;
 
-  const rgb = value.match(/^rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)/);
+  const rgb = value.match(/^rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)/u);
   if (rgb) {
     const [r, g, b] = [rgb[1], rgb[2], rgb[3]].map((n) =>
       Math.min(255, Number(n)).toString(16).padStart(2, "0")
@@ -416,8 +416,8 @@ function parseColorsFromProse(
   // else the most saturated color overall.
   const brandPool = mentions.filter(
     (m) =>
-      /primary|brand|accent/.test(m.heading) &&
-      !/background|surface|text/.test(m.heading)
+      /primary|brand|accent/u.test(m.heading) &&
+      !/background|surface|text/u.test(m.heading)
   );
   const primary = mostSaturated(brandPool.length > 0 ? brandPool : mentions);
   take("primary", primary?.hex);
@@ -503,13 +503,13 @@ function collectColorMentions(markdown: string): ColorMention[] {
   let heading = "";
   for (const rawLine of markdown.split("\n")) {
     const line = rawLine.trim();
-    const headingMatch = line.match(/^#{2,}\s+(.*)$/);
+    const headingMatch = line.match(/^#{2,}\s+(.*)$/u);
     if (headingMatch) {
       heading = headingMatch[1].toLowerCase();
       continue;
     }
     // Multiple hex codes can appear on one line; record each.
-    const hexes = line.match(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g);
+    const hexes = line.match(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/gu);
     if (!hexes) continue;
     for (const raw of hexes) {
       const hex = normalizeColor(raw);

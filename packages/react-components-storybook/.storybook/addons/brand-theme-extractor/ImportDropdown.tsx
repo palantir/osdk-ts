@@ -155,9 +155,9 @@ function roleValue(
 
 /** Detect a DESIGN.md by filename first, then by its YAML frontmatter. */
 function isDesignMarkdown(fileName: string, text: string): boolean {
-  if (/\.(md|markdown)$/i.test(fileName)) return true;
-  if (/\.css$/i.test(fileName)) return false;
-  return /^﻿?---\s*\n[\s\S]*\n(colors|typography|rounded|spacing)\s*:/m.test(
+  if (/\.(md|markdown)$/iu.test(fileName)) return true;
+  if (/\.css$/iu.test(fileName)) return false;
+  return /^﻿?---\s*\n[\s\S]*\n(colors|typography|rounded|spacing)\s*:/mu.test(
     text
   );
 }

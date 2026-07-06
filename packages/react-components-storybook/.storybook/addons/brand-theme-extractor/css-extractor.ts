@@ -236,7 +236,7 @@ export function parseCssTokens(
   // Index declarations by their normalized name (lowercased, "--" stripped).
   const byName: Record<string, string> = {};
   for (const [name, value] of Object.entries(vars)) {
-    byName[name.toLowerCase().replace(/^-+/, "")] = value;
+    byName[name.toLowerCase().replace(/^-+/u, "")] = value;
   }
   const pick = (names: string[]): string | undefined => {
     for (const name of names) {
@@ -287,7 +287,7 @@ function toPx(value: string | undefined): number | null {
  */
 function collectCustomProps(css: string): Record<string, string> {
   const vars: Record<string, string> = {};
-  const declRe = /--([\w-]+)\s*:\s*([^;{}]+)/g;
+  const declRe = /--([\w-]+)\s*:\s*([^;{}]+)/gu;
 
   const addFrom = (source: string): void => {
     declRe.lastIndex = 0;
@@ -299,7 +299,7 @@ function collectCustomProps(css: string): Record<string, string> {
     }
   };
 
-  const rootRe = /:root[^{}]*\{([^{}]*)\}/g;
+  const rootRe = /:root[^{}]*\{([^{}]*)\}/gu;
   let rootBlock: RegExpExecArray | null;
   while ((rootBlock = rootRe.exec(css)) != null) addFrom(rootBlock[1]);
 
@@ -316,7 +316,7 @@ function resolveVars(vars: Record<string, string>): Record<string, string> {
   const resolved: Record<string, string> = {};
   for (const [name, value] of Object.entries(vars)) {
     resolved[name] = value.replaceAll(
-      /var\(\s*--([\w-]+)\s*(?:,\s*([^)]*))?\)/g,
+      /var\(\s*--([\w-]+)\s*(?:,\s*([^)]*))?\)/gu,
       (_full, ref: string, fallback?: string) => {
         const target = vars[ref];
         if (target != null) return target;
@@ -550,7 +550,7 @@ const NAMED_COLORS: Record<string, string> = {
   slategray: "#708090",
 };
 
-const COLOR_TOKEN_RE = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/g;
+const COLOR_TOKEN_RE = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/gu;
 
 /** Find the first parseable color token inside a compound value (e.g. the color
  * within a `background` or `border` shorthand). */
@@ -564,7 +564,7 @@ function firstColorInValue(value: string): string | null {
   }
   const lower = value.toLowerCase();
   for (const [name, hex] of Object.entries(NAMED_COLORS)) {
-    if (new RegExp(`\\b${name}\\b`).test(lower)) return hex;
+    if (new RegExp(`\\b${name}\\b`, "u").test(lower)) return hex;
   }
   return null;
 }
@@ -586,7 +586,7 @@ function parseColorToHex(input: string): string | null {
     return null;
   }
 
-  const hex = /^#([0-9a-f]{3,8})$/i.exec(value);
+  const hex = /^#([0-9a-f]{3,8})$/iu.exec(value);
   if (hex) {
     const digits = hex[1];
     if (digits.length === 3 || digits.length === 4) {
@@ -599,9 +599,9 @@ function parseColorToHex(input: string): string | null {
     return null;
   }
 
-  const rgb = /^rgba?\(([^)]+)\)$/.exec(value);
+  const rgb = /^rgba?\(([^)]+)\)$/u.exec(value);
   if (rgb) {
-    const parts = rgb[1].split(/[\s,/]+/).filter((p) => p.length > 0);
+    const parts = rgb[1].split(/[\s,/]+/u).filter((p) => p.length > 0);
     if (parts.length >= 3) {
       const channel = (p: string): number => {
         const n = p.endsWith("%") ? (parseFloat(p) / 100) * 255 : parseFloat(p);
@@ -616,9 +616,9 @@ function parseColorToHex(input: string): string | null {
     return null;
   }
 
-  const hsl = /^hsla?\(([^)]+)\)$/.exec(value);
+  const hsl = /^hsla?\(([^)]+)\)$/u.exec(value);
   if (hsl) {
-    const parts = hsl[1].split(/[\s,/]+/).filter((p) => p.length > 0);
+    const parts = hsl[1].split(/[\s,/]+/u).filter((p) => p.length > 0);
     if (parts.length >= 3) {
       const h = parseFloat(parts[0]);
       const s = parseFloat(parts[1]);
@@ -635,13 +635,13 @@ function parseColorToHex(input: string): string | null {
 
 /** The first length token in a value (e.g. "8px" from "8px 16px"). */
 function firstLengthToken(value: string): string | null {
-  const match = /(-?\d*\.?\d+\s*(?:px|rem|em)?)/i.exec(value.trim());
+  const match = /(-?\d*\.?\d+\s*(?:px|rem|em)?)/iu.exec(value.trim());
   return match ? match[1] : null;
 }
 
 /** Normalize a CSS length to a unitless px number; rem/em assume 16px. */
 function lengthToPx(value: string): number | null {
-  const match = /(-?\d*\.?\d+)\s*(px|rem|em|%)?/i.exec(value.trim());
+  const match = /(-?\d*\.?\d+)\s*(px|rem|em|%)?/iu.exec(value.trim());
   if (!match) return null;
   const n = parseFloat(match[1]);
   if (Number.isNaN(n)) return null;
@@ -701,7 +701,7 @@ function clampByte(n: number): number {
 }
 
 function hexToRgb(hex: string): [number, number, number] | null {
-  const match = /^#([0-9a-f]{6})$/i.exec(hex);
+  const match = /^#([0-9a-f]{6})$/iu.exec(hex);
   if (!match) return null;
   const digits = match[1];
   return [
