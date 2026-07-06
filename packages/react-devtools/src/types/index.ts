@@ -119,7 +119,6 @@ export interface PanelPosition {
   readonly y: number;
   readonly width: number;
   readonly height: number;
-  readonly collapsed: boolean;
   readonly dockMode: DockMode;
 }
 
