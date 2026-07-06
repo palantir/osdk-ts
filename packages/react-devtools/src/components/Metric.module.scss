@@ -1,0 +1,52 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+// A single `Metric` cell — borderless; the enclosing `Metrics` grid draws the
+// dividers around it.
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: t.$bg-surface;
+}
+
+.metricItemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.metricHelp {
+  flex-shrink: 0;
+  color: t.$text-tertiary;
+  cursor: help;
+}
+
+// `Metric` help-tooltip body: the definition text plus, for colored metrics, a
+// color key supplied by the caller.
+.metricHelpContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 220px;
+  line-height: 1.4;
+}
+
+.metricValue {
+  @include m.dt-metric-value;
+
+
+  // No data yet — muted, so it reads as absent rather than a real measurement.
+  &.na {
+    color: t.$text-tertiary;
+  }
+}
+
+// Push the footer to the bottom of the (equal-height) cell so the "View in …"
+// links line up across a row even when metric labels wrap to different heights.
+.metricFooter {
+  margin-top: auto;
+  padding-top: 6px;
+}
