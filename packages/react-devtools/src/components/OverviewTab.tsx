@@ -36,7 +36,7 @@ const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
  * on dummy data — flip to `true` (or wire to config) to surface it. Exported so
  * tests and callers can branch on whether the tab is available.
  */
-export const IS_OVERVIEW_TAB_ENABLED = true;
+export const IS_OVERVIEW_TAB_ENABLED = false;
 
 // TODO: Fetch the real data later
 const usage = {
