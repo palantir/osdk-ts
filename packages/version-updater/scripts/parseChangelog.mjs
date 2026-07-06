@@ -18,8 +18,9 @@
 
 /**
  * @typedef {Object} VersionMapping
- * @property {string} packageVersion
- * @property {Record<string, string>} peerVersions
+ * @property {string} packageVersion The package's own version for this entry.
+ * @property {Record<string, string>} peerVersions Map of peer package name to
+ *   the version it was published against at that package version.
  */
 
 /**
@@ -43,7 +44,7 @@ export function parseChangelog(content, peerPackageNames) {
       /** @type {Record<string, string>} */
       const peerVersions = {};
       for (const peerName of peerPackageNames) {
-        const escaped = peerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const match = block.match(
           new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
         );

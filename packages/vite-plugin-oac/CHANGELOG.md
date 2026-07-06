@@ -1,5 +1,26 @@
 # @osdk/vite-plugin-oac
 
+## 0.40.0
+
+### Minor Changes
+
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [0021ee4]
+- Updated dependencies [cbcdce1]
+- Updated dependencies [f49b4af]
+- Updated dependencies [6010d45]
+- Updated dependencies [255154c]
+  - @osdk/api@2.42.0
+  - @osdk/client.unstable@2.42.0
+  - @osdk/cli@0.66.0
+  - @osdk/maker@0.45.0
+  - @osdk/faux@0.33.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
 ## 0.39.0
 
 ### Patch Changes

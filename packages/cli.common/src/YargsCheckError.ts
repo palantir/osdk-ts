@@ -17,5 +17,6 @@
 export class YargsCheckError extends Error {
   constructor(msg?: string) {
     super(msg);
+    this.name = "YargsCheckError";
   }
 }

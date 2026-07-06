@@ -19,7 +19,7 @@ import {
   type CheckboxIndicatorProps,
   type CheckboxRootProps,
 } from "@base-ui/react/checkbox";
-import { Cross, Minus, Tick } from "@blueprintjs/icons";
+import { SmallCross, SmallMinus, SmallTick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 
@@ -54,13 +54,15 @@ export function Checkbox({
           indicatorProps?.className
         )}
       >
-        {/* Color is used as the "fill" attribute on the svg  */}
+        {/* Color is used as the "fill" attribute on the svg. Icon size is
+            driven by the --osdk-checkbox-icon-size token via CSS, not the
+            Blueprint `size` prop. */}
         {indeterminate ? (
-          <Minus size={16} />
+          <SmallMinus />
         ) : isExcluding ? (
-          <Cross size={16} />
+          <SmallCross />
         ) : (
-          <Tick size={16} />
+          <SmallTick />
         )}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>

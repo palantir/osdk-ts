@@ -43,6 +43,7 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string, hint?: string) {
     super(message);
+    this.name = "ResponseError";
     this.response = response;
     this.hint = hint;
   }

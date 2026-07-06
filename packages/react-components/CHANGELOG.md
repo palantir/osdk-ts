@@ -1,5 +1,13 @@
 # @osdk/react-components
 
+## 0.35.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- e39a728: Migrate @osdk/react-components to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint, with package-specific rule carve-outs in a nested oxlint config
+- 908ad19: Reduce checkbox icon size and center checkmark within the checkbox
+
 ## 0.34.0
 
 ### Minor Changes

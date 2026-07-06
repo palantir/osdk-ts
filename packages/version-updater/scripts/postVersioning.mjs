@@ -93,7 +93,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
     return;
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   if (!packageJson.peerDependencies) {
     packageJson.peerDependencies = {};
   }
@@ -108,7 +108,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
   packageJson.peerDependencies[peerName] = range;
   fs.writeFileSync(
     packageJsonPath,
-    JSON.stringify(packageJson, null, 2) + "\n"
+    `${JSON.stringify(packageJson, null, 2)}\n`
   );
   consola.info(
     `Updated ${packageDir} ${peerName} peer dep to "${range}" (loose)`
@@ -121,7 +121,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
  * @param {string} value
  */
 function updateConstVariable(filePath, variableName, value) {
-  const fileContents = fs.readFileSync(filePath, "utf8");
+  const fileContents = fs.readFileSync(filePath, "utf-8");
 
   const regexp = new RegExp(`const ${variableName} = ".*?";`);
   if (!regexp.test(fileContents)) {
@@ -173,7 +173,7 @@ function getClientPackageVersion() {
   );
 
   const packageJsonContents = JSON.parse(
-    fs.readFileSync(clientPackageJsonPath, "utf8")
+    fs.readFileSync(clientPackageJsonPath, "utf-8")
   );
 
   const currentVersion = packageJsonContents.version;
@@ -217,7 +217,7 @@ function getPeerPackageVersion(packageName) {
   if (!fs.existsSync(pkgJsonPath)) {
     return undefined;
   }
-  return JSON.parse(fs.readFileSync(pkgJsonPath, "utf8")).version;
+  return JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8")).version;
 }
 
 /**
@@ -270,7 +270,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
     return;
   }
 
-  const changelog = fs.readFileSync(changelogPath, "utf8");
+  const changelog = fs.readFileSync(changelogPath, "utf-8");
   const versionMappings = parseChangelog(changelog, changelogPeers);
 
   if (versionMappings.length === 0) {
@@ -280,7 +280,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
     return;
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   const currentPackageVersion = packageJson.version;
 
   if (!packageJson.peerDependencies) {
@@ -327,7 +327,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
   if (changed) {
     fs.writeFileSync(
       packageJsonPath,
-      JSON.stringify(packageJson, null, 2) + "\n"
+      `${JSON.stringify(packageJson, null, 2)}\n`
     );
   }
 }

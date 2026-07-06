@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 
 import { findUp } from "find-up";
@@ -24,7 +24,7 @@ import { findUp } from "find-up";
  * @param {{cjsExtension?: ".cjs" | ".js", esmOnly?: boolean }} ourOptions
  * @returns {Promise<import('tsup').Options | import('tsup').Options[]>}
  */
-export default async (options, ourOptions) => {
+export default async function makeTsupOptions(options, ourOptions) {
   const babel = (await import("esbuild-plugin-babel")).default;
 
   const packageJson = await readFile("package.json", "utf-8").then((f) =>
@@ -106,11 +106,11 @@ export default async (options, ourOptions) => {
   const ret = [esmConfig, browserConfig];
   if (!ourOptions.esmOnly) ret.push(cjsConfig);
   return ret;
-};
+}
 
 async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
-  if (!workspaceFile) throw "couldn't find workspace file";
+  if (!workspaceFile) throw new Error("couldn't find workspace file");
   const workspaceRoot = path.dirname(workspaceFile);
   return await readFile(
     path.join(workspaceRoot, k, "package.json"),

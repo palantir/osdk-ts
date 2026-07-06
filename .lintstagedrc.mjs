@@ -122,6 +122,26 @@ const OXC_PACKAGE_EXCLUDES = [
   ...Object.keys(OXC_NESTED_CONFIG_PACKAGES),
 ].map((p) => `**/packages/${p}/**`);
 
+// Files that must never be linted/formatted regardless of toolchain: generated
+// SDK output and copied templates. Both the oxc and ESLint paths below exclude
+// these. For oxc it is load-bearing: the oxc configs already ignore these via
+// their `ignorePatterns`, so handing such a file to `oxlint` matches 0 files and
+// exits non-zero ("No files found to lint"), which fails the commit.
+const IGNORED_FILE_GLOBS = [
+  "**/templates/**/*",
+  "**/generatedNoCheck/**/*",
+  "**/generatedNoCheck2/**/*",
+  "**/examples/**/*",
+];
+
+// lint-staged passes absolute paths to these matchers, so a repo checked out
+// under a hidden directory (e.g. `/…/.codex/osdk-ts/…`) has a dot-segment in
+// the path. micromatch's `**` does not cross dot-directories unless `dot: true`
+// is set, so without it the excludes above silently fail to match: a file gets
+// routed to a formatter/linter that then matches 0 files and exits non-zero
+// ("No files found to format"/"No files found to lint"), failing the commit.
+const MICROMATCH_OPTS = { dot: true };
+
 /*
  * Overview:
  *  - Fixes lint rules and formatting for code
@@ -138,13 +158,14 @@ export default {
   ],
   "*.md": [CSPELL_CMD],
   [OXC_PACKAGE_GLOB]: (files) => {
-    if (files.length === 0) return [];
+    const match = micromatch.not(files, IGNORED_FILE_GLOBS, MICROMATCH_OPTS);
+    if (match.length === 0) return [];
     // oxlint --fix first (its fixes can affect whitespace), then oxfmt last so
     // the final result is always formatted. Mirrors the package fix-lint script.
     return [
-      `oxlint -c oxlint.config.ts --fix ${files.join(" ")}`,
-      `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
-      `${CSPELL_CMD} ${files.join(" ")}`,
+      `oxlint -c oxlint.config.ts --fix ${match.join(" ")}`,
+      `oxfmt -c oxfmt.config.ts ${match.join(" ")}`,
+      `${CSPELL_CMD} ${match.join(" ")}`,
     ];
   },
   // Same as the OXC_PACKAGE_GLOB handler above, but `-c` points at each
@@ -154,11 +175,16 @@ export default {
     Object.entries(OXC_NESTED_CONFIG_PACKAGES).map(([pkg, config]) => [
       `packages/${pkg}/**/*.{js,jsx,ts,tsx,mjs,cjs}`,
       (files) => {
-        if (files.length === 0) return [];
+        const match = micromatch.not(
+          files,
+          IGNORED_FILE_GLOBS,
+          MICROMATCH_OPTS,
+        );
+        if (match.length === 0) return [];
         return [
-          `oxlint -c ${config} --fix ${files.join(" ")}`,
-          `oxfmt -c oxfmt.config.ts ${files.join(" ")}`,
-          `${CSPELL_CMD} ${files.join(" ")}`,
+          `oxlint -c ${config} --fix ${match.join(" ")}`,
+          `oxfmt -c oxfmt.config.ts ${match.join(" ")}`,
+          `${CSPELL_CMD} ${match.join(" ")}`,
         ];
       },
     ]),
@@ -169,12 +195,10 @@ export default {
     const match = micromatch.not(
       files,
       [
-        "**/templates/**/*",
-        "**/generatedNoCheck/**/*",
-        "**/generatedNoCheck2/**/*",
-        "**/examples/**/*",
+        ...IGNORED_FILE_GLOBS,
         ...OXC_PACKAGE_EXCLUDES,
       ],
+      MICROMATCH_OPTS,
     );
     if (match.length === 0) return [];
     return [
@@ -193,7 +217,7 @@ export default {
       // "**/package.json",
       "tsconfig.json",
       "**/tsconfig.json",
-    ], {});
+    ], MICROMATCH_OPTS);
 
     const mrlCommands = mrlFiles.length > 0
       ? [
