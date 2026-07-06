@@ -133,9 +133,9 @@ async function generateCodeChallenge(codeVerifier: string) {
   const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\//g, "_")
-    .replace(/\+/g, "-")
-    .replace(/=/g, "");
+    .replace(/\//gu, "_")
+    .replace(/\+/gu, "-")
+    .replace(/=/gu, "");
   return {
     codeChallenge,
     codeChallengeMethod,

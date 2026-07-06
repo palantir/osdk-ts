@@ -164,7 +164,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -182,7 +182,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -200,7 +200,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -227,7 +227,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -261,6 +261,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
+      // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
       const pattern = new RegExp(where.value);
       return objects.filter((obj) => {
         const fieldValue = obj[field];

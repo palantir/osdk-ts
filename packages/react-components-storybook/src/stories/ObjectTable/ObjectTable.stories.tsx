@@ -710,9 +710,9 @@ export const MultipleSelection: Story = {
     // Re-query fresh each time: toggling the header re-renders the rows, so
     // checkbox refs captured earlier could go stale.
     const rowCheckboxes = () =>
-      canvas.findAllByRole("checkbox", { name: /select row/i });
+      canvas.findAllByRole("checkbox", { name: /select row/iu });
     const deselectAllCheckbox = () =>
-      canvas.findByRole("checkbox", { name: /deselect all rows/i });
+      canvas.findByRole("checkbox", { name: /deselect all rows/iu });
 
     // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
     const [firstRow, secondRow] = await rowCheckboxes();
@@ -1971,7 +1971,7 @@ export const EditableWithValidation: Story = {
         locator: { type: "property", id: "emailPrimaryWork" },
         editable: true,
         validateEdit: async (value: unknown) => {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
           return emailRegex.test(String(value ?? ""))
             ? undefined
             : "Please enter a valid email address";

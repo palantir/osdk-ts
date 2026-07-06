@@ -180,7 +180,7 @@ function writeEntityFile(
   const dirName = DIR_NAME_MAP[entityType];
 
   const entityJSON = JSON.stringify(entity, null, 2).replace(
-    /("__type"\s*:\s*)"([^"]*)"/g,
+    /("__type"\s*:\s*)"([^"]*)"/gu,
     (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
   );
 

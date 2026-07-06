@@ -477,7 +477,7 @@ function convertSecurityCondition(
  */
 function convertToJavaDurationFormat(iso8601: string): string {
   const match = iso8601.match(
-    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/
+    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/u
   );
   if (!match) return iso8601;
 

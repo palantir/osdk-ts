@@ -56,7 +56,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
       if (
         (roleDef.inputType === "px" || roleDef.inputType === "ms") &&
-        /^\d+(\.\d+)?$/.test(value)
+        /^\d+(\.\d+)?$/u.test(value)
       ) {
         value = `${value}${roleDef.inputType}`;
       }

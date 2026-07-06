@@ -44,7 +44,7 @@ const allProbes = renderQuickInfoProbes({
 
 describe("quickinfo snapshots", () => {
   for (const probesFile of probesFiles) {
-    const surface = probesFile.replace(/\.ts$/, "");
+    const surface = probesFile.replace(/\.ts$/u, "");
     it(surface, async () => {
       await expect(
         allProbes[path.join(probesDir, probesFile)]

@@ -66,7 +66,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
 
   while (
     ontology == null ||
-    !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
+    !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/u.test(ontology)
   ) {
     if (ontology != null) {
       consola.fail("Please enter a valid Ontology resource identifier (rid)");
@@ -79,7 +79,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
     );
   }
 
-  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/.test(osdkPackage)) {
+  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/u.test(osdkPackage)) {
     if (osdkPackage != null) {
       consola.fail("Please enter a valid OSDK package name");
     }
@@ -93,7 +93,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
 
   while (
     osdkRegistryUrl == null ||
-    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/.test(
+    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/u.test(
       osdkRegistryUrl
     )
   ) {
@@ -113,6 +113,6 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
   return {
     ontology,
     osdkPackage,
-    osdkRegistryUrl: osdkRegistryUrl.replace(/\/$/, ""),
+    osdkRegistryUrl: osdkRegistryUrl.replace(/\/$/u, ""),
   };
 }

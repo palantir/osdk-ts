@@ -110,9 +110,9 @@ export async function generateFunctionsIr(
   }
 
   // Normalize to forward slashes to match TypeScript's internal path format
-  const normalizedRootDir = rootDir.replace(/\\/g, "/");
+  const normalizedRootDir = rootDir.replace(/\\/gu, "/");
   const tsConfigPath =
-    configPath?.replace(/\\/g, "/") ?? normalizedRootDir + "/tsconfig.json";
+    configPath?.replace(/\\/gu, "/") ?? normalizedRootDir + "/tsconfig.json";
   const program = OntologyIrToFullMetadataConverter.createProgram(
     tsConfigPath,
     normalizedRootDir

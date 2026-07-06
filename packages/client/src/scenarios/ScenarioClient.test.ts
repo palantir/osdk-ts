@@ -64,7 +64,7 @@ describe("ScenarioClient methods", () => {
         "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/u
       );
       expect(result.objectTypes).toEqual(["Employee", "Office"]);
       expect(result.linkTypes).toEqual([
@@ -96,7 +96,7 @@ describe("ScenarioClient methods", () => {
         "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/u
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
@@ -176,7 +176,7 @@ describe("ScenarioClient methods", () => {
         "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/u
       );
       expect(result).toEqual(["lead", "peeps"]);
     });
@@ -225,7 +225,7 @@ describe("ScenarioClient methods", () => {
         "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/u
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");

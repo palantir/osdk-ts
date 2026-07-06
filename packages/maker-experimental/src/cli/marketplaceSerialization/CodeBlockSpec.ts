@@ -102,7 +102,7 @@ function generateUUIDFromStr(input: crypto.BinaryLike): UUID {
   md5Bytes[8] |= 0x80; /* set to IETF variant  */
   const hex = md5Bytes.toString("hex");
   const uuid = hex.replace(
-    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/,
+    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/u,
     "$1-$2-$3-$4-$5"
   );
   return uuid as UUID;

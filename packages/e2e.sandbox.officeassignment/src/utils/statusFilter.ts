@@ -57,7 +57,7 @@ export interface LatestStatusQuery {
 // derived-property names, so identical queries can share/coalesce in the observable cache. Each
 // (type, value) is unique within one call, so the sanitized join is unique too.
 function uidFor(type: string, value: string): string {
-  return `${type}_${value}`.replace(/[^a-zA-Z0-9]/g, "_");
+  return `${type}_${value}`.replace(/[^a-zA-Z0-9]/gu, "_");
 }
 
 /**

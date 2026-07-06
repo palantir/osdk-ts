@@ -136,7 +136,7 @@ export function handleOpenApiCall<
         u.search = ""; // msw doesn't want the search string
         captured = {
           method: req.method as any,
-          endPoint: u.toString().replace(/%3A/g, ":"),
+          endPoint: u.toString().replace(/%3A/gu, ":"),
         };
 
         // fake a response object so the call doesn't fail

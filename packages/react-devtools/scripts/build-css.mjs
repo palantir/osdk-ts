@@ -121,7 +121,7 @@ async function rewriteScssImports() {
   // Matches every form esbuild/babel can emit: `from "..."`, `import("...")`,
   // and bare side-effect `import "...";`.
   const re =
-    /(from\s+["']|import\s*\(\s*["']|import\s+["'])([^"']+\.module\.scss)(["'])/g;
+    /(from\s+["']|import\s*\(\s*["']|import\s+["'])([^"']+\.module\.scss)(["'])/gu;
   for (const jsFile of jsFiles) {
     const original = await fs.readFile(jsFile, "utf-8");
     const updated = original.replace(re, "$1$2.js$3");

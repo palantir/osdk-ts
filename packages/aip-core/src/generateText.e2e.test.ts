@@ -122,7 +122,7 @@ describeIfConfigured("generateText (e2e)", () => {
       expect(call.toolName).toBe("getWeather");
       const input = call.input as { city?: string };
       assertDefined(input.city, "tool call city");
-      expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/);
+      expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/u);
     },
     E2E_TIMEOUT_MS
   );

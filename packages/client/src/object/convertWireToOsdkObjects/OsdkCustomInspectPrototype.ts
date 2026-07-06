@@ -78,7 +78,7 @@ function customInspect(
     ret += `  ${options.stylize("$as", "special")}: ${localInspect(
       this[UnderlyingOsdkObject],
       newOptions
-    ).replace(/\n/g, `\n  `)}`;
+    ).replace(/\n/gu, `\n  `)}`;
     ret += "\n";
   }
 

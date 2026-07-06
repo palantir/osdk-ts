@@ -54,7 +54,7 @@ describe("BlobMemoryManager", () => {
     manager.add("key", blob);
 
     const url1 = manager.createBlobUrl("key");
-    expect(url1).toMatch(/^blob:/);
+    expect(url1).toMatch(/^blob:/u);
 
     const url2 = manager.createBlobUrl("key");
     expect(url2).toBe(url1);
@@ -76,7 +76,7 @@ describe("BlobMemoryManager", () => {
     manager.releaseBlobUrl("key");
 
     const url4 = manager.createBlobUrl("key");
-    expect(url4).toMatch(/^blob:/);
+    expect(url4).toMatch(/^blob:/u);
     expect(url4).toBe(url1);
   });
 

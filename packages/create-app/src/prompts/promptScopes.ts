@@ -16,7 +16,7 @@
 
 import { consola } from "../consola.js";
 
-const scopeNameRegex = /^[a-zA-Z-_:]+$/;
+const scopeNameRegex = /^[a-zA-Z-_:]+$/u;
 
 export async function promptScopes({
   scopes,

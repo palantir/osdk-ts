@@ -45,7 +45,7 @@ function isOsdkUrl(pathname: string): boolean {
 }
 
 const RID_REGEX =
-  /ri\.([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)?\.([a-z][a-z0-9-]*)\.([a-zA-Z0-9\-._]+)/;
+  /ri\.([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)?\.([a-z][a-z0-9-]*)\.([a-zA-Z0-9\-._]+)/u;
 
 export class ComputeMonitor {
   private readonly originalFetch: typeof globalThis.fetch;

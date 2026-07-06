@@ -16,7 +16,7 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 
-const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/;
+const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;

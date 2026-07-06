@@ -179,7 +179,7 @@ describe("DateRangeHistogramInput", () => {
       fireEvent.pointerMove(rects[0], { pointerId: 1 });
       const tooltip = document.body.querySelector('div[class*="tooltip"]');
       expect(tooltip).not.toBeNull();
-      expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
+      expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/u);
     });
 
     it("honors formatDate on the From input display", () => {
@@ -197,7 +197,7 @@ describe("DateRangeHistogramInput", () => {
       const tooltip = document.body.querySelector('div[class*="tooltip"]');
       expect(tooltip).not.toBeNull();
       // ISO format when formatDate is omitted.
-      expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);
+      expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/u);
     });
   });
 });

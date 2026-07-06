@@ -29,8 +29,8 @@ export function generateNpmRc({
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
   const formattedFoundryUrl = foundryUrl
-    .replace(/^https:\/\//, "")
-    .replace(/\/$/, "");
+    .replace(/^https:\/\//u, "")
+    .replace(/\/$/u, "");
   const artifactsApiUrl = formattedFoundryUrl + "/artifacts/api/";
   const packageScope = osdkPackage.split("/")[0];
 

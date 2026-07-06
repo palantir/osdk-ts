@@ -191,13 +191,13 @@ describe("createMockOsdkObject", () => {
       expect(mockEmployee.$link.officeLink).toBeDefined();
 
       await expect(mockEmployee.$link.officeLink.fetchOne()).rejects.toThrow(
-        /Link "officeLink" was not configured on mock Employee/
+        /Link "officeLink" was not configured on mock Employee/u
       );
 
       const result = await mockEmployee.$link.officeLink.fetchOneWithErrors();
       expect(result.error).toBeInstanceOf(Error);
       expect(result.error!.message).toMatch(
-        /Link "officeLink" was not configured on mock Employee/
+        /Link "officeLink" was not configured on mock Employee/u
       );
       expect(result.value).toBeUndefined();
     });
@@ -215,7 +215,7 @@ describe("createMockOsdkObject", () => {
 
       expect(await mockEmployee.$link.officeLink.fetchOne()).toBe(mockOffice);
       await expect(mockEmployee.$link.lead.fetchOne()).rejects.toThrow(
-        /Link "lead" was not configured on mock Employee/
+        /Link "lead" was not configured on mock Employee/u
       );
     });
 

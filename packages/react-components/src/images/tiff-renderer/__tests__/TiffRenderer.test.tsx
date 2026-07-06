@@ -66,7 +66,7 @@ describe("TiffRenderer", () => {
       render(<TiffRenderer content={largeContent} />);
     });
 
-    expect(screen.getByText(/exceeds maximum size/)).toBeTruthy();
+    expect(screen.getByText(/exceeds maximum size/u)).toBeTruthy();
   });
 
   it("should call onError when decoding fails", async () => {
@@ -93,7 +93,7 @@ describe("TiffRenderer", () => {
     });
 
     expect(onError).toHaveBeenCalled();
-    expect(screen.getByText(/Could not render TIFF/)).toBeTruthy();
+    expect(screen.getByText(/Could not render TIFF/u)).toBeTruthy();
   });
 
   it("should call onError when image has missing dimensions", async () => {

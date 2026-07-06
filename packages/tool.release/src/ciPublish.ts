@@ -80,7 +80,7 @@ async function getRemoteBranches(): Promise<string[]> {
     .split("\n")
     .filter((line) => !!line)
     .map((line) => {
-      const match = line.match(/release\/(.*)/);
+      const match = line.match(/release\/(.*)/u);
       if (!match) {
         consola.log(match);
         throw new Error(`Invalid branch name: ${line}`);
@@ -100,10 +100,10 @@ async function getCurrentBranch(): Promise<string> {
 export function findGreatestVersion(releaseBranches: string[]): string | null {
   if (releaseBranches.length === 0) return null;
   return releaseBranches.reduce((maxBranch, branch) => {
-    let version = branch.replace(/^.*?release\//, "");
-    let maxVersion = maxBranch.replace(/^.*?release\//, "");
-    version = version.replace(/\.x$/, ".0");
-    maxVersion = maxVersion.replace(/\.x$/, ".0");
+    let version = branch.replace(/^.*?release\//u, "");
+    let maxVersion = maxBranch.replace(/^.*?release\//u, "");
+    version = version.replace(/\.x$/u, ".0");
+    maxVersion = maxVersion.replace(/\.x$/u, ".0");
 
     if (!semver.valid(version)) {
       return maxBranch;
