@@ -2566,7 +2566,7 @@ export const WithValidation: Story = {
   },
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 const customValidateFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
   field({
@@ -13188,9 +13188,9 @@ export const MultipleSelection: Story = {
     // Re-query fresh each time: toggling the header re-renders the rows, so
     // checkbox refs captured earlier could go stale.
     const rowCheckboxes = () =&gt;
-      canvas.findAllByRole(&quot;checkbox&quot;, { name: /select row/i });
+      canvas.findAllByRole(&quot;checkbox&quot;, { name: /select row/iu });
     const deselectAllCheckbox = () =&gt;
-      canvas.findByRole(&quot;checkbox&quot;, { name: /deselect all rows/i });
+      canvas.findByRole(&quot;checkbox&quot;, { name: /deselect all rows/iu });
 
     // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
     const [firstRow, secondRow] = await rowCheckboxes();
@@ -14449,7 +14449,7 @@ export const EditableWithValidation: Story = {
         locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
         editable: true,
         validateEdit: async (value: unknown) =&gt; {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
           return emailRegex.test(String(value ?? &quot;&quot;))
             ? undefined
             : &quot;Please enter a valid email address&quot;;
@@ -15704,7 +15704,7 @@ import {
             locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
             editable: true,
             validateEdit: async (value: unknown) =&gt; {
-              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
               return emailRegex.test(String(value ?? &quot;&quot;))
                 ? undefined
                 : &quot;Please enter a valid email address&quot;;
@@ -19266,10 +19266,10 @@ export const SubmitSuccess: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Ada Lovelace&quot;);
@@ -19279,7 +19279,7 @@ export const SubmitSuccess: Story = {
     await expect(
       await canvas.findByText(&quot;Submit succeeded.&quot;)
     ).toBeInTheDocument();
-    await expect(await canvas.findByText(/Ada Lovelace/)).toBeInTheDocument();
+    await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
 };
 
@@ -19293,10 +19293,10 @@ export const SubmitFailure: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Margaret Hamilton&quot;);
@@ -19306,7 +19306,7 @@ export const SubmitFailure: Story = {
     await waitFor(() =&gt; expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText(&quot;Submit failed.&quot;)).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/)
+      await canvas.findByText(/Demo submission failed/u)
     ).toBeInTheDocument();
   },
   parameters: {
@@ -19332,9 +19332,9 @@ export const ValidationErrors: Story = {
     successSpy.mockClear();
 
     const canvas = within(canvasElement);
-    await canvas.findByRole(&quot;textbox&quot;, { name: /^fullName/ });
+    await canvas.findByRole(&quot;textbox&quot;, { name: /^fullName/u });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
     await userEvent.click(submitButton);
 
@@ -19358,7 +19358,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) =&gt; {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submit/i })
+      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu })
     ).toBeDisabled();
   },
 };
@@ -19372,10 +19372,10 @@ export const SlowCustomSubmit: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Katherine Johnson&quot;);
@@ -19383,7 +19383,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() =&gt; expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submitting/i })
+      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu })
     ).toBeDisabled();
   },
   parameters: {
@@ -19415,10 +19415,10 @@ export const CustomSubmitHandler: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Grace Hopper&quot;);
@@ -22154,7 +22154,7 @@ export const WithValidation: Story = {
   },
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 const customValidateFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
   field({
@@ -32776,9 +32776,9 @@ export const MultipleSelection: Story = {
     // Re-query fresh each time: toggling the header re-renders the rows, so
     // checkbox refs captured earlier could go stale.
     const rowCheckboxes = () =&gt;
-      canvas.findAllByRole(&quot;checkbox&quot;, { name: /select row/i });
+      canvas.findAllByRole(&quot;checkbox&quot;, { name: /select row/iu });
     const deselectAllCheckbox = () =&gt;
-      canvas.findByRole(&quot;checkbox&quot;, { name: /deselect all rows/i });
+      canvas.findByRole(&quot;checkbox&quot;, { name: /deselect all rows/iu });
 
     // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
     const [firstRow, secondRow] = await rowCheckboxes();
@@ -34037,7 +34037,7 @@ export const EditableWithValidation: Story = {
         locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
         editable: true,
         validateEdit: async (value: unknown) =&gt; {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
           return emailRegex.test(String(value ?? &quot;&quot;))
             ? undefined
             : &quot;Please enter a valid email address&quot;;
@@ -35292,7 +35292,7 @@ import {
             locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
             editable: true,
             validateEdit: async (value: unknown) =&gt; {
-              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
               return emailRegex.test(String(value ?? &quot;&quot;))
                 ? undefined
                 : &quot;Please enter a valid email address&quot;;
@@ -38854,10 +38854,10 @@ export const SubmitSuccess: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Ada Lovelace&quot;);
@@ -38867,7 +38867,7 @@ export const SubmitSuccess: Story = {
     await expect(
       await canvas.findByText(&quot;Submit succeeded.&quot;)
     ).toBeInTheDocument();
-    await expect(await canvas.findByText(/Ada Lovelace/)).toBeInTheDocument();
+    await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
 };
 
@@ -38881,10 +38881,10 @@ export const SubmitFailure: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Margaret Hamilton&quot;);
@@ -38894,7 +38894,7 @@ export const SubmitFailure: Story = {
     await waitFor(() =&gt; expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText(&quot;Submit failed.&quot;)).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/)
+      await canvas.findByText(/Demo submission failed/u)
     ).toBeInTheDocument();
   },
   parameters: {
@@ -38920,9 +38920,9 @@ export const ValidationErrors: Story = {
     successSpy.mockClear();
 
     const canvas = within(canvasElement);
-    await canvas.findByRole(&quot;textbox&quot;, { name: /^fullName/ });
+    await canvas.findByRole(&quot;textbox&quot;, { name: /^fullName/u });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
     await userEvent.click(submitButton);
 
@@ -38946,7 +38946,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) =&gt; {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submit/i })
+      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu })
     ).toBeDisabled();
   },
 };
@@ -38960,10 +38960,10 @@ export const SlowCustomSubmit: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Katherine Johnson&quot;);
@@ -38971,7 +38971,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() =&gt; expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submitting/i })
+      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu })
     ).toBeDisabled();
   },
   parameters: {
@@ -39003,10 +39003,10 @@ export const CustomSubmitHandler: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole(&quot;button&quot;, {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, &quot;Grace Hopper&quot;);
