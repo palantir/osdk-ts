@@ -9,7 +9,7 @@ component is sufficient — consumers do not need to import `useChat` or
 
 - [Import](#import)
 - [Basic Usage](#basic-usage)
-- [Props](#props)
+- [Props Reference](#props-reference)
 - [Theming](#theming)
 
 ## Import
@@ -190,7 +190,7 @@ function MyChat() {
 }
 ```
 
-## Props
+## Props Reference
 
 See [`AipAgentChatApi.ts`](../src/aip-agent-chat/AipAgentChatApi.ts) for
 the full prop list with JSDoc. `client` is the only required prop.
