@@ -146,7 +146,7 @@ export async function runCipherTextTest(): Promise<void> {
   >;
   invariant(
     (updateCipherTextEntry.properties.encrypted as CipherTextValue).ciphertext
-      === (result.encrypted as any).getValue(),
+      === (result.encrypted as unknown as { getValue(): string }).getValue(),
     "Expected updated object to contain same cipher text string",
   );
 
