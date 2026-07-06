@@ -70,15 +70,14 @@ afterEach(() => {
 });
 
 describe("PerformancePanel", () => {
-  it("renders headline metrics, recommendations and operations sections", () => {
+  it("renders the suggestions and timeline sections", () => {
     render(<PerformancePanel monitorStore={makeStore()} theme="light" />);
-    expect(screen.getByText("Cache hit rate")).not.toBeNull();
-    expect(screen.getByText("Recommendations")).not.toBeNull();
-    expect(screen.getByText("Recent operations")).not.toBeNull();
+    expect(screen.getByText("Suggestions")).not.toBeNull();
+    expect(screen.getByText("Timeline")).not.toBeNull();
   });
 
-  it("shows a cold-start state for metrics with too few samples", () => {
+  it("shows an empty operations state with no recent activity", () => {
     render(<PerformancePanel monitorStore={makeStore()} theme="light" />);
-    expect(screen.getAllByText("collecting data…").length).toBeGreaterThan(0);
+    expect(screen.getByText("No recent operations.")).not.toBeNull();
   });
 });

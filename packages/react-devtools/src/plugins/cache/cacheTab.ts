@@ -19,7 +19,7 @@ import { CachePanel } from "./CachePanel.js";
 
 export const cacheTab: DevToolsPlugin = {
   id: "cache",
-  label: "Cache",
+  label: "Cache entries",
   icon: "database",
   panel: CachePanel,
 };

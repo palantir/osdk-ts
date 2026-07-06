@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import classNames from "classnames";
 import React from "react";
 
+import { StatusTag } from "../ui/StatusTag.js";
 import type { ComponentOntology } from "./deriveComponentOntology.js";
 import { TreeRow } from "./TreeRow.js";
 
@@ -49,14 +49,9 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
   ontology,
 }) => {
   const badge = (
-    <span
-      className={classNames(
-        styles.healthBadge,
-        ontology.healthy ? styles.healthy : styles.unhealthy
-      )}
-    >
+    <StatusTag variant={ontology.healthy ? "healthy" : "warning"}>
       {ontology.healthy ? "Healthy" : ontology.warning}
-    </span>
+    </StatusTag>
   );
 
   return (

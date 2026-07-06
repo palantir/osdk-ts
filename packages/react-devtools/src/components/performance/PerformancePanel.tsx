@@ -16,66 +16,22 @@
 
 import React from "react";
 
-import { useCanonicalMetrics } from "../../hooks/useCanonicalMetrics.js";
 import type { DevToolsPanelProps } from "../../plugins/types.js";
-import { MetricStat } from "./MetricStat.js";
 import { OperationsList } from "./OperationsList.js";
 import { RecommendationsList } from "./RecommendationsList.js";
 
 import styles from "./PerformancePanel.module.scss";
 
-const EXPLAIN = {
-  cacheHitRate:
-    "Share of data requests served from cache (a stale-while-revalidate counts as a hit) instead of the network. Higher is better.",
-  requestsSaved:
-    "Network requests the cache avoided: cache hits + revalidations + deduplications.",
-  avgResponse:
-    "Average time to resolve a data request, across both cache and network.",
-  optimisticCoverage:
-    "Share of actions that showed an optimistic update before the server responded.",
-  rollbackRate:
-    "Share of actions whose optimistic update had to roll back after the server rejected it. Lower is better.",
-};
-
 /**
- * The performance tab: cold-start-aware headline metrics with plain-language
- * tooltips, the full recommendation list with copy-prompt buttons, and a
- * scoped-down recent-operations feed.
+ * The Network tab: performance suggestions (with copy-prompt buttons) and a
+ * filterable timeline of recent OSDK operations. Headline metrics live on the
+ * Overview tab.
  */
 export const PerformancePanel: React.FC<DevToolsPanelProps> = ({
   monitorStore,
 }) => {
-  const metrics = useCanonicalMetrics(monitorStore);
-
   return (
     <div className={styles.panel}>
-      <div className={styles.metricsRow}>
-        <MetricStat
-          label="Cache hit rate"
-          metric={metrics.cacheHitRate}
-          explain={EXPLAIN.cacheHitRate}
-        />
-        <MetricStat
-          label="Requests saved"
-          metric={metrics.requestsSaved}
-          explain={EXPLAIN.requestsSaved}
-        />
-        <MetricStat
-          label="Avg response"
-          metric={metrics.avgResponseMs}
-          explain={EXPLAIN.avgResponse}
-        />
-        <MetricStat
-          label="Optimistic coverage"
-          metric={metrics.optimisticCoverage}
-          explain={EXPLAIN.optimisticCoverage}
-        />
-        <MetricStat
-          label="Rollback rate"
-          metric={metrics.rollbackRate}
-          explain={EXPLAIN.rollbackRate}
-        />
-      </div>
       <RecommendationsList monitorStore={monitorStore} />
       <OperationsList monitorStore={monitorStore} />
     </div>

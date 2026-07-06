@@ -19,7 +19,7 @@ import { PerformancePanel } from "./PerformancePanel.js";
 
 export const performanceTab: DevToolsPlugin = {
   id: "performance",
-  label: "Performance",
+  label: "Network",
   icon: "dashboard",
   panel: PerformancePanel,
 };

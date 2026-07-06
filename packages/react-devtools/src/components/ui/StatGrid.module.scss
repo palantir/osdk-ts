@@ -1,0 +1,88 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use '../tokens' as t;
+
+.grid {
+  display: grid;
+  gap: 1px;
+  background: t.$border-subtle;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-lg;
+  overflow: hidden;
+}
+
+.cols2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cols3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: t.$bg-surface;
+}
+
+.label {
+  font-size: t.$font-size-sm;
+  color: t.$text-secondary;
+}
+
+.value {
+  font-size: t.$font-size-2xl;
+  font-weight: t.$font-weight-semi;
+  color: t.$text-value;
+  line-height: 1.1;
+}
+
+.success {
+  color: t.$green;
+}
+
+.warning {
+  color: t.$orange;
+}
+
+.danger {
+  color: t.$red;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: t.$blue;
+  font-size: t.$font-size-sm;
+  cursor: pointer;
+
+  &:hover {
+    color: t.$blue-hover;
+  }
+}
+
+.arrow {
+  font-size: t.$font-size-base;
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useState } from "react";
 
 import type { DevToolsPanelProps } from "../../plugins/types.js";
@@ -26,9 +26,11 @@ import styles from "./ConsolePanel.module.scss";
 type ConsoleView = "errors" | "logs";
 
 /**
- * The Console tab: a segmented Errors / Logs toggle. Errors unifies action
- * failures, window errors and console.error into structured cards; Logs is the
- * raw console output with filtering.
+ * The Console tab: an Errors / Logs switch. Errors unifies action failures,
+ * window errors and console.error into structured cards; Logs is the raw
+ * console output with per-level filtering. They stay separate because
+ * console.error appears in both sources and internal logs are dropped at
+ * capture, so a single merged feed would double-count.
  */
 export const ConsolePanel: React.FC<DevToolsPanelProps> = ({
   monitorStore,
@@ -38,24 +40,28 @@ export const ConsolePanel: React.FC<DevToolsPanelProps> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.segmented}>
-        <ButtonGroup>
-          <Button
-            active={view === "errors"}
+        <div className={styles.chipRow}>
+          <button
+            type="button"
+            className={classNames(
+              styles.chip,
+              view === "errors" && styles.chipActive
+            )}
             onClick={() => setView("errors")}
-            size="small"
-            icon="error"
           >
             Errors
-          </Button>
-          <Button
-            active={view === "logs"}
+          </button>
+          <button
+            type="button"
+            className={classNames(
+              styles.chip,
+              view === "logs" && styles.chipActive
+            )}
             onClick={() => setView("logs")}
-            size="small"
-            icon="console"
           >
             Logs
-          </Button>
-        </ButtonGroup>
+          </button>
+        </div>
       </div>
       {view === "errors" ? (
         <ConsoleErrorsView monitorStore={monitorStore} />

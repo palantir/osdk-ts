@@ -22,8 +22,8 @@ import type { DevToolsPlugin } from "./types.js";
 
 // The base tabs shown in the devtools shell, in display order.
 export const BASE_TABS: DevToolsPlugin[] = [
-  componentsTab,
   performanceTab,
+  componentsTab,
   consoleTab,
   cacheTab,
 ];

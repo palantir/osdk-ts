@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import { InputGroup } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useMemo, useState } from "react";
 
 import { useMetrics } from "../../hooks/useMetrics.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { Operation } from "../../types/index.js";
 import { formatTime } from "../../utils/format.js";
+import { SectionHeader } from "../ui/SectionHeader.js";
 
 import styles from "./PerformancePanel.module.scss";
 
@@ -40,6 +42,12 @@ const ACTION_TYPES = new Set<Operation["type"]>([
 
 type OperationFilter = "all" | "cache" | "actions";
 
+const FILTERS: Array<{ id: OperationFilter; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "cache", label: "Cache" },
+  { id: "actions", label: "Actions" },
+];
+
 function operationLabel(operation: Operation): string {
   if (operation.type === "action" || operation.type === "action-validation") {
     return operation.actionName ?? operation.signature;
@@ -51,53 +59,58 @@ interface OperationsListProps {
   monitorStore: MonitorStore;
 }
 
-/** Recent OSDK operations, filterable by kind. */
+/** The Timeline section: recent OSDK operations, filterable by kind. */
 export const OperationsList: React.FC<OperationsListProps> = ({
   monitorStore,
 }) => {
   const metrics = useMetrics(monitorStore.getMetricsStore());
   const [filter, setFilter] = useState<OperationFilter>("all");
+  const [query, setQuery] = useState("");
 
   const operations = useMemo(() => {
-    const filtered = metrics.recent.filter((op) => {
-      if (filter === "cache") {
-        return CACHE_TYPES.has(op.type);
-      }
-      if (filter === "actions") {
-        return ACTION_TYPES.has(op.type);
-      }
-      return op.type !== "deduplication";
-    });
-    return filtered.slice(-MAX_RECENT).reverse();
-  }, [metrics.recent, filter]);
+    const q = query.trim().toLowerCase();
+    return metrics.recent
+      .filter((op) => {
+        if (filter === "cache") {
+          return CACHE_TYPES.has(op.type);
+        }
+        if (filter === "actions") {
+          return ACTION_TYPES.has(op.type);
+        }
+        return op.type !== "deduplication";
+      })
+      .filter(
+        (op) => q.length === 0 || operationLabel(op).toLowerCase().includes(q)
+      )
+      .slice(-MAX_RECENT)
+      .reverse();
+  }, [metrics.recent, filter, query]);
 
   return (
-    <div className={styles.section}>
-      <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>Recent operations</span>
-        <ButtonGroup>
-          <Button
-            active={filter === "all"}
-            onClick={() => setFilter("all")}
-            size="small"
-          >
-            All
-          </Button>
-          <Button
-            active={filter === "cache"}
-            onClick={() => setFilter("cache")}
-            size="small"
-          >
-            Cache
-          </Button>
-          <Button
-            active={filter === "actions"}
-            onClick={() => setFilter("actions")}
-            size="small"
-          >
-            Actions
-          </Button>
-        </ButtonGroup>
+    <SectionHeader title="Timeline">
+      <div className={styles.toolbar}>
+        <InputGroup
+          leftIcon="search"
+          placeholder="Filter"
+          value={query}
+          onChange={(event) => setQuery(event.currentTarget.value)}
+          fill={true}
+        />
+        <div className={styles.chips}>
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className={classNames(
+                styles.chip,
+                filter === f.id && styles.chipActive
+              )}
+              onClick={() => setFilter(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
       {operations.length === 0 ? (
         <div className={styles.empty}>No recent operations.</div>
@@ -116,6 +129,6 @@ export const OperationsList: React.FC<OperationsListProps> = ({
           ))}
         </div>
       )}
-    </div>
+    </SectionHeader>
   );
 };

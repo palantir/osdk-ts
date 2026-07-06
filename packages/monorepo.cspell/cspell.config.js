@@ -150,6 +150,7 @@ const cspell = {
         // react-devtools words
         "DEDUP",
         "Keymap",
+        "overfetching",
         "reactroot",
         "reentrancy",
         "refetches",

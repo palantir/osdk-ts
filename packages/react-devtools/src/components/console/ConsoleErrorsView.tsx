@@ -63,6 +63,7 @@ export const ConsoleErrorsView: React.FC<ConsoleErrorsViewProps> = ({
           placeholder="Filter errors…"
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
+          fill={true}
         />
       </div>
       {filtered.length === 0 ? (

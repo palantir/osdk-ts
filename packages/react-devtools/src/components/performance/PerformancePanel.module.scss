@@ -14,87 +14,31 @@
  * limitations under the License.
  */
 
+@use '../tokens' as t;
+
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 12px;
-}
-
-.metricsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.metricStat {
-  flex: 1;
-  min-width: 110px;
-  padding: 8px 10px;
-  border: 1px solid rgba(138, 155, 168, 0.2);
-  border-radius: 3px;
-}
-
-.metricStatHead {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.metricStatLabel {
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-.metricStatInfo {
-  opacity: 0.5;
-  cursor: help;
-}
-
-.metricStatValue {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-.metricStatPending {
-  font-size: 12px;
-  opacity: 0.55;
-  margin-top: 4px;
-}
-
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sectionHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sectionTitle {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  opacity: 0.7;
 }
 
 .empty {
-  font-size: 12px;
-  opacity: 0.6;
   padding: 8px 4px;
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+}
+
+.recList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .recItem {
-  margin-bottom: 6px;
+  margin: 0;
 }
 
 .recBody {
-  font-size: 12px;
+  font-size: t.$font-size-base;
   margin-bottom: 6px;
 }
 
@@ -103,38 +47,80 @@
   justify-content: flex-end;
 }
 
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 2px 10px;
+  border: 1px solid t.$border-default;
+  border-radius: 999px;
+  background: transparent;
+  color: t.$text-secondary;
+  font-size: t.$font-size-sm;
+  cursor: pointer;
+
+  &:hover {
+    border-color: t.$border-hover;
+  }
+}
+
+.chipActive {
+  background: t.$blue-bg;
+  border-color: var(--dt-blue-border);
+  color: t.$blue;
+}
+
 .opList {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 .opRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  padding: 2px 4px;
+  padding: 5px 4px;
+  font-size: t.$font-size-base;
+  border-bottom: 1px solid t.$border-subtle;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .opType {
-  flex-shrink: 0;
-  font-size: 10px;
+  flex: none;
+  min-width: 92px;
+  font-size: t.$font-size-xs;
   text-transform: uppercase;
-  opacity: 0.6;
-  min-width: 90px;
+  letter-spacing: 0.03em;
+  color: t.$text-tertiary;
 }
 
 .opSignature {
   flex: 1;
   min-width: 0;
-  font-family: monospace;
-  font-size: 11px;
-  overflow-x: auto;
+  font-family: t.$font-mono;
+  font-size: t.$font-size-sm;
+  color: t.$text-secondary;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .opTime {
-  flex-shrink: 0;
-  opacity: 0.7;
+  flex: none;
+  color: t.$text-tertiary;
+  font-size: t.$font-size-sm;
+  font-variant-numeric: tabular-nums;
 }

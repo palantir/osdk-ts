@@ -31,6 +31,8 @@ import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
 import { CopyableCodeBlock } from "./CopyableCodeBlock.js";
+import { SectionHeader } from "./ui/SectionHeader.js";
+import { StatGrid } from "./ui/StatGrid.js";
 
 import styles from "./CacheInspectorTab.module.scss";
 
@@ -190,30 +192,19 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
 
   return (
     <div className={styles.cacheInspector}>
-      <div className={styles.toolbar}>
-        <h3 className={styles.title}>Cache Inspector</h3>
-
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Entries</span>
-            <span className={styles.statValue}>
-              {snapshot.stats.totalEntries}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Size</span>
-            <span className={styles.statValue}>
-              {formatBytes(snapshot.stats.totalSize)}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Hits</span>
-            <span className={styles.statValue}>{snapshot.stats.totalHits}</span>
-          </div>
-        </div>
-      </div>
+      <SectionHeader title="Overview">
+        <StatGrid
+          columns={3}
+          cells={[
+            { label: "Entries", value: snapshot.stats.totalEntries },
+            {
+              label: "Total size",
+              value: formatBytes(snapshot.stats.totalSize),
+            },
+            { label: "Total hits", value: snapshot.stats.totalHits },
+          ]}
+        />
+      </SectionHeader>
 
       <div className={styles.toolbarActions}>
         <div className={styles.search}>

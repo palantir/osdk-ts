@@ -223,30 +223,6 @@
   min-width: 0;
 }
 
-// --- Health badge -------------------------------------------------------
-
-.healthBadge {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 1px 8px;
-  border-radius: t.$radius-sm;
-  font-size: t.$font-size-xs;
-  font-weight: t.$font-weight-semi;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.healthy {
-  background: t.$green-bg;
-  color: t.$green;
-}
-
-.unhealthy {
-  background: t.$orange-bg;
-  color: t.$orange;
-}
-
 // --- React prop key/value leaf ------------------------------------------
 
 .propRow {

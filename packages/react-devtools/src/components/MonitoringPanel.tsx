@@ -555,6 +555,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           <activePlugin.panel
             monitorStore={monitorStore}
             theme={resolvedTheme}
+            onNavigate={setActiveTabId}
           />
         ) : (
           <div className={styles.emptyState}>No devtools tabs registered.</div>

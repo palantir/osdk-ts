@@ -21,6 +21,8 @@ import type { MonitorStore } from "../store/MonitorStore.js";
 export interface DevToolsPanelProps {
   monitorStore: MonitorStore;
   theme: "light" | "dark";
+  /** Switch the active devtools tab, e.g. from a cross-navigation link. */
+  onNavigate?: (tabId: string) => void;
 }
 export type DevToolsPanelComponent = ComponentType<DevToolsPanelProps>;
 

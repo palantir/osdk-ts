@@ -14,10 +14,39 @@
  * limitations under the License.
  */
 
+@use '../tokens' as t;
+
 .panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+.chipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 2px 10px;
+  border: 1px solid t.$border-default;
+  border-radius: 999px;
+  background: transparent;
+  color: t.$text-secondary;
+  font-size: t.$font-size-sm;
+  cursor: pointer;
+
+  &:hover {
+    border-color: t.$border-hover;
+  }
+}
+
+.chipActive {
+  background: t.$blue-bg;
+  border-color: var(--dt-blue-border);
+  color: t.$blue;
 }
 
 .segmented {

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup, InputGroup } from "@blueprintjs/core";
+import { Button, InputGroup } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useMemo, useState } from "react";
 
 import { useConsoleLogs } from "../../hooks/useConsoleLogs.js";
@@ -40,8 +41,8 @@ interface ConsoleLogsViewProps {
 }
 
 /**
- * Raw console output with a level filter, search, and clear. A real
- * destination rather than a buried collapsible.
+ * Raw console output with a per-level filter, search, and clear. Each level
+ * chip carries its live count.
  */
 export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
   monitorStore,
@@ -49,6 +50,14 @@ export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
   const { entries, clear } = useConsoleLogs(monitorStore);
   const [level, setLevel] = useState<ConsoleLogLevel | "all">("all");
   const [search, setSearch] = useState("");
+
+  const counts = useMemo(() => {
+    const byLevel: Record<string, number> = { all: entries.length };
+    for (const entry of entries) {
+      byLevel[entry.level] = (byLevel[entry.level] ?? 0) + 1;
+    }
+    return byLevel;
+  }, [entries]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -68,22 +77,27 @@ export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
           placeholder="Filter logs…"
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
+          fill={true}
         />
-        <ButtonGroup>
+        <div className={styles.chipRow}>
           {LEVEL_FILTERS.map((option) => (
-            <Button
+            <button
               key={option}
-              active={level === option}
-              size="small"
+              type="button"
+              className={classNames(
+                styles.chip,
+                level === option && styles.chipActive
+              )}
               onClick={() => setLevel(option)}
             >
               {option}
-            </Button>
+              {counts[option] ? ` ${counts[option]}` : ""}
+            </button>
           ))}
-        </ButtonGroup>
-        <Button size="small" variant="minimal" icon="trash" onClick={clear}>
-          Clear
-        </Button>
+          <Button size="small" variant="minimal" icon="trash" onClick={clear}>
+            Clear
+          </Button>
+        </div>
       </div>
       {filtered.length === 0 ? (
         <div className={styles.empty}>No console output captured.</div>

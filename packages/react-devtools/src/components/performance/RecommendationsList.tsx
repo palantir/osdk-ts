@@ -21,6 +21,8 @@ import { useRecommendations } from "../../hooks/useRecommendations.js";
 import { levelToIntent } from "../../recommendations/levelToIntent.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import { CopyPromptButton } from "../CopyPromptButton.js";
+import { SectionHeader } from "../ui/SectionHeader.js";
+import { StatusTag } from "../ui/StatusTag.js";
 
 import styles from "./PerformancePanel.module.scss";
 
@@ -29,42 +31,40 @@ interface RecommendationsListProps {
 }
 
 /**
- * The full ranked recommendation list. Each entry, and the list as a whole,
- * has a "Copy prompt" button that produces an AI-ready fix prompt.
+ * The Suggestions section: the full ranked recommendation list, each with a
+ * "Copy prompt" button that produces an AI-ready fix prompt. The header carries
+ * a count badge.
  */
 export const RecommendationsList: React.FC<RecommendationsListProps> = ({
   monitorStore,
 }) => {
   const { recommendations } = useRecommendations(monitorStore);
+  const badge =
+    recommendations.length > 0 ? (
+      <StatusTag variant="warning">{recommendations.length}</StatusTag>
+    ) : undefined;
 
   return (
-    <div className={styles.section}>
-      <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>Recommendations</span>
-        {recommendations.length > 0 ? (
-          <CopyPromptButton
-            recommendations={recommendations}
-            label="Copy all"
-          />
-        ) : null}
-      </div>
+    <SectionHeader title="Suggestions" rightSlot={badge}>
       {recommendations.length === 0 ? (
-        <div className={styles.empty}>No recommendations right now.</div>
+        <div className={styles.empty}>No suggestions right now.</div>
       ) : (
-        recommendations.map((rec) => (
-          <Callout
-            key={rec.id}
-            className={styles.recItem}
-            intent={levelToIntent(rec.level)}
-            title={rec.title}
-          >
-            <div className={styles.recBody}>{rec.description}</div>
-            <div className={styles.recActions}>
-              <CopyPromptButton recommendation={rec} />
-            </div>
-          </Callout>
-        ))
+        <div className={styles.recList}>
+          {recommendations.map((rec) => (
+            <Callout
+              key={rec.id}
+              className={styles.recItem}
+              intent={levelToIntent(rec.level)}
+              title={rec.title}
+            >
+              <div className={styles.recBody}>{rec.description}</div>
+              <div className={styles.recActions}>
+                <CopyPromptButton recommendation={rec} />
+              </div>
+            </Callout>
+          ))}
+        </div>
       )}
-    </div>
+    </SectionHeader>
   );
 };
