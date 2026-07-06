@@ -18,6 +18,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Custom Colors](#custom-colors)
 - [OSDK Component Tokens](#osdk-component-tokens)
   - [Shared Styling](#shared-styling)
+  - [AIP Agent Chat](#aip-agent-chat)
   - [Drag Handle](#drag-handle)
   - [Button](#button)
   - [Checkbox](#checkbox)

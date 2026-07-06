@@ -5,6 +5,13 @@ LMS via `useChat` from `@osdk/react/experimental/aip`. Importing the
 component is sufficient — consumers do not need to import `useChat` or
 `foundryModel` themselves.
 
+## Table of Contents
+
+- [Import](#import)
+- [Usage](#usage)
+- [Props](#props)
+- [Theming](#theming)
+
 ## Import
 
 ```tsx
@@ -202,6 +209,11 @@ optional props:
 ## Theming
 
 CSS variables are documented in
-[`docs/CSSVariables.md`](./CSSVariables.md). The `--osdk-aip-agent-chat-*`
-namespace covers spacing, bubble colors, composer styling, and the
-3-dot loader.
+[`docs/CSSVariables.md`](./CSSVariables.md#aip-agent-chat) under **AIP
+Agent Chat**. The `--osdk-aip-agent-chat-*` namespace covers the
+container, spacing, message bubbles, composer, empty state, and the
+3-dot streaming loader. Defaults live in
+[`src/tokens/component-tokens/aip-agent-chat.css`](../src/tokens/component-tokens/aip-agent-chat.css);
+color, spacing, and radius tokens derive from `--osdk-*` semantic
+tokens, so brand overrides applied at the `--osdk-*` layer flow through
+automatically.
