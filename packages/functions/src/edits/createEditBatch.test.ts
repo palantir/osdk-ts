@@ -349,22 +349,21 @@ describe(createEditBatch, () => {
       getValue: () => value,
     };
 
-    // create: reuse an existing CipherText -> { ciphertext }
     editBatch.create(objectTypeWithAllPropertyTypes, {
       id: 1,
       cipherText: existingCipherText,
     });
-    // create: from plaintext -> passthrough
+
     editBatch.create(objectTypeWithAllPropertyTypes, {
       id: 2,
       cipherText: { plaintext: "secret" },
     });
-    // update: reuse an existing CipherText -> { ciphertext }
+
     editBatch.update(
       { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 1 },
       { cipherText: existingCipherText }
     );
-    // update: from plaintext with a channel strategy (update-only) -> passthrough
+
     editBatch.update(
       { $apiName: "objectTypeWithAllPropertyTypes", $primaryKey: 2 },
       {
