@@ -316,7 +316,10 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                   </Tag>
                   <span className={styles.objectType}>{entry.objectType}</span>
                   {entry.metadata.isOptimistic && (
-                    <Tooltip content="Has optimistic updates">
+                    <Tooltip
+                      content="Has optimistic updates"
+                      portalClassName="osdk-devtools-portal"
+                    >
                       <Tag minimal={true} intent="warning" icon="time">
                         Optimistic
                       </Tag>
@@ -325,7 +328,10 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                 </div>
 
                 <div className={styles.entryHeaderRight}>
-                  <Tooltip content={`Status: ${entry.metadata.status}`}>
+                  <Tooltip
+                    content={`Status: ${entry.metadata.status}`}
+                    portalClassName="osdk-devtools-portal"
+                  >
                     <Tag
                       minimal={true}
                       intent={getStatusColor(entry.metadata.status)}
@@ -338,12 +344,16 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                     content={`Last updated: ${new Date(
                       entry.metadata.timestamp
                     ).toLocaleString()}`}
+                    portalClassName="osdk-devtools-portal"
                   >
                     <span className={styles.age}>
                       {formatRelativeTime(entry.metadata.timestamp)}
                     </span>
                   </Tooltip>
-                  <Tooltip content={`Cache entry size`}>
+                  <Tooltip
+                    content={`Cache entry size`}
+                    portalClassName="osdk-devtools-portal"
+                  >
                     <span className={styles.size}>
                       {formatBytes(entry.metadata.size)}
                     </span>

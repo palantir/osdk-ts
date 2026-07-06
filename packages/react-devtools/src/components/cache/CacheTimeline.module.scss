@@ -1,0 +1,78 @@
+@use '../../components/tokens' as t;
+@use '../../components/mixins' as m;
+
+.operationsList {
+  flex: 1;
+  overflow: auto;
+  @include m.dt-scrollbar;
+}
+
+.operationItem {
+  @include m.dt-list-item;
+  padding: 6px 12px;
+}
+
+.operationType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-bold;
+  color: t.$bg-base;
+  flex-shrink: 0;
+
+  &.cacheHit {
+    background: t.$green;
+  }
+
+  &.cacheMiss {
+    background: t.$red;
+  }
+}
+
+.operationDetails {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.operationSignature {
+  font-size: t.$font-size-base;
+  font-family: t.$font-mono;
+  color: t.$text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.operationTime {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+}
+
+.operationMetric {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semi;
+  font-family: t.$font-mono;
+  color: t.$text-secondary;
+  padding: 1px 4px;
+  background: t.$bg-hover;
+  border-radius: t.$radius-sm;
+}
+
+.operationMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+  font-size: t.$font-size-base;
+}
