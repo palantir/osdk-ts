@@ -21,7 +21,7 @@ import type { Client } from "@osdk/client";
 // Vite serves under `import.meta.env.BASE_URL` (trailing slash); the direct
 // fetches below hit the same-origin proxies the plugin installs, so they must
 // carry that prefix to route through Vite when it is served under a path.
-const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, "");
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/u, "");
 const withBase = (path: string): string => `${BASE_PATH}${path}`;
 
 interface RuntimeConfig {
@@ -59,7 +59,7 @@ function enqueue<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 function camelToSnakeCase(str: string): string {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/gu, (letter) => `_${letter.toLowerCase()}`);
 }
 
 function hasEntries(o: unknown): boolean {

@@ -40,7 +40,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/.]`
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -1641,7 +1641,7 @@ describe("Object Types", () => {
       },
     });
     expect(() => dumpOntologyFullMetadata()).toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
     );
   });
   it("Derived datasources are properly defined", () => {

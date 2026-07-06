@@ -50,7 +50,7 @@ describe("truncatePayload", () => {
     const result = truncatePayload(long);
 
     expect(result.length).toBe(10003);
-    expect(result).toMatch(/\.\.\.$/);
+    expect(result).toMatch(/\.\.\.$/u);
   });
 
   it("returns exact 10000-char strings unchanged", () => {

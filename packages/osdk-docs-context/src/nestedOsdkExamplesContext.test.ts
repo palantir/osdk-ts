@@ -133,8 +133,8 @@ describe("NestedOsdkExamplesContext", () => {
         variations!["^isUnary"].code
       );
       // Check for structure rather than specific method names
-      expect(variations!["#isUnary"].code).toMatch(/selectProperty|aggregate/);
-      expect(variations!["^isUnary"].code).toMatch(/aggregate|withProperties/);
+      expect(variations!["#isUnary"].code).toMatch(/selectProperty|aggregate/u);
+      expect(variations!["^isUnary"].code).toMatch(/aggregate|withProperties/u);
     });
 
     it("returns undefined for simple examples without variations", () => {

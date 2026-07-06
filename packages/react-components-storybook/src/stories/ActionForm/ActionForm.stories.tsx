@@ -503,10 +503,10 @@ export const SubmitSuccess: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, "Ada Lovelace");
@@ -516,7 +516,7 @@ export const SubmitSuccess: Story = {
     await expect(
       await canvas.findByText("Submit succeeded.")
     ).toBeInTheDocument();
-    await expect(await canvas.findByText(/Ada Lovelace/)).toBeInTheDocument();
+    await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
 };
 
@@ -530,10 +530,10 @@ export const SubmitFailure: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, "Margaret Hamilton");
@@ -543,7 +543,7 @@ export const SubmitFailure: Story = {
     await waitFor(() => expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText("Submit failed.")).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/)
+      await canvas.findByText(/Demo submission failed/u)
     ).toBeInTheDocument();
   },
   parameters: {
@@ -569,9 +569,9 @@ export const ValidationErrors: Story = {
     successSpy.mockClear();
 
     const canvas = within(canvasElement);
-    await canvas.findByRole("textbox", { name: /^fullName/ });
+    await canvas.findByRole("textbox", { name: /^fullName/u });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
     await userEvent.click(submitButton);
 
@@ -595,7 +595,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole("button", { name: /submit/i })
+      await canvas.findByRole("button", { name: /submit/iu })
     ).toBeDisabled();
   },
 };
@@ -609,10 +609,10 @@ export const SlowCustomSubmit: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, "Katherine Johnson");
@@ -620,7 +620,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() => expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole("button", { name: /submitting/i })
+      await canvas.findByRole("button", { name: /submitting/iu })
     ).toBeDisabled();
   },
   parameters: {
@@ -652,10 +652,10 @@ export const CustomSubmitHandler: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
     await userEvent.type(fullNameInput, "Grace Hopper");

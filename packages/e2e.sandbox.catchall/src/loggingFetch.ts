@@ -30,7 +30,7 @@ export async function loggingFetch(
         : input.url
   );
 
-  const cleaned = url.pathname.replace(/ri.ontology..*?\//, "{rid}/");
+  const cleaned = url.pathname.replace(/ri.ontology..*?\//u, "{rid}/");
 
   logger.debug(`fetch(${chalk.blue(cleaned)})`);
   return await fetch(url, init);

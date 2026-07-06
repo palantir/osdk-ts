@@ -49,7 +49,7 @@ export async function promptApplicationUrl({
     }
   }
 
-  while (applicationUrl == null || !/^https?:\/\//.test(applicationUrl)) {
+  while (applicationUrl == null || !/^https?:\/\//u.test(applicationUrl)) {
     if (applicationUrl != null) {
       consola.fail("Please enter a valid application URL");
     }
@@ -60,5 +60,5 @@ export async function promptApplicationUrl({
       { type: "text" }
     );
   }
-  return applicationUrl.replace(/\/$/, "");
+  return applicationUrl.replace(/\/$/u, "");
 }

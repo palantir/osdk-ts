@@ -123,6 +123,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
 function updateConstVariable(filePath, variableName, value) {
   const fileContents = fs.readFileSync(filePath, "utf-8");
 
+  // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
   const regexp = new RegExp(`const ${variableName} = ".*?";`);
   if (!regexp.test(fileContents)) {
     consola.error(

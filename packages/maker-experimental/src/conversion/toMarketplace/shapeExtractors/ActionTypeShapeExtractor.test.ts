@@ -146,7 +146,7 @@ function createMockRidGenerator(
     },
     getObjectTypeIds: () => new MockBiMap([]) as any,
     generateObjectTypeId: (objectTypeApiName: string) =>
-      objectTypeApiName.replace(/\./g, "-").toLowerCase(),
+      objectTypeApiName.replace(/\./gu, "-").toLowerCase(),
     generateDatasourceRid: (datasourceName: string) =>
       `ri.ontology.main.datasource.${datasourceName}`,
     generateValidationRuleRid: (actionTypeApiName: string, index: number) =>

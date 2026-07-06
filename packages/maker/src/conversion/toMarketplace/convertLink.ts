@@ -202,7 +202,7 @@ function validateLink(linkDefinition: LinkType) {
     );
 
     invariant(
-      /([a-z][a-z0-9\\-]*)/.test(linkDefinition.apiName),
+      /([a-z][a-z0-9\\-]*)/u.test(linkDefinition.apiName),
       `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`
     );
 

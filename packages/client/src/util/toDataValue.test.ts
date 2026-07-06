@@ -214,7 +214,7 @@ describe(toDataValue, () => {
       mockActionMetadata
     );
 
-    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
   it("converts file attachment uploads correctly", async () => {
@@ -227,7 +227,7 @@ describe(toDataValue, () => {
     );
 
     const converted = await toDataValue(file, clientCtx, mockActionMetadata);
-    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
+    expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
   it("converts media uploads correctly", async () => {

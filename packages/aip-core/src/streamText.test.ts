@@ -358,7 +358,7 @@ describe("streamText", () => {
     const errChunk = chunks.find((c) => c.type === "error");
     expect(errChunk).toBeDefined();
 
-    await expect(result.text).rejects.toThrow(/500/);
+    await expect(result.text).rejects.toThrow(/500/u);
     await new Promise((r) => setTimeout(r, 0));
     expect(onError).toHaveBeenCalledTimes(1);
   });
@@ -400,7 +400,7 @@ describe("streamText", () => {
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
       })
-    ).toThrow(/cannot specify both/);
+    ).toThrow(/cannot specify both/u);
   });
 
   it("skips malformed SSE frames and surfaces a warning", async () => {
@@ -461,6 +461,6 @@ describe("streamText", () => {
     const chunks = await collectChunks(result.fullStream);
     const errChunk = chunks.find((c) => c.type === "error");
     expect(errChunk).toBeDefined();
-    await expect(result.text).rejects.toThrow(/upstream model went away/);
+    await expect(result.text).rejects.toThrow(/upstream model went away/u);
   });
 });

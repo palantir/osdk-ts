@@ -341,7 +341,7 @@ describe(getObjectTypesThatInvalidate, () => {
           client[additionalContext],
           wireObjectSet as any
         )
-      ).rejects.toThrow(/Unsupported|Unhandled ObjectSet type/);
+      ).rejects.toThrow(/Unsupported|Unhandled ObjectSet type/u);
     }
   });
 

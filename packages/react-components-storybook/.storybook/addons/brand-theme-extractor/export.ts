@@ -41,7 +41,7 @@ function resolveTokens(assignments: TokenAssignment[]): ResolvedToken[] {
     // Append unit suffix for px/ms inputs if the value is purely numeric
     if (
       (roleDef.inputType === "px" || roleDef.inputType === "ms") &&
-      /^\d+(\.\d+)?$/.test(value)
+      /^\d+(\.\d+)?$/u.test(value)
     ) {
       value = `${value}${roleDef.inputType}`;
     }
@@ -181,7 +181,7 @@ export function generateMarkdown(
 
 function quoteIfNeeded(value: string): string {
   // Quote hex colors and values with spaces/special chars
-  if (value.startsWith("#") || /\s/.test(value) || value.includes(",")) {
+  if (value.startsWith("#") || /\s/u.test(value) || value.includes(",")) {
     return `"${value}"`;
   }
   return value;

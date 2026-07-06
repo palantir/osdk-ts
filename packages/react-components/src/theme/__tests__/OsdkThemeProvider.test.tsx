@@ -291,7 +291,7 @@ describe("useOsdkTheme", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
     try {
-      expect(() => render(<ThemeProbe />)).toThrow(/OsdkThemeProvider/);
+      expect(() => render(<ThemeProbe />)).toThrow(/OsdkThemeProvider/u);
     } finally {
       consoleError.mockRestore();
     }

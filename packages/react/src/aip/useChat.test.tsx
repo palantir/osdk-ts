@@ -547,7 +547,7 @@ describe("useChat", () => {
     it("throws when neither model nor transport is provided", () => {
       expect(() =>
         renderHook(() => useChat({ experimentalThrottle: 0 }))
-      ).toThrow(/`model` is required/);
+      ).toThrow(/`model` is required/u);
     });
   });
 });

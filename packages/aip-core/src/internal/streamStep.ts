@@ -179,7 +179,7 @@ async function parseSseStream(
       if (done) {
         break;
       }
-      buffer += value.replace(/\r\n/g, "\n");
+      buffer += value.replace(/\r\n/gu, "\n");
 
       let frameEnd = buffer.indexOf("\n\n");
       while (frameEnd !== -1) {

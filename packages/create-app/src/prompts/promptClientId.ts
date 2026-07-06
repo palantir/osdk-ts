@@ -22,7 +22,7 @@ export async function promptClientId({
 }: {
   clientId?: string;
 }): Promise<string> {
-  while (clientId == null || !/^[0-9a-f]+$/.test(clientId)) {
+  while (clientId == null || !/^[0-9a-f]+$/u.test(clientId)) {
     if (clientId != null) {
       consola.fail("Please enter a valid OAuth client ID");
     }

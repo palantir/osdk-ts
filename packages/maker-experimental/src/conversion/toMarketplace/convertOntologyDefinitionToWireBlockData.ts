@@ -479,7 +479,7 @@ function buildKnownIdentifiers(
   Array.from(ridGenerator.getActionTypeRids().inverse().entries()).forEach(
     ([actionTypeRid, actionReadableId]) => {
       // Extract action type API name from readable ID
-      const actionTypeApiName = actionReadableId.replace(/^action-type-/, "");
+      const actionTypeApiName = actionReadableId.replace(/^action-type-/u, "");
       const paramBiMap = ridGenerator
         .getParameterRidAndIds()
         .get(actionTypeApiName);

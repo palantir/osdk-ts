@@ -144,7 +144,7 @@ export async function run({
       if (fullPath.endsWith("/_gitignore")) {
         fs.renameSync(
           fullPath,
-          fullPath.replace(/\/_gitignore$/, "/.gitignore")
+          fullPath.replace(/\/_gitignore$/u, "/.gitignore")
         );
         return;
       }
@@ -175,7 +175,7 @@ export async function run({
       const templated = Handlebars.compile(fs.readFileSync(fullPath, "utf-8"))(
         templateContext
       );
-      fs.writeFileSync(fullPath.replace(/.hbs$/, ""), templated);
+      fs.writeFileSync(fullPath.replace(/.hbs$/u, ""), templated);
       fs.rmSync(fullPath);
     });
   };

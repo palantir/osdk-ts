@@ -468,7 +468,7 @@ function getMapKeyObjectName(apiName?: string) {
 }
 
 function getDisplayName(input: string): string {
-  const tokens = input.split(/[_-]|(?<=[a-z])(?=[A-Z])/);
+  const tokens = input.split(/[_-]|(?<=[a-z])(?=[A-Z])/u);
   const result = tokens.map((token) => titleCase(token.toLowerCase())).join("");
   return result.charAt(0).toLowerCase() + result.slice(1);
 }
