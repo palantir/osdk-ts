@@ -68,7 +68,7 @@ describe("FilterPopover", () => {
         <div>popup body</div>
       </FilterPopover>
     );
-    const trigger = screen.getByRole("button", { name: /Any/i });
+    const trigger = screen.getByRole("button", { name: /Any/iu });
     expect(trigger.getAttribute("data-active")).toBeNull();
 
     rerender(
@@ -77,7 +77,7 @@ describe("FilterPopover", () => {
       </FilterPopover>
     );
     expect(
-      screen.getByRole("button", { name: /X/i }).getAttribute("data-active")
+      screen.getByRole("button", { name: /X/iu }).getAttribute("data-active")
     ).toBe("true");
   });
 
@@ -89,7 +89,7 @@ describe("FilterPopover", () => {
     );
     expect(screen.queryByTestId("popup-body")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: /Any/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Any/iu }));
     expect(screen.getByTestId("popup-body")).toBeDefined();
   });
 
@@ -99,7 +99,7 @@ describe("FilterPopover", () => {
         <div data-testid="popup-body">popup body</div>
       </FilterPopover>
     );
-    const trigger = screen.getByRole("button", { name: /Any/i });
+    const trigger = screen.getByRole("button", { name: /Any/iu });
     fireEvent.click(trigger);
     expect(screen.getByTestId("popup-body")).toBeDefined();
 
@@ -117,7 +117,7 @@ describe("FilterPopover", () => {
       </FilterPopover>
     );
     expect(
-      screen.queryByRole("button", { name: /Remove Sites filter/i })
+      screen.queryByRole("button", { name: /Remove Sites filter/iu })
     ).toBeNull();
 
     rerender(
@@ -131,7 +131,7 @@ describe("FilterPopover", () => {
       </FilterPopover>
     );
     const removeButton = screen.getByRole("button", {
-      name: /Remove Sites filter/i,
+      name: /Remove Sites filter/iu,
     });
     fireEvent.click(removeButton);
     expect(onRemove).toHaveBeenCalledTimes(1);
@@ -149,7 +149,7 @@ describe("FilterPopover", () => {
       </FilterPopover>
     );
     const wrapper = container.firstElementChild;
-    expect(wrapper?.className).toMatch(/fieldGroupTop/);
+    expect(wrapper?.className).toMatch(/fieldGroupTop/u);
   });
 
   it("does not apply fieldGroupTop when labelPlacement defaults to inline", () => {
@@ -159,7 +159,7 @@ describe("FilterPopover", () => {
       </FilterPopover>
     );
     const wrapper = container.firstElementChild;
-    expect(wrapper?.className).not.toMatch(/fieldGroupTop/);
+    expect(wrapper?.className).not.toMatch(/fieldGroupTop/u);
   });
 
   it("forwards the className to the field group wrapper", () => {

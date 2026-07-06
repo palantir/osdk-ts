@@ -56,8 +56,10 @@ export async function autoVersion(config: AutoVersionConfig): Promise<string> {
 async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
   const [matchPrefix, prefixRegex] =
     tagPrefix !== ""
-      ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
-      : [undefined, new RegExp(`^v?`)];
+      ? // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+        [tagPrefix, new RegExp(`^${tagPrefix}`)]
+      : // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+        [undefined, new RegExp(`^v?`)];
 
   const gitVersion = await gitDescribe(matchPrefix);
   const version = gitVersion.trim().replace(prefixRegex, "");

@@ -276,7 +276,7 @@ export class PerformanceRecommendationEngine {
 
     const totalImpact = recommendations.reduce((sum, r) => {
       if (r.impact.includes("Save")) {
-        const match = r.impact.match(/(\d+)(ms|KB|s)/);
+        const match = r.impact.match(/(\d+)(ms|KB|s)/u);
         if (match) {
           const value = Number.parseInt(match[1]);
           const unit = match[2];

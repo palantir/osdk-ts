@@ -201,7 +201,7 @@ function formatSegment(value: number, segment: TimeSegment): string {
 }
 
 function parseNumber(text: string): number | undefined {
-  if (!/^\d{1,2}$/.test(text)) {
+  if (!/^\d{1,2}$/u.test(text)) {
     return undefined;
   }
   const parsed = Number(text);

@@ -556,10 +556,10 @@ describe("DropdownField", () => {
       fireEvent.click(trigger);
 
       await vi.waitFor(() => {
-        const alice = screen.getByRole("option", { name: /Alice/ });
+        const alice = screen.getByRole("option", { name: /Alice/u });
         expect(alice.getAttribute("aria-selected")).toBe("true");
 
-        const bob = screen.getByRole("option", { name: /Bob/ });
+        const bob = screen.getByRole("option", { name: /Bob/u });
         expect(bob.getAttribute("aria-selected")).toBe("false");
       });
     });

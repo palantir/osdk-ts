@@ -37,7 +37,7 @@ describe("createShapeBuilder", () => {
       .build();
 
     expect(shape.__baseTypeApiName).toBe("Employee");
-    expect(shape.__shapeId).toMatch(/^[0-9a-f]{8}$/);
+    expect(shape.__shapeId).toMatch(/^[0-9a-f]{8}$/u);
     const props = shape.__props as Record<string, ShapePropertyConfig>;
     expect(props.name.nullabilityOp.type).toBe("select");
     expect(props.age.nullabilityOp.type).toBe("select");

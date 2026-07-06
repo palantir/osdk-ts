@@ -44,7 +44,7 @@ describe("ComponentQueryRegistry", () => {
       });
 
       expect(bindingId).toBeTruthy();
-      expect(bindingId).toMatch(/^binding-\d+$/);
+      expect(bindingId).toMatch(/^binding-\d+$/u);
     });
 
     it("should index binding by component", () => {

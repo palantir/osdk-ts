@@ -1200,7 +1200,7 @@ describe("Experimental Test Suite", () => {
         });
       })
     ).rejects.toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
     );
   });
 });

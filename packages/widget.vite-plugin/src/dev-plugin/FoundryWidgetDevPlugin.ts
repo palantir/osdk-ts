@@ -245,7 +245,7 @@ export function FoundryWidgetDevPlugin(
       // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
         standardizedSource
-          .replace(/\.[^/.]+$/, "")
+          .replace(/\.[^/.]+$/u, "")
           .endsWith(CONFIG_FILE_SUFFIX) &&
         standardizedSource.includes("/src/") &&
         codeEntrypoints[standardizedImporter] != null

@@ -199,7 +199,7 @@ function formatCellValue(value: unknown): string {
 }
 
 function escapeCsvCell(value: string): string {
-  if (!/[",\n\r]/.test(value)) {
+  if (!/[",\n\r]/u.test(value)) {
     return value;
   }
 

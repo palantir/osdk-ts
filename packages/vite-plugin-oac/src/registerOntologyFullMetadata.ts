@@ -270,7 +270,7 @@ function paramsToDataValues(
 function camelcase(apiName: string): string {
   return apiName
     .toLowerCase()
-    .replace(/[-_]+(.)?/g, (_, chr) => (chr ? chr.toUpperCase() : ""));
+    .replace(/[-_]+(.)?/gu, (_, chr) => (chr ? chr.toUpperCase() : ""));
 }
 
 function toDataValue(value: any, param: Ontologies.ActionParameterV2): unknown {

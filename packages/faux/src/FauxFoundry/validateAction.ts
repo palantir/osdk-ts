@@ -449,7 +449,7 @@ function isValidDateString(value: unknown): boolean {
     return false;
   }
 
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/u;
   if (!dateRegex.test(value)) {
     return false;
   }
@@ -503,6 +503,6 @@ function isValidDecimalString(value: unknown): boolean {
     return false;
   }
 
-  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/;
+  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/u;
   return decimalRegex.test(value) && !isNaN(parseFloat(value));
 }

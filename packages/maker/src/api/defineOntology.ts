@@ -192,7 +192,7 @@ export function writeStaticObjects(outputDir: string): void {
             null,
             2
           ).replace(
-            /("__type"\s*:\s*)"([^"]*)"/g,
+            /("__type"\s*:\s*)"([^"]*)"/gu,
             (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
           );
           const content = `
@@ -394,15 +394,15 @@ function filterCyclicReferences(
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
-  const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  const step1 = apiName.replace(/([a-z0-9])([A-Z])/gu, "$1-$2");
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
   // then convert the whole string to lowercase
   // e.g., apiName, APIname, and apiNAME will all be converted to api-name
   const linkTypeId = step1
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/gu, "$1-$2")
     .toLowerCase();
 
-  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/u;
   if (!VALIDATION_PATTERN.test(linkTypeId)) {
     throw new Error(
       `LinkType id '${linkTypeId}' must be lower case with dashes.`
@@ -760,7 +760,7 @@ function camel(str: string): string {
   if (!str) {
     return str;
   }
-  let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
+  let result = str.replace(/[-_]+(.)?/gu, (_, c) => (c ? c.toUpperCase() : ""));
   result = result.charAt(0).toLowerCase() + result.slice(1);
   return result;
 }

@@ -80,7 +80,7 @@ describe("withScenario", () => {
       fetchFunction
     );
     const scenario = withScenario(txClient, "ri.actions..scenario.abc");
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/u));
     expect(scenario.getScenarioReference()).toBe("ri.actions..scenario.abc");
     warnSpy.mockRestore();
   });
@@ -88,7 +88,7 @@ describe("withScenario", () => {
   it("rejects a client already scoped to a scenario at runtime", () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
     expect(() => withScenario(scenario, "ri.actions..scenario.def")).toThrow(
-      /scenario/
+      /scenario/u
     );
   });
 });

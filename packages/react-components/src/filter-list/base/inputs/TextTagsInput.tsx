@@ -27,7 +27,7 @@ import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
-const TAG_SEPARATOR_PATTERN = /[,\n]/;
+const TAG_SEPARATOR_PATTERN = /[,\n]/u;
 
 interface TagItemProps {
   tag: string;

@@ -225,7 +225,7 @@ describe("generateText", () => {
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
       })
-    ).rejects.toThrow(/cannot specify both/);
+    ).rejects.toThrow(/cannot specify both/u);
   });
 
   it("throws on non-OK responses", async () => {
@@ -237,7 +237,7 @@ describe("generateText", () => {
     const model = foundryModel({ client, model: "gpt-4o" });
 
     await expect(generateText({ model, prompt: "hi" })).rejects.toThrow(
-      /500.*Internal Server Error/
+      /500.*Internal Server Error/u
     );
   });
 

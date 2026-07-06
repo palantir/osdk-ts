@@ -59,7 +59,7 @@ export interface UnusedFieldReport {
   recommendation: string;
 }
 
-const QUERY_SIGNATURE_RE = /^(\w+):(.+)/;
+const QUERY_SIGNATURE_RE = /^(\w+):(.+)/u;
 
 export class UnusedFieldAnalyzer {
   constructor(

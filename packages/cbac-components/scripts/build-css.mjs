@@ -71,7 +71,7 @@ async function rewriteCssImports() {
 
     // Replace CSS module imports to point to .js files
     const updatedContent = content.replaceAll(
-      /from\s+["']([^"']+\.module\.css)["']/g,
+      /from\s+["']([^"']+\.module\.css)["']/gu,
       'from "$1.js"'
     );
 

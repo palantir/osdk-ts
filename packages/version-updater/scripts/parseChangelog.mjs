@@ -32,11 +32,11 @@
  * @returns {VersionMapping[]} Array of version mappings
  */
 export function parseChangelog(content, peerPackageNames) {
-  const versionBlocks = content.split(/^## /m).slice(1);
+  const versionBlocks = content.split(/^## /mu).slice(1);
 
   return versionBlocks
     .map((block) => {
-      const versionMatch = block.match(/^(\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?)/);
+      const versionMatch = block.match(/^(\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?)/u);
       if (!versionMatch) {
         return undefined;
       }
@@ -44,8 +44,9 @@ export function parseChangelog(content, peerPackageNames) {
       /** @type {Record<string, string>} */
       const peerVersions = {};
       for (const peerName of peerPackageNames) {
-        const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
         const match = block.match(
+          // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
           new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
         );
         if (match) {

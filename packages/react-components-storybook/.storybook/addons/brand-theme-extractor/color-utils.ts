@@ -39,7 +39,7 @@ export const WCAG_AA_LARGE = 3;
 
 /** Parse hex color (3- or 6-digit) to RGB tuple */
 function hexToRgb(hex: string): [number, number, number] | null {
-  const short = /^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(hex);
+  const short = /^#?([0-9a-f])([0-9a-f])([0-9a-f])$/iu.exec(hex);
   if (short) {
     return [
       parseInt(short[1] + short[1], 16),
@@ -47,7 +47,7 @@ function hexToRgb(hex: string): [number, number, number] | null {
       parseInt(short[3] + short[3], 16),
     ];
   }
-  const full = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  const full = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/iu.exec(hex);
   if (!full) return null;
   return [parseInt(full[1], 16), parseInt(full[2], 16), parseInt(full[3], 16)];
 }

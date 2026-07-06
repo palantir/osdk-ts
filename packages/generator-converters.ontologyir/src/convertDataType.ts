@@ -57,6 +57,35 @@ export interface IInterfaceDataType extends IDataType {
   interface: { interfaceTypeRid: string };
 }
 
+export interface IAnonymousCustomDataType extends IDataType {
+  type: "anonymousCustomType";
+  anonymousCustomType: {
+    fields: Record<string, IDataType>;
+  };
+}
+
+function isInjectedRuntimeDataType(dataType: IDataType): boolean {
+  return dataType.type === "client" || dataType.type === "durableContext";
+}
+
+function isInjectedRuntimeContext(dataType: IDataType): boolean {
+  if (dataType.type !== "anonymousCustomType") {
+    return false;
+  }
+
+  const fields = (dataType as IAnonymousCustomDataType).anonymousCustomType
+    ?.fields;
+  const fieldTypes = fields != null ? Object.values(fields) : [];
+
+  return fieldTypes.length > 0
+    && fieldTypes.every(isInjectedRuntimeDataType);
+}
+
+export function isInjectedRuntimeInput(dataType: IDataType): boolean {
+  return isInjectedRuntimeDataType(dataType)
+    || isInjectedRuntimeContext(dataType);
+}
+
 export function convertDataType(
   dataType: IDataType,
   customTypes: Record<string, unknown>,

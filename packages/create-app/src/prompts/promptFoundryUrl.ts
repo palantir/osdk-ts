@@ -33,5 +33,5 @@ export async function promptFoundryUrl({
       { type: "text" }
     );
   }
-  return foundryUrl.replace(/\/$/, "");
+  return foundryUrl.replace(/\/$/u, "");
 }

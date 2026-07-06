@@ -170,10 +170,10 @@ describe("propertyTypeToSchemaType", () => {
 
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
-      /Unsupported property type "unknownType".*empty backing datasource/
+      /Unsupported property type "unknownType".*empty backing datasource/u
     );
     expect(() => propertyTypeToSchemaType({ type: "geopoint" })).toThrow(
-      /Unsupported property type "geopoint".*empty backing datasource/
+      /Unsupported property type "geopoint".*empty backing datasource/u
     );
   });
 });

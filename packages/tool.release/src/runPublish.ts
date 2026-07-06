@@ -78,7 +78,7 @@ export async function runPublish({
   cwd = process.cwd(),
   context,
 }: PublishOptions): Promise<PublishResult> {
-  const [publishCommand, ...publishArgs] = script.split(/\s+/);
+  const [publishCommand, ...publishArgs] = script.split(/\s+/u);
 
   const changesetPublishOutput = await getExecOutput(
     publishCommand,
@@ -92,7 +92,7 @@ export async function runPublish({
   const releasedPackages: Package[] = [];
 
   if (tool !== "root") {
-    const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@([^\s]+)/;
+    const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@([^\s]+)/u;
     const packagesByName = new Map(
       packages.map((x) => [x.packageJson.name, x])
     );
@@ -131,7 +131,7 @@ export async function runPublish({
       );
     }
     const pkg = packages[0];
-    const newTagRegex = /New tag:/;
+    const newTagRegex = /New tag:/u;
 
     for (const line of changesetPublishOutput.stdout.split("\n")) {
       const match = line.match(newTagRegex);

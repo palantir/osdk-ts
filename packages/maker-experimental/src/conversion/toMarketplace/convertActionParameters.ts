@@ -21,7 +21,7 @@ import type { ActionType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 const FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX =
-  /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/;
+  /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/u;
 
 export function convertActionParameters(
   action: ActionType,

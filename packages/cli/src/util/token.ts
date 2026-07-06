@@ -106,6 +106,6 @@ export function validate(token: string): void {
 
 function isJWT(token: string): boolean {
   // https://stackoverflow.com/a/65755789
-  const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
+  const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/u;
   return jwtPattern.test(token);
 }

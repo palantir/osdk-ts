@@ -24,7 +24,7 @@ export async function promptWidgetSetRid({
 }): Promise<string> {
   while (
     widgetSet == null ||
-    !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/.test(widgetSet)
+    !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/u.test(widgetSet)
   ) {
     if (widgetSet != null) {
       consola.fail("Please enter a valid widget resource identifier (rid)");
