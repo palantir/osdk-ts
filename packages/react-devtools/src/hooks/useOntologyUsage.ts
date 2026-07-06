@@ -24,8 +24,6 @@ export interface OntologyUsage {
   actionTypeCount: number;
   /** Distinct `source-object:link-name` pairs across `useLinks` bindings. */
   linkCount: number;
-  /** True when the registry has no active components (drives the "no ontology" empty state). */
-  isEmpty: boolean;
 }
 
 /**
@@ -63,6 +61,5 @@ export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
     objectTypeCount: objectTypes.size,
     actionTypeCount: actionTypes.size,
     linkCount: links.size,
-    isEmpty: activeComponents.size === 0,
   };
 }
