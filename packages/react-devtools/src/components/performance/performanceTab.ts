@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
-import type { DevToolsPlugin } from "./types.js";
+import type { DevToolsPlugin } from "../../plugins/types.js";
+import { PerformancePanel } from "./PerformancePanel.js";
 
-// The base tabs shown in the devtools shell, in display order. Each tab PR
-// appends its plugin here (Components, Performance, Console, Cache).
-export const BASE_TABS: DevToolsPlugin[] = [componentsTab, performanceTab];
+export const performanceTab: DevToolsPlugin = {
+  id: "performance",
+  label: "Performance",
+  icon: "dashboard",
+  panel: PerformancePanel,
+};
