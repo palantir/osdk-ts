@@ -515,6 +515,8 @@ const meta: Meta = {
   parameters: {
     layout: "fullscreen",
     controls: { disable: true },
+    // Hide the canvas "Code" tab for the overview.
+    docs: { codePanel: false },
     msw: {
       handlers: [
         ...fauxFoundry.handlers,
