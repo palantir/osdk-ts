@@ -51,8 +51,6 @@ describe(extractCipherTextValue, () => {
     expect(extractCipherTextValue("hello")).toBe("hello");
     expect(extractCipherTextValue(null)).toBeNull();
     expect(extractCipherTextValue(undefined)).toBeUndefined();
-    // A struct is left untouched (non-recursive) even if it names a field
-    // `plaintext`; only a value that is itself a CipherText is transformed.
     const struct = { a: 1, plaintext: "not encrypted" };
     expect(extractCipherTextValue(struct)).toEqual(struct);
   });

@@ -105,9 +105,6 @@ export type GetWirePropertyValueFromClient<
 /**
  * Shared entries for the create/update property-value maps. Entries that differ
  * between the maps below are declared per-map; the rest live here.
- *
- * Declared as interfaces (not intersections) so `MAP[T]` indexed access stays
- * narrow for a generic key `T`.
  */
 interface PropertyValueWireToCreateBase {
   attachment: Attachment | string;
