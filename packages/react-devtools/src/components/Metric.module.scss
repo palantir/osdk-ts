@@ -37,17 +37,6 @@
 .metricValue {
   @include m.dt-metric-value;
 
-  &.success {
-    color: t.$green;
-  }
-
-  &.warning {
-    color: t.$orange;
-  }
-
-  &.danger {
-    color: t.$red;
-  }
 
   // No data yet — muted, so it reads as absent rather than a real measurement.
   &.na {

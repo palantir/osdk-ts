@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import classNames from "classnames";
 import React from "react";
+
+import { METRIC_INTENT_COLOR } from "./metricIntent.js";
+import type { MetricIntent } from "./metricIntent.js";
 
 import styles from "./MetricLegend.module.scss";
 
-/** The swatch colors a legend row can use — mirror the `Metric` value colors. */
-export type MetricLegendSwatch = "success" | "warning" | "danger" | "na";
-
 export interface MetricLegendEntry {
   /** Which swatch color to show. */
-  swatch: MetricLegendSwatch;
+  swatch: MetricIntent;
   /** The range/description this color denotes, e.g. "≥ 70%" or "> 0". */
   label: React.ReactNode;
 }
@@ -46,7 +45,10 @@ export function MetricLegend({
       {entries.map((entry) => (
         <li key={entry.swatch} className={styles.legendRow}>
           <span
-            className={classNames(styles.legendSwatch, styles[entry.swatch])}
+            className={styles.legendSwatch}
+            style={{
+              backgroundColor: METRIC_INTENT_COLOR[entry.swatch],
+            }}
             aria-hidden={true}
           />
           {entry.label}

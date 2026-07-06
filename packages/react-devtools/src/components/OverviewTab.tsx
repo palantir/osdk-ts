@@ -31,13 +31,6 @@ import styles from "./OverviewTab.module.scss";
  */
 const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
 
-/**
- * Gates the Overview tab. Off by default while the tab is still being built out
- * on dummy data — flip to `true` (or wire to config) to surface it. Exported so
- * tests and callers can branch on whether the tab is available.
- */
-export const IS_OVERVIEW_TAB_ENABLED = false;
-
 // TODO: Fetch the real data later
 const usage = {
   objectTypeCount: 8,
@@ -53,7 +46,7 @@ const performance = {
 };
 
 const debugging = {
-  overfetchingCount: 2,
+  overfetchingCount: undefined,
   errorWarningCount: 1,
 };
 
@@ -63,7 +56,7 @@ const debugging = {
  */
 const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
   { swatch: "danger", label: "> 0" },
-  { swatch: "na", label: "0 / no data" },
+  { swatch: "none", label: "0 / no data" },
 ];
 
 /**
@@ -203,12 +196,7 @@ export function OverviewTab(): React.JSX.Element {
               <>
                 Uncaught errors and console warnings captured from @osdk/react
                 hooks and your render tree this session.
-                <MetricLegend
-                  entries={[
-                    { swatch: "danger", label: "> 0" },
-                    { swatch: "na", label: "0" },
-                  ]}
-                />
+                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
             value={

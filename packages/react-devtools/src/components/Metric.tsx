@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Classes, Icon } from "@blueprintjs/core";
-import type { Intent } from "@blueprintjs/core";
+import { AnchorButton, Classes } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 
 import { BpTooltip } from "./common/BpTooltip.js";
+import { METRIC_INTENT_COLOR } from "./metricIntent.js";
+import type { MetricIntent } from "./metricIntent.js";
 
 import styles from "./Metric.module.scss";
 
@@ -33,10 +34,10 @@ export interface MetricProps {
    */
   value: string | number | null | undefined;
   /**
-   * Colors the value via Blueprint's `Intent`; defaults to `"none"` (no color).
-   * Only `success`/`warning`/`danger` are colored. Ignored when `value` is empty.
+   * Colors the value using its `MetricIntent` color; defaults to `"none"`
+   * (inherits the surrounding text color). Ignored when `value` is empty.
    */
-  intent?: Intent;
+  intent?: MetricIntent;
   /**
    * When set, renders a top-right "?" icon whose tooltip shows this content — the
    * metric's definition and, where the value is colored, its color key.
@@ -67,7 +68,9 @@ export function Metric({
           <BpTooltip
             content={<div className={styles.metricHelpContent}>{help}</div>}
           >
-            <Icon
+            <AnchorButton
+              variant="minimal"
+              size="small"
               icon="help"
               className={styles.metricHelp}
               aria-label={`About ${title}`}
@@ -76,10 +79,8 @@ export function Metric({
         )}
       </div>
       <span
-        className={classNames(
-          styles.metricValue,
-          isEmpty ? styles.na : styles[intent]
-        )}
+        className={classNames(styles.metricValue, isEmpty && styles.na)}
+        style={isEmpty ? undefined : { color: METRIC_INTENT_COLOR[intent] }}
       >
         {isEmpty ? "N/A" : value}
       </span>

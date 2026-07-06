@@ -22,20 +22,4 @@
   height: 10px;
   border-radius: t.$radius-sm;
   flex-shrink: 0;
-
-  &.success {
-    background: t.$green;
-  }
-
-  &.warning {
-    background: t.$orange;
-  }
-
-  &.danger {
-    background: t.$red;
-  }
-
-  &.na {
-    background: t.$text-tertiary;
-  }
 }
