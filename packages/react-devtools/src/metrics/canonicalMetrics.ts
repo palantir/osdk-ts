@@ -99,8 +99,7 @@ export function getCanonicalMetrics(
   const estimatedTimeSavedMs: Metric = {
     value: Number.isFinite(timeSavedValue) ? timeSavedValue : 0,
     sampleCount: requestsSavedCount,
-    // Needs both a requests-saved count and a ready network-latency baseline;
-    // otherwise the estimate is derived from a not-yet-ready average.
+    // Only trustworthy once both inputs are ready, so gate on both.
     ready: requestsSaved.ready && avgNetworkMs.ready,
     unit: "ms",
   };
@@ -151,11 +150,7 @@ export function getCanonicalMetrics(
   };
 }
 
-/**
- * Render a canonical Metric as a display string, cold-start aware: shows a
- * neutral "collecting data…" until the metric has enough samples, then formats
- * by unit (requests, ms, or a percentage).
- */
+/** Format a metric as a display string, or a placeholder until it is ready. */
 export function formatMetric(m: Metric): string {
   if (!m.ready) {
     return "collecting data…";
