@@ -7486,6 +7486,43 @@
       "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
+    },
+    "CipherTextInterface": {
+      "rid": "ri.ontology.main.interface.2483d9cc-1bbf-4e98-9214-3be256dd7205",
+      "apiName": "CipherTextInterface",
+      "displayName": "CipherTextInterface",
+      "description": "",
+      "properties": {},
+      "allProperties": {},
+      "propertiesV2": {
+        "encrypted": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.a5eba61f-909c-4f22-9e1b-acd6ad14d94d",
+          "apiName": "encrypted",
+          "displayName": "encrypted",
+          "dataType": {
+            "type": "cipherText"
+          },
+          "requireImplementation": true,
+          "typeClasses": []
+        }
+      },
+      "allPropertiesV2": {
+        "encrypted": {
+          "rid": "ri.ontology.main.interface-property.a5eba61f-909c-4f22-9e1b-acd6ad14d94d",
+          "apiName": "encrypted",
+          "displayName": "encrypted",
+          "dataType": {
+            "type": "cipherText"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [],
+      "links": {},
+      "allLinks": {}
     }
   },
 
