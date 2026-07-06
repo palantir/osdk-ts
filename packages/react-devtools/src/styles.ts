@@ -15,6 +15,8 @@
  */
 
 // Placeholder. scripts/build-css.mjs replaces the transpiled
-// build/esm/styles.js with a runtime-injection module that adds devtools
-// styles (including Blueprint) to document.head when the package is
-// imported.
+// build/esm/styles.js with the compiled devtools stylesheet (Blueprint +
+// devtools CSS, rewritten for a shadow root). src/shadow/ShadowHost.ts imports
+// this string and injects it into the devtools shadow root; it is never added
+// to document.head.
+export const devtoolsCss = "";
