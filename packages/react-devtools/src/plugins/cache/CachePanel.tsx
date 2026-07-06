@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
-import { cacheTab } from "./cache/cacheTab.js";
-import type { DevToolsPlugin } from "./types.js";
+import type { FC } from "react";
 
-// The base tabs shown in the devtools shell, in display order.
-export const BASE_TABS: DevToolsPlugin[] = [
-  componentsTab,
-  performanceTab,
-  consoleTab,
-  cacheTab,
-];
+import type { DevToolsPanelProps } from "../types.js";
+import { CacheSplitView } from "./CacheSplitView.js";
+
+export const CachePanel: FC<DevToolsPanelProps> = ({ monitorStore }) => {
+  return <CacheSplitView monitorStore={monitorStore} />;
+};

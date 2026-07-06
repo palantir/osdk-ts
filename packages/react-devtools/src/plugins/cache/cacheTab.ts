@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { componentsTab } from "../components/components/componentsTab.js";
-import { consoleTab } from "../components/console/consoleTab.js";
-import { performanceTab } from "../components/performance/performanceTab.js";
-import { cacheTab } from "./cache/cacheTab.js";
-import type { DevToolsPlugin } from "./types.js";
+import type { DevToolsPlugin } from "../types.js";
+import { CachePanel } from "./CachePanel.js";
 
-// The base tabs shown in the devtools shell, in display order.
-export const BASE_TABS: DevToolsPlugin[] = [
-  componentsTab,
-  performanceTab,
-  consoleTab,
-  cacheTab,
-];
+export const cacheTab: DevToolsPlugin = {
+  id: "cache",
+  label: "Cache",
+  icon: "database",
+  panel: CachePanel,
+};
