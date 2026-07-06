@@ -92,6 +92,8 @@ const UI_CONSTANTS = {
   MAX_DOCKED_RIGHT_WIDTH: 800,
 };
 
+const IS_OVERVIEW_TAB_ENABLED = false;
+
 const DEVTOOLS_TAB_IDS = [
   "overview",
   "performance",
@@ -114,7 +116,9 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const metricsStore = monitorStore.getMetricsStore();
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<MonitoringTab>("overview");
+  const [activeTab, setActiveTab] = useState<MonitoringTab>(
+    IS_OVERVIEW_TAB_ENABLED ? "overview" : "performance"
+  );
   const onActiveTabChange = useCallback((newTabId: TabId) => {
     if (isDevtoolsTabId(newTabId)) {
       setActiveTab(newTabId);
@@ -565,16 +569,18 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             selectedTabId={activeTab}
             onChange={onActiveTabChange}
           >
-            <Tab
-              id="overview"
-              title="Overview"
-              panel={
-                <OverviewTab
-                  monitorStore={monitorStore}
-                  setActiveTab={setActiveTab}
-                />
-              }
-            />
+            {IS_OVERVIEW_TAB_ENABLED && (
+              <Tab
+                id="overview"
+                title="Overview"
+                panel={
+                  <OverviewTab
+                    monitorStore={monitorStore}
+                    setActiveTab={setActiveTab}
+                  />
+                }
+              />
+            )}
             <Tab
               id="performance"
               title="Performance"
