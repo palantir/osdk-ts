@@ -1,1 +1,0 @@
-import{r as o,R as r,U as c}from"./iframe-CH4bNQkz.js";function u(t){o.useEffect(t,[])}function a(t){const e=r.useContext(c);u(()=>e(t))}const i="osdk-react-components/0.35.0";function p(t){return`${i}/${t}`}function f(t,e){const n=s=>(a(p(e)),r.createElement(t,s));return n.displayName=`withOsdkMetrics(${e})`,n}export{f as w};
