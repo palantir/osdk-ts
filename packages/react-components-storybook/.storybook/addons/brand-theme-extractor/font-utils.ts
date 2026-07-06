@@ -137,3 +137,24 @@ export function resolveAvailableFontFamily(value: string): string | undefined {
 
   return kept.join(", ");
 }
+
+/**
+ * Returns the concrete (non-generic, non-`var()`) font families named in a CSS
+ * font-family value that are NOT installed on the current machine, in source
+ * order and de-duplicated. Used to warn on import that a brand font won't
+ * render locally and will fall back.
+ */
+export function findUnavailableFontFamilies(value: string): string[] {
+  const seen = new Set<string>();
+  const missing: string[] = [];
+  for (const part of value.split(",")) {
+    const name = stripQuotes(part);
+    if (name === "" || isVarReference(part) || isGenericFamily(name)) continue;
+    if (isFontFamilyAvailable(name)) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    missing.push(name);
+  }
+  return missing;
+}

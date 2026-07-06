@@ -23,7 +23,29 @@ import {
   extractTokensFromCssText,
 } from "./css-extractor.js";
 import { extractTokensFromDesignMarkdown } from "./design-md-extractor.js";
+import { findUnavailableFontFamilies } from "./font-utils.js";
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
+
+const FONT_ROLES = new Set(["font-family", "font-family-mono"]);
+
+/**
+ * Collects the concrete brand fonts named across the imported font roles that
+ * aren't installed locally — those won't render and will fall back.
+ */
+function unavailableImportedFonts(assignments: TokenAssignment[]): string[] {
+  const seen = new Set<string>();
+  const missing: string[] = [];
+  for (const a of assignments) {
+    if (!FONT_ROLES.has(a.role) || !a.customValue) continue;
+    for (const name of findUnavailableFontFamilies(a.customValue)) {
+      const key = name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      missing.push(name);
+    }
+  }
+  return missing;
+}
 
 interface ImportDropdownProps {
   onApply: (assignments: TokenAssignment[], colorMode: ThemeColorMode) => void;
@@ -132,6 +154,12 @@ const ErrorText = styled.div(({ theme }) => ({
   fontSize: 11,
 }));
 
+const WarningText = styled.div(({ theme }) => ({
+  color: theme.color.warning ?? theme.color.gold ?? theme.color.mediumdark,
+  fontSize: 11,
+  lineHeight: 1.4,
+}));
+
 const Preview = styled.div({
   display: "flex",
   gap: 4,
@@ -176,6 +204,7 @@ export function ImportDropdown({
   const [error, setError] = useState<string | null>(null);
   const [applied, setApplied] = useState<TokenAssignment[] | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  const [fontWarning, setFontWarning] = useState<string | null>(null);
   const [menuPos, setMenuPos] = useState<{
     top: number;
     left: number;
@@ -244,6 +273,18 @@ export function ImportDropdown({
     (result: CssExtractionResult, noteText: string) => {
       setApplied(result.assignments);
       setNote(noteText);
+      const missing = unavailableImportedFonts(result.assignments);
+      setFontWarning(
+        missing.length === 0
+          ? null
+          : `${
+              missing.length === 1 ? "Font" : "Fonts"
+            } not installed on this machine: ${missing.join(
+              ", "
+            )}. Falling back to an available font — the theme still records ${
+              missing.length === 1 ? "it" : "them"
+            } for machines that have ${missing.length === 1 ? "it" : "them"}.`
+      );
       onApply(result.assignments, result.colorMode);
     },
     [onApply]
@@ -256,6 +297,7 @@ export function ImportDropdown({
       if (!file) return;
       setLoading(true);
       setError(null);
+      setFontWarning(null);
       void (async () => {
         try {
           const text = await file.text();
@@ -349,6 +391,7 @@ export function ImportDropdown({
                     })}
                   </Preview>
                   {note && <Hint>{note}</Hint>}
+                  {fontWarning && <WarningText>⚠ {fontWarning}</WarningText>}
                   <Hint>Applied — adjust any token below to refine.</Hint>
                 </>
               )}
