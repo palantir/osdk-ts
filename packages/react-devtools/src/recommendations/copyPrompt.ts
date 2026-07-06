@@ -20,9 +20,6 @@ import { OSDK_GUIDANCE_BY_CATEGORY } from "../utils/PerformanceRecommendationEng
 const INTRO =
   "You are helping optimize an app built with the OSDK React Toolkit (@osdk/react).";
 
-const TASK =
-  "TASK: Apply the suggested fix at the location above. Keep behavior identical except for the optimization. If the file/line is approximate, search for the matching hook call.";
-
 /**
  * Builds an AI-ready prompt for a single performance recommendation. Sections
  * with no data are omitted cleanly so the output stays reproducible.
@@ -58,7 +55,14 @@ export function buildCopyPrompt(rec: Recommendation): string {
   const guidance = rec.osdkGuidance ?? OSDK_GUIDANCE_BY_CATEGORY[rec.category];
   sections.push(`OSDK GUIDANCE:\n${guidance}`);
 
-  sections.push(TASK);
+  // The location is only known when a binding could be resolved. Without it,
+  // point back at the issue and fix, which name the component or query to look
+  // for, rather than a location that was never included.
+  const task =
+    rec.filePath != null
+      ? "TASK: Apply the suggested fix at the location above, keeping behavior identical except for the optimization."
+      : "TASK: Apply the suggested fix. Use the issue and suggested fix above to find the component or query it refers to, keeping behavior identical except for the optimization.";
+  sections.push(task);
 
   return sections.join("\n\n");
 }

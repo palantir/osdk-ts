@@ -58,6 +58,23 @@ describe("buildCopyPrompt", () => {
     expect(buildCopyPrompt(makeRec())).not.toContain("LOCATION:");
   });
 
+  it("does not claim a location in the task when filePath is absent", () => {
+    const prompt = buildCopyPrompt(makeRec());
+
+    expect(prompt).not.toContain("the location above");
+    expect(prompt).toContain(
+      "Use the issue and suggested fix above to find the component or query"
+    );
+  });
+
+  it("points the task at the location when filePath is present", () => {
+    const prompt = buildCopyPrompt(makeRec({ filePath: "src/A.tsx" }));
+
+    expect(prompt).toContain(
+      "TASK: Apply the suggested fix at the location above"
+    );
+  });
+
   it("renders LOCATION with line number when both filePath and lineNumber are present", () => {
     const prompt = buildCopyPrompt(
       makeRec({ filePath: "src/A.tsx", lineNumber: 17 })
