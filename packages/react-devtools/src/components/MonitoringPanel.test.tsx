@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -34,6 +34,19 @@ vi.mock("../fiber/validation.js", () => ({
   validateFiberAccess: vi.fn(),
 }));
 
+// The shell renders whatever base tabs are registered; mock a single stable tab
+// so these tests stay deterministic as real tabs are added to BASE_TABS.
+vi.mock("../plugins/baseTabs.js", () => ({
+  BASE_TABS: [
+    {
+      id: "overview",
+      label: "Overview",
+      icon: "home",
+      panel: () => "overview-panel-content",
+    },
+  ],
+}));
+
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 
 describe("MonitoringPanel", () => {
@@ -41,28 +54,35 @@ describe("MonitoringPanel", () => {
     cleanup();
   });
 
-  it("renders the panel with title and tabs", () => {
+  it("boots collapsed (closed) on load", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
+
+    // The full panel is not shown; only the minimized launcher is.
+    expect(screen.queryByText("OSDK Devtools")).toBeNull();
+    expect(screen.queryByText("</>")).not.toBeNull();
+  });
+
+  it("opens from the minimized launcher and renders registered tabs", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(screen.getByText("</>"));
 
     expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
-    expect(screen.queryByText("Performance")).not.toBeNull();
-    expect(screen.queryByText("Compute")).not.toBeNull();
-    expect(screen.queryByText("Intercept")).not.toBeNull();
-    expect(screen.queryByText("Debugging")).not.toBeNull();
-  });
-
-  it("renders the beta badge", () => {
-    const store = createMockMonitorStore();
-    render(<MonitoringPanel monitorStore={store} />);
-
     expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Overview")).not.toBeNull();
+    expect(screen.queryByText("overview-panel-content")).not.toBeNull();
   });
 
-  it("defaults to the performance tab", () => {
+  it("closes back to the launcher when the close button is clicked", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByText("</>"));
+    expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
+
+    fireEvent.click(screen.getByLabelText("Close devtools panel"));
+    expect(screen.queryByText("OSDK Devtools")).toBeNull();
   });
 });
