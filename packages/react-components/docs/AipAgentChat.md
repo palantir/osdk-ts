@@ -8,7 +8,7 @@ component is sufficient — consumers do not need to import `useChat` or
 ## Table of Contents
 
 - [Import](#import)
-- [Usage](#usage)
+- [Basic Usage](#basic-usage)
 - [Props](#props)
 - [Theming](#theming)
 
@@ -29,15 +29,17 @@ import {
   when you already manage chat state yourself (a custom hook, a
   non-OSDK backend, etc.).
 
-## Usage
+## Basic Usage
 
-### Minimal
+### Minimal Example
+
+The simplest way to use `AipAgentChat` is with just a platform client;
+`model` and `defaultModel` are both optional and fall back to `"gpt-4o"`:
 
 ```tsx
 import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
 import { platformClient } from "./foundryClient.js";
 
-// `model` and `defaultModel` are both optional — falls back to "gpt-4o".
 <AipAgentChat client={platformClient} />;
 ```
 
