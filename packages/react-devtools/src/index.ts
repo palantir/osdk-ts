@@ -33,8 +33,15 @@ export {
   useComputeRecording,
   useComputeRequests,
 } from "./hooks/useComputeSelectors.js";
+export { useCanonicalMetrics } from "./hooks/useCanonicalMetrics.js";
 export { useMetrics } from "./hooks/useMetrics.js";
 export { usePersistedState } from "./hooks/usePersistedState.js";
+
+export {
+  getCanonicalMetrics,
+  MIN_SAMPLES,
+} from "./metrics/canonicalMetrics.js";
+export type { CanonicalMetrics, Metric } from "./metrics/canonicalMetrics.js";
 
 export type { Fiber } from "./fiber/types.js";
 export { ComputeStore } from "./store/ComputeStore.js";
