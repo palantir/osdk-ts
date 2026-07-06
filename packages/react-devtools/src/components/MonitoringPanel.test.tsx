@@ -46,6 +46,7 @@ describe("MonitoringPanel", () => {
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
+    expect(screen.queryByText("Overview")).not.toBeNull();
     expect(screen.queryByText("Performance")).not.toBeNull();
     expect(screen.queryByText("Compute")).not.toBeNull();
     expect(screen.queryByText("Intercept")).not.toBeNull();
@@ -59,10 +60,14 @@ describe("MonitoringPanel", () => {
     expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
   });
 
-  it("defaults to the performance tab", () => {
+  it("defaults to the Overview tab", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    expect(
+      screen
+        .getByRole("tab", { name: "Overview" })
+        .getAttribute("aria-selected")
+    ).toBe("true");
   });
 });

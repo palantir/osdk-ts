@@ -17,6 +17,10 @@
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
 import React from "react";
 
+import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
+import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
+import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
+import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatNumber, formatTime } from "../utils/format.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
@@ -31,24 +35,16 @@ import styles from "./OverviewTab.module.scss";
  */
 const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
 
-// TODO: Fetch the real data later
-const usage = {
-  objectTypeCount: 8,
-  actionTypeCount: 3,
-  linkCount: 5,
-};
+/**
+ * Gates the Overview tab in the monitoring panel. Exported so the panel (and
+ * tests) can branch on whether the tab is available; flip to `false` to hide it
+ * without removing the component.
+ */
+export const IS_OVERVIEW_TAB_ENABLED = true;
 
-const performance = {
-  cacheHitRate: 0.82,
-  networkRequests: 1240,
-  averageResponseTime: 45,
-  duplicateRequests: 0,
-};
-
-const debugging = {
-  overfetchingCount: undefined,
-  errorWarningCount: 1,
-};
+export interface OverviewTabProps {
+  monitorStore: MonitorStore;
+}
 
 /**
  * Color key shared by the count metrics where any occurrence is a problem — a
@@ -65,7 +61,13 @@ const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
  * registry is empty; otherwise renders the ontology counts and the performance
  * metrics grid.
  */
-export function OverviewTab(): React.JSX.Element {
+export function OverviewTab({
+  monitorStore,
+}: OverviewTabProps): React.JSX.Element {
+  const usage = useOntologyUsage(monitorStore);
+  const performance = usePerformanceTiles(monitorStore);
+  const debugging = useDebuggingTiles(monitorStore);
+
   const isOntologyEmpty =
     usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
 
@@ -199,17 +201,8 @@ export function OverviewTab(): React.JSX.Element {
                 <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
-            value={
-              debugging.errorWarningCount != null
-                ? formatNumber(debugging.errorWarningCount)
-                : null
-            }
-            intent={
-              debugging.errorWarningCount != null &&
-              debugging.errorWarningCount > 0
-                ? "danger"
-                : "none"
-            }
+            value={formatNumber(debugging.errorWarningCount)}
+            intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
           />
         </Metrics>
       </OverviewSection>

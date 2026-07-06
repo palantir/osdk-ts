@@ -31,6 +31,7 @@ import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
+import { IS_OVERVIEW_TAB_ENABLED, OverviewTab } from "./OverviewTab.js";
 import { PanelContainerContext } from "./PanelContainerContext.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
@@ -95,15 +96,34 @@ export interface MonitoringPanelProps {
   monitorStore: MonitorStore;
 }
 
+export type MonitoringTab =
+  | "overview"
+  | "performance"
+  | "compute"
+  | "intercept"
+  | "debugging";
+
+/**
+ * Tabs in render order. The Overview tab is prepended only when its feature
+ * flag is on, so the flag alone controls whether it surfaces.
+ */
+const TABS: readonly MonitoringTab[] = [
+  ...(IS_OVERVIEW_TAB_ENABLED ? (["overview"] as const) : []),
+  "performance",
+  "compute",
+  "intercept",
+  "debugging",
+];
+
 export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   monitorStore,
 }) => {
   const metricsStore = monitorStore.getMetricsStore();
   const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<
-    "performance" | "compute" | "intercept" | "debugging"
-  >("performance");
+  const [activeTab, setActiveTab] = useState<MonitoringTab>(
+    IS_OVERVIEW_TAB_ENABLED ? "overview" : "performance"
+  );
   const [position, setPosition] = usePersistedState<PanelPosition>(
     "osdk-monitor-position",
     {
@@ -537,29 +557,39 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         </div>
 
         <div className={styles.tabs} role="tablist" aria-label="Devtools tabs">
-          {(["performance", "compute", "intercept", "debugging"] as const).map(
-            (tab) => (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                aria-selected={activeTab === tab}
-                className={classNames(
-                  styles.tabButton,
-                  activeTab === tab && styles.tabButtonActive
-                )}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            )
-          )}
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab}
+              className={classNames(
+                styles.tabButton,
+                activeTab === tab && styles.tabButtonActive
+              )}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
         <div className={styles.content}>
           {(!fiberCapabilities.hookInstalled ||
             !fiberCapabilities.fiberAccessWorking) && (
             <DegradationNotice onRetry={() => validateFiberAccess()} />
+          )}
+
+          {IS_OVERVIEW_TAB_ENABLED && (
+            <div
+              className={
+                activeTab === "overview"
+                  ? styles.tabContentVisible
+                  : styles.tabContentHidden
+              }
+            >
+              <OverviewTab monitorStore={monitorStore} />
+            </div>
           )}
 
           <div
