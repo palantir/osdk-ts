@@ -140,7 +140,7 @@ function InteractiveChat(
 }
 
 const meta: Meta<typeof InteractiveChat> = {
-  title: "Components/AipAgentChat",
+  title: "Components/BaseChat/AipAgentChat",
   component: InteractiveChat,
   render: (args) => (
     <div style={{ height: "600px", maxWidth: "700px" }}>
