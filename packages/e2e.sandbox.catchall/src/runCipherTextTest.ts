@@ -20,7 +20,10 @@ import type {
   UpdateCipherText,
 } from "@osdk/api";
 import { CipherChannelStrategy } from "@osdk/api";
-import { CipherTextTest } from "@osdk/e2e.generated.catchall";
+import {
+  CipherTextInterface,
+  CipherTextTest,
+} from "@osdk/e2e.generated.catchall";
 import type { Edits } from "@osdk/functions";
 import { createEditBatch } from "@osdk/functions";
 import type { CreateObject, UpdateObject } from "@osdk/functions/internal";
@@ -70,7 +73,9 @@ export async function runCipherTextTest(): Promise<void> {
     "Expected non-null object to have same pk",
   );
 
-  const edits = createEditBatch<Edits.Object<CipherTextTest>>(
+  const edits = createEditBatch<
+    Edits.Object<CipherTextTest> | Edits.Interface<CipherTextInterface>
+  >(
     cipherTextOntologyClient,
   );
 
@@ -99,6 +104,13 @@ export async function runCipherTextTest(): Promise<void> {
     $primaryKey: existingPk2,
   }, {
     encrypted: result.encrypted,
+  });
+
+  edits.create(CipherTextInterface, {
+    $objectType: "CipherTextTest",
+    encrypted: {
+      plaintext: "test",
+    },
   });
 
   const editEntries = edits.getEdits();
@@ -140,6 +152,7 @@ export async function runCipherTextTest(): Promise<void> {
     "Expected updated object to contain same cipher text string",
   );
 
+  console.log(JSON.stringify(editEntries, null, 2));
   console.log("All tests passed!");
 }
 

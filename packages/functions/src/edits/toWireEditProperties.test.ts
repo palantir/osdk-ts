@@ -17,7 +17,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  normalizeCipherTextEditValue,
+  extractCipherTextValue,
   toWireEditProperties,
 } from "./toWireEditProperties.js";
 
@@ -30,36 +30,36 @@ const existingCipherText = {
   getValue: () => value,
 };
 
-describe(normalizeCipherTextEditValue, () => {
+describe(extractCipherTextValue, () => {
   it("reduces a reused CipherText to its value", () => {
-    expect(normalizeCipherTextEditValue(existingCipherText)).toEqual({
+    expect(extractCipherTextValue(existingCipherText)).toEqual({
       ciphertext: value,
     });
   });
 
   it("passes a plaintext cipherText input through unchanged", () => {
-    expect(normalizeCipherTextEditValue({ plaintext: "secret" })).toEqual({
+    expect(extractCipherTextValue({ plaintext: "secret" })).toEqual({
       plaintext: "secret",
     });
     expect(
-      normalizeCipherTextEditValue({ plaintext: "secret", strategy: "X" })
+      extractCipherTextValue({ plaintext: "secret", strategy: "X" })
     ).toEqual({ plaintext: "secret", strategy: "X" });
   });
 
   it("passes primitives, nullish, and plain structs through unchanged", () => {
-    expect(normalizeCipherTextEditValue(1)).toBe(1);
-    expect(normalizeCipherTextEditValue("hello")).toBe("hello");
-    expect(normalizeCipherTextEditValue(null)).toBeNull();
-    expect(normalizeCipherTextEditValue(undefined)).toBeUndefined();
+    expect(extractCipherTextValue(1)).toBe(1);
+    expect(extractCipherTextValue("hello")).toBe("hello");
+    expect(extractCipherTextValue(null)).toBeNull();
+    expect(extractCipherTextValue(undefined)).toBeUndefined();
     // A struct is left untouched (non-recursive) even if it names a field
     // `plaintext`; only a value that is itself a CipherText is transformed.
     const struct = { a: 1, plaintext: "not encrypted" };
-    expect(normalizeCipherTextEditValue(struct)).toEqual(struct);
+    expect(extractCipherTextValue(struct)).toEqual(struct);
   });
 
   it("normalizes each element of a multiplicity array", () => {
     expect(
-      normalizeCipherTextEditValue([existingCipherText, { plaintext: "s" }])
+      extractCipherTextValue([existingCipherText, { plaintext: "s" }])
     ).toEqual([{ ciphertext: value }, { plaintext: "s" }]);
   });
 });
