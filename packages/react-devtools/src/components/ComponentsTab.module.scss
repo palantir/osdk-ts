@@ -1,0 +1,62 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.componentsTab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid t.$border-default;
+  background: t.$bg-raised;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+}
+
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
+}
+
+.section {
+  border-bottom: 1px solid t.$border-default;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.sectionHeader {
+  @include m.dt-label;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-subtle;
+  position: sticky;
+  top: 0;
+  z-index: t.$z-sticky;
+}
+
+.sectionCount {
+  color: t.$text-tertiary;
+  font-weight: t.$font-weight-normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+  font-size: t.$font-size-base;
+  padding: 24px 16px;
+}

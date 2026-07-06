@@ -16,172 +16,22 @@
 
 import { Icon, InputGroup } from "@blueprintjs/core";
 import classNames from "classnames";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { createPollingStore } from "../hooks/createPollingStore.js";
-import { useActiveComponents } from "../hooks/useActiveComponents.js";
 import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
-import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
-import { formatTime } from "../utils/format.js";
 import { CacheInspectorTab } from "./CacheInspectorTab.js";
-import { ComponentCard } from "./ComponentCard.js";
+import { collectIssues } from "./collectIssues.js";
 import { ImprovementsTab } from "./ImprovementsTab.js";
 import { IssueCard } from "./IssueCard.js";
 import type { Issue } from "./issueTypes.js";
 import { LogEntryCard } from "./LogEntryCard.js";
-import { resolveComponentName } from "./resolveComponentName.js";
 
 import styles from "./DebuggingTab.module.scss";
 
 export interface DebuggingTabProps {
   monitorStore: MonitorStore;
-}
-
-const SEVERITY_ORDER: Record<Issue["severity"], number> = {
-  error: 0,
-  warning: 1,
-  info: 2,
-};
-
-function collectIssues(monitorStore: MonitorStore, now: number): Issue[] {
-  const issues: Issue[] = [];
-
-  for (const err of monitorStore.getMetricsStore().getActionErrors()) {
-    issues.push({
-      id: err.id,
-      severity: "error",
-      category: "action failure",
-      title: "Action failed",
-      message: err.message,
-      suggestion: err.validationErrors?.length
-        ? "Fix validation errors before retrying"
-        : undefined,
-      timestamp: err.timestamp,
-      expandable: {
-        stack: err.stack,
-        detailsJson: JSON.stringify(
-          {
-            actionType: err.actionType,
-            parameters: err.parameters,
-          },
-          null,
-          2
-        ),
-      },
-    });
-  }
-
-  const windowErrors = monitorStore.getWindowErrorStore().getEntries();
-  // Bucketed at 100ms granularity. The lookup checks the current bucket plus
-  // the two adjacent buckets so that any console.error within ±100ms of a
-  // window error collides regardless of where the timestamps fall.
-  const windowErrorBuckets = new Set<string>();
-  for (const we of windowErrors) {
-    const expandable: NonNullable<Issue["expandable"]> = {};
-    if (we.stack) {
-      expandable.stack = we.stack;
-    }
-    if (we.filename || we.lineno || we.colno) {
-      expandable.detailsJson = JSON.stringify(
-        {
-          filename: we.filename,
-          lineno: we.lineno,
-          colno: we.colno,
-        },
-        null,
-        2
-      );
-    }
-    const hasExpandable =
-      expandable.stack !== undefined || expandable.detailsJson !== undefined;
-
-    issues.push({
-      id: `windowError-${we.id}`,
-      severity: "error",
-      category:
-        we.kind === "unhandledrejection"
-          ? "unhandled rejection"
-          : "uncaught error",
-      title:
-        we.kind === "unhandledrejection"
-          ? "Unhandled promise rejection"
-          : "Uncaught error",
-      message: we.message,
-      timestamp: we.timestamp,
-      ...(hasExpandable ? { expandable } : {}),
-    });
-
-    const bucket = Math.floor(we.timestamp / 100);
-    windowErrorBuckets.add(`${we.message}|${bucket}`);
-  }
-
-  for (const entry of monitorStore.getConsoleLogStore().getEntries()) {
-    if (entry.level !== "error") {
-      continue;
-    }
-    const messageText = entry.args.join(" ");
-    const bucket = Math.floor(entry.timestamp / 100);
-    if (
-      windowErrorBuckets.has(`${messageText}|${bucket - 1}`) ||
-      windowErrorBuckets.has(`${messageText}|${bucket}`) ||
-      windowErrorBuckets.has(`${messageText}|${bucket + 1}`)
-    ) {
-      continue;
-    }
-    const issue: Issue = {
-      id: `console-${entry.id}`,
-      severity: "error",
-      category: "console error",
-      title: "console.error",
-      message: messageText,
-      timestamp: entry.timestamp,
-    };
-    if (entry.source) {
-      issue.expandable = {
-        detailsJson: JSON.stringify({ source: entry.source }, null, 2),
-      };
-    }
-    issues.push(issue);
-  }
-
-  for (const wr of monitorStore.getPropertyAccessTracker().getWastedRenders()) {
-    issues.push({
-      id: `wasted-${wr.componentId}-${wr.timestamp}`,
-      severity: "warning",
-      category: "wasted render",
-      title: `${wr.count} renders without property access`,
-      message: `${wr.componentName} renders but doesn't use the data`,
-      suggestion: "Check if this component needs this data subscription",
-      componentId: wr.componentId,
-      componentName: wr.componentName,
-      timestamp: wr.timestamp,
-    });
-  }
-
-  for (const up of monitorStore
-    .getPropertyAccessTracker()
-    .getUnusedProperties()) {
-    issues.push({
-      id: `unused-${up.componentId}-${up.propertyName}`,
-      severity: "info",
-      category: "unused field",
-      title: `"${up.propertyName}" loaded but never accessed`,
-      message: `${up.componentName} fetches this field but never reads it`,
-      suggestion: "Remove from query to reduce payload",
-      componentId: up.componentId,
-      componentName: up.componentName,
-      timestamp: now,
-    });
-  }
-
-  issues.sort(
-    (a, b) =>
-      SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] ||
-      b.timestamp - a.timestamp
-  );
-
-  return issues;
 }
 
 export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
@@ -190,9 +40,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [improvementsExpanded, setImprovementsExpanded] = useState(true);
 
-  const componentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-
-  const activeComponents = useActiveComponents(monitorStore);
   const {
     entries: consoleEntries,
     count: consoleCount,
@@ -256,56 +103,12 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
     );
   }, [consoleEntries, searchQuery]);
 
-  const issuesByComponent = useMemo(() => {
-    const map = new Map<string, Issue[]>();
-    for (const issue of issues) {
-      if (issue.componentId) {
-        const existing = map.get(issue.componentId);
-        if (existing) {
-          existing.push(issue);
-        } else {
-          map.set(issue.componentId, [issue]);
-        }
-      }
-    }
-    return map;
-  }, [issues]);
-
-  const filteredComponents = useMemo<
-    Map<string, ComponentHookBinding[]>
-  >(() => {
-    if (!searchQuery.trim()) {
-      return activeComponents;
-    }
-
-    const q = searchQuery.toLowerCase();
-    const filtered = new Map<string, ComponentHookBinding[]>();
-
-    for (const [componentId, bindings] of activeComponents) {
-      const displayName = resolveComponentName(bindings).toLowerCase();
-
-      if (displayName.includes(q) || componentId.includes(q)) {
-        filtered.set(componentId, bindings);
-      }
-    }
-
-    return filtered;
-  }, [activeComponents, searchQuery]);
-
-  const handleComponentClick = useCallback((componentId: string) => {
-    const el = componentRefs.current.get(componentId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.click();
-    }
-  }, []);
-
   return (
     <div className={styles.debuggingTab}>
       <div className={styles.controls}>
         <InputGroup
           leftIcon="search"
-          placeholder="Search issues and components..."
+          placeholder="Search issues..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className={styles.searchInput}
@@ -332,7 +135,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
               <IssueCard
                 key={issue.id}
                 issue={issue}
-                onComponentClick={handleComponentClick}
                 style={{ "--entrance-index": index } as React.CSSProperties}
               />
             ))
@@ -390,43 +192,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
                   />
                 ))
             ))}
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <span>Components</span>
-            <span className={styles.sectionCount}>
-              {filteredComponents.size}
-            </span>
-          </div>
-          {filteredComponents.size === 0 && (
-            <div className={styles.emptyState}>
-              {searchQuery
-                ? "No components match your search"
-                : "No active components found"}
-            </div>
-          )}
-          {[...filteredComponents].map(([componentId, bindings], index) => (
-            <div
-              key={componentId}
-              ref={(el) => {
-                if (el) {
-                  componentRefs.current.set(componentId, el);
-                } else {
-                  componentRefs.current.delete(componentId);
-                }
-              }}
-            >
-              <ComponentCard
-                componentId={componentId}
-                bindings={bindings}
-                formatTime={formatTime}
-                monitorStore={monitorStore}
-                issues={issuesByComponent.get(componentId)}
-                style={{ "--entrance-index": index } as React.CSSProperties}
-              />
-            </div>
-          ))}
         </div>
 
         <div className={styles.section}>
