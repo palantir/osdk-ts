@@ -15,6 +15,7 @@
  */
 
 import type { ValidationRuleDisplayMetadata } from "@osdk/client.unstable";
+
 import type { ConditionDefinition } from "./ConditionDefinition.js";
 
 export type ActionLevelValidationDefinition = Array<ActionLevelValidationRule>;

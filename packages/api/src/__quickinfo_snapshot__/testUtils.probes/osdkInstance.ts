@@ -58,9 +58,7 @@ declare const osdkInstance_property_securities: Osdk.Instance<
 // === Interface-typed instance ===
 
 /** An instance whose Q is an interface rather than an object type. */
-declare const osdkInstance_interface_default: Osdk.Instance<
-  FooInterfaceApiTest
->;
+declare const osdkInstance_interface_default: Osdk.Instance<FooInterfaceApiTest>;
 
 // === $as cast ===
 

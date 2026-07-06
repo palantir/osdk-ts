@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchUpdatePendingInputShapeMetadataRequest
-    as _api_BatchUpdatePendingInputShapeMetadataRequest,
-  BatchUpdatePendingInputShapeMetadataResponse
-    as _api_BatchUpdatePendingInputShapeMetadataResponse,
+  BatchUpdatePendingInputShapeMetadataRequest as _api_BatchUpdatePendingInputShapeMetadataRequest,
+  BatchUpdatePendingInputShapeMetadataResponse as _api_BatchUpdatePendingInputShapeMetadataResponse,
   BlockSetVersionId as _api_BlockSetVersionId,
 } from "../__components.js";
 
@@ -36,12 +35,12 @@ import type {
 export async function batchUpdatePendingInputShapeMetadata(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_BatchUpdatePendingInputShapeMetadataRequest,
+  request: _api_BatchUpdatePendingInputShapeMetadataRequest
 ): Promise<_api_BatchUpdatePendingInputShapeMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/pending/version/${blockSetVersionId}/input/metadata/batchUpdate`,
     "PUT",
-    request,
+    request
   );
 }

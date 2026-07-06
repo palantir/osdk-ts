@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OrganizationRid as _api_OrganizationRid } from "../../__components.js";
 import type {
-  SetUsageSettingsByOrganizationRequest
-    as _api_usage_SetUsageSettingsByOrganizationRequest,
-  SetUsageSettingsByOrganizationResponse
-    as _api_usage_SetUsageSettingsByOrganizationResponse,
+  SetUsageSettingsByOrganizationRequest as _api_usage_SetUsageSettingsByOrganizationRequest,
+  SetUsageSettingsByOrganizationResponse as _api_usage_SetUsageSettingsByOrganizationResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +29,12 @@ import type {
 export async function setUsageSettingsByOrganization(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  request: _api_usage_SetUsageSettingsByOrganizationRequest,
+  request: _api_usage_SetUsageSettingsByOrganizationRequest
 ): Promise<_api_usage_SetUsageSettingsByOrganizationResponse> {
   return conjureFetch(
     ctx,
     `/usage/setSettings/organization/${organizationRid}`,
     "POST",
-    request,
+    request
   );
 }

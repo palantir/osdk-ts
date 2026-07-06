@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LogicalObjectSetRequest as _api_external_planning_LogicalObjectSetRequest,
   LogicalObjectSetResponse as _api_external_planning_LogicalObjectSetResponse,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getLogicalObjectSet(
   ctx: ConjureContext,
-  request: _api_external_planning_LogicalObjectSetRequest,
+  request: _api_external_planning_LogicalObjectSetRequest
 ): Promise<_api_external_planning_LogicalObjectSetResponse> {
   return conjureFetch(ctx, `/plan/logical`, "POST", request);
 }

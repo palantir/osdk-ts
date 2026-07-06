@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreatePlaceholdersRequest as _api_CreatePlaceholdersRequest,
   CreatePlaceholdersResponse as _api_CreatePlaceholdersResponse,
@@ -50,12 +51,12 @@ import type {
  */
 export async function createPlaceholders(
   ctx: ConjureContext,
-  request: _api_CreatePlaceholdersRequest,
+  request: _api_CreatePlaceholdersRequest
 ): Promise<_api_CreatePlaceholdersResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/placeholders`,
     "POST",
-    request,
+    request
   );
 }

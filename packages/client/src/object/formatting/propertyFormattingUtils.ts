@@ -15,6 +15,7 @@
  */
 
 import type { PropertyTypeReferenceOrStringConstant } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 
 /**
@@ -23,7 +24,7 @@ import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 
 export function resolvePropertyReference(
   ref: PropertyTypeReferenceOrStringConstant,
-  objectData: SimpleOsdkProperties,
+  objectData: SimpleOsdkProperties
 ): string | undefined {
   if (ref.type === "constant") {
     return ref.value;

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
   InterfaceTypeSearchResponse as _api_search_InterfaceTypeSearchResponse,
@@ -31,12 +32,12 @@ import type {
  */
 export async function searchInterfaceTypes(
   ctx: ConjureContext,
-  request: _api_search_InterfaceTypeSearchRequest,
+  request: _api_search_InterfaceTypeSearchRequest
 ): Promise<_api_search_InterfaceTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchInterfaceTypes`,
     "POST",
-    request,
+    request
   );
 }

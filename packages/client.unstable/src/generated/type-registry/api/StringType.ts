@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface StringType {
-}
+export interface StringType {}

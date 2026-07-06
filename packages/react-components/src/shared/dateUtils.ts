@@ -79,7 +79,7 @@ export function parseDatetimeFromInput(
   value: string | undefined | null
 ): Date | undefined {
   if (!value) return undefined;
-  const normalized = value.includes("T") ? value : value.replace(/\s/, "T");
+  const normalized = value.includes("T") ? value : value.replace(/\s/u, "T");
   const date = new Date(normalized);
   return isNaN(date.getTime()) ? undefined : date;
 }

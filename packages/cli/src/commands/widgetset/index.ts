@@ -20,6 +20,7 @@ import {
   YargsCheckError,
 } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
+
 import type { WidgetSetRid } from "../../net/WidgetSetRid.js";
 import configLoader from "../../util/configLoader.js";
 import { logConfigFileMiddleware } from "../../yargs/logConfigFileMiddleware.js";
@@ -35,37 +36,34 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
     const config = await configLoader("widgetSet");
     const widgetSet = config?.foundryConfig.widgetSet.rid;
     const foundryUrl = config?.foundryConfig.foundryUrl;
-    return argv.options({
-      widgetSet: {
-        type: "string",
-        coerce: (widgetSet) => widgetSet as WidgetSetRid,
-        ...widgetSet
-          ? { default: widgetSet }
-          : { demandOption: true },
-        description: "Widget set resource identifier (rid)",
-      },
-      foundryUrl: {
-        coerce: ensureTrailingSlash,
-        type: "string",
-        ...foundryUrl
-          ? { default: foundryUrl }
-          : { demandOption: true },
-        description: "URL for the Foundry stack",
-      },
-      token: {
-        type: "string",
-        conflicts: "tokenFile",
-        description: "Foundry API token",
-      },
-      tokenFile: {
-        type: "string",
-        conflicts: "token",
-        description: "Path to file containing Foundry API token",
-      },
-    })
+    return argv
+      .options({
+        widgetSet: {
+          type: "string",
+          coerce: (widgetSet) => widgetSet as WidgetSetRid,
+          ...(widgetSet ? { default: widgetSet } : { demandOption: true }),
+          description: "Widget set resource identifier (rid)",
+        },
+        foundryUrl: {
+          coerce: ensureTrailingSlash,
+          type: "string",
+          ...(foundryUrl ? { default: foundryUrl } : { demandOption: true }),
+          description: "URL for the Foundry stack",
+        },
+        token: {
+          type: "string",
+          conflicts: "tokenFile",
+          description: "Foundry API token",
+        },
+        tokenFile: {
+          type: "string",
+          conflicts: "token",
+          description: "Path to file containing Foundry API token",
+        },
+      })
       .group(
         ["widgetSet", "foundryUrl", "token", "tokenFile"],
-        "Common Options",
+        "Common Options"
       )
       .command(version)
       .command(deploy)

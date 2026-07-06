@@ -21,7 +21,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 
 export function createLazyQueryImpl(
-  bodyToResponse: Record<string, ExecuteQueryResponse>,
+  bodyToResponse: Record<string, ExecuteQueryResponse>
 ): (req: ExecuteQueryRequest) => ExecuteQueryResponse {
   return (req: ExecuteQueryRequest): ExecuteQueryResponse => {
     const body = JSON.stringify(req);
@@ -30,7 +30,7 @@ export function createLazyQueryImpl(
     if (!resp) {
       throw new OpenApiCallError(
         400,
-        Errors.InvalidRequest("Invalid Query Request"),
+        Errors.InvalidRequest("Invalid Query Request")
       );
     }
     return resp;

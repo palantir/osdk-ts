@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetProductGroupVersionResponse as _api_GetProductGroupVersionResponse,
   ProductGroupRid as _api_ProductGroupRid,
@@ -33,11 +34,11 @@ import type {
 export async function getProductGroupVersion(
   ctx: ConjureContext,
   productGroupRid: _api_ProductGroupRid,
-  productGroupVersionRid: _api_ProductGroupVersionRid,
+  productGroupVersionRid: _api_ProductGroupVersionRid
 ): Promise<_api_GetProductGroupVersionResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/${productGroupRid}/version/${productGroupVersionRid}`,
-    "GET",
+    "GET"
   );
 }

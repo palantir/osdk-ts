@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
 import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
@@ -23,27 +24,24 @@ import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 /**
  * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
  */
-export function importSharedPropertyType(
-  opts: {
-    apiName: string;
-    packageName?: string;
-    typeHint: PropertyTypeType;
-    array?: boolean;
-  },
-): SharedPropertyType {
+export function importSharedPropertyType(opts: {
+  apiName: string;
+  packageName?: string;
+  typeHint: PropertyTypeType;
+  array?: boolean;
+}): SharedPropertyType {
   const { apiName, packageName, typeHint, array } = opts;
-  const fullApiName = packageName === undefined
-    ? apiName
-    : `${packageName}.${apiName}`;
+  const fullApiName =
+    packageName === undefined ? apiName : `${packageName}.${apiName}`;
   if (packageName !== undefined) {
     invariant(
       !packageName.endsWith("."),
-      "Package name format invalid ends with period",
+      "Package name format invalid ends with period"
     );
 
     invariant(
       packageName.match("[A-Z]") == null,
-      "Package name includes upper case characters",
+      "Package name includes upper case characters"
     );
   }
   const spt: SharedPropertyType = {

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateMarketplaceRequest as _api_CreateMarketplaceRequest,
   Marketplace as _api_Marketplace,
@@ -28,7 +29,7 @@ import type {
  */
 export async function createMarketplace(
   ctx: ConjureContext,
-  createMarketplaceRequest: _api_CreateMarketplaceRequest,
+  createMarketplaceRequest: _api_CreateMarketplaceRequest
 ): Promise<_api_Marketplace> {
   return conjureFetch(ctx, `/marketplaces`, "POST", createMarketplaceRequest);
 }

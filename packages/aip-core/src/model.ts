@@ -64,13 +64,15 @@ const internals: WeakMap<LanguageModel, FoundryInternalHandle> = new WeakMap();
  * ```
  */
 export function foundryModel(options: FoundryModelOptions): LanguageModel {
-  const identifier: ModelIdentifier = typeof options.model === "string"
-    ? { type: "lmsModel", apiName: options.model }
-    : options.model;
+  const identifier: ModelIdentifier =
+    typeof options.model === "string"
+      ? { type: "lmsModel", apiName: options.model }
+      : options.model;
 
-  const id = identifier.type === "lmsModel"
-    ? identifier.apiName
-    : identifier.registeredModelRid;
+  const id =
+    identifier.type === "lmsModel"
+      ? identifier.apiName
+      : identifier.registeredModelRid;
 
   const handle: LanguageModel = Object.freeze({
     modelId: `foundry/${id}`,
@@ -92,13 +94,13 @@ export function foundryModel(options: FoundryModelOptions): LanguageModel {
  * @internal
  */
 export function _getFoundryInternal(
-  model: LanguageModel,
+  model: LanguageModel
 ): FoundryInternalHandle {
   const handle = internals.get(model);
   if (handle == null) {
     throw new Error(
-      `LanguageModel(modelId=${model.modelId}, provider=${model.provider}) `
-        + `was not constructed via foundryModel(). Only foundry-lms models are supported in v0.`,
+      `LanguageModel(modelId=${model.modelId}, provider=${model.provider}) ` +
+        `was not constructed via foundryModel(). Only foundry-lms models are supported in v0.`
     );
   }
   return handle;

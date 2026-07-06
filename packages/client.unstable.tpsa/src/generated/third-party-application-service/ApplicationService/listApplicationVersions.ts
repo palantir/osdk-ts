@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { ApplicationVersionPageToken } from "../ApplicationVersionPageToken.js";
 import type { ListApplicationVersionsResponse } from "../ListApplicationVersionsResponse.js";
@@ -29,13 +30,13 @@ export async function listApplicationVersions(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
   pageSize: PageSize | undefined,
-  pageToken: ApplicationVersionPageToken | undefined,
+  pageToken: ApplicationVersionPageToken | undefined
 ): Promise<ListApplicationVersionsResponse> {
   return conjureFetch(
     ctx,
     `/applications/${applicationRid}/versions`,
     "GET",
     undefined,
-    { pageSize, pageToken },
+    { pageSize, pageToken }
   );
 }

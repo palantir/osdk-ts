@@ -111,7 +111,7 @@ describe("FilterListContent", () => {
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -134,7 +134,7 @@ describe("FilterListContent", () => {
 
       // No stored state + no fallback → no capability-driven controls.
       expect(
-        screen.queryByRole("button", { name: /more actions/i })
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
     });
 
@@ -185,7 +185,7 @@ describe("FilterListContent", () => {
         JSON.stringify({ type: "SELECT", selectedValues: [] })
       );
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
   });

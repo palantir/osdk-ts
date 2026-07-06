@@ -15,7 +15,7 @@
  */
 
 export function extractNamespace(
-  fqApiName: string,
+  fqApiName: string
 ): [string | undefined, string] {
   const last = fqApiName.lastIndexOf(".");
   if (last === -1) return [undefined, fqApiName];

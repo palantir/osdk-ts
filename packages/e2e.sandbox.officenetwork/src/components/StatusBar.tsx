@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { LensMode } from "../utils/lensTheme.js";
 
 interface StatusBarProps {

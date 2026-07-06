@@ -18,33 +18,33 @@ import { TimeDurationMapping } from "../mapping/DurationMapping.js";
 
 export type TimeSeriesQuery =
   | {
-    $before: number;
-    $unit: keyof typeof TimeseriesDurationMapping;
-    $after?: never;
-    $startTime?: never;
-    $endTime?: never;
-  }
+      $before: number;
+      $unit: keyof typeof TimeseriesDurationMapping;
+      $after?: never;
+      $startTime?: never;
+      $endTime?: never;
+    }
   | {
-    $after: number;
-    $unit: keyof typeof TimeseriesDurationMapping;
-    $before?: never;
-    $startTime?: never;
-    $endTime?: never;
-  }
+      $after: number;
+      $unit: keyof typeof TimeseriesDurationMapping;
+      $before?: never;
+      $startTime?: never;
+      $endTime?: never;
+    }
   | {
-    $startTime: string;
-    $endTime?: string;
-    $before?: never;
-    $after?: never;
-    $unit?: never;
-  }
+      $startTime: string;
+      $endTime?: string;
+      $before?: never;
+      $after?: never;
+      $unit?: never;
+    }
   | {
-    $startTime?: string;
-    $endTime: string;
-    $before?: never;
-    $after?: never;
-    $unit?: never;
-  };
+      $startTime?: string;
+      $endTime: string;
+      $before?: never;
+      $after?: never;
+      $unit?: never;
+    };
 
 export type TimeseriesDurationUnits =
   | "YEARS"
@@ -80,8 +80,8 @@ export const TimeseriesDurationMapping: {
   ms: "MILLISECONDS";
   milliseconds: "MILLISECONDS";
 } = {
-  "ms": "MILLISECONDS",
-  "milliseconds": "MILLISECONDS",
+  ms: "MILLISECONDS",
+  milliseconds: "MILLISECONDS",
   ...TimeDurationMapping,
 } satisfies Record<string, TimeseriesDurationUnits>;
 
@@ -121,7 +121,7 @@ export interface TimeSeriesProperty<T extends number | string> {
    * ```
    */
   readonly getAllPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
    * Returns an async iterator to load all points
@@ -139,7 +139,7 @@ export interface TimeSeriesProperty<T extends number | string> {
    * ```
    */
   readonly asyncIterPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 }
 
@@ -165,7 +165,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    * ```
    */
   readonly getAllValues: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
    * Returns an async iterator to load all points
@@ -183,7 +183,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    * ```
    */
   readonly asyncIterValues: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
   /**

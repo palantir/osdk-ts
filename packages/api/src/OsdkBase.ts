@@ -21,27 +21,23 @@ import type { ObjectTypeDefinition } from "./ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
-export type ObjectIdentifiers<
-  Q extends ObjectOrInterfaceDefinition,
-> = {
+export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
   readonly $apiName: Q["apiName"];
 
   readonly $primaryKey: PrimaryKeyType<Q>;
 };
 
-export type OsdkBase<
-  Q extends ObjectOrInterfaceDefinition,
-> = ObjectIdentifiers<Q> & {
-  readonly $objectSpecifier: ObjectSpecifier<Q>;
+export type OsdkBase<Q extends ObjectOrInterfaceDefinition> =
+  ObjectIdentifiers<Q> & {
+    readonly $objectSpecifier: ObjectSpecifier<Q>;
 
-  readonly $objectType: string;
+    readonly $objectType: string;
 
-  readonly $title: string | undefined;
-};
+    readonly $title: string | undefined;
+  };
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
-  & (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q>
-    : unknown)
-  // if the type is `unknown` then the next line will
-  // restrict it down to all valid primary key types
-  & PropertyValueWireToClient[PrimaryKeyTypes];
+  (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) &
+    // if the type is `unknown` then the next line will
+    // restrict it down to all valid primary key types
+    PropertyValueWireToClient[PrimaryKeyTypes];

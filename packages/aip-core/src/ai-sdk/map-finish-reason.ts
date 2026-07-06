@@ -17,7 +17,7 @@
 import type { LanguageModelV3FinishReason } from "@ai-sdk/provider";
 
 export function mapFinishReason(
-  raw: string | undefined,
+  raw: string | undefined
 ): LanguageModelV3FinishReason {
   let unified: LanguageModelV3FinishReason["unified"];
   switch (raw) {

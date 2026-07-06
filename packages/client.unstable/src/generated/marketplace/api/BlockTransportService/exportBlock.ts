@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockVersionId as _api_BlockVersionId,
   ExportBlockRequest as _api_ExportBlockRequest,
@@ -55,7 +56,7 @@ export async function exportBlock(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockVersionId: _api_BlockVersionId,
-  request: _api_ExportBlockRequest,
+  request: _api_ExportBlockRequest
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -64,6 +65,6 @@ export async function exportBlock(
     request,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

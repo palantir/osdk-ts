@@ -180,7 +180,7 @@ describe("MockManager", () => {
   it("findMock matches by regex primaryKey", () => {
     manager.registerMock(
       createObjectMock({
-        matcher: { objectType: "Employee", primaryKey: /^pk-\d+$/ },
+        matcher: { objectType: "Employee", primaryKey: /^pk-\d+$/u },
       })
     );
 

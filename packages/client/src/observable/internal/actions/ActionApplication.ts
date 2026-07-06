@@ -15,6 +15,7 @@
  */
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
+
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
 import { API_NAME_IDX } from "../list/ListCacheKey.js";
 import type { Store } from "../Store.js";
@@ -28,18 +29,19 @@ export class ActionApplication {
     args:
       | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
-    opts?: Store.ApplyActionOptions,
+    opts?: Store.ApplyActionOptions
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate } = {}
   ) => {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.store.logger?.child({ methodName: "applyAction" })
-      : this.store.logger;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.store.logger?.child({ methodName: "applyAction" })
+        : this.store.logger;
     const removeOptimisticResult = runOptimisticJob(
       this.store,
-      optimisticUpdate,
+      optimisticUpdate
     );
 
     let actionResults: ActionEditResponse;
@@ -49,18 +51,16 @@ export class ActionApplication {
           logger?.debug("applying action to multiple args", args);
         }
 
-        actionResults = await this.store.client(action).batchApplyAction(
-          args,
-          { $returnEdits: true },
-        );
+        actionResults = await this.store
+          .client(action)
+          .batchApplyAction(args, { $returnEdits: true });
       } else {
         // The types for client get confused when we dynamically applyAction so we
         // have to deal with the `any` here and force cast it to what it should be.
         // TODO: Update the types so this doesn't happen!
-        actionResults = await this.store.client(action).applyAction(
-          args as any,
-          { $returnEdits: true },
-        );
+        actionResults = await this.store
+          .client(action)
+          .applyAction(args as any, { $returnEdits: true });
 
         if (process.env.NODE_ENV !== "production") {
           // Skip when there's no optimistic update to surface (e.g. FBAs).
@@ -68,7 +68,7 @@ export class ActionApplication {
           if (optimisticUpdate != null && delayMs > 0) {
             this.store.maybeWarnDevModeDelayApplied();
             logger?.debug("action done, pausing", actionResults);
-            await new Promise<void>(resolve => setTimeout(resolve, delayMs));
+            await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
             logger?.debug("action done, pausing done");
           }
         }
@@ -81,14 +81,12 @@ export class ActionApplication {
       void this.#invalidatePerTypeEdits(actionResults).catch((e: unknown) => {
         logger?.warn(
           { err: e },
-          "Error while invalidating action edits by object type",
+          "Error while invalidating action edits by object type"
         );
       });
     } finally {
       if (process.env.NODE_ENV !== "production") {
-        logger?.debug(
-          "optimistic action complete; remove the results",
-        );
+        logger?.debug("optimistic action complete; remove the results");
       }
       // make sure this happens even if the action fails
       await removeOptimisticResult();
@@ -98,7 +96,7 @@ export class ActionApplication {
   };
 
   #invalidatePerObjectEdits = async (
-    actionEditResponse: ActionEditResponse | undefined,
+    actionEditResponse: ActionEditResponse | undefined
   ): Promise<void> => {
     if (actionEditResponse == null || actionEditResponse.type !== "edits") {
       return;
@@ -110,7 +108,7 @@ export class ActionApplication {
     for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
       for (const obj of list ?? []) {
         promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
+          this.store.invalidateObject(obj.objectType, obj.primaryKey)
         );
       }
     }
@@ -118,15 +116,13 @@ export class ActionApplication {
     // Use the registry to find all RDP variant cache keys for each deleted object.
     this.store.batch({}, (batch) => {
       for (const { objectType, primaryKey } of deletedObjects ?? []) {
-        for (
-          const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
-            objectType,
-            primaryKey,
-          )
-        ) {
+        for (const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+          objectType,
+          primaryKey
+        )) {
           this.store.queries.peek(cacheKey)?.deleteFromStore(
             "loaded", // this is probably not the best value to use
-            batch,
+            batch
           );
         }
       }
@@ -135,7 +131,7 @@ export class ActionApplication {
   };
 
   #invalidatePerTypeEdits = async (
-    actionEditResponse: ActionEditResponse | undefined,
+    actionEditResponse: ActionEditResponse | undefined
   ): Promise<void> => {
     if (actionEditResponse == null) {
       return;
@@ -177,9 +173,9 @@ export class ActionApplication {
       }
       for (const apiName of editedObjectTypeSet) {
         if (
-          isEditsBranch
-          && cacheKey.type === "list"
-          && cacheKey.otherKeys[API_NAME_IDX] === apiName
+          isEditsBranch &&
+          cacheKey.type === "list" &&
+          cacheKey.otherKeys[API_NAME_IDX] === apiName
         ) {
           continue;
         }

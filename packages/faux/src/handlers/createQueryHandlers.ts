@@ -15,12 +15,13 @@
  */
 
 import { valid } from "semver";
+
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 
 export const createQueryHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry,
+  fauxFoundry
 ) => [
   /**
    * Execute Queries
@@ -29,13 +30,13 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
     baseUrl,
     async ({ request, params: { ontologyApiName, queryApiName } }) => {
       const queryParams = Object.fromEntries(
-        new URL(request.url).searchParams.entries(),
+        new URL(request.url).searchParams.entries()
       );
 
       const version = queryParams["version"];
       if (version != null && !valid(version)) {
         throw new Error(
-          `Invalid version "${version}" for query "${queryApiName}" in ontology "${ontologyApiName}: not semver compatible".`,
+          `Invalid version "${version}" for query "${queryApiName}" in ontology "${ontologyApiName}: not semver compatible".`
         );
       }
 
@@ -45,8 +46,8 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
 
       return queryImpl(
         await request.json(),
-        fauxFoundry.getDataStore(ontologyApiName),
+        fauxFoundry.getDataStore(ontologyApiName)
       );
-    },
+    }
   ),
 ];

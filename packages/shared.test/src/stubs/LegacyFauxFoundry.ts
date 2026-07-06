@@ -17,6 +17,7 @@
 import type { FauxDataStore, FauxOntology } from "@osdk/faux";
 import { FauxFoundry } from "@osdk/faux";
 import invariant from "tiny-invariant";
+
 import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
 import {
@@ -46,9 +47,7 @@ import { registerLazyQueries } from "./queries.js";
 import { fooSpt } from "./spts.js";
 
 export class LegacyFauxFoundry extends FauxFoundry {
-  constructor(
-    baseUrl: string = "https://stack.palantir.com/",
-  ) {
+  constructor(baseUrl: string = "https://stack.palantir.com/") {
     super(baseUrl, defaultOntologyMetadata, { strict: false });
 
     //
@@ -60,7 +59,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
       legacyFullOntology.registerObjectType(xx);
     }
     legacyFullOntology.registerObjectType(
-      complexImplementationObjectTypeWithLinkTypes,
+      complexImplementationObjectTypeWithLinkTypes
     );
 
     registerLazyActions(legacyFullOntology);
@@ -87,52 +86,48 @@ export class LegacyFauxFoundry extends FauxFoundry {
     legacyFauxDataStore.registerObject(employee50050);
 
     legacyFauxDataStore.registerObject(nycOffice);
-    legacyFauxDataStore.registerObject(
-      {
-        ...nycOffice,
-        __primaryKey: "SEA",
-        __rid: nycOffice.__rid + "-1",
-        officeId: "SEA",
-        name: "Seattle Office",
-      } satisfies typeof nycOffice,
-    );
+    legacyFauxDataStore.registerObject({
+      ...nycOffice,
+      __primaryKey: "SEA",
+      __rid: nycOffice.__rid + "-1",
+      officeId: "SEA",
+      name: "Seattle Office",
+    } satisfies typeof nycOffice);
 
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypes1);
-    legacyFauxDataStore.registerObject(
-      objectWithAllPropertyTypes2,
-    );
+    legacyFauxDataStore.registerObject(objectWithAllPropertyTypes2);
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypesEmptyEntries);
     legacyFauxDataStore.registerObject(travisPlayer);
     legacyFauxDataStore.registerLink(
       employee_John_50030,
       "lead",
       employee_Jane_50031,
-      "peeps",
+      "peeps"
     );
     legacyFauxDataStore.registerObjectWithPropertySecurities(
       unsecuredEmployee,
       securedEmployee,
-      basicPropertySecurities,
+      basicPropertySecurities
     );
 
     legacyFauxDataStore.registerLink(
       employee3,
       "lead",
       employee_Jane_50031,
-      "peeps",
+      "peeps"
     );
     legacyFauxDataStore.registerLink(
       objectWithAllPropertyTypes2,
       "linkedObjectType",
       objectWithAllPropertyTypes1,
-      "linkedObjectType",
+      "linkedObjectType"
     );
     invariant(
       legacyFauxDataStore.getLinksOrThrow(
         "Employee",
         employee_Jane_50031.__primaryKey,
-        "peeps",
-      ).length === 2,
+        "peeps"
+      ).length === 2
     );
   }
 }

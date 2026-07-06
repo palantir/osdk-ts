@@ -19,46 +19,46 @@ import { Employee } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { formatISO, sub } from "date-fns";
 import { beforeAll, describe, expect, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("Timeseries", () => {
   let client: Client;
   const statusTimeseriesData = [
-    { time: formatISO(sub(Date.now(), { "years": 2 })), value: -365 },
-    { time: formatISO(sub(Date.now(), { "months": 2 })), value: -30 },
-    { time: formatISO(sub(Date.now(), { "weeks": 2 })), value: -7 },
-    { time: formatISO(sub(Date.now(), { "days": 2 })), value: -1 },
+    { time: formatISO(sub(Date.now(), { years: 2 })), value: -365 },
+    { time: formatISO(sub(Date.now(), { months: 2 })), value: -30 },
+    { time: formatISO(sub(Date.now(), { weeks: 2 })), value: -7 },
+    { time: formatISO(sub(Date.now(), { days: 2 })), value: -1 },
   ];
 
   const sensorTimeseriesData = [
-    { time: formatISO(sub(Date.now(), { "years": 3 })), value: -365 },
-    { time: formatISO(sub(Date.now(), { "months": 3 })), value: -30 },
-    { time: formatISO(sub(Date.now(), { "weeks": 3 })), value: -7 },
-    { time: formatISO(sub(Date.now(), { "days": 3 })), value: -1 },
+    { time: formatISO(sub(Date.now(), { years: 3 })), value: -365 },
+    { time: formatISO(sub(Date.now(), { months: 3 })), value: -30 },
+    { time: formatISO(sub(Date.now(), { weeks: 3 })), value: -7 },
+    { time: formatISO(sub(Date.now(), { days: 3 })), value: -1 },
   ];
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
 
-    testSetup.fauxFoundry.getDefaultDataStore()
+    testSetup.fauxFoundry
+      .getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",
         "employeeStatus",
-        statusTimeseriesData,
+        statusTimeseriesData
       );
 
-    testSetup.fauxFoundry.getDefaultDataStore()
+    testSetup.fauxFoundry
+      .getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",
         "employeeSensor",
-        sensorTimeseriesData,
+        sensorTimeseriesData
       );
 
     return () => {
@@ -131,8 +131,8 @@ describe("Timeseries", () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const points = await employee.employeeStatus?.getAllPoints({
-      $startTime: formatISO(sub(Date.now(), { "months": 3 })),
-      $endTime: formatISO(sub(Date.now(), { "days": 10 })),
+      $startTime: formatISO(sub(Date.now(), { months: 3 })),
+      $endTime: formatISO(sub(Date.now(), { days: 10 })),
     });
     expect(points).toBeDefined();
     expect(points!).toEqual([
@@ -158,8 +158,8 @@ describe("Timeseries", () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
     const pointsIter = employee.employeeStatus?.asyncIterPoints({
-      $startTime: formatISO(sub(Date.now(), { "months": 3 })),
-      $endTime: formatISO(sub(Date.now(), { "days": 10 })),
+      $startTime: formatISO(sub(Date.now(), { months: 3 })),
+      $endTime: formatISO(sub(Date.now(), { days: 10 })),
     });
 
     const points: TimeSeriesPoint<string>[] = [];

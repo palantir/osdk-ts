@@ -39,7 +39,7 @@ export interface SortingStrategy {
    */
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
+    batch: BatchContext
   ): ObjectCacheKey[];
 }
 
@@ -49,7 +49,7 @@ export interface SortingStrategy {
 export class NoOpSortingStrategy implements SortingStrategy {
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    _batch: BatchContext,
+    _batch: BatchContext
   ): ObjectCacheKey[] {
     return objectCacheKeys;
   }
@@ -58,7 +58,7 @@ export class NoOpSortingStrategy implements SortingStrategy {
 type ObjectInterfaceComparer = (
   a: ObjectHolder | InterfaceHolder | undefined,
   b: ObjectHolder | InterfaceHolder | undefined,
-  derivedPropertyMetadata?: DerivedPropertyRuntimeMetadata,
+  derivedPropertyMetadata?: DerivedPropertyRuntimeMetadata
 ) => number;
 
 /**
@@ -72,15 +72,14 @@ export class OrderBySortingStrategy implements SortingStrategy {
     private readonly orderBy: Canonical<
       Record<string, "asc" | "desc" | undefined>
     >,
-    public readonly derivedPropertyMetadata: DerivedPropertyRuntimeMetadata =
-      {},
+    public readonly derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
   ) {
     this.sortFns = createOrderBySortFns(orderBy);
   }
 
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
+    batch: BatchContext
   ): ObjectCacheKey[] {
     if (Object.keys(this.orderBy).length === 0) {
       return objectCacheKeys;
@@ -91,7 +90,7 @@ export class OrderBySortingStrategy implements SortingStrategy {
         const ret = sortFn(
           batch.read(a)?.value?.$as(this.apiName),
           batch.read(b)?.value?.$as(this.apiName),
-          this.derivedPropertyMetadata,
+          this.derivedPropertyMetadata
         );
         if (ret !== 0) {
           return ret;
@@ -110,13 +109,13 @@ export class OrderBySortingStrategy implements SortingStrategy {
  * @returns Array of sort functions
  */
 export function createOrderBySortFns(
-  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>
 ): ObjectInterfaceComparer[] {
   return Object.entries(orderBy).map(([key, order]) => {
     return (
       a: ObjectHolder | InterfaceHolder | undefined,
       b: ObjectHolder | InterfaceHolder | undefined,
-      derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
+      derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
     ): number => {
       const aValue = a?.[key];
       const bValue = b?.[key];
@@ -140,10 +139,11 @@ export function createOrderBySortFns(
       // covers heterogeneous holders (e.g. an interface list backed by
       // different object types).
       if (
-        typeof aValue === "string" && typeof bValue === "string"
-        && isStringEncodedNumericType(
-          resolvePropertyType(a, key, derivedPropertyMetadata)
-            ?? resolvePropertyType(b, key, derivedPropertyMetadata),
+        typeof aValue === "string" &&
+        typeof bValue === "string" &&
+        isStringEncodedNumericType(
+          resolvePropertyType(a, key, derivedPropertyMetadata) ??
+            resolvePropertyType(b, key, derivedPropertyMetadata)
         )
       ) {
         return -m * compareNumericStrings(aValue, bValue);

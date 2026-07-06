@@ -27,37 +27,33 @@ import invariant from "tiny-invariant";
 export function createLazyDoNothingActionImpl(
   reqRespPairs: Array<
     | [
-      OntologiesV2.ApplyActionRequestV2,
-      OntologiesV2.SyncApplyActionResponseV2 | undefined,
-    ]
+        OntologiesV2.ApplyActionRequestV2,
+        OntologiesV2.SyncApplyActionResponseV2 | undefined,
+      ]
     | [
-      OntologiesV2.BatchApplyActionRequestV2,
-      OntologiesV2.BatchApplyActionResponseV2 | undefined,
-    ]
-  >,
+        OntologiesV2.BatchApplyActionRequestV2,
+        OntologiesV2.BatchApplyActionResponseV2 | undefined,
+      ]
+  >
 ): FauxActionImpl {
   const stableToRet = new Map(
-    reqRespPairs.map(pair => [
-      stableStringify(pair[0]),
-      pair[1],
-    ]),
+    reqRespPairs.map((pair) => [stableStringify(pair[0]), pair[1]])
   );
 
   return (
     batch: FauxDataStoreBatch,
     payload:
       | OntologiesV2.ApplyActionRequestV2
-      | OntologiesV2.BatchApplyActionRequestV2,
+      | OntologiesV2.BatchApplyActionRequestV2
   ):
     | OntologiesV2.SyncApplyActionResponseV2
-    | OntologiesV2.BatchApplyActionResponseV2 =>
-  {
+    | OntologiesV2.BatchApplyActionResponseV2 => {
     const key = stableStringify(payload);
     // in some cases we intentionally put undefined in so this lets us error
     // differently if its an unregistered req/resp pair
     invariant(
       stableToRet.has(key),
-      "No response registered for req payload: " + key,
+      "No response registered for req payload: " + key
     );
     const resp = stableToRet.get(key);
     if (resp === undefined) {

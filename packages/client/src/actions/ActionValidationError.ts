@@ -19,5 +19,6 @@ import type { ValidateActionResponseV2 as ActionValidationResponse } from "@osdk
 export class ActionValidationError extends Error {
   constructor(public validation: ActionValidationResponse) {
     super("Validation Error: " + JSON.stringify(validation, null, 2));
+    this.name = "ActionValidationError";
   }
 }

@@ -15,43 +15,44 @@
  */
 
 import type { BBox, Point, Polygon } from "geojson";
+
 import type { Just } from "./Just.js";
 import type { DistanceUnitMapping } from "./WhereClause.js";
 
 export interface GeoFilterOptions {
-  "$within":
+  $within:
     | {
-      $distance: [number, keyof typeof DistanceUnitMapping];
-      $of: [number, number] | Readonly<Point>;
-      $bbox?: never;
-      $polygon?: never;
-    }
+        $distance: [number, keyof typeof DistanceUnitMapping];
+        $of: [number, number] | Readonly<Point>;
+        $bbox?: never;
+        $polygon?: never;
+      }
     | {
-      $bbox: BBox;
-      $distance?: never;
-      $of?: never;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $distance?: never;
+        $of?: never;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-      $distance?: never;
-      $of?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+        $distance?: never;
+        $of?: never;
+      }
     | Polygon;
-  "$intersects":
+  $intersects:
     | {
-      $bbox: BBox;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+      }
     | Polygon;
-  "$isNull": boolean;
+  $isNull: boolean;
 }
 
 export namespace GeoFilter {

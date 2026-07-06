@@ -24,9 +24,9 @@ export function source(alias: string): Source {
   if (!(alias in resolvedAliases.sources)) {
     const available = Object.keys(resolvedAliases.sources);
     throw new Error(
-      `Source alias '${alias}' not found. Available aliases: [${
-        available.join(", ")
-      }]`,
+      `Source alias '${alias}' not found. Available aliases: [${available.join(
+        ", "
+      )}]`
     );
   }
 

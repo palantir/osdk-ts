@@ -20,6 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+
 import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
@@ -51,7 +52,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
         objectTypeHolder,
         { type: "methodInput" },
         definitionMap,
-        /* fromBaseObjectSet */ true,
+        /* fromBaseObjectSet */ true
       );
 
       const result = rdpFunction(builder);

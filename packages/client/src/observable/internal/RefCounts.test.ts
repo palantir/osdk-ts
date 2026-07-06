@@ -15,6 +15,7 @@
  */
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { RefCounts } from "./RefCounts.js";
 
 describe("RefCounts", () => {
@@ -38,7 +39,7 @@ describe("RefCounts", () => {
 
     const countLogs = debugSpy.mock.calls.filter(
       ([first]) =>
-        typeof first === "string" && first.includes("RefCounts.gc() - counts"),
+        typeof first === "string" && first.includes("RefCounts.gc() - counts")
     );
     expect(countLogs.length).toBeGreaterThan(0);
   });

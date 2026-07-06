@@ -15,13 +15,12 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetId as _api_BlockSetId,
   BlockSetVersionId as _api_BlockSetVersionId,
-  ListBlockSetInstallationsMetadataPageToken
-    as _api_ListBlockSetInstallationsMetadataPageToken,
-  ListBlockSetInstallationsMetadataResponse
-    as _api_ListBlockSetInstallationsMetadataResponse,
+  ListBlockSetInstallationsMetadataPageToken as _api_ListBlockSetInstallationsMetadataPageToken,
+  ListBlockSetInstallationsMetadataResponse as _api_ListBlockSetInstallationsMetadataResponse,
   MarketplaceRid as _api_MarketplaceRid,
   PageSizeLimitHint as _api_PageSizeLimitHint,
 } from "../__components.js";
@@ -39,7 +38,7 @@ export async function listBlockSetInstallationsMetadata(
   blockSetId: _api_BlockSetId | null | undefined,
   lastConsistentBlockSetVersionId: _api_BlockSetVersionId | null | undefined,
   pageToken: _api_ListBlockSetInstallationsMetadataPageToken | null | undefined,
-  limit: _api_PageSizeLimitHint | null | undefined,
+  limit: _api_PageSizeLimitHint | null | undefined
 ): Promise<_api_ListBlockSetInstallationsMetadataResponse> {
   return conjureFetch(
     ctx,
@@ -52,6 +51,6 @@ export async function listBlockSetInstallationsMetadata(
       lastConsistentBlockSetVersionId,
       pageToken,
       limit,
-    },
+    }
   );
 }

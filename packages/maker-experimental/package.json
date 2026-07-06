@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker-experimental",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -30,8 +30,8 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",

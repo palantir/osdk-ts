@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
 
@@ -26,11 +27,11 @@ import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
  */
 export async function getApplicationForWebsiteRepository(
   ctx: ConjureContext,
-  repositoryRid: ArtifactsRepositoryRid,
+  repositoryRid: ArtifactsRepositoryRid
 ): Promise<ApplicationRid | undefined> {
   return conjureFetch(
     ctx,
     `/application-websites/for-repository/${repositoryRid}`,
-    "GET",
+    "GET"
   );
 }

@@ -1,5 +1,6 @@
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { modifyEmployee } from "../generatedNoCheck2/index.js";
 import type {
@@ -54,8 +55,11 @@ function isNetworkError(error: unknown): boolean {
   }
   if (error instanceof TypeError) {
     const message = error.message.toLowerCase();
-    return message.includes("network") || message.includes("fetch failed")
-      || message.includes("failed to fetch");
+    return (
+      message.includes("network") ||
+      message.includes("fetch failed") ||
+      message.includes("failed to fetch")
+    );
   }
   if (typeof DOMException !== "undefined" && error instanceof DOMException) {
     return error.name === "NetworkError";
@@ -89,18 +93,22 @@ export function ReorgExecuteStep({
   }, [offices]);
 
   const addLog = React.useCallback((message: string) => {
-    setLogs((
-      prev,
-    ) => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    setLogs((prev) => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] ${message}`,
+    ]);
   }, []);
 
   const executeReorg = React.useCallback(async () => {
     const changesToExecute = Array.from(changes.entries()).filter(
       ([employeeNumber, change]) => {
         const employee = employeeMap.get(employeeNumber);
-        return employee && change.targetOfficeId
-          && change.targetOfficeId !== employee.primaryOfficeId;
-      },
+        return (
+          employee &&
+          change.targetOfficeId &&
+          change.targetOfficeId !== employee.primaryOfficeId
+        );
+      }
     );
 
     if (changesToExecute.length === 0) {
@@ -144,20 +152,21 @@ export function ReorgExecuteStep({
         addLog(
           `Moving ${employee.fullName}: ${fromOffice?.name ?? "none"} → ${
             toOffice?.name ?? "none"
-          }`,
+          }`
         );
 
         await withTimeout(
           applyAction({
             employee,
-            emailPrimaryWork: employee.emailPrimaryWork
-              ?? `employee${employeeNumber}@example.com`,
+            emailPrimaryWork:
+              employee.emailPrimaryWork ??
+              `employee${employeeNumber}@example.com`,
             primary_office_id: change.targetOfficeId,
             team: change.targetTeam,
             department: change.targetDepartment,
             leadEmployeeNumber: change.targetLeadEmployeeNumber,
           }),
-          ACTION_TIMEOUT_MS,
+          ACTION_TIMEOUT_MS
         );
 
         dispatch({ type: "UPDATE_PROGRESS", completed: i + 1 });
@@ -210,15 +219,16 @@ export function ReorgExecuteStep({
         await withTimeout(
           applyAction({
             employee,
-            emailPrimaryWork: snapshot.originalValues.emailPrimaryWork
-              ?? employee.emailPrimaryWork
-              ?? `employee${snapshot.employeeNumber}@example.com`,
+            emailPrimaryWork:
+              snapshot.originalValues.emailPrimaryWork ??
+              employee.emailPrimaryWork ??
+              `employee${snapshot.employeeNumber}@example.com`,
             primary_office_id: snapshot.originalValues.primaryOfficeId,
             team: snapshot.originalValues.team,
             department: snapshot.originalValues.department,
             leadEmployeeNumber: snapshot.originalValues.leadEmployeeNumber,
           }),
-          ACTION_TIMEOUT_MS,
+          ACTION_TIMEOUT_MS
         );
 
         addLog(`✓ ${employee.fullName} rolled back`);
@@ -234,7 +244,7 @@ export function ReorgExecuteStep({
   const handleRollback = React.useCallback(() => {
     if (
       window.confirm(
-        `This will revert ${execution.snapshots.length} changes. This cannot be undone. Continue?`,
+        `This will revert ${execution.snapshots.length} changes. This cannot be undone. Continue?`
       )
     ) {
       void executeRollback();
@@ -243,16 +253,19 @@ export function ReorgExecuteStep({
 
   React.useEffect(() => {
     if (
-      !hasStartedRef.current && execution.status === "idle" && changes.size > 0
+      !hasStartedRef.current &&
+      execution.status === "idle" &&
+      changes.size > 0
     ) {
       hasStartedRef.current = true;
       void executeReorg();
     }
   }, [execution.status, changes.size, executeReorg]);
 
-  const progressPercent = execution.progress.total > 0
-    ? (execution.progress.completed / execution.progress.total) * 100
-    : 0;
+  const progressPercent =
+    execution.progress.total > 0
+      ? (execution.progress.completed / execution.progress.total) * 100
+      : 0;
 
   const elapsedTime = metrics.startTime
     ? ((metrics.endTime ?? Date.now()) - metrics.startTime) / 1000
@@ -281,8 +294,8 @@ export function ReorgExecuteStep({
               execution.status === "error"
                 ? "bg-[var(--officenetwork-status-error)]"
                 : execution.status === "success"
-                ? "bg-[var(--officenetwork-status-ready)]"
-                : "bg-[var(--officenetwork-status-warning)]"
+                  ? "bg-[var(--officenetwork-status-ready)]"
+                  : "bg-[var(--officenetwork-status-warning)]"
             }`}
             style={{ width: `${progressPercent}%` }}
           />
@@ -306,11 +319,13 @@ export function ReorgExecuteStep({
           {logs.map((log, i) => (
             <div
               key={i}
-              className={log.includes("✓")
-                ? "text-[var(--officenetwork-status-ready)]"
-                : log.includes("✗")
-                ? "text-[var(--officenetwork-status-error)]"
-                : ""}
+              className={
+                log.includes("✓")
+                  ? "text-[var(--officenetwork-status-ready)]"
+                  : log.includes("✗")
+                    ? "text-[var(--officenetwork-status-error)]"
+                    : ""
+              }
             >
               {log}
             </div>
@@ -332,8 +347,8 @@ export function ReorgExecuteStep({
                 Execution failed
               </div>
               <div className="text-xs text-[var(--officenetwork-text-muted)]">
-                {execution.snapshots.length}{" "}
-                changes were applied before the error
+                {execution.snapshots.length} changes were applied before the
+                error
               </div>
             </div>
             <button

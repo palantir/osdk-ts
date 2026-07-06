@@ -17,6 +17,7 @@
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
+
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
@@ -26,7 +27,7 @@ export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGeneratorImpl,
   functionsIr?: FunctionsIr,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
 
@@ -35,7 +36,7 @@ export function convertOntologyDefinition(
   // knownIdentifiers is built.
   const importedOntology = convertOntologyDefinitionToWireBlockData(
     importedTypes,
-    ridGenerator,
+    ridGenerator
   );
 
   const allOntologies = [ontology, importedTypes];
@@ -43,11 +44,11 @@ export function convertOntologyDefinition(
     ontology,
     ridGenerator,
     allOntologies,
-    functionsIr,
+    functionsIr
   );
 
   const importedInterfaceApiNames = new Set(
-    Object.keys(importedTypes.INTERFACE_TYPE),
+    Object.keys(importedTypes.INTERFACE_TYPE)
   );
   const transitiveInterfaces: OntologyDefinition["INTERFACE_TYPE"] = {};
 
@@ -55,8 +56,8 @@ export function convertOntologyDefinition(
     for (const linked of iface.linkedInterfaces ?? []) {
       if (typeof linked === "string") continue;
       if (
-        !importedInterfaceApiNames.has(linked.apiName)
-        && !(linked.apiName in transitiveInterfaces)
+        !importedInterfaceApiNames.has(linked.apiName) &&
+        !(linked.apiName in transitiveInterfaces)
       ) {
         transitiveInterfaces[linked.apiName] = linked;
         collectTransitive(linked);
@@ -64,8 +65,8 @@ export function convertOntologyDefinition(
     }
     for (const parent of iface.extendsInterfaces) {
       if (
-        !importedInterfaceApiNames.has(parent.apiName)
-        && !(parent.apiName in transitiveInterfaces)
+        !importedInterfaceApiNames.has(parent.apiName) &&
+        !(parent.apiName in transitiveInterfaces)
       ) {
         transitiveInterfaces[parent.apiName] = parent;
         collectTransitive(parent);
@@ -87,11 +88,11 @@ export function convertOntologyDefinition(
 
   const throwawayRidGenerator = new OntologyRidGeneratorImpl(
     getImportedTypes(),
-    randomnessKey,
+    randomnessKey
   );
   const transitiveImportedOntology = convertOntologyDefinitionToWireBlockData(
     transitiveOntology,
-    throwawayRidGenerator,
+    throwawayRidGenerator
   );
 
   return {

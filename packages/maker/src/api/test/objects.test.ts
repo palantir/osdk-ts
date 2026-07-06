@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
@@ -36,10 +37,10 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo_with_underscores",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/.]`,
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -60,10 +61,10 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
+      `[Error: Invariant failed: Title property fizz is not defined on object foo]`
     );
 
     expect(() => {
@@ -73,10 +74,10 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
+      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`
     );
 
     expect(() => {
@@ -86,17 +87,21 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "fizz",
-          }],
-        }],
+        properties: { bar: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "fizz",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
+      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`
     );
 
     expect(() => {
@@ -106,20 +111,25 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.fizz",
-            mapsTo: "bar",
-          }, {
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "bar",
-          }],
-        }],
+        properties: { bar: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.fizz",
+                mapsTo: "bar",
+              },
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "bar",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
+      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`
     );
   });
 
@@ -141,13 +151,13 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": { type: "string", displayName: "Bar" },
-        "arrayProp": {
+        bar: { type: "string", displayName: "Bar" },
+        arrayProp: {
           type: "string",
           array: true,
           displayName: "Array Property Test",
         },
-        "geopoint": {
+        geopoint: {
           type: {
             type: "struct",
             structDefinition: { lat: "double", lng: "double" },
@@ -156,13 +166,17 @@ describe("Object Types", () => {
         },
       },
       aliases: ["alias1", "alias2"],
-      implementsInterfaces: [{
-        implements: sample,
-        propertyMapping: [{
-          interfaceProperty: spt.apiName,
-          mapsTo: "bar",
-        }],
-      }],
+      implementsInterfaces: [
+        {
+          implements: sample,
+          propertyMapping: [
+            {
+              interfaceProperty: spt.apiName,
+              mapsTo: "bar",
+            },
+          ],
+        },
+      ],
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -577,7 +591,7 @@ describe("Object Types", () => {
       pluralDisplayName: "datasetBackedObject",
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
-      properties: { "bar": { type: "string" } },
+      properties: { bar: { type: "string" } },
       datasources: [{ type: "dataset" }],
     });
 
@@ -587,7 +601,7 @@ describe("Object Types", () => {
       pluralDisplayName: "streamBackedObjectNoRetention",
       apiName: "fizz",
       primaryKeyPropertyApiName: "fizz",
-      properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
+      properties: { fizz: { type: "string" }, bar: { type: "string" } },
       datasources: [{ type: "stream" }],
     });
 
@@ -597,7 +611,7 @@ describe("Object Types", () => {
       pluralDisplayName: "streamBackedObjectWithRetention",
       apiName: "buzz",
       primaryKeyPropertyApiName: "buzz",
-      properties: { "buzz": { type: "string" } },
+      properties: { buzz: { type: "string" } },
       datasources: [{ type: "stream", retentionPeriod: "PT1H" }],
     });
 
@@ -981,7 +995,7 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": { type: "string" },
+        bar: { type: "string" },
       },
       datasources: [{ type: "restrictedView" }],
     });
@@ -1137,11 +1151,11 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "fizz",
       properties: {
-        "bar": {
+        bar: {
           type: "string",
           editOnly: true,
         },
-        "fizz": {
+        fizz: {
           type: "string",
         },
       },
@@ -1342,10 +1356,10 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string", editOnly: true } },
+        properties: { bar: { type: "string", editOnly: true } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
+      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`
     );
   });
 
@@ -1357,14 +1371,16 @@ describe("Object Types", () => {
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
-        properties: { "buzz": { type: "string" } },
-        datasources: [{
-          type: "stream",
-          retentionPeriod: "bad retention period string",
-        }],
+        properties: { buzz: { type: "string" } },
+        datasources: [
+          {
+            type: "stream",
+            retentionPeriod: "bad retention period string",
+          },
+        ],
       })
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
+      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`
     );
   });
 
@@ -1376,8 +1392,8 @@ describe("Object Types", () => {
       apiName: "fizz",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "fizz": { type: "mediaReference" },
-        "bar": { type: "string" },
+        fizz: { type: "mediaReference" },
+        bar: { type: "string" },
       },
       datasources: [{ type: "stream" }],
     });
@@ -1625,7 +1641,7 @@ describe("Object Types", () => {
       },
     });
     expect(() => dumpOntologyFullMetadata()).toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/,
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
     );
   });
   it("Derived datasources are properly defined", () => {
@@ -1637,11 +1653,11 @@ describe("Object Types", () => {
       titlePropertyApiName: "name",
       editsEnabled: true,
       properties: {
-        "name": {
+        name: {
           type: "string",
           displayName: "Name",
         },
-        "flight_id": {
+        flight_id: {
           type: "string",
           displayName: "Flight ID",
         },
@@ -1684,9 +1700,11 @@ describe("Object Types", () => {
           { type: "dataset" },
           {
             type: "derived",
-            linkDefinition: [{
-              linkType: flightToPassengers,
-            }],
+            linkDefinition: [
+              {
+                linkType: flightToPassengers,
+              },
+            ],
             propertyMapping: {
               numPassengers: {
                 type: "collectList",
@@ -1698,7 +1716,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
+      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`
     );
     const flight = defineObject({
       displayName: "Flight",
@@ -1722,9 +1740,11 @@ describe("Object Types", () => {
         { type: "dataset" },
         {
           type: "derived",
-          linkDefinition: [{
-            linkType: flightToPassengers,
-          }],
+          linkDefinition: [
+            {
+              linkType: flightToPassengers,
+            },
+          ],
           propertyMapping: {
             passengersList: {
               type: "collectList",
@@ -2779,13 +2799,13 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string", status: "experimental" },
-        "parentFk": {
+        pk: { displayName: "pk", type: "string", status: "experimental" },
+        parentFk: {
           displayName: "Parent FK",
           type: "string",
           status: "experimental",
         },
-        "siblingIds": {
+        siblingIds: {
           displayName: "Sibling IDs",
           type: "string",
           array: true,
@@ -3171,9 +3191,9 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string" },
-        "normalProperty": { displayName: "Normal Property", type: "string" },
-        "SSN": {
+        pk: { displayName: "pk", type: "string" },
+        normalProperty: { displayName: "Normal Property", type: "string" },
+        SSN: {
           displayName: "SSN",
           type: "string",
         },
@@ -3495,9 +3515,9 @@ describe("Object Types", () => {
       titlePropertyApiName: "pk",
       primaryKeyPropertyApiName: "pk",
       properties: {
-        "pk": { displayName: "pk", type: "string" },
-        "group": { displayName: "Group Property", type: "string" },
-        "mandatory": {
+        pk: { displayName: "pk", type: "string" },
+        group: { displayName: "Group Property", type: "string" },
+        mandatory: {
           type: {
             type: "marking",
             markingType: "MANDATORY",
@@ -3505,7 +3525,7 @@ describe("Object Types", () => {
           },
           displayName: "mandatory",
         },
-        "SSN": {
+        SSN: {
           displayName: "SSN",
           type: "string",
         },
@@ -3520,7 +3540,7 @@ describe("Object Types", () => {
               name: "objectLevelGroup",
             },
             appliedMarkings: {
-              "objectLevelMarking": "CBAC",
+              objectLevelMarking: "CBAC",
             },
           },
           propertySecurityGroups: [
@@ -3541,10 +3561,10 @@ describe("Object Types", () => {
                 ],
               },
               appliedMarkings: {
-                "propertyLevelMarking": "MANDATORY",
+                propertyLevelMarking: "MANDATORY",
               },
               assumedMarkings: {
-                "propertyLevelAssumedMarking": "MANDATORY",
+                propertyLevelAssumedMarking: "MANDATORY",
               },
             },
           ],
@@ -3963,13 +3983,16 @@ describe("Object Types", () => {
         },
       },
       array: true,
-      reducers: [{
-        direction: "descending",
-        structField: "prop1",
-      }, {
-        direction: "ascending",
-        structField: "prop2",
-      }],
+      reducers: [
+        {
+          direction: "descending",
+          structField: "prop1",
+        },
+        {
+          direction: "ascending",
+          structField: "prop2",
+        },
+      ],
     });
     const object = defineObject({
       titlePropertyApiName: "bar",
@@ -3978,10 +4001,10 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: {
-        "bar": {
+        bar: {
           type: "string",
         },
-        "spt": {
+        spt: {
           sharedPropertyType: spt,
           type: {
             type: "struct",
@@ -3992,7 +4015,7 @@ describe("Object Types", () => {
           },
           array: true,
         },
-        "prop": {
+        prop: {
           type: {
             type: "struct",
             structDefinition: {
@@ -4011,13 +4034,16 @@ describe("Object Types", () => {
             },
           },
           array: true,
-          reducers: [{
-            direction: "descending",
-            structField: "field1",
-          }, {
-            direction: "ascending",
-            structField: "field2",
-          }],
+          reducers: [
+            {
+              direction: "descending",
+              structField: "field1",
+            },
+            {
+              direction: "ascending",
+              structField: "field2",
+            },
+          ],
         },
       },
     });
@@ -4529,32 +4555,37 @@ describe("Object Types", () => {
   });
 
   it("serializes ontologyPackage permission on object type", async () => {
-    await defineOntology("com.palantir.", () => {
-      defineObject({
-        apiName: "foo",
-        displayName: "Foo",
-        pluralDisplayName: "Foos",
-        primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        properties: { "id": { type: "string" } },
-        permission: {
-          type: "ontologyPackage",
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          permission: {
+            type: "ontologyPackage",
+            ontologyPackageRid:
+              "ri.ontology-package.main.ontology-package.abc-123",
+          },
+        });
+
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const otPerms = Object.values(bpi.objectTypes);
+        expect(otPerms).toHaveLength(1);
+        expect(otPerms[0].restrictionStatus).toEqual({
+          restrictedByDatasources: false,
+          editRestrictedByDatasources: false,
+          publicProject: false,
           ontologyPackageRid:
             "ri.ontology-package.main.ontology-package.abc-123",
-        },
-      });
-
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const otPerms = Object.values(bpi.objectTypes);
-      expect(otPerms).toHaveLength(1);
-      expect(otPerms[0].restrictionStatus).toEqual({
-        restrictedByDatasources: false,
-        editRestrictedByDatasources: false,
-        publicProject: false,
-        ontologyPackageRid: "ri.ontology-package.main.ontology-package.abc-123",
-      });
-    }, "/tmp/");
+        });
+      },
+      "/tmp/"
+    );
   });
 
   describe("EditsHistoryConfig", () => {
@@ -4565,11 +4596,11 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toBeUndefined();
     });
 
@@ -4580,12 +4611,12 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
         editsHistoryConfig: { enabled: true },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toEqual({
         type: "config",
         config: {
@@ -4602,12 +4633,12 @@ describe("Object Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
         editsHistoryConfig: { enabled: false },
       });
 
-      const objectData = dumpOntologyFullMetadata().ontology
-        .objectTypes["com.palantir.foo"];
+      const objectData =
+        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
       expect(objectData.entityMetadata?.editsHistory).toEqual({
         type: "none",
         none: {},

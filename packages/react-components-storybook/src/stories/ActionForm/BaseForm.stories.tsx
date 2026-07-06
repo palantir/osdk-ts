@@ -994,7 +994,7 @@ export const WithValidation: Story = {
   },
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 const customValidateFormContent: ReadonlyArray<FormContentItem> = [
   field({

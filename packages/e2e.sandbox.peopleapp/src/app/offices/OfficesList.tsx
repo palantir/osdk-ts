@@ -1,5 +1,6 @@
 import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
+
 import { Button } from "../../components/Button.js";
 import { CreateOfficeForm } from "../../components/CreateOfficeForm.js";
 import { List } from "../../components/List.js";
@@ -12,9 +13,7 @@ interface OfficeListItemProps {
   onSelect: (office: Office.OsdkInstance) => void;
 }
 
-function OfficeListItem(
-  { item, isSelected, onSelect }: OfficeListItemProps,
-) {
+function OfficeListItem({ item, isSelected, onSelect }: OfficeListItemProps) {
   return (
     <ListItem
       isSelected={isSelected}
@@ -30,9 +29,7 @@ interface OfficesListProps {
   onSelect: (office: Office.OsdkInstance) => void;
 }
 
-export function OfficesList(
-  props: OfficesListProps,
-) {
+export function OfficesList(props: OfficesListProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const offices = useOsdkObjects(Office, { orderBy: { name: "asc" } });
 

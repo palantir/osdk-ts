@@ -25,8 +25,8 @@ export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
   __apiName:
     | Q["apiName"]
     | (Q extends InterfaceDefinition
-      ? CompileTimeMetadata<Q> extends InterfaceMetadata
-        ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number]
-      : never
-      : never);
+        ? CompileTimeMetadata<Q> extends InterfaceMetadata
+          ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number]
+          : never
+        : never);
 };

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   DeleteDraftGroupResponse as _api_DeleteDraftGroupResponse,
   DraftGroupRid as _api_DraftGroupRid,
@@ -30,7 +31,7 @@ import type {
  */
 export async function deleteDraftGroup(
   ctx: ConjureContext,
-  draftGroupRid: _api_DraftGroupRid,
+  draftGroupRid: _api_DraftGroupRid
 ): Promise<_api_DeleteDraftGroupResponse> {
   return conjureFetch(ctx, `/draft-groups/${draftGroupRid}`, "DELETE");
 }

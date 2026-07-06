@@ -26,6 +26,7 @@ import type {
   NumberScaleType,
   PropertyNumberFormattingRuleType,
 } from "@osdk/api";
+
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 
@@ -46,15 +47,11 @@ export function formatNumber(
   value: number,
   numberType: PropertyNumberFormattingRuleType,
   objectData: SimpleOsdkProperties,
-  locale: string,
+  locale: string
 ): string | undefined {
   switch (numberType.type) {
     case "standard":
-      return formatStandardNumber(
-        value,
-        numberType.baseFormatOptions,
-        locale,
-      );
+      return formatStandardNumber(value, numberType.baseFormatOptions, locale);
 
     case "fixedValues":
       return numberType.values[value];
@@ -90,7 +87,7 @@ export function formatNumber(
 function formatStandardNumber(
   value: number,
   options: NumberFormatOptions,
-  locale: string,
+  locale: string
 ): string {
   return formatNumberWithAffixes(value, options, locale);
 }
@@ -99,7 +96,7 @@ function formatCurrency(
   value: number,
   rule: NumberFormatCurrency,
   objectData: SimpleOsdkProperties,
-  locale: string,
+  locale: string
 ): string {
   const currencyCode = resolvePropertyReference(rule.currencyCode, objectData);
   if (currencyCode == null) {
@@ -120,7 +117,7 @@ function formatStandardUnit(
   value: number,
   rule: NumberFormatStandardUnit,
   objectData: SimpleOsdkProperties,
-  locale: string,
+  locale: string
 ): string {
   const unit = resolvePropertyReference(rule.unit, objectData);
   if (unit == null) {
@@ -142,7 +139,7 @@ function formatStandardUnit(
       rule.baseFormatOptions,
       locale,
       "",
-      suffix,
+      suffix
     );
   }
 }
@@ -151,7 +148,7 @@ function formatCustomUnit(
   value: number,
   rule: NumberFormatCustomUnit,
   objectData: SimpleOsdkProperties,
-  locale: string,
+  locale: string
 ): string {
   const unit = resolvePropertyReference(rule.unit, objectData);
   const suffix = unit != null ? ` ${unit}` : "";
@@ -160,7 +157,7 @@ function formatCustomUnit(
     rule.baseFormatOptions,
     locale,
     "",
-    suffix,
+    suffix
   );
 }
 
@@ -168,20 +165,22 @@ function formatAffix(
   value: number,
   rule: NumberFormatAffix,
   objectData: SimpleOsdkProperties,
-  locale: string,
+  locale: string
 ): string {
-  const prefix = rule.affix.prefix != null
-    ? resolvePropertyReference(rule.affix.prefix, objectData) ?? ""
-    : "";
-  const suffix = rule.affix.postfix != null
-    ? resolvePropertyReference(rule.affix.postfix, objectData) ?? ""
-    : "";
+  const prefix =
+    rule.affix.prefix != null
+      ? (resolvePropertyReference(rule.affix.prefix, objectData) ?? "")
+      : "";
+  const suffix =
+    rule.affix.postfix != null
+      ? (resolvePropertyReference(rule.affix.postfix, objectData) ?? "")
+      : "";
   return formatNumberWithAffixes(
     value,
     rule.baseFormatOptions,
     locale,
     prefix,
-    suffix,
+    suffix
   );
 }
 
@@ -208,7 +207,7 @@ function getScaleDivisor(scaleType: NumberScaleType): number {
  */
 function getLocalizedCompactSuffix(
   scaleDivisor: number,
-  locale: string,
+  locale: string
 ): string {
   const compactFormatter = new Intl.NumberFormat(locale, {
     notation: "compact",
@@ -216,14 +215,14 @@ function getLocalizedCompactSuffix(
   });
 
   const parts = compactFormatter.formatToParts(scaleDivisor);
-  const compactPart = parts.find(p => p.type === "compact");
+  const compactPart = parts.find((p) => p.type === "compact");
   return compactPart?.value ?? "";
 }
 
 function formatScale(
   value: number,
   rule: NumberFormatScale,
-  locale: string,
+  locale: string
 ): string {
   const scaleDivisor = getScaleDivisor(rule.scaleType);
   const scaledValue = value / scaleDivisor;
@@ -234,13 +233,13 @@ function formatScale(
     rule.baseFormatOptions,
     locale,
     "",
-    suffix,
+    suffix
   );
 }
 
 function getRatioScaledValue(
   value: number,
-  ratioType: NumberRatioType,
+  ratioType: NumberRatioType
 ): number {
   switch (ratioType) {
     case "PERCENTAGE":
@@ -258,7 +257,7 @@ function getRatioScaledValue(
 function formatRatio(
   value: number,
   rule: NumberFormatRatio,
-  locale: string,
+  locale: string
 ): string {
   // Special case: PERCENTAGE uses Intl's native percent style
   if (rule.ratioType === "PERCENTAGE") {
@@ -290,7 +289,7 @@ function formatRatio(
     rule.baseFormatOptions,
     locale,
     "",
-    suffix,
+    suffix
   );
 }
 
@@ -298,7 +297,7 @@ function formatRatio(
  * Maps notation from OSDK format to Intl format
  */
 function mapNotation(
-  notation: "STANDARD" | "SCIENTIFIC" | "ENGINEERING" | "COMPACT",
+  notation: "STANDARD" | "SCIENTIFIC" | "ENGINEERING" | "COMPACT"
 ): Intl.NumberFormatOptions["notation"] {
   switch (notation) {
     case "STANDARD":
@@ -318,7 +317,7 @@ function mapNotation(
  * Maps rounding mode from OSDK format to Intl format
  */
 function mapRoundingMode(
-  mode: "CEIL" | "FLOOR" | "ROUND_CLOSEST",
+  mode: "CEIL" | "FLOOR" | "ROUND_CLOSEST"
 ): ExtendedNumberFormatOptions["roundingMode"] {
   switch (mode) {
     case "CEIL":
@@ -334,7 +333,7 @@ function mapRoundingMode(
 }
 
 function convertToIntlOptions(
-  options: NumberFormatOptions,
+  options: NumberFormatOptions
 ): ExtendedNumberFormatOptions {
   return {
     useGrouping: options.useGrouping,
@@ -357,10 +356,10 @@ function convertToIntlOptions(
 function maybeConvertNegativeToParenthesis(
   formatted: string,
   value: number,
-  shouldConvert: boolean,
+  shouldConvert: boolean
 ): string {
   if (shouldConvert && value < 0) {
-    return formatted.replace(/^-/, "(") + ")";
+    return formatted.replace(/^-/u, "(") + ")";
   }
   return formatted;
 }
@@ -371,14 +370,14 @@ function maybeConvertNegativeToParenthesis(
 function formatWithIntl(
   value: number,
   options: ExtendedNumberFormatOptions,
-  locale: string,
+  locale: string
 ): string {
   const formatter = new Intl.NumberFormat(locale, options);
   const formatted = formatter.format(value);
   return maybeConvertNegativeToParenthesis(
     formatted,
     value,
-    options.convertNegativeToParenthesis ?? false,
+    options.convertNegativeToParenthesis ?? false
   );
 }
 
@@ -390,7 +389,7 @@ function formatNumberWithAffixes(
   baseOptions: NumberFormatOptions,
   locale: string,
   prefix?: string,
-  suffix?: string,
+  suffix?: string
 ): string {
   const intlOptions = convertToIntlOptions(baseOptions);
   const formatted = formatWithIntl(value, intlOptions, locale);

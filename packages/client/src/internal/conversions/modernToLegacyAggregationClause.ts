@@ -61,6 +61,6 @@ export function modernToLegacyAggregationClause<
           field: property,
         },
       ];
-    },
+    }
   );
 }

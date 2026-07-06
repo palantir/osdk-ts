@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetBlockSetVersionStatusV3Request
-    as _api_BatchGetBlockSetVersionStatusV3Request,
-  BatchGetBlockSetVersionStatusV3Response
-    as _api_BatchGetBlockSetVersionStatusV3Response,
+  BatchGetBlockSetVersionStatusV3Request as _api_BatchGetBlockSetVersionStatusV3Request,
+  BatchGetBlockSetVersionStatusV3Response as _api_BatchGetBlockSetVersionStatusV3Response,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function batchGetBlockSetVersionStatusV3(
   ctx: ConjureContext,
-  request: _api_BatchGetBlockSetVersionStatusV3Request,
+  request: _api_BatchGetBlockSetVersionStatusV3Request
 ): Promise<_api_BatchGetBlockSetVersionStatusV3Response> {
   return conjureFetch(
     ctx,
     `/block-sets/v3/version/status/batchGet`,
     "POST",
-    request,
+    request
   );
 }

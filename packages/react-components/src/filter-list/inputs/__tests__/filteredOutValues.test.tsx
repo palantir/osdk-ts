@@ -86,8 +86,8 @@ describe("filtered-out initialFilterStates values", () => {
       );
 
       // Both rows render — "Marketing" from aggregation, "Research" synthesized
-      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
-      const researchRow = screen.getByRole("button", { name: /Research/ });
+      const marketingRow = screen.getByRole("button", { name: /Marketing/u });
+      const researchRow = screen.getByRole("button", { name: /Research/u });
 
       // Both are pressed (selected) since both are in filterState.values
       expect(marketingRow.getAttribute("aria-pressed")).toBe("true");
@@ -171,12 +171,12 @@ describe("STATIC_VALUES filters", () => {
 
     expect(
       screen
-        .getByRole("button", { name: /Marketing/ })
+        .getByRole("button", { name: /Marketing/u })
         .hasAttribute("data-filtered-out")
     ).toBe(false);
     expect(
       screen
-        .getByRole("button", { name: /Operations/ })
+        .getByRole("button", { name: /Operations/u })
         .hasAttribute("data-filtered-out")
     ).toBe(false);
   });
@@ -203,10 +203,10 @@ describe("STATIC_VALUES filters", () => {
     );
 
     expect(
-      screen.getByRole("option", { name: /Alpha/ }).className
+      screen.getByRole("option", { name: /Alpha/u }).className
     ).not.toContain("filteredOutItem");
     expect(
-      screen.getByRole("option", { name: /Beta/ }).className
+      screen.getByRole("option", { name: /Beta/u }).className
     ).not.toContain("filteredOutItem");
   });
 });
@@ -260,12 +260,12 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
     );
     expect(
       screen
-        .getByRole("button", { name: /Engineering/ })
+        .getByRole("button", { name: /Engineering/u })
         .hasAttribute("data-filtered-out")
     ).toBe(false);
     expect(
       screen
-        .getByRole("button", { name: /Marketing/ })
+        .getByRole("button", { name: /Marketing/u })
         .hasAttribute("data-filtered-out")
     ).toBe(true);
   });
@@ -374,15 +374,15 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
 
       expect(
         screen
-          .getByRole("button", { name: /Alice/ })
+          .getByRole("button", { name: /Alice/u })
           .hasAttribute("data-filtered-out")
       ).toBe(false);
       expect(
         screen
-          .getByRole("button", { name: /Bob/ })
+          .getByRole("button", { name: /Bob/u })
           .hasAttribute("data-filtered-out")
       ).toBe(false);
-      const carolRow = screen.getByRole("button", { name: /Carol/ });
+      const carolRow = screen.getByRole("button", { name: /Carol/u });
       expect(carolRow.hasAttribute("data-filtered-out")).toBe(true);
       expect(carolRow.textContent).toContain("0");
     });
@@ -416,7 +416,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
         />
       );
 
-      expect(screen.queryByRole("button", { name: /Carol/ })).toBeNull();
+      expect(screen.queryByRole("button", { name: /Carol/u })).toBeNull();
     });
   });
 });

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   Marketplace as _api_Marketplace,
   MarketplaceRid as _api_MarketplaceRid,
@@ -28,7 +29,7 @@ import type {
  */
 export async function getMarketplace(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid,
+  marketplaceRid: _api_MarketplaceRid
 ): Promise<_api_Marketplace> {
   return conjureFetch(ctx, `/marketplaces/${marketplaceRid}`, "GET");
 }

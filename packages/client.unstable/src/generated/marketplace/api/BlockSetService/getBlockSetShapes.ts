@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
   GetBlockSetShapesResponse as _api_GetBlockSetShapesResponse,
@@ -31,11 +32,11 @@ import type {
 export async function getBlockSetShapes(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId,
+  blockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_GetBlockSetShapesResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/version/${blockSetVersionId}/shapes`,
-    "GET",
+    "GET"
   );
 }

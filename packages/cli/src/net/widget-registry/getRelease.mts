@@ -22,12 +22,12 @@ import type { Release } from "./Release.mjs";
 export async function getRelease(
   ctx: InternalClientContext,
   widgetSetRid: WidgetSetRid,
-  releaseVersion: string,
+  releaseVersion: string
 ): Promise<Release> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}`,
-    ctx.foundryUrl,
+    ctx.foundryUrl
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   Backend as _api_Backend,
   GetObjectsPageRequest as _api_GetObjectsPageRequest,
@@ -27,7 +28,7 @@ import type {
 export async function getObjectsPage(
   ctx: ConjureContext,
   request: _api_GetObjectsPageRequest,
-  backend: _api_Backend | null | undefined,
+  backend: _api_Backend | null | undefined
 ): Promise<_api_GetObjectsPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects`, "POST", request);
 }

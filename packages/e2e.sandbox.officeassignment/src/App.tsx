@@ -15,10 +15,12 @@
  */
 
 import React from "react";
-import styles from "./App.module.css";
+
 import { Tabs, type TabSpec } from "./components/Tabs/Tabs.js";
 import { AssignmentsTab } from "./tabs/AssignmentsTab/AssignmentsTab.js";
 import { StatusUpdatesTab } from "./tabs/StatusUpdatesTab/StatusUpdatesTab.js";
+
+import styles from "./App.module.css";
 
 const TAB_ASSIGNMENTS = "assignments";
 const TAB_STATUS_UPDATES = "statusUpdates";
@@ -42,9 +44,11 @@ export function App(): React.JSX.Element {
       <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className={styles.tabContent}>
         {/* Remount on tab change so per-tab filter/selection state resets cleanly. */}
-        {activeTab === TAB_ASSIGNMENTS
-          ? <AssignmentsTab key={TAB_ASSIGNMENTS} />
-          : <StatusUpdatesTab key={TAB_STATUS_UPDATES} />}
+        {activeTab === TAB_ASSIGNMENTS ? (
+          <AssignmentsTab key={TAB_ASSIGNMENTS} />
+        ) : (
+          <StatusUpdatesTab key={TAB_STATUS_UPDATES} />
+        )}
       </div>
     </div>
   );

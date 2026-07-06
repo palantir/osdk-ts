@@ -39,9 +39,7 @@ import { OsdkThemeProvider } from "@osdk/react-components/experimental/theme";
 function App() {
   return (
     <OsdkProvider client={client}>
-      <OsdkThemeProvider>
-        {/* your app */}
-      </OsdkThemeProvider>
+      <OsdkThemeProvider>{/* your app */}</OsdkThemeProvider>
     </OsdkProvider>
   );
 }
@@ -114,7 +112,7 @@ Pin the initial mode if your app intentionally ships in light or dark regardless
 ```tsx
 <OsdkThemeProvider defaultTheme="dark">
   <App />
-</OsdkThemeProvider>;
+</OsdkThemeProvider>
 ```
 
 Users can still switch at runtime via `useOsdkTheme().setTheme`; `defaultTheme` only seeds the initial value.
@@ -161,7 +159,7 @@ Render it anywhere inside the provider:
     <ThemeToggle />
   </Header>
   <main>{/* ... */}</main>
-</OsdkThemeProvider>;
+</OsdkThemeProvider>
 ```
 
 ### Drive the theme from an external store (controlled mode)
@@ -196,7 +194,7 @@ If descendants call `setTheme` from `useOsdkTheme()`, controlled mode does **not
   onThemeChanged={(next) => dispatch(setTheme(next))}
 >
   <App />
-</OsdkThemeProvider>;
+</OsdkThemeProvider>
 ```
 
 Use controlled mode whenever an external source of truth exists. Use uncontrolled (just `defaultTheme`) when the provider can own the state itself.

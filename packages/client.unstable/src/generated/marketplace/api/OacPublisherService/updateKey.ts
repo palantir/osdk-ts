@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceRid as _api_MarketplaceRid,
   UpdateKeyRequest as _api_UpdateKeyRequest,
@@ -28,12 +29,12 @@ import type {
 export async function updateKey(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_UpdateKeyRequest,
+  request: _api_UpdateKeyRequest
 ): Promise<_api_UpdateKeyResponse> {
   return conjureFetch(
     ctx,
     `/oac-publisher/${marketplaceRid}/update-key`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationRid as _api_BlockSetInstallationRid,
   PreviewUninstallResponse as _api_PreviewUninstallResponse,
@@ -35,11 +36,11 @@ import type {
  */
 export async function previewUninstall(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid,
+  blockSetInstallationRid: _api_BlockSetInstallationRid
 ): Promise<_api_PreviewUninstallResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/${blockSetInstallationRid}/uninstall/preview`,
-    "POST",
+    "POST"
   );
 }

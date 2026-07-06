@@ -5,6 +5,7 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { RefObject } from "react";
 import React, { useCallback, useState } from "react";
+
 import { Button } from "../../components/Button.js";
 
 // Guard against pulling a very large object set into the client.
@@ -22,9 +23,7 @@ interface DownloadEmployeesButtonProps<
 export function DownloadEmployeesButton<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  { tableRef }: DownloadEmployeesButtonProps<Q, RDPs>,
-): React.ReactElement {
+>({ tableRef }: DownloadEmployeesButtonProps<Q, RDPs>): React.ReactElement {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = useCallback(async () => {
@@ -52,9 +51,7 @@ export function DownloadEmployeesButton<
 function snapshotToCsv<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
->(
-  snapshot: ObjectTableSnapshot<Q, RDPs>,
-): string {
+>(snapshot: ObjectTableSnapshot<Q, RDPs>): string {
   const { columns, rows } = snapshot;
   return [
     columns.map((column) => escapeCsvCell(column.name)).join(","),
@@ -91,10 +88,10 @@ function formatCellValue(cell: unknown): string {
 }
 
 function escapeCsvCell(value: string): string {
-  if (!/[",\n\r]/.test(value)) {
+  if (!/[",\n\r]/u.test(value)) {
     return value;
   }
-  return `"${value.replaceAll("\"", "\"\"")}"`;
+  return `"${value.replaceAll('"', '""')}"`;
 }
 
 async function downloadCsv(csv: string, fileName: string): Promise<void> {

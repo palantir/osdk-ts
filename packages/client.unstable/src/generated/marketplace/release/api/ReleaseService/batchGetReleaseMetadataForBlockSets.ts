@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetReleaseMetadataForBlockSetsRequest
-    as _release_api_BatchGetReleaseMetadataForBlockSetsRequest,
-  BatchGetReleaseMetadataForBlockSetsResponse
-    as _release_api_BatchGetReleaseMetadataForBlockSetsResponse,
+  BatchGetReleaseMetadataForBlockSetsRequest as _release_api_BatchGetReleaseMetadataForBlockSetsRequest,
+  BatchGetReleaseMetadataForBlockSetsResponse as _release_api_BatchGetReleaseMetadataForBlockSetsResponse,
 } from "../__components.js";
 
 /**
@@ -34,12 +33,12 @@ import type {
  */
 export async function batchGetReleaseMetadataForBlockSets(
   ctx: ConjureContext,
-  request: _release_api_BatchGetReleaseMetadataForBlockSetsRequest,
+  request: _release_api_BatchGetReleaseMetadataForBlockSetsRequest
 ): Promise<_release_api_BatchGetReleaseMetadataForBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/releases/batchGetReleaseMetadataForBlockSets`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   InstallRequest as _api_experimental_InstallRequest,
   InstallResponse as _api_experimental_InstallResponse,
@@ -32,7 +33,7 @@ import type {
  */
 export async function install(
   ctx: ConjureContext,
-  request: _api_experimental_InstallRequest,
+  request: _api_experimental_InstallRequest
 ): Promise<_api_experimental_InstallResponse> {
   return conjureFetch(ctx, `/experimental/installations`, "POST", request);
 }

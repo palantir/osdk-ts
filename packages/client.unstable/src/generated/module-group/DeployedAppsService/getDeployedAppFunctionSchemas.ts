@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ComputeModuleSchemaType as _ComputeModuleSchemaType,
   QueryRunnerSchema as _QueryRunnerSchema,
@@ -27,13 +28,13 @@ export async function getDeployedAppFunctionSchemas(
   ctx: ConjureContext,
   deployedAppRid: string,
   branch: string,
-  schemaType: _ComputeModuleSchemaType | null | undefined,
+  schemaType: _ComputeModuleSchemaType | null | undefined
 ): Promise<Array<_QueryRunnerSchema>> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/${branch}/function-schemas`,
     "GET",
     undefined,
-    { schemaType },
+    { schemaType }
   );
 }

@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetVersionId as _api_BlockSetVersionId,
-  GetGranularBlockSetStatisticsResponse
-    as _api_GetGranularBlockSetStatisticsResponse,
+  GetGranularBlockSetStatisticsResponse as _api_GetGranularBlockSetStatisticsResponse,
 } from "../__components.js";
 
 /**
@@ -32,11 +32,11 @@ import type {
  */
 export async function getGranularBlockSetStatistics(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId,
+  blockSetVersionId: _api_BlockSetVersionId
 ): Promise<_api_GetGranularBlockSetStatisticsResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/version/${blockSetVersionId}/granular-statistics`,
-    "GET",
+    "GET"
   );
 }

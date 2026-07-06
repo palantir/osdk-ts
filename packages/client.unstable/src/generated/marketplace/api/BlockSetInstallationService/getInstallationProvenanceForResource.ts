@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   InstallationOutputKey as _api_InstallationOutputKey,
-  ResourceInstallationProvenanceResponse
-    as _api_ResourceInstallationProvenanceResponse,
+  ResourceInstallationProvenanceResponse as _api_ResourceInstallationProvenanceResponse,
 } from "../__components.js";
 
 /**
@@ -35,12 +35,12 @@ import type {
  */
 export async function getInstallationProvenanceForResource(
   ctx: ConjureContext,
-  installationOutputKey: _api_InstallationOutputKey,
+  installationOutputKey: _api_InstallationOutputKey
 ): Promise<_api_ResourceInstallationProvenanceResponse | null | undefined> {
   return conjureFetch(
     ctx,
     `/block-set-installation/get-installation-provenance`,
     "POST",
-    installationOutputKey,
+    installationOutputKey
   );
 }

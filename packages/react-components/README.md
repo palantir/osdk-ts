@@ -260,7 +260,7 @@ import { MyComponent as _MyComponent } from "../../my-component/MyComponent.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const MyComponent: typeof _MyComponent = withOsdkMetrics(
   _MyComponent,
-  "MyComponent",
+  "MyComponent"
 );
 ```
 

@@ -23,6 +23,7 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
+
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -36,11 +37,14 @@ import type { Store } from "../Store.js";
 import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import { ListQuery, PIVOT_IDX, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
 
-type ExtractRelevantObjectsResult = Record<"added" | "modified", {
-  all: (ObjectHolder | InterfaceHolder)[];
-  strictMatches: Set<(ObjectHolder | InterfaceHolder)>;
-  sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
-}>;
+type ExtractRelevantObjectsResult = Record<
+  "added" | "modified",
+  {
+    all: (ObjectHolder | InterfaceHolder)[];
+    strictMatches: Set<ObjectHolder | InterfaceHolder>;
+    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
+  }
+>;
 
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
@@ -57,7 +61,7 @@ export class InterfaceListQuery extends ListQuery {
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
         );
       }
 
@@ -75,11 +79,10 @@ export class InterfaceListQuery extends ListQuery {
     const clientCtx = store.client[additionalContext];
     let objectSet: ObjectSet<ObjectTypeDefinition>;
     if (rids != null) {
-      objectSet = clientCtx.objectSetFactory(
-        objectTypeDef,
-        clientCtx,
-        { type: "static", objects: [...rids] },
-      );
+      objectSet = clientCtx.objectSetFactory(objectTypeDef, clientCtx, {
+        type: "static",
+        objects: [...rids],
+      });
     } else {
       objectSet = store.client(objectTypeDef);
     }
@@ -109,7 +112,7 @@ export class InterfaceListQuery extends ListQuery {
   }
 
   protected async postProcessFetchedData(
-    data: Osdk.Instance<any>[],
+    data: Osdk.Instance<any>[]
   ): Promise<Osdk.Instance<any>[]> {
     return reloadDataAsFullObjects(this.store.client, data);
   }
@@ -118,9 +121,7 @@ export class InterfaceListQuery extends ListQuery {
     return this.options.resolveToObjectType ? object : object.$as(this.apiName);
   }
 
-  protected createPayload(
-    params: CollectionConnectableParams,
-  ): ListPayload {
+  protected createPayload(params: CollectionConnectableParams): ListPayload {
     const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
       this.wrapObject(obj)
     );
@@ -132,20 +133,19 @@ export class InterfaceListQuery extends ListQuery {
   }
 
   protected extractRelevantObjects(
-    changes: Changes,
+    changes: Changes
   ): ExtractRelevantObjectsResult {
     const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
       return this.apiName in object[ObjectDefRef].interfaceMap;
     };
 
-    const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
-      [, object],
-    ) => this.wrapObject(object));
+    const added = Array.from(changes.addedObjects)
+      .filter(matchesApiName)
+      .map(([, object]) => this.wrapObject(object));
 
-    const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
-      .map((
-        [, object],
-      ) => this.wrapObject(object));
+    const modified = Array.from(changes.modifiedObjects)
+      .filter(matchesApiName)
+      .map(([, object]) => this.wrapObject(object));
 
     return {
       added: {
@@ -165,7 +165,7 @@ export class InterfaceListQuery extends ListQuery {
 function createSourceSetForPivot(
   store: Store,
   pivotInfo: PivotInfo,
-  rids: string[] | undefined,
+  rids: string[] | undefined
 ): ObjectSet<ObjectOrInterfaceDefinition> {
   const clientCtx = store.client[additionalContext];
 
@@ -176,7 +176,7 @@ function createSourceSetForPivot(
         apiName: pivotInfo.sourceType,
       } as ObjectTypeDefinition,
       clientCtx,
-      { type: "static", objects: [...rids] },
+      { type: "static", objects: [...rids] }
     );
   }
 

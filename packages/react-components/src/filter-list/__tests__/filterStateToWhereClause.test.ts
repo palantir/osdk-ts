@@ -317,8 +317,8 @@ describe("buildWhereClause", () => {
     const andConditions = clause.$and as Array<
       Record<string, Record<string, string>>
     >;
-    expect(andConditions[0].birthDate.$gte).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(andConditions[1].birthDate.$lte).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(andConditions[0].birthDate.$gte).toMatch(/^\d{4}-\d{2}-\d{2}$/u);
+    expect(andConditions[1].birthDate.$lte).toMatch(/^\d{4}-\d{2}-\d{2}$/u);
   });
 
   it("builds $or wrapping $and for NUMBER_RANGE min+max+includeNull", () => {

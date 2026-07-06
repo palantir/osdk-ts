@@ -36,24 +36,16 @@ import type { FooInterfaceApiTest } from "../../test/FooInterfaceApiTest.js";
 declare const actionParam_objectType: ActionParam.ObjectType<EmployeeApiTest>;
 
 /** What an objectSet-typed action parameter accepts. */
-declare const actionParam_objectSetType: ActionParam.ObjectSetType<
-  EmployeeApiTest
->;
+declare const actionParam_objectSetType: ActionParam.ObjectSetType<EmployeeApiTest>;
 
 /** What an interface-typed action parameter accepts. */
-declare const actionParam_interfaceType: ActionParam.InterfaceType<
-  FooInterfaceApiTest
->;
+declare const actionParam_interfaceType: ActionParam.InterfaceType<FooInterfaceApiTest>;
 
 /** A primitive (string) action parameter. */
-declare const actionParam_primitiveType_string: ActionParam.PrimitiveType<
-  "string"
->;
+declare const actionParam_primitiveType_string: ActionParam.PrimitiveType<"string">;
 
 /** A primitive (attachment) action parameter — non-trivial wire mapping. */
-declare const actionParam_primitiveType_attachment: ActionParam.PrimitiveType<
-  "attachment"
->;
+declare const actionParam_primitiveType_attachment: ActionParam.PrimitiveType<"attachment">;
 
 /** A struct-typed action parameter — fields are mapped through DataValueClientToWire. */
 declare const actionParam_structType: ActionParam.StructType<{

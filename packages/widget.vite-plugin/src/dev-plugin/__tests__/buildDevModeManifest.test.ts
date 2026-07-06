@@ -17,6 +17,7 @@
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { ViteDevServer } from "vite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import { buildDevModeManifest } from "../buildDevModeManifest.js";
 import * as extractInjectedScriptsModule from "../extractInjectedScripts.js";
 
@@ -58,10 +59,12 @@ const MOCK_CONFIG_FILE_TO_ENTRYPOINT = { "widget.config.ts": "entry.ts" };
 
 const MOCK_INPUT_SPEC = {
   discovered: {
-    sdks: [{
-      rid: "ri.third-party-applications.main.sdk-package.abc",
-      version: "1.0.0",
-    }],
+    sdks: [
+      {
+        rid: "ri.third-party-applications.main.sdk-package.abc",
+        version: "1.0.0",
+      },
+    ],
   },
 };
 
@@ -70,23 +73,27 @@ describe("buildDevModeManifest", () => {
     vi.restoreAllMocks();
     vi.mocked(extractWidgetConfig).mockResolvedValue(MOCK_WIDGET_CONFIG);
     vi.mocked(getWidgetSetInputSpec).mockResolvedValue(MOCK_INPUT_SPEC);
-    vi.spyOn(extractInjectedScriptsModule, "extractInjectedScripts")
-      .mockResolvedValue({ scriptSources: [], inlineScripts: [] });
+    vi.spyOn(
+      extractInjectedScriptsModule,
+      "extractInjectedScripts"
+    ).mockResolvedValue({ scriptSources: [], inlineScripts: [] });
   });
 
   test("localhost dev server URLs", async () => {
-    vi.spyOn(extractInjectedScriptsModule, "extractInjectedScripts")
-      .mockResolvedValue({
-        scriptSources: ["/@vite/client"],
-        inlineScripts: [],
-      });
+    vi.spyOn(
+      extractInjectedScriptsModule,
+      "extractInjectedScripts"
+    ).mockResolvedValue({
+      scriptSources: ["/@vite/client"],
+      inlineScripts: [],
+    });
     const baseHref = `http://localhost:5173/`;
 
     const result = await buildDevModeManifest(
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      baseHref,
+      baseHref
     );
 
     expect(result.manifestVersion).toBe("1.0.0");
@@ -100,18 +107,20 @@ describe("buildDevModeManifest", () => {
   });
 
   test("remote server URLs", async () => {
-    vi.spyOn(extractInjectedScriptsModule, "extractInjectedScripts")
-      .mockResolvedValue({
-        scriptSources: [`/proxy/path/@vite/client`],
-        inlineScripts: [],
-      });
+    vi.spyOn(
+      extractInjectedScriptsModule,
+      "extractInjectedScripts"
+    ).mockResolvedValue({
+      scriptSources: [`/proxy/path/@vite/client`],
+      inlineScripts: [],
+    });
     const baseHref = `https://workspace.stack.com/proxy/path/`;
 
     const result = await buildDevModeManifest(
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      baseHref,
+      baseHref
     );
 
     const widget = result.devSettings.widgets.widgetId;
@@ -128,7 +137,7 @@ describe("buildDevModeManifest", () => {
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
       "http://localhost:5173/",
-      { defaults: { refreshHostDataOnAction: true } },
+      { defaults: { refreshHostDataOnAction: true } }
     );
 
     const widget = result.devSettings.widgets.widgetId;
@@ -143,12 +152,12 @@ describe("buildDevModeManifest", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
+      "http://localhost:5173/"
     );
 
     expect(result.devSettings.inputSpec).toEqual(MOCK_INPUT_SPEC);
     expect(vi.mocked(getWidgetSetInputSpec)).toHaveBeenCalledWith(
-      "/project/package.json",
+      "/project/package.json"
     );
   });
 
@@ -177,7 +186,7 @@ describe("buildDevModeManifest", () => {
         "widgetA.config.ts": "entryA.ts",
         "widgetB.config.ts": "entryB.ts",
       },
-      "http://localhost:5173/",
+      "http://localhost:5173/"
     );
 
     expect(Object.keys(result.devSettings.widgets)).toEqual([

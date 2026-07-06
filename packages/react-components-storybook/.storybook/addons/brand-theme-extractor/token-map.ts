@@ -35,6 +35,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Background",
     category: "color",
     inputType: "color",
+    designMdKey: "canvas",
+    designMdSection: "colors",
     cssProperties: [
       // Semantic background
       "--osdk-background-primary",
@@ -52,6 +54,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Surface",
     category: "color",
     inputType: "color",
+    designMdKey: "surface",
+    designMdSection: "colors",
     cssProperties: [
       // Semantic backgrounds
       "--osdk-background-secondary",
@@ -72,6 +76,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Text",
     category: "color",
     inputType: "color",
+    designMdKey: "ink",
+    designMdSection: "colors",
     cssProperties: [
       // Typography (semantic only — palette primitives excluded
       // to preserve oklch derivation chains)
@@ -89,6 +95,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Text Muted",
     category: "color",
     inputType: "color",
+    designMdKey: "ink-muted",
+    designMdSection: "colors",
     cssProperties: [
       "--osdk-typography-color-muted",
       "--bp-typography-color-muted",
@@ -100,10 +108,24 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     ],
   },
   {
+    role: "text-subtle",
+    label: "Text Subtle",
+    category: "color",
+    inputType: "color",
+    designMdKey: "ink-subtle",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-typography-color-default-disabled",
+      "--bp-typography-color-default-disabled",
+    ],
+  },
+  {
     role: "primary",
     label: "Primary",
     category: "color",
     inputType: "color",
+    designMdKey: "primary",
+    designMdSection: "colors",
     cssProperties: [
       // Intent primary (rest only — hover/active derive from CSS defaults)
       "--osdk-intent-primary-rest",
@@ -116,10 +138,25 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     ],
   },
   {
+    role: "primary-hover",
+    label: "Primary Hover",
+    category: "color",
+    inputType: "color",
+    designMdKey: "primary-hover",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-intent-primary-subtle",
+      "--osdk-intent-primary-hover",
+      "--bp-intent-primary-hover",
+    ],
+  },
+  {
     role: "primary-foreground",
     label: "Primary Foreground",
     category: "color",
     inputType: "color",
+    designMdKey: "on-primary",
+    designMdSection: "colors",
     cssProperties: [
       "--osdk-intent-primary-foreground",
       "--bp-intent-primary-foreground",
@@ -132,6 +169,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Secondary",
     category: "color",
     inputType: "color",
+    designMdKey: "secondary",
+    designMdSection: "colors",
     cssProperties: [
       // Secondary button background only — intent-default-hover
       // intentionally excluded to preserve oklch derivation chain
@@ -143,6 +182,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Secondary Foreground",
     category: "color",
     inputType: "color",
+    designMdKey: "secondary-foreground",
+    designMdSection: "colors",
     cssProperties: [
       "--osdk-button-secondary-color",
       "--osdk-intent-default-foreground",
@@ -154,6 +195,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Icon Color",
     category: "color",
     inputType: "color",
+    designMdKey: "icon",
+    designMdSection: "colors",
     cssProperties: [
       "--osdk-iconography-color-muted",
       "--osdk-drag-handle-color",
@@ -164,6 +207,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Border",
     category: "color",
     inputType: "color",
+    designMdKey: "hairline",
+    designMdSection: "colors",
     cssProperties: [
       // Surface border (default + strong)
       "--osdk-surface-border-color-default",
@@ -179,10 +224,30 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     ],
   },
   {
+    role: "input-bg",
+    label: "Input Background",
+    category: "color",
+    inputType: "color",
+    designMdKey: "input-bg",
+    designMdSection: "colors",
+    cssProperties: ["--osdk-input-bg", "--osdk-tooltip-bg"],
+  },
+  {
+    role: "overlay",
+    label: "Overlay",
+    category: "color",
+    inputType: "color",
+    designMdKey: "semantic-overlay",
+    designMdSection: "colors",
+    cssProperties: ["--osdk-background-backdrop", "--osdk-dialog-backdrop"],
+  },
+  {
     role: "danger",
     label: "Danger",
     category: "color",
     inputType: "color",
+    designMdKey: "semantic-danger",
+    designMdSection: "colors",
     cssProperties: [
       // Rest only — hover/active derive from CSS defaults.
       // Foreground tokens (--osdk-intent-danger-foreground) intentionally
@@ -197,6 +262,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Success",
     category: "color",
     inputType: "color",
+    designMdKey: "semantic-success",
+    designMdSection: "colors",
     cssProperties: [
       // Rest only — hover/active derive from CSS defaults.
       // Foreground tokens excluded for the same contrast reason as danger.
@@ -209,6 +276,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Warning",
     category: "color",
     inputType: "color",
+    designMdKey: "semantic-warning",
+    designMdSection: "colors",
     cssProperties: [
       // Foreground tokens excluded for the same contrast reason as danger.
       "--osdk-intent-warning-rest",
@@ -222,16 +291,44 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Font Family",
     category: "typography",
     inputType: "font",
+    designMdKey: "fontFamily",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-family-default",
       "--bp-typography-family-default",
     ],
   },
   {
-    role: "font-size-small",
-    label: "Size Small",
+    role: "font-family-mono",
+    label: "Font Mono",
+    category: "typography",
+    inputType: "font",
+    designMdKey: "fontFamily-mono",
+    designMdSection: "typography",
+    cssProperties: [
+      "--osdk-typography-family-mono",
+      "--bp-typography-family-mono",
+    ],
+  },
+  {
+    role: "font-size-xsmall",
+    label: "Font Size X-Small",
     category: "typography",
     inputType: "px",
+    designMdKey: "fontSize-xs",
+    designMdSection: "typography",
+    cssProperties: [
+      "--osdk-typography-size-body-x-small",
+      "--bp-typography-size-body-x-small",
+    ],
+  },
+  {
+    role: "font-size-small",
+    label: "Font Size Small",
+    category: "typography",
+    inputType: "px",
+    designMdKey: "fontSize-sm",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-size-body-small",
       "--bp-typography-size-body-small",
@@ -239,9 +336,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-medium",
-    label: "Size Medium",
+    label: "Font Size Medium",
     category: "typography",
     inputType: "px",
+    designMdKey: "fontSize",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-size-body-medium",
       "--bp-typography-size-body-medium",
@@ -249,9 +348,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-size-large",
-    label: "Size Large",
+    label: "Font Size Large",
     category: "typography",
     inputType: "px",
+    designMdKey: "fontSize-lg",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-size-body-large",
       "--bp-typography-size-body-large",
@@ -259,9 +360,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-weight-default",
-    label: "Weight Default",
+    label: "Font Weight Default",
     category: "typography",
     inputType: "number",
+    designMdKey: "fontWeight",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-weight-default",
       "--bp-typography-weight-default",
@@ -269,9 +372,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "font-weight-bold",
-    label: "Weight Bold",
+    label: "Font Weight Bold",
     category: "typography",
     inputType: "number",
+    designMdKey: "fontWeight-bold",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-weight-bold",
       "--bp-typography-weight-bold",
@@ -279,9 +384,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
   {
     role: "line-height",
-    label: "Line Height",
+    label: "Font Line Height",
     category: "typography",
     inputType: "number",
+    designMdKey: "lineHeight",
+    designMdSection: "typography",
     cssProperties: [
       "--osdk-typography-line-height-default",
       "--bp-typography-line-height-default",
@@ -294,6 +401,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Border Radius",
     category: "surface",
     inputType: "px",
+    designMdKey: "md",
+    designMdSection: "rounded",
     cssProperties: [
       "--osdk-surface-border-radius",
       "--bp-surface-border-radius",
@@ -304,6 +413,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Spacing",
     category: "surface",
     inputType: "px",
+    designMdKey: "md",
+    designMdSection: "spacing",
     cssProperties: ["--osdk-surface-spacing", "--bp-surface-spacing"],
   },
   {
@@ -311,6 +422,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Border Width",
     category: "surface",
     inputType: "px",
+    designMdKey: "border-width",
+    designMdSection: "surface",
     cssProperties: ["--osdk-surface-border-width", "--bp-surface-border-width"],
   },
   {
@@ -318,6 +431,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Shadow",
     category: "surface",
     inputType: "shadow",
+    designMdKey: "shadow",
+    designMdSection: "surface",
     cssProperties: [
       // Only override shadow-2 (primary level) — other depths (0/1/3/4)
       // are derived by the component library's own depth hierarchy
@@ -334,6 +449,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Focus Width",
     category: "emphasis",
     inputType: "px",
+    designMdKey: "focus-width",
+    designMdSection: "emphasis",
     cssProperties: ["--osdk-emphasis-focus-width", "--bp-emphasis-focus-width"],
   },
   {
@@ -341,6 +458,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Focus Offset",
     category: "emphasis",
     inputType: "px",
+    designMdKey: "focus-offset",
+    designMdSection: "emphasis",
     cssProperties: [
       "--osdk-emphasis-focus-offset",
       "--bp-emphasis-focus-offset",
@@ -351,6 +470,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     label: "Transition",
     category: "emphasis",
     inputType: "ms",
+    designMdKey: "transition-duration",
+    designMdSection: "emphasis",
     cssProperties: [
       "--osdk-emphasis-transition-duration",
       "--bp-emphasis-transition-duration",
@@ -358,7 +479,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
   },
 ];
 
-/** Lookup a token role definition by role name */
+const TOKEN_ROLE_MAP = new Map<string, TokenRoleDefinition>(
+  TOKEN_ROLES.map((t) => [t.role, t])
+);
+
+/** Lookup a token role definition by role name (O(1) via Map) */
 export function getTokenRole(role: string): TokenRoleDefinition | undefined {
-  return TOKEN_ROLES.find((t) => t.role === role);
+  return TOKEN_ROLE_MAP.get(role);
 }

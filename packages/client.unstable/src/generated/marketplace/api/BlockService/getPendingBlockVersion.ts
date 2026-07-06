@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockVersionId as _api_BlockVersionId,
   GetPendingBlockVersionResponse as _api_GetPendingBlockVersionResponse,
@@ -28,7 +29,7 @@ import type {
  */
 export async function getPendingBlockVersion(
   ctx: ConjureContext,
-  blockVersionId: _api_BlockVersionId,
+  blockVersionId: _api_BlockVersionId
 ): Promise<_api_GetPendingBlockVersionResponse | null | undefined> {
   return conjureFetch(ctx, `/blocks/versions/${blockVersionId}/pending`, "GET");
 }

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  LoadOntologyBranchByVersionRequest
-    as _branch_api_LoadOntologyBranchByVersionRequest,
-  LoadOntologyBranchByVersionResponse
-    as _branch_api_LoadOntologyBranchByVersionResponse,
+  LoadOntologyBranchByVersionRequest as _branch_api_LoadOntologyBranchByVersionRequest,
+  LoadOntologyBranchByVersionResponse as _branch_api_LoadOntologyBranchByVersionResponse,
 } from "../__components.js";
 
 /**
@@ -27,7 +26,7 @@ import type {
  */
 export async function loadOntologyBranchByVersion(
   ctx: ConjureContext,
-  request: _branch_api_LoadOntologyBranchByVersionRequest,
+  request: _branch_api_LoadOntologyBranchByVersionRequest
 ): Promise<_branch_api_LoadOntologyBranchByVersionResponse> {
   return conjureFetch(ctx, `/ontology/branch/load/version`, "POST", request);
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
 import type {
   UpdatePackageRolesRequest as _api_permissions_UpdatePackageRolesRequest,
@@ -32,12 +33,12 @@ import type {
 export async function updatePackageRoles(
   ctx: ConjureContext,
   packageRid: _api_OntologyPackageRid,
-  request: _api_permissions_UpdatePackageRolesRequest,
+  request: _api_permissions_UpdatePackageRolesRequest
 ): Promise<_api_permissions_UpdatePackageRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/packages/${packageRid}/roles`,
     "PUT",
-    request,
+    request
   );
 }

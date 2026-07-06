@@ -15,6 +15,7 @@
  */
 
 import * as fs from "fs";
+
 import {
   detectEnvironment,
   getAliasesFilePath,
@@ -71,55 +72,53 @@ function loadPreviewAliases(): ResolvedAliases {
   };
 }
 
-function loadCustom(
-  custom: Record<string, string>,
-): Record<string, string> {
+function loadCustom(custom: Record<string, string>): Record<string, string> {
   return custom;
 }
 
 function loadPublishedModels(
-  models: Record<string, ModelValue>,
+  models: Record<string, ModelValue>
 ): Record<string, Model> {
   return Object.fromEntries<Model>(
-    Object.entries(models).map((
-      [alias, { id: identifier }],
-    ) => [alias, identifier]),
+    Object.entries(models).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ])
   );
 }
 
 function loadPublishedSources(
-  egressConnections: Record<string, EgressConnectionValue>,
+  egressConnections: Record<string, EgressConnectionValue>
 ): Record<string, Source> {
   return Object.fromEntries<Source>(
-    Object.entries(egressConnections).map((
-      [alias, { id: identifier }],
-    ) => [alias, identifier]),
+    Object.entries(egressConnections).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ])
   );
 }
 
-function loadPreviewModels(
-  models: ModelResource[],
-): Record<string, Model> {
+function loadPreviewModels(models: ModelResource[]): Record<string, Model> {
   return Object.fromEntries<Model>(
     models
-      .filter((model): model is ModelResource & { alias: string } =>
-        model.alias != null
+      .filter(
+        (model): model is ModelResource & { alias: string } =>
+          model.alias != null
       )
-      .map(({ alias, identifier }) => [alias, identifier]),
+      .map(({ alias, identifier }) => [alias, identifier])
   );
 }
 
 function loadPreviewSources(
-  connections: EgressConnection[],
+  connections: EgressConnection[]
 ): Record<string, Source> {
   return Object.fromEntries<Source>(
     connections
-      .filter((
-        connection,
-      ): connection is EgressConnection & { alias: string } =>
-        connection.alias != null
+      .filter(
+        (connection): connection is EgressConnection & { alias: string } =>
+          connection.alias != null
       )
-      .map(({ alias, rid }) => [alias, { rid }]),
+      .map(({ alias, rid }) => [alias, { rid }])
   );
 }
 

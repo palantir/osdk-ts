@@ -457,11 +457,11 @@ function generateId() {
 
   private static extractObjectTypeFromAction(actionName: string): string {
     const patterns = [
-      /create[_-]?(\w+)/i,
-      /add[_-]?(\w+)/i,
-      /new[_-]?(\w+)/i,
-      /(\w+)[_-]?create/i,
-      /(\w+)[_-]?add/i,
+      /create[_-]?(\w+)/iu,
+      /add[_-]?(\w+)/iu,
+      /new[_-]?(\w+)/iu,
+      /(\w+)[_-]?create/iu,
+      /(\w+)[_-]?add/iu,
     ];
 
     for (const pattern of patterns) {

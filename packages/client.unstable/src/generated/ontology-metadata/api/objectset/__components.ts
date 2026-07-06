@@ -26,8 +26,7 @@ import type {
   ConditionValueId as _api_types_ConditionValueId,
   RelationSide as _api_types_RelationSide,
 } from "../types/__components.js";
-export interface AllPropertiesPropertySet {
-}
+export interface AllPropertiesPropertySet {}
 /**
  * An ObjectSetFilter used to combine multiple ObjectSetFilters.
  * An object matches an AndFilter iff it matches all of the filters.
@@ -162,8 +161,7 @@ export interface MultipassAttribute {
 /**
  * The current user's Multipass user id.
  */
-export interface MultipassUserId {
-}
+export interface MultipassUserId {}
 /**
  * An object matches a NotFilter iff it does not match the provided filter.
  */

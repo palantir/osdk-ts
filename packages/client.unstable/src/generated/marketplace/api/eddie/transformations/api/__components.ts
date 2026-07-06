@@ -25,12 +25,9 @@ export interface AggregateExpressionParameterType {
 /**
  * A decimal type describing a decimal with any precision/scale.
  */
-export interface AnyDecimalType {
-}
-export interface AnyStructType {
-}
-export interface AnyType {
-}
+export interface AnyDecimalType {}
+export interface AnyStructType {}
+export interface AnyType {}
 export interface ArrayLiteral {
   values: Array<LiteralParameter>;
 }
@@ -43,20 +40,16 @@ export interface ArrayV2Type {
 export interface BinaryLiteral {
   value: string;
 }
-export interface BinaryType {
-}
+export interface BinaryType {}
 export interface BooleanLiteral {
   value: boolean;
 }
-export interface BooleanType {
-}
-export interface ByteType {
-}
+export interface BooleanType {}
+export interface ByteType {}
 /**
  * This literal will be used as a column name and must match rules for column names.
  */
-export interface ColumnNameLiteralConstraint {
-}
+export interface ColumnNameLiteralConstraint {}
 /**
  * Definition type: ColumnPairParameterType
  */
@@ -256,8 +249,7 @@ export interface DateLiteral {
 export interface DatetimeLiteral {
   value: string;
 }
-export interface DateType {
-}
+export interface DateType {}
 /**
  * Value stored in string to preserve exact scale and value
  */
@@ -275,8 +267,7 @@ export type Direction = "ASCENDING" | "DESCENDING";
 export interface DoubleLiteral {
   value: number | "NaN" | "Infinity" | "-Infinity";
 }
-export interface DoubleType {
-}
+export interface DoubleType {}
 export type EnumId = string;
 export interface EnumParameter {
   value: string;
@@ -343,10 +334,8 @@ export interface ExpressionParameterType {
  * Parameter representing an input containing files.
  * Instance type: DatasetParameter
  */
-export interface FilesInputParameterType {
-}
-export interface FloatType {
-}
+export interface FilesInputParameterType {}
+export interface FloatType {}
 /**
  * Parameter representing generator expression.
  * Instance type: InstantiatedColumnExpression
@@ -438,8 +427,7 @@ export interface InstantiateTupleAdapter {
 export interface IntegerLiteral {
   value: number;
 }
-export interface IntegerType {
-}
+export interface IntegerType {}
 export type JoinTypeParameter =
   | "INNER"
   | "LEFT_OUTER"
@@ -452,8 +440,7 @@ export type JoinTypeParameter =
  * Parameter representing join type, i.e. left, right, inner, etc.
  * Instance type: JoinParameterType
  */
-export interface JoinTypeParameterType {
-}
+export interface JoinTypeParameterType {}
 /**
  * Definition type: ListParameterType
  */
@@ -567,13 +554,11 @@ export interface LogicalType {
 export interface LongLiteral {
   value: number;
 }
-export interface LongType {
-}
+export interface LongType {}
 /**
  * References a single input element of a map operation. This is the argument to the map function.
  */
-export interface MapElementInput {
-}
+export interface MapElementInput {}
 /**
  * Takes a collection (list, set) and maps every element according to ParameterAdapter
  */
@@ -596,8 +581,7 @@ export interface MapV2Type {
   keyType: ExplicitType;
   valueType: ExplicitType;
 }
-export interface NullLiteral {
-}
+export interface NullLiteral {}
 export interface Parameter_primitive {
   type: "primitive";
   primitive: PrimitiveParameter;
@@ -935,8 +919,7 @@ export interface RegexParameter {
 /**
  * Instance type: RegexParameter
  */
-export interface RegexParameterType {
-}
+export interface RegexParameterType {}
 export interface ResourceIdentifierParameter {
   rid: string;
 }
@@ -968,8 +951,7 @@ export interface SetParameterType {
   minSize?: number | null | undefined;
   subType: PrimitiveInputParameterType;
 }
-export interface ShortType {
-}
+export interface ShortType {}
 export interface SortColumn {
   columnName: string;
   direction: Direction;
@@ -998,8 +980,7 @@ export interface StringLiteral {
 export interface StringToColumnAdapter {
   string: Parameter;
 }
-export interface StringType {
-}
+export interface StringType {}
 export interface StructElement {
   name: string;
   type: DataType;
@@ -1017,8 +998,7 @@ export interface StructLocatorParameter {
 /**
  * Instance type: StructLocatorParameter
  */
-export interface StructLocatorParameterType {
-}
+export interface StructLocatorParameterType {}
 export interface StructType {
   fields: Array<StructElement>;
 }
@@ -1032,8 +1012,7 @@ export interface StructV2Type {
 export interface TabularInputParameterType {
   isStreamable: boolean;
 }
-export interface TimestampType {
-}
+export interface TimestampType {}
 /**
  * Matches definition type: TimeZoneParameterType
  */
@@ -1045,8 +1024,7 @@ export interface TimeZoneParameter {
  *
  * This is not an enum because we don't want to maintain a list of valid time zones.
  */
-export interface TimeZoneParameterType {
-}
+export interface TimeZoneParameterType {}
 /**
  * Use the output of another transform as input.
  *
@@ -1155,8 +1133,7 @@ export type WindowParameter = WindowParameter_partitioned;
  * Parameter representing a window
  * Instance type: WindowParameter
  */
-export interface WindowParameterType {
-}
+export interface WindowParameterType {}
 /**
  * Parameter representing a window
  * Instance type: InstantiatedWindow

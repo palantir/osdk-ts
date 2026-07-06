@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MarketplaceMetadataVersion as _api_MarketplaceMetadataVersion,
   MarketplaceRid as _api_MarketplaceRid,
@@ -27,11 +28,11 @@ import type {
 export async function getMarketplaceMetadataAtVersion(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  version: _api_MarketplaceMetadataVersion,
+  version: _api_MarketplaceMetadataVersion
 ): Promise<_api_VersionedMarketplaceMetadata> {
   return conjureFetch(
     ctx,
     `/marketplaces/${marketplaceRid}/metadata/${version}`,
-    "GET",
+    "GET"
   );
 }

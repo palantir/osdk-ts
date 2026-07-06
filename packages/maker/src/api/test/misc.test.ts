@@ -17,7 +17,9 @@
 import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { addDependency } from "../addDependency.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineInterface } from "../defineInterface.js";
@@ -383,45 +385,55 @@ describe("Miscellaneous Tests", () => {
       `);
     });
     it("Export files are generated correctly", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "export_files_are_generated_correctly",
-      ));
-      await defineOntology("com.my.package.", () => {
-        const mySpt = defineSharedPropertyType({
-          apiName: "mySpt",
-          type: "string",
-        });
-        const myInterface = defineInterface({
-          apiName: "myInterface",
-          properties: {
-            mySpt,
-          },
-        });
-        const myObject = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "My Object",
-          pluralDisplayName: "myObjects",
-          apiName: "myObject",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          implementsInterfaces: [{
-            implements: myInterface,
-            propertyMapping: [{
-              interfaceProperty: "com.my.package.mySpt",
-              mapsTo: "bar",
-            }],
-          }],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "export_files_are_generated_correctly"
+        )
+      );
+      await defineOntology(
+        "com.my.package.",
+        () => {
+          const mySpt = defineSharedPropertyType({
+            apiName: "mySpt",
+            type: "string",
+          });
+          const myInterface = defineInterface({
+            apiName: "myInterface",
+            properties: {
+              mySpt,
+            },
+          });
+          const myObject = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "My Object",
+            pluralDisplayName: "myObjects",
+            apiName: "myObject",
+            primaryKeyPropertyApiName: "bar",
+            properties: { bar: { type: "string" } },
+            implementsInterfaces: [
+              {
+                implements: myInterface,
+                propertyMapping: [
+                  {
+                    interfaceProperty: "com.my.package.mySpt",
+                    mapsTo: "bar",
+                  },
+                ],
+              },
+            ],
+          });
+        },
+        generatedDir
+      );
 
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/interface-types/myInterface.ts"),
-          "utf8",
-        ),
+          "utf8"
+        )
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -497,8 +509,8 @@ describe("Miscellaneous Tests", () => {
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/object-types/myObject.ts"),
-          "utf8",
-        ),
+          "utf8"
+        )
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -599,8 +611,8 @@ describe("Miscellaneous Tests", () => {
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/shared-property-types/mySpt.ts"),
-          "utf8",
-        ),
+          "utf8"
+        )
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -634,41 +646,47 @@ describe("Miscellaneous Tests", () => {
       });
     });
     it("Extended interfaces are propagated to the static objects", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "extended_interfaces_are_propagated_to_the_static_objects",
-      ));
-      await defineOntology("com.palantir.", () => {
-        const property1 = defineSharedPropertyType({
-          apiName: "property1",
-          type: "string",
-        });
-        const property2 = defineSharedPropertyType({
-          apiName: "property2",
-          type: "string",
-        });
-        const parentInterface = defineInterface({
-          apiName: "parentInterface",
-          properties: {
-            property1,
-          },
-        });
-        const childInterface = defineInterface({
-          apiName: "childInterface",
-          properties: {
-            property2,
-          },
-          extends: [parentInterface],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "extended_interfaces_are_propagated_to_the_static_objects"
+        )
+      );
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const property1 = defineSharedPropertyType({
+            apiName: "property1",
+            type: "string",
+          });
+          const property2 = defineSharedPropertyType({
+            apiName: "property2",
+            type: "string",
+          });
+          const parentInterface = defineInterface({
+            apiName: "parentInterface",
+            properties: {
+              property1,
+            },
+          });
+          const childInterface = defineInterface({
+            apiName: "childInterface",
+            properties: {
+              property2,
+            },
+            extends: [parentInterface],
+          });
+        },
+        generatedDir
+      );
 
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/interface-types/childInterface.ts"),
-          "utf8",
-        ),
+          "utf8"
+        )
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -836,8 +854,8 @@ describe("Miscellaneous Tests", () => {
         displayName: "objectDef",
         pluralDisplayName: "objectDefs",
         properties: {
-          "property1": { type: "string", displayName: "property1" },
-          "property2": { type: "string", displayName: "property2" },
+          property1: { type: "string", displayName: "property1" },
+          property2: { type: "string", displayName: "property2" },
         },
         implementsInterfaces: [
           {
@@ -1466,12 +1484,14 @@ describe("Miscellaneous Tests", () => {
 
   describe("Dependencies", () => {
     it("Correctly adds dependencies", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "correctly_adds_dependencies",
-      ));
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "correctly_adds_dependencies"
+        )
+      );
       await defineOntology(
         "com.palantir.",
         () => {
@@ -1484,19 +1504,19 @@ describe("Miscellaneous Tests", () => {
           });
         },
         generatedDir,
-        path.join(generatedDir, "dependencies.json"),
+        path.join(generatedDir, "dependencies.json")
       );
 
       const packageJson = JSON.parse(
         fs.readFileSync(
           path.join(__dirname, "..", "..", "..", "package.json"),
-          "utf8",
-        ),
+          "utf8"
+        )
       );
       expect(packageJson.version).toBeDefined();
 
       expect(
-        fs.readFileSync(path.join(generatedDir, "dependencies.json"), "utf8"),
+        fs.readFileSync(path.join(generatedDir, "dependencies.json"), "utf8")
       ).toMatchInlineSnapshot(`
         "{
           "com.palantir": "${packageJson.version}"
@@ -1504,11 +1524,10 @@ describe("Miscellaneous Tests", () => {
       `);
 
       expect(
-        fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
-      )
-        .toContain(
-          `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
-        );
+        fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8")
+      ).toContain(
+        `addDependency("com.palantir", new URL(import.meta.url).pathname);`
+      );
 
       fs.rmSync(path.join(generatedDir, ".."), {
         recursive: true,

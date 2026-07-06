@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest,
   GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse,
@@ -32,7 +33,7 @@ import type {
  */
 export async function getDeprecationUsage(
   ctx: ConjureContext,
-  request: _api_usage_GetDeprecationUsageRequest,
+  request: _api_usage_GetDeprecationUsageRequest
 ): Promise<_api_usage_GetDeprecationUsageResponse> {
   return conjureFetch(ctx, `/usage/search/getDeprecationUsage`, "PUT", request);
 }

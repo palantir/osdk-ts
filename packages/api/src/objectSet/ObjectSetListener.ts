@@ -31,9 +31,7 @@ export namespace ObjectSetSubscription {
     /**
      * Specific objects have changed and can be immediately updated
      */
-    onChange?: (
-      objectUpdate: ObjectUpdate<O, P, R>,
-    ) => void;
+    onChange?: (objectUpdate: ObjectUpdate<O, P, R>) => void;
 
     /**
      * The subscription has been successfully established and updates can be expected to be received.
@@ -79,7 +77,8 @@ export namespace ObjectSetSubscription {
      */
     includeRid?: AllFalse<
       PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">
-    > extends true ? R
+    > extends true
+      ? R
       : false;
   }
 }
@@ -89,7 +88,8 @@ type ObjectUpdate<
   P extends PropertyKeys<O>,
   R extends boolean = false,
 > = {
-  object: R extends false ? Osdk.Instance<O, never, P>
+  object: R extends false
+    ? Osdk.Instance<O, never, P>
     : Osdk.Instance<O, "$rid", P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
@@ -99,9 +99,8 @@ type PropertyTypesOnDefMatchesType<
   P extends PropertyKeys<Q>,
   T extends WirePropertyTypes,
 > = {
-  [K in P]: CompileTimeMetadata<Q>["properties"][K][
-    "type"
-  ] extends T ? true
+  [K in P]: CompileTimeMetadata<Q>["properties"][K]["type"] extends T
+    ? true
     : false;
 };
 

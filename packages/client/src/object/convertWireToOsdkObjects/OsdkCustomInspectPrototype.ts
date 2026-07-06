@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type { inspect, InspectOptionsStylized } from "node:util";
+
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+
 import type { HolderBase } from "./InternalSymbols.js";
 import {
   InterfaceDefRef,
@@ -24,7 +26,7 @@ import {
 } from "./InternalSymbols.js";
 
 const nodejsUtilInspectCustom: unique symbol = Symbol.for(
-  "nodejs.util.inspect.custom",
+  "nodejs.util.inspect.custom"
 );
 
 export const OsdkCustomInspectPrototype: {
@@ -42,48 +44,41 @@ export const OsdkCustomInspectPrototype: {
  * @returns
  */
 function customInspect(
-  this:
-    & HolderBase<ObjectOrInterfaceDefinition>
-    & Osdk<any>,
+  this: HolderBase<ObjectOrInterfaceDefinition> & Osdk<any>,
   _depth: number,
   options: InspectOptionsStylized,
-  localInspect: typeof inspect,
+  localInspect: typeof inspect
 ): string {
   const newOptions = {
     ...options,
     depth: options.depth == null ? null : options.depth - 1,
   };
 
-  let ret = `Osdk<${
-    options.stylize(
-      this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName ?? "",
-      "special",
-    )
-  }> {\n`;
+  let ret = `Osdk<${options.stylize(
+    this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName ?? "",
+    "special"
+  )}> {\n`;
 
-  for (
-    const k of new Set([
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      ...Reflect.ownKeys(this),
-    ])
-  ) {
+  for (const k of new Set([
+    "$apiName",
+    "$objectType",
+    "$primaryKey",
+    ...Reflect.ownKeys(this),
+  ])) {
     if (typeof k === "symbol") continue;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
-    ret += `  ${options.stylize(k.toString(), "undefined")}: ${
-      localInspect(this[k as any], newOptions)
-    }\n`;
+    ret += `  ${options.stylize(k.toString(), "undefined")}: ${localInspect(
+      this[k as any],
+      newOptions
+    )}\n`;
   }
 
   if (this[UnderlyingOsdkObject] !== this) {
     ret += "\n";
-    ret += `  ${options.stylize("$as", "special")}: ${
-      localInspect(this[UnderlyingOsdkObject], newOptions).replace(
-        /\n/g,
-        `\n  `,
-      )
-    }`;
+    ret += `  ${options.stylize("$as", "special")}: ${localInspect(
+      this[UnderlyingOsdkObject],
+      newOptions
+    ).replace(/\n/gu, `\n  `)}`;
     ret += "\n";
   }
 

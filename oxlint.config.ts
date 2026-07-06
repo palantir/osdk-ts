@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { defineConfig } from "oxlint";
 import core from "ultracite/oxlint/core";
 import react from "ultracite/oxlint/react";
@@ -51,13 +67,11 @@ export default defineConfig({
     "typescript/no-explicit-any": "warn",
     "eqeqeq": ["error", "always", { "null": "never" }],
     "no-eq-null": "off",
-    "unicorn/custom-error-definition": "off",
-    "default-param-last": "off",
+    "unicorn/custom-error-definition": "error",
+    "default-param-last": "error",
     "require-await": "off",
     "typescript/require-await": "off",
-    // Adding the `u` flag to an existing regex can change its matching semantics;
-    // leave published runtime regexes untouched in this tooling migration.
-    "require-unicode-regexp": "off",
+    "require-unicode-regexp": "error",
 
     // --- Repo-wide cosmetic / high-churn policy ---
     // These rules from Ultracite's strict preset are auto-fixable but purely
@@ -294,13 +308,16 @@ export default defineConfig({
     // breaks typechecking at the use site (e.g. spreading the result into a
     // non-optional object type). Leave index access as authored.
     "unicorn/prefer-at": "off",
+    // The rule's suggested replacements (`import.meta.dirname` / `filename`)
+    // require Node >=20.11, but the repo still supports Node 18 (engines
+    // >=18.19.0, and the CI test matrix runs transpile/codegen on Node 18).
+    // Enabling it would nudge contributors toward an API that throws on our
+    // supported floor. Keep it off until Node 18 is dropped, then re-enable.
+    "unicorn/prefer-import-meta-properties": "off",
   },
 
   ignorePatterns: [
     ...(core.ignorePatterns ?? []),
-    "**/*.js",
-    "**/*.mjs",
-    "**/*.cjs",
     "**/tsup.config.bundled_*",
     // vitest.config.mts is generated/owned by monorepolint (formatted with dprint);
     // don't let oxlint --fix reorder it or //#check-mrl will fail.
@@ -315,6 +332,8 @@ export default defineConfig({
     "examples/**/*",
     "packages/monorepo.*/**",
     "google-font-mocked-response.js",
+    // Generated mock service worker; not hand-written source.
+    "**/mockServiceWorker.js",
     "tests/",
   ],
 

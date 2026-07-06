@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { NamespaceRid as _api_NamespaceRid } from "../../../api/__components.js";
 import type { InstallManagerNamespace as _installmanager_api_InstallManagerNamespace } from "../__components.js";
 
@@ -26,11 +27,11 @@ import type { InstallManagerNamespace as _installmanager_api_InstallManagerNames
  */
 export async function getInstallManagerNamespace(
   ctx: ConjureContext,
-  namespaceRid: _api_NamespaceRid,
+  namespaceRid: _api_NamespaceRid
 ): Promise<_installmanager_api_InstallManagerNamespace> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}`,
-    "GET",
+    "GET"
   );
 }

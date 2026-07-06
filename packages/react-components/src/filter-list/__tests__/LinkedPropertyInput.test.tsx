@@ -386,8 +386,8 @@ describe("LinkedPropertyInput", () => {
       );
 
       // Both rows render — "Marketing" from aggregation, "Research" synthesized
-      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
-      const researchRow = screen.getByRole("button", { name: /Research/ });
+      const marketingRow = screen.getByRole("button", { name: /Marketing/u });
+      const researchRow = screen.getByRole("button", { name: /Research/u });
 
       expect(marketingRow.getAttribute("aria-pressed")).toBe("true");
       expect(researchRow.getAttribute("aria-pressed")).toBe("true");
@@ -529,8 +529,8 @@ describe("LinkedPropertyInput", () => {
 
       // Both rows render — "Alice" from scoped, "Bob" synthesized from
       // emptySource as a count=0 filtered-out row.
-      expect(screen.getByRole("button", { name: /Alice/ })).toBeTruthy();
-      const bobRow = screen.getByRole("button", { name: /Bob/ });
+      expect(screen.getByRole("button", { name: /Alice/u })).toBeTruthy();
+      const bobRow = screen.getByRole("button", { name: /Bob/u });
       expect(bobRow.hasAttribute("data-filtered-out")).toBe(true);
     });
   });

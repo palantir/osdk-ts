@@ -15,11 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BlockSetInstallationJobRid as _api_BlockSetInstallationJobRid,
   ModifyJobDraftInstallationsRequest as _api_ModifyJobDraftInstallationsRequest,
-  ModifyJobDraftInstallationsResponse
-    as _api_ModifyJobDraftInstallationsResponse,
+  ModifyJobDraftInstallationsResponse as _api_ModifyJobDraftInstallationsResponse,
 } from "../__components.js";
 
 /**
@@ -32,12 +32,12 @@ import type {
 export async function modifyJobDraftInstallations(
   ctx: ConjureContext,
   jobRid: _api_BlockSetInstallationJobRid,
-  request: _api_ModifyJobDraftInstallationsRequest,
+  request: _api_ModifyJobDraftInstallationsRequest
 ): Promise<_api_ModifyJobDraftInstallationsResponse> {
   return conjureFetch(
     ctx,
     `/installation-job-draft/${jobRid}/installations/modify`,
     "POST",
-    request,
+    request
   );
 }

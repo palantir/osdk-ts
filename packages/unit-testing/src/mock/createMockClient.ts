@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import { createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
+
 import type {
   MockClient,
   ObjectSetStubCallback,
@@ -47,12 +48,14 @@ type QueryStub = {
   error?: Error;
 };
 
-type QueryReturnTypeFromDef<Q extends QueryDefinition> = ReturnType<
-  CompileTimeMetadata<Q>["signature"]
-> extends Promise<infer R> ? R : never;
+type QueryReturnTypeFromDef<Q extends QueryDefinition> =
+  ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
+    ? R
+    : never;
 
 type QueryParamsFromDef<Q extends QueryDefinition> =
-  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P] ? P
+  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
+    ? P
     : undefined;
 
 // Well-known string key used by Foundry Platform APIs to pull the
@@ -66,9 +69,9 @@ export function createMockClient(): MockClient {
 
   const resolve = (objectType: string, calls: Call[]): unknown =>
     resolveStub(
-      stubs.filter(s => s.objectType === objectType),
+      stubs.filter((s) => s.objectType === objectType),
       calls,
-      `No stub for request\n`,
+      `No stub for request\n`
     );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
@@ -86,9 +89,7 @@ export function createMockClient(): MockClient {
     throw new Error(msg);
   };
 
-  const mockClient = ((
-    def: ObjectOrInterfaceDefinition | QueryDefinition,
-  ) => {
+  const mockClient = ((def: ObjectOrInterfaceDefinition | QueryDefinition) => {
     invariant("apiName" in def, "Expected ObjectType, Interface, or Query");
 
     if (def.type === "query") {
@@ -103,14 +104,13 @@ export function createMockClient(): MockClient {
       };
     }
 
-    return createMockObjectSetWithResolver(
-      def,
-      (calls) => resolve(def.apiName, calls),
+    return createMockObjectSetWithResolver(def, (calls) =>
+      resolve(def.apiName, calls)
     );
   }) as MockClient;
 
   mockClient.when = <T>(
-    callback: StubPatternCallback<T>,
+    callback: StubPatternCallback<T>
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;
 
@@ -135,12 +135,9 @@ export function createMockClient(): MockClient {
     } as unknown as StubBuilderFor<T>;
   };
 
-  mockClient.whenObjectSet = <
-    Q extends ObjectOrInterfaceDefinition,
-    T,
-  >(
+  mockClient.whenObjectSet = <Q extends ObjectOrInterfaceDefinition, T>(
     objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>,
+    callback: ObjectSetStubCallback<Q, T>
   ): StubBuilderFor<T> => {
     let capturedCalls: Call[] | undefined;
 
@@ -149,7 +146,7 @@ export function createMockClient(): MockClient {
       (calls) => {
         capturedCalls = calls;
         return { data: [], nextPageToken: undefined };
-      },
+      }
     );
 
     void callback(capturingProxy);
@@ -171,7 +168,7 @@ export function createMockClient(): MockClient {
 
   mockClient.whenQuery = <Q extends QueryDefinition>(
     query: Q,
-    params?: QueryParamsFromDef<Q>,
+    params?: QueryParamsFromDef<Q>
   ): QueryStubBuilder<QueryReturnTypeFromDef<Q>> => {
     return {
       thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
@@ -207,7 +204,7 @@ export function createMockClient(): MockClient {
   Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
     value: createPlatformClient(
       "https://mock.invalid/",
-      async () => "mock-token",
+      async () => "mock-token"
     ),
     enumerable: false,
   });

@@ -36,33 +36,27 @@ export const TimeDurationMapping: {
   year: "YEARS";
   years: "YEARS";
 } = {
-  "sec": "SECONDS",
-  "seconds": "SECONDS",
-  "min": "MINUTES",
-  "minute": "MINUTES",
-  "minutes": "MINUTES",
-  "hr": "HOURS",
-  "hrs": "HOURS",
-  "hour": "HOURS",
-  "hours": "HOURS",
-  "day": "DAYS",
-  "days": "DAYS",
-  "wk": "WEEKS",
-  "week": "WEEKS",
-  "weeks": "WEEKS",
-  "mos": "MONTHS",
-  "month": "MONTHS",
-  "months": "MONTHS",
-  "yr": "YEARS",
-  "year": "YEARS",
-  "years": "YEARS",
+  sec: "SECONDS",
+  seconds: "SECONDS",
+  min: "MINUTES",
+  minute: "MINUTES",
+  minutes: "MINUTES",
+  hr: "HOURS",
+  hrs: "HOURS",
+  hour: "HOURS",
+  hours: "HOURS",
+  day: "DAYS",
+  days: "DAYS",
+  wk: "WEEKS",
+  week: "WEEKS",
+  weeks: "WEEKS",
+  mos: "MONTHS",
+  month: "MONTHS",
+  months: "MONTHS",
+  yr: "YEARS",
+  year: "YEARS",
+  years: "YEARS",
 } satisfies Record<
   string,
-  | "YEARS"
-  | "MONTHS"
-  | "WEEKS"
-  | "DAYS"
-  | "HOURS"
-  | "MINUTES"
-  | "SECONDS"
+  "YEARS" | "MONTHS" | "WEEKS" | "DAYS" | "HOURS" | "MINUTES" | "SECONDS"
 >;

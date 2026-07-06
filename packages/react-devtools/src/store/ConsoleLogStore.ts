@@ -46,7 +46,7 @@ const MAX_STRING_SIZE = 10240; // 10KB
 const MAX_TOTAL_SIZE = 10240; // 10KB
 
 const INTERNAL_FRAME_PATTERN =
-  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/;
+  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/u;
 
 // BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
 // pattern from its createStyle(). We filter these from the devtools console
@@ -61,9 +61,9 @@ function isBrowserLoggerCall(args: unknown[]): boolean {
   );
 }
 
-const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/;
-const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/;
-const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/;
+const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/u;
+const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/u;
+const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/u;
 
 function serializeValue(
   value: unknown,

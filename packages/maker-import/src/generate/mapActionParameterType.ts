@@ -52,7 +52,7 @@ const LIST_VARIANT_MAP: Record<string, ActionParameter["type"]> = {
 };
 
 function mapStructFieldType(
-  fieldType: Ontologies.OntologyDataType,
+  fieldType: Ontologies.OntologyDataType
 ): OntologyIrStructFieldBaseParameterType | undefined {
   switch (fieldType.type) {
     case "boolean":
@@ -80,7 +80,7 @@ function mapStructFieldType(
 }
 
 function mapGatewayStructFieldsToIr(
-  dataType: Ontologies.OntologyStructType,
+  dataType: Ontologies.OntologyStructType
 ): Record<string, OntologyIrStructFieldBaseParameterType> | undefined {
   const fields = dataType.fields;
   if (!fields) {
@@ -97,7 +97,7 @@ function mapGatewayStructFieldsToIr(
       structFieldTypes[field.name] = irType;
     } else {
       consola.warn(
-        `Skipping struct param field "${field.name}": unsupported type "${field.fieldType.type}"`,
+        `Skipping struct param field "${field.name}": unsupported type "${field.fieldType.type}"`
       );
     }
   }
@@ -111,7 +111,7 @@ function mapGatewayStructFieldsToIr(
  * Returns undefined for unsupported types (with a warning).
  */
 export function mapActionParameterType(
-  dataType: Ontologies.ActionParameterType,
+  dataType: Ontologies.ActionParameterType
 ): ActionParameterType | undefined {
   const simpleType = SIMPLE_PARAM_TYPES[dataType.type];
   if (simpleType !== undefined) {
@@ -174,7 +174,7 @@ export function mapActionParameterType(
       }
 
       consola.warn(
-        `Skipping array parameter with unsupported subType: ${subType.type}`,
+        `Skipping array parameter with unsupported subType: ${subType.type}`
       );
       return undefined;
     }

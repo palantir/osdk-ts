@@ -52,11 +52,11 @@ function windowError(
 }
 
 function getErrorsCount(): number {
-  const heading = screen.getByText(/^Errors$/).closest("div");
+  const heading = screen.getByText(/^Errors$/u).closest("div");
   if (heading == null) {
     return 0;
   }
-  const countSpan = within(heading).getAllByText(/^\d+$/);
+  const countSpan = within(heading).getAllByText(/^\d+$/u);
   return Number.parseInt(countSpan[0].textContent ?? "0", 10);
 }
 

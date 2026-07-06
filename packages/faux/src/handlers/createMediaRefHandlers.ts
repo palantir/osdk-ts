@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import { randomUUID } from "node:crypto";
+
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
@@ -29,38 +30,40 @@ const transformationJobs = new Map<
 
 export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry,
+  fauxFoundry
 ) => [
   /**
    * Load media metadata
    */
   OntologiesV2.MediaReferenceProperties.getMediaMetadata(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, primaryKey, propertyName } },
-    ) => {
+    async ({
+      params: { ontologyApiName, objectType, primaryKey, propertyName },
+    }) => {
       return fauxFoundry
         .getDataStore(ontologyApiName)
-        .getMediaOrThrow(objectType, primaryKey, propertyName)
-        .metaData;
-    },
+        .getMediaOrThrow(objectType, primaryKey, propertyName).metaData;
+    }
   ),
   /**
    * Read media content
    */
   OntologiesV2.MediaReferenceProperties.getMediaContent(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, primaryKey, propertyName } },
-    ) => {
-      const { content, metaData: { mediaType } } = fauxFoundry
+    async ({
+      params: { ontologyApiName, objectType, primaryKey, propertyName },
+    }) => {
+      const {
+        content,
+        metaData: { mediaType },
+      } = fauxFoundry
         .getDataStore(ontologyApiName)
         .getMediaOrThrow(objectType, primaryKey, propertyName);
 
       return new Response(content, {
         headers: { "Content-Type": mediaType },
       });
-    },
+    }
   ),
 
   /**
@@ -75,14 +78,15 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     async () => ({
       type: "untyped" as const,
       sizeBytes: 25,
-    }),
+    })
   ),
 
   OntologiesV2.MediaReferenceProperties.upload(
     baseUrl,
-    async (
-      { params: { ontologyApiName, objectType, propertyName }, request },
-    ) => {
+    async ({
+      params: { ontologyApiName, objectType, propertyName },
+      request,
+    }) => {
       const { mediaItemPath } = requireSearchParams(["mediaItemPath"], request);
 
       return fauxFoundry
@@ -92,28 +96,25 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
           propertyName,
           await request.arrayBuffer(),
           request.headers.get("Content-Type") ?? "application/octet-stream",
-          mediaItemPath,
+          mediaItemPath
         );
-    },
+    }
   ),
 
   /**
    * Initiate a media transformation job
    */
-  OntologiesV2.MediaReferenceProperties.transform(
-    baseUrl,
-    async () => {
-      const jobId = randomUUID();
-      transformationJobs.set(jobId, {
-        status: "SUCCESSFUL",
-        content: new TextEncoder().encode("transformed-content").buffer,
-      });
-      return {
-        jobId,
-        status: "SUCCESSFUL" as const,
-      };
-    },
-  ),
+  OntologiesV2.MediaReferenceProperties.transform(baseUrl, async () => {
+    const jobId = randomUUID();
+    transformationJobs.set(jobId, {
+      status: "SUCCESSFUL",
+      content: new TextEncoder().encode("transformed-content").buffer,
+    });
+    return {
+      jobId,
+      status: "SUCCESSFUL" as const,
+    };
+  }),
 
   /**
    * Get transformation job status
@@ -126,7 +127,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
         return { jobId: transformationJobId, status: "FAILED" as const };
       }
       return { jobId: transformationJobId, status: job.status };
-    },
+    }
   ),
 
   /**
@@ -142,6 +143,6 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
       return new Response(job.content, {
         headers: { "Content-Type": "application/octet-stream" },
       });
-    },
+    }
   ),
 ];

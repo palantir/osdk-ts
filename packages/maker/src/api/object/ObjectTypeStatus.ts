@@ -19,7 +19,7 @@ export type ObjectTypeStatus =
   | "experimental"
   | "example"
   | {
-    type: "deprecated";
-    message: string;
-    deadline: string;
-  };
+      type: "deprecated";
+      message: string;
+      deadline: string;
+    };

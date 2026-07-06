@@ -36,7 +36,7 @@ export interface OpenAiAssistantToolCall {
 
 export function convertPrompt(
   prompt: LanguageModelV3Prompt,
-  warnings: Array<SharedV3Warning>,
+  warnings: Array<SharedV3Warning>
 ): Array<OpenAiMessage> {
   const messages: Array<OpenAiMessage> = [];
 
@@ -49,7 +49,7 @@ export function convertPrompt(
 
 function convertMessage(
   message: LanguageModelV3Message,
-  warnings: Array<SharedV3Warning>,
+  warnings: Array<SharedV3Warning>
 ): Array<OpenAiMessage> {
   switch (message.role) {
     case "system":
@@ -92,9 +92,10 @@ function convertMessage(
               type: "function",
               function: {
                 name: part.toolName,
-                arguments: typeof part.input === "string"
-                  ? part.input
-                  : JSON.stringify(part.input ?? {}),
+                arguments:
+                  typeof part.input === "string"
+                    ? part.input
+                    : JSON.stringify(part.input ?? {}),
               },
             });
             break;
@@ -104,17 +105,18 @@ function convertMessage(
             warnings.push({
               type: "unsupported",
               feature: `assistant ${part.type} content`,
-              details:
-                `"${part.type}" parts in assistant messages are not supported in v0 — ignored`,
+              details: `"${part.type}" parts in assistant messages are not supported in v0 — ignored`,
             });
             break;
         }
       }
-      return [{
-        role: "assistant",
-        content: text.length > 0 ? text : null,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-      }];
+      return [
+        {
+          role: "assistant",
+          content: text.length > 0 ? text : null,
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+      ];
     }
 
     case "tool":
@@ -125,11 +127,10 @@ function convertMessage(
             warnings.push({
               type: "unsupported",
               feature: `tool ${part.type} content`,
-              details:
-                `"${part.type}" parts in tool messages are not supported in v0 — ignored`,
+              details: `"${part.type}" parts in tool messages are not supported in v0 — ignored`,
             });
             return false;
-          },
+          }
         )
         .map((part) => ({
           role: "tool" as const,
@@ -141,7 +142,7 @@ function convertMessage(
 
 function stringifyToolResult(
   output: LanguageModelV3ToolResultOutput,
-  warnings: Array<SharedV3Warning>,
+  warnings: Array<SharedV3Warning>
 ): string {
   switch (output.type) {
     case "text":

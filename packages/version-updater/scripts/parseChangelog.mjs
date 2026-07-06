@@ -18,8 +18,9 @@
 
 /**
  * @typedef {Object} VersionMapping
- * @property {string} packageVersion
- * @property {Record<string, string>} peerVersions
+ * @property {string} packageVersion The package's own version for this entry.
+ * @property {Record<string, string>} peerVersions Map of peer package name to
+ *   the version it was published against at that package version.
  */
 
 /**
@@ -31,11 +32,11 @@
  * @returns {VersionMapping[]} Array of version mappings
  */
 export function parseChangelog(content, peerPackageNames) {
-  const versionBlocks = content.split(/^## /m).slice(1);
+  const versionBlocks = content.split(/^## /mu).slice(1);
 
   return versionBlocks
     .map((block) => {
-      const versionMatch = block.match(/^(\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?)/);
+      const versionMatch = block.match(/^(\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?)/u);
       if (!versionMatch) {
         return undefined;
       }
@@ -43,9 +44,10 @@ export function parseChangelog(content, peerPackageNames) {
       /** @type {Record<string, string>} */
       const peerVersions = {};
       for (const peerName of peerPackageNames) {
-        const escaped = peerName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
         const match = block.match(
-          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`),
+          // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
         );
         if (match) {
           peerVersions[peerName] = match[1];
@@ -63,6 +65,6 @@ export function parseChangelog(content, peerPackageNames) {
     })
     .filter(
       /** @returns {m is VersionMapping} */
-      (m) => m != null,
+      (m) => m != null
     );
 }

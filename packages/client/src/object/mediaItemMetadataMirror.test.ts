@@ -124,81 +124,63 @@ import { describe, expectTypeOf, it } from "vitest";
  */
 describe("MediaItemMetadata mirror", () => {
   it("matches the platform union", () => {
-    expectTypeOf<ApiMediaItemMetadata>()
-      .toEqualTypeOf<PlatformMediaItemMetadata>();
+    expectTypeOf<ApiMediaItemMetadata>().toEqualTypeOf<PlatformMediaItemMetadata>();
   });
 
   describe("variant interfaces", () => {
     it("DocumentMediaItemMetadata", () => {
-      expectTypeOf<ApiDocumentMediaItemMetadata>()
-        .toEqualTypeOf<PlatformDocumentMediaItemMetadata>();
+      expectTypeOf<ApiDocumentMediaItemMetadata>().toEqualTypeOf<PlatformDocumentMediaItemMetadata>();
     });
     it("ImageryMediaItemMetadata", () => {
-      expectTypeOf<ApiImageryMediaItemMetadata>()
-        .toEqualTypeOf<PlatformImageryMediaItemMetadata>();
+      expectTypeOf<ApiImageryMediaItemMetadata>().toEqualTypeOf<PlatformImageryMediaItemMetadata>();
     });
     it("AudioMediaItemMetadata", () => {
-      expectTypeOf<ApiAudioMediaItemMetadata>()
-        .toEqualTypeOf<PlatformAudioMediaItemMetadata>();
+      expectTypeOf<ApiAudioMediaItemMetadata>().toEqualTypeOf<PlatformAudioMediaItemMetadata>();
     });
     it("VideoMediaItemMetadata", () => {
-      expectTypeOf<ApiVideoMediaItemMetadata>()
-        .toEqualTypeOf<PlatformVideoMediaItemMetadata>();
+      expectTypeOf<ApiVideoMediaItemMetadata>().toEqualTypeOf<PlatformVideoMediaItemMetadata>();
     });
     it("DicomMediaItemMetadata", () => {
-      expectTypeOf<ApiDicomMediaItemMetadata>()
-        .toEqualTypeOf<PlatformDicomMediaItemMetadata>();
+      expectTypeOf<ApiDicomMediaItemMetadata>().toEqualTypeOf<PlatformDicomMediaItemMetadata>();
     });
     it("EmailMediaItemMetadata", () => {
-      expectTypeOf<ApiEmailMediaItemMetadata>()
-        .toEqualTypeOf<PlatformEmailMediaItemMetadata>();
+      expectTypeOf<ApiEmailMediaItemMetadata>().toEqualTypeOf<PlatformEmailMediaItemMetadata>();
     });
     it("Model3dMediaItemMetadata", () => {
-      expectTypeOf<ApiModel3dMediaItemMetadata>()
-        .toEqualTypeOf<PlatformModel3dMediaItemMetadata>();
+      expectTypeOf<ApiModel3dMediaItemMetadata>().toEqualTypeOf<PlatformModel3dMediaItemMetadata>();
     });
     it("SpreadsheetMediaItemMetadata", () => {
-      expectTypeOf<ApiSpreadsheetMediaItemMetadata>()
-        .toEqualTypeOf<PlatformSpreadsheetMediaItemMetadata>();
+      expectTypeOf<ApiSpreadsheetMediaItemMetadata>().toEqualTypeOf<PlatformSpreadsheetMediaItemMetadata>();
     });
     it("UntypedMediaItemMetadata", () => {
-      expectTypeOf<ApiUntypedMediaItemMetadata>()
-        .toEqualTypeOf<PlatformUntypedMediaItemMetadata>();
+      expectTypeOf<ApiUntypedMediaItemMetadata>().toEqualTypeOf<PlatformUntypedMediaItemMetadata>();
     });
   });
 
   describe("format enums", () => {
     it("AudioDecodeFormat", () => {
-      expectTypeOf<ApiAudioDecodeFormat>()
-        .toEqualTypeOf<PlatformAudioDecodeFormat>();
+      expectTypeOf<ApiAudioDecodeFormat>().toEqualTypeOf<PlatformAudioDecodeFormat>();
     });
     it("VideoDecodeFormat", () => {
-      expectTypeOf<ApiVideoDecodeFormat>()
-        .toEqualTypeOf<PlatformVideoDecodeFormat>();
+      expectTypeOf<ApiVideoDecodeFormat>().toEqualTypeOf<PlatformVideoDecodeFormat>();
     });
     it("DocumentDecodeFormat", () => {
-      expectTypeOf<ApiDocumentDecodeFormat>()
-        .toEqualTypeOf<PlatformDocumentDecodeFormat>();
+      expectTypeOf<ApiDocumentDecodeFormat>().toEqualTypeOf<PlatformDocumentDecodeFormat>();
     });
     it("SpreadsheetDecodeFormat", () => {
-      expectTypeOf<ApiSpreadsheetDecodeFormat>()
-        .toEqualTypeOf<PlatformSpreadsheetDecodeFormat>();
+      expectTypeOf<ApiSpreadsheetDecodeFormat>().toEqualTypeOf<PlatformSpreadsheetDecodeFormat>();
     });
     it("ImageryDecodeFormat", () => {
-      expectTypeOf<ApiImageryDecodeFormat>()
-        .toEqualTypeOf<PlatformImageryDecodeFormat>();
+      expectTypeOf<ApiImageryDecodeFormat>().toEqualTypeOf<PlatformImageryDecodeFormat>();
     });
     it("EmailDecodeFormat", () => {
-      expectTypeOf<ApiEmailDecodeFormat>()
-        .toEqualTypeOf<PlatformEmailDecodeFormat>();
+      expectTypeOf<ApiEmailDecodeFormat>().toEqualTypeOf<PlatformEmailDecodeFormat>();
     });
     it("DicomMediaType", () => {
-      expectTypeOf<ApiDicomMediaType>()
-        .toEqualTypeOf<PlatformDicomMediaType>();
+      expectTypeOf<ApiDicomMediaType>().toEqualTypeOf<PlatformDicomMediaType>();
     });
     it("Model3dDecodeFormat", () => {
-      expectTypeOf<ApiModel3dDecodeFormat>()
-        .toEqualTypeOf<PlatformModel3dDecodeFormat>();
+      expectTypeOf<ApiModel3dDecodeFormat>().toEqualTypeOf<PlatformModel3dDecodeFormat>();
     });
     it("Model3dType", () => {
       expectTypeOf<ApiModel3dType>().toEqualTypeOf<PlatformModel3dType>();
@@ -207,12 +189,10 @@ describe("MediaItemMetadata mirror", () => {
 
   describe("audio / video / imagery support", () => {
     it("AudioSpecification", () => {
-      expectTypeOf<ApiAudioSpecification>()
-        .toEqualTypeOf<PlatformAudioSpecification>();
+      expectTypeOf<ApiAudioSpecification>().toEqualTypeOf<PlatformAudioSpecification>();
     });
     it("VideoSpecification", () => {
-      expectTypeOf<ApiVideoSpecification>()
-        .toEqualTypeOf<PlatformVideoSpecification>();
+      expectTypeOf<ApiVideoSpecification>().toEqualTypeOf<PlatformVideoSpecification>();
     });
     it("Dimensions", () => {
       expectTypeOf<ApiDimensions>().toEqualTypeOf<PlatformDimensions>();
@@ -224,50 +204,40 @@ describe("MediaItemMetadata mirror", () => {
       expectTypeOf<ApiDataType>().toEqualTypeOf<PlatformDataType>();
     });
     it("ColorInterpretation", () => {
-      expectTypeOf<ApiColorInterpretation>()
-        .toEqualTypeOf<PlatformColorInterpretation>();
+      expectTypeOf<ApiColorInterpretation>().toEqualTypeOf<PlatformColorInterpretation>();
     });
     it("PaletteInterpretation", () => {
-      expectTypeOf<ApiPaletteInterpretation>()
-        .toEqualTypeOf<PlatformPaletteInterpretation>();
+      expectTypeOf<ApiPaletteInterpretation>().toEqualTypeOf<PlatformPaletteInterpretation>();
     });
     it("UnitInterpretation", () => {
-      expectTypeOf<ApiUnitInterpretation>()
-        .toEqualTypeOf<PlatformUnitInterpretation>();
+      expectTypeOf<ApiUnitInterpretation>().toEqualTypeOf<PlatformUnitInterpretation>();
     });
     // ImageAttributeDomain / ImageAttributeKey are `LooselyBrandedString<...>` on the
     // platform side and plain `string` on ours. The brand carries no runtime distinction
     // (it's a structurally-optional phantom field), so mutual assignability is the
     // meaningful drift check rather than strict structural equality.
     it("ImageAttributeDomain", () => {
-      expectTypeOf<ApiImageAttributeDomain>()
-        .toExtend<PlatformImageAttributeDomain>();
-      expectTypeOf<PlatformImageAttributeDomain>()
-        .toExtend<ApiImageAttributeDomain>();
+      expectTypeOf<ApiImageAttributeDomain>().toExtend<PlatformImageAttributeDomain>();
+      expectTypeOf<PlatformImageAttributeDomain>().toExtend<ApiImageAttributeDomain>();
     });
     it("ImageAttributeKey", () => {
-      expectTypeOf<ApiImageAttributeKey>()
-        .toExtend<PlatformImageAttributeKey>();
-      expectTypeOf<PlatformImageAttributeKey>()
-        .toExtend<ApiImageAttributeKey>();
+      expectTypeOf<ApiImageAttributeKey>().toExtend<PlatformImageAttributeKey>();
+      expectTypeOf<PlatformImageAttributeKey>().toExtend<ApiImageAttributeKey>();
     });
     it("GeoMetadata", () => {
       expectTypeOf<ApiGeoMetadata>().toEqualTypeOf<PlatformGeoMetadata>();
     });
     it("CoordinateReferenceSystem", () => {
-      expectTypeOf<ApiCoordinateReferenceSystem>()
-        .toEqualTypeOf<PlatformCoordinateReferenceSystem>();
+      expectTypeOf<ApiCoordinateReferenceSystem>().toEqualTypeOf<PlatformCoordinateReferenceSystem>();
     });
     it("AffineTransform", () => {
-      expectTypeOf<ApiAffineTransform>()
-        .toEqualTypeOf<PlatformAffineTransform>();
+      expectTypeOf<ApiAffineTransform>().toEqualTypeOf<PlatformAffineTransform>();
     });
     it("GcpList", () => {
       expectTypeOf<ApiGcpList>().toEqualTypeOf<PlatformGcpList>();
     });
     it("GroundControlPoint", () => {
-      expectTypeOf<ApiGroundControlPoint>()
-        .toEqualTypeOf<PlatformGroundControlPoint>();
+      expectTypeOf<ApiGroundControlPoint>().toEqualTypeOf<PlatformGroundControlPoint>();
     });
     it("GpsMetadata", () => {
       expectTypeOf<ApiGpsMetadata>().toEqualTypeOf<PlatformGpsMetadata>();
@@ -276,8 +246,7 @@ describe("MediaItemMetadata mirror", () => {
       expectTypeOf<ApiOrientation>().toEqualTypeOf<PlatformOrientation>();
     });
     it("RotationAngle", () => {
-      expectTypeOf<ApiRotationAngle>()
-        .toEqualTypeOf<PlatformRotationAngle>();
+      expectTypeOf<ApiRotationAngle>().toEqualTypeOf<PlatformRotationAngle>();
     });
     it("FlipAxis", () => {
       expectTypeOf<ApiFlipAxis>().toEqualTypeOf<PlatformFlipAxis>();
@@ -286,23 +255,18 @@ describe("MediaItemMetadata mirror", () => {
 
   describe("DICOM support", () => {
     it("DicomMetaInformation", () => {
-      expectTypeOf<ApiDicomMetaInformation>()
-        .toEqualTypeOf<PlatformDicomMetaInformation>();
+      expectTypeOf<ApiDicomMetaInformation>().toEqualTypeOf<PlatformDicomMetaInformation>();
     });
     it("DicomMetaInformationV1", () => {
-      expectTypeOf<ApiDicomMetaInformationV1>()
-        .toEqualTypeOf<PlatformDicomMetaInformationV1>();
+      expectTypeOf<ApiDicomMetaInformationV1>().toEqualTypeOf<PlatformDicomMetaInformationV1>();
     });
     it("CommonDicomDataElements", () => {
-      expectTypeOf<ApiCommonDicomDataElements>()
-        .toEqualTypeOf<PlatformCommonDicomDataElements>();
+      expectTypeOf<ApiCommonDicomDataElements>().toEqualTypeOf<PlatformCommonDicomDataElements>();
     });
     // `LooselyBrandedString<...>` on platform, plain `string` on ours
     it("DicomDataElementKey", () => {
-      expectTypeOf<ApiDicomDataElementKey>()
-        .toExtend<PlatformDicomDataElementKey>();
-      expectTypeOf<PlatformDicomDataElementKey>()
-        .toExtend<ApiDicomDataElementKey>();
+      expectTypeOf<ApiDicomDataElementKey>().toExtend<PlatformDicomDataElementKey>();
+      expectTypeOf<PlatformDicomDataElementKey>().toExtend<ApiDicomDataElementKey>();
     });
     it("Modality", () => {
       expectTypeOf<ApiModality>().toEqualTypeOf<PlatformModality>();
@@ -314,23 +278,19 @@ describe("MediaItemMetadata mirror", () => {
       expectTypeOf<ApiMailbox>().toEqualTypeOf<PlatformMailbox>();
     });
     it("MailboxWrapper", () => {
-      expectTypeOf<ApiMailboxWrapper>()
-        .toEqualTypeOf<PlatformMailboxWrapper>();
+      expectTypeOf<ApiMailboxWrapper>().toEqualTypeOf<PlatformMailboxWrapper>();
     });
     it("Group", () => {
       expectTypeOf<ApiGroup>().toEqualTypeOf<PlatformGroup>();
     });
     it("GroupWrapper", () => {
-      expectTypeOf<ApiGroupWrapper>()
-        .toEqualTypeOf<PlatformGroupWrapper>();
+      expectTypeOf<ApiGroupWrapper>().toEqualTypeOf<PlatformGroupWrapper>();
     });
     it("MailboxOrGroup", () => {
-      expectTypeOf<ApiMailboxOrGroup>()
-        .toEqualTypeOf<PlatformMailboxOrGroup>();
+      expectTypeOf<ApiMailboxOrGroup>().toEqualTypeOf<PlatformMailboxOrGroup>();
     });
     it("EmailAttachment", () => {
-      expectTypeOf<ApiEmailAttachment>()
-        .toEqualTypeOf<PlatformEmailAttachment>();
+      expectTypeOf<ApiEmailAttachment>().toEqualTypeOf<PlatformEmailAttachment>();
     });
   });
 });

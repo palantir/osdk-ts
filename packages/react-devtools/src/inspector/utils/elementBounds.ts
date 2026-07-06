@@ -25,7 +25,7 @@ function stripTranslateFromTransform(element: Element): string {
   }
 
   const matrixMatch = transform.match(
-    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/
+    /matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*[^,]+,\s*[^)]+\)/u
   );
 
   if (matrixMatch) {
@@ -36,7 +36,7 @@ function stripTranslateFromTransform(element: Element): string {
     return `matrix(${a}, ${b}, ${c}, ${d}, 0, 0)`;
   }
 
-  const matrix3dMatch = transform.match(/matrix3d\(([^)]+)\)/);
+  const matrix3dMatch = transform.match(/matrix3d\(([^)]+)\)/u);
   if (matrix3dMatch) {
     const values = matrix3dMatch[1].split(",").map((v) => v.trim());
     if (values.length === 16) {

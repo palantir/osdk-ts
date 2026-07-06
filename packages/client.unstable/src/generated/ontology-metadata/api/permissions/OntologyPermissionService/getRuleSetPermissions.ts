@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyBranchRid as _api_OntologyBranchRid,
   RuleSetRid as _api_RuleSetRid,
@@ -27,13 +28,13 @@ import type { GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermis
 export async function getRuleSetPermissions(
   ctx: ConjureContext,
   ruleSetRid: _api_RuleSetRid,
-  ontologyBranchRid: _api_OntologyBranchRid | null | undefined,
+  ontologyBranchRid: _api_OntologyBranchRid | null | undefined
 ): Promise<_api_permissions_GetRuleSetPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/ruleSet/${ruleSetRid}`,
     "GET",
     undefined,
-    { ontologyBranchRid },
+    { ontologyBranchRid }
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import type { WhereClause } from "@osdk/api";
+
 import type { Assignment } from "../generatedNoCheck2/index.js";
 
 /**

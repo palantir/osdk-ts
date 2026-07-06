@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  SystemEntityMetadataModificationRequest
-    as _api_entitymetadata_SystemEntityMetadataModificationRequest,
-  SystemEntityMetadataModificationResponse
-    as _api_entitymetadata_SystemEntityMetadataModificationResponse,
+  SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest,
+  SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse,
 } from "../__components.js";
 
 /**
@@ -33,7 +32,7 @@ import type {
 export async function modifySystemEntityMetadata(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_entitymetadata_SystemEntityMetadataModificationRequest,
+  request: _api_entitymetadata_SystemEntityMetadataModificationRequest
 ): Promise<_api_entitymetadata_SystemEntityMetadataModificationResponse> {
   return conjureFetch(ctx, `/entityMetadata/system/modify`, "POST", request, {
     ontologyRid,

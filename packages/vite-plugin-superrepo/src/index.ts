@@ -17,7 +17,9 @@
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
+
 import type { Logger, Plugin, ProxyOptions, UserConfig } from "vite";
+
 import {
   type DiscoveryEntry,
   type DiscoveryService,
@@ -72,8 +74,8 @@ export function smartClientPlugin(): Plugin {
       const superrepoRoot = findSuperrepoRoot(root);
       if (!superrepoRoot) {
         pendingWarnings.push(
-          "running outside a SuperRepo (no `foundry.yml` ancestor found "
-            + `from ${root}); proxy routes will not be installed.`,
+          "running outside a SuperRepo (no `foundry.yml` ancestor found " +
+            `from ${root}); proxy routes will not be installed.`
         );
         return undefined;
       }
@@ -95,7 +97,7 @@ export function smartClientPlugin(): Plugin {
             route,
             basePrefix,
             pendingWarnings,
-            getLogger,
+            getLogger
           );
           setupProxies.push({ prefix: context, target: read.entry.url });
           continue;
@@ -103,23 +105,23 @@ export function smartClientPlugin(): Plugin {
         switch (read.kind) {
           case "missing":
             pendingWarnings.push(
-              `no live discovery for ${route.service} under ${palantirDir}. `
-                + `Run \`foundry start ${route.service}\` and the dev server `
-                + `will pick it up automatically.`,
+              `no live discovery for ${route.service} under ${palantirDir}. ` +
+                `Run \`foundry start ${route.service}\` and the dev server ` +
+                `will pick it up automatically.`
             );
             break;
           case "stale":
             pendingWarnings.push(
-              `discovery for ${route.service} is stale (recorded PID `
-                + `${read.pid} is no longer running). Restart `
-                + `\`foundry start ${route.service}\`.`,
+              `discovery for ${route.service} is stale (recorded PID ` +
+                `${read.pid} is no longer running). Restart ` +
+                `\`foundry start ${route.service}\`.`
             );
             break;
           case "malformed":
             pendingWarnings.push(
-              `${route.service} discovery file is corrupt (${read.reason}). `
-                + `Delete ${palantirDir}/.${route.service}-discovery.json and `
-                + `restart \`foundry start ${route.service}\`.`,
+              `${route.service} discovery file is corrupt (${read.reason}). ` +
+                `Delete ${palantirDir}/.${route.service}-discovery.json and ` +
+                `restart \`foundry start ${route.service}\`.`
             );
             break;
         }
@@ -147,9 +149,7 @@ export function smartClientPlugin(): Plugin {
         const width = Math.max(...setupProxies.map((p) => p.prefix.length));
         resolvedConfig.logger.info("[vite-plugin-superrepo] proxies:");
         for (const { prefix, target } of setupProxies) {
-          resolvedConfig.logger.info(
-            `  ${prefix.padEnd(width)} → ${target}`,
-          );
+          resolvedConfig.logger.info(`  ${prefix.padEnd(width)} → ${target}`);
         }
       }
     },
@@ -265,8 +265,8 @@ export function smartClientPlugin(): Plugin {
       // calls are routed to the local function runtimes. `@osdk/oauth`
       // and any other imports are untouched.
       return code.replace(
-        /from\s+(["'])@osdk\/client\1/,
-        `from "@osdk/vite-plugin-superrepo/osdkClient"`,
+        /from\s+(["'])@osdk\/client\1/u,
+        `from "@osdk/vite-plugin-superrepo/osdkClient"`
       );
     },
   };
@@ -277,7 +277,7 @@ function buildProxyOptions(
   route: { prefix: string; rewrite: boolean },
   basePrefix: string,
   pendingWarnings: string[],
-  getLogger: () => Logger | undefined,
+  getLogger: () => Logger | undefined
 ): ProxyOptions {
   const isHttps = entry.url.startsWith("https://");
   const options: ProxyOptions = {
@@ -286,8 +286,8 @@ function buildProxyOptions(
     configure: (proxy) => {
       proxy.on("proxyReq", (_proxyReq, req) => {
         getLogger()?.info(
-          `[vite-plugin-superrepo] ${route.prefix} ${req.method} ${req.url}`
-            + ` → ${entry.url}`,
+          `[vite-plugin-superrepo] ${route.prefix} ${req.method} ${req.url}` +
+            ` → ${entry.url}`
         );
       });
     },
@@ -299,6 +299,7 @@ function buildProxyOptions(
     : basePrefix;
   if (stripPrefix) {
     options.rewrite = (p) =>
+      // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
       p.replace(new RegExp(`^${escapeRegExp(stripPrefix)}`), "");
   }
   if (isHttps) {
@@ -310,8 +311,8 @@ function buildProxyOptions(
     } else {
       options.secure = false;
       pendingWarnings.push(
-        `discovery for ${entry.url} has no caCertPath; `
-          + `TLS verification disabled for this proxy.`,
+        `discovery for ${entry.url} has no caCertPath; ` +
+          `TLS verification disabled for this proxy.`
       );
     }
   }
@@ -319,7 +320,7 @@ function buildProxyOptions(
 }
 
 function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 /**

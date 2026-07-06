@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineCreateInterfaceLinkAction } from "../defineCreateInterfaceLinkAction.js";
 import { defineDeleteInterfaceLinkAction } from "../defineDeleteInterfaceLinkAction.js";
 import { defineInterface } from "../defineInterface.js";
@@ -71,7 +72,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.link-person-employer",
+      "com.palantir.link-person-employer"
     );
     const actionType =
       actionTypes["com.palantir.link-person-employer"].actionType;
@@ -279,24 +280,26 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     defineCreateInterfaceLinkAction({ interfaceLink: employer });
 
-    const actionType = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.link-person-employer"].actionType; // "person" in the default apiName proves from was derived
+    const actionType =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.link-person-employer"
+      ].actionType; // "person" in the default apiName proves from was derived
     const rule = actionType.actionTypeLogic.logic.rules[0];
     if (rule.type !== "addInterfaceLinkRuleV2") {
       throw new Error("expected addInterfaceLinkRuleV2");
     }
     expect(rule.addInterfaceLinkRuleV2.interfaceTypeRid).toBe(
-      "com.palantir.Person",
+      "com.palantir.Person"
     );
     expect(rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid).toBe(
-      "com.palantir.employer",
+      "com.palantir.employer"
     );
     const sourceParam = actionType.metadata.parameters.source;
     if (sourceParam.type.type !== "interfaceReference") {
       throw new Error("expected interfaceReference");
     }
     expect(sourceParam.type.interfaceReference.interfaceTypeRid).toBe(
-      "com.palantir.Person",
+      "com.palantir.Person"
     );
   });
 
@@ -327,10 +330,11 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.link-person-to-employer",
+      "com.palantir.link-person-to-employer"
     );
-    const rule = actionTypes["com.palantir.link-person-to-employer"]
-      .actionType.actionTypeLogic.logic.rules[0];
+    const rule =
+      actionTypes["com.palantir.link-person-to-employer"].actionType
+        .actionTypeLogic.logic.rules[0];
     expect(rule.type).toBe("addInterfaceLinkRuleV2");
     if (rule.type !== "addInterfaceLinkRuleV2") {
       throw new Error("Expected an addInterfaceLinkRuleV2 rule");
@@ -338,18 +342,18 @@ describe("defineCreateInterfaceLinkAction", () => {
     const sourceObject = rule.addInterfaceLinkRuleV2.sourceObjects[0];
     const targetObject = rule.addInterfaceLinkRuleV2.targetObjects[0];
     if (
-      sourceObject.type !== "existingObject"
-      || targetObject.type !== "existingObject"
+      sourceObject.type !== "existingObject" ||
+      targetObject.type !== "existingObject"
     ) {
       throw new Error("Expected existingObject references");
     }
     expect(sourceObject.existingObject).toBe("sourcePerson");
     expect(targetObject.existingObject).toBe("targetCompany");
     expect(rule.addInterfaceLinkRuleV2.interfaceTypeRid).toBe(
-      "com.palantir.Person",
+      "com.palantir.Person"
     );
     expect(rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid).toBe(
-      "com.palantir.employer",
+      "com.palantir.employer"
     );
   });
 
@@ -375,8 +379,10 @@ describe("defineCreateInterfaceLinkAction", () => {
       interfaceLink: "employers",
     });
 
-    const actionType = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.link-person-employers"].actionType;
+    const actionType =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.link-person-employers"
+      ].actionType;
     const params = actionType.metadata.parameters;
     const targetParam = params.target;
     expect(targetParam.type.type).toBe("interfaceReferenceList");
@@ -384,7 +390,7 @@ describe("defineCreateInterfaceLinkAction", () => {
       throw new Error("expected interfaceReferenceList");
     }
     expect(targetParam.type.interfaceReferenceList.interfaceTypeRid).toBe(
-      "com.palantir.Company",
+      "com.palantir.Company"
     );
     // source stays single
     expect(params.source.type.type).toBe("interfaceReference");
@@ -412,22 +418,19 @@ describe("defineCreateInterfaceLinkAction", () => {
       interfaceLink: "employers",
     });
 
-    const validations = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.link-person-employers"].actionType
-      .actionTypeLogic.validation.parameterValidations;
+    const validations =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.link-person-employers"
+      ].actionType.actionTypeLogic.validation.parameterValidations;
 
     // A list-type parameter must use listLengthValidation, not scalar required.
-    expect(
-      validations.target.defaultValidation.validation.required,
-    ).toEqual({
+    expect(validations.target.defaultValidation.validation.required).toEqual({
       type: "listLengthValidation",
       listLengthValidation: { minLength: 1, maxLength: undefined },
     });
 
     // The singular source stays a scalar required configuration.
-    expect(
-      validations.source.defaultValidation.validation.required,
-    ).toEqual({
+    expect(validations.source.defaultValidation.validation.required).toEqual({
       type: "required",
       required: {},
     });
@@ -456,13 +459,12 @@ describe("defineCreateInterfaceLinkAction", () => {
       interfaceLink: "employers",
     });
 
-    const validations = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.link-person-employers"].actionType
-      .actionTypeLogic.validation.parameterValidations;
+    const validations =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.link-person-employers"
+      ].actionType.actionTypeLogic.validation.parameterValidations;
 
-    expect(
-      validations.target.defaultValidation.validation.required,
-    ).toEqual({
+    expect(validations.target.defaultValidation.validation.required).toEqual({
       type: "listLengthValidation",
       listLengthValidation: { minLength: undefined, maxLength: undefined },
     });
@@ -491,13 +493,12 @@ describe("defineCreateInterfaceLinkAction", () => {
       interfaceLink: "employer",
     });
 
-    const validations = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.link-person-employer"].actionType
-      .actionTypeLogic.validation.parameterValidations;
+    const validations =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.link-person-employer"
+      ].actionType.actionTypeLogic.validation.parameterValidations;
 
-    expect(
-      validations.target.defaultValidation.validation.required,
-    ).toEqual({
+    expect(validations.target.defaultValidation.validation.required).toEqual({
       type: "notRequired",
       notRequired: {},
     });
@@ -520,7 +521,7 @@ describe("defineCreateInterfaceLinkAction", () => {
         from: person,
         interfaceLink: "employer",
       })
-    ).toThrow(/Interface link constraint "employer" not found on interface/);
+    ).toThrow(/Interface link constraint "employer" not found on interface/u);
   });
 
   it("throws when the ILC target interface is not defined", () => {
@@ -541,7 +542,7 @@ describe("defineCreateInterfaceLinkAction", () => {
         from: person,
         interfaceLink: "employer",
       })
-    ).toThrow(/Target interface .* is not defined/);
+    ).toThrow(/Target interface .* is not defined/u);
   });
 
   it("throws when an explicit from does not match the handle's interface", () => {
@@ -568,7 +569,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     expect(() =>
       defineCreateInterfaceLinkAction({ from: other, interfaceLink: employer })
-    ).toThrow(/does not match/);
+    ).toThrow(/does not match/u);
   });
 
   it("throws when interfaceLink is a string and from is omitted", () => {
@@ -591,7 +592,7 @@ describe("defineCreateInterfaceLinkAction", () => {
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
       defineCreateInterfaceLinkAction({ interfaceLink: "employer" })
-    ).toThrow(/"from" is required/);
+    ).toThrow(/"from" is required/u);
   });
 });
 
@@ -624,7 +625,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.delete-interface-link-person-employer",
+      "com.palantir.delete-interface-link-person-employer"
     );
     const actionType =
       actionTypes["com.palantir.delete-interface-link-person-employer"]
@@ -632,7 +633,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     // default display name
     expect(actionType.metadata.displayMetadata.displayName).toBe(
-      "Delete Person link",
+      "Delete Person link"
     );
 
     // singular params on both sides
@@ -641,8 +642,8 @@ describe("defineDeleteInterfaceLinkAction", () => {
     expect(params.target.type.type).toBe("interfaceReference");
 
     // scalar required validation (no list-length)
-    const validations = actionType.actionTypeLogic.validation
-      .parameterValidations;
+    const validations =
+      actionType.actionTypeLogic.validation.parameterValidations;
     expect(validations.target.defaultValidation.validation.required).toEqual({
       type: "required",
       required: {},
@@ -683,9 +684,10 @@ describe("defineDeleteInterfaceLinkAction", () => {
       interfaceLink: "employers",
     });
 
-    const actionType = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.delete-interface-link-person-employers"]
-      .actionType;
+    const actionType =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.delete-interface-link-person-employers"
+      ].actionType;
     const params = actionType.metadata.parameters;
 
     // delete operates on a single link instance, so the target is NOT a list
@@ -693,7 +695,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     expect(params.source.type.type).toBe("interfaceReference");
     expect(
       actionType.actionTypeLogic.validation.parameterValidations.target
-        .defaultValidation.validation.required,
+        .defaultValidation.validation.required
     ).toEqual({ type: "required", required: {} });
   });
 
@@ -724,10 +726,11 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.unlink-person-from-employer",
+      "com.palantir.unlink-person-from-employer"
     );
-    const rule = actionTypes["com.palantir.unlink-person-from-employer"]
-      .actionType.actionTypeLogic.logic.rules[0];
+    const rule =
+      actionTypes["com.palantir.unlink-person-from-employer"].actionType
+        .actionTypeLogic.logic.rules[0];
     if (rule.type !== "deleteInterfaceLinkRule") {
       throw new Error("expected deleteInterfaceLinkRule");
     }
@@ -754,14 +757,15 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     defineDeleteInterfaceLinkAction({ interfaceLink: employer });
 
-    const rule = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.delete-interface-link-person-employer"]
-      .actionType.actionTypeLogic.logic.rules[0];
+    const rule =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.delete-interface-link-person-employer"
+      ].actionType.actionTypeLogic.logic.rules[0];
     if (rule.type !== "deleteInterfaceLinkRule") {
       throw new Error("expected deleteInterfaceLinkRule");
     }
     expect(rule.deleteInterfaceLinkRule.interfaceTypeRid).toBe(
-      "com.palantir.Person",
+      "com.palantir.Person"
     );
   });
 
@@ -785,7 +789,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
       defineDeleteInterfaceLinkAction({ interfaceLink: "employer" })
-    ).toThrow(/"from" is required/);
+    ).toThrow(/"from" is required/u);
   });
 
   it("throws when source and target parameter ids collide", () => {
@@ -812,7 +816,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
         sourceParameter: { id: "shared" },
         targetParameter: { id: "shared" },
       })
-    ).toThrow(/must differ/);
+    ).toThrow(/must differ/u);
   });
 
   it("threads custom display metadata and status through", () => {
@@ -842,9 +846,10 @@ describe("defineDeleteInterfaceLinkAction", () => {
       icon: { locator: "trash", color: "#FF0000" },
     });
 
-    const actionType = dumpOntologyFullMetadata().ontology
-      .actionTypes["com.palantir.delete-interface-link-person-employer"]
-      .actionType;
+    const actionType =
+      dumpOntologyFullMetadata().ontology.actionTypes[
+        "com.palantir.delete-interface-link-person-employer"
+      ].actionType;
     const meta = actionType.metadata;
 
     expect(meta.displayMetadata.displayName).toBe("Remove employer");
@@ -855,7 +860,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     });
     expect(meta.parameters.src.displayMetadata.displayName).toBe("The person");
     expect(meta.parameters.tgt.displayMetadata.displayName).toBe(
-      "The employer",
+      "The employer"
     );
   });
 });

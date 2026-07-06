@@ -106,10 +106,10 @@ describe("BaseForm", () => {
         />
       );
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -131,7 +131,7 @@ describe("BaseForm", () => {
       fireEvent.submit(form!);
       expect(onSubmit).not.toHaveBeenCalled();
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -148,7 +148,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -178,10 +178,10 @@ describe("BaseForm", () => {
         />
       );
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "Typed" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -214,7 +214,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -399,7 +399,7 @@ describe("BaseForm", () => {
         />
       );
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       expect(onFieldValueChange).toHaveBeenCalledWith("name", "Updated");
@@ -417,7 +417,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -457,10 +457,10 @@ describe("BaseForm", () => {
 
       render(<ControlledWrapper />);
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -484,10 +484,10 @@ describe("BaseForm", () => {
         />
       );
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "User Typed This" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -506,7 +506,7 @@ describe("BaseForm", () => {
         />
       );
 
-      const input = screen.getByRole("textbox", { name: /name/ });
+      const input = screen.getByRole("textbox", { name: /name/u });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -532,7 +532,7 @@ describe("BaseForm", () => {
         />
       );
 
-      const input = screen.getByRole("textbox", { name: /name/ });
+      const input = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(input, { target: { value: "ab" } });
       fireEvent.blur(input);
 
@@ -551,7 +551,7 @@ describe("BaseForm", () => {
         />
       );
 
-      const input = screen.getByRole("textbox", { name: /name/ });
+      const input = screen.getByRole("textbox", { name: /name/u });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -575,7 +575,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByRole("alert")).toBeDefined();
@@ -593,7 +593,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/iu }) as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -613,10 +613,10 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/iu }) as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
-      const input = screen.getByRole("textbox", { name: /name/ });
+      const input = screen.getByRole("textbox", { name: /name/u });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -647,7 +647,7 @@ describe("BaseForm", () => {
         <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByText("Server error")).toBeDefined();
@@ -660,13 +660,13 @@ describe("BaseForm", () => {
         <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByText("Server error")).toBeDefined();
       });
 
-      const input = screen.getByRole("textbox", { name: /name/ });
+      const input = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(input, { target: { value: "Alice" } });
 
       await waitFor(() => {
@@ -682,7 +682,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByText("1 issue")).toBeDefined();
@@ -701,18 +701,20 @@ describe("BaseForm", () => {
         <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(
-          screen.getByRole("button", { name: /submitting/i })
+          screen.getByRole("button", { name: /submitting/iu })
         ).toBeDefined();
       });
 
       resolveSubmit!();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
+        expect(
+          screen.getByRole("button", { name: /^submit$/iu })
+        ).toBeDefined();
       });
     });
 
@@ -725,7 +727,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalled();
@@ -780,7 +782,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByText("2 errors")).toBeDefined();
@@ -804,7 +806,7 @@ describe("BaseForm", () => {
         <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />
       );
 
-      expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
+      expect(screen.getByRole("button", { name: /^submit$/iu })).toBeDefined();
     });
 
     it("submits values from fields inside sections", async () => {
@@ -827,10 +829,10 @@ describe("BaseForm", () => {
         />
       );
 
-      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -882,7 +884,7 @@ describe("BaseForm", () => {
         />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(screen.getByRole("alert").textContent).toBe(
@@ -914,13 +916,13 @@ describe("BaseForm", () => {
 
       expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
       expect(
-        screen.getByRole("textbox", { name: /Unsupported/ })
+        screen.getByRole("textbox", { name: /Unsupported/u })
       ).toHaveProperty(
         "value",
         "Unsupported field type. Use a CUSTOM field instead"
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({

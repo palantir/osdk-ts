@@ -26,6 +26,7 @@ import {
   it,
   vi,
 } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -47,7 +48,7 @@ function mockFunctionSubCallback(): MockedObject<
 
 function createMockObjectHolder(
   apiName: string,
-  primaryKey: unknown,
+  primaryKey: unknown
 ): ObjectHolder {
   return {
     $apiName: apiName,
@@ -57,7 +58,7 @@ function createMockObjectHolder(
 
 async function waitForCall(
   mock: MockedObject<Observer<FunctionPayload | undefined>>,
-  count = 1,
+  count = 1
 ) {
   await vi.waitFor(() => {
     expect(mock.next).toHaveBeenCalledTimes(count);
@@ -96,12 +97,12 @@ describe("FunctionQuery", () => {
         params: { n: 2 },
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 1);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loading" }),
+      expect.objectContaining({ status: "loading" })
     );
 
     await waitForCall(subFn, 2);
@@ -109,7 +110,7 @@ describe("FunctionQuery", () => {
       expect.objectContaining({
         status: "loaded",
         result: 3,
-      }),
+      })
     );
 
     subscription.unsubscribe();
@@ -124,7 +125,7 @@ describe("FunctionQuery", () => {
         params: { n: 2 },
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
@@ -132,7 +133,7 @@ describe("FunctionQuery", () => {
       expect.objectContaining({
         status: "loaded",
         result: 3,
-      }),
+      })
     );
 
     subFn.next.mockClear();
@@ -146,7 +147,7 @@ describe("FunctionQuery", () => {
         expect.objectContaining({
           status: "loaded",
           result: 3,
-        }),
+        })
       );
     });
 
@@ -163,12 +164,12 @@ describe("FunctionQuery", () => {
         dependsOn: [Employee.apiName],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     subFn.next.mockClear();
@@ -179,7 +180,7 @@ describe("FunctionQuery", () => {
     // Should refetch
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     subscription.unsubscribe();
@@ -191,7 +192,7 @@ describe("FunctionQuery", () => {
 
     const sub1 = store.functions.observe(
       { queryDef: addOne, params: { n: 2 }, dedupeInterval: 0 },
-      subFn1,
+      subFn1
     );
 
     // Wait for first subscription to load
@@ -200,7 +201,7 @@ describe("FunctionQuery", () => {
     // Second subscription with same params should reuse cached result
     const sub2 = store.functions.observe(
       { queryDef: addOne, params: { n: 2 }, dedupeInterval: 0 },
-      subFn2,
+      subFn2
     );
 
     // Second subscriber should get the result
@@ -208,7 +209,7 @@ describe("FunctionQuery", () => {
       expect(subFn2.next).toHaveBeenLastCalledWith(
         expect.objectContaining({
           result: 3,
-        }),
+        })
       );
     });
 
@@ -232,12 +233,12 @@ describe("FunctionQuery", () => {
         dependsOnObjects: [mockEmployee],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     subFn.next.mockClear();
@@ -253,13 +254,13 @@ describe("FunctionQuery", () => {
     const changes = createChangedObjects();
     changes.modifiedObjects.set(
       Employee.apiName,
-      createMockObjectHolder(Employee.apiName, 50030),
+      createMockObjectHolder(Employee.apiName, 50030)
     );
 
     expect(functionQuery).toBeDefined();
     const revalidatePromise = functionQuery!.maybeUpdateAndRevalidate(
       changes,
-      undefined,
+      undefined
     );
 
     expect(revalidatePromise).toBeInstanceOf(Promise);
@@ -288,12 +289,12 @@ describe("FunctionQuery", () => {
         dependsOnObjects: [mockEmployee],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
     expect(subFn.next).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: "loaded", result: 3 }),
+      expect.objectContaining({ status: "loaded", result: 3 })
     );
 
     let functionQuery: FunctionQuery | undefined;
@@ -307,7 +308,7 @@ describe("FunctionQuery", () => {
     const changes = createChangedObjects();
     changes.modifiedObjects.set(
       Employee.apiName,
-      createMockObjectHolder(Employee.apiName, 99999), // Different primary key
+      createMockObjectHolder(Employee.apiName, 99999) // Different primary key
     );
 
     expect(functionQuery).toBeDefined();
@@ -333,7 +334,7 @@ describe("FunctionQuery", () => {
         dependsOnObjects: [mockEmployee],
         dedupeInterval: 0,
       },
-      subFn,
+      subFn
     );
 
     await waitForCall(subFn, 2);
@@ -349,13 +350,13 @@ describe("FunctionQuery", () => {
     const changes = createChangedObjects();
     changes.addedObjects.set(
       Employee.apiName,
-      createMockObjectHolder(Employee.apiName, 50030),
+      createMockObjectHolder(Employee.apiName, 50030)
     );
 
     expect(functionQuery).toBeDefined();
     const revalidatePromise = functionQuery!.maybeUpdateAndRevalidate(
       changes,
-      undefined,
+      undefined
     );
 
     expect(revalidatePromise).toBeInstanceOf(Promise);
@@ -374,12 +375,12 @@ describe("FunctionQuery", () => {
           dependsOnObjects: [{ $apiName: Todo.apiName, $primaryKey: 0 }],
           dedupeInterval: 0,
         },
-        subFn,
+        subFn
       );
 
       await waitForCall(subFn, 2);
       expect(subFn.next).toHaveBeenLastCalledWith(
-        expect.objectContaining({ status: "loaded", result: 3 }),
+        expect.objectContaining({ status: "loaded", result: 3 })
       );
 
       subFn.next.mockClear();
@@ -403,12 +404,12 @@ describe("FunctionQuery", () => {
           dependsOn: [Todo.apiName],
           dedupeInterval: 0,
         },
-        subFn,
+        subFn
       );
 
       await waitForCall(subFn, 2);
       expect(subFn.next).toHaveBeenLastCalledWith(
-        expect.objectContaining({ status: "loaded", result: 3 }),
+        expect.objectContaining({ status: "loaded", result: 3 })
       );
 
       subFn.next.mockClear();
@@ -432,7 +433,7 @@ describe("FunctionQuery", () => {
           dependsOnObjects: [{ $apiName: Todo.apiName, $primaryKey: 0 }],
           dedupeInterval: 0,
         },
-        subFn,
+        subFn
       );
 
       await waitForCall(subFn, 2);

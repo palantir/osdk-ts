@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetEditorsForObjectTypeRequest
-    as _api_permissions_GetEditorsForObjectTypeRequest,
-  GetEditorsForObjectTypeResponse
-    as _api_permissions_GetEditorsForObjectTypeResponse,
+  GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest,
+  GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse,
 } from "../__components.js";
 
 /**
@@ -32,12 +31,12 @@ import type {
  */
 export async function getEditorsForObjectType(
   ctx: ConjureContext,
-  request: _api_permissions_GetEditorsForObjectTypeRequest,
+  request: _api_permissions_GetEditorsForObjectTypeRequest
 ): Promise<_api_permissions_GetEditorsForObjectTypeResponse> {
   return conjureFetch(
     ctx,
     `/permissions/getEditorsForObjectType`,
     "POST",
-    request,
+    request
   );
 }

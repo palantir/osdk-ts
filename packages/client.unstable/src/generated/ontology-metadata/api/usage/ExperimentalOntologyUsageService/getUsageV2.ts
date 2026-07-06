@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetUsageRequestV2 as _api_usage_GetUsageRequestV2,
   GetUsageResponseV2 as _api_usage_GetUsageResponseV2,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getUsageV2(
   ctx: ConjureContext,
-  request: _api_usage_GetUsageRequestV2,
+  request: _api_usage_GetUsageRequestV2
 ): Promise<_api_usage_GetUsageResponseV2> {
   return conjureFetch(ctx, `/usage/search/getUsageV2`, "PUT", request);
 }

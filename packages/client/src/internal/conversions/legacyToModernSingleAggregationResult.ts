@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
+
 import type { ArrayElement } from "../../util/ArrayElement.js";
 import { splitAggregationKey } from "./modernToLegacyAggregationClause.js";
 
@@ -29,7 +30,7 @@ export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<Q>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
-  select: AC,
+  select: AC
 ): AggregationResultsWithoutGroups<Q, AC> {
   const result: Record<string, Record<string, any>> = {};
 
@@ -49,7 +50,8 @@ export function legacyToModernSingleAggregationResult<
       continue;
     }
     const [property, metricType] = name.split(".");
-    if (result[property]) { // guard against an unknown metric name
+    if (result[property]) {
+      // guard against an unknown metric name
       result[property][metricType] = value;
     }
   }

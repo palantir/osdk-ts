@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BatchGetBlockInstallationsRequest as _api_BatchGetBlockInstallationsRequest,
   BatchGetBlockInstallationsResponse as _api_BatchGetBlockInstallationsResponse,
@@ -41,12 +42,12 @@ import type {
 export async function batchGetBlockInstallations(
   ctx: ConjureContext,
   blockSetInstallationRid: _api_BlockSetInstallationRid,
-  request: _api_BatchGetBlockInstallationsRequest,
+  request: _api_BatchGetBlockInstallationsRequest
 ): Promise<_api_BatchGetBlockInstallationsResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/block-set-installations/${blockSetInstallationRid}/block-installations/batch-get`,
     "POST",
-    request,
+    request
   );
 }

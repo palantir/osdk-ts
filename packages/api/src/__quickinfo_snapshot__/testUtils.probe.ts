@@ -21,6 +21,7 @@
 
 import { spawnSync } from "node:child_process";
 import * as path from "node:path";
+
 import * as ts from "typescript";
 
 export interface RenderQuickInfoProbesOptions {
@@ -47,7 +48,7 @@ export interface RenderQuickInfoProbesOptions {
  * user-facing situation it captures; a missing JSDoc throws.
  */
 export function renderQuickInfoProbes(
-  opts: RenderQuickInfoProbesOptions,
+  opts: RenderQuickInfoProbesOptions
 ): Record<string, string> {
   const { probesPaths, tsconfigPath } = opts;
   const program = buildProgram(probesPaths, tsconfigPath);
@@ -56,7 +57,7 @@ export function renderQuickInfoProbes(
   for (const probesPath of probesPaths) {
     out[probesPath] = formatSnapshot(
       extractProbes(program, checker, probesPath),
-      path.basename(probesPath),
+      path.basename(probesPath)
     );
   }
   return out;
@@ -72,7 +73,7 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
   if (configText == null) throw new Error(`cannot read ${tsconfigPath}`);
   const { config, error } = ts.parseConfigFileTextToJson(
     tsconfigPath,
-    configText,
+    configText
   );
   if (error) {
     throw new Error(ts.flattenDiagnosticMessageText(error.messageText, "\n"));
@@ -80,7 +81,7 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
   const parsed = ts.parseJsonConfigFileContent(
     config,
     ts.sys,
-    path.dirname(tsconfigPath),
+    path.dirname(tsconfigPath)
   );
   return ts.createProgram({
     rootNames: probesPaths,
@@ -96,15 +97,16 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
 function extractProbes(
   program: ts.Program,
   checker: ts.TypeChecker,
-  probesPath: string,
+  probesPath: string
 ): Record<string, ProbeEntry> {
   const sourceFile = program.getSourceFile(probesPath);
   if (sourceFile == null) {
     throw new Error(`probes file not part of program: ${probesPath}`);
   }
-  const flags = ts.TypeFormatFlags.NoTruncation
-    | ts.TypeFormatFlags.WriteArrayAsGenericType
-    | ts.TypeFormatFlags.InTypeAlias;
+  const flags =
+    ts.TypeFormatFlags.NoTruncation |
+    ts.TypeFormatFlags.WriteArrayAsGenericType |
+    ts.TypeFormatFlags.InTypeAlias;
 
   const out: Record<string, ProbeEntry> = {};
   for (const stmt of sourceFile.statements) {
@@ -129,25 +131,24 @@ function extractProbes(
 // falling back to an empty description.
 function probeDescription(
   stmt: ts.VariableStatement,
-  decl: ts.VariableDeclaration,
+  decl: ts.VariableDeclaration
 ): string {
   const jsdoc = ts.getJSDocCommentsAndTags(stmt).find(ts.isJSDoc);
   const raw = jsdoc?.comment;
-  const text = typeof raw === "string"
-    ? raw
-    : raw?.map((c) => c.text).join("") ?? "";
+  const text =
+    typeof raw === "string" ? raw : (raw?.map((c) => c.text).join("") ?? "");
   if (text.trim().length === 0) {
     const name = ts.isIdentifier(decl.name) ? decl.name.text : "<unnamed>";
     throw new Error(
-      `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration`,
+      `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration`
     );
   }
-  return text.replace(/\s+/g, " ").trim();
+  return text.replace(/\s+/gu, " ").trim();
 }
 
 // Strip absolute import paths so the snapshot is identical across machines.
 function scrub(s: string): string {
-  return s.replace(/import\("[^"]+"\)\./g, "");
+  return s.replace(/import\("[^"]+"\)\./gu, "");
 }
 
 // Pretty-print one probes file's worth of probes as TS-flavored snapshot
@@ -155,7 +156,7 @@ function scrub(s: string): string {
 // dprint.
 function formatSnapshot(
   probes: Record<string, ProbeEntry>,
-  probesFileName: string,
+  probesFileName: string
 ): string {
   const names = Object.keys(probes).sort();
   if (names.length === 0) return "";
@@ -165,19 +166,22 @@ function formatSnapshot(
     `// Update: pnpm updateSnapshots --filter=@osdk/api`,
     `// See packages/api/src/__quickinfo_snapshot__/README.md for details.`,
   ].join("\n");
-  const body = names.map((n) => {
-    const { source, rendered } = probes[n];
-    return `/** ${source} */\ntype ${n} = ${rendered};`;
-  }).join("\n\n");
+  const body = names
+    .map((n) => {
+      const { source, rendered } = probes[n];
+      return `/** ${source} */\ntype ${n} = ${rendered};`;
+    })
+    .join("\n\n");
   const wrapped = `${header}\n\n${body}`;
-  const result = spawnSync(
-    "pnpm exec dprint fmt --stdin probes.ts",
-    { input: wrapped, encoding: "utf8", shell: true },
-  );
+  const result = spawnSync("pnpm exec dprint fmt --stdin probes.ts", {
+    input: wrapped,
+    encoding: "utf8",
+    shell: true,
+  });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(
-      `dprint exited with status ${result.status}: ${result.stderr}`,
+      `dprint exited with status ${result.status}: ${result.stderr}`
     );
   }
   return result.stdout;

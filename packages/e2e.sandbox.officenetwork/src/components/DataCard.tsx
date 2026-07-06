@@ -8,9 +8,13 @@ interface DataCardProps {
   isSelected?: boolean;
 }
 
-export function DataCard(
-  { label, value, accent = "cyan", onClick, isSelected }: DataCardProps,
-) {
+export function DataCard({
+  label,
+  value,
+  accent = "cyan",
+  onClick,
+  isSelected,
+}: DataCardProps) {
   const accentColors = {
     cyan: "var(--accent-cyan)",
     violet: "var(--accent-violet)",
@@ -30,10 +34,10 @@ export function DataCard(
         p-3 rounded border transition-all duration-150
         ${onClick ? "cursor-pointer" : ""}
         ${
-        isSelected
-          ? "bg-[color:var(--card-accent)]/10 border-[color:var(--card-accent)]/50"
-          : "bg-[var(--bg-tertiary)] border-[var(--border-subtle)] hover:border-[var(--border-accent)]"
-      }
+          isSelected
+            ? "bg-[color:var(--card-accent)]/10 border-[color:var(--card-accent)]/50"
+            : "bg-[var(--bg-tertiary)] border-[var(--border-subtle)] hover:border-[var(--border-accent)]"
+        }
       `}
     >
       <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] mb-1">
@@ -58,9 +62,5 @@ export function DataList({ children, columns = 1 }: DataListProps) {
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
   };
 
-  return (
-    <div className={`grid ${gridCols[columns]} gap-2`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${gridCols[columns]} gap-2`}>{children}</div>;
 }

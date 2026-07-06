@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadObjectsRequest as _api_LoadObjectsRequest,
   LoadObjectsResponse as _api_LoadObjectsResponse,
@@ -32,7 +33,7 @@ import type {
  */
 export async function loadObjects(
   ctx: ConjureContext,
-  request: _api_LoadObjectsRequest,
+  request: _api_LoadObjectsRequest
 ): Promise<_api_LoadObjectsResponse> {
   return conjureFetch(ctx, `/objects/load`, "PUT", request);
 }

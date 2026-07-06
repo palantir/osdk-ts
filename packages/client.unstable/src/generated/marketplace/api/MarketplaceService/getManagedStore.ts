@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ManagedMarketplaceId as _api_ManagedMarketplaceId,
   ManagedStoreResponseEntry as _api_ManagedStoreResponseEntry,
@@ -28,11 +29,11 @@ import type {
  */
 export async function getManagedStore(
   ctx: ConjureContext,
-  managedMarketplaceId: _api_ManagedMarketplaceId,
+  managedMarketplaceId: _api_ManagedMarketplaceId
 ): Promise<_api_ManagedStoreResponseEntry> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStores/${managedMarketplaceId}`,
-    "GET",
+    "GET"
   );
 }

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetInstallableBlockSetVersionsRequest
-    as _api_BatchGetInstallableBlockSetVersionsRequest,
-  BatchGetInstallableBlockSetVersionsResponse
-    as _api_BatchGetInstallableBlockSetVersionsResponse,
+  BatchGetInstallableBlockSetVersionsRequest as _api_BatchGetInstallableBlockSetVersionsRequest,
+  BatchGetInstallableBlockSetVersionsResponse as _api_BatchGetInstallableBlockSetVersionsResponse,
   MarketplaceRid as _api_MarketplaceRid,
 } from "../__components.js";
 
@@ -35,13 +34,13 @@ export async function batchGetInstallableBlockSetVersions(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   onlyLoadMetadata: boolean | null | undefined,
-  request: _api_BatchGetInstallableBlockSetVersionsRequest,
+  request: _api_BatchGetInstallableBlockSetVersionsRequest
 ): Promise<_api_BatchGetInstallableBlockSetVersionsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/blockSet/version/batchGet`,
     "POST",
     request,
-    { onlyLoadMetadata },
+    { onlyLoadMetadata }
   );
 }

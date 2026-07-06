@@ -43,7 +43,7 @@ import {
  */
 export function withScenario(
   client: Client,
-  scenarioRid: string,
+  scenarioRid: string
 ): EXPERIMENTAL_ScenarioClient {
   return buildScenarioClient(client, scenarioRid);
 }

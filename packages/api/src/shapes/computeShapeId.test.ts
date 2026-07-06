@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { computeShapeId } from "./computeShapeId.js";
 import type {
   ShapeDerivedLinkDef,
@@ -26,7 +27,7 @@ function makeInput(
     baseTypeApiName?: string;
     props?: Record<string, ShapePropertyConfig>;
     derivedLinks?: readonly ShapeDerivedLinkDef[];
-  } = {},
+  } = {}
 ) {
   return {
     baseTypeApiName: overrides.baseTypeApiName ?? "Employee",
@@ -38,7 +39,7 @@ function makeInput(
 describe("computeShapeId", () => {
   it("returns a deterministic 8-char hex string", () => {
     const id = computeShapeId(makeInput());
-    expect(id).toMatch(/^[0-9a-f]{8}$/);
+    expect(id).toMatch(/^[0-9a-f]{8}$/u);
     expect(computeShapeId(makeInput())).toBe(id);
   });
 
@@ -49,52 +50,68 @@ describe("computeShapeId", () => {
   });
 
   it("differs for different property selections", () => {
-    const a = computeShapeId(makeInput({
-      props: { name: { nullabilityOp: { type: "select" } } },
-    }));
-    const b = computeShapeId(makeInput({
-      props: { age: { nullabilityOp: { type: "select" } } },
-    }));
+    const a = computeShapeId(
+      makeInput({
+        props: { name: { nullabilityOp: { type: "select" } } },
+      })
+    );
+    const b = computeShapeId(
+      makeInput({
+        props: { age: { nullabilityOp: { type: "select" } } },
+      })
+    );
     expect(a).not.toBe(b);
   });
 
   it("differs for different nullability ops on the same property", () => {
-    const a = computeShapeId(makeInput({
-      props: { name: { nullabilityOp: { type: "select" } } },
-    }));
-    const b = computeShapeId(makeInput({
-      props: { name: { nullabilityOp: { type: "require" } } },
-    }));
+    const a = computeShapeId(
+      makeInput({
+        props: { name: { nullabilityOp: { type: "select" } } },
+      })
+    );
+    const b = computeShapeId(
+      makeInput({
+        props: { name: { nullabilityOp: { type: "require" } } },
+      })
+    );
     expect(a).not.toBe(b);
   });
 
   it("differs for different default values on the same property", () => {
-    const a = computeShapeId(makeInput({
-      props: {
-        age: { nullabilityOp: { type: "withDefault", defaultValue: 0 } },
-      },
-    }));
-    const b = computeShapeId(makeInput({
-      props: {
-        age: { nullabilityOp: { type: "withDefault", defaultValue: 18 } },
-      },
-    }));
+    const a = computeShapeId(
+      makeInput({
+        props: {
+          age: { nullabilityOp: { type: "withDefault", defaultValue: 0 } },
+        },
+      })
+    );
+    const b = computeShapeId(
+      makeInput({
+        props: {
+          age: { nullabilityOp: { type: "withDefault", defaultValue: 18 } },
+        },
+      })
+    );
     expect(a).not.toBe(b);
   });
 
   it("is stable regardless of property insertion order", () => {
-    const a = computeShapeId(makeInput({
-      props: {
-        name: { nullabilityOp: { type: "select" } },
-        age: { nullabilityOp: { type: "require" } },
-      },
-    }));
-    const b = computeShapeId(makeInput({
-      props: {
-        age: { nullabilityOp: { type: "require" } },
-        name: { nullabilityOp: { type: "select" } },
-      },
-    }));
+    const a = computeShapeId(
+      makeInput({
+        props: {
+          name: { nullabilityOp: { type: "select" } },
+          age: { nullabilityOp: { type: "require" } },
+        },
+      })
+    );
+    const b = computeShapeId(
+      makeInput({
+        props: {
+          age: { nullabilityOp: { type: "require" } },
+          name: { nullabilityOp: { type: "select" } },
+        },
+      })
+    );
     expect(a).toBe(b);
   });
 

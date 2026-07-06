@@ -60,7 +60,7 @@ describe("FormSection", () => {
       expect(screen.getByTestId("child-field")).toBeDefined();
 
       // Click the collapse trigger
-      const trigger = screen.getByRole("button", { name: /test section/i });
+      const trigger = screen.getByRole("button", { name: /test section/iu });
       fireEvent.click(trigger);
 
       // Content should be hidden (panel closed)
@@ -101,7 +101,7 @@ describe("FormSection", () => {
       ).not.toBeNull();
 
       // Click to expand
-      const trigger = screen.getByRole("button", { name: /test section/i });
+      const trigger = screen.getByRole("button", { name: /test section/iu });
       fireEvent.click(trigger);
 
       // Now visible
@@ -151,7 +151,7 @@ describe("FormSection", () => {
         </FormSection>
       );
 
-      expect(screen.queryByText(/error/)).toBeNull();
+      expect(screen.queryByText(/error/u)).toBeNull();
     });
 
     it("renders without header when showTitleBar is false", () => {

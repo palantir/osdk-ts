@@ -22,6 +22,7 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -37,15 +38,18 @@ describe("cipherText", () => {
   });
 
   it("generates a CipherText-typed property", async () => {
-    const { data: [object1] } = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+    const {
+      data: [object1],
+    } = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     expectTypeOf(object1.cipherText).toEqualTypeOf<CipherText | undefined>();
     expect(typeof object1.cipherText?.decrypt).toBe("function");
     const plaintext = await object1.cipherText?.decrypt();
     // See packages/faux/src/handlers/createCipherTextHandlers.ts
     expect(plaintext).toBe(
-      "decrypted:objectTypeWithAllPropertyTypes:1:cipherText",
+      "decrypted:objectTypeWithAllPropertyTypes:1:cipherText"
     );
   });
 });

@@ -23,25 +23,22 @@ export async function promptOsdkRegistryUrl({
   osdkRegistryUrl?: string;
 }): Promise<string> {
   while (
-    osdkRegistryUrl == null
-    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.[^/]+\/contents\/release\/npm\/?$/
-      .test(
-        osdkRegistryUrl,
-      )
+    osdkRegistryUrl == null ||
+    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.[^/]+\/contents\/release\/npm\/?$/u.test(
+      osdkRegistryUrl
+    )
   ) {
     if (osdkRegistryUrl != null) {
       consola.fail(
-        "Please enter a valid NPM registry URL to install your OSDK package",
+        "Please enter a valid NPM registry URL to install your OSDK package"
       );
     }
     osdkRegistryUrl = await consola.prompt(
-      `Enter the NPM registry URL to install your OSDK package:\n${
-        italic(
-          "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the NPM registry URL to install your OSDK package:\n${italic(
+        "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)"
+      )}`,
+      { type: "text" }
     );
   }
-  return osdkRegistryUrl.replace(/\/$/, "");
+  return osdkRegistryUrl.replace(/\/$/u, "");
 }

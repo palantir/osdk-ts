@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
 import type { PackageName } from "../PackageName.js";
 import type { Sdk } from "../Sdk.js";
@@ -29,11 +30,11 @@ export async function getSdk(
   ctx: ConjureContext,
   repositoryRid: ArtifactsRepositoryRid,
   packageName: PackageName,
-  sdkVersion: SdkVersion,
+  sdkVersion: SdkVersion
 ): Promise<Sdk> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/${sdkVersion}`,
-    "GET",
+    "GET"
   );
 }

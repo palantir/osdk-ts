@@ -66,19 +66,19 @@ export type QueryParams =
     };
 
 const INTERNAL_FRAME_PATTERNS = [
-  /node_modules/,
-  /@osdk\/react/,
-  /react-devtools/,
-  /ComponentContextCapture/,
-  /ObservableClientMonitor/,
-  /ComponentQueryRegistry/,
-  /packages\/react\/build/,
-  /packages\/react\/esm/,
-  /packages\/react\/src/,
+  /node_modules/u,
+  /@osdk\/react/u,
+  /react-devtools/u,
+  /ComponentContextCapture/u,
+  /ObservableClientMonitor/u,
+  /ComponentQueryRegistry/u,
+  /packages\/react\/build/u,
+  /packages\/react\/esm/u,
+  /packages\/react\/src/u,
 ];
 
-const CHROME_STACK_RE = /\((.*?):(\d+):(\d+)\)/;
-const FIREFOX_STACK_RE = /@(.*?):(\d+):(\d+)/;
+const CHROME_STACK_RE = /\((.*?):(\d+):(\d+)\)/u;
+const FIREFOX_STACK_RE = /@(.*?):(\d+):(\d+)/u;
 
 function isInternalFrame(filePath: string): boolean {
   for (const pattern of INTERNAL_FRAME_PATTERNS) {

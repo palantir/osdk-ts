@@ -75,19 +75,17 @@ export interface StreamTextOptions<TOOLS extends ToolSet = ToolSet> {
   onError?: (error: Error) => void | PromiseLike<void>;
 
   /** Fires once after the stream completes successfully. */
-  onFinish?: (
-    event: {
-      finishReason: FinishReason;
-      text: string;
-      reasoningText: string | undefined;
-      toolCalls: Array<ToolCall>;
-      usage: LanguageModelUsage;
-      totalUsage: LanguageModelUsage;
-      warnings: Array<Warning> | undefined;
-      response: ResponseMetadata | undefined;
-      request: RequestMetadata | undefined;
-    },
-  ) => void | PromiseLike<void>;
+  onFinish?: (event: {
+    finishReason: FinishReason;
+    text: string;
+    reasoningText: string | undefined;
+    toolCalls: Array<ToolCall>;
+    usage: LanguageModelUsage;
+    totalUsage: LanguageModelUsage;
+    warnings: Array<Warning> | undefined;
+    response: ResponseMetadata | undefined;
+    request: RequestMetadata | undefined;
+  }) => void | PromiseLike<void>;
 }
 
 /**
@@ -166,14 +164,14 @@ interface FinalState {
 }
 
 export function streamText<TOOLS extends ToolSet = ToolSet>(
-  options: StreamTextOptions<TOOLS>,
+  options: StreamTextOptions<TOOLS>
 ): StreamTextResult {
   const warnings: Array<Warning> = [];
   const messages = resolveMessages(
     "streamText",
     options.system,
     options.prompt,
-    options.messages,
+    options.messages
   );
 
   const final = createDeferred<FinalState>();
@@ -288,15 +286,15 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
           controller.enqueue(chunk.delta);
         }
       },
-    }),
+    })
   );
 
   // Warnings settle even if the stream errors, so the consumer can read them
   // off the failure path. Other promises propagate the error.
-  const warningsPromise: Promise<Array<Warning> | undefined> = final.promise
-    .then(
+  const warningsPromise: Promise<Array<Warning> | undefined> =
+    final.promise.then(
       (s) => s.warnings,
-      () => (warnings.length > 0 ? warnings : undefined),
+      () => (warnings.length > 0 ? warnings : undefined)
     );
 
   return {

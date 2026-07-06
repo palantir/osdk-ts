@@ -11,12 +11,14 @@ import {
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
 import React, { useCallback, useRef } from "react";
+
+import { Button } from "../../components/Button.js";
+
+import "./EmployeesTable.css";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
-import "./EmployeesTable.css";
-import { Button } from "../../components/Button.js";
 import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
