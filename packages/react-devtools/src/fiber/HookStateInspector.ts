@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getComponentId, getComponentName } from "./FiberInspection.js";
+import {
+  getComponentId,
+  getComponentName,
+  getProps,
+} from "./FiberInspection.js";
 import { safeFiberOperation } from "./SafeFiberOperation.js";
 import { traverseAllFibers, walkFiberTree } from "./traverseFiber.js";
 import type {
@@ -412,6 +416,69 @@ export interface DiscoveredComponent {
   componentName: string;
   hooks: OsdkHookMetadata[];
   sourceLocation: { fileName?: string; lineNumber?: number } | null;
+  /** Shallow, display-safe summary of the component's React props. */
+  props?: Record<string, string>;
+}
+
+const MAX_PROP_KEYS = 12;
+const MAX_PROP_VALUE_LEN = 80;
+
+/** One-line, reference-free preview of a single prop value. */
+function summarizePropValue(value: unknown): string {
+  if (value == null) {
+    return "null";
+  }
+  switch (typeof value) {
+    case "undefined": {
+      return "undefined";
+    }
+    case "string": {
+      const text =
+        value.length > MAX_PROP_VALUE_LEN
+          ? `${value.slice(0, MAX_PROP_VALUE_LEN)}…`
+          : value;
+      return JSON.stringify(text);
+    }
+    case "number":
+    case "boolean":
+    case "bigint": {
+      return String(value);
+    }
+    case "function": {
+      return "ƒ";
+    }
+    case "object": {
+      if (Array.isArray(value)) {
+        return `Array(${value.length})`;
+      }
+      const record = value as Record<string, unknown>;
+      if (typeof record.$apiName === "string") {
+        return `<${record.$apiName}>`;
+      }
+      return "{…}";
+    }
+    default: {
+      return String(value);
+    }
+  }
+}
+
+/**
+ * A shallow, display-safe view of a component's props. Skips `children` (noisy)
+ * and never holds onto the live prop references — each value is reduced to a
+ * short string so the panel can render it without risk of cycles or leaks.
+ */
+function summarizeProps(fiber: Fiber): Record<string, string> | undefined {
+  const raw = getProps(fiber);
+  const keys = Object.keys(raw).filter((key) => key !== "children");
+  if (keys.length === 0) {
+    return undefined;
+  }
+  const summary: Record<string, string> = {};
+  for (const key of keys.slice(0, MAX_PROP_KEYS)) {
+    summary[key] = summarizePropValue(raw[key]);
+  }
+  return summary;
 }
 
 export function discoverOsdkComponentsFromRoot(
@@ -442,6 +509,7 @@ export function discoverOsdkComponentsFromRoot(
             componentName,
             hooks: metadata,
             sourceLocation,
+            props: summarizeProps(fiber),
           });
         }
       });
