@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Classes, Icon, Tooltip } from "@blueprintjs/core";
+import { Classes, Icon } from "@blueprintjs/core";
 import type { Intent } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 
-import { PanelContainerContext } from "./PanelContainerContext.js";
+import { BpTooltip } from "./common/BpTooltip.js";
 
 import styles from "./Metric.module.scss";
 
@@ -59,22 +59,20 @@ export function Metric({
   intent = "none",
 }: MetricProps): React.JSX.Element {
   const isEmpty = value == null || value === "";
-  const panelContainer = React.useContext(PanelContainerContext);
   return (
     <div className={styles.metricItem}>
       <div className={styles.metricItemHeader}>
         <span className={Classes.TEXT_MUTED}>{title}</span>
         {help != null && (
-          <Tooltip
+          <BpTooltip
             content={<div className={styles.metricHelpContent}>{help}</div>}
-            portalContainer={panelContainer ?? undefined}
           >
             <Icon
               icon="help"
               className={styles.metricHelp}
               aria-label={`About ${title}`}
             />
-          </Tooltip>
+          </BpTooltip>
         )}
       </div>
       <span
