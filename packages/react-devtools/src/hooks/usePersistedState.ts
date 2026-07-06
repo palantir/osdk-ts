@@ -32,6 +32,9 @@ function readFromStorage<T>(key: string, defaultValue: T): T {
 }
 
 export function usePersistedState<T>(
+  /**
+   * The key will be prefixed with `OSDK_DEVTOOLS_KEY_PREFIX`
+   */
   initialKey: string,
   defaultValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {

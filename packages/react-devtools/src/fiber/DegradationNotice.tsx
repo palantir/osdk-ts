@@ -46,7 +46,6 @@ const FEATURE_DESCRIPTIONS: Record<FiberFeature, string> = {
 export interface DegradationNoticeProps {
   onRetry?: () => void;
   showWhenHealthy?: boolean;
-  /** Applied to the rendered `Callout` so callers can adjust its layout. */
   className?: string;
 }
 
