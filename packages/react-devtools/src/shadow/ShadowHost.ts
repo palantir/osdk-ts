@@ -16,7 +16,7 @@
 
 import { devtoolsCss } from "../styles.js";
 
-const HOST_ID = "__osdk_react_devtools_host__";
+export const HOST_ID = "__osdk_react_devtools_host__";
 const MOUNT_ATTR = "data-osdk-devtools-mount";
 
 let cachedMount: HTMLElement | null = null;

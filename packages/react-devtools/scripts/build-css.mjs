@@ -219,6 +219,19 @@ async function main() {
     await rewriteForShadow(combinedModuleCss),
   ].join("\n\n");
 
+  // Fail the build loudly if the :root -> :host rewrite stopped matching
+  // Blueprint's token blocks (e.g. a future Blueprint release emits
+  // `:root:where(...)` that the rewrite regex misses). Without this, the tokens
+  // would land on :root, match nothing in the shadow root, and the panel would
+  // lose its Blueprint theme with no error.
+  if (!/:host\s*\{[^}]*--bp-/u.test(shadowCss)) {
+    throw new Error(
+      "build-css: shadow bundle has no `:host { --bp-* }` block; the " +
+        ":root -> :host rewrite likely failed to match Blueprint's token " +
+        "selectors. Check rewriteForShadow against the installed Blueprint."
+    );
+  }
+
   await fs.mkdir(buildDir, { recursive: true });
   await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf-8");
   await fs.writeFile(

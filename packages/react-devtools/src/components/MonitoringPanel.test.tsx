@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { HOST_ID } from "../shadow/ShadowHost.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -40,9 +41,7 @@ const { MonitoringPanel } = await import("./MonitoringPanel.js");
 // host app. React Testing Library's `screen` does not pierce the shadow
 // boundary, so assertions read the devtools shadow root directly.
 function devtoolsShadowRoot(): ShadowRoot {
-  const host = document.querySelector<HTMLElement>(
-    "#__osdk_react_devtools_host__"
-  );
+  const host = document.querySelector<HTMLElement>(`#${HOST_ID}`);
   if (host?.shadowRoot == null) {
     throw new Error("devtools shadow host was not created");
   }
