@@ -51,11 +51,7 @@ interface OperationsListProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * Recent OSDK operations, capped and filterable. Deduplication noise is hidden
- * from "all" and only shown under the Cache filter. Long signatures scroll
- * horizontally instead of being clipped.
- */
+/** Recent OSDK operations, filterable by kind. */
 export const OperationsList: React.FC<OperationsListProps> = ({
   monitorStore,
 }) => {
