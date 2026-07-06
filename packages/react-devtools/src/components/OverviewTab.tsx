@@ -15,11 +15,12 @@
  */
 
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
-import classNames from "classnames";
 import React from "react";
 
 import { formatNumber, formatTime } from "../utils/format.js";
 import { Metric } from "./Metric.js";
+import { MetricLegend } from "./MetricLegend.js";
+import type { MetricLegendEntry } from "./MetricLegend.js";
 import { Metrics } from "./Metrics.js";
 import { OverviewSection } from "./OverviewSection.js";
 
@@ -55,6 +56,15 @@ const debugging = {
   overfetchingCount: 2,
   errorWarningCount: 1,
 };
+
+/**
+ * Color key shared by the count metrics where any occurrence is a problem — a
+ * positive value is flagged `danger`; zero / no data reads as muted.
+ */
+const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
+  { swatch: "danger", label: "> 0" },
+  { swatch: "na", label: "0 / no data" },
+];
 
 /**
  * The Overview tab — an at-a-glance summary of the monitored client's ontology
@@ -103,35 +113,13 @@ export function OverviewTab(): React.JSX.Element {
               <>
                 Share of object reads served from the normalized cache instead
                 of the network.
-                <ul className={styles.metricLegend}>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(
-                        styles.legendSwatch,
-                        styles.success
-                      )}
-                      aria-hidden={true}
-                    />
-                    ≥ 70%
-                  </li>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(
-                        styles.legendSwatch,
-                        styles.warning
-                      )}
-                      aria-hidden={true}
-                    />
-                    40–70%
-                  </li>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden={true}
-                    />
-                    {"< 40%"}
-                  </li>
-                </ul>
+                <MetricLegend
+                  entries={[
+                    { swatch: "success", label: "≥ 70%" },
+                    { swatch: "warning", label: "40–70%" },
+                    { swatch: "danger", label: "< 40%" },
+                  ]}
+                />
               </>
             }
             value={
@@ -173,22 +161,7 @@ export function OverviewTab(): React.JSX.Element {
               <>
                 Requests for data an in-flight request already covered,
                 collapsed onto a single fetch by deduplication.
-                <ul className={styles.metricLegend}>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden={true}
-                    />
-                    {"> 0"}
-                  </li>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden={true}
-                    />
-                    0 / no data
-                  </li>
-                </ul>
+                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
             value={
@@ -209,22 +182,7 @@ export function OverviewTab(): React.JSX.Element {
               <>
                 Components whose hooks fetch fields that no descendant ever
                 reads.
-                <ul className={styles.metricLegend}>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden={true}
-                    />
-                    {"> 0"}
-                  </li>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden={true}
-                    />
-                    0 / no data
-                  </li>
-                </ul>
+                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
             value={
@@ -245,26 +203,25 @@ export function OverviewTab(): React.JSX.Element {
               <>
                 Uncaught errors and console warnings captured from @osdk/react
                 hooks and your render tree this session.
-                <ul className={styles.metricLegend}>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden={true}
-                    />
-                    {"> 0"}
-                  </li>
-                  <li className={styles.legendRow}>
-                    <span
-                      className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden={true}
-                    />
-                    0
-                  </li>
-                </ul>
+                <MetricLegend
+                  entries={[
+                    { swatch: "danger", label: "> 0" },
+                    { swatch: "na", label: "0" },
+                  ]}
+                />
               </>
             }
-            value={formatNumber(debugging.errorWarningCount)}
-            intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
+            value={
+              debugging.errorWarningCount != null
+                ? formatNumber(debugging.errorWarningCount)
+                : null
+            }
+            intent={
+              debugging.errorWarningCount != null &&
+              debugging.errorWarningCount > 0
+                ? "danger"
+                : "none"
+            }
           />
         </Metrics>
       </OverviewSection>

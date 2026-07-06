@@ -20,8 +20,8 @@ import styles from "./Metrics.module.scss";
 
 export interface MetricsProps {
   /**
-   * Fixed number of columns. Omit for a responsive auto-fit layout. The cells
-   * are separated by hairline dividers within a single rounded border.
+   * Fixed number of columns. Omit for a responsive auto-fit layout. The cells are separated by hairline dividers
+   * within a single rounded border.
    */
   columns?: number;
   /** A list of `Metric` cells. */
@@ -40,7 +40,7 @@ export function Metrics({
       className={styles.metrics}
       style={
         columns != null
-          ? { gridTemplateColumns: `repeat(${columns}, 1fr)` }
+          ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
           : undefined
       }
     >

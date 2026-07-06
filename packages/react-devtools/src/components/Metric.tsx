@@ -61,7 +61,7 @@ export function Metric({
   const isEmpty = value == null || value === "";
   const panelContainer = React.useContext(PanelContainerContext);
   return (
-    <section className={styles.metricItem} aria-label={title}>
+    <div className={styles.metricItem}>
       <div className={styles.metricItemHeader}>
         <span className={Classes.TEXT_MUTED}>{title}</span>
         {help != null && (
@@ -86,6 +86,6 @@ export function Metric({
         {isEmpty ? "N/A" : value}
       </span>
       {footer != null && <div className={styles.metricFooter}>{footer}</div>}
-    </section>
+    </div>
   );
 }

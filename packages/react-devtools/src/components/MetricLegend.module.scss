@@ -1,0 +1,41 @@
+@use 'tokens' as t;
+
+.metricLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: t.$font-size-sm;
+  font-family: t.$font-mono;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: t.$radius-sm;
+  flex-shrink: 0;
+
+  &.success {
+    background: t.$green;
+  }
+
+  &.warning {
+    background: t.$orange;
+  }
+
+  &.danger {
+    background: t.$red;
+  }
+
+  &.na {
+    background: t.$text-tertiary;
+  }
+}
