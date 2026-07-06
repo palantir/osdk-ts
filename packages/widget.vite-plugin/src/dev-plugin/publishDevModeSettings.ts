@@ -55,12 +55,6 @@ class ResponseError extends Error {
 
 function getHintForError(parsed: { errorName?: string }): string | undefined {
   if (
-    parsed.errorName === "Api:WidgetIdNotFound" ||
-    parsed.errorName === "WidgetIdNotFound"
-  ) {
-    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
-  }
-  if (
     parsed.errorName === "Api:InvalidManifest" ||
     parsed.errorName === "InvalidManifest"
   ) {
