@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
-import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it, vi } from "vitest";
+import { isInjectedRuntimeInput } from "./convertDataType.js";
+import {
+  type IDiscoveredFunction,
+  OntologyIrToFullMetadataConverter,
+} from "./OntologyIrToFullMetadataConverter.js";
+
+const discoveredFunctions = vi.hoisted<IDiscoveredFunction[]>(() => []);
+
+vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
+  FunctionDiscoverer: class {
+    discover() {
+      return { discoveredFunctions };
+    }
+  },
+}));
 
 describe(OntologyIrToFullMetadataConverter, () => {
   it("should convert ontology IR to full metadata", async () => {
@@ -3419,5 +3434,127 @@ describe(OntologyIrToFullMetadataConverter, () => {
         "valueTypes": {},
       }
     `);
+  });
+
+  describe(isInjectedRuntimeInput, () => {
+    it("identifies injected runtime function inputs", () => {
+      expect(isInjectedRuntimeInput({
+        type: "client",
+        client: {
+          type: "ontologySdkClient",
+          ontologySdkClient: {},
+        },
+      })).toBe(true);
+      expect(isInjectedRuntimeInput({
+        type: "durableContext",
+        durableContext: {},
+      })).toBe(true);
+      expect(isInjectedRuntimeInput({
+        type: "anonymousCustomType",
+        anonymousCustomType: {
+          fields: {
+            client: {
+              type: "client",
+              client: {
+                type: "ontologySdkClient",
+                ontologySdkClient: {},
+              },
+            },
+            context: {
+              type: "durableContext",
+              durableContext: {},
+            },
+          },
+        },
+      })).toBe(true);
+    });
+
+    it("does not treat every anonymous custom type as injected", () => {
+      expect(isInjectedRuntimeInput({
+        type: "anonymousCustomType",
+        anonymousCustomType: {
+          fields: {
+            value: {
+              type: "string",
+            },
+          },
+        },
+      })).toBe(false);
+      expect(isInjectedRuntimeInput({
+        type: "anonymousCustomType",
+        anonymousCustomType: {
+          fields: {},
+        },
+      })).toBe(false);
+    });
+  });
+
+  it("only omits injected runtime inputs in the first position", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue({} as never);
+    const clientInput = {
+      name: "client",
+      dataType: {
+        type: "client",
+        client: {
+          type: "ontologySdkClient",
+          ontologySdkClient: {},
+        },
+      },
+      required: true,
+    };
+    const valueInput = {
+      name: "value",
+      dataType: { type: "string" },
+      required: true,
+    };
+
+    discoveredFunctions.splice(0, discoveredFunctions.length, {
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "contextFirst" },
+      },
+      inputs: [clientInput, valueInput],
+      output: { single: { dataType: { type: "string" } } },
+      customTypes: {},
+    }, {
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "contextSecond" },
+      },
+      inputs: [valueInput, clientInput],
+      output: { single: { dataType: { type: "string" } } },
+      customTypes: {},
+    });
+
+    try {
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .discoverTypeScriptFunctions(
+          fileURLToPath(new URL(".", import.meta.url)),
+        );
+
+      expect(queryTypes.map(queryType => queryType.parameters)).toEqual([
+        {
+          value: {
+            dataType: { type: "string" },
+            required: true,
+          },
+        },
+        {
+          value: {
+            dataType: { type: "string" },
+            required: true,
+          },
+          client: {
+            dataType: { type: "string" },
+            required: true,
+          },
+        },
+      ]);
+    } finally {
+      createProgramSpy.mockRestore();
+    }
   });
 });
