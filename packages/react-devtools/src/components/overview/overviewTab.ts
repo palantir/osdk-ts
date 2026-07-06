@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { overviewTab } from "../components/overview/overviewTab.js";
-import type { DevToolsPlugin } from "./types.js";
+import type { DevToolsPlugin } from "../../plugins/types.js";
+import { OverviewPanel } from "./OverviewPanel.js";
 
-// The base tabs shown in the devtools shell, in display order. Each tab PR
-// appends its plugin here (Overview, Components, Performance, Console, Cache).
-export const BASE_TABS: DevToolsPlugin[] = [overviewTab];
+export const overviewTab: DevToolsPlugin = {
+  id: "overview",
+  label: "Overview",
+  icon: "home",
+  panel: OverviewPanel,
+};

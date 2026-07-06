@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-import { overviewTab } from "../components/overview/overviewTab.js";
-import type { DevToolsPlugin } from "./types.js";
+import type { Intent } from "@blueprintjs/core";
 
-// The base tabs shown in the devtools shell, in display order. Each tab PR
-// appends its plugin here (Overview, Components, Performance, Console, Cache).
-export const BASE_TABS: DevToolsPlugin[] = [overviewTab];
+import type { RecommendationLevel } from "../utils/PerformanceRecommendationEngine.js";
+
+/** Map a recommendation severity level to a Blueprint intent for display. */
+export function levelToIntent(level: RecommendationLevel): Intent {
+  switch (level) {
+    case "critical": {
+      return "danger";
+    }
+    case "high": {
+      return "warning";
+    }
+    case "medium": {
+      return "primary";
+    }
+    default: {
+      return "none";
+    }
+  }
+}
