@@ -36,7 +36,7 @@ function makeRec(overrides: Partial<Recommendation> = {}): Recommendation {
 }
 
 describe("buildCopyPrompt", () => {
-  it("always renders intro, issue, suggestion, guidance and task sections", () => {
+  it("renders intro, issue, suggestion, guidance and task sections", () => {
     const prompt = buildCopyPrompt(makeRec());
 
     expect(prompt).toContain("OSDK React Toolkit");
@@ -54,13 +54,10 @@ describe("buildCopyPrompt", () => {
     expect(prompt).toContain("TASK: Apply the suggested fix");
   });
 
-  it("omits the LOCATION line when filePath is absent", () => {
-    expect(buildCopyPrompt(makeRec())).not.toContain("LOCATION:");
-  });
-
-  it("does not claim a location in the task when filePath is absent", () => {
+  it("omits LOCATION and points the task at the issue when filePath is absent", () => {
     const prompt = buildCopyPrompt(makeRec());
 
+    expect(prompt).not.toContain("LOCATION:");
     expect(prompt).not.toContain("the location above");
     expect(prompt).toContain(
       "Use the issue and suggested fix above to find the component or query"

@@ -15,8 +15,9 @@
  */
 
 import { Button } from "@blueprintjs/core";
-import React, { useCallback, useRef, useState } from "react";
+import React from "react";
 
+import { useCopyToClipboard } from "../hooks/useCopyToClipboard.js";
 import {
   buildCopyAllPrompt,
   buildCopyPrompt,
@@ -28,8 +29,7 @@ export type CopyPromptButtonProps =
   | { recommendations: Recommendation[]; label?: string };
 
 export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const { copied, copy } = useCopyToClipboard();
 
   const isSingle = "recommendation" in props;
   const prompt = isSingle
@@ -37,23 +37,12 @@ export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
     : buildCopyAllPrompt(props.recommendations);
   const label = props.label ?? (isSingle ? "Copy prompt" : "Copy all");
 
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(prompt);
-      setCopied(true);
-      clearTimeout(copyTimeoutRef.current);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // Clipboard writes can reject (e.g. denied permission); ignore silently.
-    }
-  }, [prompt]);
-
   return (
     <Button
       variant="minimal"
       size="small"
       icon={copied ? "tick" : "clipboard"}
-      onClick={() => void handleCopy()}
+      onClick={() => void copy(prompt)}
     >
       {label}
     </Button>

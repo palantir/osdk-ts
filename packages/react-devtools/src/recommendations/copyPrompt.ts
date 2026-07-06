@@ -73,6 +73,8 @@ export function buildCopyPrompt(rec: Recommendation): string {
  * horizontal rule.
  */
 export function buildCopyAllPrompt(recs: Recommendation[]): string {
+  // Recs arrive already sorted by priority from PerformanceRecommendationEngine,
+  // so this keeps the caller's order rather than re-sorting here.
   const preamble = `Here are ${recs.length} OSDK optimizations, ordered by priority:`;
   const items = recs.map((rec, i) => `${i + 1}. ${buildCopyPrompt(rec)}`);
   return `${preamble}\n\n${items.join("\n\n---\n\n")}`;
