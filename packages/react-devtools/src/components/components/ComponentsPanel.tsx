@@ -25,6 +25,7 @@ import React, {
 import type { DevToolsPanelProps } from "../../plugins/types.js";
 import { resolveComponentName } from "../resolveComponentName.js";
 import { ComponentCard } from "./ComponentCard.js";
+import { type ComponentFilter, ComponentFilters } from "./ComponentFilters.js";
 import { ComponentsHeader } from "./ComponentsHeader.js";
 import {
   type ComponentOntology,
@@ -43,9 +44,9 @@ interface ComponentEntry {
 }
 
 /**
- * The component inspector: every mounted OSDK component shown as an ontology
- * tree of the object types, actions, and properties it uses. Filterable by any
- * of those names through the search box.
+ * The component inspector: every mounted OSDK component as an ontology tree of
+ * the object types, actions, and properties it uses. Search by name, or filter
+ * down to a single object type or action.
  */
 export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
   monitorStore,
@@ -60,6 +61,7 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
   const insights = useComponentInsights(monitorStore);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<ComponentFilter | null>(null);
 
   const entries = useMemo<ComponentEntry[]>(() => {
     return [...registry.getActiveComponents().entries()].map(
@@ -89,7 +91,7 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
     // version + insights drive the recompute as the registry and tracker change.
   }, [registry, tracker, version, insights]);
 
-  const stats = useMemo(() => {
+  const facets = useMemo(() => {
     const objectTypes = new Set<string>();
     const actions = new Set<string>();
     for (const entry of entries) {
@@ -101,16 +103,27 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
       }
     }
     return {
-      objectTypeCount: objectTypes.size,
-      actionTypeCount: actions.size,
+      objectTypes: [...objectTypes].sort((a, b) => a.localeCompare(b)),
+      actions: [...actions].sort((a, b) => a.localeCompare(b)),
     };
   }, [entries]);
 
   const query = search.trim().toLowerCase();
-  const visible =
-    query.length === 0
-      ? entries
-      : entries.filter((entry) => entry.haystack.includes(query));
+  const visible = entries.filter((entry) => {
+    if (query.length > 0 && !entry.haystack.includes(query)) {
+      return false;
+    }
+    if (filter != null) {
+      const inScope =
+        filter.kind === "objectType"
+          ? entry.ontology.objectTypes.some((t) => t.name === filter.name)
+          : entry.ontology.actions.includes(filter.name);
+      if (!inScope) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   return (
     <div className={styles.panel}>
@@ -124,13 +137,19 @@ export const ComponentsPanel: React.FC<DevToolsPanelProps> = ({
       </div>
       <ComponentsHeader
         componentCount={entries.length}
-        objectTypeCount={stats.objectTypeCount}
-        actionTypeCount={stats.actionTypeCount}
+        objectTypeCount={facets.objectTypes.length}
+        actionTypeCount={facets.actions.length}
+      />
+      <ComponentFilters
+        objectTypes={facets.objectTypes}
+        actions={facets.actions}
+        active={filter}
+        onChange={setFilter}
       />
       {visible.length === 0 ? (
         <div className={styles.empty}>
           {entries.length > 0
-            ? "No components match your search."
+            ? "No components match."
             : "No OSDK components are mounted yet."}
         </div>
       ) : (

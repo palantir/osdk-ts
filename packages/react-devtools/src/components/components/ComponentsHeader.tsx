@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Icon } from "@blueprintjs/core";
 import React from "react";
 
 import styles from "./ComponentsPanel.module.scss";
@@ -31,8 +30,7 @@ function plural(count: number, noun: string): string {
 
 /**
  * The summary line above the tree: how many components are mounted and, across
- * all of them, how many distinct object types and action types they touch. The
- * filter glyph is a visual affordance; filtering happens through the search box.
+ * all of them, how many distinct object types and action types they touch.
  */
 export const ComponentsHeader: React.FC<ComponentsHeaderProps> = ({
   componentCount,
@@ -50,12 +48,6 @@ export const ComponentsHeader: React.FC<ComponentsHeaderProps> = ({
         <span className={styles.summaryDot}>•</span>
         <span>{plural(actionTypeCount, "action type")}</span>
       </span>
-      <Icon
-        className={styles.summaryFilter}
-        icon="filter"
-        size={14}
-        title="Filter"
-      />
     </div>
   );
 };

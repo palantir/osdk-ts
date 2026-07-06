@@ -61,7 +61,7 @@ export interface ComponentOntology {
   actions: string[];
   /** Properties the component read, grouped by object type. */
   properties: OntologyProperties[];
-  /** Shallow, display-safe React props captured from the fiber. */
+  /** React props captured from the fiber. */
   reactProps: Array<[string, string]>;
   /** True when the component has no wasted renders and no over-fetch. */
   healthy: boolean;
@@ -95,11 +95,9 @@ const isKnown = (type: string | null): type is string =>
   type != null && type !== "Unknown";
 
 /**
- * Reduce a component's hook bindings, property-access history, props, and health
- * signals into the ontology-tree shape the Components tab renders: the object
- * types and actions it uses (from hook usage), the instances and properties it
- * actually read (from the access tracker), and its React props. Pure and sorted
- * for deterministic rendering and testing.
+ * Reduce a component's hook bindings, property access, props, and health signals
+ * into the ontology tree the Components tab renders: the object types and actions
+ * it uses, the instances and properties it read, and its React props.
  */
 export function deriveComponentOntology(
   bindings: ComponentHookBinding[],

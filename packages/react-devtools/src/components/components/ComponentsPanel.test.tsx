@@ -81,6 +81,13 @@ afterEach(() => {
   cleanup();
 });
 
+/** Matches for `label` that are tree nodes, not filter chips (chips are buttons). */
+function treeNodes(label: string): HTMLElement[] {
+  return screen
+    .getAllByText(label)
+    .filter((el) => el.closest("button") == null);
+}
+
 describe("ComponentsPanel", () => {
   it("renders the ontology search box and the mounted components", () => {
     const active = new Map([["c1", [makeBinding()]]]);
@@ -134,9 +141,9 @@ describe("ComponentsPanel", () => {
     fireEvent.click(screen.getByText("ParcelList"));
 
     expect(screen.getByText("Related objects")).not.toBeNull();
-    expect(screen.getByText("Parcel")).not.toBeNull();
+    expect(treeNodes("Parcel").length).toBeGreaterThan(0);
     expect(screen.getByText("Related actions")).not.toBeNull();
-    expect(screen.getByText("createParcel")).not.toBeNull();
+    expect(treeNodes("createParcel").length).toBeGreaterThan(0);
     expect(screen.queryByText("useOsdkObjects")).toBeNull();
     expect(screen.queryByText("useOsdkAction")).toBeNull();
   });
@@ -169,9 +176,9 @@ describe("ComponentsPanel", () => {
     render(<ComponentsPanel monitorStore={store} theme="light" />);
 
     fireEvent.click(screen.getByText("ParcelList"));
-    // "Parcel" appears under both Related objects and Related properties;
-    // the first is the Related objects group.
-    fireEvent.click(screen.getAllByText("Parcel")[0]);
+    // "Parcel" is a filter chip and two tree nodes (Related objects, Related
+    // properties); the first tree node is the Related objects group.
+    fireEvent.click(treeNodes("Parcel")[0]);
 
     expect(screen.getByText("p0")).not.toBeNull();
     expect(screen.getByText("+ 3 more")).not.toBeNull();
@@ -223,5 +230,48 @@ describe("ComponentsPanel", () => {
     });
     expect(screen.queryByText("ParcelList")).toBeNull();
     expect(screen.getByText("WorkspaceView")).not.toBeNull();
+  });
+
+  it("filters components to a selected object type chip", () => {
+    const active = new Map([
+      ["c1", [makeBinding()]],
+      [
+        "c2",
+        [
+          makeBinding({
+            componentName: "WorkspaceView",
+            queryParams: { type: "list", objectType: "Workspace" },
+          }),
+        ],
+      ],
+    ]);
+    render(<ComponentsPanel monitorStore={makeStore(active)} theme="light" />);
+
+    fireEvent.click(screen.getByText("Parcel"));
+    expect(screen.getByText("ParcelList")).not.toBeNull();
+    expect(screen.queryByText("WorkspaceView")).toBeNull();
+
+    fireEvent.click(screen.getByText("All"));
+    expect(screen.getByText("WorkspaceView")).not.toBeNull();
+  });
+
+  it("filters components to a selected action chip", () => {
+    const active = new Map([
+      [
+        "c1",
+        [
+          makeBinding({
+            hookType: "useOsdkAction",
+            queryParams: { type: "action", actionName: "createParcel" },
+          }),
+        ],
+      ],
+      ["c2", [makeBinding({ componentName: "WorkspaceView" })]],
+    ]);
+    render(<ComponentsPanel monitorStore={makeStore(active)} theme="light" />);
+
+    fireEvent.click(screen.getByText("createParcel"));
+    expect(screen.getByText("ParcelList")).not.toBeNull();
+    expect(screen.queryByText("WorkspaceView")).toBeNull();
   });
 });

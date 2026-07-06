@@ -416,7 +416,7 @@ export interface DiscoveredComponent {
   componentName: string;
   hooks: OsdkHookMetadata[];
   sourceLocation: { fileName?: string; lineNumber?: number } | null;
-  /** Shallow, display-safe summary of the component's React props. */
+  /** Short string preview of the component's React props. */
   props?: Record<string, string>;
 }
 
@@ -463,11 +463,6 @@ function summarizePropValue(value: unknown): string {
   }
 }
 
-/**
- * A shallow, display-safe view of a component's props. Skips `children` (noisy)
- * and never holds onto the live prop references — each value is reduced to a
- * short string so the panel can render it without risk of cycles or leaks.
- */
 function summarizeProps(fiber: Fiber): Record<string, string> | undefined {
   const raw = getProps(fiber);
   const keys = Object.keys(raw).filter((key) => key !== "children");
