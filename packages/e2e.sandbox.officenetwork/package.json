@@ -27,7 +27,7 @@
     "build": "vite build",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser transpileEsm --filter='@osdk/e2e.sandbox.officenetwork^...' & vite",
+    "dev": "vite",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "preview": "vite preview",
