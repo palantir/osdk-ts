@@ -18,10 +18,8 @@ import type { MonitorStore } from "../store/MonitorStore.js";
 import { useActiveComponents } from "./useActiveComponents.js";
 
 export interface OntologyUsage {
-  /** Distinct object-type api-names in active bindings whose entity kind is not `interface`. */
+  /** Distinct object-type api-names across object/list/aggregation bindings. */
   objectTypeCount: number;
-  /** Distinct interface api-names in active bindings whose entity kind is `interface`. */
-  interfaceCount: number;
   /** Distinct action names across `useOsdkAction` bindings. */
   actionTypeCount: number;
   /** Distinct `source-object:link-name` pairs across `useLinks` bindings. */
@@ -33,15 +31,14 @@ export interface OntologyUsage {
 /**
  * Derives the Overview's ontology-in-use counts from the component query
  * registry's active bindings — the same source the Debugging/Components view
- * reads, so the two cannot diverge. Interface-kind bindings are counted as
- * interfaces; every other object/list/aggregation binding counts as an object
- * type. Links are counted per distinct source-object/link-name pair.
+ * reads, so the two cannot diverge. Every object/list/aggregation binding
+ * counts as an object type. Links are counted per distinct source-object/
+ * link-name pair.
  */
 export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
   const activeComponents = useActiveComponents(monitorStore);
 
   const objectTypes = new Set<string>();
-  const interfaceTypes = new Set<string>();
   const actionTypes = new Set<string>();
   const links = new Set<string>();
 
@@ -57,18 +54,13 @@ export function useOntologyUsage(monitorStore: MonitorStore): OntologyUsage {
         params.type === "list" ||
         params.type === "aggregation"
       ) {
-        if (params.entityKind === "interface") {
-          interfaceTypes.add(params.objectType);
-        } else {
-          objectTypes.add(params.objectType);
-        }
+        objectTypes.add(params.objectType);
       }
     }
   }
 
   return {
     objectTypeCount: objectTypes.size,
-    interfaceCount: interfaceTypes.size,
     actionTypeCount: actionTypes.size,
     linkCount: links.size,
     isEmpty: activeComponents.size === 0,

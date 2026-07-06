@@ -46,20 +46,11 @@ export interface ComponentHookBinding {
   avgRenderDuration: number;
 }
 
-/**
- * Whether an observed query targeted an object type or an interface. Captured at
- * the monitored-client boundary from the definition's `type` discriminant.
- * `"unknown"` when the app passed a bare string api-name instead of a generated
- * definition object. Distinct from the query-kind discriminant on `QueryParams`.
- */
-export type EntityKind = "object" | "interface" | "unknown";
-
 export type QueryParams =
   | {
       type: "object";
       objectType: string;
       primaryKey: string;
-      entityKind?: EntityKind;
     }
   | {
       type: "list";
@@ -67,7 +58,6 @@ export type QueryParams =
       where?: unknown;
       orderBy?: unknown;
       pageSize?: number;
-      entityKind?: EntityKind;
     }
   | { type: "action"; actionName: string }
   | { type: "links"; sourceObject: string; linkName: string }
@@ -77,7 +67,6 @@ export type QueryParams =
       objectType: string;
       where?: unknown;
       aggregate?: unknown;
-      entityKind?: EntityKind;
     };
 
 const INTERNAL_FRAME_PATTERNS = [

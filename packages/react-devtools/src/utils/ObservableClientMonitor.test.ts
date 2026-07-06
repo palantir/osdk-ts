@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ObservableClient } from "@osdk/client/observable";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -386,97 +385,5 @@ describe("ObservableClientMonitor", () => {
     const client = createMockClient();
     monitor.wrapClient(client as unknown as ObservableClient);
     expect(() => monitor.dispose()).not.toThrow();
-  });
-
-  describe("entity-kind capture", () => {
-    const objectDef: ObjectTypeDefinition = {
-      apiName: "Employee",
-      type: "object",
-    };
-    const interfaceDef: InterfaceDefinition = {
-      apiName: "FooInterface",
-      type: "interface",
-    };
-
-    function lastQueryParams(): Record<string, unknown> {
-      const mock = registry.registerBinding as ReturnType<typeof vi.fn>;
-      const calls = mock.mock.calls;
-      return calls[calls.length - 1][0].queryParams;
-    }
-
-    it("observeObject records entityKind 'object' for an object-type definition", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeObject(objectDef, "pk-1", {}, observer as never);
-
-      expect(lastQueryParams()).toMatchObject({
-        type: "object",
-        entityKind: "object",
-      });
-    });
-
-    it("observeObject records entityKind 'interface' for an interface definition", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeObject(interfaceDef, "pk-1", {}, observer as never);
-
-      expect(lastQueryParams()).toMatchObject({ entityKind: "interface" });
-    });
-
-    it("observeObject records entityKind 'unknown' for a bare string api-name", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeObject("Employee", "pk-1", {}, observer as never);
-
-      expect(lastQueryParams()).toMatchObject({ entityKind: "unknown" });
-    });
-
-    it("observeList records entityKind 'object' for an object-type definition", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeList(
-        { type: objectDef, where: {} } as never,
-        observer as never
-      );
-
-      expect(lastQueryParams()).toMatchObject({
-        type: "list",
-        entityKind: "object",
-      });
-    });
-
-    it("observeList records entityKind 'interface' for an interface definition", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeList(
-        { type: interfaceDef, where: {} } as never,
-        observer as never
-      );
-
-      expect(lastQueryParams()).toMatchObject({ entityKind: "interface" });
-    });
-
-    it("observeList records entityKind 'unknown' for a bare string api-name", () => {
-      const client = createMockClient();
-      const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
-      const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
-
-      wrapped.observeList(
-        { type: "Employee", where: {} } as never,
-        observer as never
-      );
-
-      expect(lastQueryParams()).toMatchObject({ entityKind: "unknown" });
-    });
   });
 });

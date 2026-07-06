@@ -98,7 +98,6 @@ function populateOneObject(
             type: "object",
             objectType: "Employee",
             primaryKey: "1",
-            entityKind: "object",
           },
         }),
       ],
@@ -219,7 +218,6 @@ describe("OverviewTab", () => {
               type: "object",
               objectType: "Employee",
               primaryKey: "1",
-              entityKind: "object",
             },
           }),
           // Same object type in another component → still counts once.
@@ -229,7 +227,6 @@ describe("OverviewTab", () => {
               type: "object",
               objectType: "Employee",
               primaryKey: "2",
-              entityKind: "object",
             },
           }),
           binding({
@@ -246,7 +243,6 @@ describe("OverviewTab", () => {
             queryParams: {
               type: "list",
               objectType: "Office",
-              entityKind: "object",
             },
           }),
         ],
@@ -261,83 +257,6 @@ describe("OverviewTab", () => {
     expect(
       screen.getByRole("region", { name: /action types/i }).textContent
     ).toContain("1");
-  });
-
-  it("excludes interface-kind bindings from the object-type count", () => {
-    const store = createMockMonitorStore();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useOsdkObject",
-            queryParams: {
-              type: "object",
-              objectType: "Employee",
-              primaryKey: "1",
-              entityKind: "object",
-            },
-          }),
-          binding({
-            hookType: "useOsdkObjects",
-            queryParams: {
-              type: "list",
-              objectType: "Named",
-              entityKind: "interface",
-            },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
-
-    expect(
-      screen.getByRole("region", { name: /object types/i }).textContent
-    ).toContain("1");
-  });
-
-  it("shows a distinct interface count for interface-kind bindings", () => {
-    const store = createMockMonitorStore();
-    populateRegistry(store, [
-      [
-        "c1",
-        [
-          binding({
-            hookType: "useOsdkObjects",
-            queryParams: {
-              type: "list",
-              objectType: "Named",
-              entityKind: "interface",
-            },
-          }),
-          // Same interface elsewhere → counts once.
-          binding({
-            hookType: "useOsdkObject",
-            queryParams: {
-              type: "object",
-              objectType: "Named",
-              primaryKey: "1",
-              entityKind: "interface",
-            },
-          }),
-          binding({
-            hookType: "useOsdkObjects",
-            queryParams: {
-              type: "list",
-              objectType: "Located",
-              entityKind: "interface",
-            },
-          }),
-        ],
-      ],
-    ]);
-
-    render(<OverviewTab monitorStore={store} setActiveTab={vi.fn()} />);
-
-    expect(
-      screen.getByRole("region", { name: /interfaces/i }).textContent
-    ).toContain("2");
   });
 
   it("shows a distinct link count for useLinks bindings", () => {

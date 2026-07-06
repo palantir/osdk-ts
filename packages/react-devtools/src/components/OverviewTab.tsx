@@ -54,11 +54,7 @@ export function OverviewTab({
 }: OverviewTabProps): React.JSX.Element {
   const usage = useOntologyUsage(monitorStore);
   const isOntologyEmpty =
-    usage.objectTypeCount +
-      usage.actionTypeCount +
-      usage.linkCount +
-      usage.interfaceCount ===
-    0;
+    usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
   const performance = usePerformanceTiles(monitorStore);
   const debugging = useDebuggingTiles(monitorStore);
 
@@ -84,9 +80,8 @@ export function OverviewTab({
             }
           />
         ) : (
-          <Metrics columns={2}>
+          <Metrics>
             <Metric title="Object types" value={usage.objectTypeCount} />
-            <Metric title="Interfaces" value={usage.interfaceCount} />
             <Metric title="Action types" value={usage.actionTypeCount} />
             <Metric title="Links" value={usage.linkCount} />
           </Metrics>
@@ -107,7 +102,7 @@ export function OverviewTab({
                         styles.legendSwatch,
                         styles.success
                       )}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     ≥ 70%
                   </li>
@@ -117,14 +112,14 @@ export function OverviewTab({
                         styles.legendSwatch,
                         styles.warning
                       )}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     40–70%
                   </li>
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     {"< 40%"}
                   </li>
@@ -204,14 +199,14 @@ export function OverviewTab({
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     {"> 0"}
                   </li>
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     0 / no data
                   </li>
@@ -240,14 +235,14 @@ export function OverviewTab({
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     {"> 0"}
                   </li>
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     0 / no data
                   </li>
@@ -286,14 +281,14 @@ export function OverviewTab({
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.danger)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     {"> 0"}
                   </li>
                   <li className={styles.legendRow}>
                     <span
                       className={classNames(styles.legendSwatch, styles.na)}
-                      aria-hidden
+                      aria-hidden={true}
                     />
                     0
                   </li>

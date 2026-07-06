@@ -40,7 +40,6 @@ import { componentContextCapture } from "./ComponentContextCapture.js";
 import type {
   ComponentHookBinding,
   ComponentQueryRegistry,
-  EntityKind,
   QueryParams,
 } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
@@ -113,20 +112,6 @@ function getDebugMetadata(value: unknown): ObservableDebugMetadata | undefined {
       .__debugMetadata;
   }
   return undefined;
-}
-
-/**
- * Derive whether an observed query targeted an object type or an interface from
- * the definition passed at the observe boundary. A bare string api-name carries
- * no discriminant, so it is `"unknown"` (later readers bucket it as an object
- * type). Definition objects expose a top-level `type` of `"object"` or
- * `"interface"`.
- */
-function deriveEntityKind(definition: string | { type?: unknown }): EntityKind {
-  if (typeof definition === "string") {
-    return "unknown";
-  }
-  return definition.type === "interface" ? "interface" : "object";
 }
 
 function isMockActionEdits(value: unknown): value is MockActionEdits {
@@ -502,7 +487,6 @@ export class ObservableClientMonitor {
           type: "object",
           objectType: apiNameStr,
           primaryKey: String(primaryKey),
-          entityKind: deriveEntityKind(apiName),
         },
       });
 
@@ -622,7 +606,6 @@ export class ObservableClientMonitor {
           where: options.where,
           orderBy: options.orderBy,
           pageSize: options.pageSize,
-          entityKind: deriveEntityKind(options.type),
         },
       });
 
@@ -737,7 +720,6 @@ export class ObservableClientMonitor {
           objectType: apiNameStr,
           where: options.where,
           aggregate: options.aggregate,
-          entityKind: deriveEntityKind(options.type),
         },
       });
 
