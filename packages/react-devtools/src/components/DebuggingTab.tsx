@@ -16,7 +16,7 @@
 
 import { Icon, InputGroup } from "@blueprintjs/core";
 import classNames from "classnames";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
@@ -39,6 +39,8 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const [cacheExpanded, setCacheExpanded] = useState(false);
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [improvementsExpanded, setImprovementsExpanded] = useState(true);
+
+  const componentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const {
     entries: consoleEntries,
@@ -103,6 +105,14 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
     );
   }, [consoleEntries, searchQuery]);
 
+  const handleComponentClick = useCallback((componentId: string) => {
+    const el = componentRefs.current.get(componentId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.click();
+    }
+  }, []);
+
   return (
     <div className={styles.debuggingTab}>
       <div className={styles.controls}>
@@ -135,6 +145,7 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
               <IssueCard
                 key={issue.id}
                 issue={issue}
+                onComponentClick={handleComponentClick}
                 style={{ "--entrance-index": index } as React.CSSProperties}
               />
             ))
