@@ -18,22 +18,8 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { MonitorStore } from "../../store/MonitorStore.js";
+import { createMockMonitorStore } from "../testHelpers.js";
 import { ConsolePanel } from "./ConsolePanel.js";
-
-function makeStore(): MonitorStore {
-  const stub = {
-    getMetricsStore: () => ({ getActionErrors: () => [] }),
-    getWindowErrorStore: () => ({ getEntries: () => [] }),
-    getConsoleLogStore: () => ({
-      subscribe: () => () => {},
-      getEntries: () => [],
-      getSize: () => 0,
-      clear: () => {},
-    }),
-  };
-  return stub as unknown as MonitorStore;
-}
 
 afterEach(() => {
   cleanup();
@@ -41,7 +27,7 @@ afterEach(() => {
 
 describe("ConsolePanel", () => {
   it("offers an Errors/Logs toggle and defaults to the errors view", () => {
-    render(<ConsolePanel monitorStore={makeStore()} />);
+    render(<ConsolePanel monitorStore={createMockMonitorStore()} />);
     expect(screen.getByText("Errors")).not.toBeNull();
     expect(screen.getByText("Logs")).not.toBeNull();
     expect(screen.getByText("No errors captured.")).not.toBeNull();
