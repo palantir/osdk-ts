@@ -478,6 +478,7 @@ export class ComponentQueryRegistry {
     this.bindings.clear();
     this.componentToBindings.clear();
     this.queryToBindings.clear();
+    this.componentProps.clear();
     this.subscriptionToBinding.clear();
   }
 
