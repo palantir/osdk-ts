@@ -53,7 +53,7 @@ export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
       variant={props.variant ?? "minimal"}
       intent={props.intent}
       size="small"
-      icon={copied ? "tick" : "clipboard"}
+      icon={copied ? "tick" : "duplicate"}
       onClick={() => void copy(prompt)}
     >
       {label}
