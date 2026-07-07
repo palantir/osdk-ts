@@ -45,19 +45,19 @@
 // Console rows tint the whole row by severity (opt-in via the `tinted` prop).
 .tinted {
   &.levelError {
-    background: rgba(t.$red, 0.16);
+    background: t.$red-bg;
   }
 
   &.levelWarn {
-    background: rgba(t.$orange, 0.13);
+    background: t.$orange-bg;
   }
 
   &.levelInfo {
-    background: rgba(t.$blue, 0.1);
+    background: t.$blue-bg;
   }
 
   &.levelDebug {
-    background: rgba(t.$gray, 0.1);
+    background: t.$bg-hover;
   }
 }
 

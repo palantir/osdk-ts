@@ -70,18 +70,18 @@
 }
 
 .pillError {
-  background: rgba(t.$red, 0.15);
+  background: t.$red-bg;
   color: t.$red;
 }
 
-.pillWarn {
-  background: rgba(t.$orange, 0.15);
-  color: t.$orange;
+.pillLogs {
+  background: t.$green-bg;
+  color: t.$green;
 }
 
-.pillOther {
-  background: rgba(t.$gray, 0.18);
-  color: t.$text-secondary;
+.pillWarn {
+  background: t.$orange-bg;
+  color: t.$orange;
 }
 
 .hidden {

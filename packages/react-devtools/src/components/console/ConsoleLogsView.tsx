@@ -21,6 +21,7 @@ import {
   MenuDivider,
   MenuItem,
   Popover,
+  Tooltip,
 } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useMemo, useState } from "react";
@@ -106,15 +107,21 @@ export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
         />
         <div className={styles.issuesBar}>
           <span className={styles.issuesCount}>{entries.length} issues</span>
-          <span className={classNames(styles.pill, styles.pillError)}>
-            {counts.error}
-          </span>
-          <span className={classNames(styles.pill, styles.pillWarn)}>
-            {counts.warn}
-          </span>
-          <span className={classNames(styles.pill, styles.pillOther)}>
-            {counts.other}
-          </span>
+          <Tooltip content="Errors" compact={true}>
+            <span className={classNames(styles.pill, styles.pillError)}>
+              {counts.error}
+            </span>
+          </Tooltip>
+          <Tooltip content="Logs" compact={true}>
+            <span className={classNames(styles.pill, styles.pillLogs)}>
+              {counts.other}
+            </span>
+          </Tooltip>
+          <Tooltip content="Warnings" compact={true}>
+            <span className={classNames(styles.pill, styles.pillWarn)}>
+              {counts.warn}
+            </span>
+          </Tooltip>
           {hidden > 0 ? (
             <span className={styles.hidden}>{hidden} hidden</span>
           ) : null}
