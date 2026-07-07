@@ -28,10 +28,6 @@ interface ConsoleErrorsViewProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * Structured error feed unifying action failures, window errors and
- * console.error. Polls the error sources while mounted via an external store.
- */
 export const ConsoleErrorsView: React.FC<ConsoleErrorsViewProps> = ({
   monitorStore,
 }) => {

@@ -39,10 +39,6 @@ interface ConsoleLogsViewProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * Raw console output with a level filter, search, and clear. A real
- * destination rather than a buried collapsible.
- */
 export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
   monitorStore,
 }) => {

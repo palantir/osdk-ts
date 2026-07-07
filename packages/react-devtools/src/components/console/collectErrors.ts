@@ -17,13 +17,9 @@
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { Issue } from "../issueTypes.js";
 
-/**
- * Pure aggregation of the error-class issues from the monitor's three error
- * sources: OSDK action failures, window errors / unhandled rejections, and
- * console.error. A console.error within ±100ms of a window error carrying the
- * same message is treated as a duplicate of that window error and dropped
- * (the buckets are 100ms wide and the lookup checks the adjacent buckets too).
- */
+// A console.error within ±100ms of a window error with the same message is
+// treated as a duplicate of that window error and dropped (buckets are 100ms
+// wide; the lookup checks adjacent buckets too).
 export function collectErrors(monitorStore: MonitorStore): Issue[] {
   const errors: Issue[] = [];
 

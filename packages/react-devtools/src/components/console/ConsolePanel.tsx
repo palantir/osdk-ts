@@ -29,11 +29,6 @@ interface ConsolePanelProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * The Console tab: a segmented Errors / Logs toggle. Errors unifies action
- * failures, window errors and console.error into structured cards; Logs is the
- * raw console output with filtering.
- */
 export const ConsolePanel: React.FC<ConsolePanelProps> = ({ monitorStore }) => {
   const [view, setView] = useState<ConsoleView>("errors");
 

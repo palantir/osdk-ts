@@ -48,10 +48,6 @@ interface ErrorCardProps {
   issue: Issue;
 }
 
-/**
- * A single structured error, unified across action failures, window errors and
- * console.error, with an expandable stack / details section.
- */
 export const ErrorCard: React.FC<ErrorCardProps> = ({ issue }) => {
   const [open, setOpen] = useState(false);
   const expandable = issue.expandable;
