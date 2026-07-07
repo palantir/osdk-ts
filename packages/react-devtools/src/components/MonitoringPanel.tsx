@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Classes, Tooltip } from "@blueprintjs/core";
+import { Button, Classes, PortalProvider, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -25,13 +25,13 @@ import {
 } from "../fiber/DegradationNotice.js";
 import { validateFiberAccess } from "../fiber/validation.js";
 import { usePersistedState } from "../hooks/usePersistedState.js";
+import { getDevtoolsShadowMount } from "../shadow/ShadowHost.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
 import { ComputeTab } from "./ComputeTab.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
-import { PanelContainerContext } from "./PanelContainerContext.js";
 import { PerformanceTab } from "./PerformanceTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
@@ -135,9 +135,12 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     [themePreference, systemPrefersDark]
   );
 
-  // A callback-ref-driven state (not a plain ref) so the context Provider
-  // re-renders with the panel element once it mounts — descendants portal
-  // overlays into it. See PanelContainerContext.
+  // Renders inside a shadow root so the bundled Blueprint + devtools CSS can't
+  // leak into the page, and the page's CSS can't leak in.
+  const [shadowMount] = useState(getDevtoolsShadowMount);
+
+  // Callback-ref state so a re-render fires once the panel mounts; overlays
+  // portal into it (see PortalProvider below) so the panel-scoped styles apply.
   const [panelEl, setPanelEl] = useState<HTMLDivElement | null>(null);
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
@@ -398,20 +401,24 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   if (position.collapsed) {
     return createPortal(
-      <Tooltip
-        content="View OSDK Devtools"
-        placement="left"
-        hoverOpenDelay={UI_CONSTANTS.TOOLTIP_HOVER_DELAY}
-      >
-        <div
-          className={styles.minimized}
-          data-dt-theme={resolvedTheme}
-          onClick={() => setPosition((prev) => ({ ...prev, collapsed: false }))}
+      <PortalProvider portalContainer={shadowMount}>
+        <Tooltip
+          content="View OSDK Devtools"
+          placement="left"
+          hoverOpenDelay={UI_CONSTANTS.TOOLTIP_HOVER_DELAY}
         >
-          <span className={styles.minimizedIcon}>&lt;/&gt;</span>
-        </div>
-      </Tooltip>,
-      document.body
+          <div
+            className={styles.minimized}
+            data-dt-theme={resolvedTheme}
+            onClick={() =>
+              setPosition((prev) => ({ ...prev, collapsed: false }))
+            }
+          >
+            <span className={styles.minimizedIcon}>&lt;/&gt;</span>
+          </div>
+        </Tooltip>
+      </PortalProvider>,
+      shadowMount
     );
   }
 
@@ -425,7 +432,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     }
   );
   return createPortal(
-    <PanelContainerContext.Provider value={panelEl}>
+    <PortalProvider portalContainer={panelEl ?? shadowMount}>
       <div
         ref={setPanelEl}
         className={panelClassName}
@@ -454,7 +461,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
               { cls: [styles.vertical, styles.right], handle: "right" },
               { cls: [styles.corner, styles.topLeft], handle: "topLeft" },
               { cls: [styles.corner, styles.topRight], handle: "topRight" },
-              { cls: [styles.corner, styles.bottomLeft], handle: "bottomLeft" },
+              {
+                cls: [styles.corner, styles.bottomLeft],
+                handle: "bottomLeft",
+              },
               {
                 cls: [styles.corner, styles.bottomRight],
                 handle: "bottomRight",
@@ -603,8 +613,8 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           </div>
         </div>
       </div>
-    </PanelContainerContext.Provider>,
-    document.body
+    </PortalProvider>,
+    shadowMount
   );
 };
 

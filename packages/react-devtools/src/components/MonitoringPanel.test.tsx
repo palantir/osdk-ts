@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { HOST_ID } from "../shadow/ShadowHost.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -36,6 +37,20 @@ vi.mock("../fiber/validation.js", () => ({
 
 const { MonitoringPanel } = await import("./MonitoringPanel.js");
 
+// The panel renders inside a shadow root; `screen` does not pierce the shadow
+// boundary, so assertions read the shadow root directly.
+function devtoolsShadowRoot(): ShadowRoot {
+  const host = document.querySelector<HTMLElement>(`#${HOST_ID}`);
+  if (host?.shadowRoot == null) {
+    throw new Error("devtools shadow host was not created");
+  }
+  return host.shadowRoot;
+}
+
+function shadowContains(text: string): boolean {
+  return devtoolsShadowRoot().textContent?.includes(text) ?? false;
+}
+
 describe("MonitoringPanel", () => {
   afterEach(() => {
     cleanup();
@@ -45,24 +60,38 @@ describe("MonitoringPanel", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryByText("OSDK Devtools")).not.toBeNull();
-    expect(screen.queryByText("Performance")).not.toBeNull();
-    expect(screen.queryByText("Compute")).not.toBeNull();
-    expect(screen.queryByText("Intercept")).not.toBeNull();
-    expect(screen.queryByText("Debugging")).not.toBeNull();
+    expect(shadowContains("OSDK Devtools")).toBe(true);
+    expect(shadowContains("Performance")).toBe(true);
+    expect(shadowContains("Compute")).toBe(true);
+    expect(shadowContains("Intercept")).toBe(true);
+    expect(shadowContains("Debugging")).toBe(true);
   });
 
   it("renders the beta badge", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Beta").length).toBeGreaterThan(0);
+    expect(shadowContains("Beta")).toBe(true);
   });
 
   it("defaults to the performance tab", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
+    expect(shadowContains("Cache Hit Rate")).toBe(true);
+  });
+
+  it("renders into an isolated shadow root, not the page", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    // The panel content lives in the shadow root, not the light DOM.
+    expect(screen.queryByText("OSDK Devtools")).toBeNull();
+    expect(shadowContains("OSDK Devtools")).toBe(true);
+
+    // The devtools stylesheet lives inside the shadow root, never in the page.
+    const shadowStyle = devtoolsShadowRoot().querySelector("style");
+    expect(shadowStyle).not.toBeNull();
+    expect(document.head.contains(shadowStyle)).toBe(false);
   });
 });

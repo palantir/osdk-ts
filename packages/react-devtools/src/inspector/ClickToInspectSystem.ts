@@ -17,6 +17,7 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 
+import { getDevtoolsShadowMount } from "../shadow/ShadowHost.js";
 import { InspectorBanner } from "./components/InspectorBanner.js";
 import { InspectorOverlay } from "./components/InspectorOverlay.js";
 import { createInspectorController } from "./inspectorController.js";
@@ -103,7 +104,7 @@ export class ClickToInspectSystem {
   }
 
   private showOverlay(): void {
-    const renderTarget = this.options.renderTarget ?? document.body;
+    const renderTarget = this.options.renderTarget ?? getDevtoolsShadowMount();
 
     if (!this.overlayContainer) {
       this.overlayContainer = document.createElement("div");
@@ -164,7 +165,7 @@ export class ClickToInspectSystem {
   }
 
   private showBanner(): void {
-    const renderTarget = this.options.renderTarget ?? document.body;
+    const renderTarget = this.options.renderTarget ?? getDevtoolsShadowMount();
 
     if (!this.bannerContainer) {
       this.bannerContainer = document.createElement("div");
