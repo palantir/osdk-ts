@@ -48,8 +48,21 @@ function makeStore(): MonitorStore {
     subscribe: () => () => {},
     getSnapshot: () => snapshot,
   };
+  const componentRegistry = {
+    subscribe: () => () => {},
+    getVersion: () => 0,
+    getActiveComponents: () => new Map(),
+  };
+  const emptyEntryStore = {
+    subscribe: () => () => {},
+    getEntries: () => [],
+  };
   const stub = {
     getMetricsStore: () => metricsStore,
+    getComponentRegistry: () => componentRegistry,
+    getWindowErrorStore: () => emptyEntryStore,
+    getConsoleLogStore: () => emptyEntryStore,
+    getPropertyAccessTracker: () => ({ getAccessedFields: () => new Map() }),
     getCacheSnapshot: () =>
       Promise.resolve({
         entries: [],
