@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 2.42.0
 
 ### Minor Changes

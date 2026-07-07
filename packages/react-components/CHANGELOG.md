@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.36.0
+
+### Minor Changes
+
+- 12e5e63: Add `--osdk-button-border-radius` token so a theme can round buttons independently of inputs/cards.
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 0.35.0
 
 ### Minor Changes

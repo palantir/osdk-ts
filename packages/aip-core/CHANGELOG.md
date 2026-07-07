@@ -1,5 +1,17 @@
 # @osdk/aip-core
 
+## 0.8.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+
 ## 0.7.0
 
 ### Minor Changes
