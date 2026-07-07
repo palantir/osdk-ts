@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-@use '../tokens' as t;
-
 .panel {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
-}
-
-.description {
-  margin: 0 0 8px;
-  font-size: t.$font-size-base;
-  color: t.$text-tertiary;
 }

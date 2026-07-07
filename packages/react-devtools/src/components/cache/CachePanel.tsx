@@ -34,11 +34,7 @@ export const CachePanel: FC<CachePanelProps> = ({ monitorStore }) => {
       <OverviewSection title="Cache inspector">
         <CacheInspectorTab monitorStore={monitorStore} />
       </OverviewSection>
-      <OverviewSection title="Activity timeline">
-        <p className={styles.description}>
-          Recent cache hits and misses in reverse chronological order — a hit
-          was served from the normalized cache, a miss went to the network.
-        </p>
+      <OverviewSection title="Cache history">
         <CacheTimeline monitorStore={monitorStore} />
       </OverviewSection>
     </div>

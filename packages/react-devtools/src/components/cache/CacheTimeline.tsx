@@ -21,7 +21,7 @@ import { createPollingStore } from "../../hooks/createPollingStore.js";
 import { useMetrics } from "../../hooks/useMetrics.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { Operation } from "../../types/index.js";
-import { formatTime } from "../../utils/format.js";
+import { formatRelativeTime, formatTime } from "../../utils/format.js";
 
 import styles from "./CacheTimeline.module.scss";
 
@@ -176,7 +176,7 @@ const OperationItem: React.FC<OperationItemProps> = ({
           {getEnrichedSignature()}
         </div>
         <div className={styles.operationTime}>
-          {new Date(operation.timestamp).toLocaleTimeString()}
+          {formatRelativeTime(operation.timestamp)}
         </div>
         {operation.responseTime != null && (
           <div className={styles.operationMetrics}>

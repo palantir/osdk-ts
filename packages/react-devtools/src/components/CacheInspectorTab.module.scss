@@ -11,42 +11,10 @@
 .toolbar {
   padding: 12px 16px;
   border-bottom: 1px solid t.$border-default;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
   position: sticky;
   top: 0;
   z-index: t.$z-sticky;
   background: t.$bg-raised;
-}
-
-.title {
-  @include m.dt-label;
-  font-size: t.$font-size-sm;
-  text-wrap: balance;
-}
-
-.stats {
-  display: flex;
-  gap: 24px;
-  flex: 1;
-}
-
-.stat {
-  @include m.dt-metric;
-}
-
-.statLabel {
-  @include m.dt-metric-label;
-}
-
-.statValue {
-  font-size: 18px;
-  font-weight: t.$font-weight-bold;
-  font-family: t.$font-mono;
-  color: t.$text-value;
-  font-variant-numeric: tabular-nums;
 }
 
 .toolbarActions {
