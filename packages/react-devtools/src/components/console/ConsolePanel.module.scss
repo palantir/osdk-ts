@@ -59,9 +59,9 @@
 .errorCard {
   margin-bottom: 2px;
 
-  // Blueprint buttons default to dark text; keep the details toggle readable on
-  // the tinted callout background.
-  :global(.bp5-button) {
+  // Blueprint minimal buttons default to dark text; keep the details toggle
+  // readable on the tinted callout background.
+  :global(.bp6-button.bp6-minimal) {
     color: var(--dt-text-secondary);
   }
 }
