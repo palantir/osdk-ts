@@ -100,6 +100,12 @@ const DEVTOOLS_TAB_IDS = [
 
 type DevtoolsTabId = (typeof DEVTOOLS_TAB_IDS)[number];
 
+interface DevtoolsTab {
+  id: DevtoolsTabId;
+  title: string;
+  panel: React.JSX.Element;
+}
+
 export interface MonitoringPanelProps {
   /** The MonitorStore instance that provides all metrics, compute, and component tracking data. */
   monitorStore: MonitorStore;
@@ -429,6 +435,29 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     );
   }
 
+  const tabs: ReadonlyArray<DevtoolsTab> = [
+    {
+      id: "performance",
+      title: "Performance",
+      panel: <PerformanceTab monitorStore={monitorStore} />,
+    },
+    {
+      id: "compute",
+      title: "Compute",
+      panel: <ComputeTab computeStore={computeStore} />,
+    },
+    {
+      id: "intercept",
+      title: "Intercept",
+      panel: <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />,
+    },
+    {
+      id: "debugging",
+      title: "Debugging",
+      panel: <DebuggingTab monitorStore={monitorStore} />,
+    },
+  ];
+
   const panelClassName = classNames(
     styles.panel,
     // Class needed to remove the useless outline added on tabs/buttons
@@ -566,40 +595,15 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             selectedTabId={activeTab}
             onChange={onActiveTabChange}
           >
-            <Tab
-              id="performance"
-              title="Performance"
-              panelClassName={styles.tabPanel}
-              panel={
-                <PerformanceTab
-                  metricsStore={metricsStore}
-                  monitorStore={monitorStore}
-                />
-              }
-            />
-            <Tab
-              id="compute"
-              title="Compute"
-              panelClassName={styles.tabPanel}
-              panel={<ComputeTab computeStore={computeStore} />}
-            />
-            <Tab
-              id="intercept"
-              title="Intercept"
-              panelClassName={styles.tabPanel}
-              panel={
-                <InterceptTab
-                  monitorStore={monitorStore}
-                  theme={resolvedTheme}
-                />
-              }
-            />
-            <Tab
-              id="debugging"
-              title="Debugging"
-              panelClassName={styles.tabPanel}
-              panel={<DebuggingTab monitorStore={monitorStore} />}
-            />
+            {tabs.map(({ id, title, panel }) => (
+              <Tab
+                key={id}
+                id={id}
+                title={title}
+                panelClassName={styles.tabPanel}
+                panel={panel}
+              />
+            ))}
           </Tabs>
         </div>
       </div>

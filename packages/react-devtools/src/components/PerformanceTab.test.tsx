@@ -29,18 +29,16 @@ describe("PerformanceTab", () => {
 
   it("renders cache metrics section", () => {
     const store = createMockMonitorStore();
-    const metricsStore = store.getMetricsStore();
 
-    render(<PerformanceTab metricsStore={metricsStore} monitorStore={store} />);
+    render(<PerformanceTab monitorStore={store} />);
 
     expect(screen.queryAllByText("Cache Hit Rate").length).toBeGreaterThan(0);
   });
 
   it("renders filter buttons", () => {
     const store = createMockMonitorStore();
-    const metricsStore = store.getMetricsStore();
 
-    render(<PerformanceTab metricsStore={metricsStore} monitorStore={store} />);
+    render(<PerformanceTab monitorStore={store} />);
 
     expect(screen.queryAllByText("All").length).toBeGreaterThan(0);
     expect(screen.queryAllByText("Cache").length).toBeGreaterThan(0);
@@ -49,11 +47,8 @@ describe("PerformanceTab", () => {
 
   it("renders with zero metrics without crashing", () => {
     const store = createMockMonitorStore();
-    const metricsStore = store.getMetricsStore();
 
-    const { container } = render(
-      <PerformanceTab metricsStore={metricsStore} monitorStore={store} />
-    );
+    const { container } = render(<PerformanceTab monitorStore={store} />);
 
     expect(container.firstChild).not.toBeNull();
   });

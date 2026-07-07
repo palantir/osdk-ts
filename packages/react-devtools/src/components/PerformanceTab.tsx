@@ -22,7 +22,6 @@ import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useMetrics } from "../hooks/useMetrics.js";
 import { useRecommendations } from "../hooks/useRecommendations.js";
 import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
-import type { MetricsStore } from "../store/MetricsStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Operation } from "../types/index.js";
 import type { ActionStartEvent } from "../utils/EventTimeline.js";
@@ -54,15 +53,13 @@ const ACTION_OPERATION_TYPES = new Set<Operation["type"]>([
 const MAX_RECENT_OPERATIONS = 50;
 
 export interface PerformanceTabProps {
-  metricsStore: MetricsStore;
   monitorStore: MonitorStore;
 }
 
 export const PerformanceTab: React.FC<PerformanceTabProps> = ({
-  metricsStore,
   monitorStore,
 }) => {
-  const metrics = useMetrics(metricsStore);
+  const metrics = useMetrics(monitorStore.getMetricsStore());
   const { report: unusedFieldReport, isLoading: analysisLoading } =
     useUnusedFieldAnalysis(monitorStore);
   const { recommendations } = useRecommendations(monitorStore);
