@@ -20,6 +20,14 @@ import type { ClientMetrics } from "../metrics/clientMetrics.js";
 import { getClientMetrics } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 
+/**
+ * Subscribes to the metrics store and returns the full {@link ClientMetrics}
+ * set, recomputed whenever any metric changes. It is meant for a single surface
+ * that renders these metrics together (the Overview tab), where re-rendering the
+ * whole group on any change is expected. If a consumer ever needs one metric in
+ * isolation (without re-rendering when unrelated metrics change), add a selector
+ * overload here rather than reading a single field off the full result.
+ */
 export function useClientMetrics(monitorStore: MonitorStore): ClientMetrics {
   const store = monitorStore.getMetricsStore();
   const subscribe = useCallback(
