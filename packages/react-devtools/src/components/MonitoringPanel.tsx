@@ -37,6 +37,7 @@ import { getDevtoolsShadowMount } from "../shadow/ShadowHost.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
 import { ComputeTab } from "./ComputeTab.js";
+import { ConsolePanel } from "./console/ConsolePanel.js";
 import { DebuggingTab } from "./DebuggingTab.js";
 import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
@@ -103,6 +104,7 @@ const DEVTOOLS_TAB_IDS = [
   "compute",
   "intercept",
   "debugging",
+  "console",
 ] as const;
 
 type DevtoolsTabId = (typeof DEVTOOLS_TAB_IDS)[number];
@@ -616,6 +618,12 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
               title="Debugging"
               panelClassName={styles.tabPanel}
               panel={<DebuggingTab monitorStore={monitorStore} />}
+            />
+            <Tab
+              id="console"
+              title="Console"
+              panelClassName={styles.tabPanel}
+              panel={<ConsolePanel monitorStore={monitorStore} />}
             />
           </Tabs>
         </div>

@@ -24,6 +24,15 @@
   min-height: 200px;
   pointer-events: none;
 
+  // Blueprint overlays (the Console filter Popover menu, pill Tooltips) portal
+  // into this element via PortalProvider (portalContainer={panelEl}), so they
+  // mount as siblings of .content — outside the children that re-enable pointer
+  // events. Without this they inherit the panel's pointer-events:none and render
+  // visible but dead: no hover, and clicks fall through to the rows behind.
+  :global(.bp6-portal) {
+    pointer-events: auto;
+  }
+
   &.collapsed {
     min-width: auto;
     min-height: auto;

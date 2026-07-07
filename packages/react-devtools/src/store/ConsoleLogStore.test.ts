@@ -384,6 +384,129 @@ describe("ConsoleLogStore", () => {
     });
   });
 
+  describe("BrowserLogger capture and %c formatting", () => {
+    // Mirrors @osdk/client's BrowserLogger.createLogMethod: the format string is
+    // a run of "%c<segment>%c" markers (level, optional msgPrefix, optional
+    // .method()), each %c consuming one CSS-string arg, followed by the real
+    // message args.
+    function browserLog(
+      level: "debug" | "info" | "warn" | "error",
+      segments: string[],
+      styles: string[],
+      ...rest: unknown[]
+    ): void {
+      const format = segments.map((s) => `%c${s}%c`).join(" ");
+      const styleArgs: string[] = [];
+      for (const style of styles) {
+        styleArgs.push(style, "");
+      }
+      console[level](format, ...styleArgs, ...rest);
+    }
+
+    it("captures a BrowserLogger call instead of dropping it", async () => {
+      store.install();
+
+      browserLog(
+        "error",
+        ["error", ".getObject()"],
+        [
+          "color: red; border: 1px solid red; padding: 2px; border-radius: 3px;",
+          "font-style: italic;color: orchid",
+        ],
+        "No such ontology entity: ontology-metadata-app"
+      );
+      await flushMicrotasks();
+
+      expect(store.getEntries()).toHaveLength(1);
+      expect(store.getEntries()[0].level).toBe("error");
+    });
+
+    it("strips %c directives and consumes CSS-string args", async () => {
+      store.install();
+
+      browserLog(
+        "debug",
+        ["debug", "ListQuery<Employee>", ".revalidate()"],
+        [
+          "color: LightBlue; border: 1px solid LightBlue; padding: 2px; border-radius: 3px;",
+          "font-style: italic; color: gray",
+          "font-style: italic;color: orchid",
+        ],
+        "Fetch is already pending, using it"
+      );
+      await flushMicrotasks();
+
+      const entry = store.getEntries()[0];
+      const rendered = entry.args.join(" ");
+      expect(rendered).not.toContain("%c");
+      expect(rendered).not.toContain("border: 1px solid");
+      expect(rendered).not.toContain("font-style");
+      expect(rendered).toContain("debug");
+      expect(rendered).toContain("ListQuery<Employee>");
+      expect(rendered).toContain(".revalidate()");
+      expect(rendered).toContain("Fetch is already pending, using it");
+    });
+
+    it("still captures a plain console.error alongside BrowserLogger output", async () => {
+      store.install();
+
+      browserLog(
+        "error",
+        ["error"],
+        ["color: red; border: 1px solid red;"],
+        "internal osdk chatter"
+      );
+      console.error("app-level failure");
+      await flushMicrotasks();
+
+      const entries = store.getEntries();
+      expect(entries).toHaveLength(2);
+      expect(entries[1].args[0]).toBe("app-level failure");
+    });
+
+    it("leaves plain (non-%c) strings untouched", async () => {
+      store.install();
+
+      console.log("plain message", "with two args");
+      await flushMicrotasks();
+
+      const entry = store.getEntries()[0];
+      expect(entry.args[0]).toBe("plain message");
+      expect(entry.args[1]).toBe("with two args");
+    });
+
+    it("substitutes %s and %d directives inline", async () => {
+      store.install();
+
+      console.log("loaded %s in %d ms", "Employee", 42);
+      await flushMicrotasks();
+
+      const entry = store.getEntries()[0];
+      expect(entry.args[0]).toBe("loaded Employee in 42 ms");
+    });
+
+    it("keeps trailing args that the format string did not consume", async () => {
+      store.install();
+
+      console.log("%c%s", "color: red", "labelled", { extra: 1 });
+      await flushMicrotasks();
+
+      const entry = store.getEntries()[0];
+      expect(entry.args[0]).toBe("labelled");
+      expect(entry.args[1]).toContain("extra");
+    });
+
+    it("leaves a bare percent sign alone", async () => {
+      store.install();
+
+      console.log("50% off today");
+      await flushMicrotasks();
+
+      const entry = store.getEntries()[0];
+      expect(entry.args[0]).toBe("50% off today");
+    });
+  });
+
   describe("suppress/unsuppress", () => {
     it("should not capture while suppressed", async () => {
       store.install();
