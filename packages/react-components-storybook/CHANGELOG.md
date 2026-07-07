@@ -1,5 +1,18 @@
 # @osdk/react-components-storybook
 
+## 0.35.0
+
+### Minor Changes
+
+- 3833cdd: Render the AipAgentChat story as a folder under Components (matching CbacPicker) with a Docs page and beta badge
+- f5fd886: Hide the canvas Code tab on the Overview story
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/faux@0.34.0
+
 ## 0.34.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.46.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/typescript-sdk-docs@0.17.0
+  - @osdk/api@2.43.0
+
 ## 0.45.0
 
 ### Minor Changes

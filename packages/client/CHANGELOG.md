@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.43.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/api@2.43.0
+  - @osdk/client.unstable@2.43.0
+  - @osdk/generator-converters@2.43.0
+
 ## 2.42.0
 
 ### Minor Changes
