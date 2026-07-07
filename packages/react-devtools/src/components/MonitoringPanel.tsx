@@ -40,7 +40,6 @@ import { CachePanel } from "./cache/CachePanel.js";
 import { ComponentsPanel } from "./components/ComponentsPanel.js";
 import { ConsolePanel } from "./console/ConsolePanel.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
-import { OverviewTab } from "./OverviewTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -98,12 +97,7 @@ const UI_CONSTANTS = {
   MAX_DOCKED_RIGHT_WIDTH: 800,
 };
 
-const DEVTOOLS_TAB_IDS = [
-  "overview",
-  "components",
-  "console",
-  "cache",
-] as const;
+const DEVTOOLS_TAB_IDS = ["components", "console", "cache"] as const;
 
 type DevtoolsTabId = (typeof DEVTOOLS_TAB_IDS)[number];
 
@@ -117,7 +111,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 }) => {
   const metricsStore = monitorStore.getMetricsStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("overview");
+  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("components");
   const onActiveTabChange = useCallback((newTabId: TabId) => {
     if (isDevtoolsTabId(newTabId)) {
       setActiveTab(newTabId);
@@ -582,12 +576,6 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             selectedTabId={activeTab}
             onChange={onActiveTabChange}
           >
-            <Tab
-              id="overview"
-              title="Overview"
-              panelClassName={styles.tabPanel}
-              panel={<OverviewTab monitorStore={monitorStore} />}
-            />
             <Tab
               id="components"
               title="Components"
