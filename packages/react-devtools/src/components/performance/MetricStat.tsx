@@ -17,7 +17,7 @@
 import { Icon, Tooltip } from "@blueprintjs/core";
 import React from "react";
 
-import { formatMetric, type Metric } from "../../metrics/canonicalMetrics.js";
+import { formatMetric, type Metric } from "../../metrics/clientMetrics.js";
 
 import styles from "./PerformancePanel.module.scss";
 

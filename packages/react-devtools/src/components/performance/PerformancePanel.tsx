@@ -16,7 +16,7 @@
 
 import React from "react";
 
-import { useCanonicalMetrics } from "../../hooks/useCanonicalMetrics.js";
+import { useClientMetrics } from "../../hooks/useClientMetrics.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
 import { MetricStat } from "./MetricStat.js";
 import { OperationsList } from "./OperationsList.js";
@@ -44,7 +44,7 @@ interface PerformancePanelProps {
 export const PerformancePanel: React.FC<PerformancePanelProps> = ({
   monitorStore,
 }) => {
-  const metrics = useCanonicalMetrics(monitorStore);
+  const metrics = useClientMetrics(monitorStore);
 
   return (
     <div className={styles.panel}>
