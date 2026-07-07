@@ -26,11 +26,11 @@ afterEach(() => {
 });
 
 describe("ConsolePanel", () => {
-  it("renders the logs view with level filters and a clear action", () => {
+  it("renders the logs view with a search, issues summary, and filter", () => {
     render(<ConsolePanel monitorStore={createMockMonitorStore()} />);
     expect(screen.getByPlaceholderText("Filter logs…")).not.toBeNull();
-    expect(screen.getByText("error")).not.toBeNull();
-    expect(screen.getByText("Clear")).not.toBeNull();
+    expect(screen.getByText(/\d+ issues/u)).not.toBeNull();
+    expect(screen.getByLabelText("Filter logs")).not.toBeNull();
     expect(screen.getByText("No console output captured.")).not.toBeNull();
   });
 });

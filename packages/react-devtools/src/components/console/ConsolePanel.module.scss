@@ -41,19 +41,56 @@
   border-bottom: 1px solid t.$border-subtle;
 }
 
-.searchRow {
+// The issues summary bar: total count, per-severity count pills, a hidden
+// count, and a funnel that opens the level filter + clear actions (right).
+.issuesBar {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  // Let the search input take the full row width and keep Clear pinned right.
-  :global(.bp6-input-group) {
-    flex: 1;
-  }
+  gap: 6px;
 }
 
-.levelFilters {
-  flex-wrap: wrap;
+.issuesCount {
+  font-size: t.$font-size-base;
+  font-weight: 600;
+  color: t.$text-secondary;
+}
+
+// Square count chips whose text is the severity color on a subtle same-hue fill.
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: t.$font-size-xs;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.7;
+}
+
+.pillError {
+  background: rgba(t.$red, 0.15);
+  color: t.$red;
+}
+
+.pillWarn {
+  background: rgba(t.$orange, 0.15);
+  color: t.$orange;
+}
+
+.pillOther {
+  background: rgba(t.$gray, 0.18);
+  color: t.$text-secondary;
+}
+
+.hidden {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+}
+
+.funnel {
+  margin-left: auto;
 }
 
 .list {

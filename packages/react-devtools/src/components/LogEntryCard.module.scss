@@ -42,6 +42,34 @@
   border-left: 2px solid transparent;
 }
 
+// Console rows tint the whole row by severity (opt-in via the `tinted` prop).
+.tinted {
+  &.levelError {
+    background: rgba(t.$red, 0.16);
+  }
+
+  &.levelWarn {
+    background: rgba(t.$orange, 0.13);
+  }
+
+  &.levelInfo {
+    background: rgba(t.$blue, 0.1);
+  }
+
+  &.levelDebug {
+    background: rgba(t.$gray, 0.1);
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 12px;
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  color: t.$text-tertiary;
+}
+
 .levelBadge {
   flex-shrink: 0;
   margin-top: 1px;
