@@ -17,16 +17,13 @@
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
 import React from "react";
 
-import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
-import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
-import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
-import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatNumber, formatTime } from "../utils/format.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
 import type { MetricLegendEntry } from "./MetricLegend.js";
 import { Metrics } from "./Metrics.js";
 import { OverviewSection } from "./OverviewSection.js";
+import { RecommendationsList } from "./RecommendationsList.js";
 
 import styles from "./OverviewTab.module.scss";
 
@@ -55,19 +52,17 @@ const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
   { swatch: "none", label: "0 / no data" },
 ];
 
+export interface OverviewTabProps {
+  monitorStore: MonitorStore;
+}
+
 /**
  * The Overview tab — an at-a-glance summary of the monitored client's ontology
  * usage and health metrics. Shows the "no ontology" empty state when the
- * registry is empty; otherwise renders the ontology counts and the performance
- * metrics grid.
+ * registry is empty; otherwise renders the ontology counts, the performance
+ * metrics grid, and the recommendations.
  */
-export function OverviewTab({
-  monitorStore,
-}: OverviewTabProps): React.JSX.Element {
-  const usage = useOntologyUsage(monitorStore);
-  const performance = usePerformanceTiles(monitorStore);
-  const debugging = useDebuggingTiles(monitorStore);
-
+export function OverviewTab(): React.JSX.Element {
   const isOntologyEmpty =
     usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
 
@@ -205,6 +200,9 @@ export function OverviewTab({
             intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
           />
         </Metrics>
+      </OverviewSection>
+      <OverviewSection title="Recommendations">
+        <RecommendationsList monitorStore={monitorStore} />
       </OverviewSection>
     </div>
   );

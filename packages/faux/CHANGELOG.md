@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.34.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/api@2.43.0
+  - @osdk/generator-converters@2.43.0
+
 ## 0.33.0
 
 ### Minor Changes

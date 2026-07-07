@@ -60,15 +60,34 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // Semantic backgrounds
       "--osdk-background-secondary",
       "--osdk-background-tertiary",
-      // Surface hover/active (needed for filter list, select, combobox states)
-      "--osdk-surface-background-color-default-hover",
-      "--bp-surface-background-color-default-hover",
-      "--osdk-surface-background-color-default-active",
-      "--bp-surface-background-color-default-active",
       // Table header
       "--osdk-table-header-bg",
+    ],
+  },
+  {
+    role: "surface-hover",
+    label: "Surface Hover",
+    category: "color",
+    inputType: "color",
+    designMdKey: "surface-hover",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-surface-background-color-default-hover",
+      "--bp-surface-background-color-default-hover",
       // Checkbox hover background
       "--osdk-checkbox-bg-hover",
+    ],
+  },
+  {
+    role: "surface-active",
+    label: "Surface Active",
+    category: "color",
+    inputType: "color",
+    designMdKey: "surface-active",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-surface-background-color-default-active",
+      "--bp-surface-background-color-default-active",
     ],
   },
   {
@@ -148,6 +167,18 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       "--osdk-intent-primary-subtle",
       "--osdk-intent-primary-hover",
       "--bp-intent-primary-hover",
+    ],
+  },
+  {
+    role: "primary-active",
+    label: "Primary Active",
+    category: "color",
+    inputType: "color",
+    designMdKey: "primary-active",
+    designMdSection: "colors",
+    cssProperties: [
+      "--osdk-intent-primary-active",
+      "--bp-intent-primary-active",
     ],
   },
   {
@@ -407,6 +438,15 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       "--osdk-surface-border-radius",
       "--bp-surface-border-radius",
     ],
+  },
+  {
+    role: "button-border-radius",
+    label: "Button Radius",
+    category: "surface",
+    inputType: "px",
+    designMdKey: "button",
+    designMdSection: "rounded",
+    cssProperties: ["--osdk-button-border-radius"],
   },
   {
     role: "spacing",

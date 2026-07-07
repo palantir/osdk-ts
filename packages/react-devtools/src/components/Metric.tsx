@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { AnchorButton, Classes } from "@blueprintjs/core";
+import { AnchorButton, Classes, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React from "react";
 
-import { BpTooltip } from "./common/BpTooltip.js";
 import { METRIC_INTENT_COLOR } from "./metricIntent.js";
 import type { MetricIntent } from "./metricIntent.js";
 
@@ -65,7 +64,7 @@ export function Metric({
       <div className={styles.metricItemHeader}>
         <span className={Classes.TEXT_MUTED}>{title}</span>
         {help != null && (
-          <BpTooltip
+          <Tooltip
             content={<div className={styles.metricHelpContent}>{help}</div>}
           >
             <AnchorButton
@@ -75,7 +74,7 @@ export function Metric({
               className={styles.metricHelp}
               aria-label={`About ${title}`}
             />
-          </BpTooltip>
+          </Tooltip>
         )}
       </div>
       <span

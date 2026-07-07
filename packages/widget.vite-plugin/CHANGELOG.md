@@ -1,5 +1,20 @@
 # @osdk/widget.vite-plugin
 
+## 3.40.0
+
+### Minor Changes
+
+- 164ed08: Update dev mode guidance
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/foundry-config-json@1.11.0
+  - @osdk/widget.api@3.40.0
+
 ## 3.39.0
 
 ### Minor Changes

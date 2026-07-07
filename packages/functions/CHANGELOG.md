@@ -1,5 +1,17 @@
 # @osdk/functions
 
+## 1.16.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+
 ## 1.15.0
 
 ### Minor Changes

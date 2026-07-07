@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { dirname, resolve as resolvePath } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import type { Plugin } from "vite";
 
 import { PLUGIN_NAME } from "./constants.js";
 import { generateHookInstallationScript } from "./hookInstaller.js";
-
-const __dirname = import.meta.dirname;
-const CSS_PATH = resolvePath(__dirname, "../styles.css");
 
 export interface OsdkDevToolsOptions {
   /**
@@ -37,20 +31,11 @@ export interface OsdkDevToolsOptions {
    * Default: false
    */
   verbose?: boolean;
-
-  /**
-   * Automatically inject CSS.
-   * Default: true
-   */
-  injectCSS?: boolean;
 }
 
 export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
-  const {
-    enabled = process.env.NODE_ENV !== "production",
-    verbose = false,
-    injectCSS = true,
-  } = options;
+  const { enabled = process.env.NODE_ENV !== "production", verbose = false } =
+    options;
 
   return {
     name: PLUGIN_NAME,
@@ -83,12 +68,7 @@ export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
 
         const registerScript = `\n  <script type="module">import '@osdk/react-devtools';</script>`;
 
-        let cssTag = "";
-        if (injectCSS) {
-          cssTag = `\n  <link rel="stylesheet" href="/@fs${CSS_PATH}" />`;
-        }
-
-        const injection = `${hookScript}${registerScript}${cssTag}\n`;
+        const injection = `${hookScript}${registerScript}\n`;
         let transformed = html.replace("</head>", `${injection}</head>`);
 
         if (transformed === html) {

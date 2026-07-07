@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import type { Context } from "react";
-import { createContext } from "react";
-
-/**
- * The panel's root element, published so descendants can portal overlays
- * (tooltips, popovers) into the panel instead of `document.body`.
- */
-export const PanelContainerContext: Context<HTMLElement | null> =
-  createContext<HTMLElement | null>(null);
+.panel {
+  display: flex;
+  flex-direction: column;
+  // The surrounding tab-content owns vertical scroll; the stacked sections
+  // flow naturally so the whole panel scrolls as one. A little bottom padding
+  // keeps the last history row clear of the scroll boundary.
+  padding-bottom: 8px;
+}

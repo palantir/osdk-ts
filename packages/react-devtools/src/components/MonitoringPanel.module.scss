@@ -195,33 +195,51 @@
 
 .content {
   flex: 1;
-  overflow: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
 }
 
+.notice {
+  // Blueprint's Callout is width: 100%; combined with its inline margin that
+  // overflows the panel on the right. Let it size to the padded width instead.
+  width: auto;
+}
+
 .tabs {
-  @include m.dt-tabs;
-  padding: 0 12px;
-  flex-shrink: 0;
-  pointer-events: auto;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  // Panel chrome surface. The tab-list strip and tab panels are transparent,
+  // so this is the single source for the tabs-region background — no per-child
+  // overrides needed. Theme-aware
+  background: t.$bg-elevated;
+
+  // Blueprint v6 exposes no className prop for the tab-list strip so using :global
+  :global(.bp6-tab-list) {
+    flex-shrink: 0;
+    padding: 4px 12px 0;
+    border-bottom: 1px solid t.$border-default;
+    overflow-x: auto;
+    overflow-y: hidden;
+    // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
-.tabButton {
-  @include m.dt-tab-button;
-}
-
-.tabButtonActive {
-  @include m.dt-tab-active;
-}
-
-.tabContentVisible {
-  display: contents;
-}
-
-.tabContentHidden {
-  display: none;
+.tabPanel {
+  flex: 1;
+  min-height: 0;
+  margin-top: 0;
+  overflow: auto;
+  @include m.dt-scrollbar;
 }
 
 .metricsGrid {
@@ -537,7 +555,7 @@
 .panel {
   :global {
     // Buttons
-    .bp5-button {
+    .bp6-button {
       background: t.$bg-elevated;
       border: 1px solid t.$border-default;
       color: t.$text-secondary;
@@ -555,7 +573,7 @@
         box-shadow: none;
       }
 
-      &.bp5-minimal {
+      &.bp6-minimal {
         background: transparent;
         border: none;
 
@@ -567,16 +585,16 @@
           background: t.$bg-active;
         }
 
-        &.bp5-intent-success,
-        &.bp5-intent-warning,
-        &.bp5-intent-danger,
-        &.bp5-intent-primary {
+        &.bp6-intent-success,
+        &.bp6-intent-warning,
+        &.bp6-intent-danger,
+        &.bp6-intent-primary {
           background: transparent;
           border: none;
         }
       }
 
-      &.bp5-intent-primary {
+      &.bp6-intent-primary {
         background: t.$blue;
         border-color: t.$blue;
         color: t.$bg-base;
@@ -586,7 +604,7 @@
         }
       }
 
-      &.bp5-intent-danger {
+      &.bp6-intent-danger {
         background: t.$red-bg;
         border-color: var(--dt-red-border);
         color: t.$red;
@@ -596,7 +614,7 @@
         }
       }
 
-      &.bp5-intent-success {
+      &.bp6-intent-success {
         background: t.$green-bg;
         border-color: var(--dt-green-border);
         color: t.$green;
@@ -606,7 +624,7 @@
         }
       }
 
-      &.bp5-intent-warning {
+      &.bp6-intent-warning {
         background: t.$orange-bg;
         border-color: var(--dt-orange-border);
         color: t.$orange;
@@ -618,8 +636,8 @@
     }
 
     // Inputs
-    .bp5-input-group .bp5-input,
-    .bp5-input {
+    .bp6-input-group .bp6-input,
+    .bp6-input {
       background: t.$bg-base;
       border: 1px solid t.$border-default;
       color: t.$text-primary;
@@ -636,64 +654,64 @@
       }
     }
 
-    .bp5-input-group .bp5-icon {
+    .bp6-input-group .bp6-icon {
       color: t.$text-tertiary;
     }
 
     // Tags
-    .bp5-tag {
+    .bp6-tag {
       font-size: t.$font-size-xs;
       font-weight: t.$font-weight-semi;
       border-radius: t.$radius-sm;
       background: t.$bg-hover;
       color: t.$text-secondary;
 
-      &.bp5-minimal {
+      &.bp6-minimal {
         background: transparent;
       }
 
-      &.bp5-intent-primary {
+      &.bp6-intent-primary {
         background: t.$blue-bg;
         color: t.$blue;
       }
 
-      &.bp5-intent-success {
+      &.bp6-intent-success {
         background: t.$green-bg;
         color: t.$green;
       }
 
-      &.bp5-intent-warning {
+      &.bp6-intent-warning {
         background: t.$orange-bg;
         color: t.$orange;
       }
 
-      &.bp5-intent-danger {
+      &.bp6-intent-danger {
         background: t.$red-bg;
         color: t.$red;
       }
     }
 
     // Callouts
-    .bp5-callout {
+    .bp6-callout {
       background: t.$bg-elevated;
       border: 1px solid t.$border-default;
       font-size: t.$font-size-base;
       color: t.$text-secondary;
       border-radius: t.$radius-md;
 
-      &.bp5-intent-primary {
+      &.bp6-intent-primary {
         background: t.$blue-bg;
         border-color: var(--dt-blue-border);
         color: t.$text-primary;
       }
 
-      &.bp5-intent-danger {
+      &.bp6-intent-danger {
         background: t.$red-bg;
         border-color: var(--dt-red-border);
         color: t.$text-primary;
       }
 
-      &.bp5-intent-warning {
+      &.bp6-intent-warning {
         background: t.$orange-bg;
         border-color: var(--dt-orange-border);
         color: t.$text-primary;
@@ -701,19 +719,19 @@
     }
 
     // Form groups
-    .bp5-form-group .bp5-label {
+    .bp6-form-group .bp6-label {
       font-size: t.$font-size-sm;
       font-weight: t.$font-weight-medium;
       color: t.$text-secondary;
     }
 
-    .bp5-form-helper-text {
+    .bp6-form-helper-text {
       font-size: t.$font-size-xs;
       color: t.$text-tertiary;
     }
 
     // Select
-    .bp5-html-select select {
+    .bp6-html-select select {
       background: t.$bg-base;
       border: 1px solid t.$border-default;
       color: t.$text-primary;
@@ -726,24 +744,24 @@
     }
 
     // Checkbox and Radio
-    .bp5-control {
+    .bp6-control {
       color: t.$text-secondary;
       font-size: t.$font-size-base;
     }
 
     // Non-ideal state
-    .bp5-non-ideal-state {
+    .bp6-non-ideal-state {
       color: t.$text-tertiary;
 
-      .bp5-non-ideal-state-visual {
+      .bp6-non-ideal-state-visual {
         color: t.$text-tertiary;
         opacity: 0.5;
       }
     }
 
     // TextArea
-    .bp5-text-area-container textarea,
-    textarea.bp5-input {
+    .bp6-text-area-container textarea,
+    textarea.bp6-input {
       background: t.$bg-base;
       border: 1px solid t.$border-default;
       color: t.$text-primary;
@@ -756,14 +774,14 @@
     }
 
     // Tooltip (rendered inline, not portal)
-    .bp5-tooltip .bp5-popover-content {
+    .bp6-tooltip .bp6-popover-content {
       background: t.$bg-elevated;
       color: t.$text-secondary;
       font-size: t.$font-size-sm;
     }
 
     // Icon colors
-    .bp5-icon {
+    .bp6-icon {
       color: t.$text-tertiary;
     }
   }

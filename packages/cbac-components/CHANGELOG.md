@@ -1,5 +1,11 @@
 # @osdk/cbac-components
 
+## 0.8.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 0.7.0
 
 ### Minor Changes

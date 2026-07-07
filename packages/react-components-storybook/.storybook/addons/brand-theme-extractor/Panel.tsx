@@ -21,6 +21,7 @@ import { styled } from "storybook/theming";
 import { GLOBALS_KEY } from "./constants.js";
 import { generateCss, generateMarkdown } from "./export.js";
 import { ExportDropdown } from "./ExportButtons.js";
+import { ImportDropdown } from "./ImportDropdown.js";
 import { getBuiltInDefaults } from "./presets.js";
 import {
   findMatchingPreset,
@@ -29,7 +30,11 @@ import {
   stringifyBrandThemeState,
 } from "./state.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
-import type { BrandThemeGlobals, TokenAssignment } from "./types.js";
+import type {
+  BrandThemeGlobals,
+  ThemeColorMode,
+  TokenAssignment,
+} from "./types.js";
 
 interface PanelProps {
   active: boolean;
@@ -123,6 +128,18 @@ function PanelContent(): React.ReactElement {
     [updateGlobals]
   );
 
+  const handleImport = useCallback(
+    (assignments: TokenAssignment[], colorMode: ThemeColorMode) => {
+      updateState({
+        assignments,
+        active: true,
+        colorMode,
+        selectedPresetId: findMatchingPreset(assignments, colorMode),
+      });
+    },
+    [updateState]
+  );
+
   const handleAssignmentChange = useCallback(
     (role: string, partial: Partial<TokenAssignment>) => {
       const current = stateRef.current;
@@ -159,6 +176,7 @@ function PanelContent(): React.ReactElement {
       <HeaderRow>
         <Title>Brand Theme</Title>
         <HeaderRight>
+          <ImportDropdown onApply={handleImport} />
           <ExportDropdown
             items={[
               {
