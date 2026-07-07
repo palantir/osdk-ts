@@ -1,4 +1,10 @@
 /* Global styles for Storybook */
+html,
+body,
+#storybook-root {
+  height: 100%;
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
@@ -9,6 +15,7 @@ body {
 
 /* Needed for BaseUI popover - creates stacking context */
 .root {
+  height: 100%;
   isolation: isolate;
 }
 
