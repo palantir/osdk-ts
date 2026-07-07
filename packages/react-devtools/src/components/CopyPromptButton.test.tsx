@@ -77,7 +77,7 @@ describe("CopyPromptButton", () => {
 
     const { container } = render(<CopyPromptButton recommendation={rec} />);
 
-    expect(container.querySelector('[data-icon="clipboard"]')).not.toBeNull();
+    expect(container.querySelector('[data-icon="duplicate"]')).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button"));
     await flushMicrotasks();
@@ -85,7 +85,7 @@ describe("CopyPromptButton", () => {
     expect(writeText).toHaveBeenCalledTimes(1);
     expect(writeText).toHaveBeenCalledWith(buildCopyPrompt(rec));
     expect(container.querySelector('[data-icon="tick"]')).not.toBeNull();
-    expect(container.querySelector('[data-icon="clipboard"]')).toBeNull();
+    expect(container.querySelector('[data-icon="duplicate"]')).toBeNull();
   });
 
   it("copies the combined prompt for multiple recommendations", async () => {
@@ -99,7 +99,7 @@ describe("CopyPromptButton", () => {
     expect(writeText).toHaveBeenCalledWith(buildCopyAllPrompt(recs));
   });
 
-  it("resets the icon back to clipboard after the timeout elapses", async () => {
+  it("resets the icon back to duplicate after the timeout elapses", async () => {
     vi.useFakeTimers();
     const rec = makeRec();
 
@@ -115,7 +115,7 @@ describe("CopyPromptButton", () => {
     });
 
     expect(container.querySelector('[data-icon="tick"]')).toBeNull();
-    expect(container.querySelector('[data-icon="clipboard"]')).not.toBeNull();
+    expect(container.querySelector('[data-icon="duplicate"]')).not.toBeNull();
   });
 
   it("defaults to the single label and respects an override", () => {
