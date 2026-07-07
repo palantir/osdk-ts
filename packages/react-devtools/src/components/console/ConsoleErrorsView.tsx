@@ -31,6 +31,7 @@ interface ConsoleErrorsViewProps {
 export const ConsoleErrorsView: React.FC<ConsoleErrorsViewProps> = ({
   monitorStore,
 }) => {
+  // Re-collect errors every 2s; they don't need sub-second freshness.
   const store = useMemo(
     () => createPollingStore(() => collectErrors(monitorStore), 2000),
     [monitorStore]

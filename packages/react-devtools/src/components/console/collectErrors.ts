@@ -18,8 +18,7 @@ import type { MonitorStore } from "../../store/MonitorStore.js";
 import type { Issue } from "../issueTypes.js";
 
 // A console.error within ±100ms of a window error with the same message is
-// treated as a duplicate of that window error and dropped (buckets are 100ms
-// wide; the lookup checks adjacent buckets too).
+// treated as a duplicate of that window error and dropped.
 export function collectErrors(monitorStore: MonitorStore): Issue[] {
   const errors: Issue[] = [];
 
