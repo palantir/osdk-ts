@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.43.0
+
+### Minor Changes
+
+- da96711: Make client and durableContext types run-time injected types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.43.0
+
 ## 2.42.0
 
 ### Patch Changes
