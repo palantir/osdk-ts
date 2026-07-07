@@ -25,6 +25,8 @@ import { formatTime } from "../../utils/format.js";
 
 import styles from "./CacheTimeline.module.scss";
 
+// TODO: virtualize this list so we can render the full history instead of
+// capping at the most recent MAX_RECENT_OPERATIONS.
 const MAX_RECENT_OPERATIONS = 50;
 
 export interface CacheTimelineProps {

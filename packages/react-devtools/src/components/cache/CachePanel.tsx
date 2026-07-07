@@ -15,14 +15,32 @@
  */
 
 import type { FC } from "react";
+import React from "react";
 
 import type { MonitorStore } from "../../store/MonitorStore.js";
-import { CacheSplitView } from "./CacheSplitView.js";
+import { CacheInspectorTab } from "../CacheInspectorTab.js";
+import { OverviewSection } from "../OverviewSection.js";
+import { CacheTimeline } from "./CacheTimeline.js";
+
+import styles from "./CachePanel.module.scss";
 
 interface CachePanelProps {
   monitorStore: MonitorStore;
 }
 
 export const CachePanel: FC<CachePanelProps> = ({ monitorStore }) => {
-  return <CacheSplitView monitorStore={monitorStore} />;
+  return (
+    <div className={styles.panel}>
+      <OverviewSection title="Cache inspector">
+        <CacheInspectorTab monitorStore={monitorStore} />
+      </OverviewSection>
+      <OverviewSection title="Activity timeline">
+        <p className={styles.description}>
+          Recent cache hits and misses in reverse chronological order — a hit
+          was served from the normalized cache, a miss went to the network.
+        </p>
+        <CacheTimeline monitorStore={monitorStore} />
+      </OverviewSection>
+    </div>
+  );
 };

@@ -315,6 +315,8 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                     {entry.type}
                   </Tag>
                   <span className={styles.objectType}>{entry.objectType}</span>
+                  {/* TODO: drop the portalClassName="osdk-devtools-portal"
+                      workaround on the Tooltips in this file once #3647 lands. */}
                   {entry.metadata.isOptimistic && (
                     <Tooltip
                       content="Has optimistic updates"
