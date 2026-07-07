@@ -25,8 +25,16 @@ import {
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 
 export type CopyPromptButtonProps =
-  | { recommendation: Recommendation; label?: string }
-  | { recommendations: Recommendation[]; label?: string };
+  | {
+      recommendation: Recommendation;
+      label?: string;
+      variant?: "minimal" | "outlined";
+    }
+  | {
+      recommendations: Recommendation[];
+      label?: string;
+      variant?: "minimal" | "outlined";
+    };
 
 export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
   const { copied, copy } = useCopyToClipboard();
@@ -39,7 +47,7 @@ export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
 
   return (
     <Button
-      variant="minimal"
+      variant={props.variant ?? "minimal"}
       size="small"
       icon={copied ? "tick" : "clipboard"}
       onClick={() => void copy(prompt)}

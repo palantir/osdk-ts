@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Callout } from "@blueprintjs/core";
+import { Button, Callout } from "@blueprintjs/core";
 import React from "react";
 
 import { useRecommendations } from "../hooks/useRecommendations.js";
@@ -36,7 +36,7 @@ interface RecommendationsListProps {
 export const RecommendationsList: React.FC<RecommendationsListProps> = ({
   monitorStore,
 }) => {
-  const { recommendations } = useRecommendations(monitorStore);
+  const { recommendations, dismiss } = useRecommendations(monitorStore);
 
   return (
     <div className={styles.list}>
@@ -59,7 +59,19 @@ export const RecommendationsList: React.FC<RecommendationsListProps> = ({
             >
               <div className={styles.recBody}>{rec.description}</div>
               <div className={styles.recActions}>
-                <CopyPromptButton recommendation={rec} />
+                <CopyPromptButton
+                  recommendation={rec}
+                  label="Copy fix prompt"
+                  variant="outlined"
+                />
+                <Button
+                  variant="minimal"
+                  size="small"
+                  icon="notifications-snooze"
+                  onClick={() => dismiss(rec.id)}
+                >
+                  Dismiss
+                </Button>
               </div>
             </Callout>
           ))}
