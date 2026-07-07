@@ -183,6 +183,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
           icon="refresh"
           onClick={() => snapshotStore.forceRefresh()}
           size="small"
+          className={styles.toolbarButton}
         >
           Refresh
         </Button>
@@ -192,6 +193,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
           variant="outlined"
           onClick={() => void handleClearAll()}
           size="small"
+          className={styles.toolbarButtonDanger}
         >
           Clear cache
         </Button>
@@ -295,6 +297,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                     icon="refresh"
                     variant="minimal"
                     size="small"
+                    className={styles.iconButton}
                     onClick={(e) => {
                       e.stopPropagation();
                       void handleInvalidate(entry);

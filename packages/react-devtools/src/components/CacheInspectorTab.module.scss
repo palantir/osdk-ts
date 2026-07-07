@@ -4,8 +4,6 @@
 .cacheInspector {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
 }
 
 .toolbar {
@@ -31,6 +29,37 @@
   min-width: 0;
 }
 
+// The panel's Blueprint overrides key off .bp5-* while the bundled Blueprint is
+// v6, so these toolbar buttons fall back to white defaults. Theme them here to
+// match the surrounding controls.
+.toolbarButton {
+  background: t.$bg-elevated !important;
+  border: 1px solid t.$border-default !important;
+  box-shadow: none !important;
+  color: t.$text-secondary !important;
+
+  &:hover {
+    background: t.$bg-hover !important;
+    color: t.$text-primary !important;
+  }
+
+  &:active {
+    background: t.$bg-active !important;
+  }
+}
+
+.toolbarButtonDanger {
+  background: t.$red-bg !important;
+  border: 1px solid var(--dt-red-border) !important;
+  box-shadow: none !important;
+  color: t.$red !important;
+
+  &:hover {
+    background: var(--dt-red-hover-bg) !important;
+    color: t.$red !important;
+  }
+}
+
 .errorBanner {
   display: flex;
   align-items: center;
@@ -47,13 +76,10 @@
 }
 
 .content {
-  flex: 1;
-  overflow-y: auto;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
-  @include m.dt-scrollbar;
 
   &.empty {
     align-items: center;
@@ -135,6 +161,25 @@
   flex-shrink: 0;
 }
 
+// The panel's Blueprint overrides key off .bp5-* while the bundled Blueprint is
+// v6, so the minimal invalidate button falls back to a white default. Force it
+// to blend into the dark theme like the surrounding controls.
+.iconButton {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: t.$text-secondary !important;
+
+  &:hover {
+    background: t.$bg-hover !important;
+    color: t.$text-primary !important;
+  }
+
+  &:active {
+    background: t.$bg-active !important;
+  }
+}
+
 .age,
 .size {
   font-size: t.$font-size-sm;
@@ -169,6 +214,11 @@
 
 .codeBlock {
   @include m.dt-code-block;
+  // Large cached-data blobs scroll within the expanded entry instead of
+  // stretching the row open indefinitely.
+  max-height: 240px;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
 }
 
 .callout {
