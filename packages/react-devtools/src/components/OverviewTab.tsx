@@ -17,6 +17,10 @@
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
 import React from "react";
 
+import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
+import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
+import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
+import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatNumber, formatTime } from "../utils/format.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
@@ -62,7 +66,13 @@ export interface OverviewTabProps {
  * registry is empty; otherwise renders the ontology counts, the performance
  * metrics grid, and the recommendations.
  */
-export function OverviewTab(): React.JSX.Element {
+export function OverviewTab({
+  monitorStore,
+}: OverviewTabProps): React.JSX.Element {
+  const usage = useOntologyUsage(monitorStore);
+  const performance = usePerformanceTiles(monitorStore);
+  const debugging = useDebuggingTiles(monitorStore);
+
   const isOntologyEmpty =
     usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
 

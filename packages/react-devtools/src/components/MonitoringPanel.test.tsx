@@ -93,7 +93,7 @@ describe("MonitoringPanel", () => {
     expect(shadowContains("Beta")).toBe(true);
   });
 
-  it("defaults to the Overview tab", () => {
+  it("defaults to the performance tab", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 

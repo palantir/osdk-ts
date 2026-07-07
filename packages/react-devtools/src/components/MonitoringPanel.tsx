@@ -112,25 +112,6 @@ export interface MonitoringPanelProps {
   monitorStore: MonitorStore;
 }
 
-export type MonitoringTab =
-  | "overview"
-  | "performance"
-  | "compute"
-  | "intercept"
-  | "debugging";
-
-/**
- * Tabs in render order. The Overview tab is prepended only when its feature
- * flag is on, so the flag alone controls whether it surfaces.
- */
-const TABS: readonly MonitoringTab[] = [
-  ...(IS_OVERVIEW_TAB_ENABLED ? (["overview"] as const) : []),
-  "performance",
-  "compute",
-  "intercept",
-  "debugging",
-];
-
 export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   monitorStore,
 }) => {
