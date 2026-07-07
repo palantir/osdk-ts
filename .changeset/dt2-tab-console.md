@@ -2,4 +2,4 @@
 "@osdk/react-devtools": patch
 ---
 
-add the Console base tab: a filterable, level-color-coded console output view that drops React DevTools' duplicate installHook re-emissions
+fix devtools panel tooltips and popover menus not responding to hover or clicks, caused by portaled overlays inheriting the panel's pointer-events:none

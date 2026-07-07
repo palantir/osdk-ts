@@ -48,56 +48,17 @@ const MAX_TOTAL_SIZE = 10240; // 10KB
 const INTERNAL_FRAME_PATTERN =
   /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/u;
 
-// cspell:ignore csdifo
-const FORMAT_DIRECTIVE = /%[csdifoOj%]/gu;
-
-/**
- * Applies console format-string substitution to a console.* argument list the
- * way the browser devtools console does. The first arg is treated as a format
- * string when it contains `%`-directives; each directive consumes one following
- * arg:
- *   - `%c` styles subsequent text via a CSS string — we drop the directive and
- *     discard the CSS arg (BrowserLogger uses these heavily for colored pills).
- *   - `%s` / `%d` / `%i` / `%f` / `%o` / `%O` / `%j` substitute the next arg's
- *     value inline.
- *   - `%%` emits a literal `%` and consumes nothing.
- *   - An unrecognized directive is left as-is and consumes nothing.
- * Any args not consumed by the format string are returned after the rebuilt
- * string. Calls whose first arg is not a format string are returned unchanged.
- */
-function formatConsoleArgs(args: readonly unknown[]): unknown[] {
-  const format = args[0];
-  if (typeof format !== "string" || !format.includes("%")) {
-    return [...args];
-  }
-
-  let argIndex = 1;
-  const rebuilt = format.replace(FORMAT_DIRECTIVE, (directive) => {
-    if (directive === "%%") {
-      return "%";
-    }
-    if (argIndex >= args.length) {
-      return directive;
-    }
-    if (directive === "%c") {
-      argIndex++;
-      return "";
-    }
-    const value = args[argIndex];
-    argIndex++;
-    if (directive === "%d" || directive === "%i") {
-      return String(Math.trunc(Number(value)));
-    }
-    if (directive === "%f") {
-      return String(Number(value));
-    }
-    if (typeof value === "string") {
-      return value;
-    }
-    return serializeArg(value);
-  });
-
-  return [rebuilt.replaceAll(/\s{2,}/gu, " ").trim(), ...args.slice(argIndex)];
+// BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
+// pattern from its createStyle(). We filter these from the devtools console
+// because devtools monitors the same operations through its own instrumentation.
+const BROWSER_LOGGER_CSS = "border: 1px solid";
+function isBrowserLoggerCall(args: unknown[]): boolean {
+  return (
+    typeof args[0] === "string" &&
+    args[0].startsWith("%c") &&
+    typeof args[1] === "string" &&
+    args[1].includes(BROWSER_LOGGER_CSS)
+  );
 }
 
 const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/u;
@@ -324,7 +285,8 @@ export class ConsoleLogStore extends SubscribableStore {
         // captured (one extra entry, no infinite loop). Strict synchronous
         // reentrancy guarding is incompatible with the microtask deferral that
         // makes the source attribution improvement possible.
-        const skipCapture = store.suppressed || store.capturing;
+        const skipCapture =
+          store.suppressed || store.capturing || isBrowserLoggerCall(args);
         const source = skipCapture ? undefined : getCallerLocation();
         const skip =
           skipCapture || (source !== undefined && isReactDevtoolsFrame(source));
@@ -341,10 +303,7 @@ export class ConsoleLogStore extends SubscribableStore {
           }
           store.capturing = true;
           try {
-            const formattedArgs = formatConsoleArgs(args);
-            const serializedArgs = capEntrySize(
-              formattedArgs.map(serializeArg)
-            );
+            const serializedArgs = capEntrySize(args.map(serializeArg));
             const entry: ConsoleLogEntry = {
               id: nextId(),
               level,
