@@ -47,7 +47,25 @@ export interface Recommendation {
   suggestion: string;
   code?: string;
   dismissible: boolean;
+  filePath?: string;
+  lineNumber?: number;
+  currentCode?: string;
+  osdkGuidance?: string;
 }
+
+export const OSDK_GUIDANCE_BY_CATEGORY: Record<RecommendationCategory, string> =
+  {
+    Performance:
+      "Avoid sequential data dependencies. Prefer a single query (using $select, links, or an object set) over chained hooks that wait on one another, so the toolkit can resolve data in parallel.",
+    Bandwidth:
+      "Use $select to fetch only the properties a component reads. The toolkit caches and revalidates per-property, so narrower selections reduce payload size and unnecessary refetches.",
+    "Code Quality":
+      "Keep query definitions colocated with the component that consumes them and request only the data you render. Lean queries are easier for the toolkit to cache and dedupe.",
+    Cache:
+      "Reuse shared object sets and query keys so the toolkit can serve cached results instead of refetching. Avoid recreating query inputs on every render.",
+    Queries:
+      "Consolidate overlapping queries. The toolkit deduplicates identical query signatures, so aligning inputs lets multiple components share one subscription.",
+  };
 
 export interface PerformanceScore {
   overall: number; // 0-100
@@ -108,6 +126,7 @@ export class PerformanceRecommendationEngine {
         suggestion: wf.suggestion,
         code: wf.code,
         dismissible: true,
+        osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Performance,
       });
     }
 
@@ -118,6 +137,11 @@ export class PerformanceRecommendationEngine {
       ) {
         continue;
       }
+
+      const subscribers = this.registry.getQuerySubscribers(
+        offender.querySignature
+      );
+      const locatedBinding = subscribers.find((b) => b.filePath);
 
       recommendations.push({
         id: `field-${offender.querySignature}`,
@@ -132,6 +156,9 @@ export class PerformanceRecommendationEngine {
         suggestion: "Use $select to only fetch used properties",
         code: offender.suggestion,
         dismissible: true,
+        filePath: locatedBinding?.filePath,
+        lineNumber: locatedBinding?.lineNumber,
+        osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Bandwidth,
       });
     }
 
@@ -152,6 +179,7 @@ export class PerformanceRecommendationEngine {
           effort: "Medium",
           suggestion: rec.suggestion,
           dismissible: true,
+          osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Cache,
         });
       }
     }

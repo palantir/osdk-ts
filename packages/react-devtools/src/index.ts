@@ -15,7 +15,6 @@
  */
 
 import "./register.js";
-import "./styles.js";
 
 export { BubbleChart } from "./components/BubbleChart.js";
 export { MonitorErrorBoundary } from "./components/MonitorErrorBoundary.js";

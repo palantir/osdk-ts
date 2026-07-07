@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import type { Context } from "react";
-import { createContext } from "react";
+import type { Intent } from "@blueprintjs/core";
 
-/**
- * The panel's root element, published so descendants can portal overlays
- * (tooltips, popovers) into the panel instead of `document.body`.
- */
-export const PanelContainerContext: Context<HTMLElement | null> =
-  createContext<HTMLElement | null>(null);
+import type { RecommendationLevel } from "../utils/PerformanceRecommendationEngine.js";
+
+/** Map a recommendation severity level to a Blueprint intent for display. */
+export function levelToIntent(level: RecommendationLevel): Intent {
+  switch (level) {
+    case "critical": {
+      return "danger";
+    }
+    case "high": {
+      return "warning";
+    }
+    case "medium": {
+      return "primary";
+    }
+    default: {
+      return "none";
+    }
+  }
+}
