@@ -2,4 +2,4 @@
 "@osdk/react-devtools": patch
 ---
 
-add the Console base tab with an errors/logs toggle: a filterable structured error feed that aggregates action failures, window errors, and console.error, plus a raw console output view
+add the Console base tab: a filterable, level-color-coded console output view that drops React DevTools' duplicate installHook re-emissions

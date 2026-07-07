@@ -10,6 +10,11 @@
   border-bottom: 1px solid t.$border-subtle;
   font-size: t.$font-size-base;
   transition: background-color t.$transition-fast;
+}
+
+// Only entries that can expand (multiline) are interactive; single-line entries
+// should not look clickable when nothing happens on click.
+.interactive {
   cursor: pointer;
 
   &:hover {

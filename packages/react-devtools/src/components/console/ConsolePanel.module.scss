@@ -14,83 +14,59 @@
  * limitations under the License.
  */
 
+@use '../tokens' as t;
+@use '../mixins' as m;
+
 .panel {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-}
-
-.segmented {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 8px 12px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .view {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0 12px 12px;
+  flex: 1;
+  min-height: 0;
 }
 
 .toolbar {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 36px;
-  padding: 4px 0;
-}
-
-.list {
-  display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-subtle;
 }
 
-.empty {
-  font-size: 12px;
-  opacity: 0.6;
-  padding: 12px 4px;
-}
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-.errorCard {
-  margin-bottom: 2px;
-
-  // Blueprint minimal buttons default to dark text; keep the details toggle
-  // readable on the tinted callout background.
-  :global(.bp6-button.bp6-minimal) {
-    color: var(--dt-text-secondary);
+  // Let the search input take the full row width and keep Clear pinned right.
+  :global(.bp6-input-group) {
+    flex: 1;
   }
 }
 
-.errorMeta {
-  font-size: 11px;
-  opacity: 0.6;
-  margin-bottom: 2px;
+.levelFilters {
+  flex-wrap: wrap;
 }
 
-.errorMessage {
-  font-size: 12px;
-  white-space: pre-wrap;
-  word-break: break-word;
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
+  display: flex;
+  flex-direction: column;
 }
 
-.errorSuggestion {
-  font-size: 12px;
-  font-style: italic;
-  opacity: 0.8;
-  margin-top: 4px;
-}
-
-.errorStack {
-  display: block;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 11px;
-  margin-top: 6px;
-  max-height: 200px;
-  overflow: auto;
+.empty {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+  padding: 12px;
 }

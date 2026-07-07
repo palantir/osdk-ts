@@ -188,6 +188,21 @@ function getCallerLocation(): string | undefined {
   return undefined;
 }
 
+/**
+ * React DevTools' installHook re-emits console.error/warn (to append the React
+ * component stack) through our wrapper, which surfaces as a duplicate entry
+ * whose resolved source is installHook.js. Recognize those frames so the
+ * re-emission can be dropped — the app's own call is captured separately with
+ * its real source, since our wrapper sits on top of installHook's.
+ */
+function isReactDevtoolsFrame(source: string): boolean {
+  return (
+    source.startsWith("installHook.js") ||
+    source.startsWith("react_devtools") ||
+    source.startsWith("react-devtools")
+  );
+}
+
 function capEntrySize(args: string[]): string[] {
   let totalSize = 0;
   for (const arg of args) {
@@ -273,10 +288,12 @@ export class ConsoleLogStore extends SubscribableStore {
         const skipCapture =
           store.suppressed || store.capturing || isBrowserLoggerCall(args);
         const source = skipCapture ? undefined : getCallerLocation();
+        const skip =
+          skipCapture || (source !== undefined && isReactDevtoolsFrame(source));
 
         Function.prototype.apply.call(original, this ?? console, args);
 
-        if (skipCapture) {
+        if (skip) {
           return;
         }
 

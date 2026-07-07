@@ -26,10 +26,11 @@ afterEach(() => {
 });
 
 describe("ConsolePanel", () => {
-  it("offers an Errors/Logs toggle and defaults to the errors view", () => {
+  it("renders the logs view with level filters and a clear action", () => {
     render(<ConsolePanel monitorStore={createMockMonitorStore()} />);
-    expect(screen.getByText("Errors")).not.toBeNull();
-    expect(screen.getByText("Logs")).not.toBeNull();
-    expect(screen.getByText("No errors captured.")).not.toBeNull();
+    expect(screen.getByPlaceholderText("Filter logs…")).not.toBeNull();
+    expect(screen.getByText("error")).not.toBeNull();
+    expect(screen.getByText("Clear")).not.toBeNull();
+    expect(screen.getByText("No console output captured.")).not.toBeNull();
   });
 });

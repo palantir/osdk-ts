@@ -72,7 +72,11 @@ export const LogEntryCard: React.FC<LogEntryCardProps> = ({ entry, style }) => {
 
   return (
     <div
-      className={classNames(styles.logEntry, config.className)}
+      className={classNames(
+        styles.logEntry,
+        config.className,
+        isMultiline && styles.interactive
+      )}
       onClick={() => {
         if (isMultiline) {
           setExpanded(!expanded);

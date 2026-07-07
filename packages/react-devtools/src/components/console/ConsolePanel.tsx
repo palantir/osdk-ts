@@ -14,51 +14,21 @@
  * limitations under the License.
  */
 
-import { Button, ButtonGroup } from "@blueprintjs/core";
-import React, { useState } from "react";
+import React from "react";
 
 import type { MonitorStore } from "../../store/MonitorStore.js";
-import { ConsoleErrorsView } from "./ConsoleErrorsView.js";
 import { ConsoleLogsView } from "./ConsoleLogsView.js";
 
 import styles from "./ConsolePanel.module.scss";
-
-type ConsoleView = "errors" | "logs";
 
 interface ConsolePanelProps {
   monitorStore: MonitorStore;
 }
 
 export const ConsolePanel: React.FC<ConsolePanelProps> = ({ monitorStore }) => {
-  const [view, setView] = useState<ConsoleView>("errors");
-
   return (
     <div className={styles.panel}>
-      <div className={styles.segmented}>
-        <ButtonGroup>
-          <Button
-            active={view === "errors"}
-            onClick={() => setView("errors")}
-            size="small"
-            icon="error"
-          >
-            Errors
-          </Button>
-          <Button
-            active={view === "logs"}
-            onClick={() => setView("logs")}
-            size="small"
-            icon="console"
-          >
-            Logs
-          </Button>
-        </ButtonGroup>
-      </div>
-      {view === "errors" ? (
-        <ConsoleErrorsView monitorStore={monitorStore} />
-      ) : (
-        <ConsoleLogsView monitorStore={monitorStore} />
-      )}
+      <ConsoleLogsView monitorStore={monitorStore} />
     </div>
   );
 };
