@@ -1,0 +1,271 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use '../tokens' as t;
+@use '../mixins' as m;
+
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: t.$z-sticky;
+  padding: 8px 12px;
+  background: t.$bg-surface;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  border-bottom: 1px solid t.$border-default;
+}
+
+.summaryText {
+  font-size: t.$font-size-sm;
+  color: t.$text-secondary;
+}
+
+.summaryStrong {
+  color: t.$text-primary;
+  font-weight: t.$font-weight-semi;
+}
+
+.summaryDot {
+  margin: 0 6px;
+  color: t.$text-tertiary;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  background: t.$bg-elevated;
+  color: t.$text-secondary;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  font-size: t.$font-size-xs;
+  cursor: pointer;
+  transition: background-color t.$transition-fast, color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+    color: t.$text-primary;
+  }
+}
+
+.chipActive {
+  background: t.$blue-bg;
+  color: t.$blue;
+  border-color: t.$blue;
+
+  &:hover {
+    background: t.$blue-bg;
+    color: t.$blue;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+  padding: 16px 12px;
+}
+
+.componentCard {
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+// --- Tree ---------------------------------------------------------------
+
+.treeNode {
+  min-width: 0;
+}
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 10px;
+  color: t.$text-secondary;
+  font-size: t.$font-size-sm;
+  border-left: 2px solid transparent;
+  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+}
+
+.treeRowInteractive {
+  cursor: pointer;
+
+  &:hover {
+    background: t.$bg-hover;
+    border-left-color: t.$text-tertiary;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-left-color: t.$blue;
+    background: t.$bg-hover;
+  }
+}
+
+.treeRowLeaf {
+  .treeLabel {
+    color: t.$text-tertiary;
+    font-family: t.$font-mono;
+    font-size: t.$font-size-xs;
+  }
+}
+
+// Depth 0 is the component header: raised, bolder, primary text.
+.depth0 {
+  padding-left: 8px;
+  background: t.$bg-raised;
+
+  .treeLabel {
+    color: t.$text-primary;
+    font-size: t.$font-size-md;
+    font-weight: t.$font-weight-semi;
+  }
+}
+
+.depth1 {
+  padding-left: 26px;
+
+  .treeLabel {
+    color: t.$text-primary;
+    font-weight: t.$font-weight-medium;
+  }
+}
+
+.depth2 {
+  padding-left: 44px;
+}
+
+.depth3 {
+  padding-left: 62px;
+}
+
+.depth4 {
+  padding-left: 80px;
+}
+
+.treeChevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  color: t.$text-tertiary;
+}
+
+.treeIcon {
+  flex-shrink: 0;
+  color: t.$blue;
+}
+
+.treeLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treeCount {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  background: t.$bg-elevated;
+  color: t.$text-secondary;
+  border-radius: t.$radius-sm;
+  font-family: t.$font-mono;
+  font-size: t.$font-size-xs;
+  font-variant-numeric: tabular-nums;
+}
+
+.treeChildren {
+  min-width: 0;
+}
+
+// --- Health badge -------------------------------------------------------
+
+.healthBadge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semi;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.healthy {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+.unhealthy {
+  background: t.$orange-bg;
+  color: t.$orange;
+}
+
+// --- React prop key/value leaf ------------------------------------------
+
+.propRow {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.propKey {
+  flex: none;
+  font-family: t.$font-mono;
+  color: t.$text-tertiary;
+}
+
+.propValue {
+  flex: 1;
+  min-width: 0;
+  font-family: t.$font-mono;
+  color: t.$text-secondary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
