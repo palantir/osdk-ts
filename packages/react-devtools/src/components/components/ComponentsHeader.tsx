@@ -28,10 +28,6 @@ function plural(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
 
-/**
- * The summary line above the tree: how many components are mounted and, across
- * all of them, how many distinct object types and action types they touch.
- */
 export const ComponentsHeader: React.FC<ComponentsHeaderProps> = ({
   componentCount,
   objectTypeCount,

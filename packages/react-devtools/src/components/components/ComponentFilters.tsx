@@ -31,7 +31,6 @@ interface ComponentFiltersProps {
   onChange: (filter: ComponentFilter | null) => void;
 }
 
-/** Chip row for narrowing the component list to one object type or action. */
 export const ComponentFilters: React.FC<ComponentFiltersProps> = ({
   objectTypes,
   actions,

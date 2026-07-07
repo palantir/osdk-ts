@@ -27,10 +27,8 @@ interface ComponentCardProps {
   ontology: ComponentOntology;
 }
 
-/** How many leaf rows to show before collapsing the rest into "+N more". */
 const VISIBLE_LEAVES = 5;
 
-/** A muted, non-interactive "+N more" leaf row. */
 function moreRow(depth: number, hidden: number): React.ReactNode {
   if (hidden <= 0) {
     return null;
@@ -38,12 +36,6 @@ function moreRow(depth: number, hidden: number): React.ReactNode {
   return <TreeRow depth={depth} leaf label={`+ ${hidden} more`} />;
 }
 
-/**
- * One live component rendered as an ontology tree: the object types and actions
- * it uses (inferred from hook usage) plus the instances and properties it read
- * and its React props. Health is summarized in the header badge; the per-object
- * detail is available on expand.
- */
 export const ComponentCard: React.FC<ComponentCardProps> = ({
   name,
   ontology,

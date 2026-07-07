@@ -31,7 +31,6 @@
   border-bottom: 1px solid t.$border-subtle;
 }
 
-// Summary line: "N components • M object types • K action types".
 .summary {
   display: flex;
   align-items: center;
@@ -56,7 +55,6 @@
   color: t.$text-tertiary;
 }
 
-// Filter chips: All + one per object type / action, narrowing the list below.
 .filters {
   display: flex;
   flex-wrap: wrap;

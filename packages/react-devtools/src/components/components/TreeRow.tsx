@@ -46,12 +46,8 @@ function depthClass(depth: number): string | undefined {
   return styles[DEPTH_CLASS[clamped]];
 }
 
-/**
- * One collapsible row in the ontology tree. Rows with children show a chevron
- * and toggle on click; leaf rows align to the same indent without one. Every
- * level of the tree (component, category, object type, instance/property) is a
- * `TreeRow`, so indentation and interaction stay consistent.
- */
+// Every level of the tree is a TreeRow, so indentation and interaction stay
+// consistent; rows with children toggle on click, leaf rows do not.
 export const TreeRow: React.FC<TreeRowProps> = ({
   label,
   depth,

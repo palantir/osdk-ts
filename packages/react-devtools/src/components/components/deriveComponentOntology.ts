@@ -94,11 +94,6 @@ function parseObjectKey(
 const isKnown = (type: string | null): type is string =>
   type != null && type !== "Unknown";
 
-/**
- * Reduce a component's hook bindings, property access, props, and health signals
- * into the ontology tree the Components tab renders: the object types and actions
- * it uses, the instances and properties it read, and its React props.
- */
 export function deriveComponentOntology(
   bindings: ComponentHookBinding[],
   accesses: PropertyAccessEvent[],

@@ -47,11 +47,6 @@ interface ComponentsPanelProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * The component inspector: every mounted OSDK component as an ontology tree of
- * the object types, actions, and properties it uses. Search by name, or filter
- * down to a single object type or action.
- */
 export const ComponentsPanel: React.FC<ComponentsPanelProps> = ({
   monitorStore,
 }) => {

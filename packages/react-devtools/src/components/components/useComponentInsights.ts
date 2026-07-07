@@ -25,11 +25,6 @@ export interface ComponentInsights {
   unusedByComponent: Map<string, UnusedProperty[]>;
 }
 
-/**
- * Per-component health signals (wasted renders, over-fetched properties) keyed
- * by componentId. The underlying tracker isn't subscribable, so we recompute on
- * the shared polling tick the rest of the inspector already uses.
- */
 export function useComponentInsights(
   monitorStore: MonitorStore
 ): ComponentInsights {

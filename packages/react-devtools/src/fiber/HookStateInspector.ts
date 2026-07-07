@@ -416,14 +416,12 @@ export interface DiscoveredComponent {
   componentName: string;
   hooks: OsdkHookMetadata[];
   sourceLocation: { fileName?: string; lineNumber?: number } | null;
-  /** Short string preview of the component's React props. */
   props?: Record<string, string>;
 }
 
 const MAX_PROP_KEYS = 12;
 const MAX_PROP_VALUE_LEN = 80;
 
-/** One-line, reference-free preview of a single prop value. */
 function summarizePropValue(value: unknown): string {
   if (value == null) {
     return "null";
