@@ -67,6 +67,12 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  // Blueprint buttons default to dark text; keep the copy-prompt buttons
+  // readable on the panel and tinted recommendation cards.
+  :global(.bp5-button) {
+    color: var(--dt-text-secondary);
+  }
 }
 
 .sectionHead {
