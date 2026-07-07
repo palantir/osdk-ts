@@ -18,17 +18,17 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-
-  // Blueprint minimal buttons default to dark text; keep the copy-prompt
-  // buttons readable on the panel and tinted recommendation cards.
-  :global(.bp6-button.bp6-minimal) {
-    color: var(--dt-text-secondary);
-  }
 }
 
 .head {
   display: flex;
   justify-content: flex-end;
+
+  // The section-level "Copy all" carries no intent, so keep it readable on the
+  // card. The in-card buttons take their recommendation's intent color instead.
+  :global(.bp6-button.bp6-minimal) {
+    color: var(--dt-text-secondary);
+  }
 }
 
 .empty {

@@ -50,31 +50,36 @@ export const RecommendationsList: React.FC<RecommendationsListProps> = ({
               label="Copy all"
             />
           </div>
-          {recommendations.map((rec) => (
-            <Callout
-              key={rec.id}
-              className={styles.recItem}
-              intent={levelToIntent(rec.level)}
-              title={rec.title}
-            >
-              <div className={styles.recBody}>{rec.description}</div>
-              <div className={styles.recActions}>
-                <CopyPromptButton
-                  recommendation={rec}
-                  label="Copy fix prompt"
-                  variant="outlined"
-                />
-                <Button
-                  variant="minimal"
-                  size="small"
-                  icon="notifications-snooze"
-                  onClick={() => dismiss(rec.id)}
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </Callout>
-          ))}
+          {recommendations.map((rec) => {
+            const intent = levelToIntent(rec.level);
+            return (
+              <Callout
+                key={rec.id}
+                className={styles.recItem}
+                intent={intent}
+                title={rec.title}
+              >
+                <div className={styles.recBody}>{rec.description}</div>
+                <div className={styles.recActions}>
+                  <CopyPromptButton
+                    recommendation={rec}
+                    label="Copy fix prompt"
+                    variant="outlined"
+                    intent={intent}
+                  />
+                  <Button
+                    variant="minimal"
+                    intent={intent}
+                    size="small"
+                    icon="notifications-snooze"
+                    onClick={() => dismiss(rec.id)}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </Callout>
+            );
+          })}
         </>
       )}
     </div>
