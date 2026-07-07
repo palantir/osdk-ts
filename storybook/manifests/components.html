@@ -6364,13 +6364,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  509 | }
-  510 |
-&gt; 511 | const meta: Meta = {
+  519 | }
+  520 |
+&gt; 521 | const meta: Meta = {
       | ^
-  512 |   title: &quot;Components/Overview&quot;,
-  513 |   component: ComponentOverview,
-  514 |   tags: [&quot;beta&quot;],
+  522 |   title: &quot;Components/Overview&quot;,
+  523 |   component: ComponentOverview,
+  524 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -6681,7 +6681,7 @@ function DataTab(): React.ReactElement {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    &lt;div style={{ display: &quot;flex&quot;, height: 500 }}&gt;
+    &lt;div style={{ display: &quot;flex&quot;, height: &quot;100%&quot;, minHeight: 0 }}&gt;
       &lt;div
         style={{
           ...FILTER_WRAPPER_STYLE,
@@ -6733,7 +6733,7 @@ function ViewersTab({
   const loadingMessage = isLoading ? &quot;Loading document...&quot; : &quot;No media found.&quot;;
 
   return (
-    &lt;div style={{ height: 400, position: &quot;relative&quot; }}&gt;
+    &lt;div style={{ height: &quot;100%&quot;, minHeight: 0, position: &quot;relative&quot; }}&gt;
       {hasMedia &amp;&amp; (
         &lt;DocumentViewer
           key={selectedViewerType}
@@ -6802,11 +6802,19 @@ function ComponentOverview(): React.ReactElement {
   );
 
   return (
-    &lt;div&gt;
+    &lt;div
+      style={{
+        display: &quot;flex&quot;,
+        flexDirection: &quot;column&quot;,
+        height: &quot;100%&quot;,
+        minHeight: 0,
+      }}
+    &gt;
       &lt;div
         style={{
           display: &quot;flex&quot;,
           alignItems: &quot;center&quot;,
+          flexShrink: 0,
           borderBottom:
             &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
         }}
@@ -6874,11 +6882,13 @@ function ComponentOverview(): React.ReactElement {
         )}
       &lt;/div&gt;
 
-      {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
-      {activeTab === &quot;viewers&quot; &amp;&amp; (
-        &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
-      )}
-      {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+      &lt;div style={{ flex: 1, minHeight: 0, overflow: &quot;auto&quot; }}&gt;
+        {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
+        {activeTab === &quot;viewers&quot; &amp;&amp; (
+          &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
+        )}
+        {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+      &lt;/div&gt;
     &lt;/div&gt;
   );
 }
@@ -25954,13 +25964,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  509 | }
-  510 |
-&gt; 511 | const meta: Meta = {
+  519 | }
+  520 |
+&gt; 521 | const meta: Meta = {
       | ^
-  512 |   title: &quot;Components/Overview&quot;,
-  513 |   component: ComponentOverview,
-  514 |   tags: [&quot;beta&quot;],
+  522 |   title: &quot;Components/Overview&quot;,
+  523 |   component: ComponentOverview,
+  524 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -26271,7 +26281,7 @@ function DataTab(): React.ReactElement {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    &lt;div style={{ display: &quot;flex&quot;, height: 500 }}&gt;
+    &lt;div style={{ display: &quot;flex&quot;, height: &quot;100%&quot;, minHeight: 0 }}&gt;
       &lt;div
         style={{
           ...FILTER_WRAPPER_STYLE,
@@ -26323,7 +26333,7 @@ function ViewersTab({
   const loadingMessage = isLoading ? &quot;Loading document...&quot; : &quot;No media found.&quot;;
 
   return (
-    &lt;div style={{ height: 400, position: &quot;relative&quot; }}&gt;
+    &lt;div style={{ height: &quot;100%&quot;, minHeight: 0, position: &quot;relative&quot; }}&gt;
       {hasMedia &amp;&amp; (
         &lt;DocumentViewer
           key={selectedViewerType}
@@ -26392,11 +26402,19 @@ function ComponentOverview(): React.ReactElement {
   );
 
   return (
-    &lt;div&gt;
+    &lt;div
+      style={{
+        display: &quot;flex&quot;,
+        flexDirection: &quot;column&quot;,
+        height: &quot;100%&quot;,
+        minHeight: 0,
+      }}
+    &gt;
       &lt;div
         style={{
           display: &quot;flex&quot;,
           alignItems: &quot;center&quot;,
+          flexShrink: 0,
           borderBottom:
             &quot;1px solid var(--osdk-surface-border-color-default, #d1d5db)&quot;,
         }}
@@ -26464,11 +26482,13 @@ function ComponentOverview(): React.ReactElement {
         )}
       &lt;/div&gt;
 
-      {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
-      {activeTab === &quot;viewers&quot; &amp;&amp; (
-        &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
-      )}
-      {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+      &lt;div style={{ flex: 1, minHeight: 0, overflow: &quot;auto&quot; }}&gt;
+        {activeTab === &quot;data&quot; &amp;&amp; &lt;DataTab /&gt;}
+        {activeTab === &quot;viewers&quot; &amp;&amp; (
+          &lt;ViewersTab selectedViewerType={selectedViewerType} /&gt;
+        )}
+        {activeTab === &quot;forms&quot; &amp;&amp; &lt;FormsTab /&gt;}
+      &lt;/div&gt;
     &lt;/div&gt;
   );
 }
