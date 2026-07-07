@@ -31,13 +31,12 @@ export interface CacheTimelineProps {
   monitorStore: MonitorStore;
 }
 
-// Limited by design to cache-hit and cache-miss operations; no revalidation,
-// deduplication, optimistic, or action rows.
 export const CacheTimeline: React.FC<CacheTimelineProps> = ({
   monitorStore,
 }) => {
   const metrics = useMetrics(monitorStore.getMetricsStore());
 
+  // Refresh cache entries every 2s to enrich timeline rows; entries change slowly.
   const enrichmentStore = React.useMemo(
     () =>
       createPollingStore(async () => {
