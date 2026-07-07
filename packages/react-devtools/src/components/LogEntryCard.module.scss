@@ -10,6 +10,11 @@
   border-bottom: 1px solid t.$border-subtle;
   font-size: t.$font-size-base;
   transition: background-color t.$transition-fast;
+}
+
+// Only entries that can expand (multiline) are interactive; single-line entries
+// should not look clickable when nothing happens on click.
+.interactive {
   cursor: pointer;
 
   &:hover {
@@ -35,6 +40,34 @@
 
 .levelLog {
   border-left: 2px solid transparent;
+}
+
+// Console rows tint the whole row by severity (opt-in via the `tinted` prop).
+.tinted {
+  &.levelError {
+    background: t.$red-bg;
+  }
+
+  &.levelWarn {
+    background: t.$orange-bg;
+  }
+
+  &.levelInfo {
+    background: t.$blue-bg;
+  }
+
+  &.levelDebug {
+    background: t.$bg-hover;
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 12px;
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  color: t.$text-tertiary;
 }
 
 .levelBadge {
