@@ -7,9 +7,18 @@ body {
   padding: 0;
 }
 
+/* Full-height chain so fullscreen stories can fill the canvas with
+ * height: 100% instead of viewport units (vh is unreliable across displays). */
+html,
+body,
+#storybook-root {
+  height: 100%;
+}
+
 /* Needed for BaseUI popover - creates stacking context */
 .root {
   isolation: isolate;
+  height: 100%;
 }
 
 /* Status tag styles */

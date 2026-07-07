@@ -1,5 +1,14 @@
 # @osdk/react-devtools
 
+## 0.12.0
+
+### Minor Changes
+
+- 644f6f1: add copy-prompt builder and CopyPromptButton for actionable performance recommendations
+- f71b440: isolate devtools styling in a shadow root so it no longer overrides app theme tokens
+- ea126f7: Add Overview tab primitives (Metric, Metrics, OverviewSection) and a dummy-data OverviewTab to the monitoring panel.
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 0.11.0
 
 ### Minor Changes

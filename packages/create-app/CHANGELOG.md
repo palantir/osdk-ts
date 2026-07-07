@@ -1,5 +1,15 @@
 # @osdk/create-app
 
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- @osdk/generator-utils@2.43.0
+
 ## 2.42.0
 
 ### Minor Changes

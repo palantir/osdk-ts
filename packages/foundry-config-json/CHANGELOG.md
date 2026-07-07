@@ -1,5 +1,12 @@
 # @osdk/foundry-config-json
 
+## 1.11.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 1.10.0
 
 ### Minor Changes

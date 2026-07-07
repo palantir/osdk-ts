@@ -1,5 +1,11 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.10.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
 ## 0.9.0
 
 ### Minor Changes
