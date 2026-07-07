@@ -31,11 +31,8 @@ export interface CacheTimelineProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * A live list of cache-hit and cache-miss operations. Deliberately limited to
- * those two operation types — no revalidation, deduplication, optimistic, or
- * action rows.
- */
+// Limited by design to cache-hit and cache-miss operations; no revalidation,
+// deduplication, optimistic, or action rows.
 export const CacheTimeline: React.FC<CacheTimelineProps> = ({
   monitorStore,
 }) => {

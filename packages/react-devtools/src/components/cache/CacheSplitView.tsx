@@ -30,11 +30,6 @@ export interface CacheSplitViewProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * The Cache tab layout: the cache-entry inspector on top and a live cache
- * hit/miss list on the bottom, separated by a draggable divider whose position
- * is persisted.
- */
 export const CacheSplitView: React.FC<CacheSplitViewProps> = ({
   monitorStore,
 }) => {
