@@ -51,7 +51,6 @@ interface OperationsListProps {
   monitorStore: MonitorStore;
 }
 
-/** Recent OSDK operations, filterable by kind. */
 export const OperationsList: React.FC<OperationsListProps> = ({
   monitorStore,
 }) => {

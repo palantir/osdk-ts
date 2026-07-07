@@ -41,11 +41,6 @@ interface PerformancePanelProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * The performance tab: headline metrics with plain-language tooltips, the full
- * recommendation list with copy-prompt buttons, and a scoped-down
- * recent-operations feed.
- */
 export const PerformancePanel: React.FC<PerformancePanelProps> = ({
   monitorStore,
 }) => {

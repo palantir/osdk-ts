@@ -28,10 +28,6 @@ interface MetricStatProps {
   explain: string;
 }
 
-/**
- * A single headline metric with a progressive-disclosure tooltip for the jargon
- * and a neutral "N/A" state until enough samples exist.
- */
 export const MetricStat: React.FC<MetricStatProps> = ({
   label,
   metric,

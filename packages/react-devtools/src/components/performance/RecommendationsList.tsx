@@ -28,10 +28,6 @@ interface RecommendationsListProps {
   monitorStore: MonitorStore;
 }
 
-/**
- * The full ranked recommendation list. Each entry, and the list as a whole,
- * has a "Copy prompt" button that produces an AI-ready fix prompt.
- */
 export const RecommendationsList: React.FC<RecommendationsListProps> = ({
   monitorStore,
 }) => {
