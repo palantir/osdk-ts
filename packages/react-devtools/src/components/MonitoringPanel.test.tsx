@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
+import type { BoundFunctions, queries } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { HOST_ID } from "../shadow/ShadowHost.js";
+import { clearPersistedState } from "../hooks/usePersistedState.js";
+import { getDevtoolsShadowMount, HOST_ID } from "../shadow/ShadowHost.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -51,9 +59,20 @@ function shadowContains(text: string): boolean {
   return devtoolsShadowRoot().textContent?.includes(text) ?? false;
 }
 
+// Testing Library's queries (getByRole, etc.) are free functions that take a
+// container, not methods on an element — so `within` wraps the shadow mount to
+// scope them there. Reuses `getDevtoolsShadowMount()` (the same mount the panel
+// portals into); `screen` can't pierce the shadow boundary.
+function shadow(): BoundFunctions<typeof queries> {
+  return within(getDevtoolsShadowMount());
+}
+
 describe("MonitoringPanel", () => {
   afterEach(() => {
     cleanup();
+    // Clear persisted state so tab/collapse state
+    // from one test does not leak into the next.
+    clearPersistedState();
   });
 
   it("renders the panel with title and tabs", () => {
@@ -93,5 +112,52 @@ describe("MonitoringPanel", () => {
     const shadowStyle = devtoolsShadowRoot().querySelector("style");
     expect(shadowStyle).not.toBeNull();
     expect(document.head.contains(shadowStyle)).toBe(false);
+  });
+
+  it("selects a tab and surfaces its panel when activated", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(shadow().getByRole("tab", { name: "Compute" }));
+
+    expect(
+      shadow().getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+    // The single visible tabpanel is the one owned by the Compute tab.
+    expect(
+      shadow().getByRole("tabpanel").getAttribute("aria-labelledby")
+    ).toContain("compute");
+  });
+
+  it("keeps all four tab panels mounted across a tab switch", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    // hidden: true includes the aria-hidden inactive panels that stay mounted.
+    expect(shadow().getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
+
+    fireEvent.click(shadow().getByRole("tab", { name: "Debugging" }));
+
+    expect(shadow().getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
+  });
+
+  it("preserves the selected tab across a minimize and reopen cycle", () => {
+    const store = createMockMonitorStore();
+    render(<MonitoringPanel monitorStore={store} />);
+
+    fireEvent.click(shadow().getByRole("tab", { name: "Compute" }));
+    expect(
+      shadow().getByRole("tab", { name: "Compute", selected: true })
+    ).not.toBeNull();
+
+    fireEvent.click(
+      shadow().getByRole("button", { name: "Minimize devtools panel" })
+    );
+    expect(shadow().queryByRole("tablist")).toBeNull();
+
+    // Reopen via the minimized affordance.
+    fireEvent.click(shadow().getByLabelText("View OSDK Devtools"));
+
+    expect(shadow().queryByRole("tablist")).not.toBeNull();
   });
 });
