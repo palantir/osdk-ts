@@ -18,6 +18,7 @@ import type { Decorator } from "@storybook/react-vite";
 import { useEffect, useMemo } from "react";
 
 import { GLOBALS_KEY } from "./constants.js";
+import { resolveAvailableFontFamily } from "./font-utils.js";
 import { parseBrandThemeState } from "./state.js";
 import { getTokenRole } from "./token-map.js";
 
@@ -59,6 +60,16 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
         /^\d+(\.\d+)?$/u.test(value)
       ) {
         value = `${value}${roleDef.inputType}`;
+      }
+
+      // For font families, only apply fonts actually installed on this machine.
+      // A missing brand font would otherwise be swapped for the browser default
+      // (serif) on some surfaces while others keep the sans, producing a
+      // two-font mismatch. When no named font is available locally we skip the
+      // override so the base token's default stack stands everywhere.
+      if (roleDef.inputType === "font") {
+        value = resolveAvailableFontFamily(value);
+        if (!value) continue;
       }
 
       for (const prop of roleDef.cssProperties) {

@@ -1,0 +1,17 @@
+@use 'tokens' as t;
+
+.overviewSection {
+  border-radius: 0;
+  // A real top border as the section divider (matches the 1px divider used elsewhere).
+  border-top: 1px solid t.$border-default;
+
+  // Clear Blueprint's `.bp6-elevation-0` box-shadow outline so that we don't have borders on the left and right
+  &:global(.bp6-elevation-0) {
+    box-shadow: none;
+  }
+
+  .overviewSectionCard {
+    padding: 12px;
+    background: t.$bg-surface;
+  }
+}

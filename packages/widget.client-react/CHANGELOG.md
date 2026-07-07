@@ -1,5 +1,14 @@
 # @osdk/widget.client-react
 
+## 3.40.0
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+  - @osdk/widget.client@3.40.0
+
 ## 3.39.0
 
 ### Patch Changes

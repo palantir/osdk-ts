@@ -1,5 +1,16 @@
 # @osdk/create-widget
 
+## 3.40.0
+
+### Minor Changes
+
+- 164ed08: Update dev mode guidance
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- @osdk/generator-utils@2.43.0
+
 ## 3.39.0
 
 ### Minor Changes

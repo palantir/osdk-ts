@@ -1,0 +1,11 @@
+@use 'tokens' as t;
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: t.$border-default;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+}

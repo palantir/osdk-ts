@@ -1,5 +1,20 @@
 # @osdk/cli
 
+## 0.67.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/foundry-config-json@1.11.0
+  - @osdk/widget.api@3.40.0
+
 ## 0.66.0
 
 ### Minor Changes

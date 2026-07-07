@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.12.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+
 ## 2.11.0
 
 ### Minor Changes

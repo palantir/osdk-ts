@@ -34,11 +34,14 @@ export interface BrandThemeGlobals {
 export type ColorTokenRole =
   | "background"
   | "surface"
+  | "surface-hover"
+  | "surface-active"
   | "text"
   | "text-muted"
   | "text-subtle"
   | "primary"
   | "primary-hover"
+  | "primary-active"
   | "primary-foreground"
   | "secondary"
   | "secondary-foreground"
@@ -63,6 +66,7 @@ export type TypographyTokenRole =
 
 export type SurfaceTokenRole =
   | "border-radius"
+  | "button-border-radius"
   | "spacing"
   | "border-width"
   | "shadow";

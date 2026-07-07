@@ -38,6 +38,7 @@ struct
 structs
 subdependencies
 subdeps
+trackpad
 tsdoc
 typecheck
 typemapping

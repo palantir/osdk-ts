@@ -65,6 +65,8 @@ export default defineConfig({
     // already-published packages. Kept at prior severity / disabled so the
     // migration introduces no breaking changes (revisit in a dedicated PR).
     "typescript/no-explicit-any": "warn",
+    // `no-eq-null` is off so `x == null` / `x != null` stay allowed as the
+    // coercion-free "is null or undefined" idiom. We eventually want to move to ===.
     "eqeqeq": ["error", "always", { "null": "never" }],
     "no-eq-null": "off",
     "unicorn/custom-error-definition": "error",
