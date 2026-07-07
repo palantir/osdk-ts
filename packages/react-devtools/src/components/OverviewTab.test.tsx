@@ -18,9 +18,9 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { MonitorStore } from "../../store/MonitorStore.js";
-import type { MetricsSnapshot } from "../../types/index.js";
-import { PerformancePanel } from "./PerformancePanel.js";
+import type { MonitorStore } from "../store/MonitorStore.js";
+import type { MetricsSnapshot } from "../types/index.js";
+import { OverviewTab } from "./OverviewTab.js";
 
 function makeSnapshot(): MetricsSnapshot {
   return {
@@ -56,7 +56,10 @@ function makeStore(): MonitorStore {
         stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
       }),
     loadCacheEntries: () => Promise.resolve([]),
-    getRecommendationEngine: () => ({ generateRecommendations: () => [] }),
+    getRecommendationEngine: () => ({
+      generateRecommendations: () => [],
+      dismissRecommendation: () => {},
+    }),
     getEventTimeline: () => ({
       getEventsByType: () => [],
       getLastEmission: () => null,
@@ -69,16 +72,16 @@ afterEach(() => {
   cleanup();
 });
 
-describe("PerformancePanel", () => {
-  it("renders headline metrics, recommendations and operations sections", () => {
-    render(<PerformancePanel monitorStore={makeStore()} />);
-    expect(screen.getByText("Cache hit rate")).not.toBeNull();
+describe("OverviewTab", () => {
+  it("renders the ontology, metrics, and recommendations sections", () => {
+    render(<OverviewTab monitorStore={makeStore()} />);
+    expect(screen.getByText("Ontology")).not.toBeNull();
+    expect(screen.getByText("Metrics")).not.toBeNull();
     expect(screen.getByText("Recommendations")).not.toBeNull();
-    expect(screen.getByText("Recent operations")).not.toBeNull();
   });
 
-  it("shows an N/A state for metrics with too few samples", () => {
-    render(<PerformancePanel monitorStore={makeStore()} />);
-    expect(screen.getAllByText("N/A").length).toBeGreaterThan(0);
+  it("shows the empty recommendations state when there are none", () => {
+    render(<OverviewTab monitorStore={makeStore()} />);
+    expect(screen.getByText("No recommendations right now.")).not.toBeNull();
   });
 });
