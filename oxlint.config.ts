@@ -49,19 +49,8 @@ export default defineConfig({
     // already-published packages. Kept at prior severity / disabled so the
     // migration introduces no breaking changes (revisit in a dedicated PR).
     "typescript/no-explicit-any": "warn",
-    // `eqeqeq` requires === / !== everywhere EXCEPT against null, and `no-eq-null`
-    // is deliberately left off, so `x == null` / `x != null` remain allowed. This
-    // is intentional, not an un-migrated leftover: `== null` is a repo-wide idiom
-    // (adopted in #62, Feb 2024, when eqeqeq was first enabled) for the "is null or
-    // undefined" check. It is the one coercion-free use of `==` (it never matches
-    // 0 / "" / false), and it reads more concisely than `=== null || === undefined`
-    // across the many `T | null | undefined` values here (optional props, Map.get,
-    // index access). `eqeqeq` still catches the actual type-coercion bugs on every
-    // non-null comparison. Banning `== null` is a defensible but debatable style
-    // choice with no recorded rationale either way; it would also be a large manual
-    // change, since oxlint's `no-eq-null` autofix rewrites `== null` to `=== null`
-    // and silently drops the `undefined` case. Revisit as its own initiative, not
-    // as part of this tooling migration.
+    // `no-eq-null` is off so `x == null` / `x != null` stay allowed as the
+    // coercion-free "is null or undefined" idiom. We eventually want to move to ===.
     "eqeqeq": ["error", "always", { "null": "never" }],
     "no-eq-null": "off",
     "unicorn/custom-error-definition": "error",
