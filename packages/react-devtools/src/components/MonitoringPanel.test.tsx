@@ -26,7 +26,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { clearPersistedState } from "../hooks/usePersistedState.js";
-import { HOST_ID } from "../shadow/ShadowHost.js";
+import { getDevtoolsShadowMount, HOST_ID } from "../shadow/ShadowHost.js";
 import { createMockMonitorStore } from "./testHelpers.js";
 
 vi.mock("../fiber/DegradationNotice.js", () => ({
@@ -59,17 +59,12 @@ function shadowContains(text: string): boolean {
   return devtoolsShadowRoot().textContent?.includes(text) ?? false;
 }
 
-// Scopes Testing Library role/label queries to the panel's shadow-root mount,
-// since `screen` only queries the light DOM and cannot pierce the shadow
-// boundary.
+// Testing Library's queries (getByRole, etc.) are free functions that take a
+// container, not methods on an element — so `within` wraps the shadow mount to
+// scope them there. Reuses `getDevtoolsShadowMount()` (the same mount the panel
+// portals into); `screen` can't pierce the shadow boundary.
 function shadow(): BoundFunctions<typeof queries> {
-  const mount = devtoolsShadowRoot().querySelector<HTMLElement>(
-    "[data-osdk-devtools-mount]"
-  );
-  if (mount == null) {
-    throw new Error("devtools shadow mount was not created");
-  }
-  return within(mount);
+  return within(getDevtoolsShadowMount());
 }
 
 describe("MonitoringPanel", () => {

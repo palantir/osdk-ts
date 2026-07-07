@@ -213,10 +213,10 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  // Panel chrome surface (Blueprint dark-gray-2). The tab-list strip and tab
-  // panels are transparent, so this is the single source for the tabs-region
-  // background — no per-child overrides needed.
-  background: var(--bp-palette-dark-gray-2);
+  // Panel chrome surface. The tab-list strip and tab panels are transparent,
+  // so this is the single source for the tabs-region background — no per-child
+  // overrides needed. Theme-aware
+  background: t.$bg-elevated;
 
   // Blueprint v6 exposes no className prop for the tab-list strip so using :global
   :global(.bp6-tab-list) {
