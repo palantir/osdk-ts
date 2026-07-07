@@ -46,7 +46,8 @@ export interface OntologyObjectType {
   instances: string[];
 }
 
-export interface OntologyProperties {
+/** The property names a component read on a single object type. */
+export interface ObjectTypeProperties {
   objectType: string;
   names: string[];
 }
@@ -54,7 +55,7 @@ export interface OntologyProperties {
 export interface ComponentOntology {
   objectTypes: OntologyObjectType[];
   actions: string[];
-  properties: OntologyProperties[];
+  properties: ObjectTypeProperties[];
   reactProps: Array<[string, string]>;
   healthy: boolean;
   warning?: string;
@@ -143,7 +144,7 @@ export function deriveComponentOntology(
       ),
     }));
 
-  const properties: OntologyProperties[] = [...propertiesByType.entries()]
+  const properties: ObjectTypeProperties[] = [...propertiesByType.entries()]
     .filter(([, names]) => names.size > 0)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([objectType, names]) => ({

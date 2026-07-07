@@ -41,6 +41,7 @@ function depthClass(depth: number): string | undefined {
   return styles[DEPTH_CLASS[clamped]];
 }
 
+// TODO: evaluate replacing this hand-rolled tree with Blueprint's <Tree>.
 export const TreeRow: React.FC<TreeRowProps> = ({
   label,
   depth,
@@ -51,7 +52,10 @@ export const TreeRow: React.FC<TreeRowProps> = ({
   children,
   leaf = false,
 }) => {
-  const collapsible = React.Children.count(children) > 0;
+  // toArray drops null/undefined/boolean children, so a row whose only children
+  // render to nothing (e.g. an object type with no instances) is not treated as
+  // collapsible and shows no caret.
+  const collapsible = React.Children.toArray(children).length > 0;
   const [open, setOpen] = useState(defaultOpen);
 
   const toggle = (): void => {

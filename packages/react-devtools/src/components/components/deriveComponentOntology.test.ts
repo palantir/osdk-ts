@@ -77,7 +77,7 @@ describe("objectTypeOf", () => {
 });
 
 describe("deriveComponentOntology", () => {
-  it("surfaces object types and actions from hook usage, not hook names", () => {
+  it("derives object types and actions from each binding's query params", () => {
     const result = deriveComponentOntology(
       [
         binding({ type: "list", objectType: "Parcel" }),
@@ -172,6 +172,8 @@ describe("deriveComponentOntology", () => {
       }
     );
     expect(result.healthy).toBe(false);
+    // wasted.count (3 wasted renders) and the two unused properties (over-fetch 2)
+    // are each summarized into the warning string.
     expect(result.warning).toContain("3 wasted");
     expect(result.warning).toContain("over-fetch 2");
   });

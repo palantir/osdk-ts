@@ -33,6 +33,8 @@ function moreRow(depth: number, hidden: number): React.ReactNode {
   if (hidden <= 0) {
     return null;
   }
+  // TODO: make this row expandable so users can reveal the hidden items instead
+  // of only seeing a static "+ N more" count.
   return <TreeRow depth={depth} leaf label={`+ ${hidden} more`} />;
 }
 
@@ -124,6 +126,8 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
                   label={group.objectType}
                   count={group.names.length}
                 >
+                  {/* TODO: show each property's read value on hover once the
+                      access tracker captures values, not just names. */}
                   {visible.map((propertyName) => (
                     <TreeRow
                       key={propertyName}
