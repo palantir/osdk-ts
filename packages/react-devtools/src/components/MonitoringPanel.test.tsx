@@ -80,10 +80,10 @@ describe("MonitoringPanel", () => {
     render(<MonitoringPanel monitorStore={store} />);
 
     expect(shadowContains("OSDK Devtools")).toBe(true);
-    expect(shadowContains("Performance")).toBe(true);
-    expect(shadowContains("Compute")).toBe(true);
-    expect(shadowContains("Intercept")).toBe(true);
-    expect(shadowContains("Debugging")).toBe(true);
+    expect(shadow().getByRole("tab", { name: "Overview" })).not.toBeNull();
+    expect(shadow().getByRole("tab", { name: "Components" })).not.toBeNull();
+    expect(shadow().getByRole("tab", { name: "Console" })).not.toBeNull();
+    expect(shadow().getByRole("tab", { name: "Cache" })).not.toBeNull();
   });
 
   it("renders the beta badge", () => {
@@ -93,11 +93,13 @@ describe("MonitoringPanel", () => {
     expect(shadowContains("Beta")).toBe(true);
   });
 
-  it("defaults to the performance tab", () => {
+  it("defaults to the overview tab", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    expect(shadowContains("Cache Hit Rate")).toBe(true);
+    expect(
+      shadow().getByRole("tab", { name: "Overview", selected: true })
+    ).not.toBeNull();
   });
 
   it("renders into an isolated shadow root, not the page", () => {
@@ -118,15 +120,15 @@ describe("MonitoringPanel", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    fireEvent.click(shadow().getByRole("tab", { name: "Compute" }));
+    fireEvent.click(shadow().getByRole("tab", { name: "Components" }));
 
     expect(
-      shadow().getByRole("tab", { name: "Compute", selected: true })
+      shadow().getByRole("tab", { name: "Components", selected: true })
     ).not.toBeNull();
-    // The single visible tabpanel is the one owned by the Compute tab.
+    // The single visible tabpanel is the one owned by the Components tab.
     expect(
       shadow().getByRole("tabpanel").getAttribute("aria-labelledby")
-    ).toContain("compute");
+    ).toContain("components");
   });
 
   it("keeps all four tab panels mounted across a tab switch", () => {
@@ -136,7 +138,7 @@ describe("MonitoringPanel", () => {
     // hidden: true includes the aria-hidden inactive panels that stay mounted.
     expect(shadow().getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
 
-    fireEvent.click(shadow().getByRole("tab", { name: "Debugging" }));
+    fireEvent.click(shadow().getByRole("tab", { name: "Cache" }));
 
     expect(shadow().getAllByRole("tabpanel", { hidden: true })).toHaveLength(4);
   });
@@ -145,9 +147,9 @@ describe("MonitoringPanel", () => {
     const store = createMockMonitorStore();
     render(<MonitoringPanel monitorStore={store} />);
 
-    fireEvent.click(shadow().getByRole("tab", { name: "Compute" }));
+    fireEvent.click(shadow().getByRole("tab", { name: "Components" }));
     expect(
-      shadow().getByRole("tab", { name: "Compute", selected: true })
+      shadow().getByRole("tab", { name: "Components", selected: true })
     ).not.toBeNull();
 
     fireEvent.click(

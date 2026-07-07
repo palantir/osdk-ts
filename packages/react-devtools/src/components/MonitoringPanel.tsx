@@ -36,11 +36,11 @@ import { usePersistedState } from "../hooks/usePersistedState.js";
 import { getDevtoolsShadowMount } from "../shadow/ShadowHost.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
-import { ComputeTab } from "./ComputeTab.js";
-import { DebuggingTab } from "./DebuggingTab.js";
-import { InterceptTab } from "./InterceptTab.js";
+import { CachePanel } from "./cache/CachePanel.js";
+import { ComponentsPanel } from "./components/ComponentsPanel.js";
+import { ConsolePanel } from "./console/ConsolePanel.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
-import { PerformanceTab } from "./PerformanceTab.js";
+import { OverviewTab } from "./OverviewTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -99,10 +99,10 @@ const UI_CONSTANTS = {
 };
 
 const DEVTOOLS_TAB_IDS = [
-  "performance",
-  "compute",
-  "intercept",
-  "debugging",
+  "overview",
+  "components",
+  "console",
+  "cache",
 ] as const;
 
 type DevtoolsTabId = (typeof DEVTOOLS_TAB_IDS)[number];
@@ -116,9 +116,8 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   monitorStore,
 }) => {
   const metricsStore = monitorStore.getMetricsStore();
-  const computeStore = monitorStore.getComputeStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("performance");
+  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("overview");
   const onActiveTabChange = useCallback((newTabId: TabId) => {
     if (isDevtoolsTabId(newTabId)) {
       setActiveTab(newTabId);
@@ -584,38 +583,28 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             onChange={onActiveTabChange}
           >
             <Tab
-              id="performance"
-              title="Performance"
+              id="overview"
+              title="Overview"
               panelClassName={styles.tabPanel}
-              panel={
-                <PerformanceTab
-                  metricsStore={metricsStore}
-                  monitorStore={monitorStore}
-                />
-              }
+              panel={<OverviewTab monitorStore={monitorStore} />}
             />
             <Tab
-              id="compute"
-              title="Compute"
+              id="components"
+              title="Components"
               panelClassName={styles.tabPanel}
-              panel={<ComputeTab computeStore={computeStore} />}
+              panel={<ComponentsPanel monitorStore={monitorStore} />}
             />
             <Tab
-              id="intercept"
-              title="Intercept"
+              id="console"
+              title="Console"
               panelClassName={styles.tabPanel}
-              panel={
-                <InterceptTab
-                  monitorStore={monitorStore}
-                  theme={resolvedTheme}
-                />
-              }
+              panel={<ConsolePanel monitorStore={monitorStore} />}
             />
             <Tab
-              id="debugging"
-              title="Debugging"
+              id="cache"
+              title="Cache"
               panelClassName={styles.tabPanel}
-              panel={<DebuggingTab monitorStore={monitorStore} />}
+              panel={<CachePanel monitorStore={monitorStore} />}
             />
           </Tabs>
         </div>
