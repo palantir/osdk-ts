@@ -18,8 +18,8 @@ import { devtoolsCss } from "../styles.js";
 
 export const HOST_ID = "__osdk_react_devtools_host__";
 const MOUNT_ATTR = "data-osdk-devtools-mount";
-
-let cachedMount: HTMLElement | null = null;
+// 2^31 - 1, the largest z-index browsers accept.
+const MAX_Z_INDEX = 2147483647;
 
 /**
  * Returns the single mount element for the devtools UI. It lives in a shadow
@@ -31,23 +31,18 @@ let cachedMount: HTMLElement | null = null;
  * inline, so Blueprint's `:host` base rules still win by source order.
  */
 export function getDevtoolsShadowMount(): HTMLElement {
-  if (cachedMount != null) {
-    return cachedMount;
-  }
-
   const existingHost = document.querySelector<HTMLElement>(`#${HOST_ID}`);
   const existingMount = existingHost?.shadowRoot?.querySelector<HTMLElement>(
     `[${MOUNT_ATTR}]`
   );
   if (existingMount != null) {
-    cachedMount = existingMount;
     return existingMount;
   }
 
   const host = existingHost ?? document.createElement("div");
   host.id = HOST_ID;
   host.setAttribute("data-osdk-devtools-ignore", "");
-  host.style.cssText = "position:fixed;top:0;left:0;z-index:2147483647;";
+  host.style.cssText = `position:fixed;top:0;left:0;z-index:${MAX_Z_INDEX};`;
 
   const shadow = host.shadowRoot ?? host.attachShadow({ mode: "open" });
 
@@ -63,6 +58,5 @@ export function getDevtoolsShadowMount(): HTMLElement {
     document.body.appendChild(host);
   }
 
-  cachedMount = mount;
   return mount;
 }

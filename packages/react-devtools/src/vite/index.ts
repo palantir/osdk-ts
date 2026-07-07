@@ -31,12 +31,6 @@ export interface OsdkDevToolsOptions {
    * Default: false
    */
   verbose?: boolean;
-
-  /**
-   * @deprecated No longer used. Devtools styles load into a shadow root at
-   * runtime, so nothing is added to the page.
-   */
-  injectCSS?: boolean;
 }
 
 export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {

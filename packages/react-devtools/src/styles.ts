@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-// Placeholder. scripts/build-css.mjs overwrites the transpiled
-// build/esm/styles.js with the compiled shadow-scoped stylesheet, which
-// ShadowHost.ts injects into the shadow root (never into document.head).
+// Runtime default. ShadowHost imports `devtoolsCss` as a value, so a real
+// module must exist in source — tests and pre-build resolution import
+// "../styles.js" (a .d.ts alone would not resolve at runtime). The empty
+// default means "no styles" until scripts/build-css.mjs overwrites the built
+// build/esm/styles.js with the compiled shadow-scoped stylesheet.
 export const devtoolsCss = "";
