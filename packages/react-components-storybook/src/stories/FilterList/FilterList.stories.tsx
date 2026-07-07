@@ -30,7 +30,7 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -1278,6 +1278,52 @@ export const WithCheckbox: Story = {
     },
   },
   render: (args) => <WithCheckboxStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expectedDepartmentOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    const visibleDepartmentOrder = () =>
+      canvas
+        .getAllByRole("button", {
+          name: /^(Engineering|Marketing|Design|Data|Finance)\s+\d+/u,
+        })
+        .map((row) => {
+          const label = expectedDepartmentOrder.find((name) =>
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from "${row.textContent}"`
+            );
+          }
+          return label;
+        });
+
+    await canvas.findByRole("button", { name: "Marketing 4" });
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "true")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "false")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+  },
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
