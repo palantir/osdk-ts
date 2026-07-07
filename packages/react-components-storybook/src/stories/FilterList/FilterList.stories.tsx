@@ -1326,6 +1326,130 @@ export const WithCheckbox: Story = {
   },
 };
 
+function WithBelowFoldSelectionStory(args: Partial<EmployeeFilterListProps>) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-below-fold",
+        key: "department",
+        label: "Department",
+        filterComponent: "LISTOGRAM",
+        // "Sales" sorts below the collapsed fold, so seeding it as selected
+        // exercises the tail-pinning path: it stays visible, appended after
+        // the head rows, without being hoisted above the fold.
+        filterState: { type: "EXACT_MATCH", values: ["Sales"] },
+      },
+    ],
+    []
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithBelowFoldSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A selected value that sorts below the collapsed fold stays visible, " +
+          "appended at the tail of the collapsed view rather than hoisted to " +
+          'the top. The "View all" button remains so the rest can be revealed.',
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: ["Sales"] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithBelowFoldSelectionStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const headDepartments = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    const departmentHeader = canvas.getByText("Department");
+    const departmentHeaderRow = departmentHeader.parentElement;
+    if (departmentHeaderRow == null) {
+      throw new Error("Unable to find Department filter header row");
+    }
+    const departmentFilterElement = departmentHeaderRow.parentElement;
+    if (departmentFilterElement == null) {
+      throw new Error("Unable to find Department filter element");
+    }
+    const departmentFilter = within(departmentFilterElement);
+
+    const visibleDepartmentOrder = () =>
+      departmentFilter
+        .getAllByRole("button", {
+          name: /^(Engineering|Marketing|Design|Data|Finance|Sales)\s+\d+/u,
+        })
+        .map((row) => {
+          const label = [...headDepartments, "Sales"].find((name) =>
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from "${row.textContent}"`
+            );
+          }
+          return label;
+        });
+
+    // Sales is below the fold but selected, so it is pinned at the tail after
+    // the head rows — not hoisted above them.
+    await departmentFilter.findByRole("button", { name: "Sales 2" });
+    await expect(visibleDepartmentOrder()).toEqual([
+      ...headDepartments,
+      "Sales",
+    ]);
+    await expect(
+      departmentFilter.getByRole("button", { name: "Sales 2" })
+    ).toHaveAttribute("aria-pressed", "true");
+
+    // The tail-pinned selection does not collapse the "View all" affordance.
+    await expect(
+      departmentFilter.getByRole("button", { name: "View all (14)" })
+    ).toBeInTheDocument();
+
+    // Unchecking a tail-pinned row must not make it vanish: it stays visible
+    // (now unchecked) so it can be re-checked in place. Only "View all" changes
+    // the collapsed row set.
+    await userEvent.click(
+      departmentFilter.getByRole("button", { name: "Sales 2" })
+    );
+    await waitFor(() =>
+      expect(
+        departmentFilter.getByRole("button", { name: "Sales 2" })
+      ).toHaveAttribute("aria-pressed", "false")
+    );
+    await expect(visibleDepartmentOrder()).toEqual([
+      ...headDepartments,
+      "Sales",
+    ]);
+    await expect(
+      departmentFilter.getByRole("button", { name: "View all (14)" })
+    ).toBeInTheDocument();
+  },
+};
+
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   const [definitions, setDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
