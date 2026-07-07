@@ -23,7 +23,7 @@ export interface Metric {
   unit?: string;
 }
 
-export interface CanonicalMetrics {
+export interface ClientMetrics {
   cacheHitRate: Metric;
   requestsSaved: Metric;
   estimatedTimeSavedMs: Metric;
@@ -60,9 +60,7 @@ function metric(
   };
 }
 
-export function getCanonicalMetrics(
-  snapshot: MetricsSnapshot
-): CanonicalMetrics {
+export function getClientMetrics(snapshot: MetricsSnapshot): ClientMetrics {
   const a = snapshot.aggregates;
   const hits = a.cacheHits;
   const misses = a.cacheMisses;

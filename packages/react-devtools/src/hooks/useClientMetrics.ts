@@ -16,13 +16,11 @@
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
-import type { CanonicalMetrics } from "../metrics/canonicalMetrics.js";
-import { getCanonicalMetrics } from "../metrics/canonicalMetrics.js";
+import type { ClientMetrics } from "../metrics/clientMetrics.js";
+import { getClientMetrics } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 
-export function useCanonicalMetrics(
-  monitorStore: MonitorStore
-): CanonicalMetrics {
+export function useClientMetrics(monitorStore: MonitorStore): ClientMetrics {
   const store = monitorStore.getMetricsStore();
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
@@ -30,5 +28,5 @@ export function useCanonicalMetrics(
   );
   const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-  return useMemo(() => getCanonicalMetrics(snapshot), [snapshot]);
+  return useMemo(() => getClientMetrics(snapshot), [snapshot]);
 }

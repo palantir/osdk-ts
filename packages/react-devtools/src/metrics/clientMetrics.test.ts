@@ -22,8 +22,8 @@ import type {
   MetricRates,
   MetricsSnapshot,
 } from "../types/index.js";
-import type { CanonicalMetrics } from "./canonicalMetrics.js";
-import { getCanonicalMetrics } from "./canonicalMetrics.js";
+import type { ClientMetrics } from "./clientMetrics.js";
+import { getClientMetrics } from "./clientMetrics.js";
 
 function flushMicrotasksAndTimers(): void {
   vi.advanceTimersByTime(0);
@@ -89,7 +89,7 @@ function makeSnapshot(overrides: Partial<AggregateMetrics>): MetricsSnapshot {
   };
 }
 
-const CANONICAL_KEYS: ReadonlyArray<keyof CanonicalMetrics> = [
+const CLIENT_KEYS: ReadonlyArray<keyof ClientMetrics> = [
   "avgCachedMs",
   "avgNetworkMs",
   "avgPerceivedSpeedupMs",
@@ -101,7 +101,7 @@ const CANONICAL_KEYS: ReadonlyArray<keyof CanonicalMetrics> = [
   "rollbackRate",
 ];
 
-describe("getCanonicalMetrics", () => {
+describe("getClientMetrics", () => {
   let store: MetricsStore;
 
   beforeEach(() => {
@@ -133,9 +133,9 @@ describe("getCanonicalMetrics", () => {
     vi.useRealTimers();
   });
 
-  it("exposes exactly the nine canonical metric keys", () => {
-    const metrics = getCanonicalMetrics(makeSnapshot({}));
-    expect(Object.keys(metrics).sort()).toEqual([...CANONICAL_KEYS]);
+  it("exposes exactly the nine client metric keys", () => {
+    const metrics = getClientMetrics(makeSnapshot({}));
+    expect(Object.keys(metrics).sort()).toEqual([...CLIENT_KEYS]);
   });
 
   it("matches MetricsStore.getCacheHitRate() for the request-based formula", () => {
@@ -151,7 +151,7 @@ describe("getCanonicalMetrics", () => {
     flushMicrotasksAndTimers();
 
     const snapshot = store.getSnapshot();
-    const metrics = getCanonicalMetrics(snapshot);
+    const metrics = getClientMetrics(snapshot);
 
     expect(metrics.cacheHitRate.value).toBeCloseTo(store.getCacheHitRate());
     expect(metrics.cacheHitRate.value).toBeCloseTo((14 + 2) / 20);
@@ -159,7 +159,7 @@ describe("getCanonicalMetrics", () => {
   });
 
   it("assigns request and millisecond units", () => {
-    const metrics = getCanonicalMetrics(
+    const metrics = getClientMetrics(
       makeSnapshot({ cacheHits: 5, revalidations: 3, deduplications: 2 })
     );
 
@@ -175,7 +175,7 @@ describe("getCanonicalMetrics", () => {
   });
 
   it("computes requestsSaved and derives estimatedTimeSavedMs from it", () => {
-    const metrics = getCanonicalMetrics(
+    const metrics = getClientMetrics(
       makeSnapshot({
         cacheHits: 10,
         cacheMisses: 5,
@@ -192,7 +192,7 @@ describe("getCanonicalMetrics", () => {
   it("leaves estimatedTimeSavedMs undefined until the network baseline has samples", () => {
     // Requests saved has samples, but with too few misses the network-latency
     // baseline has no value, so the derived estimate must stay undefined.
-    const metrics = getCanonicalMetrics(
+    const metrics = getClientMetrics(
       makeSnapshot({ cacheHits: 3, cacheMisses: 2, networkResponseTime: 200 })
     );
 
@@ -202,22 +202,22 @@ describe("getCanonicalMetrics", () => {
   });
 
   it("gates cacheHitRate at the twenty-sample threshold", () => {
-    const below = getCanonicalMetrics(makeSnapshot({ cacheHits: 19 }));
+    const below = getClientMetrics(makeSnapshot({ cacheHits: 19 }));
     expect(below.cacheHitRate.sampleCount).toBe(19);
     expect(below.cacheHitRate.value).toBeUndefined();
 
-    const atThreshold = getCanonicalMetrics(makeSnapshot({ cacheHits: 20 }));
+    const atThreshold = getClientMetrics(makeSnapshot({ cacheHits: 20 }));
     expect(atThreshold.cacheHitRate.sampleCount).toBe(20);
     expect(atThreshold.cacheHitRate.value).toBeDefined();
   });
 
   it("gates latency metrics at the five-sample threshold", () => {
-    const below = getCanonicalMetrics(
+    const below = getClientMetrics(
       makeSnapshot({ cacheMisses: 4, networkResponseTime: 400 })
     );
     expect(below.avgNetworkMs.value).toBeUndefined();
 
-    const atThreshold = getCanonicalMetrics(
+    const atThreshold = getClientMetrics(
       makeSnapshot({ cacheMisses: 5, networkResponseTime: 500 })
     );
     expect(atThreshold.avgNetworkMs.value).toBeCloseTo(100);
@@ -225,15 +225,15 @@ describe("getCanonicalMetrics", () => {
 
   it("gates requestsSaved at the single-sample threshold", () => {
     expect(
-      getCanonicalMetrics(makeSnapshot({})).requestsSaved.value
+      getClientMetrics(makeSnapshot({})).requestsSaved.value
     ).toBeUndefined();
     expect(
-      getCanonicalMetrics(makeSnapshot({ cacheHits: 1 })).requestsSaved.value
+      getClientMetrics(makeSnapshot({ cacheHits: 1 })).requestsSaved.value
     ).toBeDefined();
   });
 
   it("gates optimistic coverage and rollback rate at the three-sample threshold", () => {
-    const below = getCanonicalMetrics(
+    const below = getClientMetrics(
       makeSnapshot({
         actionCount: 2,
         optimisticActionCount: 1,
@@ -243,7 +243,7 @@ describe("getCanonicalMetrics", () => {
     expect(below.optimisticCoverage.value).toBeUndefined();
     expect(below.rollbackRate.value).toBeUndefined();
 
-    const atThreshold = getCanonicalMetrics(
+    const atThreshold = getClientMetrics(
       makeSnapshot({
         actionCount: 3,
         optimisticActionCount: 3,
@@ -255,9 +255,9 @@ describe("getCanonicalMetrics", () => {
   });
 
   it("returns undefined for every metric on a zeroed snapshot", () => {
-    const metrics = getCanonicalMetrics(makeSnapshot({}));
+    const metrics = getClientMetrics(makeSnapshot({}));
 
-    for (const key of CANONICAL_KEYS) {
+    for (const key of CLIENT_KEYS) {
       expect(metrics[key].value).toBeUndefined();
       expect(metrics[key].sampleCount).toBe(0);
     }
