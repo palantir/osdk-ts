@@ -42,6 +42,5 @@ export function useComponentInsights(
       unusedByComponent.set(unused.componentId, list);
     }
     return { wastedByComponent, unusedByComponent };
-    // tick drives the recompute since the tracker has no change subscription.
   }, [monitorStore, tick]);
 }

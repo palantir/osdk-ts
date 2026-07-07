@@ -420,6 +420,7 @@ export interface DiscoveredComponent {
 }
 
 const MAX_PROP_KEYS = 12;
+// Longest a prop-value preview may be before it's truncated, in characters.
 const MAX_PROP_VALUE_LEN = 80;
 
 function summarizePropValue(value: unknown): string {

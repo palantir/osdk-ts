@@ -21,7 +21,6 @@ import type {
 } from "../../utils/ComponentQueryRegistry.js";
 import type { PropertyAccessEvent } from "../../utils/PropertyAccessTracker.js";
 
-/** The object type a query reads from, or null for actions (shown by name). */
 export function objectTypeOf(params: QueryParams): string | null {
   switch (params.type) {
     case "object":
@@ -43,9 +42,7 @@ export function objectTypeOf(params: QueryParams): string | null {
 }
 
 export interface OntologyObjectType {
-  /** Object type api name, e.g. "Parcel". */
   name: string;
-  /** Distinct primary keys of instances the component actually read. */
   instances: string[];
 }
 
@@ -55,17 +52,11 @@ export interface OntologyProperties {
 }
 
 export interface ComponentOntology {
-  /** Object types the component reads, inferred from hook usage. */
   objectTypes: OntologyObjectType[];
-  /** Action names the component invokes, inferred from hook usage. */
   actions: string[];
-  /** Properties the component read, grouped by object type. */
   properties: OntologyProperties[];
-  /** React props captured from the fiber. */
   reactProps: Array<[string, string]>;
-  /** True when the component has no wasted renders and no over-fetch. */
   healthy: boolean;
-  /** Short human label describing the health warning, when not healthy. */
   warning?: string;
 }
 

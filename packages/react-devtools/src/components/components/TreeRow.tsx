@@ -21,15 +21,10 @@ import React, { useState } from "react";
 import styles from "./ComponentsPanel.module.scss";
 
 interface TreeRowProps {
-  /** Row label; a string renders as the row text, nodes render as-is. */
   label: React.ReactNode;
-  /** Indentation level (0 = component, 1 = category, 2 = object type, 3 = leaf). */
   depth: number;
-  /** Leading Blueprint icon. */
   icon?: IconName;
-  /** Trailing count chip. */
   count?: number;
-  /** Trailing badge node (e.g. a Healthy pill), shown after the count. */
   badge?: React.ReactNode;
   /** Whether the row is expanded on first render (only relevant with children). */
   defaultOpen?: boolean;
@@ -46,8 +41,6 @@ function depthClass(depth: number): string | undefined {
   return styles[DEPTH_CLASS[clamped]];
 }
 
-// Every level of the tree is a TreeRow, so indentation and interaction stay
-// consistent; rows with children toggle on click, leaf rows do not.
 export const TreeRow: React.FC<TreeRowProps> = ({
   label,
   depth,
@@ -62,17 +55,19 @@ export const TreeRow: React.FC<TreeRowProps> = ({
   const [open, setOpen] = useState(defaultOpen);
 
   const toggle = (): void => {
-    if (collapsible) {
-      setOpen((prev) => !prev);
-    }
+    setOpen((prev) => !prev);
   };
 
   const onKeyDown = (event: React.KeyboardEvent): void => {
-    if (collapsible && (event.key === "Enter" || event.key === " ")) {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       toggle();
     }
   };
+
+  const interactiveProps: React.HTMLAttributes<HTMLDivElement> = collapsible
+    ? { onClick: toggle, onKeyDown, tabIndex: 0, "aria-expanded": open }
+    : {};
 
   return (
     <div className={styles.treeNode}>
@@ -81,29 +76,26 @@ export const TreeRow: React.FC<TreeRowProps> = ({
           [styles.treeRowLeaf]: leaf,
           [styles.treeRowInteractive]: collapsible,
         })}
-        onClick={collapsible ? toggle : undefined}
-        onKeyDown={collapsible ? onKeyDown : undefined}
         role="treeitem"
-        tabIndex={collapsible ? 0 : undefined}
-        aria-expanded={collapsible ? open : undefined}
+        {...interactiveProps}
       >
         <span className={styles.treeChevron}>
-          {collapsible ? (
+          {collapsible && (
             <Icon icon={open ? "chevron-down" : "chevron-right"} size={12} />
-          ) : null}
+          )}
         </span>
-        {icon !== undefined ? (
+        {icon !== undefined && (
           <Icon className={styles.treeIcon} icon={icon} size={14} />
-        ) : null}
+        )}
         <span className={styles.treeLabel}>{label}</span>
-        {count !== undefined ? (
+        {count !== undefined && (
           <span className={styles.treeCount}>{count}</span>
-        ) : null}
-        {badge !== undefined ? badge : null}
+        )}
+        {badge}
       </div>
-      {collapsible && open ? (
+      {collapsible && open && (
         <div className={styles.treeChildren}>{children}</div>
-      ) : null}
+      )}
     </div>
   );
 };
