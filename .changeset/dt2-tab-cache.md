@@ -2,4 +2,4 @@
 "@osdk/react-devtools": patch
 ---
 
-add the Cache base tab: stacked sections pairing the cache entry inspector with a described cache activity timeline
+add the Cache tab: a cache entry inspector with size and entries stats stacked above a cache history timeline
