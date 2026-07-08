@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.37.0
+
+### Minor Changes
+
+- df15011: Detect actions and resolve memo component names in the component tree, and clarify the components and cache-hit-rate copy
+
 ## 0.36.0
 
 ### Minor Changes
