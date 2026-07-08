@@ -83,7 +83,6 @@ export function OverviewTab({
                 rel="noreferrer"
                 intent="primary"
                 endIcon="share"
-                variant="outlined"
               >
                 View documentation
               </AnchorButton>
@@ -216,7 +215,7 @@ function useOverviewMetrics(monitorStore: MonitorStore) {
     () =>
       logs.entries.filter((l) => l.level === "error" || l.level === "warn")
         .length,
-    [logs]
+    [logs.entries]
   );
   const { facets } = useComponentOntology(monitorStore);
 

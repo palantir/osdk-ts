@@ -121,16 +121,28 @@ afterEach(() => {
   cleanup();
 });
 
+const noop = () => {};
+
 describe("OverviewTab value tiles", () => {
   it("renders the ontology, metrics, and recommendations sections", () => {
-    render(<OverviewTab monitorStore={makeStore(makeSnapshot({}))} />);
+    render(
+      <OverviewTab
+        monitorStore={makeStore(makeSnapshot({}))}
+        onNavigateToTab={noop}
+      />
+    );
     expect(screen.getByText("Ontology")).not.toBeNull();
     expect(screen.getByText("Metrics")).not.toBeNull();
     expect(screen.getByText("Recommendations")).not.toBeNull();
   });
 
   it("shows the empty recommendations state when there are none", () => {
-    render(<OverviewTab monitorStore={makeStore(makeSnapshot({}))} />);
+    render(
+      <OverviewTab
+        monitorStore={makeStore(makeSnapshot({}))}
+        onNavigateToTab={noop}
+      />
+    );
     expect(screen.getByText("No recommendations right now.")).not.toBeNull();
   });
 
@@ -144,7 +156,9 @@ describe("OverviewTab value tiles", () => {
     });
     const metrics = getClientMetrics(snapshot);
 
-    render(<OverviewTab monitorStore={makeStore(snapshot)} />);
+    render(
+      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />
+    );
 
     expect(screen.getByText(formatMetric(metrics.cacheHitRate))).not.toBeNull();
     expect(screen.getByText("67%")).not.toBeNull();
@@ -176,7 +190,12 @@ describe("OverviewTab value tiles", () => {
         ],
       ],
     ]);
-    render(<OverviewTab monitorStore={makeStore(makeSnapshot({}), active)} />);
+    render(
+      <OverviewTab
+        monitorStore={makeStore(makeSnapshot({}), active)}
+        onNavigateToTab={noop}
+      />
+    );
 
     expect(screen.getByText("Object types")).not.toBeNull();
     expect(screen.getByText("Action types")).not.toBeNull();
@@ -193,7 +212,9 @@ describe("OverviewTab value tiles", () => {
   it("shows a no-ontology-usage empty state with N/A metrics and preserved sections when empty", () => {
     const snapshot = makeSnapshot({});
     const metrics = getClientMetrics(snapshot);
-    render(<OverviewTab monitorStore={makeStore(snapshot)} />);
+    render(
+      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />
+    );
 
     // With no ontology usage, the Ontology section shows the empty state, not tiles.
     expect(screen.getByText("No ontology usage detected")).not.toBeNull();
