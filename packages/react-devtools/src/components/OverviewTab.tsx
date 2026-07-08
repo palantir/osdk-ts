@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AnchorButton, NonIdealState } from "@blueprintjs/core";
+import { AnchorButton, Classes, Icon, NonIdealState } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useMemo } from "react";
 
 import { useClientMetrics } from "../hooks/useClientMetrics.js";
@@ -23,6 +24,7 @@ import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
 import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
 import { formatMetric } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
+import type { DevtoolsTabId } from "./components/devtoolsTabId.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
 import type { MetricLegendEntry } from "./MetricLegend.js";
@@ -39,6 +41,10 @@ const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
 
 export interface OverviewTabProps {
   monitorStore: MonitorStore;
+  /**
+   * Switches the panel's active tab.
+   */
+  onNavigateToTab: (tab: DevtoolsTabId) => void;
 }
 
 /**
@@ -56,6 +62,7 @@ const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
  */
 export function OverviewTab({
   monitorStore,
+  onNavigateToTab,
 }: OverviewTabProps): React.JSX.Element {
   const metrics = useOverviewMetrics(monitorStore);
   const isOntologyEmpty =
@@ -93,6 +100,16 @@ export function OverviewTab({
       <OverviewSection title="Metrics">
         <Metrics columns={2}>
           <Metric
+            title="Requests saved"
+            help="Requests served from cache, revalidations, and deduplicated fetches that never hit the network."
+            value={formatMetric(metrics.requestsSaved)}
+          />
+          <Metric
+            title="Time saved"
+            help="Estimated network time avoided by serving requests from cache."
+            value={formatMetric(metrics.estimatedTimeSavedMs)}
+          />
+          <Metric
             title="Cache hit rate"
             help={
               <>
@@ -117,17 +134,18 @@ export function OverviewTab({
                     ? "warning"
                     : "danger"
             }
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("cache")}
+              >
+                View in Cache
+                <Icon icon="arrow-right" size={14} />
+              </button>
+            }
           />
-          <Metric
-            title="Requests saved"
-            help="Requests served from cache, revalidations, and deduplicated fetches that never hit the network."
-            value={formatMetric(metrics.requestsSaved)}
-          />
-          <Metric
-            title="Time saved"
-            help="Estimated network time avoided by serving requests from cache."
-            value={formatMetric(metrics.estimatedTimeSavedMs)}
-          />
+
           <Metric
             title="Avg response time"
             help="Average response time across requests. Cache reads are typically under 1ms; network reads dominate."
@@ -144,6 +162,16 @@ export function OverviewTab({
             }
             value={metrics.errorWarningCount}
             intent={metrics.errorWarningCount > 0 ? "danger" : "none"}
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("console")}
+              >
+                View in Console
+                <Icon icon="arrow-right" size={14} />
+              </button>
+            }
           />
           <Metric
             title="Overfetching"
@@ -159,6 +187,16 @@ export function OverviewTab({
               metrics.overfetchingCount != null && metrics.overfetchingCount > 0
                 ? "danger"
                 : "none"
+            }
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("components")}
+              >
+                View in Components
+                <Icon icon="arrow-right" size={14} />
+              </button>
             }
           />
         </Metrics>

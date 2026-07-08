@@ -38,8 +38,11 @@ import type { MonitorStore } from "../store/MonitorStore.js";
 import type { PanelPosition } from "../types/index.js";
 import { CachePanel } from "./cache/CachePanel.js";
 import { ComponentsPanel } from "./components/ComponentsPanel.js";
+import type { DevtoolsTabId } from "./components/devtoolsTabId.js";
+import { DEVTOOLS_TAB_IDS } from "./components/devtoolsTabId.js";
 import { ConsolePanel } from "./console/ConsolePanel.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
+import { OverviewTab } from "./OverviewTab.js";
 
 import styles from "./MonitoringPanel.module.scss";
 
@@ -97,10 +100,6 @@ const UI_CONSTANTS = {
   MAX_DOCKED_RIGHT_WIDTH: 800,
 };
 
-const DEVTOOLS_TAB_IDS = ["components", "console", "cache"] as const;
-
-type DevtoolsTabId = (typeof DEVTOOLS_TAB_IDS)[number];
-
 export interface MonitoringPanelProps {
   /** The MonitorStore instance that provides all metrics, compute, and component tracking data. */
   monitorStore: MonitorStore;
@@ -111,7 +110,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 }) => {
   const metricsStore = monitorStore.getMetricsStore();
   const fiberCapabilities = useFiberCapabilities();
-  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("components");
+  const [activeTab, setActiveTab] = useState<DevtoolsTabId>("overview");
   const onActiveTabChange = useCallback((newTabId: TabId) => {
     if (isDevtoolsTabId(newTabId)) {
       setActiveTab(newTabId);
@@ -576,6 +575,17 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             selectedTabId={activeTab}
             onChange={onActiveTabChange}
           >
+            <Tab
+              id="overview"
+              title="Overview"
+              panelClassName={styles.tabPanel}
+              panel={
+                <OverviewTab
+                  monitorStore={monitorStore}
+                  onNavigateToTab={onActiveTabChange}
+                />
+              }
+            />
             <Tab
               id="components"
               title="Components"
