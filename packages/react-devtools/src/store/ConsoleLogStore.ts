@@ -199,7 +199,8 @@ function isReactDevtoolsFrame(source: string): boolean {
   return (
     source.startsWith("installHook.js") ||
     source.includes("react_devtools") ||
-    source.includes("react-devtools")
+    source.includes("react-devtools") ||
+    source.includes("react-router-dom")
   );
 }
 
