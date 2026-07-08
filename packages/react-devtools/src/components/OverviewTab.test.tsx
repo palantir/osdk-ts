@@ -72,9 +72,13 @@ function makeStore(
   snapshot: MetricsSnapshot,
   active = new Map<string, ComponentHookBinding[]>()
 ): MonitorStore {
+  // Stable reference: useConsoleLogs caches its snapshot by identity, so
+  // getEntries must return the same array each call (as the real store does).
+  const noEntries: readonly never[] = [];
   const emptyEntryStore = {
     subscribe: () => () => {},
-    getEntries: () => [],
+    getEntries: () => noEntries,
+    getSize: () => 0,
   };
   const stub = {
     getMetricsStore: () => ({
@@ -118,6 +122,18 @@ afterEach(() => {
 });
 
 describe("OverviewTab value tiles", () => {
+  it("renders the ontology, metrics, and recommendations sections", () => {
+    render(<OverviewTab monitorStore={makeStore(makeSnapshot({}))} />);
+    expect(screen.getByText("Ontology")).not.toBeNull();
+    expect(screen.getByText("Metrics")).not.toBeNull();
+    expect(screen.getByText("Recommendations")).not.toBeNull();
+  });
+
+  it("shows the empty recommendations state when there are none", () => {
+    render(<OverviewTab monitorStore={makeStore(makeSnapshot({}))} />);
+    expect(screen.getByText("No recommendations right now.")).not.toBeNull();
+  });
+
   it("renders each client-metric value through the shared humanizing formatter", () => {
     // 40 hits / 60 requests => 0.6667 cache hit rate => "67%".
     // 720ms total across 60 requests => 12ms average => "12 ms".
