@@ -181,7 +181,7 @@ export function deriveComponentOntology(
   return {
     objectTypes,
     actions: [...actionNames].sort((a, b) => a.localeCompare(b)),
-    links: [...new Set(linkNames)].sort((a, b) => a.localeCompare(b)),
+    links: [...linkNames].sort((a, b) => a.localeCompare(b)),
     properties,
     reactProps: props ? Object.entries(props) : [],
     healthy,

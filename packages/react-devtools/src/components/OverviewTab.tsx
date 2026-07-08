@@ -74,8 +74,8 @@ export function OverviewTab({
         {isOntologyEmpty ? (
           <NonIdealState
             icon="cube"
-            title="No ontology usage detected"
-            description="We didn't detect any ontology used inside the components of this app."
+            title="No Ontology usage detected"
+            description="None of this app's components use the Ontology yet. Add an @osdk/react hook to a component to read objects or call actions."
             action={
               <AnchorButton
                 href={OSDK_DOCS_URL}
@@ -104,9 +104,9 @@ export function OverviewTab({
             value={formatMetric(metrics.requestsSaved)}
           />
           <Metric
-            title="Time saved"
-            help="Estimated network time avoided by serving requests from cache."
-            value={formatMetric(metrics.estimatedTimeSavedMs)}
+            title="Optimistic coverage"
+            help="Share of actions that update the UI right away, before the server confirms."
+            value={formatMetric(metrics.optimisticCoverage)}
           />
           <Metric
             title="Cache hit rate"
@@ -222,7 +222,7 @@ function useOverviewMetrics(monitorStore: MonitorStore) {
   return {
     cacheHitRate: clientMetrics.cacheHitRate,
     requestsSaved: clientMetrics.requestsSaved,
-    estimatedTimeSavedMs: clientMetrics.estimatedTimeSavedMs,
+    optimisticCoverage: clientMetrics.optimisticCoverage,
     avgResponseMs: clientMetrics.avgResponseMs,
     objectTypeCount: facets.objectTypes.length,
     actionTypeCount: facets.actions.length,
