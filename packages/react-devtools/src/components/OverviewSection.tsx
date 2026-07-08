@@ -15,6 +15,7 @@
  */
 
 import { Section, SectionCard } from "@blueprintjs/core";
+import classNames from "classnames";
 import React from "react";
 
 import styles from "./OverviewSection.module.scss";
@@ -24,11 +25,18 @@ export interface OverviewSectionProps {
   title: string;
   /** The section body — typically a grid of tiles. */
   children: React.ReactNode;
+  /**
+   * Adds interior padding around the section body. Disabled by default so
+   * sections whose content owns its own spacing (e.g. the cache lists) render
+   * flush; enable it for tile grids that need breathing room.
+   */
+  padded?: boolean;
 }
 
 export function OverviewSection({
   title,
   children,
+  padded = false,
 }: OverviewSectionProps): React.JSX.Element {
   return (
     <Section
@@ -37,7 +45,12 @@ export function OverviewSection({
       title={title}
       className={styles.overviewSection}
     >
-      <SectionCard className={styles.overviewSectionCard}>
+      <SectionCard
+        padded={false}
+        className={classNames(styles.overviewSectionCard, {
+          [styles.padded]: padded,
+        })}
+      >
         {children}
       </SectionCard>
     </Section>

@@ -11,7 +11,12 @@
   }
 
   .overviewSectionCard {
-    padding: 12px;
     background: t.$bg-surface;
+
+    // Interior padding is opt-in via the `padded` prop; sections whose content
+    // owns its own spacing (e.g. the cache lists) render flush without it.
+    &.padded {
+      padding: 12px;
+    }
   }
 }
