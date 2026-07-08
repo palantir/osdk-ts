@@ -36,13 +36,6 @@ import styles from "./OverviewTab.module.scss";
  */
 const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
 
-/**
- * Gates the Overview tab in the monitoring panel. Exported so the panel (and
- * tests) can branch on whether the tab is available; flip to `false` to hide it
- * without removing the component.
- */
-export const IS_OVERVIEW_TAB_ENABLED = true;
-
 export interface OverviewTabProps {
   monitorStore: MonitorStore;
 }
