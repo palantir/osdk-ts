@@ -1,5 +1,20 @@
 # @osdk/react-devtools
 
+## 0.13.0
+
+### Minor Changes
+
+- 928a117: render only the Components, Console, and Cache tabs in the devtools panel, replacing the Performance, Compute, Intercept, and Debugging tabs. The cache sections now render flush, dropping the extra section padding via an `OverviewSection` `padded` prop
+- ebb4850: fix outlined primary buttons ("View documentation", "Copy fix prompt") in the devtools panel to use the soft blue tint and readable blue label instead of a solid fill with low-contrast text
+- e3a6fa4: add client metrics (cache, latency, and optimistic-update effectiveness) computed from the metrics store
+- 63139b8: add the Cache tab: a cache entry inspector with size and entries stats stacked above a cache history timeline
+- b5c9ab3: rebuild the Components base tab as a collapsible ontology tree showing the object types, actions, and properties each component touches, with search and per-component health badges
+- b03e461: fix devtools panel tooltips and popover menus not responding to hover or clicks, caused by portaled overlays inheriting the panel's pointer-events:none
+- cfa111e: surface performance recommendations as a section on the Overview tab
+- a4b03d5: Use real metrics in the Overview tab
+- 7995be0: Restyle the monitoring panel header background and remove the uppercase transform from the title
+- 7449f91: Restyle the MonitoringPanel devtools tab bar to use Blueprint Tabs
+
 ## 0.12.0
 
 ### Minor Changes

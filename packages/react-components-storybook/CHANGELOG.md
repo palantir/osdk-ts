@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.36.0
+
+### Minor Changes
+
+- d99575d: Make the Components Overview page fill the full available height so the ObjectTable, FilterList, and DocumentViewer stretch to the viewport.
+
 ## 0.35.0
 
 ### Minor Changes
