@@ -328,6 +328,22 @@ function isValidHookType(value: string): value is OsdkHookMetadata["hookType"] {
   return VALID_HOOK_TYPES.has(value as OsdkHookMetadata["hookType"]);
 }
 
+/**
+ * The lightweight `useDevToolsMetadata` (useRef) marker stores a hook's
+ * identifying name under `key`, not the typed name fields. `useOsdkAction` uses
+ * this path with `key === actionDef.apiName`, so map it onto `actionName`;
+ * otherwise downstream consumers see `undefined` → "Unknown" and drop it.
+ */
+function normalizeRefMetadata(meta: OsdkHookMetadata): OsdkHookMetadata {
+  if (meta.hookType === "useOsdkAction" && meta.actionName == null) {
+    const key = (meta as { key?: unknown }).key;
+    if (typeof key === "string") {
+      return { ...meta, [OSDK_HOOK_METADATA]: true, actionName: key };
+    }
+  }
+  return meta;
+}
+
 export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
   return safeFiberOperation(
     () => {
@@ -339,7 +355,7 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
 
         // useRef check: state is { current: OsdkHookMetadata }
         if (isRefStorage(state) && isOsdkHookMetadata(state.current)) {
-          results.push(state.current);
+          results.push(normalizeRefMetadata(state.current));
         }
 
         // useMemo check: state is [memoizedValue, deps]
