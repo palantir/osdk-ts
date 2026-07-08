@@ -112,8 +112,9 @@ export function OverviewTab({
             title="Cache hit rate"
             help={
               <>
-                Share of object reads served from the normalized cache instead
-                of the network.
+                How often object reads come from the cache instead of the
+                network. Averaged over all reads since devtools started; blank
+                until at least 20 reads.
                 <MetricLegend
                   entries={[
                     { swatch: "success", label: "≥ 70%" },
