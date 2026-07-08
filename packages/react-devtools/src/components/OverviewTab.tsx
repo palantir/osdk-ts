@@ -15,11 +15,12 @@
  */
 
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
-import React from "react";
+import React, { useMemo } from "react";
 
 import { useClientMetrics } from "../hooks/useClientMetrics.js";
 import { useComponentOntology } from "../hooks/useComponentOntology.js";
-import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
+import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
+import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
 import { formatMetric } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { Metric } from "./Metric.js";
@@ -171,8 +172,14 @@ export function OverviewTab({
 
 function useOverviewMetrics(monitorStore: MonitorStore) {
   const clientMetrics = useClientMetrics(monitorStore);
-  const { overfetchingCount, errorWarningCount } =
-    useDebuggingTiles(monitorStore);
+  const { report } = useUnusedFieldAnalysis(monitorStore);
+  const logs = useConsoleLogs(monitorStore);
+  const errorWarningCount = useMemo(
+    () =>
+      logs.entries.filter((l) => l.level === "error" || l.level === "warn")
+        .length,
+    [logs]
+  );
   const { facets } = useComponentOntology(monitorStore);
 
   return {
@@ -183,7 +190,7 @@ function useOverviewMetrics(monitorStore: MonitorStore) {
     objectTypeCount: facets.objectTypes.length,
     actionTypeCount: facets.actions.length,
     linkCount: facets.links.length,
+    overfetchingCount: report != null ? report.inefficientComponents : null,
     errorWarningCount,
-    overfetchingCount,
   };
 }
