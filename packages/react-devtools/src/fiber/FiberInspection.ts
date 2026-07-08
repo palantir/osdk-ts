@@ -49,7 +49,22 @@ function getComponentNameUnsafe(fiber: Fiber): string {
   }
 
   if (typeof type === "function") {
-    return type.displayName || type.name || "Anonymous";
+    if (type.displayName || type.name) {
+      return type.displayName || type.name;
+    }
+    // SimpleMemoComponent: fiber.type is the inner render fn, which the build
+    // often leaves anonymous/minified, while fiber.elementType is the
+    // React.memo() wrapper carrying the `memo(fn); C.displayName = "C"` name.
+    const elementType = fiber.elementType as
+      | { displayName?: unknown; name?: unknown }
+      | undefined;
+    if (typeof elementType?.displayName === "string") {
+      return elementType.displayName;
+    }
+    if (typeof elementType?.name === "string" && elementType.name.length > 0) {
+      return elementType.name;
+    }
+    return "Anonymous";
   }
 
   if (type && typeof type === "object") {
