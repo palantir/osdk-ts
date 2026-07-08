@@ -26,9 +26,9 @@ export interface OverviewSectionProps {
   /** The section body — typically a grid of tiles. */
   children: React.ReactNode;
   /**
-   * Adds interior padding around the section body. Disabled by default so
-   * sections whose content owns its own spacing (e.g. the cache lists) render
-   * flush; enable it for tile grids that need breathing room.
+   * Adds interior padding around the section body. Enabled by default; disable
+   * it for sections whose content owns its own spacing (e.g. the cache lists)
+   * so they render flush.
    */
   padded?: boolean;
 }
@@ -36,7 +36,7 @@ export interface OverviewSectionProps {
 export function OverviewSection({
   title,
   children,
-  padded = false,
+  padded = true,
 }: OverviewSectionProps): React.JSX.Element {
   return (
     <Section
