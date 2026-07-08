@@ -17,11 +17,9 @@
 import { AnchorButton, NonIdealState } from "@blueprintjs/core";
 import React from "react";
 
-import { useDebuggingTiles } from "../hooks/useDebuggingTiles.js";
-import { useOntologyUsage } from "../hooks/useOntologyUsage.js";
-import { usePerformanceTiles } from "../hooks/usePerformanceTiles.js";
+import { useOverviewMetrics } from "../hooks/useOverviewMetrics.js";
+import { formatMetric } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
-import { formatNumber, formatTime } from "../utils/format.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
 import type { MetricLegendEntry } from "./MetricLegend.js";
@@ -56,25 +54,16 @@ const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
   { swatch: "none", label: "0 / no data" },
 ];
 
-export interface OverviewTabProps {
-  monitorStore: MonitorStore;
-}
-
 /**
- * The Overview tab — an at-a-glance summary of the monitored client's ontology
- * usage and health metrics. Shows the "no ontology" empty state when the
- * registry is empty; otherwise renders the ontology counts, the performance
- * metrics grid, and the recommendations.
+ * The Overview tab — an at-a-glance summary of the monitored client's value,
+ * health, and ontology usage.
  */
 export function OverviewTab({
   monitorStore,
 }: OverviewTabProps): React.JSX.Element {
-  const usage = useOntologyUsage(monitorStore);
-  const performance = usePerformanceTiles(monitorStore);
-  const debugging = useDebuggingTiles(monitorStore);
-
+  const metrics = useOverviewMetrics(monitorStore);
   const isOntologyEmpty =
-    usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
+    metrics.objectTypeCount + metrics.actionTypeCount + metrics.linkCount === 0;
 
   return (
     <div className={styles.overviewTab}>
@@ -99,9 +88,9 @@ export function OverviewTab({
           />
         ) : (
           <Metrics columns={3}>
-            <Metric title="Object types" value={usage.objectTypeCount} />
-            <Metric title="Action types" value={usage.actionTypeCount} />
-            <Metric title="Links" value={usage.linkCount} />
+            <Metric title="Object types" value={metrics.objectTypeCount} />
+            <Metric title="Action types" value={metrics.actionTypeCount} />
+            <Metric title="Links" value={metrics.linkCount} />
           </Metrics>
         )}
       </OverviewSection>
@@ -122,80 +111,31 @@ export function OverviewTab({
                 />
               </>
             }
-            value={
-              performance.cacheHitRate == null
-                ? null
-                : `${Math.round(performance.cacheHitRate * 100)}%`
-            }
+            value={formatMetric(metrics.cacheHitRate)}
             intent={
-              performance.cacheHitRate == null
+              metrics.cacheHitRate.value == null
                 ? "none"
-                : performance.cacheHitRate > 0.7
+                : metrics.cacheHitRate.value > 0.7
                   ? "success"
-                  : performance.cacheHitRate > 0.4
+                  : metrics.cacheHitRate.value > 0.4
                     ? "warning"
                     : "danger"
             }
           />
           <Metric
-            title="Network requests"
-            help="Requests that went to the network — cache misses plus revalidations."
-            value={
-              performance.networkRequests == null
-                ? null
-                : formatNumber(performance.networkRequests)
-            }
+            title="Requests saved"
+            help="Requests served from cache, revalidations, and deduplicated fetches that never hit the network."
+            value={formatMetric(metrics.requestsSaved)}
+          />
+          <Metric
+            title="Time saved"
+            help="Estimated network time avoided by serving requests from cache."
+            value={formatMetric(metrics.estimatedTimeSavedMs)}
           />
           <Metric
             title="Avg response time"
             help="Average response time across requests. Cache reads are typically under 1ms; network reads dominate."
-            value={
-              performance.averageResponseTime == null
-                ? null
-                : formatTime(performance.averageResponseTime)
-            }
-          />
-          <Metric
-            title="Duplicate requests"
-            help={
-              <>
-                Requests for data an in-flight request already covered,
-                collapsed onto a single fetch by deduplication.
-                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
-              </>
-            }
-            value={
-              performance.duplicateRequests == null
-                ? null
-                : formatNumber(performance.duplicateRequests)
-            }
-            intent={
-              performance.duplicateRequests != null &&
-              performance.duplicateRequests > 0
-                ? "danger"
-                : "none"
-            }
-          />
-          <Metric
-            title="Overfetching"
-            help={
-              <>
-                Components whose hooks fetch fields that no descendant ever
-                reads.
-                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
-              </>
-            }
-            value={
-              debugging.overfetchingCount == null
-                ? null
-                : formatNumber(debugging.overfetchingCount)
-            }
-            intent={
-              debugging.overfetchingCount != null &&
-              debugging.overfetchingCount > 0
-                ? "danger"
-                : "none"
-            }
+            value={formatMetric(metrics.avgResponseMs)}
           />
           <Metric
             title="Errors & warnings"
@@ -206,8 +146,24 @@ export function OverviewTab({
                 <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
-            value={formatNumber(debugging.errorWarningCount)}
-            intent={debugging.errorWarningCount > 0 ? "danger" : "none"}
+            value={metrics.errorWarningCount}
+            intent={metrics.errorWarningCount > 0 ? "danger" : "none"}
+          />
+          <Metric
+            title="Overfetching"
+            help={
+              <>
+                Components whose hooks fetch fields that no descendant ever
+                reads.
+                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
+              </>
+            }
+            value={metrics.overfetchingCount}
+            intent={
+              metrics.overfetchingCount != null && metrics.overfetchingCount > 0
+                ? "danger"
+                : "none"
+            }
           />
         </Metrics>
       </OverviewSection>

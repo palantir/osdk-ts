@@ -22,8 +22,8 @@ import type {
   MetricRates,
   MetricsSnapshot,
 } from "../types/index.js";
-import type { ClientMetrics } from "./clientMetrics.js";
-import { getClientMetrics } from "./clientMetrics.js";
+import type { ClientMetrics, Metric } from "./clientMetrics.js";
+import { formatMetric, getClientMetrics } from "./clientMetrics.js";
 
 function flushMicrotasksAndTimers(): void {
   vi.advanceTimersByTime(0);
@@ -261,5 +261,41 @@ describe("getClientMetrics", () => {
       expect(metrics[key].value).toBeUndefined();
       expect(metrics[key].sampleCount).toBe(0);
     }
+  });
+});
+
+describe("formatMetric", () => {
+  function m(value: number | undefined, unit?: string): Metric {
+    return { value, sampleCount: 100, unit };
+  }
+
+  it("shows N/A until a value has accrued", () => {
+    expect(formatMetric(m(undefined))).toBe("N/A");
+    expect(formatMetric(m(undefined, "ms"))).toBe("N/A");
+  });
+
+  it("rounds a request count to a whole number", () => {
+    expect(formatMetric(m(4.6, "requests"))).toBe("5");
+  });
+
+  it("renders a unitless ratio as a rounded percentage", () => {
+    expect(formatMetric(m(0.6667))).toBe("67%");
+  });
+
+  it("keeps sub-second durations in milliseconds", () => {
+    expect(formatMetric(m(12, "ms"))).toBe("12 ms");
+    expect(formatMetric(m(999, "ms"))).toBe("999 ms");
+  });
+
+  it("humanizes durations of a second or more into seconds", () => {
+    expect(formatMetric(m(1000, "ms"))).toBe("1 s");
+    expect(formatMetric(m(1500, "ms"))).toBe("1.5 s");
+    expect(formatMetric(m(12340, "ms"))).toBe("12.3 s");
+    expect(formatMetric(m(45000, "ms"))).toBe("45 s");
+  });
+
+  it("humanizes durations of a minute or more into minutes", () => {
+    expect(formatMetric(m(60000, "ms"))).toBe("1 min");
+    expect(formatMetric(m(90000, "ms"))).toBe("1.5 min");
   });
 });

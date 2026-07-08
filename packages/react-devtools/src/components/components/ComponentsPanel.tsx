@@ -15,33 +15,15 @@
  */
 
 import { InputGroup } from "@blueprintjs/core";
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import React, { useState } from "react";
 
+import { useComponentOntology } from "../../hooks/useComponentOntology.js";
 import type { MonitorStore } from "../../store/MonitorStore.js";
-import { resolveComponentName } from "../resolveComponentName.js";
 import { ComponentCard } from "./ComponentCard.js";
 import { type ComponentFilter, ComponentFilters } from "./ComponentFilters.js";
 import { ComponentsHeader } from "./ComponentsHeader.js";
-import {
-  type ComponentOntology,
-  deriveComponentOntology,
-} from "./deriveComponentOntology.js";
-import { useComponentInsights } from "./useComponentInsights.js";
 
 import styles from "./ComponentsPanel.module.scss";
-
-interface ComponentEntry {
-  componentId: string;
-  name: string;
-  ontology: ComponentOntology;
-  /** Lowercased searchable text: name + object types + actions + properties. */
-  haystack: string;
-}
 
 interface ComponentsPanelProps {
   monitorStore: MonitorStore;
@@ -50,62 +32,9 @@ interface ComponentsPanelProps {
 export const ComponentsPanel: React.FC<ComponentsPanelProps> = ({
   monitorStore,
 }) => {
-  const registry = monitorStore.getComponentRegistry();
-  const tracker = monitorStore.getPropertyAccessTracker();
-  const subscribe = useCallback(
-    (cb: () => void) => registry.subscribe(cb),
-    [registry]
-  );
-  const getVersion = useCallback(() => registry.getVersion(), [registry]);
-  const version = useSyncExternalStore(subscribe, getVersion, getVersion);
-  const insights = useComponentInsights(monitorStore);
+  const { entries, facets } = useComponentOntology(monitorStore);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<ComponentFilter | null>(null);
-
-  const entries = useMemo<ComponentEntry[]>(() => {
-    return [...registry.getActiveComponents().entries()].map(
-      ([componentId, bindings]) => {
-        const ontology = deriveComponentOntology(
-          bindings,
-          tracker.getAccessesByComponent(componentId),
-          registry.getComponentProps(componentId),
-          {
-            wasted: insights.wastedByComponent.get(componentId),
-            unused: insights.unusedByComponent.get(componentId),
-          }
-        );
-        const name = resolveComponentName(bindings);
-        const haystack = [
-          name,
-          ...ontology.objectTypes.map((t) => t.name),
-          ...ontology.objectTypes.flatMap((t) => t.instances),
-          ...ontology.actions,
-          ...ontology.properties.flatMap((p) => [p.objectType, ...p.names]),
-        ]
-          .join(" ")
-          .toLowerCase();
-        return { componentId, name, ontology, haystack };
-      }
-    );
-    // version + insights drive the recompute as the registry and tracker change.
-  }, [registry, tracker, version, insights]);
-
-  const facets = useMemo(() => {
-    const objectTypes = new Set<string>();
-    const actions = new Set<string>();
-    for (const entry of entries) {
-      for (const objectType of entry.ontology.objectTypes) {
-        objectTypes.add(objectType.name);
-      }
-      for (const action of entry.ontology.actions) {
-        actions.add(action);
-      }
-    }
-    return {
-      objectTypes: [...objectTypes].sort((a, b) => a.localeCompare(b)),
-      actions: [...actions].sort((a, b) => a.localeCompare(b)),
-    };
-  }, [entries]);
 
   const query = search.trim().toLowerCase();
   const visible = entries.filter((entry) => {
