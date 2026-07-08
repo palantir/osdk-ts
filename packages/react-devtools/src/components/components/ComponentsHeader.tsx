@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Icon, Tooltip } from "@blueprintjs/core";
 import React from "react";
 
 import styles from "./ComponentsPanel.module.scss";
@@ -27,6 +28,8 @@ interface ComponentsHeaderProps {
 function plural(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
+
+const SCOPE_EXPLANATION = `Only components that call an @osdk/react hook (useOsdkObject, useOsdkObjects, …) show up here. If a component only renders an OSDK-aware child like ObjectTable or ActionForm, or gets its objects through props, it won't appear. Look for the child that owns the hook instead.`;
 
 export const ComponentsHeader: React.FC<ComponentsHeaderProps> = ({
   componentCount,
@@ -44,6 +47,14 @@ export const ComponentsHeader: React.FC<ComponentsHeaderProps> = ({
         <span className={styles.summaryDot}>•</span>
         <span>{plural(actionTypeCount, "action type")}</span>
       </span>
+      <Tooltip
+        compact={true}
+        content={
+          <span className={styles.infoContent}>{SCOPE_EXPLANATION}</span>
+        }
+      >
+        <Icon className={styles.infoIcon} icon="info-sign" size={12} />
+      </Tooltip>
     </div>
   );
 };

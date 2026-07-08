@@ -38,6 +38,7 @@
   gap: 8px;
   padding: 7px 12px;
   border-bottom: 1px solid t.$border-default;
+  align-items: center;
 }
 
 .summaryText {
@@ -53,6 +54,16 @@
 .summaryDot {
   margin: 0 6px;
   color: t.$text-tertiary;
+}
+
+.infoIcon {
+  color: t.$text-tertiary;
+  cursor: help;
+}
+
+.infoContent {
+  display: inline-block;
+  max-width: 260px;
 }
 
 .filters {
