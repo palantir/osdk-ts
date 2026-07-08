@@ -1,0 +1,109 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use '../tokens' as t;
+@use '../mixins' as m;
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+// The issues summary bar: total count, per-severity count pills, a hidden
+// count, and a funnel that opens the level filter + clear actions (right).
+.issuesBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.issuesCount {
+  font-size: t.$font-size-base;
+  font-weight: 600;
+  color: t.$text-secondary;
+}
+
+// Square count chips whose text is the severity color on a subtle same-hue fill.
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: t.$font-size-xs;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.7;
+}
+
+.pillError {
+  background: t.$red-bg;
+  color: t.$red;
+}
+
+.pillLogs {
+  background: t.$green-bg;
+  color: t.$green;
+}
+
+.pillWarn {
+  background: t.$orange-bg;
+  color: t.$orange;
+}
+
+.hidden {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+}
+
+.funnel {
+  margin-left: auto;
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  @include m.dt-scrollbar;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+  padding: 12px;
+}

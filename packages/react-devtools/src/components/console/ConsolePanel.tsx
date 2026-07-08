@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-import type { FC } from "react";
 import React from "react";
 
 import type { MonitorStore } from "../../store/MonitorStore.js";
-import { CacheInspectorTab } from "../CacheInspectorTab.js";
-import { OverviewSection } from "../OverviewSection.js";
-import { CacheTimeline } from "./CacheTimeline.js";
+import { ConsoleLogsView } from "./ConsoleLogsView.js";
 
-import styles from "./CachePanel.module.scss";
+import styles from "./ConsolePanel.module.scss";
 
-interface CachePanelProps {
+interface ConsolePanelProps {
   monitorStore: MonitorStore;
 }
 
-export const CachePanel: FC<CachePanelProps> = ({ monitorStore }) => {
+export const ConsolePanel: React.FC<ConsolePanelProps> = ({ monitorStore }) => {
   return (
     <div className={styles.panel}>
-      <OverviewSection title="Cache inspector" padded={false}>
-        <CacheInspectorTab monitorStore={monitorStore} />
-      </OverviewSection>
-      <OverviewSection title="Cache history" padded={false}>
-        <CacheTimeline monitorStore={monitorStore} />
-      </OverviewSection>
+      <ConsoleLogsView monitorStore={monitorStore} />
     </div>
   );
 };
