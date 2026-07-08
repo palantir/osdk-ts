@@ -217,7 +217,7 @@ describe("OverviewTab value tiles", () => {
     );
 
     // With no ontology usage, the Ontology section shows the empty state, not tiles.
-    expect(screen.getByText("No ontology usage detected")).not.toBeNull();
+    expect(screen.getByText("No Ontology usage detected")).not.toBeNull();
     expect(screen.getByText("View documentation")).not.toBeNull();
     expect(screen.queryByText("Object types")).toBeNull();
     expect(screen.queryByText("Action types")).toBeNull();
