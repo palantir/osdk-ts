@@ -31,10 +31,10 @@ interface CachePanelProps {
 export const CachePanel: FC<CachePanelProps> = ({ monitorStore }) => {
   return (
     <div className={styles.panel}>
-      <OverviewSection title="Cache inspector">
+      <OverviewSection title="Cache inspector" padded={false}>
         <CacheInspectorTab monitorStore={monitorStore} />
       </OverviewSection>
-      <OverviewSection title="Cache history">
+      <OverviewSection title="Cache history" padded={false}>
         <CacheTimeline monitorStore={monitorStore} />
       </OverviewSection>
     </div>
