@@ -610,6 +610,19 @@
         &:hover {
           background: t.$blue-hover;
         }
+
+        // Outlined primary buttons (e.g. "View documentation", "Copy fix
+        // prompt") mirror the soft tint the other intents use instead of the
+        // solid fill, so their label stays readable on the panel surface.
+        &.bp6-outlined {
+          background: t.$blue-bg;
+          border-color: var(--dt-blue-border);
+          color: t.$blue;
+
+          &:hover {
+            background: var(--dt-blue-hover-bg);
+          }
+        }
       }
 
       &.bp6-intent-danger {
