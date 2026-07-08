@@ -191,4 +191,64 @@ describe("deriveComponentOntology", () => {
     expect(result.objectTypes).toEqual([]);
     expect(result.actions).toEqual([]);
   });
+
+  it("collects link names and excludes the source object from objectTypes", () => {
+    const result = deriveComponentOntology(
+      [
+        binding({
+          type: "links",
+          sourceObject: "Parcel:p1",
+          linkName: "owner",
+        }),
+      ],
+      [],
+      undefined,
+      {}
+    );
+    expect(result.links).toEqual(["owner"]);
+    // A links binding contributes a link, not its source object type.
+    expect(result.objectTypes).toEqual([]);
+  });
+
+  it("de-duplicates and sorts link names across bindings", () => {
+    const result = deriveComponentOntology(
+      [
+        binding({
+          type: "links",
+          sourceObject: "Parcel:p1",
+          linkName: "owner",
+        }),
+        binding({
+          type: "links",
+          sourceObject: "Parcel:p2",
+          linkName: "assignee",
+        }),
+        binding({
+          type: "links",
+          sourceObject: "Invoice:i1",
+          linkName: "owner",
+        }),
+      ],
+      [],
+      undefined,
+      {}
+    );
+    expect(result.links).toEqual(["assignee", "owner"]);
+  });
+
+  it("drops Unknown link names", () => {
+    const result = deriveComponentOntology(
+      [
+        binding({
+          type: "links",
+          sourceObject: "Parcel:p1",
+          linkName: "Unknown",
+        }),
+      ],
+      [],
+      undefined,
+      {}
+    );
+    expect(result.links).toEqual([]);
+  });
 });

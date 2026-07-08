@@ -55,6 +55,7 @@ export interface ObjectTypeProperties {
 export interface ComponentOntology {
   objectTypes: OntologyObjectType[];
   actions: string[];
+  links: string[];
   properties: ObjectTypeProperties[];
   reactProps: Array<[string, string]>;
   healthy: boolean;
@@ -94,6 +95,7 @@ export function deriveComponentOntology(
 ): ComponentOntology {
   const objectTypeNames = new Set<string>();
   const actionNames = new Set<string>();
+  const linkNames = new Set<string>();
 
   for (const binding of bindings) {
     if (binding.queryParams.type === "action") {
@@ -103,6 +105,14 @@ export function deriveComponentOntology(
       }
       continue;
     }
+    if (binding.queryParams.type === "links") {
+      const name = binding.queryParams.linkName;
+      if (isKnown(name)) {
+        linkNames.add(name);
+      }
+      continue;
+    }
+
     const type = objectTypeOf(binding.queryParams);
     if (isKnown(type)) {
       objectTypeNames.add(type);
@@ -171,6 +181,7 @@ export function deriveComponentOntology(
   return {
     objectTypes,
     actions: [...actionNames].sort((a, b) => a.localeCompare(b)),
+    links: [...linkNames].sort((a, b) => a.localeCompare(b)),
     properties,
     reactProps: props ? Object.entries(props) : [],
     healthy,

@@ -253,6 +253,45 @@ describe("ComponentsPanel", () => {
     expect(screen.getByText("WorkspaceView")).not.toBeNull();
   });
 
+  it("counts a type reached via list, links, and object set only once in the header", () => {
+    const active = new Map([
+      [
+        "c1",
+        [
+          makeBinding(),
+          makeBinding({
+            hookType: "useLinks",
+            queryParams: {
+              type: "links",
+              sourceObject: "Parcel:123",
+              linkName: "owner",
+            },
+          }),
+          makeBinding({
+            hookType: "useObjectSet",
+            queryParams: {
+              type: "objectSet",
+              baseObjectSet: "Parcel",
+              operations: [],
+            },
+          }),
+        ],
+      ],
+    ]);
+    render(<ComponentsPanel monitorStore={makeStore(active)} />);
+
+    // The list, links, and object-set bindings all resolve to "Parcel", so the
+    // header must report a single object type, not three.
+    expect(screen.getByText("1 object type")).not.toBeNull();
+    expect(screen.queryByText("3 object types")).toBeNull();
+    // And that count matches the distinct object types shown across the cards.
+    fireEvent.click(screen.getByText("ParcelList"));
+    const distinctCardTypes = new Set(
+      treeNodes("Parcel").map((el) => el.textContent)
+    );
+    expect(distinctCardTypes.size).toBe(1);
+  });
+
   it("filters components to a selected action chip", () => {
     const active = new Map([
       [

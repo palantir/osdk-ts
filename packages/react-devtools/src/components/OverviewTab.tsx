@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { AnchorButton, NonIdealState } from "@blueprintjs/core";
-import React from "react";
+import { AnchorButton, Classes, Icon, NonIdealState } from "@blueprintjs/core";
+import classNames from "classnames";
+import React, { useMemo } from "react";
 
+import { useClientMetrics } from "../hooks/useClientMetrics.js";
+import { useComponentOntology } from "../hooks/useComponentOntology.js";
+import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
+import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
+import { formatMetric } from "../metrics/clientMetrics.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
-import { formatNumber, formatTime } from "../utils/format.js";
+import type { DevtoolsTabId } from "./components/devtoolsTabId.js";
 import { Metric } from "./Metric.js";
 import { MetricLegend } from "./MetricLegend.js";
 import type { MetricLegendEntry } from "./MetricLegend.js";
@@ -33,24 +39,13 @@ import styles from "./OverviewTab.module.scss";
  */
 const OSDK_DOCS_URL = "https://palantir.github.io/osdk-ts/";
 
-// TODO: Fetch the real data later
-const usage = {
-  objectTypeCount: 8,
-  actionTypeCount: 3,
-  linkCount: 5,
-};
-
-const performance = {
-  cacheHitRate: 0.82,
-  networkRequests: 1240,
-  averageResponseTime: 45,
-  duplicateRequests: 0,
-};
-
-const debugging = {
-  overfetchingCount: undefined,
-  errorWarningCount: 1,
-};
+export interface OverviewTabProps {
+  monitorStore: MonitorStore;
+  /**
+   * Switches the panel's active tab.
+   */
+  onNavigateToTab: (tab: DevtoolsTabId) => void;
+}
 
 /**
  * Color key shared by the count metrics where any occurrence is a problem — a
@@ -61,21 +56,17 @@ const POSITIVE_IS_PROBLEM_LEGEND: readonly MetricLegendEntry[] = [
   { swatch: "none", label: "0 / no data" },
 ];
 
-export interface OverviewTabProps {
-  monitorStore: MonitorStore;
-}
-
 /**
- * The Overview tab — an at-a-glance summary of the monitored client's ontology
- * usage and health metrics. Shows the "no ontology" empty state when the
- * registry is empty; otherwise renders the ontology counts, the performance
- * metrics grid, and the recommendations.
+ * The Overview tab — an at-a-glance summary of the monitored client's value,
+ * health, and ontology usage.
  */
 export function OverviewTab({
   monitorStore,
+  onNavigateToTab,
 }: OverviewTabProps): React.JSX.Element {
+  const metrics = useOverviewMetrics(monitorStore);
   const isOntologyEmpty =
-    usage.objectTypeCount + usage.actionTypeCount + usage.linkCount === 0;
+    metrics.objectTypeCount + metrics.actionTypeCount + metrics.linkCount === 0;
 
   return (
     <div className={styles.overviewTab}>
@@ -83,8 +74,8 @@ export function OverviewTab({
         {isOntologyEmpty ? (
           <NonIdealState
             icon="cube"
-            title="No ontology usage detected"
-            description="We didn't detect any ontology used inside the components of this app."
+            title="No Ontology usage detected"
+            description="None of this app's components use the Ontology yet. Add an @osdk/react hook to a component to read objects or call actions."
             action={
               <AnchorButton
                 href={OSDK_DOCS_URL}
@@ -92,7 +83,6 @@ export function OverviewTab({
                 rel="noreferrer"
                 intent="primary"
                 endIcon="share"
-                variant="outlined"
               >
                 View documentation
               </AnchorButton>
@@ -100,14 +90,24 @@ export function OverviewTab({
           />
         ) : (
           <Metrics columns={3}>
-            <Metric title="Object types" value={usage.objectTypeCount} />
-            <Metric title="Action types" value={usage.actionTypeCount} />
-            <Metric title="Links" value={usage.linkCount} />
+            <Metric title="Object types" value={metrics.objectTypeCount} />
+            <Metric title="Action types" value={metrics.actionTypeCount} />
+            <Metric title="Links" value={metrics.linkCount} />
           </Metrics>
         )}
       </OverviewSection>
       <OverviewSection title="Metrics">
         <Metrics columns={2}>
+          <Metric
+            title="Requests saved"
+            help="Requests served from cache, revalidations, and deduplicated fetches that never hit the network."
+            value={formatMetric(metrics.requestsSaved)}
+          />
+          <Metric
+            title="Optimistic coverage"
+            help="Share of actions that update the UI right away, before the server confirms."
+            value={formatMetric(metrics.optimisticCoverage)}
+          />
           <Metric
             title="Cache hit rate"
             help={
@@ -123,58 +123,53 @@ export function OverviewTab({
                 />
               </>
             }
-            value={
-              performance.cacheHitRate == null
-                ? null
-                : `${Math.round(performance.cacheHitRate * 100)}%`
-            }
+            value={formatMetric(metrics.cacheHitRate)}
             intent={
-              performance.cacheHitRate == null
+              metrics.cacheHitRate.value == null
                 ? "none"
-                : performance.cacheHitRate > 0.7
+                : metrics.cacheHitRate.value > 0.7
                   ? "success"
-                  : performance.cacheHitRate > 0.4
+                  : metrics.cacheHitRate.value > 0.4
                     ? "warning"
                     : "danger"
             }
-          />
-          <Metric
-            title="Network requests"
-            help="Requests that went to the network — cache misses plus revalidations."
-            value={
-              performance.networkRequests == null
-                ? null
-                : formatNumber(performance.networkRequests)
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("cache")}
+              >
+                View in Cache
+                <Icon icon="arrow-right" size={14} />
+              </button>
             }
           />
+
           <Metric
             title="Avg response time"
             help="Average response time across requests. Cache reads are typically under 1ms; network reads dominate."
-            value={
-              performance.averageResponseTime == null
-                ? null
-                : formatTime(performance.averageResponseTime)
-            }
+            value={formatMetric(metrics.avgResponseMs)}
           />
           <Metric
-            title="Duplicate requests"
+            title="Errors & warnings"
             help={
               <>
-                Requests for data an in-flight request already covered,
-                collapsed onto a single fetch by deduplication.
+                Uncaught errors and console warnings captured from @osdk/react
+                hooks and your render tree this session.
                 <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
-            value={
-              performance.duplicateRequests == null
-                ? null
-                : formatNumber(performance.duplicateRequests)
-            }
-            intent={
-              performance.duplicateRequests != null &&
-              performance.duplicateRequests > 0
-                ? "danger"
-                : "none"
+            value={metrics.errorWarningCount}
+            intent={metrics.errorWarningCount > 0 ? "danger" : "none"}
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("console")}
+              >
+                View in Console
+                <Icon icon="arrow-right" size={14} />
+              </button>
             }
           />
           <Metric
@@ -186,37 +181,21 @@ export function OverviewTab({
                 <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
               </>
             }
-            value={
-              debugging.overfetchingCount == null
-                ? null
-                : formatNumber(debugging.overfetchingCount)
-            }
+            value={metrics.overfetchingCount}
             intent={
-              debugging.overfetchingCount != null &&
-              debugging.overfetchingCount > 0
+              metrics.overfetchingCount != null && metrics.overfetchingCount > 0
                 ? "danger"
                 : "none"
             }
-          />
-          <Metric
-            title="Errors & warnings"
-            help={
-              <>
-                Uncaught errors and console warnings captured from @osdk/react
-                hooks and your render tree this session.
-                <MetricLegend entries={POSITIVE_IS_PROBLEM_LEGEND} />
-              </>
-            }
-            value={
-              debugging.errorWarningCount != null
-                ? formatNumber(debugging.errorWarningCount)
-                : null
-            }
-            intent={
-              debugging.errorWarningCount != null &&
-              debugging.errorWarningCount > 0
-                ? "danger"
-                : "none"
+            footer={
+              <button
+                type="button"
+                className={classNames(styles.metricLink, Classes.TEXT_MUTED)}
+                onClick={() => onNavigateToTab("components")}
+              >
+                View in Components
+                <Icon icon="arrow-right" size={14} />
+              </button>
             }
           />
         </Metrics>
@@ -226,4 +205,29 @@ export function OverviewTab({
       </OverviewSection>
     </div>
   );
+}
+
+function useOverviewMetrics(monitorStore: MonitorStore) {
+  const clientMetrics = useClientMetrics(monitorStore);
+  const { report } = useUnusedFieldAnalysis(monitorStore);
+  const logs = useConsoleLogs(monitorStore);
+  const errorWarningCount = useMemo(
+    () =>
+      logs.entries.filter((l) => l.level === "error" || l.level === "warn")
+        .length,
+    [logs.entries]
+  );
+  const { facets } = useComponentOntology(monitorStore);
+
+  return {
+    cacheHitRate: clientMetrics.cacheHitRate,
+    requestsSaved: clientMetrics.requestsSaved,
+    optimisticCoverage: clientMetrics.optimisticCoverage,
+    avgResponseMs: clientMetrics.avgResponseMs,
+    objectTypeCount: facets.objectTypes.length,
+    actionTypeCount: facets.actions.length,
+    linkCount: facets.links.length,
+    overfetchingCount: report != null ? report.inefficientComponents : null,
+    errorWarningCount,
+  };
 }
