@@ -198,8 +198,8 @@ function getCallerLocation(): string | undefined {
 function isReactDevtoolsFrame(source: string): boolean {
   return (
     source.startsWith("installHook.js") ||
-    source.startsWith("react_devtools") ||
-    source.startsWith("react-devtools")
+    source.includes("react_devtools") ||
+    source.includes("react-devtools")
   );
 }
 
@@ -338,7 +338,6 @@ export class ConsoleLogStore extends SubscribableStore {
       const original = this.originals.get(level);
       const ourWrapper = this.wrappers.get(level);
       if (original && ourWrapper && console[level] === ourWrapper) {
-        // eslint-disable-line no-console
         console[level] = original; // eslint-disable-line no-console
       }
     }
