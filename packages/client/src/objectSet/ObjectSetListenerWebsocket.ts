@@ -36,6 +36,7 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import type { SubscriptionConnection } from "../SubscriptionConnection.js";
 import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
@@ -124,9 +125,22 @@ export class ObjectSetListenerWebsocket {
     return instance;
   }
 
-  #ws: WebSocket | undefined;
+  #ws: SubscriptionConnection | undefined;
   #lastWsConnect = 0;
   #client: MinimalClient;
+
+  /**
+   * Default connection factory: constructs a real `WebSocket`, resolving the URL and bearer
+   * token from the client. Used when the client provides no `createSubscriptionConnection`.
+   */
+  #defaultConnectionFactory = async (): Promise<SubscriptionConnection> => {
+    const url = constructWebsocketUrl(
+      this.#client.baseUrl,
+      await this.#client.ontologyRid
+    );
+    const token = await this.#client.tokenProvider();
+    return new WebSocket(url, [`Bearer-${token}`]);
+  };
   #backoff: ExponentialBackoff;
   #isFirstConnection = true;
 
@@ -402,16 +416,13 @@ export class ObjectSetListenerWebsocket {
 
   async #ensureWebsocket() {
     if (this.#ws == null) {
-      const { baseUrl, tokenProvider } = this.#client;
-      const url = constructWebsocketUrl(
-        baseUrl,
-        await this.#client.ontologyRid
-      );
+      const factory =
+        this.#client.createSubscriptionConnection ??
+        this.#defaultConnectionFactory;
 
-      const token = await tokenProvider();
-
-      // tokenProvider is async, there could potentially be a race to create the websocket.
-      // Only the first call to reach here will find a null this.#ws, the rest will bail out
+      // The connection factory (token fetch, url construction) is async, so there could be a
+      // race to create the websocket. Only the first call to reach the construction below will
+      // find a null this.#ws; the rest bail out.
       if (this.#ws == null) {
         // Only apply exponential backoff delay on reconnection attempts, not the first connection
         if (!this.#isFirstConnection) {
@@ -434,10 +445,16 @@ export class ObjectSetListenerWebsocket {
           if (process.env.NODE_ENV !== "production") {
             this.#logger?.debug("Creating websocket");
           }
-          this.#ws = new WebSocket(url, [`Bearer-${token}`]);
-          this.#ws.addEventListener("close", this.#onClose);
-          this.#ws.addEventListener("message", this.#onMessage);
-          this.#ws.addEventListener("open", this.#onOpen);
+          const connection = await factory();
+          // awaiting the factory (token/url) is another chance to lose the race
+          if (this.#ws == null) {
+            this.#ws = connection;
+            this.#ws.addEventListener("close", this.#onClose);
+            this.#ws.addEventListener("message", this.#onMessage);
+            this.#ws.addEventListener("open", this.#onOpen);
+          } else {
+            connection.close();
+          }
         }
       }
       // Allow await-ing the websocket open event if it isn't open already.
