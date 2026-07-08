@@ -174,14 +174,16 @@ describe("OverviewTab value tiles", () => {
     expect(screen.queryByText("0%")).toBeNull();
   });
 
-  it("shows the ontology as object and action tiles only, with N/A metrics and preserved sections when empty", () => {
+  it("shows a no-ontology-usage empty state with N/A metrics and preserved sections when empty", () => {
     const snapshot = makeSnapshot({});
     const metrics = getClientMetrics(snapshot);
     render(<OverviewTab monitorStore={makeStore(snapshot)} />);
 
-    // Ontology tiles for object and action types.
-    expect(screen.getByText("Object types")).not.toBeNull();
-    expect(screen.getByText("Action types")).not.toBeNull();
+    // With no ontology usage, the Ontology section shows the empty state, not tiles.
+    expect(screen.getByText("No ontology usage detected")).not.toBeNull();
+    expect(screen.getByText("View documentation")).not.toBeNull();
+    expect(screen.queryByText("Object types")).toBeNull();
+    expect(screen.queryByText("Action types")).toBeNull();
 
     // Starved client metrics read "N/A" while the sections stay in place.
     expect(formatMetric(metrics.cacheHitRate)).toBe("N/A");
