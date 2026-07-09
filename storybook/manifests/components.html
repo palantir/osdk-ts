@@ -11453,7 +11453,7 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
       | ^
   143 |   title: &quot;Components/AipAgentChat&quot;,
   144 |   component: InteractiveChat,
-  145 |   render: (args) =&gt; (
+  145 |   render: (args) =&gt; &lt;InteractiveChat {...args} /&gt;,
 
 ./src/stories/AipAgentChat/AipAgentChat.stories.tsx:
 /*
@@ -11600,11 +11600,7 @@ function InteractiveChat(
 const meta: Meta&lt;typeof InteractiveChat&gt; = {
   title: &quot;Components/AipAgentChat&quot;,
   component: InteractiveChat,
-  render: (args) =&gt; (
-    &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-      &lt;InteractiveChat {...args} /&gt;
-    &lt;/div&gt;
-  ),
+  render: (args) =&gt; &lt;InteractiveChat {...args} /&gt;,
   parameters: {
     controls: { expanded: true },
   },
@@ -11669,9 +11665,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Empty chat with the default welcome state. Type a message to start a simulated conversation.</div>
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const Default = () =&gt; &lt;InteractiveChat /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11680,9 +11674,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Chat pre-populated with an existing conversation.</div>
-              <pre><code>const WithConversation = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat initialMessages={SAMPLE_CONVERSATION} /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithConversation = () =&gt; &lt;InteractiveChat initialMessages={SAMPLE_CONVERSATION} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11691,9 +11683,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Chat displaying an error banner with a dismiss button.</div>
-              <pre><code>const WithError = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat simulateError initialMessages={SAMPLE_CONVERSATION.slice(0, 2)} /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithError = () =&gt; &lt;InteractiveChat simulateError initialMessages={SAMPLE_CONVERSATION.slice(0, 2)} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11702,9 +11692,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Custom placeholder text in the composer.</div>
-              <pre><code>const CustomPlaceholder = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat placeholder=&quot;Ask me anything about your data...&quot; /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const CustomPlaceholder = () =&gt; &lt;InteractiveChat placeholder=&quot;Ask me anything about your data...&quot; /&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -31053,7 +31041,7 @@ export const Default: StoryObj&lt;ImageViewerMediaProps&gt; = {
       | ^
   143 |   title: &quot;Components/AipAgentChat&quot;,
   144 |   component: InteractiveChat,
-  145 |   render: (args) =&gt; (
+  145 |   render: (args) =&gt; &lt;InteractiveChat {...args} /&gt;,
 
 ./src/stories/AipAgentChat/AipAgentChat.stories.tsx:
 /*
@@ -31200,11 +31188,7 @@ function InteractiveChat(
 const meta: Meta&lt;typeof InteractiveChat&gt; = {
   title: &quot;Components/AipAgentChat&quot;,
   component: InteractiveChat,
-  render: (args) =&gt; (
-    &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-      &lt;InteractiveChat {...args} /&gt;
-    &lt;/div&gt;
-  ),
+  render: (args) =&gt; &lt;InteractiveChat {...args} /&gt;,
   parameters: {
     controls: { expanded: true },
   },
@@ -31269,9 +31253,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Empty chat with the default welcome state. Type a message to start a simulated conversation.</div>
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const Default = () =&gt; &lt;InteractiveChat /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -31280,9 +31262,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Chat pre-populated with an existing conversation.</div>
-              <pre><code>const WithConversation = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat initialMessages={SAMPLE_CONVERSATION} /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithConversation = () =&gt; &lt;InteractiveChat initialMessages={SAMPLE_CONVERSATION} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -31291,9 +31271,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Chat displaying an error banner with a dismiss button.</div>
-              <pre><code>const WithError = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat simulateError initialMessages={SAMPLE_CONVERSATION.slice(0, 2)} /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const WithError = () =&gt; &lt;InteractiveChat simulateError initialMessages={SAMPLE_CONVERSATION.slice(0, 2)} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -31302,9 +31280,7 @@ export const CustomPlaceholder: Story = {
               </div>
               
               <div class="hint">Custom placeholder text in the composer.</div>
-              <pre><code>const CustomPlaceholder = () =&gt; &lt;div style={{ height: &quot;600px&quot;, maxWidth: &quot;700px&quot; }}&gt;
-    &lt;InteractiveChat placeholder=&quot;Ask me anything about your data...&quot; /&gt;
-&lt;/div&gt;;</code></pre>
+              <pre><code>const CustomPlaceholder = () =&gt; &lt;InteractiveChat placeholder=&quot;Ask me anything about your data...&quot; /&gt;;</code></pre>
             </div>
         </div>
   </div>
