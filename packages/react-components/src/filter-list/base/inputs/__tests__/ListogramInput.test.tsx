@@ -121,9 +121,9 @@ describe("ListogramInput ordering", () => {
     expect(screen.getByRole("button", { name: "View all (4)" })).not.toBeNull();
   });
 
-  it("keeps a below-fold value visible at the tail after it is unchecked in the collapsed view", () => {
+  it("drops a below-fold value from the collapsed view once it is unchecked", () => {
     // maxVisibleItems=2 -> collapsed body shows Engineering, Sales; Support is
-    // below the fold but selected, so it is pinned at the tail.
+    // below the fold but selected, so it is appended at the tail.
     render(
       <ControlledListogram
         values={mockValues}
@@ -138,56 +138,11 @@ describe("ListogramInput ordering", () => {
     expect(supportRow?.getAttribute("aria-pressed")).toBe("true");
     expect(getRenderedOrder()).toEqual(["Engineering", "Sales", "Support"]);
 
-    // Unchecking a tail-pinned row must NOT remove it. It stays visible (now
-    // unchecked) so it can be re-checked in place; only "View all" changes the
-    // collapsed row set.
     fireEvent.click(supportRow!);
 
-    const supportRowAfter = queryRow("Support");
-    expect(supportRowAfter).not.toBeNull();
-    expect(supportRowAfter?.getAttribute("aria-pressed")).toBe("false");
-    expect(getRenderedOrder()).toEqual(["Engineering", "Sales", "Support"]);
+    expect(queryRow("Support")).toBeNull();
+    expect(getRenderedOrder()).toEqual(["Engineering", "Sales"]);
     expect(screen.getByRole("button", { name: "View all (4)" })).not.toBeNull();
-  });
-
-  it("does not pin a head-row value that is unchecked and later falls below the fold", () => {
-    const { rerender } = render(
-      <ControlledListogram
-        values={mockValues}
-        maxCount={42}
-        maxVisibleItems={2}
-        initialSelected={["Engineering"]}
-      />
-    );
-
-    // Engineering is in the head (index 0). Unchecking a head row must not mark
-    // it as a surfaced tail pin — head rows never vanish, so there is nothing to
-    // preserve.
-    const engineeringRow = queryRow("Engineering");
-    expect(engineeringRow).not.toBeNull();
-    fireEvent.click(engineeringRow!);
-
-    // Counts shift (as they do when other filters change) so Engineering now
-    // sorts below the collapsed fold.
-    const reordered: PropertyAggregationValue[] = [
-      { value: "Sales", count: 18 },
-      { value: "Marketing", count: 12 },
-      { value: "Engineering", count: 3 },
-      { value: "Support", count: 6 },
-    ];
-    rerender(
-      <ControlledListogram
-        values={reordered}
-        maxCount={42}
-        maxVisibleItems={2}
-        initialSelected={["Engineering"]}
-      />
-    );
-
-    // It was never a below-fold interaction, so it must not reappear pinned at
-    // the tail.
-    expect(getRenderedOrder()).toEqual(["Sales", "Marketing"]);
-    expect(queryRow("Engineering")).toBeNull();
   });
 
   it("shows the View all button in the collapsed view and expands to all values", () => {
@@ -230,52 +185,5 @@ describe("ListogramInput ordering", () => {
       "Support",
     ]);
     expect(screen.queryByRole("button", { name: /View all/u })).toBeNull();
-  });
-});
-
-// A pinned below-fold row is plain instance state, so it stays pinned for the
-// life of this component instance — even if the underlying data is later
-// replaced in place. This test documents the in-instance persistence
-describe("ListogramInput tail-pin scoping", () => {
-  it("keeps a pinned below-fold value visible when the same instance receives new data", () => {
-    const datasetA: PropertyAggregationValue[] = [
-      { value: "North", count: 10 },
-      { value: "South", count: 9 },
-      { value: "Sales", count: 8 }, // below the fold at index 2
-      { value: "East", count: 7 },
-    ];
-    const { rerender } = render(
-      <ControlledListogram
-        values={datasetA}
-        maxCount={10}
-        maxVisibleItems={2}
-        initialSelected={["Sales"]}
-      />
-    );
-
-    // Uncheck the below-fold Sales row -> pinned for this instance.
-    fireEvent.click(screen.getByRole("button", { name: /^Sales\s+\d+/u }));
-    expect(
-      screen.queryByRole("button", { name: /^Sales\s+\d+/u })
-    ).not.toBeNull();
-
-    // New data is fed to the SAME (non-remounted) instance. Sales happens to
-    // reuse the same label below the fold; there is no seeded selection.
-    const datasetB: PropertyAggregationValue[] = [
-      { value: "Red", count: 5 },
-      { value: "Green", count: 4 },
-      { value: "Sales", count: 3 }, // same label, below the fold
-      { value: "Blue", count: 2 },
-    ];
-    rerender(
-      <ControlledListogram values={datasetB} maxCount={5} maxVisibleItems={2} />
-    );
-
-    // The pin persists for the instance's lifetime, so Sales stays visible at
-    // the tail next to the head rows; Blue (below fold, not pinned) does not.
-    expect(queryRow("Red")).not.toBeNull();
-    expect(queryRow("Green")).not.toBeNull();
-    expect(queryRow("Sales")).not.toBeNull();
-    expect(queryRow("Blue")).toBeNull();
   });
 });

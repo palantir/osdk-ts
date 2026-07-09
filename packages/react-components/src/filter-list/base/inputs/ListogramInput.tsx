@@ -70,16 +70,20 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Below-fold values the user has unchecked in the collapsed view. They stay
-  // pinned at the tail so the row never vanishes under the cursor on toggle and
-  // can be re-checked in place.
-  const [pinnedBelowFold, setPinnedBelowFold] = useState<ReadonlySet<string>>(
-    () => new Set()
-  );
-
   const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
+
+  const toggleValue = useCallback(
+    (value: string) => {
+      if (selectedSet.has(value)) {
+        onChange(selectedValues.filter((v) => v !== value));
+      } else {
+        onChange([...selectedValues, value]);
+      }
+    },
+    [selectedValues, selectedSet, onChange]
+  );
 
   const filteredValues = useMemo(() => {
     if (searchQuery) {
@@ -91,63 +95,20 @@ function ListogramInputInner({
     return stableValues;
   }, [stableValues, searchQuery, renderValue]);
 
-  const toggleValue = useCallback(
-    (value: string) => {
-      if (selectedSet.has(value)) {
-        // Unchecking. Only remember the value if it sits below the collapsed
-        // fold right now, so it keeps its tail slot instead of vanishing under
-        // the cursor. Head rows never vanish on toggle, so surfacing them would
-        // only create stale tail pins if their count later drops them below the
-        // fold.
-        const isBelowFold =
-          !isExpanded &&
-          maxVisibleItems != null &&
-          filteredValues.findIndex((v) => v.value === value) >= maxVisibleItems;
-        if (isBelowFold) {
-          setPinnedBelowFold((prev) => {
-            if (prev.has(value)) return prev;
-            const next = new Set(prev);
-            next.add(value);
-            return next;
-          });
-        }
-        onChange(selectedValues.filter((v) => v !== value));
-      } else {
-        onChange([...selectedValues, value]);
-      }
-    },
-    [
-      selectedValues,
-      selectedSet,
-      onChange,
-      isExpanded,
-      maxVisibleItems,
-      filteredValues,
-    ]
-  );
-
   // Render in natural count/value order regardless of selection — toggling a
   // checkbox must never reorder rows. In the collapsed view we still keep
-  // below-fold values visible by appending them at the tail (matching Foundry
-  // Workshop's listogram), without hoisting them or displacing the head. A
-  // below-fold value earns a tail slot while it is selected or once it has been
-  // pinned (see toggleValue).
+  // below-fold selected values visible by appending them at the tail (matching
+  // Foundry Workshop's listogram), without hoisting them or displacing the
+  // head. Unchecking a below-fold row drops it from the tail; "View all"
+  // reveals it again.
   const displayValues = useMemo(() => {
     if (isExpanded || maxVisibleItems == null) return filteredValues;
     const head = filteredValues.slice(0, maxVisibleItems);
-    const belowFoldVisible = filteredValues
+    const belowFoldSelected = filteredValues
       .slice(maxVisibleItems)
-      .filter(
-        ({ value }) => selectedSet.has(value) || pinnedBelowFold.has(value)
-      );
-    return [...head, ...belowFoldVisible];
-  }, [
-    filteredValues,
-    maxVisibleItems,
-    isExpanded,
-    selectedSet,
-    pinnedBelowFold,
-  ]);
+      .filter(({ value }) => selectedSet.has(value));
+    return [...head, ...belowFoldSelected];
+  }, [filteredValues, maxVisibleItems, isExpanded, selectedSet]);
 
   const hasMore =
     maxVisibleItems != null && filteredValues.length > maxVisibleItems;
