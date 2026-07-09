@@ -456,17 +456,17 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       )
       .replace(
         // Use the local package in the monorepo
-        `"@osdk/react-components": "latest"`,
+        /"@osdk\/react-components": "\^.*?"/,
         `"@osdk/react-components": "workspace:*"`,
       )
       .replace(
         // Use the local package in the monorepo
-        `"@osdk/react-devtools": "latest"`,
+        /"@osdk\/react-devtools": "\^.*?"/,
         `"@osdk/react-devtools": "workspace:*"`,
       )
       .replace(
         // Use the local package in the monorepo
-        `"@osdk/aip-core": "latest"`,
+        /"@osdk\/aip-core": "\^.*?"/,
         `"@osdk/aip-core": "workspace:*"`,
       )
       .replace(
