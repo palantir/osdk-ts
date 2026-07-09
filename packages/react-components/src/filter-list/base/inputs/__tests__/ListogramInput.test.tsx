@@ -30,43 +30,6 @@ const mockValues: PropertyAggregationValue[] = [
   { value: "Support", count: 6 },
 ];
 
-// Rows are the only buttons carrying aria-pressed; the "View all" button has none.
-function getRenderedOrder(): string[] {
-  const rows = document.querySelectorAll<HTMLElement>("button[aria-pressed]");
-  return Array.from(rows).map((row) => {
-    const match = mockValues.find((v) => row.textContent?.includes(v.value));
-    return match?.value ?? row.textContent ?? "";
-  });
-}
-
-function queryRow(value: string): HTMLElement | null {
-  return screen.queryByRole("button", {
-    name: new RegExp(`^${value}\\s+\\d+`, "u"),
-  });
-}
-
-/** Controlled wrapper so a click actually updates selection and re-renders. */
-function ControlledListogram({
-  initialSelected = [],
-  ...rest
-}: {
-  initialSelected?: string[];
-  values: PropertyAggregationValue[];
-  maxCount: number;
-  maxVisibleItems?: number;
-}): React.ReactElement {
-  const [selected, setSelected] = useState<string[]>(initialSelected);
-  return (
-    <ListogramInput
-      isLoading={false}
-      error={null}
-      selectedValues={selected}
-      onChange={setSelected}
-      {...rest}
-    />
-  );
-}
-
 describe("ListogramInput ordering", () => {
   it("keeps row order unchanged when a checkbox is toggled", () => {
     render(<ControlledListogram values={mockValues} maxCount={42} />);
@@ -187,3 +150,40 @@ describe("ListogramInput ordering", () => {
     expect(screen.queryByRole("button", { name: /View all/u })).toBeNull();
   });
 });
+
+// Rows are the only buttons carrying aria-pressed; the "View all" button has none.
+function getRenderedOrder(): string[] {
+  const rows = document.querySelectorAll<HTMLElement>("button[aria-pressed]");
+  return Array.from(rows).map((row) => {
+    const match = mockValues.find((v) => row.textContent?.includes(v.value));
+    return match?.value ?? row.textContent ?? "";
+  });
+}
+
+function queryRow(value: string): HTMLElement | null {
+  return screen.queryByRole("button", {
+    name: new RegExp(`^${value}\\s+\\d+`, "u"),
+  });
+}
+
+/** Controlled wrapper so a click actually updates selection and re-renders. */
+function ControlledListogram({
+  initialSelected = [],
+  ...rest
+}: {
+  initialSelected?: string[];
+  values: PropertyAggregationValue[];
+  maxCount: number;
+  maxVisibleItems?: number;
+}): React.ReactElement {
+  const [selected, setSelected] = useState<string[]>(initialSelected);
+  return (
+    <ListogramInput
+      isLoading={false}
+      error={null}
+      selectedValues={selected}
+      onChange={setSelected}
+      {...rest}
+    />
+  );
+}
