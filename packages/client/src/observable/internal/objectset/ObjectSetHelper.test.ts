@@ -21,6 +21,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import { hydrateObjectSetFromObjectRids } from "../../../public-utils/hydrateObjectSetFromObjectRids.js";
 import { Store } from "../Store.js";
 
 describe("ObjectSetHelper RDP canonicalization", () => {
@@ -117,6 +118,37 @@ describe("ObjectSetHelper RDP canonicalization", () => {
   // cache key for Interface Object Sets. For Base Object Sets it is a no-op and
   // must be dropped, so it never fragments the cache.
   describe("$includeAllBaseObjectProperties cache-key gating", () => {
+    // Kept => the flag participates in the cache key, so with vs without differ.
+    // Dropped => it does not, so the canonical operations are identical.
+    const expectFlagKept = (baseObjectSet: ObjectSet<any>) => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet,
+        mode: "offline",
+      });
+      expect(withFlag.cacheKey.otherKeys).not.toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    };
+    const expectFlagDropped = (baseObjectSet: ObjectSet<any>) => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet,
+        mode: "offline",
+      });
+      expect(withFlag.cacheKey.otherKeys).toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    };
+
     it("produces a distinct cache key for an Interface Object Set when the flag is set", () => {
       const withFlag = store.objectSets.getQuery({
         baseObjectSet: client(FooInterface) as ObjectSet<any>,
@@ -193,6 +225,71 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
       expect(withFlag.cacheKey.otherKeys).toEqual(
         withoutFlag.cacheKey.otherKeys
+      );
+    });
+
+    // asType: the narrow-to kind is recorded synchronously by narrowToType(),
+    // so the gate resolves it precisely.
+    it("keeps the flag when a base object set is narrowed to an interface", () => {
+      expectFlagKept(
+        client(Employee).narrowToType(FooInterface) as ObjectSet<any>
+      );
+    });
+
+    it("drops the flag when an interface is narrowed to a concrete object type", () => {
+      expectFlagDropped(
+        client(FooInterface).narrowToType(Employee) as ObjectSet<any>
+      );
+    });
+
+    // Link traversal: an interface link resolves to an interface (can't be
+    // resolved synchronously, so the gate keeps the flag), an object link to an
+    // object.
+    it("keeps the flag for an interface-link search-around", () => {
+      expectFlagKept(client(FooInterface).pivotTo("toBar") as ObjectSet<any>);
+    });
+
+    it("drops the flag for an object-link search-around", () => {
+      expectFlagDropped(client(Employee).pivotTo("lead") as ObjectSet<any>);
+    });
+
+    // Set operations: the flag is kept when any operand may resolve to an
+    // interface, dropped when they're all objects.
+    it("keeps the flag for a union of interface object sets", () => {
+      expectFlagKept(
+        client(FooInterface).union(client(FooInterface)) as ObjectSet<any>
+      );
+    });
+
+    it("drops the flag for a union of base object sets", () => {
+      expectFlagDropped(
+        client(Employee).union(client(Employee)) as ObjectSet<any>
+      );
+    });
+
+    it("keeps the flag for a subtract of interface object sets", () => {
+      expectFlagKept(
+        client(FooInterface).subtract(client(FooInterface)) as ObjectSet<any>
+      );
+    });
+
+    // hydrateObjectSetFromObjectRids builds intersect([interfaceBase | base,
+    // static]). This exercises the full-operand scan together with the static
+    // operand resolving to "not an interface": the interface operand must still
+    // be found, and a static-only object set must not keep the flag.
+    it("keeps the flag for a hydrated interface set (intersect with a static operand)", () => {
+      expectFlagKept(
+        hydrateObjectSetFromObjectRids(client, FooInterface, [
+          "ri.a",
+        ]) as ObjectSet<any>
+      );
+    });
+
+    it("drops the flag for a hydrated base set (intersect with a static operand)", () => {
+      expectFlagDropped(
+        hydrateObjectSetFromObjectRids(client, Employee, [
+          "ri.a",
+        ]) as ObjectSet<any>
       );
     });
   });
