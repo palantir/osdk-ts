@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import { escapeJsDocText } from "../util/escapeJsDocText.js";
-
-export function getDescriptionIfPresent(
-  description?: string,
-  includeNewline?: boolean,
-): string {
-  if (description) {
-    // Preserve line breaks in multi-line descriptions
-    const lines = escapeJsDocText(description).split("\n");
-    const formattedLines = lines.map(line => ` * ${line}`).join("\n");
-    return `/**
-${formattedLines}
- */${includeNewline ? "\n" : ""}`;
-  }
-  return "";
+/**
+ * Escapes text so it can be embedded in a JSDoc block comment without
+ * prematurely closing it.
+ */
+export function escapeJsDocText(text: string): string {
+  return text.replace(/\*\//gu, "*\\/");
 }

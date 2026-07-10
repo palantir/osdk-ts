@@ -26,6 +26,7 @@ import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
@@ -149,7 +150,7 @@ export async function generatePerActionDataFiles(
         const oldParamsIdentifier = `${action.shortApiName}$Params`;
         const jsDocBlock = ["/**"];
         if (action.description != null) {
-          jsDocBlock.push(`* ${action.description}`);
+          jsDocBlock.push(`* ${escapeJsDocText(action.description)}`);
 
           // Add note about null values to the action description if there are nullable parameters
           const hasNullableParams = Object.values(
@@ -174,7 +175,7 @@ export async function generatePerActionDataFiles(
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
-        
+
           export namespace ${action.shortApiName}{
             ${createParamsDef()}
 
@@ -193,7 +194,7 @@ export async function generatePerActionDataFiles(
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
                   ogValue.nullable ? `[${ogKey}]` : ogKey
-                } ${ogValue.description ?? ""}`,
+                } ${escapeJsDocText(ogValue.description ?? "")}`,
               );
               return [key, value];
             },
@@ -205,13 +206,13 @@ export async function generatePerActionDataFiles(
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
               applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
-           
+
               batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
-  
+
           }
 
-          
+
           ${jsDocBlock.join("\n")}
           */
           export interface ${action.shortApiName} extends ActionDefinition<${action.shortApiName}.Signatures> {
@@ -221,7 +222,7 @@ export async function generatePerActionDataFiles(
             "parameters": () => action.definitionParamsIdentifier,
           })
         }
-              
+
               signatures: ${action.shortApiName}.Signatures;
             },
             ${
@@ -240,7 +241,7 @@ export async function generatePerActionDataFiles(
       }
 
       function createV2Object() {
-        return `  export const ${action.shortApiName}: ${action.shortApiName} = 
+        return `  export const ${action.shortApiName}: ${action.shortApiName} =
         {
           ${
           stringify(fullActionDef, {
@@ -335,7 +336,7 @@ export async function generatePerActionDataFiles(
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 
-        
+
           ${createV2Types()}
 
           ${createV2Object()}
