@@ -152,5 +152,48 @@ describe("ObjectSetHelper RDP canonicalization", () => {
         withoutFlag.cacheKey.otherKeys
       );
     });
+
+    // A composed set (e.g. `.where(...)`) wraps the interface base in a `filter`
+    // wire; the gate must see through the wrapper, otherwise the flag is
+    // silently dropped for the common filtered-interface case.
+    it("produces a distinct cache key for a filtered Interface Object Set when the flag is set", () => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet: client(FooInterface).where({
+          fooSpt: { $eq: "x" },
+        }) as ObjectSet<any>,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet: client(FooInterface).where({
+          fooSpt: { $eq: "x" },
+        }) as ObjectSet<any>,
+        mode: "offline",
+      });
+
+      expect(withFlag.cacheKey.otherKeys).not.toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    });
+
+    it("ignores the flag for a filtered Base Object Set, reusing the same cache key", () => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet: client(Employee).where({
+          employeeId: { $eq: 1 },
+        }) as ObjectSet<any>,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet: client(Employee).where({
+          employeeId: { $eq: 1 },
+        }) as ObjectSet<any>,
+        mode: "offline",
+      });
+
+      expect(withFlag.cacheKey.otherKeys).toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    });
   });
 });

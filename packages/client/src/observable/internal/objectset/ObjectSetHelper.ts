@@ -183,16 +183,64 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.loadPropertySecurity = true;
     }
 
-    // The flag is interface-only on the server. Gate on the base wire type:
-    // an Interface Object Set keeps it (so it enters the cache key), a Base
-    // Object Set drops it so it never fragments the cache over a no-op flag.
+    // The flag is interface-only on the server. Keep it only when the base set
+    // resolves to an interface (so it enters the cache key and reaches the
+    // server); for a Base Object Set it is dropped so it never fragments the
+    // cache over a no-op flag.
     if (
       options.$includeAllBaseObjectProperties &&
-      baseWire.type === "interfaceBase"
+      baseSetResolvesToInterface(baseWire)
     ) {
       operations.includeAllBaseObjectProperties = true;
     }
 
     return operations as Canonical<ObjectSetOperations>;
+  }
+}
+
+/**
+ * Whether an Object Set's result type is an interface, walking through the
+ * result-type-preserving wrappers a composed set can carry (e.g. a filtered or
+ * derived-property interface set). Set operations keep the operand result type,
+ * so the first operand is representative.
+ *
+ * Conservative: wrappers that change the result type (searchAround, asType,
+ * asBaseObjectTypes) or cannot be resolved synchronously (interfaceLinkSearchAround,
+ * reference, static) return false, so the flag is dropped rather than sent for a
+ * set whose result may not be an interface.
+ */
+function baseSetResolvesToInterface(wire: WireObjectSet): boolean {
+  switch (wire.type) {
+    case "interfaceBase":
+      return true;
+    case "filter":
+    case "withProperties":
+    case "nearestNeighbors":
+      return baseSetResolvesToInterface(wire.objectSet);
+    case "union":
+    case "intersect":
+    case "subtract":
+      return (
+        wire.objectSets.length > 0 &&
+        baseSetResolvesToInterface(wire.objectSets[0])
+      );
+    // These either change the result type away from the interface (searchAround,
+    // asType, asBaseObjectTypes) or cannot be resolved synchronously
+    // (interfaceLinkSearchAround, reference, static, methodInput); treat them as
+    // non-interface so the flag is dropped rather than sent for a set whose
+    // result may not be an interface.
+    case "base":
+    case "searchAround":
+    case "interfaceLinkSearchAround":
+    case "asType":
+    case "asBaseObjectTypes":
+    case "reference":
+    case "static":
+    case "methodInput":
+      return false;
+    default: {
+      ((_: never) => {})(wire);
+      return false;
+    }
   }
 }

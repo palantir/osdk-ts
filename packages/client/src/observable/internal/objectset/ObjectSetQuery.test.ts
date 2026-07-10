@@ -111,4 +111,38 @@ describe("observeObjectSet $includeAllBaseObjectProperties", () => {
     // concrete-only `office` property is absent.
     expect(row.$as(Employee).office).toBeUndefined();
   });
+
+  // Composed interface sets (e.g. `.where(...)`) wrap the interface base in a
+  // `filter` wire. The flag must survive the wrapper end-to-end, not just for a
+  // bare interface base.
+  it("delivers Base Object Properties for a filtered Interface Object Set when the flag is on", async () => {
+    fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Santa Claus",
+      office: "NYC",
+    });
+
+    const withFlag = mockObserver<ObjectSetPayload | undefined>();
+    defer(
+      store.objectSets.observe(
+        {
+          // `fooSpt` maps to Employee.fullName, so this matches the row above.
+          baseObjectSet: client(FooInterface).where({
+            fooSpt: { $eq: "Santa Claus" },
+          }) as ObjectSet<FooInterface>,
+          $includeAllBaseObjectProperties: true,
+        },
+        withFlag
+      )
+    );
+
+    const loaded = await waitForPayload(
+      withFlag,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) > 0
+    );
+
+    const row = loaded!.resolvedList![0] as Osdk.Instance<FooInterface>;
+    expect(row.$as(Employee).office).toBe("NYC");
+  });
 });
