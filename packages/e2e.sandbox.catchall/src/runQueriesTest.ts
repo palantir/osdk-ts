@@ -52,7 +52,7 @@ export async function runQueriesTest(): Promise<void> {
   console.log("busId fetched with interface2: ", resultFetchWithInterface2);
 
   const resultFetchWithInterfaceSet = await dsClient(
-    getBusFromSet,
+    getBusFromSet
   ).executeFunction({ busesObjectSet: busesOs });
 
   console.log("busId fetched with interfaceSet: ", resultFetchWithInterfaceSet);
@@ -64,7 +64,7 @@ export async function runQueriesTest(): Promise<void> {
   console.log("bus fetched with Id: ", resultGetInterface);
 
   const resultGetInterfaceSet = await dsClient(
-    getBusInterfaceSet,
+    getBusInterfaceSet
   ).executeFunction({ vehicleIdToFind: "3106" });
 
   console.log("bus set fetched with id", resultGetInterfaceSet);

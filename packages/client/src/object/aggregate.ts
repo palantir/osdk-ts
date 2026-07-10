@@ -44,7 +44,7 @@ export async function aggregate<
 >(
   clientCtx: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: ObjectSet,
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);

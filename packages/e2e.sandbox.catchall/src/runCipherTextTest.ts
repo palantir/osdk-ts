@@ -33,19 +33,18 @@ import { cipherTextOntologyClient } from "./client.js";
 
 export async function runCipherTextTest(): Promise<void> {
   const nonNullPk = "784691a7-2203-4088-8c0c-43b5cb25e563";
-  const result = await cipherTextOntologyClient(CipherTextTest).fetchOne(
-    nonNullPk,
-  );
+  const result =
+    await cipherTextOntologyClient(CipherTextTest).fetchOne(nonNullPk);
   const plaintextTruth = result.plaintext;
   const plaintext = await result.encrypted?.decrypt();
 
   invariant(
     plaintext === plaintextTruth,
-    "Expected plaintext == plaintextTruth",
+    "Expected plaintext == plaintextTruth"
   );
 
   const { data: nullFilterTestData } = await cipherTextOntologyClient(
-    CipherTextTest,
+    CipherTextTest
   )
     .where({
       encrypted: {
@@ -56,23 +55,22 @@ export async function runCipherTextTest(): Promise<void> {
 
   invariant(
     typeof nullFilterTestData?.[0]?.plaintext === "undefined",
-    "Expected null object to have empty plaintext",
+    "Expected null object to have empty plaintext"
   );
 
   const { data: nonNullFilterTestData } = await cipherTextOntologyClient(
-    CipherTextTest,
+    CipherTextTest
   )
     .where({
       encrypted: {
-        $eq:
-          "CIPHER::ri.bellaso.main.cipher-channel.fac3283c-c2c1-4570-b7ca-f9ec5fd9df80::oZ7g+aCWqU+CZjzhl5F3FspKSa0ijiiNuFcZ6c6IV8LOHH9VQ2Y3NcVPB7QOZNCgjHOShA==::CIPHER",
+        $eq: "CIPHER::ri.bellaso.main.cipher-channel.fac3283c-c2c1-4570-b7ca-f9ec5fd9df80::oZ7g+aCWqU+CZjzhl5F3FspKSa0ijiiNuFcZ6c6IV8LOHH9VQ2Y3NcVPB7QOZNCgjHOShA==::CIPHER",
       },
     })
     .fetchPage();
 
   invariant(
     nonNullFilterTestData?.[0]?.pk === nonNullPk,
-    "Expected non-null object to have same pk",
+    "Expected non-null object to have same pk"
   );
 
   const edits = createEditBatch<

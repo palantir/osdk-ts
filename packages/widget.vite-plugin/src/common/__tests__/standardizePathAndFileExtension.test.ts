@@ -22,37 +22,37 @@ describe("standardizePathAndFileExtension", () => {
   describe("file extension standardization", () => {
     it("should replace .ts extension with .js", () => {
       expect(standardizePathAndFileExtension("/path/to/file.ts")).toBe(
-        "/path/to/file.js",
+        "/path/to/file.js"
       );
     });
 
     it("should replace .tsx extension with .js", () => {
       expect(standardizePathAndFileExtension("/path/to/component.tsx")).toBe(
-        "/path/to/component.js",
+        "/path/to/component.js"
       );
     });
 
     it("should replace .jsx extension with .js", () => {
       expect(standardizePathAndFileExtension("/path/to/component.jsx")).toBe(
-        "/path/to/component.js",
+        "/path/to/component.js"
       );
     });
 
     it("should keep .js extension as is", () => {
       expect(standardizePathAndFileExtension("/path/to/file.js")).toBe(
-        "/path/to/file.js",
+        "/path/to/file.js"
       );
     });
 
     it("should append .js to config files", () => {
       expect(standardizePathAndFileExtension("/path/to/widget.config")).toBe(
-        "/path/to/widget.config.js",
+        "/path/to/widget.config.js"
       );
     });
 
     it("should handle files without extensions", () => {
       expect(standardizePathAndFileExtension("/path/to/file")).toBe(
-        "/path/to/file",
+        "/path/to/file"
       );
     });
   });
@@ -60,33 +60,33 @@ describe("standardizePathAndFileExtension", () => {
   describe("path normalization", () => {
     it("should normalize Windows paths with backslashes to forward slashes", () => {
       expect(
-        standardizePathAndFileExtension("C:\\Users\\project\\src\\file.ts"),
+        standardizePathAndFileExtension("C:\\Users\\project\\src\\file.ts")
       ).toBe("C:/Users/project/src/file.js");
     });
 
     it("should normalize Windows paths with mixed separators", () => {
       expect(
-        standardizePathAndFileExtension("C:\\Users/project\\src/file.tsx"),
+        standardizePathAndFileExtension("C:\\Users/project\\src/file.tsx")
       ).toBe("C:/Users/project/src/file.js");
     });
 
     it("should preserve paths that already use forward slashes", () => {
       expect(
-        standardizePathAndFileExtension("/Users/project/src/file.ts"),
+        standardizePathAndFileExtension("/Users/project/src/file.ts")
       ).toBe("/Users/project/src/file.js");
     });
 
     it("should handle Windows config file paths", () => {
       expect(
         standardizePathAndFileExtension(
-          "D:\\workspace\\widgets\\my-widget.config",
-        ),
+          "D:\\workspace\\widgets\\my-widget.config"
+        )
       ).toBe("D:/workspace/widgets/my-widget.config.js");
     });
 
     it("should handle Windows paths without file extensions", () => {
       expect(
-        standardizePathAndFileExtension("C:\\Users\\project\\README"),
+        standardizePathAndFileExtension("C:\\Users\\project\\README")
       ).toBe("C:/Users/project/README");
     });
   });
@@ -98,21 +98,19 @@ describe("standardizePathAndFileExtension", () => {
 
     it("should handle paths with multiple dots", () => {
       expect(standardizePathAndFileExtension("/path/to/file.test.ts")).toBe(
-        "/path/to/file.test.js",
+        "/path/to/file.test.js"
       );
     });
 
     it("should handle Windows paths with multiple dots", () => {
       expect(
-        standardizePathAndFileExtension("C:\\path\\to\\file.test.tsx"),
+        standardizePathAndFileExtension("C:\\path\\to\\file.test.tsx")
       ).toBe("C:/path/to/file.test.js");
     });
 
     it("should handle virtual paths with @fs prefix", () => {
       expect(
-        standardizePathAndFileExtension(
-          "/@fs/C:\\Users\\project\\src\\file.ts",
-        ),
+        standardizePathAndFileExtension("/@fs/C:\\Users\\project\\src\\file.ts")
       ).toBe("/@fs/C:/Users/project/src/file.js");
     });
 

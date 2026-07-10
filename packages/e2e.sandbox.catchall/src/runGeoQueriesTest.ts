@@ -23,7 +23,7 @@ import {
 import { client } from "./client.js";
 
 export async function runGeoQueriesTest(
-  runAction: boolean = false,
+  runAction: boolean = false
 ): Promise<void> {
   const result = await client(WeatherStation)
     .where({
@@ -89,9 +89,7 @@ export async function runGeoQueriesTest(
     .where({
       geometry10M: {
         $intersects: [
-          -75.18845865422688,
-          41.151409247298204,
-          -74.38919193981752,
+          -75.18845865422688, 41.151409247298204, -74.38919193981752,
           41.676311210175015,
         ],
       },

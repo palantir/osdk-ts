@@ -23,12 +23,12 @@ import type { PackageJson } from "./PackageJson.js";
 
 export async function visitNpmPackages(
   rootPackageJsonPath: string,
-  onVisit: (packageJsonPath: string, packageJson: PackageJson) => void,
+  onVisit: (packageJsonPath: string, packageJson: PackageJson) => void
 ): Promise<void> {
   const visited = new Set<string>();
 
-  const visitNpmPackagesInternal = async function(
-    packageJsonPath: string,
+  const visitNpmPackagesInternal = async function (
+    packageJsonPath: string
   ): Promise<void> {
     if (visited.has(packageJsonPath)) {
       return;
@@ -51,7 +51,7 @@ export async function visitNpmPackages(
 
 export function findPackageJsonPath(
   dependency: string,
-  baseDir: string,
+  baseDir: string
 ): string {
   const packagePath = resolvePackagePath(dependency, baseDir);
   if (packagePath == null) {
@@ -61,7 +61,7 @@ export function findPackageJsonPath(
 }
 
 export async function parsePackageJson(
-  packageJsonPath: string,
+  packageJsonPath: string
 ): Promise<PackageJson> {
   let packageJsonContent;
   try {
@@ -69,7 +69,7 @@ export async function parsePackageJson(
   } catch (err) {
     throw new Error(
       `Failed to read file at path. Does it exist?: "${packageJsonPath}"`,
-      { cause: err },
+      { cause: err }
     );
   }
   try {
@@ -77,7 +77,7 @@ export async function parsePackageJson(
   } catch (err) {
     throw new Error(
       `Failed to parse package.json content from file "${packageJsonPath}"`,
-      { cause: err },
+      { cause: err }
     );
   }
 }

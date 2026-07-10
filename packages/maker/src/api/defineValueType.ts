@@ -156,7 +156,7 @@ export function defineValueType(
   } = valueTypeDef;
   const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
-    /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
+    /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/u;
   invariant(semverValidation.test(version), "Version is not a valid semver");
 
   const existingVersions =

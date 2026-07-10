@@ -20,7 +20,7 @@ import getConfig from "../util/configLoader.js";
 
 let firstTime = true;
 export async function logConfigFileMiddleware(
-  type: "site" | "widgetSet",
+  type: "site" | "widgetSet"
 ): Promise<void> {
   if (firstTime) {
     firstTime = false;

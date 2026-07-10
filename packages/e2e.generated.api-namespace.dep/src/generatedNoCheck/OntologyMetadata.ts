@@ -1,4 +1,4 @@
-export type $ExpectedClientVersion = '2.41.0';
+export type $ExpectedClientVersion = '2.43.0';
 export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/dev osdk-cli/dev' };
 
 export const $ontologyRid = 'ri.ontology.main.ontology.dep';

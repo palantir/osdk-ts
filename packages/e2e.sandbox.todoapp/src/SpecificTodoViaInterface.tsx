@@ -9,7 +9,7 @@ import { TodoView } from "./TodoView.js";
 export function SpecificTodoViaInterface() {
   const { object, isLoading } = useOsdkObject(
     $Interfaces.TodoLike,
-    "12421298-4fcf-4fae-b391-724f59d08a9c",
+    "12421298-4fcf-4fae-b391-724f59d08a9c"
   );
 
   return (

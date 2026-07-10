@@ -15,6 +15,10 @@
  */
 
 export function createFetchHeaderMutator(
+  // Reordering these params to satisfy default-param-last would break this
+  // published function's signature; `mutator` is required, so the `= fetch`
+  // default is only reachable when a caller explicitly passes `undefined`.
+  // oxlint-disable-next-line default-param-last
   fetchFn: typeof fetch | undefined = fetch,
   mutator: (headers: Headers) => Promise<Headers> | Headers
 ): typeof fetch {

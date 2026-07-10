@@ -60,8 +60,8 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
       JSON.stringify(
         { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
         null,
-        2,
-      ),
+        2
+      )
     );
   });
 
@@ -79,8 +79,8 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
       JSON.stringify(
         { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
         null,
-        2,
-      ),
+        2
+      )
     );
   });
 
@@ -107,8 +107,8 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
           siteVersion: TEST_SITE_VERSION,
         },
         null,
-        2,
-      ),
+        2
+      )
     );
   });
 
@@ -126,8 +126,8 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
       JSON.stringify(
         { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
         null,
-        2,
-      ),
+        2
+      )
     );
   });
 });

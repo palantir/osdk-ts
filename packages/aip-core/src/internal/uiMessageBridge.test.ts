@@ -22,7 +22,7 @@ import { uiMessagesToModelMessages } from "./uiMessageBridge.js";
 function uiMsg(
   role: UIMessage["role"],
   text: string,
-  id: string = `m-${role}-${text.slice(0, 6)}`,
+  id: string = `m-${role}-${text.slice(0, 6)}`
 ): UIMessage {
   return {
     id,

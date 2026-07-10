@@ -34,7 +34,7 @@ export interface InjectedScripts {
  * See documentation: https://vite.dev/guide/api-plugin#transformindexhtml
  */
 export async function extractInjectedScripts(
-  server: Pick<ViteDevServer, "transformIndexHtml">,
+  server: Pick<ViteDevServer, "transformIndexHtml">
 ): Promise<InjectedScripts> {
   const result = await server.transformIndexHtml("", "");
   return parseTransformResult(result);
@@ -57,13 +57,13 @@ function parseTransformResult(result: string): InjectedScripts {
 
 type FoundScript =
   | {
-    type: "src";
-    src: string;
-  }
+      type: "src";
+      src: string;
+    }
   | {
-    type: "inline";
-    content: string;
-  };
+      type: "inline";
+      content: string;
+    };
 
 function visitNode(node: DefaultTreeAdapterTypes.Node): FoundScript[] {
   if (node.nodeName === "script") {
@@ -77,18 +77,18 @@ function visitNode(node: DefaultTreeAdapterTypes.Node): FoundScript[] {
 
 function parseScriptNode(node: DefaultTreeAdapterTypes.Element): FoundScript {
   const srcAttribute = node.attrs?.find(
-    (attribute) => attribute.name === "src",
+    (attribute) => attribute.name === "src"
   );
   return srcAttribute != null
     ? { type: "src", src: srcAttribute.value }
     : {
-      type: "inline",
-      content: node.childNodes
-        .filter(
-          (childNode): childNode is DefaultTreeAdapterTypes.TextNode =>
-            childNode.nodeName === "#text",
-        )
-        .map((childNode) => childNode.value.trim())
-        .join("\n"),
-    };
+        type: "inline",
+        content: node.childNodes
+          .filter(
+            (childNode): childNode is DefaultTreeAdapterTypes.TextNode =>
+              childNode.nodeName === "#text"
+          )
+          .map((childNode) => childNode.value.trim())
+          .join("\n"),
+      };
 }

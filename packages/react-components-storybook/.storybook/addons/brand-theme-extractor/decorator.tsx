@@ -18,6 +18,7 @@ import type { Decorator } from "@storybook/react-vite";
 import { useEffect, useMemo } from "react";
 
 import { GLOBALS_KEY } from "./constants.js";
+import { resolveAvailableFontFamily } from "./font-utils.js";
 import { parseBrandThemeState } from "./state.js";
 import { getTokenRole } from "./token-map.js";
 
@@ -29,13 +30,10 @@ const STYLE_ID = "brand-theme-overrides";
  * document head. Uses :root with high specificity to override theme values.
  */
 export const BrandThemeDecorator: Decorator = (Story, context) => {
-  const brandTheme = useMemo(
-    () => parseBrandThemeState(context.globals[GLOBALS_KEY]),
-    [context.globals[GLOBALS_KEY]]
-  );
+  const rawState = context.globals[GLOBALS_KEY];
+  const brandTheme = useMemo(() => parseBrandThemeState(rawState), [rawState]);
 
   const cssText = useMemo(() => {
-    if (!brandTheme?.active) return "";
     if (!brandTheme.assignments || brandTheme.assignments.length === 0) {
       return "";
     }
@@ -53,23 +51,25 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       const roleDef = getTokenRole(assignment.role);
       if (!roleDef) continue;
 
-      let value: string | undefined;
-      if (
-        assignment.colorIndex >= 0 &&
-        brandTheme.palette?.[assignment.colorIndex]
-      ) {
-        value = brandTheme.palette[assignment.colorIndex].hex;
-      } else if (assignment.customValue) {
-        value = assignment.customValue;
-      }
+      let value: string | undefined = assignment.customValue;
 
       if (!value) continue;
 
       if (
         (roleDef.inputType === "px" || roleDef.inputType === "ms") &&
-        /^\d+(\.\d+)?$/.test(value)
+        /^\d+(\.\d+)?$/u.test(value)
       ) {
         value = `${value}${roleDef.inputType}`;
+      }
+
+      // For font families, only apply fonts actually installed on this machine.
+      // A missing brand font would otherwise be swapped for the browser default
+      // (serif) on some surfaces while others keep the sans, producing a
+      // two-font mismatch. When no named font is available locally we skip the
+      // override so the base token's default stack stands everywhere.
+      if (roleDef.inputType === "font") {
+        value = resolveAvailableFontFamily(value);
+        if (!value) continue;
       }
 
       for (const prop of roleDef.cssProperties) {
@@ -93,13 +93,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
     // Use :root:root (doubled specificity) to override theme layers.
     return `:root:root {\n${overrides.join("\n")}\n}`;
-  }, [brandTheme]);
+  }, [brandTheme.assignments]);
 
   useEffect(
     function syncBrandThemeOverrideStyle() {
-      let styleEl = document.querySelector(
-        `#${STYLE_ID}`
-      ) as HTMLStyleElement | null;
+      let styleEl = document.getElementById(STYLE_ID);
 
       if (cssText) {
         if (!styleEl) {
@@ -113,8 +111,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       }
 
       return () => {
-        const el = document.querySelector(`#${STYLE_ID}`);
-        if (el) el.remove();
+        if (styleEl) styleEl.remove();
       };
     },
     [cssText]

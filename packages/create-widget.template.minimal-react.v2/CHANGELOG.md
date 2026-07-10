@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.40.0
+
+### Minor Changes
+
+- 164ed08: Update dev mode guidance
+
+## 3.39.0
+
 ## 3.38.0
 
 ## 3.37.0

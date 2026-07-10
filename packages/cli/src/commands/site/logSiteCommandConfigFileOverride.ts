@@ -22,20 +22,20 @@ import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 
 export async function logSiteCommandConfigFileOverride(
   args: Arguments<CommonSiteArgs>,
-  config: FoundryConfig<"site"> | undefined,
+  config: FoundryConfig<"site"> | undefined
 ): Promise<void> {
   if (
-    config?.site.application != null
-    && args.application !== config.site.application
+    config?.site.application != null &&
+    args.application !== config.site.application
   ) {
     consola.debug(
-      `Overriding "application" from config file with ${args.application}`,
+      `Overriding "application" from config file with ${args.application}`
     );
   }
 
   if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {
     consola.debug(
-      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`,
+      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`
     );
   }
 }

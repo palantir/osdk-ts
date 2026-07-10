@@ -32,10 +32,10 @@ interface StatusUpdatesFiltersProps {
   onFilterClauseChanged: (clause: WhereClause<StatusUpdate>) => void;
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<StatusUpdate>,
-    newState: FilterState,
+    newState: FilterState
   ) => void;
   onFilterVisibilityChange?: (
-    newStates: Array<{ filterKey: string; isVisible: boolean }>,
+    newStates: Array<{ filterKey: string; isVisible: boolean }>
   ) => void;
   onReset?: () => void;
   initialFilterStates?: Map<string, FilterState>;
@@ -80,5 +80,5 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
         addFilterMode="uncontrolled"
       />
     );
-  },
+  }
 );

@@ -30,12 +30,12 @@ export async function runPropertySecuritiesTest(): Promise<void> {
     "equipment_34968",
     {
       $loadPropertySecurityMetadata: true,
-    },
+    }
   );
 
   console.log("Securities for MasonHeavyEquipment object:");
   console.log(
-    JSON.stringify(heavyEquipmentObject1.$propertySecurities, null, 2),
+    JSON.stringify(heavyEquipmentObject1.$propertySecurities, null, 2)
   );
 }
 

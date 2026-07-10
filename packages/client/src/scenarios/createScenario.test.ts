@@ -58,7 +58,7 @@ describe("createScenario", () => {
       fetchFunction.mock.calls[0][0] as string,
       "https://mock.com"
     );
-    expect(createUrl.pathname).toMatch(/\/scenarios\/create$/);
+    expect(createUrl.pathname).toMatch(/\/scenarios\/create$/u);
 
     expect(scenario.getScenarioReference()).toBe(newScenarioRid);
 
@@ -94,13 +94,13 @@ describe("createScenario", () => {
 
     const scenario = await createScenario(txClient);
 
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/u));
     expect(scenario.getScenarioReference()).toBe(newScenarioRid);
     warnSpy.mockRestore();
   });
 
   it("rejects a client already scoped to a scenario at runtime", async () => {
     const scenario = withScenario(client, "ri.actions..scenario.abc");
-    await expect(createScenario(scenario)).rejects.toThrow(/scenario/);
+    await expect(createScenario(scenario)).rejects.toThrow(/scenario/u);
   });
 });

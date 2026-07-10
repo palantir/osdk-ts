@@ -10,7 +10,7 @@ import "./index.css";
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error(
-    "Root element not found. Ensure index.html has <div id='root'></div>",
+    "Root element not found. Ensure index.html has <div id='root'></div>"
   );
 }
 
@@ -19,5 +19,5 @@ ReactDOM.createRoot(rootElement).render(
     <OsdkProvider client={$}>
       <App />
     </OsdkProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

@@ -41,17 +41,17 @@ export type StreamChunkEvent =
   | { type: "text-delta"; id: string; delta: string }
   | { type: "reasoning-delta"; id: string; delta: string }
   | {
-    type: "tool-call";
-    toolCallId: string;
-    toolName: string;
-    input: unknown;
-  }
+      type: "tool-call";
+      toolCallId: string;
+      toolName: string;
+      input: unknown;
+    }
   | {
-    type: "finish";
-    finishReason: FinishReason;
-    rawFinishReason: string | undefined;
-    usage: LanguageModelUsage;
-  }
+      type: "finish";
+      finishReason: FinishReason;
+      rawFinishReason: string | undefined;
+      usage: LanguageModelUsage;
+    }
   | { type: "error"; error: Error };
 
 export interface StreamStepInput<TOOLS extends ToolSet> {
@@ -120,7 +120,7 @@ interface ToolCallAccumulator {
 }
 
 export async function streamStep<TOOLS extends ToolSet>(
-  input: StreamStepInput<TOOLS>,
+  input: StreamStepInput<TOOLS>
 ): Promise<StreamStepResult> {
   const apiName = getModelApiName(_getFoundryInternal(input.model).identifier);
   const body = buildOpenAiRequestBody<TOOLS>({ apiName, ...input }, true);
@@ -156,7 +156,7 @@ const TEXT_PART_ID = "text-0";
 const REASONING_PART_ID = "reasoning-0";
 
 async function parseSseStream(
-  args: ParseSseStreamArgs,
+  args: ParseSseStreamArgs
 ): Promise<StreamStepResult> {
   const reader = args.body.pipeThrough(new TextDecoderStream()).getReader();
 
@@ -179,7 +179,7 @@ async function parseSseStream(
       if (done) {
         break;
       }
-      buffer += value.replace(/\r\n/g, "\n");
+      buffer += value.replace(/\r\n/gu, "\n");
 
       let frameEnd = buffer.indexOf("\n\n");
       while (frameEnd !== -1) {
@@ -240,8 +240,8 @@ async function parseSseStream(
 
             const reasoningDelta = delta.reasoning ?? delta.reasoning_content;
             if (
-              typeof reasoningDelta === "string"
-              && reasoningDelta.length > 0
+              typeof reasoningDelta === "string" &&
+              reasoningDelta.length > 0
             ) {
               reasoningStarted = true;
               reasoningBuf += reasoningDelta;
@@ -298,7 +298,7 @@ async function parseSseStream(
       toolCallId: acc.id !== "" ? acc.id : `tool_call_${index}`,
       toolName: acc.name,
       input: parseToolArguments(acc.args, args.warnings),
-    }),
+    })
   );
   for (const tc of toolCalls) {
     await args.onChunk({
@@ -319,9 +319,8 @@ async function parseSseStream(
   const response: ResponseMetadata = {
     id: responseId,
     modelId: responseModel,
-    timestamp: responseCreated != null
-      ? new Date(responseCreated * 1000)
-      : undefined,
+    timestamp:
+      responseCreated != null ? new Date(responseCreated * 1000) : undefined,
     messages: [
       {
         role: "assistant",
@@ -344,10 +343,10 @@ async function parseSseStream(
 
 function isErrorFrame(payload: unknown): payload is { error: unknown } {
   return (
-    typeof payload === "object"
-    && payload != null
-    && "error" in payload
-    && (payload as { error: unknown }).error != null
+    typeof payload === "object" &&
+    payload != null &&
+    "error" in payload &&
+    (payload as { error: unknown }).error != null
   );
 }
 

@@ -176,7 +176,7 @@ describe("ObjectSet", () => {
 
         // @ts-expect-error
         expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
-          /has a non-local implementation/
+          /has a non-local implementation/u
         );
       })();
     });

@@ -28,7 +28,7 @@ export async function routeConnectToMsw(
   emitter: EventEmitter<msw.LifeCycleEventsMap>,
   req: Connect.IncomingMessage,
   res: ServerResponse<IncomingMessage>,
-  next: Connect.NextFunction,
+  next: Connect.NextFunction
 ): Promise<void> {
   const method = req.method ?? "GET";
   const canRequestHaveBody = method !== "HEAD" && method !== "GET";
@@ -78,6 +78,6 @@ export async function routeConnectToMsw(
       onPassthroughResponse() {
         next();
       },
-    },
+    }
   );
 }

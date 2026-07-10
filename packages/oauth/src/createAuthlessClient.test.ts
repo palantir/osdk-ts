@@ -15,10 +15,11 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { createAuthlessClient } from "./createAuthlessClient.js";
 
 describe(createAuthlessClient, () => {
-  it("should return \"PUBLIC\" when called", async () => {
+  it('should return "PUBLIC" when called', async () => {
     const authlessClientProvider = createAuthlessClient();
     const result = await authlessClientProvider();
     expect(result).toBe("PUBLIC");

@@ -49,7 +49,7 @@ export async function runWithPropertiesTest(): Promise<void> {
       x.exactDistinctAirportStateCode,
       x.stateCount,
       x.stateNameSet,
-    ]),
+    ])
   );
 }
 

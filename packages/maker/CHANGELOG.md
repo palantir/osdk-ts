@@ -1,5 +1,33 @@
 # @osdk/maker
 
+## 0.46.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/typescript-sdk-docs@0.17.0
+  - @osdk/api@2.43.0
+
+## 0.45.0
+
+### Minor Changes
+
+- f49b4af: Migrate @osdk/maker, @osdk/maker-experimental, and @osdk/maker-import to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [cbcdce1]
+  - @osdk/api@2.42.0
+  - @osdk/typescript-sdk-docs@0.16.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
 ## 0.44.0
 
 ### Patch Changes

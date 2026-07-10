@@ -50,8 +50,8 @@ describe("validateDevEnvironment", () => {
       expect(mockLogger.warn).toHaveBeenCalledTimes(1);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          `You should probably be using "npm run dev:remote" instead`,
-        ),
+          `You should probably be using "npm run dev:remote" instead`
+        )
       );
     });
 
@@ -61,14 +61,14 @@ describe("validateDevEnvironment", () => {
 
       validateDevEnvironment.warnIfWrongDevCommand(
         "code-workspaces",
-        mockLogger,
+        mockLogger
       );
 
       expect(mockLogger.warn).toHaveBeenCalledTimes(1);
       expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          `You should probably be using "npm run dev" instead`,
-        ),
+          `You should probably be using "npm run dev" instead`
+        )
       );
     });
 
@@ -78,7 +78,7 @@ describe("validateDevEnvironment", () => {
 
       validateDevEnvironment.warnIfWrongDevCommand(
         "code-workspaces",
-        mockLogger,
+        mockLogger
       );
 
       expect(mockLogger.warn).not.toHaveBeenCalled();

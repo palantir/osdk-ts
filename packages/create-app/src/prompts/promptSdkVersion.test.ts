@@ -59,7 +59,7 @@ const templateOnly2x: Template = {
 
 test("defaults to latest version when no sdkVersion is provided", async () => {
   expect(await promptSdkVersion({ template: templateBothVersions })).toBe(
-    "2.x",
+    "2.x"
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
@@ -75,7 +75,7 @@ test("accepts explicit sdkVersion without prompt", async () => {
     await promptSdkVersion({
       sdkVersion: "1.x",
       template: templateBothVersions,
-    }),
+    })
   ).toBe("1.x");
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
@@ -83,7 +83,7 @@ test("accepts explicit sdkVersion without prompt", async () => {
 test("prompts when explicit sdkVersion is not supported by template", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("2.x");
   expect(
-    await promptSdkVersion({ sdkVersion: "1.x", template: templateOnly2x }),
+    await promptSdkVersion({ sdkVersion: "1.x", template: templateOnly2x })
   ).toBe("2.x");
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

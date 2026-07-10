@@ -60,7 +60,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       })
       .group(
         ["application", "foundryUrl", "token", "tokenFile"],
-        "Common Options",
+        "Common Options"
       )
       .command(version)
       .command(deploy)

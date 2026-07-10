@@ -46,7 +46,7 @@ const MAX_STRING_SIZE = 10240; // 10KB
 const MAX_TOTAL_SIZE = 10240; // 10KB
 
 const INTERNAL_FRAME_PATTERN =
-  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/;
+  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/u;
 
 // BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
 // pattern from its createStyle(). We filter these from the devtools console
@@ -61,9 +61,9 @@ function isBrowserLoggerCall(args: unknown[]): boolean {
   );
 }
 
-const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/;
-const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/;
-const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/;
+const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/u;
+const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/u;
+const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/u;
 
 function serializeValue(
   value: unknown,
@@ -188,6 +188,22 @@ function getCallerLocation(): string | undefined {
   return undefined;
 }
 
+/**
+ * React DevTools' installHook re-emits console.error/warn (to append the React
+ * component stack) through our wrapper, which surfaces as a duplicate entry
+ * whose resolved source is installHook.js. Recognize those frames so the
+ * re-emission can be dropped — the app's own call is captured separately with
+ * its real source, since our wrapper sits on top of installHook's.
+ */
+function isReactDevtoolsFrame(source: string): boolean {
+  return (
+    source.startsWith("installHook.js") ||
+    source.includes("react_devtools") ||
+    source.includes("react-devtools") ||
+    source.includes("react-router-dom")
+  );
+}
+
 function capEntrySize(args: string[]): string[] {
   let totalSize = 0;
   for (const arg of args) {
@@ -273,10 +289,12 @@ export class ConsoleLogStore extends SubscribableStore {
         const skipCapture =
           store.suppressed || store.capturing || isBrowserLoggerCall(args);
         const source = skipCapture ? undefined : getCallerLocation();
+        const skip =
+          skipCapture || (source !== undefined && isReactDevtoolsFrame(source));
 
         Function.prototype.apply.call(original, this ?? console, args);
 
-        if (skipCapture) {
+        if (skip) {
           return;
         }
 
@@ -321,7 +339,6 @@ export class ConsoleLogStore extends SubscribableStore {
       const original = this.originals.get(level);
       const ourWrapper = this.wrappers.get(level);
       if (original && ourWrapper && console[level] === ourWrapper) {
-        // eslint-disable-line no-console
         console[level] = original; // eslint-disable-line no-console
       }
     }

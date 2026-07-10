@@ -17,9 +17,9 @@
 
 /* eslint-disable no-console */
 
-import { promises as fs } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import postcss from "postcss";
 import postcssModules from "postcss-modules";
@@ -67,16 +67,16 @@ async function rewriteCssImports() {
   const jsFiles = await findJsFiles(buildDir);
 
   for (const jsFile of jsFiles) {
-    let content = await fs.readFile(jsFile, "utf8");
+    const content = await fs.readFile(jsFile, "utf-8");
 
     // Replace CSS module imports to point to .js files
-    const updatedContent = content.replace(
-      /from\s+["']([^"']+\.module\.css)["']/g,
+    const updatedContent = content.replaceAll(
+      /from\s+["']([^"']+\.module\.css)["']/gu,
       'from "$1.js"'
     );
 
     if (content !== updatedContent) {
-      await fs.writeFile(jsFile, updatedContent, "utf8");
+      await fs.writeFile(jsFile, updatedContent, "utf-8");
     }
   }
 }
@@ -86,7 +86,7 @@ async function processCssModules() {
   let combinedCss = "/* @osdk/cbac-components - Combined styles */\n\n";
 
   for (const cssFile of cssFiles) {
-    const content = await fs.readFile(cssFile, "utf8");
+    const content = await fs.readFile(cssFile, "utf-8");
     const relativePath = path.relative(buildDir, cssFile);
 
     let exportedClasses = {};
@@ -105,14 +105,14 @@ const styles = ${JSON.stringify(exportedClasses, null, 2)};
 
 export default styles;
 `;
-    await fs.writeFile(cssFile + ".js", jsContent, "utf8");
+    await fs.writeFile(`${cssFile}.js`, jsContent, "utf-8");
 
     // Add to combined CSS
     combinedCss += `/* ${relativePath} */\n${result.css}\n\n`;
   }
 
   // Write combined CSS file
-  await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf8");
+  await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf-8");
 
   // Rewrite imports in JS files
   await rewriteCssImports();

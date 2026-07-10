@@ -68,7 +68,7 @@ export const AssignmentsTable = React.memo<AssignmentsTableProps>(
       handleColumnsPinnedChanged,
     } = useObjectTableState<Assignment, AssignmentColumnRdps>(
       BASE_COLUMN_DEFS,
-      DEFAULT_ORDER_BY,
+      DEFAULT_ORDER_BY
     );
 
     return (
@@ -90,5 +90,5 @@ export const AssignmentsTable = React.memo<AssignmentsTableProps>(
         onRowSelectionChanged={onRowSelectionChanged}
       />
     );
-  },
+  }
 );

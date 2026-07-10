@@ -142,7 +142,8 @@ export function ReorgConfigStep({
                       e.target.value,
                       config.swapOfficeIds?.[1] ?? "",
                     ],
-                  })}
+                  })
+                }
                 className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
@@ -165,7 +166,8 @@ export function ReorgConfigStep({
                       config.swapOfficeIds?.[0] ?? "",
                       e.target.value,
                     ],
-                  })}
+                  })
+                }
                 className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
@@ -187,7 +189,8 @@ export function ReorgConfigStep({
           <select
             value={config.consolidateOfficeId ?? ""}
             onChange={(e) =>
-              onUpdateConfig({ consolidateOfficeId: e.target.value })}
+              onUpdateConfig({ consolidateOfficeId: e.target.value })
+            }
             className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
           >
             <option value="">Select target office...</option>
@@ -211,7 +214,8 @@ export function ReorgConfigStep({
               onChange={(e) =>
                 onUpdateConstraints({
                   keepHeadcountBalanced: e.target.checked,
-                })}
+                })
+              }
               className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
@@ -237,7 +241,8 @@ export function ReorgConfigStep({
                 onChange={(e) =>
                   onUpdateConstraints({
                     headcountTolerance: Number(e.target.value),
-                  })}
+                  })
+                }
                 className="w-full accent-[var(--officenetwork-status-warning)]"
               />
             </div>
@@ -248,7 +253,8 @@ export function ReorgConfigStep({
               type="checkbox"
               checked={config.constraints.keepTeamComposition}
               onChange={(e) =>
-                onUpdateConstraints({ keepTeamComposition: e.target.checked })}
+                onUpdateConstraints({ keepTeamComposition: e.target.checked })
+              }
               className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
@@ -269,7 +275,8 @@ export function ReorgConfigStep({
                 onChange={(e) =>
                   onUpdateConstraints({
                     maxMovesPerOffice: e.target.checked ? 50 : null,
-                  })}
+                  })
+                }
                 className="accent-[var(--officenetwork-status-warning)]"
               />
               <div>
@@ -296,7 +303,8 @@ export function ReorgConfigStep({
                   onChange={(e) =>
                     onUpdateConstraints({
                       maxMovesPerOffice: Number(e.target.value),
-                    })}
+                    })
+                  }
                   className="w-full accent-[var(--officenetwork-status-warning)]"
                 />
               </div>

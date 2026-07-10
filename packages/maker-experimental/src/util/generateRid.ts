@@ -1045,7 +1045,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     }
 
     // Match Java: apiName.replace(".", "-").toLowerCase()
-    const objectTypeId = objectTypeApiName.replace(/\./g, "-").toLowerCase();
+    const objectTypeId = objectTypeApiName.replace(/\./gu, "-").toLowerCase();
     this.objectTypeIds.put(readableId, objectTypeId);
     return objectTypeId;
   }

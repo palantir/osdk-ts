@@ -19,7 +19,9 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import os from "node:os";
 import path from "node:path";
+
 import { afterEach, beforeEach, expect, it } from "vitest";
+
 import { statusReporterPlugin } from "./statusReporterPlugin.js";
 
 let workDir: string;
@@ -34,7 +36,7 @@ afterEach(() => {
 it("publishes PREPARING through the discovered status server URL", async () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    "minCliVersion: \"0.0.0\"\n",
+    'minCliVersion: "0.0.0"\n'
   );
 
   const events: unknown[] = [];
@@ -63,16 +65,18 @@ it("publishes PREPARING through the discovered status server URL", async () => {
       JSON.stringify({
         pid: process.pid,
         url: `http://127.0.0.1:${port}`,
-      }),
+      })
     );
 
     const plugin = statusReporterPlugin({ service: "APP" });
-    const configResolved = typeof plugin.configResolved === "function"
-      ? plugin.configResolved
-      : plugin.configResolved?.handler;
-    const configureServer = typeof plugin.configureServer === "function"
-      ? plugin.configureServer
-      : plugin.configureServer?.handler;
+    const configResolved =
+      typeof plugin.configResolved === "function"
+        ? plugin.configResolved
+        : plugin.configResolved?.handler;
+    const configureServer =
+      typeof plugin.configureServer === "function"
+        ? plugin.configureServer
+        : plugin.configureServer?.handler;
     (configResolved as unknown as (cfg: unknown) => void)({
       root: workDir,
       logger: { warn: () => {} },

@@ -17,9 +17,9 @@
 import { CONFIG_FILE_SUFFIX } from "../common/constants.js";
 
 export function isConfigFile(filePath: string): boolean {
-  const trimmedFilePath = filePath.replace(/\.[^/.]+$/, "");
+  const trimmedFilePath = filePath.replace(/\.[^/.]+$/u, "");
   return (
-    filePath.endsWith(CONFIG_FILE_SUFFIX)
-    || trimmedFilePath.endsWith(CONFIG_FILE_SUFFIX)
+    filePath.endsWith(CONFIG_FILE_SUFFIX) ||
+    trimmedFilePath.endsWith(CONFIG_FILE_SUFFIX)
   );
 }

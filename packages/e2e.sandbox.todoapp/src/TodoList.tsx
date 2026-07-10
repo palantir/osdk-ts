@@ -36,8 +36,8 @@ function TodoList({ where, heading }: TodoListProps) {
 
       {!data && isLoading && "Loading"}
 
-      {data
-        && data.map((todo) => <TodoView todo={todo} key={todo.$primaryKey} />)}
+      {data &&
+        data.map((todo) => <TodoView todo={todo} key={todo.$primaryKey} />)}
     </>
   );
 }

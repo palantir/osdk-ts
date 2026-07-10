@@ -53,7 +53,7 @@ export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
       handleColumnsPinnedChanged,
     } = useObjectTableState<StatusUpdate, StatusUpdateColumnRdps>(
       BASE_COLUMN_DEFS,
-      DEFAULT_ORDER_BY,
+      DEFAULT_ORDER_BY
     );
 
     return (
@@ -72,5 +72,5 @@ export const StatusUpdatesTable = React.memo<StatusUpdatesTableProps>(
         selectionMode="none"
       />
     );
-  },
+  }
 );

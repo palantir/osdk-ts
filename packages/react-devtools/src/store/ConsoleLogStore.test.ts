@@ -175,7 +175,7 @@ describe("ConsoleLogStore", () => {
       await flushMicrotasks();
 
       const entries = store.getEntries();
-      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/);
+      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/u);
     });
 
     it("should serialize Error with stack", async () => {

@@ -29,13 +29,13 @@ export function generateNpmRc({
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
   const formattedFoundryUrl = foundryUrl
-    .replace(/^https:\/\//, "")
-    .replace(/\/$/, "");
+    .replace(/^https:\/\//u, "")
+    .replace(/\/$/u, "");
   const artifactsApiUrl = formattedFoundryUrl + "/artifacts/api/";
   const packageScope = osdkPackage.split("/")[0];
 
   return (
-    `//${artifactsApiUrl}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`
+    `//${artifactsApiUrl}:_authToken=\${FOUNDRY_TOKEN}\n` +
+    `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`
   );
 }

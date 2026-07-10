@@ -41,7 +41,7 @@ describe("getBaseHref", () => {
   test("returns code workspaces URLs in code workspaces mode", () => {
     // Representative value when running dev mode in Code Workspaces mode
     vi.spyOn(codeWorkspacesMode, "getCodeWorkspacesBaseHref").mockReturnValue(
-      "https://workspace.stack.com/proxy/path",
+      "https://workspace.stack.com/proxy/path"
     );
 
     const server = {

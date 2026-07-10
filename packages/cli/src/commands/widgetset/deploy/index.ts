@@ -27,15 +27,15 @@ import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
   command: "deploy",
   describe:
-    `Deploy a new widget set version\n\nThe widget set files must contain a `
-    + `valid manifest at ${MANIFEST_FILE_LOCATION} which determines the version`
-    + ` to publish. The widget set files may be uploaded to the widget set`
-    + ` itself, or to a separate code repository if it has been authorized to`
-    + ` publish the widget set.`,
+    `Deploy a new widget set version\n\nThe widget set files must contain a ` +
+    `valid manifest at ${MANIFEST_FILE_LOCATION} which determines the version` +
+    ` to publish. The widget set files may be uploaded to the widget set` +
+    ` itself, or to a separate code repository if it has been authorized to` +
+    ` publish the widget set.`,
   builder: async (argv) => {
     const config = await configLoader("widgetSet");
-    const widgetSetConfig: WidgetSetConfig | undefined = config?.foundryConfig
-      .widgetSet;
+    const widgetSetConfig: WidgetSetConfig | undefined =
+      config?.foundryConfig.widgetSet;
     const directory = widgetSetConfig?.directory;
     const repository = widgetSetConfig?.repository;
 

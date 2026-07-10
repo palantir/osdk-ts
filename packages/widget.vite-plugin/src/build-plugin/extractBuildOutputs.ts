@@ -50,7 +50,7 @@ function parseTransformResult(result: string): BuildOutputs {
   const outputs = visitNode(parse5(result));
   return {
     scripts: outputs.filter(
-      (output) => output.type === "script",
+      (output) => output.type === "script"
     ) as ScriptBuildOutput[],
     stylesheets: outputs
       .filter((output) => output.type === "stylesheet")
@@ -72,7 +72,7 @@ function visitNode(node: DefaultTreeAdapterTypes.Node): BuildOutput[] {
 }
 
 function parseScriptNode(
-  node: DefaultTreeAdapterTypes.Element,
+  node: DefaultTreeAdapterTypes.Element
 ): ScriptBuildOutput {
   assertEmptyNode(node);
   assertMinAttributes(node, ["src"]);
@@ -81,7 +81,7 @@ function parseScriptNode(
   const typeAttribute = getAttributeOrDefault(node, "type", "text/javascript");
   if (!isValidScriptType(typeAttribute)) {
     throw new Error(
-      `Invalid script type attribute found in Vite HTML output: ${typeAttribute}`,
+      `Invalid script type attribute found in Vite HTML output: ${typeAttribute}`
     );
   }
   return {
@@ -92,7 +92,7 @@ function parseScriptNode(
 }
 
 function parseStylesheetNode(
-  node: DefaultTreeAdapterTypes.Element,
+  node: DefaultTreeAdapterTypes.Element
 ): StylesheetBuildOutput {
   assertEmptyNode(node);
   assertMinAttributes(node, ["rel", "href"]);
@@ -108,13 +108,13 @@ function isValidScriptType(type: string): type is ScriptType {
 
 function assertMinAttributes(
   node: DefaultTreeAdapterTypes.Element,
-  requiredAttributeNames: string[],
+  requiredAttributeNames: string[]
 ): void {
   const actualAttributeNames = new Set(node.attrs?.map((attr) => attr.name));
   requiredAttributeNames.forEach((requiredAttributeName) => {
     if (!actualAttributeNames.has(requiredAttributeName)) {
       throw new Error(
-        `Missing ${requiredAttributeName} attribute in Vite HTML output`,
+        `Missing ${requiredAttributeName} attribute in Vite HTML output`
       );
     }
   });
@@ -122,13 +122,13 @@ function assertMinAttributes(
 
 function assertMaxAttributes(
   node: DefaultTreeAdapterTypes.Element,
-  allowedAttributeNames: string[],
+  allowedAttributeNames: string[]
 ): void {
   const actualAttributeNames = new Set(node.attrs?.map((attr) => attr.name));
   actualAttributeNames.forEach((actualAttributeName) => {
     if (!allowedAttributeNames.includes(actualAttributeName)) {
       throw new Error(
-        `Unexpected ${actualAttributeName} attribute found in Vite HTML output`,
+        `Unexpected ${actualAttributeName} attribute found in Vite HTML output`
       );
     }
   });
@@ -148,7 +148,7 @@ function assertValue(actual: string, allowedValues: string[]) {
 
 function getAttribute(
   node: DefaultTreeAdapterTypes.Element,
-  attributeName: string,
+  attributeName: string
 ): string | undefined {
   return node.attrs?.find((attribute) => attribute.name === attributeName)
     ?.value;
@@ -157,7 +157,7 @@ function getAttribute(
 function getAttributeOrDefault(
   node: DefaultTreeAdapterTypes.Element,
   attributeName: string,
-  defaultValue: string,
+  defaultValue: string
 ): string {
   return getAttribute(node, attributeName) ?? defaultValue;
 }

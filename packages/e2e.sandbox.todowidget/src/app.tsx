@@ -32,9 +32,9 @@ export const App: React.FC = () => {
       createClient(
         window.location.origin,
         "ri.ontology.main.ontology.0000-0000-0000-0000",
-        () => Promise.resolve("dummy-auth"),
+        () => Promise.resolve("dummy-auth")
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNewTodoItem(event.target.value);
     },
-    [],
+    []
   );
 
   return (
@@ -92,10 +92,12 @@ export const App: React.FC = () => {
       <Container size="1">
         <Flex p="5" direction="column" gap="2">
           <Heading size="4">
-            {parameters.state === "loading"
-                || parameters.state === "not-started"
-              ? <Skeleton>Hello, world!</Skeleton>
-              : headerText}
+            {parameters.state === "loading" ||
+            parameters.state === "not-started" ? (
+              <Skeleton>Hello, world!</Skeleton>
+            ) : (
+              headerText
+            )}
           </Heading>
           {parameters.state === "loaded" && showWarning && (
             <Callout.Root size="1" color="orange" variant="soft">
@@ -106,23 +108,19 @@ export const App: React.FC = () => {
             </Callout.Root>
           )}
           <Heading size="2">
-            {dataset.type === "loading" || dataset.type === "reloading"
-              ? <Skeleton>Loading dataset…</Skeleton>
-              : dataset.type === "loaded"
-              ? (
-                <>
-                  <TableIcon /> {dataset.value?.name}
-                </>
-              )
-              : dataset.type === "failed"
-              ? (
-                <Text>
-                  <ExclamationTriangleIcon /> Failed to load dataset
-                </Text>
-              )
-              : (
-                "No dataset loaded"
-              )}
+            {dataset.type === "loading" || dataset.type === "reloading" ? (
+              <Skeleton>Loading dataset…</Skeleton>
+            ) : dataset.type === "loaded" ? (
+              <>
+                <TableIcon /> {dataset.value?.name}
+              </>
+            ) : dataset.type === "failed" ? (
+              <Text>
+                <ExclamationTriangleIcon /> Failed to load dataset
+              </Text>
+            ) : (
+              "No dataset loaded"
+            )}
           </Heading>
           <Table.Root>
             <Table.Header>
@@ -133,9 +131,9 @@ export const App: React.FC = () => {
             </Table.Header>
 
             <Table.Body>
-              {(parameters.state === "loading"
-                || parameters.state === "not-started"
-                || parameters.state === "reloading") && (
+              {(parameters.state === "loading" ||
+                parameters.state === "not-started" ||
+                parameters.state === "reloading") && (
                 <>
                   <Table.Row>
                     <Table.Cell>
@@ -159,8 +157,8 @@ export const App: React.FC = () => {
                   </Table.Row>
                 </>
               )}
-              {parameters.state === "loaded"
-                && todoItems?.map((item, index) => (
+              {parameters.state === "loaded" &&
+                todoItems?.map((item, index) => (
                   <Table.Row key={index}>
                     <Table.Cell>
                       <Checkbox />
@@ -168,12 +166,12 @@ export const App: React.FC = () => {
                     <Table.Cell>{item}</Table.Cell>
                   </Table.Row>
                 ))}
-              {parameters.state === "loaded"
-                && (todoItems ?? []).length === 0 && (
-                <Table.Row>
-                  <Table.Cell colSpan={2}>No items yet</Table.Cell>
-                </Table.Row>
-              )}
+              {parameters.state === "loaded" &&
+                (todoItems ?? []).length === 0 && (
+                  <Table.Row>
+                    <Table.Cell colSpan={2}>No items yet</Table.Cell>
+                  </Table.Row>
+                )}
               <Table.Row>
                 <Table.Cell colSpan={2}>
                   <Flex gap="2">

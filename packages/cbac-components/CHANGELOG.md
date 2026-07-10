@@ -1,5 +1,18 @@
 # @osdk/cbac-components
 
+## 0.8.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 0.7.0
+
+### Minor Changes
+
+- 9c6b0e3: Migrate @osdk/cbac-components to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (fifth increment of the repo-wide oxc migration; first React package with CSS exports)
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+
 ## 0.6.0
 
 ### Minor Changes

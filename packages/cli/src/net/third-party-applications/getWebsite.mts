@@ -16,6 +16,7 @@
 
 import { ExitProcessError } from "@osdk/cli.common";
 import { PalantirApiError } from "@osdk/shared.net.errors";
+
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
@@ -23,12 +24,12 @@ import type { Website } from "./Website.mjs";
 
 export async function getWebsite(
   ctx: InternalClientContext,
-  thirdPartyAppRid: ThirdPartyAppRid,
+  thirdPartyAppRid: ThirdPartyAppRid
 ): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website`,
-    ctx.foundryUrl,
+    ctx.foundryUrl
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();
@@ -39,9 +40,10 @@ export async function getWebsite(
   } catch (e) {
     // Revisit this error handling in the API
     if (
-      e instanceof ExitProcessError && e.originalError != null
-      && e.originalError instanceof PalantirApiError
-      && e.originalError.errorName === "WebsiteNotFound"
+      e instanceof ExitProcessError &&
+      e.originalError != null &&
+      e.originalError instanceof PalantirApiError &&
+      e.originalError.errorName === "WebsiteNotFound"
     ) {
       return undefined;
     }

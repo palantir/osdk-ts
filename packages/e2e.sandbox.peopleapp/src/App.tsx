@@ -8,17 +8,18 @@ function PeopleApp() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
-  const activeTab = path === "/" || path === "/employees"
-    ? "employees"
-    : path === "/employees/filter-list"
-    ? "filter-list"
-    : path === "/employees/action-form-filter-list-repro"
-    ? "action-form-filter-list-repro"
-    : path === "/form"
-    ? "form"
-    : path === "/aip-agent-chat"
-    ? "aip-agent-chat"
-    : "offices";
+  const activeTab =
+    path === "/" || path === "/employees"
+      ? "employees"
+      : path === "/employees/filter-list"
+        ? "filter-list"
+        : path === "/employees/action-form-filter-list-repro"
+          ? "action-form-filter-list-repro"
+          : path === "/form"
+            ? "form"
+            : path === "/aip-agent-chat"
+              ? "aip-agent-chat"
+              : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">

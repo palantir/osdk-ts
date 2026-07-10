@@ -56,6 +56,6 @@ function printEmployees(employees: Osdk<Employee>[]) {
       adUsername,
       businessTitle,
       employeeNumber,
-    })),
+    }))
   );
 }

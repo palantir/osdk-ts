@@ -22,7 +22,7 @@ import { logger } from "./logger.js";
 
 export async function runFoundrySdkClientVerificationTest(
   datasetRid: string,
-  branchToCreate = "test",
+  branchToCreate = "test"
 ): Promise<void> {
   const pageSize = 10;
 
@@ -37,19 +37,19 @@ export async function runFoundrySdkClientVerificationTest(
 
   if (branchesResult.nextPageToken) {
     throw new Error(
-      `You cannot run this test on a dataset with more than ${pageSize} branches`,
+      `You cannot run this test on a dataset with more than ${pageSize} branches`
     );
   }
 
   if (!branchesResult.data.find((b) => b.name === "master")) {
     throw new Error(
-      `You can not run this test as dataset ${datasetRid} does not have a master branch.`,
+      `You can not run this test as dataset ${datasetRid} does not have a master branch.`
     );
   }
 
   if (branchesResult.data.find((b) => b.name === branchToCreate)) {
     throw new Error(
-      `Expected that dataset ${datasetRid} would not have a branch called "${branchToCreate}". Aborting`,
+      `Expected that dataset ${datasetRid} would not have a branch called "${branchToCreate}". Aborting`
     );
   }
 
@@ -84,6 +84,6 @@ export async function runFoundrySdkClientVerificationTest(
 
   logger.info(
     testBranch,
-    "Created and deleted test branch, which means we handled the Promise<void> correctly",
+    "Created and deleted test branch, which means we handled the Promise<void> correctly"
   );
 }

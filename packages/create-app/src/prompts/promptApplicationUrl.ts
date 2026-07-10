@@ -41,7 +41,7 @@ export async function promptApplicationUrl({
             value: "no",
           },
         ],
-      },
+      }
     )) as "yes" | "no";
 
     if (skip === "no") {
@@ -49,18 +49,16 @@ export async function promptApplicationUrl({
     }
   }
 
-  while (applicationUrl == null || !/^https?:\/\//.test(applicationUrl)) {
+  while (applicationUrl == null || !/^https?:\/\//u.test(applicationUrl)) {
     if (applicationUrl != null) {
       consola.fail("Please enter a valid application URL");
     }
     applicationUrl = await consola.prompt(
-      `Enter the URL your production application will be hosted on:\n${
-        italic(
-          "(Example: https://myapp.example.palantirfoundry.com)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the URL your production application will be hosted on:\n${italic(
+        "(Example: https://myapp.example.palantirfoundry.com)"
+      )}`,
+      { type: "text" }
     );
   }
-  return applicationUrl.replace(/\/$/, "");
+  return applicationUrl.replace(/\/$/u, "");
 }

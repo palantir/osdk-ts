@@ -21,7 +21,7 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
 export async function fetchAggregationForEmployees(
-  client: Client,
+  client: Client
 ): Promise<void> {
   const result = await client(Employee).aggregate({
     $select: {
@@ -81,17 +81,17 @@ fetchAggregationForEmployees()
   // Runtime Verification
   invariant(
     !Array.isArray(result),
-    "no groups means we should not get an array",
+    "no groups means we should not get an array"
   );
   invariant(
     Object.keys(result).length === 3,
-    `the result should have 3 keys, got: ${Object.keys(result)}`,
+    `the result should have 3 keys, got: ${Object.keys(result)}`
   );
   invariant(
-    "employeeNumber" in result
-      && "locationName" in result
-      && "locationCity" in result,
-    "The keys should be the expected ones",
+    "employeeNumber" in result &&
+      "locationName" in result &&
+      "locationCity" in result,
+    "The keys should be the expected ones"
   );
   invariant(Object.keys(result.employeeNumber).length === 3);
 }

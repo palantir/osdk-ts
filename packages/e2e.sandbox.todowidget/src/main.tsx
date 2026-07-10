@@ -15,5 +15,5 @@ createRoot(root).render(
     <FoundryWidget config={MainConfig}>
       <App />
     </FoundryWidget>
-  </Theme>,
+  </Theme>
 );

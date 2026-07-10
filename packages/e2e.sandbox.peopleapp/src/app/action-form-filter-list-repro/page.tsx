@@ -23,9 +23,7 @@ import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 
 import "./page.css";
 
-interface ModifyEmployeeDepartmentAction
-  extends ActionDefinition<ModifyEmployeeDepartmentSignatures>
-{
+interface ModifyEmployeeDepartmentAction extends ActionDefinition<ModifyEmployeeDepartmentSignatures> {
   apiName: "modifyEmployee";
   type: "action";
   unsanitizedApiName: "modify-employee";
@@ -40,12 +38,12 @@ interface ModifyEmployeeDepartmentParams {
 interface ModifyEmployeeDepartmentSignatures {
   applyAction<OP extends ApplyActionOptions>(
     args: ModifyEmployeeDepartmentParams,
-    options?: OP,
+    options?: OP
   ): Promise<ActionReturnTypeForOptions<OP>>;
 
   batchApplyAction<OP extends ApplyBatchActionOptions>(
     args: ReadonlyArray<ModifyEmployeeDepartmentParams>,
-    options?: OP,
+    options?: OP
   ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
@@ -184,14 +182,13 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
     const handleActionSuccess = useCallback(function handleActionSuccess() {
       setStatusMessage({
         kind: "success",
-        text:
-          "Department update submitted. Check Network for refreshes from ObjectTable and FilterList.",
+        text: "Department update submitted. Check Network for refreshes from ObjectTable and FilterList.",
       });
       setIsDialogOpen(false);
     }, []);
 
     const handleActionError = useCallback(function handleActionError(
-      error: FormError,
+      error: FormError
     ) {
       setStatusMessage({
         kind: "error",
@@ -216,9 +213,11 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
 
         {statusMessage != null && (
           <div
-            className={statusMessage.kind === "error"
-              ? "actionFormFilterListReproStatus actionFormFilterListReproStatusError"
-              : "actionFormFilterListReproStatus"}
+            className={
+              statusMessage.kind === "error"
+                ? "actionFormFilterListReproStatus actionFormFilterListReproStatusError"
+                : "actionFormFilterListReproStatus"
+            }
             role={statusMessage.kind === "error" ? "alert" : "status"}
           >
             {statusMessage.text}
@@ -278,7 +277,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
         )}
       </div>
     );
-  },
+  }
 );
 
 function formatFormError(error: FormError): string {

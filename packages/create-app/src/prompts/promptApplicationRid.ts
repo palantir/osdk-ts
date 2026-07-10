@@ -23,23 +23,21 @@ export async function promptApplicationRid({
   application?: string;
 }): Promise<string> {
   while (
-    application == null
-    || !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/.test(
-      application,
+    application == null ||
+    !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/u.test(
+      application
     )
   ) {
     if (application != null) {
       consola.fail(
-        "Please enter a valid application resource identifier (rid)",
+        "Please enter a valid application resource identifier (rid)"
       );
     }
     application = await consola.prompt(
-      `Enter the application resource identifier (rid) for your application from Developer Console:\n${
-        italic(
-          "(Example: ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the application resource identifier (rid) for your application from Developer Console:\n${italic(
+        "(Example: ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)"
+      )}`,
+      { type: "text" }
     );
   }
   return application;

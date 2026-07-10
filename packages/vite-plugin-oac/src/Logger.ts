@@ -43,7 +43,7 @@ export class Logger {
     if (this.#level <= Level.debug) {
       this.#viteLogger.info(
         `${chalk.cyan("[osdk]")} ${chalk.gray(`DEBUG: ${message}`)}`,
-        { timestamp: true },
+        { timestamp: true }
       );
     }
   }
@@ -68,7 +68,7 @@ export class Logger {
     if (this.#level <= Level.warn) {
       this.#viteLogger.warn(
         `${chalk.cyan("[osdk]")} ${chalk.yellow(message)}`,
-        { timestamp: true },
+        { timestamp: true }
       );
     }
   }

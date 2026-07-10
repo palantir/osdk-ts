@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import path from "path";
+
 import type { Release, ReleasePlan } from "@changesets/types";
 import chalk from "chalk";
-import path from "path";
 import { inc, parse } from "semver";
+
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 
 function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
@@ -25,14 +27,14 @@ function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
   const newSemver = parse(newVersion);
   if (oldSemver == null || newSemver == null) {
     throw new FailedWithUserMessage(
-      `Invalid version(s): ${oldVersion}, ${newVersion}`,
+      `Invalid version(s): ${oldVersion}, ${newVersion}`
     );
   }
   return (
-    oldSemver.prerelease.length > 0
-    && newSemver.prerelease.length === 0
-    && oldSemver.compareMain(newSemver) === 0
-    && newSemver.patch === 0
+    oldSemver.prerelease.length > 0 &&
+    newSemver.prerelease.length === 0 &&
+    oldSemver.compareMain(newSemver) === 0 &&
+    newSemver.patch === 0
   );
 }
 
@@ -44,7 +46,7 @@ function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
  */
 function isPatchVersionOrFirstMinorRelease(
   releasePlan: ReleasePlan,
-  releaseForChangeset: Release,
+  releaseForChangeset: Release
 ): boolean {
   if (releaseForChangeset.type === "patch") {
     return true;
@@ -52,12 +54,12 @@ function isPatchVersionOrFirstMinorRelease(
   if (releaseForChangeset.type === "minor") {
     // Find the matching release entry in the overall release plan
     const releaseName = releaseForChangeset.name;
-    const matchingReleases = releasePlan.releases.filter((r) =>
-      r.name === releaseForChangeset.name
+    const matchingReleases = releasePlan.releases.filter(
+      (r) => r.name === releaseForChangeset.name
     );
     if (matchingReleases.length !== 1) {
       throw new FailedWithUserMessage(
-        `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`,
+        `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`
       );
     }
     const release = matchingReleases[0];
@@ -69,7 +71,7 @@ function isPatchVersionOrFirstMinorRelease(
 export function mutateReleasePlan(
   cwd: string,
   releasePlan: ReleasePlan,
-  releaseType: "release branch" | "main",
+  releaseType: "release branch" | "main"
 ): void {
   let bulkErrorMsg = "";
   for (const changeSet of releasePlan.changesets) {
@@ -78,29 +80,27 @@ export function mutateReleasePlan(
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
-        releaseType === "release branch"
-        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release))
-        && (release.type !== "none")
+        releaseType === "release branch" &&
+        !isPatchVersionOrFirstMinorRelease(releasePlan, release) &&
+        release.type !== "none"
       ) {
         if (!errorStarted) {
-          bulkErrorMsg = `\n${
-            chalk.cyan(
-              path.relative(
-                cwd,
-                `${path.join(cwd, ".changeset", changeSet.id)}.md`,
-              ),
+          bulkErrorMsg = `\n${chalk.cyan(
+            path.relative(
+              cwd,
+              `${path.join(cwd, ".changeset", changeSet.id)}.md`
             )
-          }:\n`;
+          )}:\n`;
           errorStarted = true;
         }
-        bulkErrorMsg += `  - ${
-          chalk.red(`${release.name}: ${release.type}`)
-        }\n`;
+        bulkErrorMsg += `  - ${chalk.red(
+          `${release.name}: ${release.type}`
+        )}\n`;
       }
 
       if (release.type === "major") {
         throw new FailedWithUserMessage(
-          `Major changes are not allowed without explicit human intervention.`,
+          `Major changes are not allowed without explicit human intervention.`
         );
       }
     }
@@ -108,17 +108,17 @@ export function mutateReleasePlan(
 
   if (bulkErrorMsg.length > 0) {
     throw new FailedWithUserMessage(
-      `Unable to create a release for the stable branch.\n\n`
-        + `Our branching model requires that we only release patch changes on a stable branch `
-        + `to avoid version number collisions with main and the other release branches. `
-        + `Problems:\n${bulkErrorMsg}`,
+      `Unable to create a release for the stable branch.\n\n` +
+        `Our branching model requires that we only release patch changes on a stable branch ` +
+        `to avoid version number collisions with main and the other release branches. ` +
+        `Problems:\n${bulkErrorMsg}`
     );
   }
 
   for (const q of releasePlan.releases) {
     if (q.type === "major") {
       throw new FailedWithUserMessage(
-        `Package "${q.name}" received a major bump (${q.oldVersion} -> ${q.newVersion}). Major bumps are never allowed.`,
+        `Package "${q.name}" received a major bump (${q.oldVersion} -> ${q.newVersion}). Major bumps are never allowed.`
       );
     }
     if (releaseType === "main" && q.type === "patch") {

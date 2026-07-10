@@ -108,7 +108,7 @@ export function useOfficeFormAction({
         });
       }
     },
-    [applyAction, formRef, setShowSuccess],
+    [applyAction, formRef, setShowSuccess]
   );
 
   return [formState, handleSubmit] as const;

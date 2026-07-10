@@ -92,7 +92,7 @@ describe("BaseAipAgentChat", () => {
       />
     );
 
-    const sendButton = screen.getByRole("button", { name: /send/i });
+    const sendButton = screen.getByRole("button", { name: /send/iu });
     expect(sendButton.matches(":disabled")).toBe(true);
   });
 
@@ -111,7 +111,7 @@ describe("BaseAipAgentChat", () => {
     const textarea = screen.getByLabelText("Message input");
     fireEvent.change(textarea, { target: { value: "hello" } });
 
-    const sendButton = screen.getByRole("button", { name: /send/i });
+    const sendButton = screen.getByRole("button", { name: /send/iu });
     expect(sendButton.matches(":disabled")).toBe(false);
   });
 
@@ -131,7 +131,7 @@ describe("BaseAipAgentChat", () => {
 
     const textarea = screen.getByLabelText("Message input");
     fireEvent.change(textarea, { target: { value: "hello world" } });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send/iu }));
 
     expect(onSendMessage).toHaveBeenCalledWith("hello world");
   });
@@ -148,8 +148,8 @@ describe("BaseAipAgentChat", () => {
       />
     );
 
-    expect(screen.queryByRole("button", { name: /send/i })).toBeNull();
-    expect(screen.getByRole("button", { name: /stop/i })).toBeDefined();
+    expect(screen.queryByRole("button", { name: /send/iu })).toBeNull();
+    expect(screen.getByRole("button", { name: /stop/iu })).toBeDefined();
   });
 
   it("calls onStop when Stop button is clicked", () => {
@@ -166,7 +166,7 @@ describe("BaseAipAgentChat", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /stop/i }));
+    fireEvent.click(screen.getByRole("button", { name: /stop/iu }));
 
     expect(onStop).toHaveBeenCalled();
   });
@@ -203,7 +203,7 @@ describe("BaseAipAgentChat", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
+    fireEvent.click(screen.getByRole("button", { name: /dismiss/iu }));
 
     expect(onClearError).toHaveBeenCalled();
   });

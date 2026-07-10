@@ -59,7 +59,7 @@ export function ontologyAsCode(oacConfig: OacConfig): PluginOption {
           ctx.logger.error(
             `Failed to generate ontology assets: ${
               error instanceof Error ? error.message : String(error)
-            }`,
+            }`
           );
           throw error;
         }

@@ -140,13 +140,9 @@ function InteractiveChat(
 }
 
 const meta: Meta<typeof InteractiveChat> = {
-  title: "Beta/AipAgentChat",
+  title: "Components/AipAgentChat",
   component: InteractiveChat,
-  render: (args) => (
-    <div style={{ height: "600px", maxWidth: "700px" }}>
-      <InteractiveChat {...args} />
-    </div>
-  ),
+  render: (args) => <InteractiveChat {...args} />,
   parameters: {
     controls: { expanded: true },
   },

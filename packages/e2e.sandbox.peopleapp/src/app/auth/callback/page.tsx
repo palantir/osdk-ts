@@ -58,7 +58,7 @@ export function AuthCallbackPage() {
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
-        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4" />
+        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4"></div>
         <h2 className="text-xl font-semibold mb-2">
           Authentication in progress...
         </h2>

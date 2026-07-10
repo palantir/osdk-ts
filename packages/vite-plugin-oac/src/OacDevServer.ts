@@ -49,7 +49,7 @@ export class OacDevServer extends OacServerContext {
   #connectMiddleware = async (
     req: Connect.IncomingMessage,
     res: ServerResponse<IncomingMessage>,
-    next: Connect.NextFunction,
+    next: Connect.NextFunction
   ): Promise<void> => {
     const mswEmitter = new EventEmitter<msw.LifeCycleEventsMap>();
 
@@ -59,7 +59,7 @@ export class OacDevServer extends OacServerContext {
       mswEmitter,
       req,
       res,
-      next,
+      next
     ));
   };
 
@@ -101,7 +101,7 @@ export class OacDevServer extends OacServerContext {
       await this.emitter.emit("generatedOntologyAssets");
     } catch (error) {
       this.logger.error(
-        `Error generating ontology assets: ${util.inspect(error)}`,
+        `Error generating ontology assets: ${util.inspect(error)}`
       );
     }
   };

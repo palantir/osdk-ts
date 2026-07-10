@@ -44,9 +44,11 @@ export function App(): React.JSX.Element {
       <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className={styles.tabContent}>
         {/* Remount on tab change so per-tab filter/selection state resets cleanly. */}
-        {activeTab === TAB_ASSIGNMENTS
-          ? <AssignmentsTab key={TAB_ASSIGNMENTS} />
-          : <StatusUpdatesTab key={TAB_STATUS_UPDATES} />}
+        {activeTab === TAB_ASSIGNMENTS ? (
+          <AssignmentsTab key={TAB_ASSIGNMENTS} />
+        ) : (
+          <StatusUpdatesTab key={TAB_STATUS_UPDATES} />
+        )}
       </div>
     </div>
   );

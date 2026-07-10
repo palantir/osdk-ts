@@ -359,7 +359,7 @@ function maybeConvertNegativeToParenthesis(
   shouldConvert: boolean
 ): string {
   if (shouldConvert && value < 0) {
-    return formatted.replace(/^-/, "(") + ")";
+    return formatted.replace(/^-/u, "(") + ")";
   }
   return formatted;
 }

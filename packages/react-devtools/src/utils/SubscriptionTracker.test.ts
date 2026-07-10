@@ -31,8 +31,8 @@ describe("SubscriptionTracker", () => {
     const id2 = tracker.startSubscription("sig-b");
 
     expect(id1).not.toBe(id2);
-    expect(id1).toMatch(/^sub-\d+$/);
-    expect(id2).toMatch(/^sub-\d+$/);
+    expect(id1).toMatch(/^sub-\d+$/u);
+    expect(id2).toMatch(/^sub-\d+$/u);
   });
 
   it("getActiveSubscriptions returns only non-ended subs", () => {

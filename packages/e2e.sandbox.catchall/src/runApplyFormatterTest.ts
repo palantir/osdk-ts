@@ -39,8 +39,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.booleanFormattedTrue,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "booleanFormattedTrue",
-      ),
+        "booleanFormattedTrue"
+      )
     );
   }
   if (testObject.booleanFormattedFalse !== undefined) {
@@ -49,8 +49,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.booleanFormattedFalse,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "booleanFormattedFalse",
-      ),
+        "booleanFormattedFalse"
+      )
     );
   }
 
@@ -61,8 +61,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleCurrencyUsd,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleCurrencyUsd",
-      ),
+        "doubleCurrencyUsd"
+      )
     );
   }
   if (testObject.doubleCurrencyEur !== undefined) {
@@ -71,8 +71,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleCurrencyEur,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleCurrencyEur",
-      ),
+        "doubleCurrencyEur"
+      )
     );
   }
   if (testObject.doubleCurrencyCompact !== undefined) {
@@ -81,8 +81,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleCurrencyCompact,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleCurrencyCompact",
-      ),
+        "doubleCurrencyCompact"
+      )
     );
   }
 
@@ -93,8 +93,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doublePercentage,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doublePercentage",
-      ),
+        "doublePercentage"
+      )
     );
   }
   if (testObject.doublePercentageDecimal !== undefined) {
@@ -103,8 +103,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doublePercentageDecimal,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doublePercentageDecimal",
-      ),
+        "doublePercentageDecimal"
+      )
     );
   }
 
@@ -115,8 +115,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.durationSeconds,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "durationSeconds",
-      ),
+        "durationSeconds"
+      )
     );
   }
   if (testObject.durationMilliseconds !== undefined) {
@@ -125,8 +125,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.durationMilliseconds,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "durationMilliseconds",
-      ),
+        "durationMilliseconds"
+      )
     );
   }
 
@@ -137,8 +137,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.dateShort,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "dateShort",
-      ),
+        "dateShort"
+      )
     );
   }
   if (testObject.dateLong !== undefined) {
@@ -147,8 +147,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.dateLong,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "dateLong",
-      ),
+        "dateLong"
+      )
     );
   }
   if (testObject.timestampDatetime !== undefined) {
@@ -157,8 +157,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.timestampDatetime,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "timestampDatetime",
-      ),
+        "timestampDatetime"
+      )
     );
   }
   if (testObject.timestampNyc !== undefined) {
@@ -167,8 +167,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.timestampNyc,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "timestampNyc",
-      ),
+        "timestampNyc"
+      )
     );
   }
 
@@ -179,8 +179,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleUnitMeter,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleUnitMeter",
-      ),
+        "doubleUnitMeter"
+      )
     );
   }
   if (testObject.doubleUnitKilogram !== undefined) {
@@ -189,8 +189,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleUnitKilogram,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleUnitKilogram",
-      ),
+        "doubleUnitKilogram"
+      )
     );
   }
   if (testObject.doubleUnitCelsius !== undefined) {
@@ -199,8 +199,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleUnitCelsius,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleUnitCelsius",
-      ),
+        "doubleUnitCelsius"
+      )
     );
   }
 
@@ -211,8 +211,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleThousandsK,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleThousandsK",
-      ),
+        "doubleThousandsK"
+      )
     );
   }
   if (testObject.doubleMillionsM !== undefined) {
@@ -221,8 +221,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleMillionsM,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleMillionsM",
-      ),
+        "doubleMillionsM"
+      )
     );
   }
   if (testObject.doubleBillionsB !== undefined) {
@@ -231,12 +231,12 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleBillionsB,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleBillionsB",
-      ),
+        "doubleBillionsB"
+      )
     );
   }
   console.log(
-    "\n--- Properties with reference to other properties formatting ---",
+    "\n--- Properties with reference to other properties formatting ---"
   );
   if (testObject.doubleCurrencyCompact != null) {
     console.log(
@@ -244,8 +244,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.doubleCurrencyCompact,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "doubleCurrencyCompact",
-      ),
+        "doubleCurrencyCompact"
+      )
     );
   }
   if (testObject.timestampUtc != null) {
@@ -254,8 +254,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.timestampUtc,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "timestampUtc",
-      ),
+        "timestampUtc"
+      )
     );
   }
   console.log("\n--- Known Type Formatting ---");
@@ -265,8 +265,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.stringUser,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "stringUser",
-      ),
+        "stringUser"
+      )
     );
   }
   if (testObject.stringResource !== undefined) {
@@ -275,8 +275,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       testObject.stringResource,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-        "stringResource",
-      ),
+        "stringResource"
+      )
     );
   }
   // Test with different locale (German)
@@ -289,8 +289,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
         "doubleCurrencyUsd",
-        { locale: "de-DE" },
-      ),
+        { locale: "de-DE" }
+      )
     );
   }
   if (testObject.doublePercentage !== undefined) {
@@ -300,8 +300,8 @@ export async function runApplyFormatterTest(): Promise<void> {
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
         "doublePercentage",
-        { locale: "de-DE" },
-      ),
+        { locale: "de-DE" }
+      )
     );
   }
 
@@ -318,8 +318,8 @@ export async function runApplyFormatterTest(): Promise<void> {
         {
           locale: "en-US",
           timezoneId: "America/New_York",
-        },
-      ),
+        }
+      )
     );
   }
 }

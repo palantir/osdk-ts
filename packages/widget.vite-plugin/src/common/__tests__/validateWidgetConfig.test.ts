@@ -30,7 +30,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.id = "a".repeat(101);
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Widget id length can be at most 100 characters",
+      "Widget id length can be at most 100 characters"
     );
   });
 
@@ -54,7 +54,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.name = "A".repeat(101);
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Widget name length can be at most 100 characters",
+      "Widget name length can be at most 100 characters"
     );
   });
 
@@ -63,7 +63,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.description = "A".repeat(251);
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Widget description length can be at most 250 characters",
+      "Widget description length can be at most 250 characters"
     );
   });
 
@@ -84,7 +84,7 @@ describe("validateWidgetConfig", () => {
     };
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Parameter id \"Invalid-Param\" does not match allowed pattern (must be camelCase)",
+      'Parameter id "Invalid-Param" does not match allowed pattern (must be camelCase)'
     );
   });
 
@@ -99,7 +99,7 @@ describe("validateWidgetConfig", () => {
     };
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Parameter id length can be at most 100 characters",
+      "Parameter id length can be at most 100 characters"
     );
   });
 
@@ -146,7 +146,7 @@ describe("validateWidgetConfig", () => {
       },
     };
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "ObjectSet parameter \"myObjectSet\" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2",
+      'ObjectSet parameter "myObjectSet" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2'
     );
   });
 });

@@ -79,16 +79,11 @@
         {
           "type": "applyScenario",
           "scenarioParameter": "scenario",
-          "objectTypeApiNames": [
-            "ScenarioTestOsdk"
-          ],
+          "objectTypeApiNames": ["ScenarioTestOsdk"],
           "linkTypes": [
             {
               "objectTypeApiName": "ScenarioTestOsdk",
-              "linkTypes": [
-                "right",
-                "left"
-              ]
+              "linkTypes": ["right", "left"]
             }
           ]
         }

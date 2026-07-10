@@ -37,7 +37,7 @@ export function generateFoundryConfigJson({
         },
       },
       null,
-      2,
+      2
     ) + "\n"
   );
 }

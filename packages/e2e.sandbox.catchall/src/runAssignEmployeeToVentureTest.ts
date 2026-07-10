@@ -62,7 +62,7 @@ export async function runAssignEmployeeToVentureTest(): Promise<void> {
           },
           {
             $validateOnly: true,
-          },
+          }
         );
 
         if (false) {
@@ -75,7 +75,7 @@ export async function runAssignEmployeeToVentureTest(): Promise<void> {
             ],
             {
               $returnEdits: true,
-            },
+            }
           );
         }
 

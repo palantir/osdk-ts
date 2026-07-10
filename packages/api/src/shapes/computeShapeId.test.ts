@@ -39,7 +39,7 @@ function makeInput(
 describe("computeShapeId", () => {
   it("returns a deterministic 8-char hex string", () => {
     const id = computeShapeId(makeInput());
-    expect(id).toMatch(/^[0-9a-f]{8}$/);
+    expect(id).toMatch(/^[0-9a-f]{8}$/u);
     expect(computeShapeId(makeInput())).toBe(id);
   });
 

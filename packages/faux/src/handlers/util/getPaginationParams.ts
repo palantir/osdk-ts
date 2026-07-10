@@ -18,26 +18,30 @@ import type { PageToken } from "@osdk/foundry.core";
 import type { LoadObjectSetRequestV2 } from "@osdk/internal.foundry.ontologies";
 import type { StrictRequest } from "msw";
 
-export function getPaginationParamsFromUrl(
-  request: StrictRequest<any>,
-): { pageSize: number | undefined; pageToken: PageToken | undefined } {
+export function getPaginationParamsFromUrl(request: StrictRequest<any>): {
+  pageSize: number | undefined;
+  pageToken: PageToken | undefined;
+} {
   const url = new URL(request.url);
   return {
-    pageSize: url.searchParams.get("pageSize") == null
-      ? undefined
-      : Number(url.searchParams.get("pageSize")),
-    pageToken: url.searchParams.get("pageToken") == null
-      ? undefined
-      : (url.searchParams.get("pageToken") as string),
+    pageSize:
+      url.searchParams.get("pageSize") == null
+        ? undefined
+        : Number(url.searchParams.get("pageSize")),
+    pageToken:
+      url.searchParams.get("pageToken") == null
+        ? undefined
+        : (url.searchParams.get("pageToken") as string),
   };
 }
 
-export function getPaginationParamsFromRequest(
-  { pageSize, pageToken }: Pick<
-    LoadObjectSetRequestV2,
-    "pageToken" | "pageSize"
-  >,
-): { pageSize: number | undefined; pageToken: PageToken | undefined } {
+export function getPaginationParamsFromRequest({
+  pageSize,
+  pageToken,
+}: Pick<LoadObjectSetRequestV2, "pageToken" | "pageSize">): {
+  pageSize: number | undefined;
+  pageToken: PageToken | undefined;
+} {
   return {
     pageSize,
     pageToken,

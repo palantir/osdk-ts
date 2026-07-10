@@ -46,7 +46,7 @@ function fakeModel(): LanguageModel {
 }
 
 function streamFromChunks(
-  chunks: ReadonlyArray<TextStreamChunk>,
+  chunks: ReadonlyArray<TextStreamChunk>
 ): ReadableStream<TextStreamChunk> {
   return new ReadableStream<TextStreamChunk>({
     start(c) {
@@ -59,7 +59,7 @@ function streamFromChunks(
 }
 
 function fakeStreamTextResult(
-  chunks: ReadonlyArray<TextStreamChunk>,
+  chunks: ReadonlyArray<TextStreamChunk>
 ): StreamTextResult {
   const fullStream = streamFromChunks(chunks);
   // textStream is unused by the transport; produce an empty stream.
@@ -132,7 +132,7 @@ describe("LmsChatTransport", () => {
           rawFinishReason: "stop",
           usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
         },
-      ]),
+      ])
     );
     const t = new LmsChatTransport({
       model: fakeModel(),
@@ -174,7 +174,7 @@ describe("LmsChatTransport", () => {
           rawFinishReason: "stop",
           usage: { inputTokens: 1, outputTokens: 2, totalTokens: 3 },
         },
-      ]),
+      ])
     );
     const t = new LmsChatTransport({ model: fakeModel() });
 
@@ -207,7 +207,7 @@ describe("LmsChatTransport", () => {
     const finish = chunks[7];
     if (finish == null || finish.type !== "finish") {
       throw new Error(
-        `expected eighth chunk to be 'finish', got ${finish?.type}`,
+        `expected eighth chunk to be 'finish', got ${finish?.type}`
       );
     }
     expect(finish.messageMetadata).toMatchObject({
@@ -218,7 +218,7 @@ describe("LmsChatTransport", () => {
 
   it("forwards a streamText error chunk as a UIMessage error chunk", async () => {
     streamTextMock.mockReturnValue(
-      fakeStreamTextResult([{ type: "error", error: new Error("boom") }]),
+      fakeStreamTextResult([{ type: "error", error: new Error("boom") }])
     );
     const t = new LmsChatTransport({ model: fakeModel() });
 
@@ -243,7 +243,7 @@ describe("LmsChatTransport", () => {
         { type: "text-delta", id: "text-0", delta: "partial" },
         { type: "reasoning-delta", id: "r-0", delta: "thinking" },
         { type: "error", error: new Error("boom") },
-      ]),
+      ])
     );
     const t = new LmsChatTransport({ model: fakeModel() });
 
@@ -277,7 +277,7 @@ describe("LmsChatTransport", () => {
           rawFinishReason: "stop",
           usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
         },
-      ]),
+      ])
     );
     const t = new LmsChatTransport({ model: fakeModel() });
     const ctrl = new AbortController();

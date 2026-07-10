@@ -41,7 +41,7 @@ function normalSubscription() {
           "Object with primaryKey ",
           object.object.$primaryKey,
           " changed stringProperty to ",
-          object.object.stringProperty,
+          object.object.stringProperty
         );
         if (++counter >= 3) {
           console.log("Unsubscribing");
@@ -73,7 +73,7 @@ function normalSubscription() {
         });
       },
     },
-    { properties: ["stringProperty"], includeRid: true },
+    { properties: ["stringProperty"], includeRid: true }
   );
 }
 
@@ -84,7 +84,7 @@ function interfaceSubscription() {
         "Interface with primaryKey ",
         object.object.$primaryKey,
         " changed objectDescription to ",
-        object.object.objectDescription,
+        object.object.objectDescription
       );
     },
     async onSuccessfulSubscription() {
@@ -109,14 +109,14 @@ function referenceUpdateSubscription() {
           "Bus with positionId ",
           object.object.vehicleId,
           " changed location to ",
-          object.object.positionId.lastFetchedValue?.value,
+          object.object.positionId.lastFetchedValue?.value
         );
       } else {
         console.log(
           "Bus with vehicleId ",
           object.object.vehicleId,
           " changed nextStop to ",
-          object.object.nextStopId,
+          object.object.nextStopId
         );
       }
     },
@@ -138,10 +138,10 @@ function referenceUpdateSubscription() {
 async function noTypeObjectSetSubscription() {
   const objectSetRid = await createAndFetchTempObjectSetRid(
     client,
-    client(OsdkTestObject),
+    client(OsdkTestObject)
   );
   const subscription = client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet
   ).subscribeToNoTypeObjectSet(
     objectSetRid,
     {
@@ -150,7 +150,7 @@ async function noTypeObjectSetSubscription() {
           "No-type object set change for $apiName ",
           object.object.$apiName,
           " $rid ",
-          object.object.$rid,
+          object.object.$rid
         );
       },
       onError(err) {
@@ -167,7 +167,7 @@ async function noTypeObjectSetSubscription() {
         }, 10000);
       },
     },
-    { includeRid: true },
+    { includeRid: true }
   );
 }
 

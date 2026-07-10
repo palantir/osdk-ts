@@ -42,11 +42,11 @@ interface UseObjectTableStateReturn<
   effectiveColumnDefs: Array<ColumnDefinition<Q, RDPs>>;
   handleOrderByChanged: (orderBy: Array<OrderByEntry<Q, RDPs>>) => void;
   handleColumnVisibilityChanged: (
-    changes: Array<{ columnId: string; isVisible: boolean }>,
+    changes: Array<{ columnId: string; isVisible: boolean }>
   ) => void;
   handleColumnResize: (columnId: string, size: number | null) => void;
   handleColumnsPinnedChanged: (
-    states: Array<{ columnId: string; pinned: PinDirection }>,
+    states: Array<{ columnId: string; pinned: PinDirection }>
   ) => void;
 }
 
@@ -59,7 +59,7 @@ export function useObjectTableState<
   RDPs extends Record<string, SimplePropertyDef>,
 >(
   baseColumnDefs: Array<ColumnDefinition<Q, RDPs>>,
-  defaultOrderBy: Array<OrderByEntry<Q, RDPs>>,
+  defaultOrderBy: Array<OrderByEntry<Q, RDPs>>
 ): UseObjectTableStateReturn<Q, RDPs> {
   const [orderBy, setOrderBy] = React.useState<
     Array<OrderByEntry<Q, RDPs>> | undefined
@@ -87,25 +87,25 @@ export function useObjectTableState<
             width: columnSizing[id] ?? def.width,
             pinned: columnPinning != null ? columnPinning[id] : def.pinned,
           };
-        },
+        }
       ),
-    [baseColumnDefs, columnVisibility, columnSizing, columnPinning],
+    [baseColumnDefs, columnVisibility, columnSizing, columnPinning]
   );
 
   const handleOrderByChanged = React.useCallback(
     (newOrderBy: Array<OrderByEntry<Q, RDPs>>) => {
       setOrderBy(newOrderBy);
     },
-    [],
+    []
   );
 
   const handleColumnVisibilityChanged = React.useCallback(
     (changes: Array<{ columnId: string; isVisible: boolean }>) => {
       setColumnVisibility(
-        changes.map(({ columnId, isVisible }) => ({ id: columnId, isVisible })),
+        changes.map(({ columnId, isVisible }) => ({ id: columnId, isVisible }))
       );
     },
-    [],
+    []
   );
 
   const handleColumnResize = React.useCallback(
@@ -120,7 +120,7 @@ export function useObjectTableState<
         return next;
       });
     },
-    [],
+    []
   );
 
   const handleColumnsPinnedChanged = React.useCallback(
@@ -131,7 +131,7 @@ export function useObjectTableState<
       }
       setColumnPinning(pinning);
     },
-    [],
+    []
   );
 
   return {

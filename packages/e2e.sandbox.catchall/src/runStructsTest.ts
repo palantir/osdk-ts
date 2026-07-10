@@ -24,7 +24,7 @@ import { client, dsClient } from "./client.js";
 
 export async function runStructsTest(): Promise<void> {
   const player = await dsClient(BgaoNflPlayer).fetchOne(
-    "50A409AB-C909-453A-A61A-31B51324C8E3",
+    "50A409AB-C909-453A-A61A-31B51324C8E3"
   );
 
   // Making sure things work when struct values are not set, like with this object
@@ -33,7 +33,7 @@ export async function runStructsTest(): Promise<void> {
   console.log(player.address?.addressLine1);
 
   const airport = await dsClient(McAirportStruct).fetchOne(
-    "Ronald Reagan Washington National Airport",
+    "Ronald Reagan Washington National Airport"
   );
 
   console.log(airport.airportStruct);
@@ -84,11 +84,11 @@ export async function runStructsTest(): Promise<void> {
 
   console.log(
     "Filtered Array of Structs: ",
-    filteredArrayOfStruct.data[0].structArray,
+    filteredArrayOfStruct.data[0].structArray
   );
   console.log(
     "Filtered Array of Structs With Or (should have two value): ",
-    filteredArrayOfStructWith2.data,
+    filteredArrayOfStructWith2.data
   );
 }
 

@@ -79,16 +79,16 @@ test("visitNpmPackages", async () => {
   expect(onVisit).toHaveBeenNthCalledWith(
     1,
     "/path/to/package.json",
-    packageJson1,
+    packageJson1
   );
   expect(onVisit).toHaveBeenNthCalledWith(
     2,
     "/path/to/node_modules/package2/package.json",
-    packageJson2,
+    packageJson2
   );
   expect(onVisit).toHaveBeenNthCalledWith(
     3,
     "/path/to/node_modules/package3/package.json",
-    packageJson3,
+    packageJson3
   );
 });

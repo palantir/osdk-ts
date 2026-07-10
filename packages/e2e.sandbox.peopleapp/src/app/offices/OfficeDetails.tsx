@@ -192,31 +192,31 @@ function Occupants({ office }: { office: Office.OsdkInstance }) {
       {error && (
         <ErrorMessage message={`Error loading occupants: ${error.message}`} />
       )}
-      {links && links.length > 0
-        ? (
-          <div>
-            <p className="mb-2 text-sm text-gray-600">
-              {links.length} employees in this office
-            </p>
-            <ul className="list-none">
-              {links.map((employee) => (
-                <li
-                  key={employee.$primaryKey}
-                  className="py-2 px-3 mb-1 rounded bg-gray-50"
-                >
-                  <div className="font-medium">
-                    {(employee as any).fullName ?? "No name available"}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {(employee as any).jobTitle ?? "No job title"} - #
-                    {(employee as any).employeeNumber}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-        : <div className="text-sm italic">No occupants in this office</div>}
+      {links && links.length > 0 ? (
+        <div>
+          <p className="mb-2 text-sm text-gray-600">
+            {links.length} employees in this office
+          </p>
+          <ul className="list-none">
+            {links.map((employee) => (
+              <li
+                key={employee.$primaryKey}
+                className="py-2 px-3 mb-1 rounded bg-gray-50"
+              >
+                <div className="font-medium">
+                  {(employee as any).fullName ?? "No name available"}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {(employee as any).jobTitle ?? "No job title"} - #
+                  {(employee as any).employeeNumber}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div className="text-sm italic">No occupants in this office</div>
+      )}
     </>
   );
 }

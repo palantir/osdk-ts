@@ -31,7 +31,7 @@ export interface LatestStatusFilterProps {
 function isSelected(
   selections: readonly LatestStatusSelection[],
   type: string,
-  value: string,
+  value: string
 ): boolean {
   return selections.some((s) => s.type === type && s.value === value);
 }
@@ -41,7 +41,7 @@ function isSelected(
  * selected values are OR'd; across types they are combined with the AND/OR toggle.
  */
 export function LatestStatusFilter(
-  props: LatestStatusFilterProps,
+  props: LatestStatusFilterProps
 ): React.JSX.Element {
   const { selections, onChange, composeAcrossTypes, onComposeChange } = props;
 
@@ -49,13 +49,13 @@ export function LatestStatusFilter(
     (type: string, value: string) => {
       if (isSelected(selections, type, value)) {
         onChange(
-          selections.filter((s) => !(s.type === type && s.value === value)),
+          selections.filter((s) => !(s.type === type && s.value === value))
         );
       } else {
         onChange([...selections, { type, value }]);
       }
     },
-    [selections, onChange],
+    [selections, onChange]
   );
 
   const clearAll = React.useCallback(() => onChange([]), [onChange]);
@@ -67,34 +67,36 @@ export function LatestStatusFilter(
         <div className={styles.composeToggle}>
           <button
             type="button"
-            className={composeAcrossTypes === "$and"
-              ? styles.composeActive
-              : styles.composeButton}
+            className={
+              composeAcrossTypes === "$and"
+                ? styles.composeActive
+                : styles.composeButton
+            }
             onClick={() => onComposeChange("$and")}
           >
             Match all (AND)
           </button>
           <button
             type="button"
-            className={composeAcrossTypes === "$or"
-              ? styles.composeActive
-              : styles.composeButton}
+            className={
+              composeAcrossTypes === "$or"
+                ? styles.composeActive
+                : styles.composeButton
+            }
             onClick={() => onComposeChange("$or")}
           >
             Match any (OR)
           </button>
         </div>
-        {selections.length > 0
-          ? (
-            <button
-              type="button"
-              className={styles.clearButton}
-              onClick={clearAll}
-            >
-              Clear all
-            </button>
-          )
-          : null}
+        {selections.length > 0 ? (
+          <button
+            type="button"
+            className={styles.clearButton}
+            onClick={clearAll}
+          >
+            Clear all
+          </button>
+        ) : null}
       </div>
       <div className={styles.groups}>
         {STATUS_TYPES.map((spec) => (

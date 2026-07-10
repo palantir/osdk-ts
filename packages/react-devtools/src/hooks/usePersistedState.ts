@@ -16,6 +16,8 @@
 
 import React from "react";
 
+const OSDK_DEVTOOLS_KEY_PREFIX = "osdk-";
+
 function readFromStorage<T>(key: string, defaultValue: T): T {
   if (typeof window === "undefined") {
     return defaultValue;
@@ -30,7 +32,10 @@ function readFromStorage<T>(key: string, defaultValue: T): T {
 }
 
 export function usePersistedState<T>(
-  key: string,
+  /**
+   * The key will be prefixed with `OSDK_DEVTOOLS_KEY_PREFIX`
+   */
+  initialKey: string,
   defaultValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const storeRef = React.useRef<{
@@ -38,6 +43,8 @@ export function usePersistedState<T>(
     value: T;
     listeners: Set<() => void>;
   } | null>(null);
+
+  const key = `${OSDK_DEVTOOLS_KEY_PREFIX}${initialKey}`;
 
   if (storeRef.current == null || storeRef.current.key !== key) {
     storeRef.current = {
@@ -117,4 +124,26 @@ export function usePersistedState<T>(
   );
 
   return [value, setPersistedValue];
+}
+
+/**
+ * Function exported for testing.
+ * We don't want tests to use localStorage directly since the storage layer could change
+ */
+export function clearPersistedState(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key != null && key.startsWith(OSDK_DEVTOOLS_KEY_PREFIX)) {
+      keysToRemove.push(key);
+    }
+  }
+
+  for (const key of keysToRemove) {
+    localStorage.removeItem(key);
+  }
 }

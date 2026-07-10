@@ -16,9 +16,9 @@ export async function runReducerAndMainValueTest(): Promise<void> {
     reducerTestObject.data[0].stringArray;
   const mainValueStruct:
     | {
-      string1: string;
-      integer1: string;
-    }
+        string1: string;
+        integer1: string;
+      }
     | undefined = reducerTestObject.data[0].structWithMultipleMain;
   assert(typeof reducedValue === "string");
   assert(typeof mainValueStruct);

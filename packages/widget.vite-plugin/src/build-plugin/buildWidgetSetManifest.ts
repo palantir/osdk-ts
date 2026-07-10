@@ -33,7 +33,7 @@ export function buildWidgetSetManifest(
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
   widgetSetInputSpec: WidgetSetInputSpec,
-  pluginOptions?: FoundryWidgetPluginOptions,
+  pluginOptions?: FoundryWidgetPluginOptions
 ): WidgetSetManifest {
   validateWidgetSet(widgetBuilds);
   return {
@@ -44,7 +44,7 @@ export function buildWidgetSetManifest(
       widgets: Object.fromEntries(
         widgetBuilds
           .map((build) => buildWidgetManifest(build, pluginOptions))
-          .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
+          .map((widgetManifest) => [widgetManifest.id, widgetManifest])
       ),
       inputSpec: widgetSetInputSpec,
     },
@@ -53,7 +53,7 @@ export function buildWidgetSetManifest(
 
 function buildWidgetManifest(
   widgetBuild: WidgetBuildOutputs,
-  pluginOptions?: FoundryWidgetPluginOptions,
+  pluginOptions?: FoundryWidgetPluginOptions
 ): WidgetManifestConfig {
   return buildWidgetManifestConfig(
     widgetBuild.widgetConfig,
@@ -64,7 +64,7 @@ function buildWidgetManifest(
     widgetBuild.stylesheets.map((path) => ({
       path: trimLeadingSlash(path),
     })),
-    pluginOptions,
+    pluginOptions
   );
 }
 
@@ -76,7 +76,7 @@ export function buildWidgetManifestConfig(
   widgetConfig: WidgetConfig<ParameterConfig>,
   entrypointJs: Array<{ path: string; type: "module" | "text/javascript" }>,
   entrypointCss: Array<{ path: string }>,
-  pluginOptions?: FoundryWidgetPluginOptions,
+  pluginOptions?: FoundryWidgetPluginOptions
 ): WidgetManifestConfig {
   return {
     id: widgetConfig.id,
@@ -88,24 +88,25 @@ export function buildWidgetManifestConfig(
     parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
-    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
-      ?? pluginOptions?.defaults?.refreshHostDataOnAction,
+    refreshHostDataOnAction:
+      widgetConfig.refreshHostDataOnAction ??
+      pluginOptions?.defaults?.refreshHostDataOnAction,
   };
 }
 
 export function convertParameters(
-  parameters: Record<string, ParameterDefinition>,
+  parameters: Record<string, ParameterDefinition>
 ): Record<string, ManifestParameterDefinition> {
   return Object.fromEntries(
     Object.entries(parameters).map(([key, param]) => [
       key,
       convertParameter(param),
-    ]),
+    ])
   );
 }
 
 function convertParameter(
-  parameter: ParameterDefinition,
+  parameter: ParameterDefinition
 ): ManifestParameterDefinition {
   if (parameter.type === "objectSet") {
     // Config has already been validated so rid must be present
@@ -115,9 +116,10 @@ function convertParameter(
     return {
       type: "objectSet",
       displayName: parameter.displayName,
-      objectTypeRids: parameter.allowedType.type === "object"
-        ? [parameter.allowedType.internalDoNotUseMetadata.rid]
-        : [],
+      objectTypeRids:
+        parameter.allowedType.type === "object"
+          ? [parameter.allowedType.internalDoNotUseMetadata.rid]
+          : [],
       allowedType: parameter.allowedType.internalDoNotUseMetadata.rid,
     };
   }

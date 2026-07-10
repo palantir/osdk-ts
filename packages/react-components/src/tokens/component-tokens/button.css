@@ -4,6 +4,7 @@
   --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
   --osdk-button-border-color: color-mix(in oklch, var(--bp-palette-black) 20%, transparent);
   --osdk-button-border: none;
+  --osdk-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-button-drop-shadow-color: color-mix(in oklch, var(--bp-palette-black) 10%, transparent);
   --osdk-button-shadow:
     inset 0 0 0 1px var(--osdk-button-border-color),

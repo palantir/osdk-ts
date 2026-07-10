@@ -34,7 +34,7 @@ export interface RecordStatusUpdateFormProps {
 
 /** Records a new StatusUpdate. The caller supplies timestamp, timestampEpochMs and typeValue. */
 export function RecordStatusUpdateForm(
-  props: RecordStatusUpdateFormProps,
+  props: RecordStatusUpdateFormProps
 ): React.JSX.Element {
   const { assignment } = props;
   const { applyAction, isPending, error } = useOsdkAction(recordStatusUpdate);
@@ -77,7 +77,7 @@ export function RecordStatusUpdateForm(
         // unhandled rejection.
         .catch(() => {});
     },
-    [applyAction, assignment, type, effectiveValue, comment],
+    [applyAction, assignment, type, effectiveValue, comment]
   );
 
   return (

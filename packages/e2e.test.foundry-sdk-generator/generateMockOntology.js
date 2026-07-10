@@ -26,7 +26,7 @@ import { $ } from "execa";
 
 async function setup() {
   const dir = await fs.mkdtemp(
-    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
+    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-")
   );
 
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), undefined);
@@ -113,7 +113,7 @@ async function setup() {
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "build",
-    "codegen",
+    "codegen"
   );
 
   await fs.rm(finalOutDir, { recursive: true, force: true });
@@ -132,7 +132,7 @@ await setup();
 async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });
-  } catch (e) {
+  } catch {
     // console.debug("rm error", e);
     // Only needed for regenerations
   }
@@ -155,7 +155,7 @@ async function safeStat(filePath, type) {
     return ret;
   } catch (e) {
     if (type === "should exist") {
-      throw new Error(`Expected ${filePath} to exist`);
+      throw new Error(`Expected ${filePath} to exist`, { cause: e });
     }
 
     // eslint-disable-next-line no-console

@@ -49,7 +49,7 @@ export function startNodeApiServer<
     msw.http.all("*", async () => {
       await delay(0);
     }),
-    ...fauxFoundry.handlers,
+    ...fauxFoundry.handlers
   );
 
   const logger_ = fauxFoundry.logger?.child({}, { msgPrefix: "msw" });
@@ -62,7 +62,7 @@ export function startNodeApiServer<
 
     logger("request:start", requestId)?.debug(
       `${request.method} ${request.url}`,
-      blob.type === "application/json" ? await blob.text() : blob,
+      blob.type === "application/json" ? await blob.text() : blob
     );
   });
   apiServer.events.on("unhandledException", ({ error, requestId, request }) => {
@@ -72,7 +72,7 @@ export function startNodeApiServer<
     logger("response:mocked", requestId)?.debug(
       "Mocked response",
       response.status,
-      response.statusText,
+      response.statusText
     );
   });
   apiServer.events.on("request:end", ({ request, requestId }) => {
@@ -80,7 +80,7 @@ export function startNodeApiServer<
   });
   apiServer.events.on("request:unhandled", ({ request, requestId }) => {
     logger("request:unhandled", requestId)?.warn(
-      `Unhandled request ${request.method} ${request.url}`,
+      `Unhandled request ${request.method} ${request.url}`
     );
   });
   const auth = () => Promise.resolve("myAccessToken");
@@ -94,7 +94,7 @@ export function startNodeApiServer<
       fauxFoundry.baseUrl,
       fauxFoundry.defaultOntologyRid,
       auth,
-      ...clientArgs,
+      ...clientArgs
     ),
   };
 }

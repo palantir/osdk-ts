@@ -63,7 +63,7 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
       })
       .group(
         ["widgetSet", "foundryUrl", "token", "tokenFile"],
-        "Common Options",
+        "Common Options"
       )
       .command(version)
       .command(deploy)

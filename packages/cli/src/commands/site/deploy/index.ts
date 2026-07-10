@@ -34,9 +34,8 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
     const directory = siteConfig?.directory;
     const autoVersion = siteConfig?.autoVersion;
-    const gitTagPrefix = autoVersion?.type === "git-describe"
-      ? autoVersion.tagPrefix
-      : undefined;
+    const gitTagPrefix =
+      autoVersion?.type === "git-describe" ? autoVersion.tagPrefix : undefined;
     const uploadOnly = siteConfig?.uploadOnly;
 
     return argv
@@ -90,48 +89,48 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
         // So this case is for when nothing is provided.
         if (
-          autoVersion == null
-          && args.autoVersion == null
-          && args.version == null
+          autoVersion == null &&
+          args.autoVersion == null &&
+          args.version == null
         ) {
           throw new YargsCheckError(
-            "One of --version or --autoVersion must be specified",
+            "One of --version or --autoVersion must be specified"
           );
         }
 
         if (args.version != null && !isValidSemver(args.version)) {
           throw new YargsCheckError(
-            `--version "${args.version}" must be a valid SemVer string`,
+            `--version "${args.version}" must be a valid SemVer string`
           );
         }
 
         const autoVersionType = args.autoVersion ?? autoVersion;
         if (
-          autoVersionType != null
-          && autoVersionType !== "git-describe"
-          && autoVersionType !== "package-json"
+          autoVersionType != null &&
+          autoVersionType !== "git-describe" &&
+          autoVersionType !== "package-json"
         ) {
           throw new YargsCheckError(
-            `Only 'git-describe' and 'package-json' are supported for autoVersion`,
+            `Only 'git-describe' and 'package-json' are supported for autoVersion`
           );
         }
 
         const gitTagPrefixValue = args.gitTagPrefix ?? gitTagPrefix;
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
-            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+            `--gitTagPrefix is only supported when --autoVersion=git-describe`
           );
         }
 
         if (args.uploadOnly && args.snapshot) {
           throw new YargsCheckError(
-            `--uploadOnly and --snapshot cannot be enabled together`,
+            `--uploadOnly and --snapshot cannot be enabled together`
           );
         }
 
         if (args.snapshotId != null && !args.snapshot) {
           throw new YargsCheckError(
-            "--snapshotId is only supported when --snapshot is enabled",
+            "--snapshotId is only supported when --snapshot is enabled"
           );
         }
 
@@ -144,12 +143,13 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
     const { version, autoVersion, gitTagPrefix, ...restArgs } = args;
-    const selectedVersion = args.version != null
-      ? args.version
-      : {
-        type: args.autoVersion!,
-        tagPrefix: args.gitTagPrefix,
-      };
+    const selectedVersion =
+      args.version != null
+        ? args.version
+        : {
+            type: args.autoVersion!,
+            tagPrefix: args.gitTagPrefix,
+          };
     await command.default({ ...restArgs, selectedVersion });
   },
 };

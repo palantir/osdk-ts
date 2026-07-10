@@ -22,7 +22,7 @@ export const TodoView = React.memo(function TodoView({ todo }: Props) {
         ctx.updateObject(
           todo.$clone({
             isComplete: !todo.isComplete,
-          }),
+          })
         );
       },
     });

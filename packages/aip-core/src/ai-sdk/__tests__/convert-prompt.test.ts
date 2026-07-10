@@ -24,7 +24,7 @@ describe("convertPrompt", () => {
     const warnings: Array<SharedV3Warning> = [];
     const result = convertPrompt(
       [{ role: "system", content: "Be helpful." }],
-      warnings,
+      warnings
     );
     expect(result).toEqual([{ role: "system", content: "Be helpful." }]);
     expect(warnings).toHaveLength(0);
@@ -34,7 +34,7 @@ describe("convertPrompt", () => {
     const warnings: Array<SharedV3Warning> = [];
     const result = convertPrompt(
       [{ role: "user", content: [{ type: "text", text: "Hello" }] }],
-      warnings,
+      warnings
     );
     expect(result).toEqual([
       {
@@ -55,7 +55,7 @@ describe("convertPrompt", () => {
           ],
         },
       ],
-      warnings,
+      warnings
     );
     expect(warnings).toHaveLength(1);
     expect(warnings[0].type).toBe("unsupported");
@@ -90,7 +90,7 @@ describe("convertPrompt", () => {
             type: "function",
             function: {
               name: "search",
-              arguments: "{\"query\":\"test\"}",
+              arguments: '{"query":"test"}',
             },
           },
         ],
@@ -139,7 +139,7 @@ describe("convertPrompt", () => {
       },
     ];
     const result = convertPrompt(prompt, warnings);
-    expect(result[0].content).toBe("{\"count\":3}");
+    expect(result[0].content).toBe('{"count":3}');
   });
 
   it("handles execution-denied tool results", () => {

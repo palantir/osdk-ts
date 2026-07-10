@@ -21,6 +21,7 @@ import type {
   RequestHandlerOptions,
 } from "msw";
 import { http, HttpResponse } from "msw";
+
 import type { BaseAPIError } from "../../BaseError.js";
 import { authHandlerMiddleware } from "../authHandlerMiddleware.js";
 
@@ -33,26 +34,27 @@ export class OpenApiCallError extends Error {
       errorInstanceId: string;
       errorDescription?: string;
       parameters: Record<string, unknown>;
-    },
+    }
   ) {
     super(
-      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${
-        JSON.stringify(
-          json.parameters,
-        )
-      }`,
+      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${JSON.stringify(
+        json.parameters
+      )}`
     );
+    this.name = "OpenApiCallError";
   }
 }
 
 type ExtractStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? [A, ...ExtractStringParams<B>]
-  : []
+  ? A extends string
+    ? [A, ...ExtractStringParams<B>]
+    : []
   : [];
 
 export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? SkipStringParams<B>
-  : T
+  ? A extends string
+    ? SkipStringParams<B>
+    : T
   : T;
 
 /**
@@ -65,7 +67,8 @@ export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
  */
 export type ExtractBody<
   X extends (reqCall: any, ...args: any[]) => Promise<any>,
-> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0] ? never
+> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0]
+  ? never
   : SkipStringParams<ParamsAfterReqCall<X>>[0];
 
 export type ExtractResponse<X extends (...args: any[]) => Promise<any>> =
@@ -86,7 +89,7 @@ export type RestImpl<
       REQ_BODY,
       RESP_BODY | BaseAPIError
     >
-  >[0],
+  >[0]
 ) => RESP_BODY | Promise<RESP_BODY>;
 
 export type OpenApiCallFactory<
@@ -96,7 +99,7 @@ export type OpenApiCallFactory<
 > = (
   baseUrl: string,
   restImpl: RestImpl<URL_PARAMS, REQ_BODY, RESP_BODY>,
-  options?: RequestHandlerOptions,
+  options?: RequestHandlerOptions
 ) => HttpHandler;
 
 export type CallFactory<
@@ -105,7 +108,7 @@ export type CallFactory<
 > = (
   baseUrl: string,
   restImpl: RestImpl<URL_PARAMS, ExtractBody<X>, ExtractResponse<X>>,
-  options?: RequestHandlerOptions,
+  options?: RequestHandlerOptions
 ) => HttpHandler;
 
 export function handleOpenApiCall<
@@ -115,7 +118,7 @@ export function handleOpenApiCall<
   return (
     baseUrl: string,
     restImpl: RestImpl<N[number], ExtractBody<X>, ExtractResponse<X>>,
-    options?: RequestHandlerOptions,
+    options?: RequestHandlerOptions
   ): HttpHandler => {
     let captured: {
       method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -133,7 +136,7 @@ export function handleOpenApiCall<
         u.search = ""; // msw doesn't want the search string
         captured = {
           method: req.method as any,
-          endPoint: u.toString().replace(/%3A/g, ":"),
+          endPoint: u.toString().replace(/%3A/gu, ":"),
         };
 
         // fake a response object so the call doesn't fail
@@ -151,7 +154,7 @@ export function handleOpenApiCall<
       capture as any,
       ...(names.map((n) => `:${n}`) as any),
       // add a simulated blob in here in case of an upload
-      { type: "", size: 5 },
+      { type: "", size: 5 }
     );
 
     return http[
@@ -164,7 +167,7 @@ export function handleOpenApiCall<
 
           if (result instanceof Response) {
             return new HttpResponse(
-              result.body,
+              result.body
             ) as HttpResponse<DefaultBodyType>;
           }
           return HttpResponse.json(result);
@@ -175,13 +178,13 @@ export function handleOpenApiCall<
               {
                 status: e.status,
                 statusText: e.message,
-              },
+              }
             );
           }
           throw e;
         }
       }),
-      options,
+      options
     );
   };
 }

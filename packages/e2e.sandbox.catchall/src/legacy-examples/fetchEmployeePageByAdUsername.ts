@@ -22,7 +22,7 @@ import { Employee } from "@osdk/e2e.generated.catchall";
  */
 export async function fetchEmployeePageByAdUsername(
   client: Client,
-  adUsername: string,
+  adUsername: string
 ): Promise<void> {
   const result = await client(Employee)
     .where({
@@ -39,7 +39,7 @@ export async function fetchEmployeePageByAdUsername(
       adUsername,
       businessTitle,
       employeeNumber,
-    })),
+    }))
   );
   console.log();
 }

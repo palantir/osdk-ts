@@ -61,7 +61,7 @@ function emptyToUndefined(value: string | undefined): string | undefined {
  * assignment's primary key) when a different assignment loads.
  */
 export function UpdateAssignmentForm(
-  props: UpdateAssignmentFormProps,
+  props: UpdateAssignmentFormProps
 ): React.JSX.Element {
   const { assignment } = props;
   const { applyAction, error } = useOsdkAction(updateAssignment);
@@ -77,7 +77,7 @@ export function UpdateAssignmentForm(
         defaultValue: assignment[fieldKey] ?? "",
         fieldComponentProps: {},
       })),
-    [assignment],
+    [assignment]
   );
 
   const handleSubmit = React.useCallback(
@@ -91,7 +91,7 @@ export function UpdateAssignmentForm(
         managerId: emptyToUndefined(formState.managerId),
       });
     },
-    [applyAction, assignment],
+    [applyAction, assignment]
   );
 
   return (

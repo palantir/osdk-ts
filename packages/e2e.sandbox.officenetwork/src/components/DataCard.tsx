@@ -34,10 +34,10 @@ export function DataCard({
         p-3 rounded border transition-all duration-150
         ${onClick ? "cursor-pointer" : ""}
         ${
-        isSelected
-          ? "bg-[color:var(--card-accent)]/10 border-[color:var(--card-accent)]/50"
-          : "bg-[var(--bg-tertiary)] border-[var(--border-subtle)] hover:border-[var(--border-accent)]"
-      }
+          isSelected
+            ? "bg-[color:var(--card-accent)]/10 border-[color:var(--card-accent)]/50"
+            : "bg-[var(--bg-tertiary)] border-[var(--border-subtle)] hover:border-[var(--border-accent)]"
+        }
       `}
     >
       <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] mb-1">

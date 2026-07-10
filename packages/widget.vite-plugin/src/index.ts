@@ -33,7 +33,7 @@ export interface FoundryWidgetPluginOptions {
 }
 
 export default function FoundryWidgetPlugin(
-  options?: FoundryWidgetPluginOptions,
+  options?: FoundryWidgetPluginOptions
 ): PluginOption {
   return [FoundryWidgetDevPlugin(options), FoundryWidgetBuildPlugin(options)];
 }

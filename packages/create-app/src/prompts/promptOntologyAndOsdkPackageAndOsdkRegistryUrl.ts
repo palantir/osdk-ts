@@ -40,10 +40,10 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
   }
 
   if (
-    sdkVersion !== "1.x"
-    && osdkPackage == null
-    && ontology == null
-    && osdkRegistryUrl == null
+    sdkVersion !== "1.x" &&
+    osdkPackage == null &&
+    ontology == null &&
+    osdkRegistryUrl == null
   ) {
     const skip = (await consola.prompt(
       "Will you be using an OSDK in your application?",
@@ -56,7 +56,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
             value: "no",
           },
         ],
-      },
+      }
     )) as "yes" | "no";
 
     if (skip === "no") {
@@ -65,61 +65,54 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
   }
 
   while (
-    ontology == null
-    || !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
+    ontology == null ||
+    !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/u.test(ontology)
   ) {
     if (ontology != null) {
       consola.fail("Please enter a valid Ontology resource identifier (rid)");
     }
     ontology = await consola.prompt(
-      `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${
-        italic(
-          "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${italic(
+        "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)"
+      )}`,
+      { type: "text" }
     );
   }
 
-  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/.test(osdkPackage)) {
+  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/u.test(osdkPackage)) {
     if (osdkPackage != null) {
       consola.fail("Please enter a valid OSDK package name");
     }
     osdkPackage = await consola.prompt(
-      `Enter the OSDK package name for your application from Developer Console:\n${
-        italic(
-          "(Example: @my-app/sdk)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the OSDK package name for your application from Developer Console:\n${italic(
+        "(Example: @my-app/sdk)"
+      )}`,
+      { type: "text" }
     );
   }
 
   while (
-    osdkRegistryUrl == null
-    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/
-      .test(
-        osdkRegistryUrl,
-      )
+    osdkRegistryUrl == null ||
+    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/u.test(
+      osdkRegistryUrl
+    )
   ) {
     if (osdkRegistryUrl != null) {
       consola.fail(
-        "Please enter a valid NPM registry URL to install your OSDK package",
+        "Please enter a valid NPM registry URL to install your OSDK package"
       );
     }
     osdkRegistryUrl = await consola.prompt(
-      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${
-        italic(
-          "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${italic(
+        "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)"
+      )}`,
+      { type: "text" }
     );
   }
 
   return {
     ontology,
     osdkPackage,
-    osdkRegistryUrl: osdkRegistryUrl.replace(/\/$/, ""),
+    osdkRegistryUrl: osdkRegistryUrl.replace(/\/$/u, ""),
   };
 }

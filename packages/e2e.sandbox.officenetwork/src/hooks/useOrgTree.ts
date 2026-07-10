@@ -20,7 +20,7 @@ interface UseOrgTreeResult {
 
 function useReportsLevel(
   employee: Employee.OsdkInstance | undefined,
-  enabled: boolean,
+  enabled: boolean
 ): { reports: Employee.OsdkInstance[] | undefined; isLoading: boolean } {
   const { links, isLoading } = useLinks(employee, "peeps", { enabled });
   return { reports: links, isLoading };
@@ -28,10 +28,10 @@ function useReportsLevel(
 
 export function useOrgTree(
   employee: Employee.OsdkInstance | null,
-  maxDepth: number = 3,
+  maxDepth: number = 3
 ): UseOrgTreeResult {
   const [expandedNodes, setExpandedNodes] = React.useState<Set<number>>(
-    new Set(),
+    new Set()
   );
 
   const level0 = useReportsLevel(employee ?? undefined, !!employee);
@@ -43,35 +43,35 @@ export function useOrgTree(
 
   const level1a = useReportsLevel(
     level1Employees[0],
-    !!level1Employees[0] && maxDepth >= 2,
+    !!level1Employees[0] && maxDepth >= 2
   );
   const level1b = useReportsLevel(
     level1Employees[1],
-    !!level1Employees[1] && maxDepth >= 2,
+    !!level1Employees[1] && maxDepth >= 2
   );
   const level1c = useReportsLevel(
     level1Employees[2],
-    !!level1Employees[2] && maxDepth >= 2,
+    !!level1Employees[2] && maxDepth >= 2
   );
   const level1d = useReportsLevel(
     level1Employees[3],
-    !!level1Employees[3] && maxDepth >= 2,
+    !!level1Employees[3] && maxDepth >= 2
   );
   const level1e = useReportsLevel(
     level1Employees[4],
-    !!level1Employees[4] && maxDepth >= 2,
+    !!level1Employees[4] && maxDepth >= 2
   );
   const level1f = useReportsLevel(
     level1Employees[5],
-    !!level1Employees[5] && maxDepth >= 2,
+    !!level1Employees[5] && maxDepth >= 2
   );
   const level1g = useReportsLevel(
     level1Employees[6],
-    !!level1Employees[6] && maxDepth >= 2,
+    !!level1Employees[6] && maxDepth >= 2
   );
   const level1h = useReportsLevel(
     level1Employees[7],
-    !!level1Employees[7] && maxDepth >= 2,
+    !!level1Employees[7] && maxDepth >= 2
   );
 
   const level1Results = React.useMemo(
@@ -85,7 +85,7 @@ export function useOrgTree(
       level1g,
       level1h,
     ],
-    [level1a, level1b, level1c, level1d, level1e, level1f, level1g, level1h],
+    [level1a, level1b, level1c, level1d, level1e, level1f, level1g, level1h]
   );
   const MAX_EXPANDED_REPORTS = level1Results.length;
 
@@ -96,7 +96,7 @@ export function useOrgTree(
       emp: Employee.OsdkInstance,
       reports: Employee.OsdkInstance[] | undefined,
       isLoading: boolean,
-      depth: number,
+      depth: number
     ): OrgTreeNode => {
       const isExpanded = expandedNodes.has(emp.employeeNumber);
 
@@ -104,7 +104,7 @@ export function useOrgTree(
       if (reports && isExpanded && depth < maxDepth) {
         childNodes = reports.map((r) => {
           const level1Index = level1Employees.findIndex(
-            (e) => e.employeeNumber === r.employeeNumber,
+            (e) => e.employeeNumber === r.employeeNumber
           );
           const level1Result =
             level1Index >= 0 && level1Index < MAX_EXPANDED_REPORTS
@@ -115,7 +115,7 @@ export function useOrgTree(
             r,
             level1Result?.reports,
             level1Result?.isLoading ?? false,
-            depth + 1,
+            depth + 1
           );
         });
       }
@@ -130,7 +130,7 @@ export function useOrgTree(
 
     const rootReports = level0.reports.map((r) => {
       const level1Index = level1Employees.findIndex(
-        (e) => e.employeeNumber === r.employeeNumber,
+        (e) => e.employeeNumber === r.employeeNumber
       );
       const level1Result =
         level1Index >= 0 && level1Index < MAX_EXPANDED_REPORTS
@@ -141,7 +141,7 @@ export function useOrgTree(
         r,
         level1Result?.reports,
         level1Result?.isLoading ?? false,
-        1,
+        1
       );
     });
 
@@ -171,7 +171,7 @@ export function useOrgTree(
       if (!node || node.reports.length === 0) return current;
       return Math.max(...node.reports.map((r) => getMaxDepth(r, current + 1)));
     },
-    [],
+    []
   );
 
   const toggleExpand = React.useCallback((employeeNumber: number) => {

@@ -38,7 +38,7 @@ describe("codeWorkspacesMode", () => {
   describe("isCodeWorkspacesMode", () => {
     test("returns true for 'code-workspaces' mode", () => {
       expect(codeWorkspacesMode.isCodeWorkspacesMode("code-workspaces")).toBe(
-        true,
+        true
       );
     });
 
@@ -52,7 +52,7 @@ describe("codeWorkspacesMode", () => {
     test("returns correct URL when env is set", () => {
       vi.stubEnv("FOUNDRY_PROXY_URL", FOUNDRY_PROXY_URL);
       expect(codeWorkspacesMode.getCodeWorkspacesFoundryUrl()).toBe(
-        `https://${FOUNDRY_PROXY_URL}`,
+        `https://${FOUNDRY_PROXY_URL}`
       );
     });
 
@@ -67,7 +67,7 @@ describe("codeWorkspacesMode", () => {
       vi.stubEnv("DEV_SERVER_DOMAIN", DEV_SERVER_DOMAIN);
       vi.stubEnv("DEV_SERVER_BASE_PATH", DEV_SERVER_BASE_PATH);
       expect(codeWorkspacesMode.getCodeWorkspacesBaseHref()).toBe(
-        `https://${DEV_SERVER_DOMAIN}${DEV_SERVER_BASE_PATH}`,
+        `https://${DEV_SERVER_DOMAIN}${DEV_SERVER_BASE_PATH}`
       );
     });
 
@@ -89,14 +89,15 @@ describe("codeWorkspacesMode", () => {
       vi.stubEnv("FOUNDRY_PROXY_TOKEN", FOUNDRY_PROXY_TOKEN);
       vi.spyOn(fs, "readFileSync").mockReturnValue(MOCK_TOKEN);
       expect(codeWorkspacesMode.getCodeWorkspacesFoundryToken()).toBe(
-        MOCK_TOKEN,
+        MOCK_TOKEN
       );
     });
 
     test("throws if env is missing", () => {
       vi.stubEnv("FOUNDRY_PROXY_TOKEN", undefined);
-      expect(() => codeWorkspacesMode.getCodeWorkspacesFoundryToken())
-        .toThrow();
+      expect(() =>
+        codeWorkspacesMode.getCodeWorkspacesFoundryToken()
+      ).toThrow();
     });
 
     test("throws if file read fails", () => {
@@ -104,8 +105,9 @@ describe("codeWorkspacesMode", () => {
       vi.spyOn(fs, "readFileSync").mockImplementation(() => {
         throw new Error("fail");
       });
-      expect(() => codeWorkspacesMode.getCodeWorkspacesFoundryToken())
-        .toThrow();
+      expect(() =>
+        codeWorkspacesMode.getCodeWorkspacesFoundryToken()
+      ).toThrow();
     });
   });
 });

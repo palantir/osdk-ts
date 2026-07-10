@@ -36,13 +36,13 @@ afterEach(() => {
 it("installs ontology proxy prefixes from a live discovery file", () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    "minCliVersion: \"0.0.0\"\n",
+    'minCliVersion: "0.0.0"\n'
   );
   const dir = path.join(workDir, DISCOVERY_DIR);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
     path.join(dir, ".ontology-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" })
   );
 
   const userConfig: UserConfig = { root: workDir };
@@ -53,7 +53,7 @@ it("installs ontology proxy prefixes from a live discovery file", () => {
   (
     fn as unknown as (
       cfg: UserConfig,
-      env: { command: "serve" | "build"; mode: string },
+      env: { command: "serve" | "build"; mode: string }
     ) => unknown
   )(userConfig, { command: "serve", mode: "development" });
 
@@ -68,17 +68,17 @@ it("installs ontology proxy prefixes from a live discovery file", () => {
 it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   fs.writeFileSync(
     path.join(workDir, "foundry.yml"),
-    "minCliVersion: \"0.0.0\"\n",
+    'minCliVersion: "0.0.0"\n'
   );
   const dir = path.join(workDir, DISCOVERY_DIR);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
     path.join(dir, ".ontology-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51000" })
   );
   fs.writeFileSync(
     path.join(dir, ".typescript-functions-discovery.json"),
-    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51001" }),
+    JSON.stringify({ pid: process.pid, url: "https://127.0.0.1:51001" })
   );
 
   const base =
@@ -91,7 +91,7 @@ it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   (
     fn as unknown as (
       cfg: UserConfig,
-      env: { command: "serve" | "build"; mode: string },
+      env: { command: "serve" | "build"; mode: string }
     ) => unknown
   )(userConfig, { command: "serve", mode: "development" });
 
@@ -106,7 +106,7 @@ it("prefixes proxy contexts with `base` and strips it on rewrite", () => {
   const ontology = proxy[`${prefix}/ontology-metadata`];
   expect(ontology.target).toBe("https://127.0.0.1:51000");
   expect(ontology.rewrite?.(`${prefix}/ontology-metadata/foo`)).toBe(
-    "/ontology-metadata/foo",
+    "/ontology-metadata/foo"
   );
 
   // Rewrite route: strips both the base and the route prefix.

@@ -1,5 +1,38 @@
 # @osdk/react-components-storybook
 
+## 0.36.0
+
+### Minor Changes
+
+- d99575d: Make the Components Overview page fill the full available height so the ObjectTable, FilterList, and DocumentViewer stretch to the viewport.
+
+## 0.35.0
+
+### Minor Changes
+
+- 3833cdd: Render the AipAgentChat story as a folder under Components (matching CbacPicker) with a Docs page and beta badge
+- f5fd886: Hide the canvas Code tab on the Overview story
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/faux@0.34.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 56f6317: Enable DESIGN.md and CSS export for built-in Workshop Light and Dark themes
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+- 7884819: Add Component Overview story with tabbed layout showing FilterList, ObjectTable, PdfViewer, and ActionForm
+- 9e4f284: Add brand theme plugin to Storybook: theme preset picker toolbar with built-in/custom categories, interactive token mapping panel with WCAG contrast checking, style presets for radius/spacing, CSS/Markdown export, and dark mode support
+
+### Patch Changes
+
+- Updated dependencies [6010d45]
+  - @osdk/faux@0.33.0
+
 ## 0.33.0
 
 ### Minor Changes

@@ -69,7 +69,7 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
     event: StepResult<TOOLS> & {
       steps: Array<StepResult<TOOLS>>;
       totalUsage: LanguageModelUsage;
-    },
+    }
   ) => void | PromiseLike<void>;
 }
 
@@ -77,8 +77,7 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
  * Result of {@link generateText}.
  */
 export type GenerateTextResult<TOOLS extends ToolSet = ToolSet> =
-  & StepResult<TOOLS>
-  & {
+  StepResult<TOOLS> & {
     totalUsage: LanguageModelUsage;
     steps: Array<StepResult<TOOLS>>;
   };
@@ -101,13 +100,13 @@ export type GenerateTextResult<TOOLS extends ToolSet = ToolSet> =
  * ```
  */
 export async function generateText<TOOLS extends ToolSet = ToolSet>(
-  options: GenerateTextOptions<TOOLS>,
+  options: GenerateTextOptions<TOOLS>
 ): Promise<GenerateTextResult<TOOLS>> {
   const messages = resolveMessages(
     "generateText",
     options.system,
     options.prompt,
-    options.messages,
+    options.messages
   );
 
   const step = await runStep<TOOLS>({

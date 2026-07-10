@@ -26,7 +26,7 @@ export function getBaseHref(server: ViteDevServer): string {
     ? getCodeWorkspacesBaseHref()
     : getLocalhostBaseHref(server);
   // Ensure that all URLs end with a trailing slash for consistency
-  return baseHref.replace(/\/?$/, "/");
+  return baseHref.replace(/\/?$/u, "/");
 }
 
 function getLocalhostBaseHref(server: ViteDevServer): string {

@@ -77,12 +77,12 @@ export function ConnectionLayer({
       acc[type] = {
         type: "FeatureCollection" as const,
         features: connections.features.filter(
-          (f) => f.properties.type === type,
+          (f) => f.properties.type === type
         ),
       };
       return acc;
     },
-    {} as Record<ConnectionProperties["type"], ConnectionCollection>,
+    {} as Record<ConnectionProperties["type"], ConnectionCollection>
   );
 
   return (
@@ -128,7 +128,7 @@ export function createConnection(
   type: ConnectionProperties["type"],
   sourceId: string,
   targetId: string,
-  label?: string,
+  label?: string
 ): ConnectionFeature {
   return {
     type: "Feature",
@@ -146,7 +146,7 @@ export function createConnection(
 }
 
 export function createConnectionCollection(
-  features: ConnectionFeature[],
+  features: ConnectionFeature[]
 ): ConnectionCollection {
   return {
     type: "FeatureCollection",

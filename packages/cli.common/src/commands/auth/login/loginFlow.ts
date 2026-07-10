@@ -30,7 +30,7 @@ import { isTokenErrorResponse } from "./token.js";
 const BROWSER_PROMPT_TIME_MS = 60 * 1000;
 
 export async function invokeLoginFlow(
-  args: LoginArgs,
+  args: LoginArgs
 ): Promise<TokenSuccessResponse> {
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
@@ -50,7 +50,7 @@ export async function invokeLoginFlow(
   server.on("error", (e) => {
     if ((e as any).code === "EADDRINUSE") {
       consola.error(
-        `Port ${port} is already in use, unable to perform authentication flow.`,
+        `Port ${port} is already in use, unable to perform authentication flow.`
       );
       server.close();
       exit(1);
@@ -68,21 +68,21 @@ export async function invokeLoginFlow(
     clientId,
     state,
     redirectUrl,
-    codeChallenge,
+    codeChallenge
   );
 
   try {
     await open(authorizeUrl);
   } catch {
     consola.warn(
-      `Unable to open browser, please open this url in your browser to to authenticate: ${authorizeUrl}`,
+      `Unable to open browser, please open this url in your browser to to authenticate: ${authorizeUrl}`
     );
   }
 
   // nag the user if we didn't get an auth token for a relatively long time
   const browserPrompt = setTimeout(() => {
     consola.warn(
-      `Still waiting for the authentication to complete. Please open a browser to ${authorizeUrl}`,
+      `Still waiting for the authentication to complete. Please open a browser to ${authorizeUrl}`
     );
   }, BROWSER_PROMPT_TIME_MS);
 
@@ -96,14 +96,14 @@ export async function invokeLoginFlow(
     redirectUrl,
     code,
     foundryUrl,
-    codeVerifier,
+    codeVerifier
   );
 
   if (isTokenErrorResponse(token)) {
     consola.error(
       "Unable to authenticate",
       token.error,
-      token.error_description,
+      token.error_description
     );
     exit(1);
   }
@@ -133,9 +133,9 @@ async function generateCodeChallenge(codeVerifier: string) {
   const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\//g, "_")
-    .replace(/\+/g, "-")
-    .replace(/=/g, "");
+    .replace(/\//gu, "_")
+    .replace(/\+/gu, "-")
+    .replace(/=/gu, "");
   return {
     codeChallenge,
     codeChallengeMethod,
@@ -147,7 +147,7 @@ function generateAuthorizeUrl(
   clientId: string,
   state: string,
   redirectUrl: string,
-  codeChallenge: { codeChallenge: string; codeChallengeMethod: string },
+  codeChallenge: { codeChallenge: string; codeChallengeMethod: string }
 ) {
   const url = new URL("multipass/api/oauth2/authorize", baseUrl);
   url.searchParams.set("client_id", clientId);
@@ -157,11 +157,11 @@ function generateAuthorizeUrl(
   url.searchParams.set("code_challenge", codeChallenge.codeChallenge);
   url.searchParams.set(
     "code_challenge_method",
-    codeChallenge.codeChallengeMethod,
+    codeChallenge.codeChallengeMethod
   );
   url.searchParams.set(
     "scope",
-    ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" "),
+    ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" ")
   );
   return url.toString();
 }
@@ -171,7 +171,7 @@ async function getTokenWithCodeVerifier(
   redirectUrl: string,
   code: string,
   baseUrl: string,
-  codeVerifier: string,
+  codeVerifier: string
 ): Promise<TokenResponse> {
   const body = new URLSearchParams();
   body.append("client_id", clientId);
@@ -197,10 +197,10 @@ async function getTokenWithCodeVerifier(
   } catch (e) {
     throw new Error(
       `Failed to get token: ${
-        (e as { cause?: any })?.cause?.toString()
-          ?? e?.toString()
-          ?? "Unknown error"
-      }`,
+        (e as { cause?: any })?.cause?.toString() ??
+        e?.toString() ??
+        "Unknown error"
+      }`
     );
   }
 }

@@ -46,7 +46,7 @@ export const createClient: typeof __real = (
   ontologyRid,
   tokenProvider,
   options,
-  fetchFn,
+  fetchFn
 ) =>
   smartClient(
     __real(
@@ -54,6 +54,6 @@ export const createClient: typeof __real = (
       ontologyRid,
       tokenProvider,
       options,
-      fetchFn,
-    ),
+      fetchFn
+    )
   );

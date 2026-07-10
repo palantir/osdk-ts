@@ -41,7 +41,7 @@ test("it prompts again if answered value is invalid", async () => {
 
 test("it accepts valid initial value without prompt", async () => {
   expect(await promptOsdkPackage({ osdkPackage: "@myapp/sdk" })).toEqual(
-    "@myapp/sdk",
+    "@myapp/sdk"
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
@@ -49,7 +49,7 @@ test("it accepts valid initial value without prompt", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("@myapp/sdk");
   expect(await promptOsdkPackage({ osdkPackage: "some-package" })).toEqual(
-    "@myapp/sdk",
+    "@myapp/sdk"
   );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

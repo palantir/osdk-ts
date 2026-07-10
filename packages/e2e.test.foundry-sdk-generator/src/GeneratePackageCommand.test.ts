@@ -32,7 +32,7 @@ describe("Generate Package Command", () => {
         "build",
         "codegen",
         scope,
-        "osdk",
+        "osdk"
       );
       const packagePath = path.join(generatedPath, "package.json");
 
@@ -50,9 +50,9 @@ describe("Generate Package Command", () => {
 
       const contents = await fs.readFile(
         path.join(generatedPath, "esm", "index.js"),
-        "utf-8",
+        "utf-8"
       );
       expect(contents).not.toContain("Object.defineProperty(exports,");
-    },
+    }
   );
 });

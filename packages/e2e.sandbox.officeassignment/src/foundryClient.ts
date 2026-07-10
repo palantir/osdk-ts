@@ -41,13 +41,13 @@ const tokenProvider: () => Promise<string> =
 function createOauthTokenProvider(): () => Promise<string> {
   invariant(
     import.meta.env.VITE_FOUNDRY_CLIENT_ID,
-    "VITE_FOUNDRY_CLIENT_ID is required",
+    "VITE_FOUNDRY_CLIENT_ID is required"
   );
   return createPublicOauthClient(
     import.meta.env.VITE_FOUNDRY_CLIENT_ID,
     baseUrl,
     `${baseUrl}/auth/callback`,
-    { useHistory: true, logger },
+    { useHistory: true, logger }
   );
 }
 

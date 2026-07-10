@@ -44,7 +44,7 @@ function createModel(opts: {
       {
         status: opts.responseStatus ?? 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   });
 
@@ -90,7 +90,7 @@ function simplePrompt(): LanguageModelV3Prompt {
 }
 
 function callOptions(
-  overrides?: Partial<LanguageModelV3CallOptions>,
+  overrides?: Partial<LanguageModelV3CallOptions>
 ): LanguageModelV3CallOptions {
   return {
     prompt: simplePrompt(),
@@ -107,7 +107,7 @@ describe("FoundryChatLanguageModel", () => {
         callOptions({
           temperature: 0.5,
           maxOutputTokens: 100,
-        }),
+        })
       );
 
       // Verify request
@@ -145,7 +145,7 @@ describe("FoundryChatLanguageModel", () => {
                     type: "function",
                     function: {
                       name: "getWeather",
-                      arguments: "{\"location\":\"London\"}",
+                      arguments: '{"location":"London"}',
                     },
                   },
                 ],
@@ -164,7 +164,7 @@ describe("FoundryChatLanguageModel", () => {
           type: "tool-call",
           toolCallId: "call_1",
           toolName: "getWeather",
-          input: "{\"location\":\"London\"}",
+          input: '{"location":"London"}',
         },
       ]);
       expect(result.finishReason.unified).toBe("tool-calls");
@@ -207,7 +207,7 @@ describe("FoundryChatLanguageModel", () => {
       });
 
       await expect(model.doGenerate(callOptions())).rejects.toThrow(
-        "LMS chat/completions request failed: 500",
+        "LMS chat/completions request failed: 500"
       );
     });
 
@@ -219,7 +219,7 @@ describe("FoundryChatLanguageModel", () => {
       expect(result.warnings).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ type: "unsupported", feature: "topK" }),
-        ]),
+        ])
       );
     });
 
@@ -240,7 +240,7 @@ describe("FoundryChatLanguageModel", () => {
             },
           ],
           toolChoice: { type: "auto" },
-        }),
+        })
       );
 
       const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
@@ -264,48 +264,42 @@ describe("FoundryChatLanguageModel", () => {
   describe("doStream", () => {
     it("parses SSE stream into AI SDK stream parts", async () => {
       const sseBody = [
-        `data: ${
-          JSON.stringify({
-            id: "chatcmpl-s1",
-            object: "chat.completion.chunk",
-            created: 1_700_000_000,
-            model: "gpt-4o",
-            choices: [
-              {
-                index: 0,
-                delta: { role: "assistant", content: "He" },
-                finish_reason: null,
-              },
-            ],
-          })
-        }`,
+        `data: ${JSON.stringify({
+          id: "chatcmpl-s1",
+          object: "chat.completion.chunk",
+          created: 1_700_000_000,
+          model: "gpt-4o",
+          choices: [
+            {
+              index: 0,
+              delta: { role: "assistant", content: "He" },
+              finish_reason: null,
+            },
+          ],
+        })}`,
         "",
-        `data: ${
-          JSON.stringify({
-            id: "chatcmpl-s1",
-            object: "chat.completion.chunk",
-            created: 1_700_000_000,
-            model: "gpt-4o",
-            choices: [
-              {
-                index: 0,
-                delta: { content: "llo!" },
-                finish_reason: null,
-              },
-            ],
-          })
-        }`,
+        `data: ${JSON.stringify({
+          id: "chatcmpl-s1",
+          object: "chat.completion.chunk",
+          created: 1_700_000_000,
+          model: "gpt-4o",
+          choices: [
+            {
+              index: 0,
+              delta: { content: "llo!" },
+              finish_reason: null,
+            },
+          ],
+        })}`,
         "",
-        `data: ${
-          JSON.stringify({
-            id: "chatcmpl-s1",
-            object: "chat.completion.chunk",
-            created: 1_700_000_000,
-            model: "gpt-4o",
-            choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
-            usage: { prompt_tokens: 5, completion_tokens: 3, total_tokens: 8 },
-          })
-        }`,
+        `data: ${JSON.stringify({
+          id: "chatcmpl-s1",
+          object: "chat.completion.chunk",
+          created: 1_700_000_000,
+          model: "gpt-4o",
+          choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+          usage: { prompt_tokens: 5, completion_tokens: 3, total_tokens: 8 },
+        })}`,
         "",
         "data: [DONE]",
         "",
@@ -342,7 +336,7 @@ describe("FoundryChatLanguageModel", () => {
       });
 
       await expect(model.doStream(callOptions())).rejects.toThrow(
-        "LMS chat/completions request failed: 500",
+        "LMS chat/completions request failed: 500"
       );
     });
   });

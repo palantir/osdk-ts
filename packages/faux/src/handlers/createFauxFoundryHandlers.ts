@@ -15,6 +15,7 @@
  */
 
 import type { RequestHandler } from "msw";
+
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { createActionHandlers } from "./createActionHandlers.js";
 import { createAdminHandlers } from "./createAdminHandlers.js";
@@ -30,12 +31,12 @@ import { createTimeseriesAndGeotimeHandlers } from "./createTimeseriesAndGeotime
 
 export type FauxFoundryHandlersFactory = (
   baseUrl: string,
-  fauxFoundry: FauxFoundry,
+  fauxFoundry: FauxFoundry
 ) => Array<RequestHandler>;
 
 export function createFauxFoundryHandlers(
   baseUrl: string,
-  fauxFoundry: FauxFoundry,
+  fauxFoundry: FauxFoundry
 ): Array<RequestHandler> {
   return [
     createMultipassServerHandlers,
@@ -49,5 +50,5 @@ export function createFauxFoundryHandlers(
     createMediaRefHandlers,
     createCipherTextHandlers,
     createAdminHandlers,
-  ].flatMap(x => x(baseUrl, fauxFoundry));
+  ].flatMap((x) => x(baseUrl, fauxFoundry));
 }

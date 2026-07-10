@@ -237,7 +237,7 @@ test("it generates .env.development", () => {
       clientId: "123",
       corsProxy: false,
       ontology: "ri.ontology.main.ontology.fake",
-    }),
+    })
   ).toEqual(expectedEnvDevelopment);
 });
 
@@ -249,7 +249,7 @@ test("it generates .env.development without ontology rid", () => {
       clientId: "123",
       corsProxy: false,
       ontology: undefined,
-    }),
+    })
   ).toEqual(expectedEnvDevelopmentNoOntologyRid);
 });
 
@@ -261,7 +261,7 @@ test("it generates .env.development assuming CORS proxy", () => {
       clientId: "123",
       corsProxy: true,
       ontology: "ri.ontology.main.ontology.fake",
-    }),
+    })
   ).toEqual(expectedEnvDevelopmentCorsProxy);
 });
 
@@ -273,7 +273,7 @@ test("it generates .env.production", () => {
       applicationUrl: "https://app.com",
       clientId: "123",
       ontology: "ri.ontology.main.ontology.fake",
-    }),
+    })
   ).toEqual(expectedEnvProduction);
 });
 
@@ -285,7 +285,7 @@ test("it generates .env.production without app url", () => {
       applicationUrl: undefined,
       clientId: "123",
       ontology: "ri.ontology.main.ontology.fake",
-    }),
+    })
   ).toEqual(expectedEnvProductionNoAppUrl);
 });
 
@@ -297,6 +297,6 @@ test("it generates .env.production without ontology rid", () => {
       applicationUrl: "https://app.com",
       clientId: "123",
       ontology: undefined,
-    }),
+    })
   ).toEqual(expectedEnvProductionNoOntologyRid);
 });

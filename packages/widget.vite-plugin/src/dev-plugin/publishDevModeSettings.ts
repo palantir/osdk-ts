@@ -34,6 +34,7 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string) {
     super(message);
+    this.name = "ResponseError";
     try {
       const parsed = JSON.parse(response);
       this.#response = JSON.stringify(parsed, null, 4);
@@ -54,14 +55,8 @@ class ResponseError extends Error {
 
 function getHintForError(parsed: { errorName?: string }): string | undefined {
   if (
-    parsed.errorName === "Api:WidgetIdNotFound"
-    || parsed.errorName === "WidgetIdNotFound"
-  ) {
-    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
-  }
-  if (
-    parsed.errorName === "Api:InvalidManifest"
-    || parsed.errorName === "InvalidManifest"
+    parsed.errorName === "Api:InvalidManifest" ||
+    parsed.errorName === "InvalidManifest"
   ) {
     return "The dev mode manifest was rejected by the server. This may indicate a mismatch between your plugin version and the Foundry platform version.";
   }
@@ -74,7 +69,7 @@ function getHintForError(parsed: { errorName?: string }): string | undefined {
 export async function publishDevModeSettings(
   server: ViteDevServer,
   manifest: DevModeManifest,
-  res: ServerResponse,
+  res: ServerResponse
 ): Promise<void> {
   try {
     const foundryConfig = await loadFoundryConfig("widgetSet");
@@ -93,30 +88,30 @@ export async function publishDevModeSettings(
       foundryUrl,
       widgetSetRid,
       manifest,
-      server.config.mode,
+      server.config.mode
     );
     if (settingsResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
         `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
-        responseContent,
+        responseContent
       );
     }
 
     const enableResponse = await enableDevMode(foundryUrl, server.config.mode);
     if (enableResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
+        `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`
       );
       const responseContent = await enableResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
-        responseContent,
+        responseContent
       );
     }
 
@@ -128,14 +123,14 @@ export async function publishDevModeSettings(
         redirectUrl: isCodeWorkspacesMode(server.config.mode)
           ? null
           : new URL(
-            `workspace/custom-widgets/preview/${widgetSetRid}`,
-            foundryUrl,
-          ).toString(),
-      }),
+              `workspace/custom-widgets/preview/${widgetSetRid}`,
+              foundryUrl
+            ).toString(),
+      })
     );
   } catch (error: unknown) {
     server.config.logger.error(
-      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`,
+      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`
     );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
@@ -145,7 +140,7 @@ export async function publishDevModeSettings(
         error: inspect(error),
         response: error instanceof ResponseError ? error.response : undefined,
         hint: error instanceof ResponseError ? error.hint : undefined,
-      }),
+      })
     );
   }
 }

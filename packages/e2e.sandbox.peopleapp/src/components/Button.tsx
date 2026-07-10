@@ -22,27 +22,27 @@ export function Button({
         ${variant === "tab" ? "" : "text-white"}
         ${disabled ? "bg-gray-300 cursor-default" : ""}
         ${
-        !disabled && variant === "primary" && !active
-          ? "bg-blue-500 hover:bg-blue-700"
-          : ""
-      }
+          !disabled && variant === "primary" && !active
+            ? "bg-blue-500 hover:bg-blue-700"
+            : ""
+        }
         ${
-        !disabled && variant === "secondary" && !active
-          ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
-          : ""
-      }
+          !disabled && variant === "secondary" && !active
+            ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
+            : ""
+        }
         ${
-        !disabled && variant === "tab" && !active
-          ? "bg-gray-200 hover:bg-gray-300"
-          : ""
-      }
+          !disabled && variant === "tab" && !active
+            ? "bg-gray-200 hover:bg-gray-300"
+            : ""
+        }
         ${active && variant === "tab" ? "bg-blue-500 text-white" : ""}
         ${active && variant !== "tab" ? "bg-blue-700" : ""}
         ${
-        !disabled && variant === "danger" && !active
-          ? "bg-red-500 hover:bg-red-700"
-          : ""
-      }
+          !disabled && variant === "danger" && !active
+            ? "bg-red-500 hover:bg-red-700"
+            : ""
+        }
         ${active && variant === "danger" ? "bg-red-700" : ""}
       `}
       aria-disabled={disabled}

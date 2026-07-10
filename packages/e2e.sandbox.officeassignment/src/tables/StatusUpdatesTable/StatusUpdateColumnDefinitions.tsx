@@ -78,9 +78,11 @@ export function createStatusUpdateColumnDefinitions(): Array<
       renderHeader: () => "Value",
       isVisible: true,
       renderCell: (row: StatusUpdateInstance) =>
-        row.isExcluded === true
-          ? <s className={styles.excludedValue}>{row.value}</s>
-          : <span>{row.value}</span>,
+        row.isExcluded === true ? (
+          <s className={styles.excludedValue}>{row.value}</s>
+        ) : (
+          <span>{row.value}</span>
+        ),
     },
     {
       locator: { type: "property", id: "timestamp" },

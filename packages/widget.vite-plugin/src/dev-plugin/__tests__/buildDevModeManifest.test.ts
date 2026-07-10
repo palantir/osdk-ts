@@ -75,14 +75,14 @@ describe("buildDevModeManifest", () => {
     vi.mocked(getWidgetSetInputSpec).mockResolvedValue(MOCK_INPUT_SPEC);
     vi.spyOn(
       extractInjectedScriptsModule,
-      "extractInjectedScripts",
+      "extractInjectedScripts"
     ).mockResolvedValue({ scriptSources: [], inlineScripts: [] });
   });
 
   test("localhost dev server URLs", async () => {
     vi.spyOn(
       extractInjectedScriptsModule,
-      "extractInjectedScripts",
+      "extractInjectedScripts"
     ).mockResolvedValue({
       scriptSources: ["/@vite/client"],
       inlineScripts: [],
@@ -93,7 +93,7 @@ describe("buildDevModeManifest", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      baseHref,
+      baseHref
     );
 
     expect(result.manifestVersion).toBe("1.0.0");
@@ -109,7 +109,7 @@ describe("buildDevModeManifest", () => {
   test("remote server URLs", async () => {
     vi.spyOn(
       extractInjectedScriptsModule,
-      "extractInjectedScripts",
+      "extractInjectedScripts"
     ).mockResolvedValue({
       scriptSources: [`/proxy/path/@vite/client`],
       inlineScripts: [],
@@ -120,7 +120,7 @@ describe("buildDevModeManifest", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      baseHref,
+      baseHref
     );
 
     const widget = result.devSettings.widgets.widgetId;
@@ -137,7 +137,7 @@ describe("buildDevModeManifest", () => {
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
       "http://localhost:5173/",
-      { defaults: { refreshHostDataOnAction: true } },
+      { defaults: { refreshHostDataOnAction: true } }
     );
 
     const widget = result.devSettings.widgets.widgetId;
@@ -152,12 +152,12 @@ describe("buildDevModeManifest", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
+      "http://localhost:5173/"
     );
 
     expect(result.devSettings.inputSpec).toEqual(MOCK_INPUT_SPEC);
     expect(vi.mocked(getWidgetSetInputSpec)).toHaveBeenCalledWith(
-      "/project/package.json",
+      "/project/package.json"
     );
   });
 
@@ -186,7 +186,7 @@ describe("buildDevModeManifest", () => {
         "widgetA.config.ts": "entryA.ts",
         "widgetB.config.ts": "entryB.ts",
       },
-      "http://localhost:5173/",
+      "http://localhost:5173/"
     );
 
     expect(Object.keys(result.devSettings.widgets)).toEqual([

@@ -36,7 +36,7 @@ describe("extractWidgetConfig", () => {
 
     const validateSpy = vi.spyOn(
       validateWidgetConfigModule,
-      "validateWidgetConfig",
+      "validateWidgetConfig"
     );
 
     const result = await extractWidgetConfig("/path/to/config.ts", MOCK_SERVER);
@@ -58,24 +58,23 @@ describe("extractWidgetConfig", () => {
 
     vi.spyOn(
       validateWidgetConfigModule,
-      "validateWidgetConfig",
+      "validateWidgetConfig"
     ).mockImplementation((config) => {
       throw new Error(
-        `Widget id "${config.id}" does not match allowed pattern (must be camelCase)`,
+        `Widget id "${config.id}" does not match allowed pattern (must be camelCase)`
       );
     });
 
     await expect(
-      extractWidgetConfig("/path/to/config.ts", MOCK_SERVER),
+      extractWidgetConfig("/path/to/config.ts", MOCK_SERVER)
     ).rejects.toThrow(
       expect.objectContaining({
         message:
           "Encountered error: 'Widget id \"Invalid-Id\" does not match allowed pattern (must be camelCase)' while loading widget config from /path/to/config.ts",
         cause: expect.objectContaining({
-          message:
-            `Widget id "Invalid-Id" does not match allowed pattern (must be camelCase)`,
+          message: `Widget id "Invalid-Id" does not match allowed pattern (must be camelCase)`,
         }),
-      }),
+      })
     );
   });
 
@@ -85,7 +84,7 @@ describe("extractWidgetConfig", () => {
     });
 
     await expect(
-      extractWidgetConfig("/path/to/config.ts", MOCK_SERVER),
+      extractWidgetConfig("/path/to/config.ts", MOCK_SERVER)
     ).rejects.toThrow(
       expect.objectContaining({
         message:
@@ -93,19 +92,19 @@ describe("extractWidgetConfig", () => {
         cause: expect.objectContaining({
           message: "No default export found in /path/to/config.ts",
         }),
-      }),
+      })
     );
   });
 
   test("throws for invalid module path", async () => {
     vi.mocked(MOCK_SERVER.ssrLoadModule).mockRejectedValue(
-      new Error("Module loading failed"),
+      new Error("Module loading failed")
     );
 
     await expect(
-      extractWidgetConfig("/invalid/path/config.ts", MOCK_SERVER),
+      extractWidgetConfig("/invalid/path/config.ts", MOCK_SERVER)
     ).rejects.toThrow(
-      "Encountered error: 'Module loading failed' while loading widget config from /invalid/path/config.ts",
+      "Encountered error: 'Module loading failed' while loading widget config from /invalid/path/config.ts"
     );
   });
 });

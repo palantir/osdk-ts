@@ -54,7 +54,7 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
   }
 
   async doGenerate(
-    options: LanguageModelV3CallOptions,
+    options: LanguageModelV3CallOptions
   ): Promise<LanguageModelV3GenerateResult> {
     const warnings: Array<SharedV3Warning> = [];
     const { body, url } = this.buildRequest(options, warnings);
@@ -73,8 +73,8 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
     if (!res.ok) {
       const errBody = await safeReadText(res);
       throw new Error(
-        `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-          + (errBody ? ` — ${errBody}` : ""),
+        `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+          (errBody ? ` — ${errBody}` : "")
       );
     }
 
@@ -83,7 +83,7 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
   }
 
   async doStream(
-    options: LanguageModelV3CallOptions,
+    options: LanguageModelV3CallOptions
   ): Promise<LanguageModelV3StreamResult> {
     const warnings: Array<SharedV3Warning> = [];
     const { body, url } = this.buildRequest(options, warnings);
@@ -103,8 +103,8 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
     if (!res.ok) {
       const errBody = await safeReadText(res);
       throw new Error(
-        `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-          + (errBody ? ` — ${errBody}` : ""),
+        `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
+          (errBody ? ` — ${errBody}` : "")
       );
     }
 
@@ -118,13 +118,14 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
 
   private buildRequest(
     options: LanguageModelV3CallOptions,
-    warnings: Array<SharedV3Warning>,
+    warnings: Array<SharedV3Warning>
   ): { body: OpenAiChatRequest; url: string } {
     const baseUrl = getOpenAiBaseUrl(this.config.client);
     const url = new URL("chat/completions", `${baseUrl}/`).toString();
-    const apiName = this.config.identifier.type === "lmsModel"
-      ? this.config.identifier.apiName
-      : this.config.identifier.registeredModelRid;
+    const apiName =
+      this.config.identifier.type === "lmsModel"
+        ? this.config.identifier.apiName
+        : this.config.identifier.registeredModelRid;
 
     const messages = convertPrompt(options.prompt, warnings);
 
@@ -134,8 +135,7 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
         warnings.push({
           type: "unsupported",
           feature: `${t.type} tool type`,
-          details:
-            `Only "function" tools are supported; "${t.type}" tools are ignored`,
+          details: `Only "function" tools are supported; "${t.type}" tools are ignored`,
         });
         return false;
       })
@@ -188,12 +188,12 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
   private parseGenerateResponse(
     res: OpenAiChatCompletionResponse,
     request: OpenAiChatRequest,
-    warnings: Array<SharedV3Warning>,
+    warnings: Array<SharedV3Warning>
   ): LanguageModelV3GenerateResult {
     const choice = res.choices[0];
     if (choice == null) {
       throw new Error(
-        "LMS chat/completions response did not include any choices",
+        "LMS chat/completions response did not include any choices"
       );
     }
 
@@ -238,7 +238,7 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
   private parseStreamResponse(
     res: Response,
     request: OpenAiChatRequest,
-    warnings: Array<SharedV3Warning>,
+    warnings: Array<SharedV3Warning>
   ): ReadableStream<LanguageModelV3StreamPart> {
     const body = res.body;
     if (body == null) {
@@ -306,7 +306,7 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
                   type: "finish",
                   usage: mapUsage(chunk.usage),
                   finishReason: mapFinishReason(
-                    chunk.choices?.[0]?.finish_reason ?? undefined,
+                    chunk.choices?.[0]?.finish_reason ?? undefined
                   ),
                 });
               }
@@ -461,7 +461,7 @@ interface OpenAiUsage {
 // ---------------------------------------------------------------------------
 
 function convertToolChoice(
-  choice: LanguageModelV3ToolChoice | undefined,
+  choice: LanguageModelV3ToolChoice | undefined
 ): OpenAiToolChoiceValue | undefined {
   if (choice == null) return undefined;
   switch (choice.type) {
@@ -493,7 +493,7 @@ function mapUsage(usage: OpenAiUsage | undefined): LanguageModelV3Usage {
 }
 
 function filterHeaders(
-  input: Record<string, string | undefined>,
+  input: Record<string, string | undefined>
 ): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(input)) {

@@ -21,7 +21,7 @@ import type { Client } from "@osdk/client";
 // Vite serves under `import.meta.env.BASE_URL` (trailing slash); the direct
 // fetches below hit the same-origin proxies the plugin installs, so they must
 // carry that prefix to route through Vite when it is served under a path.
-const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, "");
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/u, "");
 const withBase = (path: string): string => `${BASE_PATH}${path}`;
 
 interface RuntimeConfig {
@@ -53,20 +53,20 @@ function enqueue<T>(fn: () => Promise<T>): Promise<T> {
   const result = pythonQueue.then(fn, fn);
   pythonQueue = result.then(
     () => {},
-    () => {},
+    () => {}
   );
   return result;
 }
 
 function camelToSnakeCase(str: string): string {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/gu, (letter) => `_${letter.toLowerCase()}`);
 }
 
 function hasEntries(o: unknown): boolean {
   return (
-    o != null
-    && typeof o === "object"
-    && Object.keys(o as Record<string, unknown>).length > 0
+    o != null &&
+    typeof o === "object" &&
+    Object.keys(o as Record<string, unknown>).length > 0
   );
 }
 
@@ -80,20 +80,20 @@ function outputContainsOntologyEdit(func: FunctionSpec): boolean {
 }
 
 function isOsdkObject(
-  value: unknown,
+  value: unknown
 ): value is { $apiName: string; $primaryKey: unknown } {
   return (
-    value != null
-    && typeof value === "object"
-    && "$apiName" in value
-    && "$primaryKey" in value
+    value != null &&
+    typeof value === "object" &&
+    "$apiName" in value &&
+    "$primaryKey" in value
   );
 }
 
 async function fetchPkPropertyNames(): Promise<Map<string, string>> {
   const response = await fetch(
     withBase("/api/v2/ontologies/ontology/objectTypes"),
-    { headers: { Authorization: LOCAL_RUNTIME_TOKEN } },
+    { headers: { Authorization: LOCAL_RUNTIME_TOKEN } }
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch object types: ${response.status}`);
@@ -115,13 +115,13 @@ async function fetchPkPropertyNames(): Promise<Map<string, string>> {
 
 function wrapObjectLocator(
   obj: { $apiName: string; $primaryKey: unknown },
-  pkNames: Map<string, string>,
+  pkNames: Map<string, string>
 ): unknown {
   const apiName = obj.$apiName;
   const pkProperty = pkNames.get(apiName);
   if (!pkProperty) {
     throw new Error(
-      `No primary key property found for object type "${apiName}"`,
+      `No primary key property found for object type "${apiName}"`
     );
   }
   return {
@@ -146,9 +146,9 @@ function wrapPrimitive(value: number | string | boolean): {
 
 function wrapValue(value: unknown, pkNames: Map<string, string>): unknown {
   if (
-    typeof value === "number"
-    || typeof value === "string"
-    || typeof value === "boolean"
+    typeof value === "number" ||
+    typeof value === "string" ||
+    typeof value === "boolean"
   ) {
     return wrapPrimitive(value);
   }
@@ -169,7 +169,7 @@ function wrapValue(value: unknown, pkNames: Map<string, string>): unknown {
 function transformParametersToLocal(
   parameters: Record<string, unknown>,
   isPython: boolean,
-  pkNames: Map<string, string>,
+  pkNames: Map<string, string>
 ): Record<string, unknown> {
   const transformed: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(parameters)) {
@@ -257,7 +257,7 @@ interface RuntimeSpecs {
 
 function createFunctionLocator(
   functionName: string,
-  specs: RuntimeSpecs,
+  specs: RuntimeSpecs
 ): FunctionLocator {
   const funcSpec = specs?.functions?.find((f) => {
     const locator = f.locator;
@@ -302,7 +302,7 @@ function createFunctionLocator(
 const SPECS_TIMEOUT_MS = 30_000;
 
 async function fetchSpecs(
-  runtime: RuntimeConfig,
+  runtime: RuntimeConfig
 ): Promise<RuntimeSpecs | null> {
   try {
     const response = await fetch(withBase(runtime.specsEndpoint), {
@@ -329,13 +329,13 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
   function detectEditFunction(func: FunctionSpec, isPython: boolean): boolean {
     const prov = func.ontologyProvenance;
     return (
-      hasEntries(prov?.editedObjects)
-      || hasEntries(prov?.editedLinks)
-      || hasEntries(prov?.editedInterfaces)
+      hasEntries(prov?.editedObjects) ||
+      hasEntries(prov?.editedLinks) ||
+      hasEntries(prov?.editedInterfaces) ||
       // Fallback: the Python runtime may not populate ontologyProvenance,
       // but edit functions return list[OntologyEdit] which shows up in the
       // output data type.
-      || (isPython && outputContainsOntologyEdit(func))
+      (isPython && outputContainsOntologyEdit(func))
     );
   }
 
@@ -372,7 +372,7 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
 
 async function postJsonToLocalRuntime(
   url: string,
-  body: unknown,
+  body: unknown
 ): Promise<Response> {
   const response = await fetch(withBase(url), {
     method: "POST",
@@ -386,7 +386,7 @@ async function postJsonToLocalRuntime(
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `Request to ${url} failed: ${response.status} - ${errorText}`,
+      `Request to ${url} failed: ${response.status} - ${errorText}`
     );
   }
 
@@ -400,10 +400,11 @@ interface FunctionDefinition {
 
 async function executeLocalFunction(
   functionDefinition: FunctionDefinition,
-  parameters: Record<string, unknown>,
+  parameters: Record<string, unknown>
 ): Promise<unknown> {
-  const functionName = functionDefinition.apiName
-    ?? functionDefinition.__DefinitionMetadata?.apiName;
+  const functionName =
+    functionDefinition.apiName ??
+    functionDefinition.__DefinitionMetadata?.apiName;
   if (!functionName) {
     throw new Error("Unable to determine function name from definition");
   }
@@ -413,7 +414,7 @@ async function executeLocalFunction(
 
   if (!info) {
     throw new Error(
-      `Function "${functionName}" not found in any local runtime`,
+      `Function "${functionName}" not found in any local runtime`
     );
   }
 
@@ -422,7 +423,7 @@ async function executeLocalFunction(
   const transformedParams = transformParametersToLocal(
     parameters,
     isPython,
-    pkNames,
+    pkNames
   );
 
   // Edit functions are routed through the action endpoint
@@ -430,7 +431,7 @@ async function executeLocalFunction(
   if (info.isEditFunction) {
     await postJsonToLocalRuntime(
       `/api/v2/ontologies/ontology/actions/${functionName}/apply`,
-      { parameters: transformedParams },
+      { parameters: transformedParams }
     );
     return undefined;
   }
@@ -445,7 +446,7 @@ async function executeLocalFunction(
   const execute = async () => {
     const response = await postJsonToLocalRuntime(
       info.runtime.executeEndpoint,
-      requestBody,
+      requestBody
     );
     return transformResponseFromLocal(await response.json());
   };
@@ -463,10 +464,10 @@ export function smartClient<T extends Client>(client: T): T {
       const result = (client as unknown as Function)(...args);
 
       if (
-        result
-        && typeof result === "object"
-        && typeof (result as Record<string, unknown>).executeFunction
-          === "function"
+        result &&
+        typeof result === "object" &&
+        typeof (result as Record<string, unknown>).executeFunction ===
+          "function"
       ) {
         return new Proxy(result as object, {
           get(target, prop, receiver) {

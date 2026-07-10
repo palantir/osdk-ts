@@ -54,18 +54,17 @@ fs.writeFileSync(
   import { getPackageFiles } from "../getPackageFiles.js";
 
   export const TEMPLATES: readonly Template[] = [
-  ${
-    TEMPLATES.map((template) => {
-      const v1Name = findPackageName([
-        `@osdk/create-widget.template.${template.id}.v1`,
-        `@osdk/create-widget.template.${template.id}`,
-      ]);
-      const v2Name = findPackageName([
-        `@osdk/create-widget.template.${template.id}.v2`,
-        `@osdk/create-widget.template.${template.id}.beta`,
-        `@osdk/create-widget.template.${template.id}`,
-      ]);
-      return dedent`
+  ${TEMPLATES.map((template) => {
+    const v1Name = findPackageName([
+      `@osdk/create-widget.template.${template.id}.v1`,
+      `@osdk/create-widget.template.${template.id}`,
+    ]);
+    const v2Name = findPackageName([
+      `@osdk/create-widget.template.${template.id}.v2`,
+      `@osdk/create-widget.template.${template.id}.beta`,
+      `@osdk/create-widget.template.${template.id}`,
+    ]);
+    return dedent`
           // ${template.label}
           {
             id: "template-widget-${template.id}",
@@ -78,10 +77,9 @@ fs.writeFileSync(
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
             },
           },`;
-    }).join("\n")
-  }
+  }).join("\n")}
   ];
-  `,
+  `
 );
 
 /**

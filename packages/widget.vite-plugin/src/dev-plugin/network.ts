@@ -21,11 +21,11 @@ export function setWidgetSetManifest(
   foundryUrl: string,
   widgetSetRid: string,
   manifest: DevModeManifest,
-  viteMode: string | undefined,
+  viteMode: string | undefined
 ): Promise<Response> {
   const url = new URL(
     "api/v2/widgets/devModeSettingsV2/setWidgetSetManifest",
-    foundryUrl,
+    foundryUrl
   );
   url.searchParams.set("preview", "true");
   return fetch(url, {
@@ -44,7 +44,7 @@ export function setWidgetSetManifest(
 
 export function enableDevMode(
   foundryUrl: string,
-  viteMode: string | undefined,
+  viteMode: string | undefined
 ): Promise<Response> {
   const url = new URL("api/v2/widgets/devModeSettingsV2/enable", foundryUrl);
   url.searchParams.set("preview", "true");

@@ -46,13 +46,13 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
     stylesheets: ["/styles.css"],
   };
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue(
-    mockBuildOutputs,
+    mockBuildOutputs
   );
 
   const configFile = "/src/widget.config.js";
   const widgetConfig = mockWidgetConfig(MOCK_WIDGET_ID);
   vi.mocked(extractWidgetConfigModule.extractWidgetConfig).mockResolvedValue(
-    widgetConfig,
+    widgetConfig
   );
 
   const entryChunk = mockChunk({
@@ -66,7 +66,7 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
     { "chunk.js": entryChunk },
     MOCK_INPUT,
     MOCK_BUILD_DIR,
-    MOCK_SERVER,
+    MOCK_SERVER
   );
   expect(result).toEqual({
     ...mockBuildOutputs,
@@ -98,7 +98,7 @@ test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async
       { "chunk.js": nonEntryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
   ).rejects.toThrow("Entrypoint chunk not found for input file: index.html");
 });
@@ -127,10 +127,10 @@ test("getWidgetBuildOutputs throws error when no config file found", async () =>
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
   ).rejects.toThrow(
-    "No widget config files found for entrypoint /src/widget.js",
+    "No widget config files found for entrypoint /src/widget.js"
   );
 });
 
@@ -158,10 +158,10 @@ test("getWidgetBuildOutputs throws error when multiple config files found", asyn
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
   ).rejects.toThrow(
-    "Multiple widget config files found for entrypoint /src/widget.js",
+    "Multiple widget config files found for entrypoint /src/widget.js"
   );
 });
 
@@ -186,7 +186,7 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
   });
 
   vi.mocked(extractWidgetConfigModule.extractWidgetConfig).mockRejectedValue(
-    new Error("Config extraction failed"),
+    new Error("Config extraction failed")
   );
 
   await expect(() =>
@@ -194,7 +194,7 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
   ).rejects.toThrow("Config extraction failed");
 });

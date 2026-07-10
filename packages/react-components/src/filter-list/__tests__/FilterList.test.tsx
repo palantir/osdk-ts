@@ -54,7 +54,7 @@ describe("FilterList", () => {
       // On first render the … shows from the state buildInitialStates seeds
       // out of `definition.filterState`
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
 
       // Removing clears the stored state and hides the filter.
@@ -62,15 +62,15 @@ describe("FilterList", () => {
         screen.getByRole("button", { name: "Remove dept filter" })
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/i })
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
 
       // Re-add it through the "+ Add filter" menu
-      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
 
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -82,21 +82,21 @@ describe("FilterList", () => {
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
 
       fireEvent.click(
         screen.getByRole("button", { name: "Remove manager filter" })
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/i })
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
 
-      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "manager" }));
 
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -108,23 +108,23 @@ describe("FilterList", () => {
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
 
       fireEvent.click(
         screen.getByRole("button", { name: "Remove manager filter" })
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/i })
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
 
-      fireEvent.click(screen.getByRole("button", { name: /add filter/i }));
+      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "manager" }));
 
       // The linked filter is not seeded either; the … reappears via the
       // getEmptyDisplayState fallback (unwrapped to the inner EXACT_MATCH state).
       expect(
-        screen.getByRole("button", { name: /more actions/i })
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -140,7 +140,7 @@ describe("FilterList", () => {
       );
 
       expect(
-        screen.queryByRole("button", { name: /more actions/i })
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
     });
 
@@ -154,7 +154,7 @@ describe("FilterList", () => {
         <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /more actions/i }));
+      fireEvent.click(screen.getByRole("button", { name: /more actions/iu }));
 
       // After opening, the include/exclude dropdown trigger should be visible.
       expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();

@@ -23,7 +23,7 @@ import { assertThrowsExpectedError } from "./errorCheck.js";
 function validateCount<T>(expected: number, actual: T[]) {
   invariant(
     actual.length === expected,
-    `Expected ${expected} results, got ${actual.length}`,
+    `Expected ${expected} results, got ${actual.length}`
   );
 }
 
@@ -44,7 +44,7 @@ export async function runNearestNeighborsTest(): Promise<void> {
     .fetchPageWithErrors();
   invariant(
     resultWithErrors !== undefined,
-    "Expected resultWithErrors to be defined",
+    "Expected resultWithErrors to be defined"
   );
   validateCount(10, resultWithErrors.data);
 
@@ -61,7 +61,7 @@ export async function runNearestNeighborsTest(): Promise<void> {
     .nearestNeighbors(
       Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE }, () => 0.3),
       10,
-      "embedding",
+      "embedding"
     )
     .fetchPage();
   validateCount(10, vectorQuery);
@@ -125,31 +125,27 @@ export async function runNearestNeighborsTest(): Promise<void> {
           "coffee",
           10,
           // @ts-expect-error
-          "orderTitle",
+          "orderTitle"
         )
-        .fetchPage(),
+        .fetchPage()
   );
 
   // Querying too many neighbors
-  await assertThrowsExpectedError(
-    "TooManyNearestNeighborsRequested",
-    () =>
-      client(MatthewvsDevOrderEmbedding)
-        .nearestNeighbors("coffee", MAX_NEIGHBORS + 1, "embedding")
-        .fetchPage(),
+  await assertThrowsExpectedError("TooManyNearestNeighborsRequested", () =>
+    client(MatthewvsDevOrderEmbedding)
+      .nearestNeighbors("coffee", MAX_NEIGHBORS + 1, "embedding")
+      .fetchPage()
   );
 
   // Invalid query vector
-  await assertThrowsExpectedError(
-    "InvalidVectorDimension",
-    () =>
-      client(MatthewvsDevOrderEmbedding)
-        .nearestNeighbors(
-          Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE - 1 }, () => 0.3),
-          10,
-          "embedding",
-        )
-        .fetchPage(),
+  await assertThrowsExpectedError("InvalidVectorDimension", () =>
+    client(MatthewvsDevOrderEmbedding)
+      .nearestNeighbors(
+        Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE - 1 }, () => 0.3),
+        10,
+        "embedding"
+      )
+      .fetchPage()
   );
 }
 

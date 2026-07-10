@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-widget",
-  "version": "3.38.0",
+  "version": "3.40.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -30,8 +30,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",

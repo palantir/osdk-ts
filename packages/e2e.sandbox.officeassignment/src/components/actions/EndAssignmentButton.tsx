@@ -29,7 +29,7 @@ export interface EndAssignmentButtonProps {
 
 /** Ends an assignment (sets status=Ended + endDate). Disabled when already ended. */
 export function EndAssignmentButton(
-  props: EndAssignmentButtonProps,
+  props: EndAssignmentButtonProps
 ): React.JSX.Element {
   const { assignment } = props;
   const { applyAction, isPending, error } = useOsdkAction(endAssignment);

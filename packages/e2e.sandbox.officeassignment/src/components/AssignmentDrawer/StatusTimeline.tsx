@@ -40,15 +40,15 @@ export function StatusTimeline(props: StatusTimelineProps): React.JSX.Element {
     <div className={styles.container}>
       <LoadingBar active={isLoading} />
       <ErrorBanner message={error?.message} context="Status timeline" />
-      {data != null && data.length === 0 && !isLoading
-        ? <div className={styles.empty}>No status updates yet.</div>
-        : (
-          <ol className={styles.list}>
-            {(data ?? []).map((row) => (
-              <TimelineRow key={row.statusUpdateId} row={row} />
-            ))}
-          </ol>
-        )}
+      {data != null && data.length === 0 && !isLoading ? (
+        <div className={styles.empty}>No status updates yet.</div>
+      ) : (
+        <ol className={styles.list}>
+          {(data ?? []).map((row) => (
+            <TimelineRow key={row.statusUpdateId} row={row} />
+          ))}
+        </ol>
+      )}
     </div>
   );
 }

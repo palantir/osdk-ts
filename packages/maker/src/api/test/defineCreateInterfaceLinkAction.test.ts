@@ -521,7 +521,7 @@ describe("defineCreateInterfaceLinkAction", () => {
         from: person,
         interfaceLink: "employer",
       })
-    ).toThrow(/Interface link constraint "employer" not found on interface/);
+    ).toThrow(/Interface link constraint "employer" not found on interface/u);
   });
 
   it("throws when the ILC target interface is not defined", () => {
@@ -542,7 +542,7 @@ describe("defineCreateInterfaceLinkAction", () => {
         from: person,
         interfaceLink: "employer",
       })
-    ).toThrow(/Target interface .* is not defined/);
+    ).toThrow(/Target interface .* is not defined/u);
   });
 
   it("throws when an explicit from does not match the handle's interface", () => {
@@ -569,7 +569,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     expect(() =>
       defineCreateInterfaceLinkAction({ from: other, interfaceLink: employer })
-    ).toThrow(/does not match/);
+    ).toThrow(/does not match/u);
   });
 
   it("throws when interfaceLink is a string and from is omitted", () => {
@@ -592,7 +592,7 @@ describe("defineCreateInterfaceLinkAction", () => {
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
       defineCreateInterfaceLinkAction({ interfaceLink: "employer" })
-    ).toThrow(/"from" is required/);
+    ).toThrow(/"from" is required/u);
   });
 });
 
@@ -789,7 +789,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
       defineDeleteInterfaceLinkAction({ interfaceLink: "employer" })
-    ).toThrow(/"from" is required/);
+    ).toThrow(/"from" is required/u);
   });
 
   it("throws when source and target parameter ids collide", () => {
@@ -816,7 +816,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
         sourceParameter: { id: "shared" },
         targetParameter: { id: "shared" },
       })
-    ).toThrow(/must differ/);
+    ).toThrow(/must differ/u);
   });
 
   it("threads custom display metadata and status through", () => {

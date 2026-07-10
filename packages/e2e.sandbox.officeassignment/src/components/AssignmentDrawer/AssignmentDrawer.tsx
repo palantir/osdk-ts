@@ -38,73 +38,72 @@ interface InfoItem {
 }
 
 export function AssignmentDrawer(
-  props: AssignmentDrawerProps,
+  props: AssignmentDrawerProps
 ): React.JSX.Element {
   const { assignmentId, onClose } = props;
   const { object, isLoading, error } = useOsdkObject(
     Assignment,
     assignmentId ?? "",
-    assignmentId != null,
+    assignmentId != null
   );
 
   const title = object?.title ?? assignmentId ?? "Assignment";
 
-  const info: InfoItem[] = object == null
-    ? []
-    : [
-      { label: "Status", value: object.assignmentStatus ?? "—" },
-      { label: "Type", value: object.assignmentType ?? "—" },
-      { label: "Employee ID", value: object.employeeId ?? "—" },
-      { label: "Function", value: object.function ?? "—" },
-      { label: "Office ID", value: object.officeId ?? "—" },
-      { label: "Floor ID", value: object.floorId ?? "—" },
-      { label: "Manager ID", value: object.managerId ?? "—" },
-      { label: "Start", value: formatDate(object.startDate) || "—" },
-      { label: "End", value: formatDate(object.endDate) || "—" },
-      { label: "Tenure (days)", value: object.tenureDays ?? "—" },
-    ];
+  const info: InfoItem[] =
+    object == null
+      ? []
+      : [
+          { label: "Status", value: object.assignmentStatus ?? "—" },
+          { label: "Type", value: object.assignmentType ?? "—" },
+          { label: "Employee ID", value: object.employeeId ?? "—" },
+          { label: "Function", value: object.function ?? "—" },
+          { label: "Office ID", value: object.officeId ?? "—" },
+          { label: "Floor ID", value: object.floorId ?? "—" },
+          { label: "Manager ID", value: object.managerId ?? "—" },
+          { label: "Start", value: formatDate(object.startDate) || "—" },
+          { label: "End", value: formatDate(object.endDate) || "—" },
+          { label: "Tenure (days)", value: object.tenureDays ?? "—" },
+        ];
 
   return (
     <Drawer isOpen={assignmentId != null} onClose={onClose} title={title}>
       <LoadingBar active={isLoading} />
       <ErrorBanner message={error?.message} context="Load assignment" />
-      {object != null
-        ? (
-          <div className={styles.body}>
-            <dl className={styles.infoGrid}>
-              {info.map((item) => (
-                <div key={item.label} className={styles.infoItem}>
-                  <dt className={styles.infoLabel}>{item.label}</dt>
-                  <dd className={styles.infoValue}>{item.value}</dd>
-                </div>
-              ))}
-            </dl>
+      {object != null ? (
+        <div className={styles.body}>
+          <dl className={styles.infoGrid}>
+            {info.map((item) => (
+              <div key={item.label} className={styles.infoItem}>
+                <dt className={styles.infoLabel}>{item.label}</dt>
+                <dd className={styles.infoValue}>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
 
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Record status update</h3>
-              <RecordStatusUpdateForm assignment={object} />
-            </section>
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Record status update</h3>
+            <RecordStatusUpdateForm assignment={object} />
+          </section>
 
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Status timeline</h3>
-              <StatusTimeline assignmentId={object.$primaryKey} />
-            </section>
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Status timeline</h3>
+            <StatusTimeline assignmentId={object.$primaryKey} />
+          </section>
 
-            <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Edit assignment</h3>
-              {/* Remount on assignment change so the form re-seeds from the new object. */}
-              <UpdateAssignmentForm
-                key={object.$primaryKey}
-                assignment={object}
-              />
-            </section>
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Edit assignment</h3>
+            {/* Remount on assignment change so the form re-seeds from the new object. */}
+            <UpdateAssignmentForm
+              key={object.$primaryKey}
+              assignment={object}
+            />
+          </section>
 
-            <section className={styles.section}>
-              <EndAssignmentButton assignment={object} />
-            </section>
-          </div>
-        )
-        : null}
+          <section className={styles.section}>
+            <EndAssignmentButton assignment={object} />
+          </section>
+        </div>
+      ) : null}
     </Drawer>
   );
 }

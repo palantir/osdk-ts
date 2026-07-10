@@ -39,7 +39,7 @@ describe("validateWidgetSet", () => {
       ];
 
       expect(() => validateWidgetSet(widgetBuilds)).toThrow(
-        "Duplicate widget ID: widget1. Each widget must have a unique ID.",
+        "Duplicate widget ID: widget1. Each widget must have a unique ID."
       );
     });
   });

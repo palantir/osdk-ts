@@ -58,12 +58,12 @@ export async function runAggregationGroupByDatesTest(): Promise<void> {
   console.log(
     rangedTimestamps[0].$group.currentTimestamp.startValue,
     rangedTimestamps[0].$group.currentTimestamp.endValue,
-    rangedTimestamps[0].$count,
+    rangedTimestamps[0].$count
   );
   console.log(
     rangedDates[0].$group.date.startValue,
     rangedDates[0].$group.date.endValue,
-    rangedDates[0].$count,
+    rangedDates[0].$count
   );
 }
 

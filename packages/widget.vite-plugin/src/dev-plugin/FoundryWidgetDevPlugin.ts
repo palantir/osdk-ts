@@ -41,14 +41,15 @@ import { publishDevModeSettings } from "./publishDevModeSettings.js";
 import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
 // Location of the setup page assets
-const DIR_DIST: string = typeof __dirname !== "undefined"
-  ? __dirname
-  : path.dirname(fileURLToPath(import.meta.url));
+const DIR_DIST: string =
+  typeof __dirname !== "undefined"
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url));
 
 import type { FoundryWidgetPluginOptions } from "../index.js";
 
 export function FoundryWidgetDevPlugin(
-  pluginOptions?: FoundryWidgetPluginOptions,
+  pluginOptions?: FoundryWidgetPluginOptions
 ): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
@@ -63,8 +64,8 @@ export function FoundryWidgetDevPlugin(
     // Only apply this plugin during development, skip during tests and build-mode module evaluation
     apply(config, { command }) {
       if (
-        config.mode === MODULE_EVALUATION_MODE
-        || process.env.VITEST != null
+        config.mode === MODULE_EVALUATION_MODE ||
+        process.env.VITEST != null
       ) {
         return false;
       }
@@ -110,7 +111,7 @@ export function FoundryWidgetDevPlugin(
           } else {
             next();
           }
-        },
+        }
       );
 
       /**
@@ -122,7 +123,7 @@ export function FoundryWidgetDevPlugin(
         sirv(path.resolve(DIR_DIST, "../../site"), {
           single: true,
           dev: true,
-        }),
+        })
       );
 
       /**
@@ -133,8 +134,8 @@ export function FoundryWidgetDevPlugin(
         res.setHeader("Content-Type", "application/json");
         res.end(
           JSON.stringify(
-            htmlEntrypoints.map((entrypoint) => serverPath(server, entrypoint)),
-          ),
+            htmlEntrypoints.map((entrypoint) => serverPath(server, entrypoint))
+          )
         );
       });
 
@@ -160,7 +161,7 @@ export function FoundryWidgetDevPlugin(
               JSON.stringify({
                 status: "error",
                 error: errorMessage,
-              }),
+              })
             );
             return;
           }
@@ -170,8 +171,8 @@ export function FoundryWidgetDevPlugin(
           const numConfigFiles = Object.keys(configFileToEntrypoint).length;
           if (numConfigFiles < numEntrypoints) {
             server.config.logger.info(
-              `Waiting for widget config files to be parsed, found ${numConfigFiles} config files out of`
-                + ` ${numEntrypoints} HTML entrypoints.`,
+              `Waiting for widget config files to be parsed, found ${numConfigFiles} config files out of` +
+                ` ${numEntrypoints} HTML entrypoints.`
             );
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ status: "pending" }));
@@ -184,10 +185,10 @@ export function FoundryWidgetDevPlugin(
             codeEntrypoints,
             configFileToEntrypoint,
             getBaseHref(server),
-            pluginOptions,
+            pluginOptions
           );
           await publishDevModeSettings(server, manifest, res);
-        },
+        }
       );
 
       /**
@@ -202,7 +203,7 @@ export function FoundryWidgetDevPlugin(
           res.setHeader("Content-Type", "application/javascript");
           const injectedScripts = await extractInjectedScripts(server);
           res.end(injectedScripts.inlineScripts.join("\n"));
-        },
+        }
       );
     },
 
@@ -220,19 +221,19 @@ export function FoundryWidgetDevPlugin(
         getFullSourcePath(
           // If the source path is absolute, resolve it against the current working directory
           source.startsWith("/") ? path.join(process.cwd(), source) : source,
-          importer,
-        ),
+          importer
+        )
       );
       // Importers are already full paths, so just standardize the extension
       const standardizedImporter = standardizePathAndFileExtension(importer);
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
-        importer.endsWith("index.html")
-        && !standardizedSource.includes("@fs")
+        importer.endsWith("index.html") &&
+        !standardizedSource.includes("@fs") &&
         // In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
         // These files are not valid code entrypoints, so we ignore them here.
-        && path.extname(standardizedSource) !== ".html"
+        path.extname(standardizedSource) !== ".html"
       ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
@@ -244,13 +245,13 @@ export function FoundryWidgetDevPlugin(
       // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
         standardizedSource
-          .replace(/\.[^/.]+$/, "")
-          .endsWith(CONFIG_FILE_SUFFIX)
-        && standardizedSource.includes("/src/")
-        && codeEntrypoints[standardizedImporter] != null
+          .replace(/\.[^/.]+$/u, "")
+          .endsWith(CONFIG_FILE_SUFFIX) &&
+        standardizedSource.includes("/src/") &&
+        codeEntrypoints[standardizedImporter] != null
       ) {
         const fullSourcePath = standardizePathAndFileExtension(
-          getFullSourcePath(source, standardizedImporter),
+          getFullSourcePath(source, standardizedImporter)
         );
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;
       }
@@ -261,14 +262,14 @@ export function FoundryWidgetDevPlugin(
       if (configFileToEntrypoint[standardizedFile] != null) {
         const reapplyInstruction = isCodeWorkspacesMode(server.config.mode)
           ? "   Refresh the preview panel to see your changes.\n"
-          : `   Re-enter the developer mode setup URL to apply your changes:\n`
-            + `   ${color.green(`${getBaseHref(server)}${SETUP_PATH}/`)}\n`;
+          : `   Re-enter the developer mode setup URL to apply your changes:\n` +
+            `   ${color.green(`${getBaseHref(server)}${SETUP_PATH}/`)}\n`;
         server.config.logger.warn(
           color.yellow(
-            `\n⚠️  Detected a change to widget config file:\n`
-              + `   ${file}\n\n`
-              + reapplyInstruction,
-          ),
+            `\n⚠️  Detected a change to widget config file:\n` +
+              `   ${file}\n\n` +
+              reapplyInstruction
+          )
         );
         return [];
       }
@@ -291,20 +292,16 @@ function serverPath(server: ViteDevServer, subPath: string): string {
 function printSetupPageUrl(server: ViteDevServer) {
   if (isCodeWorkspacesMode(server.config.mode)) {
     server.config.logger.info(
-      `  ${color.green("➜")}  ${
-        color.bold(
-          "Open the preview panel to enter developer mode",
-        )
-      }`,
+      `  ${color.green("➜")}  ${color.bold(
+        "Open the preview panel to enter developer mode"
+      )}`
     );
   } else {
     const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
     server.config.logger.info(
-      `  ${color.green("➜")}  ${
-        color.bold(
-          "Click to enter developer mode for your widget set",
-        )
-      }: ${color.green(setupRoute)}`,
+      `  ${color.green("➜")}  ${color.bold(
+        "Click to enter developer mode for your widget set"
+      )}: ${color.green(setupRoute)}`
     );
   }
 }

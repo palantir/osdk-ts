@@ -106,13 +106,12 @@ async function ontologyIrToFullMetadata({
     const blockData = JSON.parse(irContent)
       .blockData as OntologyIrOntologyBlockDataV2;
 
-    const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
-      blockData,
-    );
+    const fullMeta =
+      OntologyIrToFullMetadataConverter.getFullMetadataFromIr(blockData);
 
     await fs.promises.writeFile(
       ontologyFullMetadataPath(workDir),
-      JSON.stringify(fullMeta, null, 2),
+      JSON.stringify(fullMeta, null, 2)
     );
 
     logger.debug("Successfully converted IR to full metadata");
@@ -141,7 +140,7 @@ async function fullMetadataToOsdk({
   await fs.promises.writeFile(
     path.join(tempDir, "..", "package.json"),
     JSON.stringify({}, null, 2),
-    { encoding: "utf-8" },
+    { encoding: "utf-8" }
   );
 
   try {
@@ -177,14 +176,14 @@ async function fullMetadataToOsdk({
       const targetDir = ".osdk/src";
       try {
         logger.debug(
-          "OSDK generation successful, synchronizing with target directory",
+          "OSDK generation successful, synchronizing with target directory"
         );
 
         // Use granular synchronization instead of wholesale replacement
         await syncDirectories(tempSrcDir, targetDir, logger);
 
         logger.debug(
-          `Successfully synchronized ${targetDir} with newly generated code`,
+          `Successfully synchronized ${targetDir} with newly generated code`
         );
 
         await compileOsdk(logger);
@@ -193,7 +192,7 @@ async function fullMetadataToOsdk({
         await fs.promises.rm(tempDir, { recursive: true, force: true });
       } catch (error) {
         logger.error(
-          `Failed to synchronize ${targetDir} directory: ${inspect(error)}`,
+          `Failed to synchronize ${targetDir} directory: ${inspect(error)}`
         );
         logger.error(`Temporary files left at: ${tempDir}`);
         throw error;
@@ -209,7 +208,7 @@ async function fullMetadataToOsdk({
       await fs.promises.rm(tempDir, { recursive: true, force: true });
     } catch (cleanupError) {
       logger.warn(
-        `Failed to clean up temporary directory: ${inspect(cleanupError)}`,
+        `Failed to clean up temporary directory: ${inspect(cleanupError)}`
       );
     }
     throw error;

@@ -26,27 +26,26 @@ export default function ValidateActionDemo() {
         setValidationMessage("✅ Action is valid!");
       } else if (validationResult.result === "INVALID") {
         const failedParams: string[] = [];
-        for (
-          const [name, constraint] of Object.entries(
-            validationResult.parameters || {},
-          )
-        ) {
+        for (const [name, constraint] of Object.entries(
+          validationResult.parameters || {}
+        )) {
           if (constraint.result === "INVALID") {
             failedParams.push(name);
           }
         }
 
-        const failedCriteria = validationResult.submissionCriteria
-          ?.filter((criteria) => criteria.result === "INVALID")
-          .map(
-            (criteria) =>
-              criteria.configuredFailureMessage || "Failed criteria",
-          ) || [];
+        const failedCriteria =
+          validationResult.submissionCriteria
+            ?.filter((criteria) => criteria.result === "INVALID")
+            .map(
+              (criteria) =>
+                criteria.configuredFailureMessage || "Failed criteria"
+            ) || [];
 
         setValidationMessage(
           `❌ Validation failed: ${
             [...failedParams, ...failedCriteria].join(", ") || "Invalid action"
-          }`,
+          }`
         );
       }
     }

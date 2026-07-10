@@ -36,11 +36,9 @@ export async function promptOverwrite({
   }
 
   const result = (await consola.prompt(
-    `The directory ${
-      green(
-        project,
-      )
-    } already exists do you want to overwrite or ignore it?`,
+    `The directory ${green(
+      project
+    )} already exists do you want to overwrite or ignore it?`,
     {
       type: "select",
       options: [
@@ -48,7 +46,7 @@ export async function promptOverwrite({
         { label: "Ignore files and continue", value: "ignore" },
         { label: "Cancel", value: "cancel" },
       ],
-    },
+    }
   )) as "overwrite" | "ignore" | "cancel";
 
   switch (result) {

@@ -67,19 +67,15 @@ const OrgTreeNodeView = React.memo(function OrgTreeNodeView({
             className="size-4 flex items-center justify-center text-[10px] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] transition-colors"
             disabled={!hasReports && !node.isLoading}
           >
-            {node.isLoading
-              ? <span className="animate-spin">⟳</span>
-              : canExpand
-              ? (
-                "▶"
-              )
-              : canCollapse
-              ? (
-                "▼"
-              )
-              : (
-                "·"
-              )}
+            {node.isLoading ? (
+              <span className="animate-spin">⟳</span>
+            ) : canExpand ? (
+              "▶"
+            ) : canCollapse ? (
+              "▼"
+            ) : (
+              "·"
+            )}
           </button>
           <div
             className="size-2 rounded-sm shrink-0"
@@ -98,8 +94,8 @@ const OrgTreeNodeView = React.memo(function OrgTreeNodeView({
           )}
         </div>
       )}
-      {node.isExpanded
-        && node.reports.map((child) => (
+      {node.isExpanded &&
+        node.reports.map((child) => (
           <OrgTreeNodeView
             key={child.employee.employeeNumber}
             node={child}
@@ -125,7 +121,7 @@ export function EmployeePanel({
       onSelectEmployee(emp);
       onPanToEmployee?.(emp);
     },
-    [onSelectEmployee, onPanToEmployee],
+    [onSelectEmployee, onPanToEmployee]
   );
   const { data: enrichedEmployees, isLoading: rdpLoading } = useOsdkObjects(
     Employee,
@@ -133,7 +129,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       withProperties: employeeWithRdps,
       pageSize: 1,
-    },
+    }
   );
   const enrichedEmployee = enrichedEmployees?.[0];
 
@@ -143,7 +139,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
       $includeAllBaseObjectProperties: true,
-    },
+    }
   );
   const worker = workerData?.[0];
 
@@ -153,7 +149,7 @@ export function EmployeePanel({
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
       $includeAllBaseObjectProperties: true,
-    },
+    }
   );
   const person = personData?.[0];
 
@@ -177,7 +173,7 @@ export function EmployeePanel({
     {
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    },
+    }
   );
 
   const { links: manager } = useLinks(employee, "lead", {
@@ -193,7 +189,7 @@ export function EmployeePanel({
 
   const { links: employeeOffice, isLoading: officeLoading } = useLinks(
     employee,
-    "primaryOffice",
+    "primaryOffice"
   );
   const employeeOfficeObj = employeeOffice?.[0];
 
@@ -201,9 +197,10 @@ export function EmployeePanel({
     enabled: !!managerObj,
   });
   const managerOfficeObj = managerOffice?.[0];
-  const isCrossOffice = managerOfficeObj
-    && employeeOfficeObj
-    && managerOfficeObj.primaryKey_ !== employeeOfficeObj.primaryKey_;
+  const isCrossOffice =
+    managerOfficeObj &&
+    employeeOfficeObj &&
+    managerOfficeObj.primaryKey_ !== employeeOfficeObj.primaryKey_;
 
   const { links: colleagues, isLoading: colleaguesLoading } = useLinks(
     employeeOfficeObj,
@@ -212,12 +209,12 @@ export function EmployeePanel({
       enabled: !!employeeOfficeObj,
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    },
+    }
   );
   const colleaguesExcludingSelf = React.useMemo(
     () =>
       colleagues?.filter((c) => c.employeeNumber !== employee.employeeNumber),
-    [colleagues, employee.employeeNumber],
+    [colleagues, employee.employeeNumber]
   );
 
   const { links: peerReports, isLoading: peersLoading } = useLinks(
@@ -227,12 +224,12 @@ export function EmployeePanel({
       enabled: !!managerObj,
       orderBy: { fullName: "asc" },
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    },
+    }
   );
   const peersExcludingSelf = React.useMemo(
     () =>
       peerReports?.filter((p) => p.employeeNumber !== employee.employeeNumber),
-    [peerReports, employee.employeeNumber],
+    [peerReports, employee.employeeNumber]
   );
 
   const { links: skipLevelManager, isLoading: skipLevelLoading } = useLinks(
@@ -241,14 +238,14 @@ export function EmployeePanel({
     {
       enabled: !!managerObj,
       $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
-    },
+    }
   );
   const skipLevelManagerObj = skipLevelManager?.[0];
 
   const { links: skipLevelOffice } = useLinks(
     skipLevelManagerObj,
     "primaryOffice",
-    { enabled: !!skipLevelManagerObj },
+    { enabled: !!skipLevelManagerObj }
   );
   const skipLevelOfficeObj = skipLevelOffice?.[0];
 
@@ -317,52 +314,48 @@ export function EmployeePanel({
         {/* Works at */}
         <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
           <div className="officenetwork-section-label mb-1">Works at</div>
-          {officeLoading
-            ? <LoadingIndicator size="sm" />
-            : employeeOfficeObj
-            ? (
-              <div className="text-sm font-medium text-[var(--officenetwork-accent-cyan)]">
-                {employeeOfficeObj.name ?? "Unknown Office"}
-              </div>
-            )
-            : (
-              <div className="text-sm text-[var(--officenetwork-text-muted)]">
-                No office assigned
-              </div>
-            )}
+          {officeLoading ? (
+            <LoadingIndicator size="sm" />
+          ) : employeeOfficeObj ? (
+            <div className="text-sm font-medium text-[var(--officenetwork-accent-cyan)]">
+              {employeeOfficeObj.name ?? "Unknown Office"}
+            </div>
+          ) : (
+            <div className="text-sm text-[var(--officenetwork-text-muted)]">
+              No office assigned
+            </div>
+          )}
         </div>
 
         {/* Reports to */}
         <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
           <div className="officenetwork-section-label mb-1">Reports to</div>
-          {managerObj
-            ? (
-              <div className="flex items-center gap-2">
-                <div
-                  className="size-2 rounded-sm shrink-0"
-                  style={{
-                    backgroundColor:
-                      HIERARCHY_COLORS[getHierarchyLevel(managerObj.jobTitle)],
-                  }}
-                />
-                <button
-                  onClick={() => handleSelectAndPan(managerObj)}
-                  className="text-sm font-medium text-[var(--officenetwork-status-ready)] hover:underline"
-                >
-                  {managerObj.fullName ?? `#${managerObj.employeeNumber}`}
-                </button>
-                {isCrossOffice && (
-                  <span className="officenetwork-badge officenetwork-badge-warning">
-                    {managerOfficeObj?.name ?? "Other office"}
-                  </span>
-                )}
-              </div>
-            )
-            : (
-              <div className="text-sm text-[var(--officenetwork-text-muted)]">
-                No manager (top of org)
-              </div>
-            )}
+          {managerObj ? (
+            <div className="flex items-center gap-2">
+              <div
+                className="size-2 rounded-sm shrink-0"
+                style={{
+                  backgroundColor:
+                    HIERARCHY_COLORS[getHierarchyLevel(managerObj.jobTitle)],
+                }}
+              />
+              <button
+                onClick={() => handleSelectAndPan(managerObj)}
+                className="text-sm font-medium text-[var(--officenetwork-status-ready)] hover:underline"
+              >
+                {managerObj.fullName ?? `#${managerObj.employeeNumber}`}
+              </button>
+              {isCrossOffice && (
+                <span className="officenetwork-badge officenetwork-badge-warning">
+                  {managerOfficeObj?.name ?? "Other office"}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-[var(--officenetwork-text-muted)]">
+              No manager (top of org)
+            </div>
+          )}
         </div>
 
         {/* Skip-level manager */}
@@ -373,17 +366,18 @@ export function EmployeePanel({
               <div
                 className="size-2 rounded-sm shrink-0"
                 style={{
-                  backgroundColor: HIERARCHY_COLORS[
-                    getHierarchyLevel(skipLevelManagerObj.jobTitle)
-                  ],
+                  backgroundColor:
+                    HIERARCHY_COLORS[
+                      getHierarchyLevel(skipLevelManagerObj.jobTitle)
+                    ],
                 }}
               />
               <button
                 onClick={() => onSelectEmployee(skipLevelManagerObj)}
                 className="text-sm font-medium text-[var(--officenetwork-status-warning)] hover:underline"
               >
-                {skipLevelManagerObj.fullName
-                  ?? `#${skipLevelManagerObj.employeeNumber}`}
+                {skipLevelManagerObj.fullName ??
+                  `#${skipLevelManagerObj.employeeNumber}`}
               </button>
               {skipLevelOfficeObj && (
                 <span className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
@@ -421,8 +415,9 @@ export function EmployeePanel({
                 const level = getHierarchyLevel(node.employee.jobTitle);
                 const isFirst = index === 0;
                 const isLast = index === chain.length - 1;
-                const isCeo = node.employee.leadEmployeeNumber
-                  === node.employee.employeeNumber;
+                const isCeo =
+                  node.employee.leadEmployeeNumber ===
+                  node.employee.employeeNumber;
 
                 return (
                   <div
@@ -453,8 +448,8 @@ export function EmployeePanel({
                       }`}
                     >
                       {isCeo && "👑 "}
-                      {node.employee.fullName
-                        ?? `#${node.employee.employeeNumber}`}
+                      {node.employee.fullName ??
+                        `#${node.employee.employeeNumber}`}
                     </button>
                     <span
                       className="text-[9px] officenetwork-mono shrink-0"
@@ -543,9 +538,9 @@ export function EmployeePanel({
             isLoading={colleaguesLoading && !!employeeOfficeObj}
             maxVisible={4}
             countColor="var(--officenetwork-status-ready)"
-            emptyMessage={employeeOfficeObj
-              ? "No colleagues"
-              : "No office assigned"}
+            emptyMessage={
+              employeeOfficeObj ? "No colleagues" : "No office assigned"
+            }
             onSelectEmployee={onSelectEmployee}
           />
         )}
@@ -559,86 +554,86 @@ export function EmployeePanel({
             >
               Interface Comparison
             </div>
-            {workerLoading || personLoading
-              ? <LoadingIndicator size="sm" />
-              : (
-                <div className="space-y-2">
-                  <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--officenetwork-border-default)] pb-2">
-                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                      Property
-                    </span>
-                    <span className="text-[var(--officenetwork-hier-evp)]">
-                      Employee
-                    </span>
-                    <span className="text-[var(--officenetwork-accent-teal)]">
-                      Worker
-                    </span>
-                    <span className="text-[var(--officenetwork-status-ready)]">
-                      Person
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                      name
-                    </span>
-                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                      {employee.fullName ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                      {worker?.name ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-text-muted)]">
-                      —
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                      email
-                    </span>
-                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                      {employee.emailPrimaryWork ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                      {worker?.email ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-status-ready)] truncate">
-                      {person?.email ?? "—"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                      empNum
-                    </span>
-                    <span className="text-[var(--officenetwork-text-secondary)]">
-                      {employee.employeeNumber}
-                    </span>
-                    <span className="text-[var(--officenetwork-accent-teal)]">
-                      {worker?.employeeNumber ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-status-ready)]">
-                      {person?.employeeNumber ?? "—"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                      jobTitle
-                    </span>
-                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                      {employee.jobTitle ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                      {worker?.$as(Employee).jobTitle ?? "—"}
-                    </span>
-                    <span className="text-[var(--officenetwork-status-ready)] truncate">
-                      {person?.$as(Employee).jobTitle ?? "—"}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
-                    Worker/Person columns use $includeAllBaseObjectProperties to
-                    expose concrete fields (jobTitle) via $as(Employee)
-                  </div>
+            {workerLoading || personLoading ? (
+              <LoadingIndicator size="sm" />
+            ) : (
+              <div className="space-y-2">
+                <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--officenetwork-border-default)] pb-2">
+                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                    Property
+                  </span>
+                  <span className="text-[var(--officenetwork-hier-evp)]">
+                    Employee
+                  </span>
+                  <span className="text-[var(--officenetwork-accent-teal)]">
+                    Worker
+                  </span>
+                  <span className="text-[var(--officenetwork-status-ready)]">
+                    Person
+                  </span>
                 </div>
-              )}
+                <div className="grid grid-cols-4 gap-1 text-[10px]">
+                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                    name
+                  </span>
+                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                    {employee.fullName ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                    {worker?.name ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-text-muted)]">
+                    —
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px]">
+                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                    email
+                  </span>
+                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                    {employee.emailPrimaryWork ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                    {worker?.email ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-status-ready)] truncate">
+                    {person?.email ?? "—"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px]">
+                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                    empNum
+                  </span>
+                  <span className="text-[var(--officenetwork-text-secondary)]">
+                    {employee.employeeNumber}
+                  </span>
+                  <span className="text-[var(--officenetwork-accent-teal)]">
+                    {worker?.employeeNumber ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-status-ready)]">
+                    {person?.employeeNumber ?? "—"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-1 text-[10px]">
+                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                    jobTitle
+                  </span>
+                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                    {employee.jobTitle ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                    {worker?.$as(Employee).jobTitle ?? "—"}
+                  </span>
+                  <span className="text-[var(--officenetwork-status-ready)] truncate">
+                    {person?.$as(Employee).jobTitle ?? "—"}
+                  </span>
+                </div>
+                <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
+                  Worker/Person columns use $includeAllBaseObjectProperties to
+                  expose concrete fields (jobTitle) via $as(Employee)
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

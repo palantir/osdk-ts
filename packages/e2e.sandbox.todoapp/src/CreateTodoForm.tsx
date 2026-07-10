@@ -39,7 +39,7 @@ export default function CreateTodoForm() {
       // reset the form if we succeeded
       formRef.current.reset();
     },
-    [formRef.current, inputRef.current, applyAction],
+    [inputRef.current, applyAction]
   );
 
   return (

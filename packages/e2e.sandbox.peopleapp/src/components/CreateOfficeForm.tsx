@@ -16,7 +16,7 @@ export function CreateOfficeForm() {
 
   // Get the createOffice action
   const { applyAction, isPending, error } = useOsdkAction(
-    $Actions.createOffice,
+    $Actions.createOffice
   );
 
   // State for success message

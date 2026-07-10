@@ -23,6 +23,7 @@ import type {
 import semver, { valid } from "semver";
 import invariant from "tiny-invariant";
 import type { ReadonlyDeep } from "type-fest";
+
 import {
   ActionNotFoundError,
   LinkTypeNotFound,
@@ -69,32 +70,32 @@ export class FauxOntology {
   }
 
   getFilteredOntologyMetadata(
-    request: OntologiesV2.LoadOntologyMetadataRequest,
+    request: OntologiesV2.LoadOntologyMetadataRequest
   ): OntologiesV2.OntologyFullMetadata {
     return {
       ontology: this.#ontology.ontology,
       objectTypes: Object.fromEntries(
-        Object.entries(this.#ontology.objectTypes).filter(([objectType]) =>
-          request.objectTypes.includes(objectType)
-        ).map(([objectTypeApiName, objectTypeDefinition]) => [
-          objectTypeApiName,
-          {
-            ...objectTypeDefinition,
-            linkTypes: objectTypeDefinition.linkTypes.filter(linkType =>
-              request.linkTypes.includes(linkType.apiName)
-            ),
-          },
-        ]),
+        Object.entries(this.#ontology.objectTypes)
+          .filter(([objectType]) => request.objectTypes.includes(objectType))
+          .map(([objectTypeApiName, objectTypeDefinition]) => [
+            objectTypeApiName,
+            {
+              ...objectTypeDefinition,
+              linkTypes: objectTypeDefinition.linkTypes.filter((linkType) =>
+                request.linkTypes.includes(linkType.apiName)
+              ),
+            },
+          ])
       ),
       actionTypes: filterRecord(
         this.#ontology.actionTypes,
-        request.actionTypes,
+        request.actionTypes
       ),
       queryTypes: this.#getFilteredQueryTypes(request),
 
       interfaceTypes: filterRecord(
         this.#ontology.interfaceTypes,
-        request.interfaceTypes,
+        request.interfaceTypes
       ),
       sharedPropertyTypes: {},
       valueTypes: {},
@@ -121,31 +122,26 @@ export class FauxOntology {
     const ret = this.#ontology.interfaceTypes[interfaceType];
 
     if (ret === undefined) {
-      throw new OpenApiCallError(
-        404,
-        ObjectNotFoundError(interfaceType, ""),
-      );
+      throw new OpenApiCallError(404, ObjectNotFoundError(interfaceType, ""));
     }
 
-    return (
-      this.#ontology.interfaceTypes[interfaceType]
-    );
+    return this.#ontology.interfaceTypes[interfaceType];
   }
 
   public getObjectTypeFullMetadata(
-    objectTypeApiName: string,
+    objectTypeApiName: string
   ): OntologiesV2.ObjectTypeFullMetadata | undefined {
     return this.#ontology.objectTypes[objectTypeApiName];
   }
 
   public getObjectTypeFullMetadataOrThrow(
-    objectTypeApiName: string,
+    objectTypeApiName: string
   ): OntologiesV2.ObjectTypeFullMetadata {
     const objectType = this.#ontology.objectTypes[objectTypeApiName];
     if (objectType === undefined) {
       throw new OpenApiCallError(
         404,
-        ObjectTypeDoesNotExistError(objectTypeApiName),
+        ObjectTypeDoesNotExistError(objectTypeApiName)
       );
     }
     return objectType;
@@ -154,10 +150,7 @@ export class FauxOntology {
   public getActionDef(actionTypeApiName: string): OntologiesV2.ActionTypeV2 {
     const actionType = this.#ontology.actionTypes[camelize(actionTypeApiName)];
     if (actionType === undefined) {
-      throw new OpenApiCallError(
-        404,
-        ActionNotFoundError(),
-      );
+      throw new OpenApiCallError(404, ActionNotFoundError());
     }
     return actionType;
   }
@@ -169,14 +162,16 @@ export class FauxOntology {
   }
 
   public getQueryDef(
-    queryTypeApiNameAndVersion: string,
+    queryTypeApiNameAndVersion: string
   ): OntologiesV2.QueryTypeV2 {
-    const queryType = this.#ontology
-      .queryTypes[this.#convertToVersionedApiName(queryTypeApiNameAndVersion)];
+    const queryType =
+      this.#ontology.queryTypes[
+        this.#convertToVersionedApiName(queryTypeApiNameAndVersion)
+      ];
     if (queryType === undefined) {
       throw new OpenApiCallError(
         404,
-        QueryNotFoundError(queryTypeApiNameAndVersion),
+        QueryNotFoundError(queryTypeApiNameAndVersion)
       );
     }
     return queryType;
@@ -184,31 +179,29 @@ export class FauxOntology {
 
   public getQueryImpl(
     queryTypeApiName: string,
-    version?: string,
+    version?: string
   ): FauxQueryImpl {
     const versionMap = this.#queryImpl.get(queryTypeApiName);
 
-    const impl = version !== undefined
-      ? versionMap?.get(version)
-      : versionMap?.get(semver.rsort(Array.from(versionMap.keys() ?? []))[0]);
+    const impl =
+      version !== undefined
+        ? versionMap?.get(version)
+        : versionMap?.get(semver.rsort(Array.from(versionMap.keys() ?? []))[0]);
 
     if (!impl) {
-      throw new OpenApiCallError(
-        404,
-        QueryNotFoundError(queryTypeApiName),
-      );
+      throw new OpenApiCallError(404, QueryNotFoundError(queryTypeApiName));
     }
     invariant(impl, "Query implementation not found for " + queryTypeApiName);
     return impl;
   }
 
   public getInterfaceToObjectTypeMappings(
-    objectApiNames: Iterable<OntologiesV2.ObjectTypeApiName>,
+    objectApiNames: Iterable<OntologiesV2.ObjectTypeApiName>
   ): Record<
     OntologiesV2.InterfaceTypeApiName,
     OntologiesV2.InterfaceToObjectTypeMappings
   > {
-    const objectDefs = Array.from(objectApiNames).map(apiName =>
+    const objectDefs = Array.from(objectApiNames).map((apiName) =>
       this.getObjectTypeFullMetadataOrThrow(apiName)
     );
 
@@ -218,11 +211,9 @@ export class FauxOntology {
     > = {};
 
     for (const objDef of objectDefs) {
-      for (
-        const [ifaceApiName, { properties }] of Object.entries(
-          objDef.implementsInterfaces2,
-        )
-      ) {
+      for (const [ifaceApiName, { properties }] of Object.entries(
+        objDef.implementsInterfaces2
+      )) {
         if (ifaceToObjMap[ifaceApiName] === undefined) {
           ifaceToObjMap[ifaceApiName] = {};
         }
@@ -236,16 +227,16 @@ export class FauxOntology {
 
   public getLinkTypeSideV2(
     objectTypeApiName: string,
-    linkTypeName: string,
+    linkTypeName: string
   ): OntologiesV2.LinkTypeSideV2 {
     const objectType = this.getObjectTypeFullMetadataOrThrow(objectTypeApiName);
-    const linkType = objectType.linkTypes.find((a) =>
-      a.apiName === linkTypeName
+    const linkType = objectType.linkTypes.find(
+      (a) => a.apiName === linkTypeName
     );
     if (linkType === undefined) {
       throw new OpenApiCallError(
         404,
-        LinkTypeNotFound(objectTypeApiName, linkTypeName),
+        LinkTypeNotFound(objectTypeApiName, linkTypeName)
       );
     }
     return linkType;
@@ -253,23 +244,23 @@ export class FauxOntology {
 
   public getOtherLinkTypeSideV2OrThrow(
     objectTypeApiName: string,
-    linkTypeName: string,
+    linkTypeName: string
   ): OntologiesV2.LinkTypeSideV2 {
     const thisSideLink = this.getLinkTypeSideV2(
       objectTypeApiName,
-      linkTypeName,
+      linkTypeName
     );
     const otherObj = this.getObjectTypeFullMetadataOrThrow(
-      thisSideLink.objectTypeApiName,
+      thisSideLink.objectTypeApiName
     );
-    const candidates = otherObj.linkTypes.filter(l =>
-      l.linkTypeRid === thisSideLink.linkTypeRid
+    const candidates = otherObj.linkTypes.filter(
+      (l) => l.linkTypeRid === thisSideLink.linkTypeRid
     );
     if (otherObj.objectType.apiName !== objectTypeApiName) {
       // if its not the same object type then there should only be one
       invariant(
         candidates.length === 1,
-        "Expected only one candidate link type",
+        "Expected only one candidate link type"
       );
       return candidates[0];
     }
@@ -282,12 +273,14 @@ export class FauxOntology {
     }
     invariant(
       candidates.length === 2,
-      "Expected only two candidate link types",
+      "Expected only two candidate link types"
     );
-    const candidate = candidates.find(l => l.apiName !== thisSideLink.apiName);
+    const candidate = candidates.find(
+      (l) => l.apiName !== thisSideLink.apiName
+    );
     invariant(
       candidate,
-      "Expected to find a candidate link type that is not the same as the one passed in",
+      "Expected to find a candidate link type that is not the same as the one passed in"
     );
     return candidate;
   }
@@ -295,38 +288,33 @@ export class FauxOntology {
   getBothLinkTypeSides(
     leftObjectType: string,
     leftLinkName: string,
-    rightObjectType: string,
+    rightObjectType: string
   ): [OntologiesV2.LinkTypeSideV2, OntologiesV2.LinkTypeSideV2] {
-    const leftTypeSideV2 = this.getLinkTypeSideV2(
-      leftObjectType,
-      leftLinkName,
-    );
+    const leftTypeSideV2 = this.getLinkTypeSideV2(leftObjectType, leftLinkName);
 
     // the rhs passed in should match the target of the lhs
     invariant(rightObjectType === leftTypeSideV2.objectTypeApiName);
 
     const rightTypeSideV2 = this.getOtherLinkTypeSideV2OrThrow(
       leftObjectType,
-      leftLinkName,
+      leftLinkName
     );
 
     return [leftTypeSideV2, rightTypeSideV2];
   }
 
   registerObjectType<Q extends ObjectTypeDefinition>(
-    def: TH_ObjectTypeFullMetadata<Q>,
+    def: TH_ObjectTypeFullMetadata<Q>
   ): void;
   registerObjectType(
-    def: ReadonlyDeep<OntologiesV2.ObjectTypeFullMetadata>,
+    def: ReadonlyDeep<OntologiesV2.ObjectTypeFullMetadata>
   ): void;
   registerObjectType<Q extends ObjectTypeDefinition>(
-    def:
-      | TH_ObjectTypeFullMetadata<Q>
-      | OntologiesV2.ObjectTypeFullMetadata,
+    def: TH_ObjectTypeFullMetadata<Q> | OntologiesV2.ObjectTypeFullMetadata
   ): void {
     if (def.objectType.apiName in this.#ontology.objectTypes) {
       throw new Error(
-        `ObjectType ${def.objectType.apiName} already registered`,
+        `ObjectType ${def.objectType.apiName} already registered`
       );
     }
     this.#ontology.objectTypes[def.objectType.apiName] = def;
@@ -334,20 +322,18 @@ export class FauxOntology {
 
   registerActionType<Q extends OntologiesV2.ActionTypeV2>(
     def: Q,
-    implementation?: FauxActionImpl<Q>,
+    implementation?: FauxActionImpl<Q>
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
-    implementation?: FauxActionImpl,
+    implementation?: FauxActionImpl
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
-    implementation?: FauxActionImpl,
+    implementation?: FauxActionImpl
   ): void {
     if (def.apiName in this.#ontology.actionTypes) {
-      throw new Error(
-        `ActionType ${def.apiName} already registered`,
-      );
+      throw new Error(`ActionType ${def.apiName} already registered`);
     }
     this.#ontology.actionTypes[def.apiName] = def;
     if (implementation) {
@@ -357,81 +343,70 @@ export class FauxOntology {
 
   registerQueryType(
     def: OntologiesV2.QueryTypeV2,
-    implementation?: FauxQueryImpl,
+    implementation?: FauxQueryImpl
   ): void {
     if (`${def.apiName}:${def.version}` in this.#ontology.queryTypes) {
-      throw new Error(
-        `QueryType ${def.apiName} already registered`,
-      );
+      throw new Error(`QueryType ${def.apiName} already registered`);
     }
-    this.#ontology
-      .queryTypes[
-        `${def.apiName}:${def.version}` as VersionedQueryTypeApiName
-      ] = def;
+    this.#ontology.queryTypes[
+      `${def.apiName}:${def.version}` as VersionedQueryTypeApiName
+    ] = def;
     if (implementation) {
       if (!this.#queryImpl.has(def.apiName)) {
         this.#queryImpl.set(def.apiName, new Map());
       }
       if (!valid(def.version)) {
         throw new Error(
-          `QueryType ${def.apiName} version ${def.version} is not semver valid`,
+          `QueryType ${def.apiName} version ${def.version} is not semver valid`
         );
       }
-      this.#queryImpl.get(def.apiName)?.set(
-        def.version,
-        implementation,
-      );
+      this.#queryImpl.get(def.apiName)?.set(def.version, implementation);
     }
   }
 
   registerInterfaceType(def: OntologiesV2.InterfaceType): void {
     if (def.apiName in this.#ontology.interfaceTypes) {
-      throw new Error(
-        `InterfaceType ${def.apiName} already registered`,
-      );
+      throw new Error(`InterfaceType ${def.apiName} already registered`);
     }
     this.#ontology.interfaceTypes[def.apiName] = def;
   }
 
   registerSharedPropertyType(def: OntologiesV2.SharedPropertyType): void {
     if (def.apiName in this.#ontology.sharedPropertyTypes) {
-      throw new Error(
-        `SharedPropertyType ${def.apiName} already registered`,
-      );
+      throw new Error(`SharedPropertyType ${def.apiName} already registered`);
     }
     this.#ontology.sharedPropertyTypes[def.apiName] = def;
   }
 
-  #getFilteredQueryTypes(request: LoadOntologyMetadataRequest): Record<
-    OntologiesV2.QueryApiName,
-    OntologiesV2.QueryTypeV2
-  > {
-    const remappedQueryTypes = request.queryTypes.map(x =>
+  #getFilteredQueryTypes(
+    request: LoadOntologyMetadataRequest
+  ): Record<OntologiesV2.QueryApiName, OntologiesV2.QueryTypeV2> {
+    const remappedQueryTypes = request.queryTypes.map((x) =>
       this.#convertToVersionedApiName(x)
     );
     return Object.fromEntries(
-      Object.entries(this.#ontology.queryTypes).filter((
-        [queryTypeApiName],
-      ) => remappedQueryTypes.includes(queryTypeApiName)).map((
-        [queryTypeApiName, queryTypeDefinition],
-      ) => [
-        request.queryTypes[remappedQueryTypes.indexOf(queryTypeApiName)],
-        queryTypeDefinition,
-      ]),
+      Object.entries(this.#ontology.queryTypes)
+        .filter(([queryTypeApiName]) =>
+          remappedQueryTypes.includes(queryTypeApiName)
+        )
+        .map(([queryTypeApiName, queryTypeDefinition]) => [
+          request.queryTypes[remappedQueryTypes.indexOf(queryTypeApiName)],
+          queryTypeDefinition,
+        ])
     );
   }
 
-  #convertToVersionedApiName(
-    apiName: string,
-  ): VersionedQueryTypeApiName {
+  #convertToVersionedApiName(apiName: string): VersionedQueryTypeApiName {
     // If a query is requested without a version, we remap it to include a versioned api name with the latest version
     if (extractVersion(apiName) !== undefined) {
       return apiName as VersionedQueryTypeApiName;
     }
     const version = semver.rsort(
-      Object.keys(this.#ontology.queryTypes).filter(
-        queryTypeApiName => queryTypeApiName.split(":")[0] === apiName,
-      ).map(x => extractVersion(x)),
+      Object.keys(this.#ontology.queryTypes)
+        .filter(
+          (queryTypeApiName) => queryTypeApiName.split(":")[0] === apiName
+        )
+        .map((x) => extractVersion(x))
     )[0];
     return `${apiName}:${version}`;
   }
@@ -439,15 +414,13 @@ export class FauxOntology {
 
 function filterRecord<T>(
   record: Record<string, T>,
-  keys: string[],
+  keys: string[]
 ): Record<string, T> {
   return Object.fromEntries(
-    Object.entries(record).filter(([key]) => keys.includes(key)),
+    Object.entries(record).filter(([key]) => keys.includes(key))
   );
 }
 
-function extractVersion(
-  apiName: string,
-): string {
+function extractVersion(apiName: string): string {
   return apiName.split(":")[1];
 }

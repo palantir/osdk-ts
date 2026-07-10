@@ -21,7 +21,7 @@ import { expectType } from "ts-expect";
 
 export async function fetchEmployeeLead(
   client: Client,
-  adUsername: string,
+  adUsername: string
 ): Promise<void> {
   const result = await client(Employee)
     .where({
@@ -78,7 +78,7 @@ export async function fetchEmployeeLead(
       adUsername,
       businessTitle,
       employeeNumber,
-    })),
+    }))
   );
   console.log();
 }

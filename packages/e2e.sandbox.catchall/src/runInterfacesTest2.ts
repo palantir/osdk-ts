@@ -68,7 +68,7 @@ export async function runInterfacesTest2(): Promise<void> {
   console.log("object scoped should have only selected: ", nbaPlayer1);
 
   expectType<TypeOf<Osdk.Instance<NbaPlayer, never, "id">, typeof nbaPlayer1>>(
-    true,
+    true
   );
 
   // You cannot specify both $select and $includeAllBaseObjectProperties
@@ -84,16 +84,17 @@ export async function runInterfacesTest2(): Promise<void> {
 
   // interface to interface
   const concernCandidates2 = await dsClient(
-    CollateralConcernCandidate,
+    CollateralConcernCandidate
   ).fetchPage();
   const concernList2 = await dsClient(CollateralConcernCandidate)
     .pivotTo(
-      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
     )
     .fetchPage({ $includeAllBaseObjectProperties: true });
-  const singleLink = await concernCandidates2.data[0].$link[
-    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
-  ].fetchPage();
+  const singleLink =
+    await concernCandidates2.data[0].$link[
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
+    ].fetchPage();
   console.log("concern candidates", concernCandidates2.data);
   console.log("linked list entities", concernList2.data);
   console.log("tried link instance impl", singleLink);
@@ -118,7 +119,7 @@ export async function runInterfacesTest2(): Promise<void> {
     .fetchPage({ $includeAllBaseObjectProperties: true });
   console.log(
     "interfaceA filtered by title instances: ",
-    interfaceAFilteredByTitle,
+    interfaceAFilteredByTitle
   );
 
   const interfaceAFilteredByPk = await dsClient(EsongInterfaceA)
@@ -128,7 +129,7 @@ export async function runInterfacesTest2(): Promise<void> {
     .fetchPage({ $includeAllBaseObjectProperties: true });
   console.log(
     "interfaceA filtered by title instances: ",
-    interfaceAFilteredByPk,
+    interfaceAFilteredByPk
   );
 
   const huh3 = await interfaceA.data[0].$link.esongPds.fetchOne();
@@ -159,25 +160,25 @@ export async function runInterfacesTest2(): Promise<void> {
     });
   console.log(
     "All objects that implement both interface A and interface B",
-    implementObjectTypeAAndB,
+    implementObjectTypeAAndB
   );
   console.log(
     "All objects linked to object type a and b (implemented by interface A)",
-    linkedToObjectTypeAAndB,
+    linkedToObjectTypeAAndB
   );
   console.log(
     "All objects linked to object type b and c (implemented by interface B)",
-    linkedToObjectTypeBAndC,
+    linkedToObjectTypeBAndC
   );
   console.log(
     "All objects linked to objects that are instances of both interface A and interface B",
-    linkedToObjectTypeB,
+    linkedToObjectTypeB
   );
   console.log(
     "All objects linked to objects that are instances of both interface A and interface B, as interface",
     linkedToObjectTypeBAsInterface.data[0].$as(
-      $Objects.NihalbCastingLinkedObjectTypeA,
-    ),
+      $Objects.NihalbCastingLinkedObjectTypeA
+    )
   );
 
   const myInterfaceIdpData = await ontologyClient(MwaltherTestIdp).fetchPage();
@@ -194,21 +195,21 @@ export async function runInterfacesTest2(): Promise<void> {
 
   console.log(
     "We get all data loading by interface with IDP: ",
-    myInterfaceIdpData.data,
+    myInterfaceIdpData.data
   );
   console.log(
     "property accessors work on idp and then spt with namespace: ",
     myInterfaceIdpData.data[0].idpAge,
-    myInterfaceIdpData.data[1].mwaltherName,
+    myInterfaceIdpData.data[1].mwaltherName
   );
   console.log(
     "We get all data loading by interface with simple filter IDP: ",
-    myFilteredInterfaceIdpData.data,
+    myFilteredInterfaceIdpData.data
   );
   console.log(
     "property accessors STILL work on idp and then spt with namespace: ",
     myFilteredInterfaceIdpData.data[0].idpAge,
-    myFilteredInterfaceIdpData.data[1].mwaltherName,
+    myFilteredInterfaceIdpData.data[1].mwaltherName
   );
 
   const interfaceObjectWithNonLocalImplementations = (
@@ -217,7 +218,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   console.log(
     "Interface object with non local impl directly loaded: ",
-    JSON.stringify(interfaceObjectWithNonLocalImplementations, null, 1),
+    JSON.stringify(interfaceObjectWithNonLocalImplementations, null, 1)
   );
 
   try {
@@ -232,15 +233,15 @@ export async function runInterfacesTest2(): Promise<void> {
 
   console.log(
     "Object loaded directly: ",
-    JSON.stringify(objectForNonLocalInterface, null, 1),
+    JSON.stringify(objectForNonLocalInterface, null, 1)
   );
   console.log(
     "Object casted to interface works: ",
     JSON.stringify(
       objectForNonLocalInterface.$as(ReducerTestInterface),
       null,
-      1,
-    ),
+      1
+    )
   );
 }
 

@@ -213,19 +213,19 @@ export function FormPage() {
     async (formState: Record<string, unknown>) => {
       setSubmittedState(formState);
     },
-    [],
+    []
   );
 
   const employeeObjectSet = useMemo(
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [],
+    []
   );
   const marketingEmployees = useMemo(
     () =>
       $(Employee).where({
         department: "Marketing",
       }) as ObjectSet<ObjectTypeDefinition>,
-    [],
+    []
   );
 
   const allFormContent = useMemo(
@@ -250,7 +250,7 @@ export function FormPage() {
         },
       }),
     ],
-    [employeeObjectSet, marketingEmployees],
+    [employeeObjectSet, marketingEmployees]
   );
 
   return (

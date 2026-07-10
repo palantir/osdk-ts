@@ -31,8 +31,9 @@ export interface TimelineRowProps {
 export function TimelineRow(props: TimelineRowProps): React.JSX.Element {
   const { row } = props;
   const excluded = row.isExcluded === true;
-  const label = row.typeValue
-    ?? (row.type != null && row.value != null
+  const label =
+    row.typeValue ??
+    (row.type != null && row.value != null
       ? makeTypeValue(row.type, row.value)
       : (row.value ?? ""));
 
@@ -44,9 +45,9 @@ export function TimelineRow(props: TimelineRowProps): React.JSX.Element {
           <span className={excluded ? styles.labelExcluded : styles.label}>
             {label}
           </span>
-          {excluded
-            ? <span className={styles.excludedTag}>Excluded</span>
-            : null}
+          {excluded ? (
+            <span className={styles.excludedTag}>Excluded</span>
+          ) : null}
           <span className={styles.timestamp}>
             {formatTimestamp(row.timestamp)}
           </span>
@@ -54,12 +55,12 @@ export function TimelineRow(props: TimelineRowProps): React.JSX.Element {
             <ToggleExclusionButton statusUpdate={row} />
           </span>
         </div>
-        {row.comment != null && row.comment !== ""
-          ? <div className={styles.comment}>{row.comment}</div>
-          : null}
-        {row.recordedBy != null && row.recordedBy !== ""
-          ? <div className={styles.recordedBy}>by {row.recordedBy}</div>
-          : null}
+        {row.comment != null && row.comment !== "" ? (
+          <div className={styles.comment}>{row.comment}</div>
+        ) : null}
+        {row.recordedBy != null && row.recordedBy !== "" ? (
+          <div className={styles.recordedBy}>by {row.recordedBy}</div>
+        ) : null}
       </div>
     </li>
   );

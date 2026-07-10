@@ -26,7 +26,7 @@ export function MultiOfficeLinksPanel({
   } = useLinks(offices, "occupants");
 
   const [expandedOffices, setExpandedOffices] = React.useState<Set<string>>(
-    () => new Set(),
+    () => new Set()
   );
 
   const toggleOffice = React.useCallback((officeId: string) => {
@@ -79,7 +79,7 @@ export function MultiOfficeLinksPanel({
         <div className="p-2">
           {offices.map((office) => {
             const officeEmployees = linkedObjectsBySourcePrimaryKey.get(
-              office.primaryKey_,
+              office.primaryKey_
             );
             const count = officeEmployees?.length ?? 0;
             const isExpanded = expandedOffices.has(office.primaryKey_);
@@ -102,47 +102,47 @@ export function MultiOfficeLinksPanel({
                   </span>
                 </button>
 
-                {isExpanded
-                  && officeEmployees
-                  && officeEmployees.length > 0 && (
-                  <div className="ml-5 space-y-px">
-                    {officeEmployees.map((emp) => {
-                      const level = getHierarchyLevel(emp.jobTitle);
-                      return (
-                        <button
-                          key={emp.employeeNumber}
-                          onClick={() => onSelectEmployee(emp)}
-                          className="w-full text-left px-3 py-1.5 rounded hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group flex items-center gap-2"
-                        >
-                          <div
-                            className="size-1.5 rounded-sm shrink-0"
-                            style={{
-                              backgroundColor: HIERARCHY_COLORS[level],
-                            }}
-                          />
-                          <span className="text-xs text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate flex-1">
-                            {emp.fullName
-                              ?? `Employee #${emp.employeeNumber}`}
-                          </span>
-                          <span
-                            className="text-[9px] officenetwork-mono uppercase tracking-wider shrink-0"
-                            style={{ color: HIERARCHY_COLORS[level] }}
+                {isExpanded &&
+                  officeEmployees &&
+                  officeEmployees.length > 0 && (
+                    <div className="ml-5 space-y-px">
+                      {officeEmployees.map((emp) => {
+                        const level = getHierarchyLevel(emp.jobTitle);
+                        return (
+                          <button
+                            key={emp.employeeNumber}
+                            onClick={() => onSelectEmployee(emp)}
+                            className="w-full text-left px-3 py-1.5 rounded hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group flex items-center gap-2"
                           >
-                            {HIERARCHY_LABELS[level]}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                            <div
+                              className="size-1.5 rounded-sm shrink-0"
+                              style={{
+                                backgroundColor: HIERARCHY_COLORS[level],
+                              }}
+                            />
+                            <span className="text-xs text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate flex-1">
+                              {emp.fullName ??
+                                `Employee #${emp.employeeNumber}`}
+                            </span>
+                            <span
+                              className="text-[9px] officenetwork-mono uppercase tracking-wider shrink-0"
+                              style={{ color: HIERARCHY_COLORS[level] }}
+                            >
+                              {HIERARCHY_LABELS[level]}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                {isExpanded
-                  && (!officeEmployees || officeEmployees.length === 0)
-                  && !isLoading && (
-                  <div className="ml-5 px-3 py-2 text-[10px] text-[var(--officenetwork-text-muted)]">
-                    No employees
-                  </div>
-                )}
+                {isExpanded &&
+                  (!officeEmployees || officeEmployees.length === 0) &&
+                  !isLoading && (
+                    <div className="ml-5 px-3 py-2 text-[10px] text-[var(--officenetwork-text-muted)]">
+                      No employees
+                    </div>
+                  )}
               </div>
             );
           })}

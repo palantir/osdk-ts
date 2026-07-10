@@ -52,7 +52,7 @@ test("it generates foundry.config.json", () => {
       widgetSet: "ri.widgetregistry..widget-set.fake",
       repository: undefined,
       directory: "./dist",
-    }),
+    })
   ).toEqual(expected);
 });
 
@@ -63,6 +63,6 @@ test("it generates foundry.config.json with repository", () => {
       widgetSet: "ri.widgetregistry..widget-set.fake",
       repository: "ri.stemma.main.repository.fake",
       directory: "./dist",
-    }),
+    })
   ).toEqual(expectedWithRepository);
 });

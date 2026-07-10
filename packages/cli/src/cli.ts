@@ -25,7 +25,7 @@ import site from "./commands/site/index.js";
 import widgetSet from "./commands/widgetset/index.js";
 
 export async function cli(
-  args: string[] = process.argv,
+  args: string[] = process.argv
 ): Promise<Record<string, unknown> | undefined> {
   consola.info(`Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`);
 

@@ -39,11 +39,11 @@ export interface MatchedKeysResult {
  */
 export function useMatchedAssignmentKeys(
   selections: readonly LatestStatusSelection[],
-  composeAcrossTypes: "$and" | "$or",
+  composeAcrossTypes: "$and" | "$or"
 ): MatchedKeysResult {
   const query = React.useMemo(
     () => buildLatestStatusQuery(selections, { composeAcrossTypes }),
-    [selections, composeAcrossTypes],
+    [selections, composeAcrossTypes]
   );
 
   const where = React.useMemo<
@@ -53,7 +53,7 @@ export function useMatchedAssignmentKeys(
       query == null
         ? undefined
         : { $and: [ASSIGNMENT_BASE_WHERE, query.where] },
-    [query],
+    [query]
   );
 
   const { data, isLoading, error } = useOsdkObjects<
@@ -70,7 +70,7 @@ export function useMatchedAssignmentKeys(
 
   const matchedKeys = React.useMemo(
     () => (query == null ? undefined : (data ?? []).map((o) => o.$primaryKey)),
-    [query, data],
+    [query, data]
   );
 
   return { matchedKeys, isLoading, error };

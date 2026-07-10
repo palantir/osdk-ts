@@ -12,5 +12,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <OsdkProvider client={$}>
       <Router />
     </OsdkProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-devtools",
-  "version": "0.10.0",
+  "version": "0.14.0",
   "description": "Developer tools and debugging utilities for OSDK React Toolkit",
   "license": "Apache-2.0",
   "repository": {
@@ -107,8 +107,7 @@
   "types": "./build/types/index.d.ts",
   "sideEffects": [
     "**/*.css",
-    "**/*.scss",
-    "**/styles.js"
+    "**/*.scss"
   ],
   "type": "module"
 }

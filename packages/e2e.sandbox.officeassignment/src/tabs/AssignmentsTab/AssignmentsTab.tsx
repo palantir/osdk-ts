@@ -61,7 +61,7 @@ export function AssignmentsTab(): React.JSX.Element {
 
   const closeDrawer = React.useCallback(
     () => setSelectedAssignmentId(undefined),
-    [],
+    []
   );
 
   return (

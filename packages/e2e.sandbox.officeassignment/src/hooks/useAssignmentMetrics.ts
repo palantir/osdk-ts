@@ -41,7 +41,7 @@ function parseCount(totalCount: string | undefined): number | undefined {
  * Uses lightweight count queries via the API's `totalCount`.
  */
 export function useAssignmentMetrics(
-  tableFilter: WhereClause<Assignment> | undefined,
+  tableFilter: WhereClause<Assignment> | undefined
 ): AssignmentMetrics {
   const total = useOsdkObjects(Assignment, {
     where: ASSIGNMENT_BASE_WHERE,
@@ -50,9 +50,9 @@ export function useAssignmentMetrics(
 
   const shownWhere = React.useMemo<WhereClause<Assignment>>(
     () =>
-      combineWhere<Assignment>([ASSIGNMENT_BASE_WHERE, tableFilter])
-        ?? ASSIGNMENT_BASE_WHERE,
-    [tableFilter],
+      combineWhere<Assignment>([ASSIGNMENT_BASE_WHERE, tableFilter]) ??
+      ASSIGNMENT_BASE_WHERE,
+    [tableFilter]
   );
 
   // When nothing narrows the set, "shown" equals "total" — skip the duplicate count query.

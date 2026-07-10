@@ -88,10 +88,10 @@ function formatCellValue(cell: unknown): string {
 }
 
 function escapeCsvCell(value: string): string {
-  if (!/[",\n\r]/.test(value)) {
+  if (!/[",\n\r]/u.test(value)) {
     return value;
   }
-  return `"${value.replaceAll("\"", "\"\"")}"`;
+  return `"${value.replaceAll('"', '""')}"`;
 }
 
 async function downloadCsv(csv: string, fileName: string): Promise<void> {

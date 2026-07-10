@@ -189,8 +189,8 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   propertySecurities: [],
 };
 
-const baseObjectFullScopeSetResponse:
-  LoadObjectSetV2MultipleObjectTypesResponse = {
+const baseObjectFullScopeSetResponse: LoadObjectSetV2MultipleObjectTypesResponse =
+  {
     data: [employeeFullObjectScoped],
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
@@ -213,8 +213,8 @@ const baseObjectFullScopeSetResponse:
     propertySecurities: [],
   };
 
-const equalsFullScopeObjectSetResponse:
-  LoadObjectSetV2MultipleObjectTypesResponse = {
+const equalsFullScopeObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse =
+  {
     data: [employeeFullObjectScoped2],
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },

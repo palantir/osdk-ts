@@ -47,10 +47,10 @@ export async function runAggregationsTest(): Promise<void> {
     testAggregateCountNoGroup.$count,
     testAggregateCountNoGroup.latitude.avg,
     testAggregateCountNoGroup.latitude.max,
-    testAggregateCountNoGroup.latitude.min,
+    testAggregateCountNoGroup.latitude.min
   );
   const testAggregateCountWithGroups = await client(
-    BoundariesUsState,
+    BoundariesUsState
   ).aggregate({
     $select: {
       $count: "unordered",
@@ -67,7 +67,7 @@ export async function runAggregationsTest(): Promise<void> {
   });
 
   const testAggregateCountWithFixedGroups = await client(
-    BoundariesUsState,
+    BoundariesUsState
   ).aggregate({
     $select: {
       $count: "unordered",
@@ -83,7 +83,7 @@ export async function runAggregationsTest(): Promise<void> {
   });
 
   const testAggregateCountWithRangeGroups = await client(
-    BoundariesUsState,
+    BoundariesUsState
   ).aggregate({
     $select: {
       $count: "unordered",
@@ -124,7 +124,7 @@ export async function runAggregationsTest(): Promise<void> {
     testAggregateCountWithGroups[0].$count,
     testAggregateCountWithGroups[0].latitude.avg,
     testAggregateCountWithGroups[0].latitude.max,
-    testAggregateCountWithGroups[0].latitude.min,
+    testAggregateCountWithGroups[0].latitude.min
   );
 
   console.log(testAggregateCountWithGroups[0].$group.longitude);
@@ -132,13 +132,13 @@ export async function runAggregationsTest(): Promise<void> {
 
   for (const group of testAggregateCountWithRangeGroups) {
     console.log(
-      `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`,
+      `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`
     );
   }
 
   console.log(
     "Exact match with default value bucket: ",
-    testExactMatchWithDefault,
+    testExactMatchWithDefault
   );
 
   console.log("Exact match with null bucket:", testExactMatchWithNullBucket);
@@ -156,10 +156,10 @@ export async function runAggregationsTest(): Promise<void> {
 
   invariant(testAggregateZeroObjects.$count === 0, "Expected $count to be 0");
   invariant(
-    "latitude" in testAggregateZeroObjects
-      && "max" in testAggregateZeroObjects.latitude
-      && "min" in testAggregateZeroObjects.latitude,
-    "Expected latitude with max/min keys to be present",
+    "latitude" in testAggregateZeroObjects &&
+      "max" in testAggregateZeroObjects.latitude &&
+      "min" in testAggregateZeroObjects.latitude,
+    "Expected latitude with max/min keys to be present"
   );
   console.log("Zero objects aggregation result:", testAggregateZeroObjects);
 }

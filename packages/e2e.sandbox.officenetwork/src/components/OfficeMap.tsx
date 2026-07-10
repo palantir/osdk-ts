@@ -51,7 +51,7 @@ const mapStyle: StyleSpecification = {
       ],
       tileSize: 256,
       attribution:
-        "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
   layers: [
@@ -89,10 +89,10 @@ interface EmployeeWithLocation {
 const showsOfficeMarkers = (mode: LensMode): boolean => mode === "offices";
 
 const showsEmployeeMarkers = (mode: LensMode): boolean =>
-  mode === "employees"
-  || mode === "network"
-  || mode === "chain"
-  || mode === "team";
+  mode === "employees" ||
+  mode === "network" ||
+  mode === "chain" ||
+  mode === "team";
 
 const showsConnectionLines = (mode: LensMode): boolean =>
   mode === "network" || mode === "chain" || mode === "team";
@@ -126,7 +126,7 @@ export function OfficeMap({
   const mapRef = React.useRef<MapRef>(null);
 
   const officesWithLocation = offices.filter(
-    (o): o is typeof o & { location: Point } => isPoint(o.location),
+    (o): o is typeof o & { location: Point } => isPoint(o.location)
   );
 
   const officeLocationMap = React.useMemo(() => {
@@ -178,19 +178,20 @@ export function OfficeMap({
     lensMode,
   });
 
-  const defaultCenter = officesWithLocation.length > 0
-    ? {
-      longitude: officesWithLocation[0].location.coordinates[0],
-      latitude: officesWithLocation[0].location.coordinates[1],
-    }
-    : { longitude: -98, latitude: 39 };
+  const defaultCenter =
+    officesWithLocation.length > 0
+      ? {
+          longitude: officesWithLocation[0].location.coordinates[0],
+          latitude: officesWithLocation[0].location.coordinates[1],
+        }
+      : { longitude: -98, latitude: 39 };
 
   React.useEffect(() => {
     if (freezeMap) return;
     if (
-      selectedOffice?.location
-      && mapRef.current
-      && isPoint(selectedOffice.location)
+      selectedOffice?.location &&
+      mapRef.current &&
+      isPoint(selectedOffice.location)
     ) {
       mapRef.current.flyTo({
         center: [
@@ -206,12 +207,12 @@ export function OfficeMap({
   React.useEffect(() => {
     if (freezeMap) return;
     if (
-      selectedEmployee?.primaryOfficeId
-      && mapRef.current
-      && showsEmployeeMarkers(lensMode)
+      selectedEmployee?.primaryOfficeId &&
+      mapRef.current &&
+      showsEmployeeMarkers(lensMode)
     ) {
       const officeInfo = officeLocationMap.get(
-        selectedEmployee.primaryOfficeId,
+        selectedEmployee.primaryOfficeId
       );
       if (officeInfo) {
         mapRef.current.flyTo({
@@ -245,16 +246,16 @@ export function OfficeMap({
         />
 
         {/* Office markers - dark background with cyan border, fills cyan when selected */}
-        {showsOfficeMarkers(lensMode)
-          && officesWithLocation.map((office) => {
+        {showsOfficeMarkers(lensMode) &&
+          officesWithLocation.map((office) => {
             const [longitude, latitude] = office.location.coordinates;
             const isSelected =
               selectedOffice?.primaryKey_ === office.primaryKey_;
             const hasMatchingEmployees = employeesByOffice.has(
-              office.primaryKey_,
+              office.primaryKey_
             );
-            const isDimmed = hasActiveFilters && !hasMatchingEmployees
-              && !isSelected;
+            const isDimmed =
+              hasActiveFilters && !hasMatchingEmployees && !isSelected;
 
             return (
               <Marker
@@ -315,18 +316,20 @@ export function OfficeMap({
           })}
 
         {/* Employee markers - dark background with colored border/text, fills when selected */}
-        {showsEmployeeMarkers(lensMode)
-          && Array.from(employeesByOffice.entries()).map(([officeId, emps]) => {
+        {showsEmployeeMarkers(lensMode) &&
+          Array.from(employeesByOffice.entries()).map(([officeId, emps]) => {
             return emps.map((emp, index) => {
               const [longitude, latitude] = emp.location.coordinates;
-              const isSelected = selectedEmployee?.employeeNumber
-                === emp.employee.employeeNumber;
+              const isSelected =
+                selectedEmployee?.employeeNumber ===
+                emp.employee.employeeNumber;
               const offset = getOffset(index, emps.length);
-              const initials = emp.employee.fullName
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2) ?? "?";
+              const initials =
+                emp.employee.fullName
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2) ?? "?";
 
               const useHierarchy = usesHierarchyColors(lensMode);
               const hierarchyLevel = useHierarchy
@@ -335,9 +338,10 @@ export function OfficeMap({
               const hierarchyColor = hierarchyLevel
                 ? HIERARCHY_COLORS[hierarchyLevel]
                 : "var(--officenetwork-hier-evp)";
-              const matchesFilter = !filteredLevel
-                || hierarchyLevel === filteredLevel
-                || isSelected;
+              const matchesFilter =
+                !filteredLevel ||
+                hierarchyLevel === filteredLevel ||
+                isSelected;
               const isDimmed = filteredLevel && !matchesFilter;
 
               return (
@@ -423,8 +427,8 @@ export function OfficeMap({
                     isActive
                       ? "bg-[var(--officenetwork-bg-elevated)] ring-1 ring-[var(--officenetwork-accent-cyan)]/50"
                       : filteredLevel
-                      ? "opacity-40 hover:opacity-70"
-                      : "hover:bg-[var(--officenetwork-bg-elevated)]"
+                        ? "opacity-40 hover:opacity-70"
+                        : "hover:bg-[var(--officenetwork-bg-elevated)]"
                   }`}
                 >
                   <span
@@ -432,9 +436,11 @@ export function OfficeMap({
                     style={{ backgroundColor: HIERARCHY_COLORS[level] }}
                   />
                   <span
-                    className={isActive
-                      ? "text-[var(--officenetwork-text-primary)]"
-                      : "text-[var(--officenetwork-text-muted)]"}
+                    className={
+                      isActive
+                        ? "text-[var(--officenetwork-text-primary)]"
+                        : "text-[var(--officenetwork-text-muted)]"
+                    }
                   >
                     {HIERARCHY_LABELS[level]}
                   </span>
