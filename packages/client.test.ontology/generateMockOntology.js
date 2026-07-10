@@ -24,9 +24,6 @@ import { fileURLToPath } from "node:url";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { LegacyFauxFoundry } from "@osdk/shared.test";
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, "src", "generatedNoCheck");
 
