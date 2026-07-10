@@ -16,6 +16,8 @@
 
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 
+import { additionalContext } from "../../../Client.js";
+import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -184,12 +186,17 @@ export class ObjectSetHelper extends AbstractHelper<
     }
 
     // The flag is interface-only on the server. Keep it only when the base set
-    // resolves to an interface (so it enters the cache key and reaches the
-    // server); for a Base Object Set it is dropped so it never fragments the
-    // cache over a no-op flag.
+    // resolves to an interface, so it never fragments the cache over a no-op flag
+    // for a Base Object Set. This ignores pivotTo, so a pivot onto objects can
+    // still send the flag; gating on the true post-pivot type needs async
+    // metadata resolution on this synchronous path, which isn't worth it. Results
+    // stay correct (the server ignores the flag); the cost is cache fragmentation.
     if (
       options.$includeAllBaseObjectProperties &&
-      baseSetResolvesToInterface(baseWire)
+      baseSetMayResolveToInterface(
+        baseWire,
+        this.store.client[additionalContext]
+      )
     ) {
       operations.includeAllBaseObjectProperties = true;
     }
@@ -199,47 +206,76 @@ export class ObjectSetHelper extends AbstractHelper<
 }
 
 /**
- * Whether an Object Set's result type is an interface, walking through the
- * result-type-preserving wrappers a composed set can carry (e.g. a filtered or
- * derived-property interface set). Set operations keep the operand result type,
- * so the first operand is representative.
+ * Whether an Object Set's result type may be an interface, used to gate the
+ * interface-only flag. Recurses through type-preserving wrappers; set operations
+ * return true if any operand may be an interface (reference/static can sit at
+ * index 0, so the first operand alone isn't representative). See groups below:
+ * false for provably-object (base, searchAround) and unreachable-here (reference,
+ * static, methodInput); asType resolved precisely from the recorded narrow-to
+ * kind; interfaceLinkSearchAround returns true (can't resolve synchronously, so
+ * err toward sending rather than dropping a meaningful flag).
  *
- * Conservative: wrappers that change the result type (searchAround, asType,
- * asBaseObjectTypes) or cannot be resolved synchronously (interfaceLinkSearchAround,
- * reference, static) return false, so the flag is dropped rather than sent for a
- * set whose result may not be an interface.
+ * Terminates: each call descends into a strict child of a finite acyclic tree
+ * (callers JSON.stringify it first, throwing on a cycle before we get here).
  */
-function baseSetResolvesToInterface(wire: WireObjectSet): boolean {
+function baseSetMayResolveToInterface(
+  wire: WireObjectSet,
+  clientCtx: MinimalClient
+): boolean {
   switch (wire.type) {
     case "interfaceBase":
       return true;
     case "filter":
     case "withProperties":
     case "nearestNeighbors":
-      return baseSetResolvesToInterface(wire.objectSet);
+    case "asBaseObjectTypes":
+      return baseSetMayResolveToInterface(wire.objectSet, clientCtx);
     case "union":
     case "intersect":
     case "subtract":
-      return (
-        wire.objectSets.length > 0 &&
-        baseSetResolvesToInterface(wire.objectSets[0])
+      // Operands share a result type, but reference/static operands resolve to
+      // "not an interface" and can sit at any position (e.g. hydrate builds
+      // intersect([interfaceBase, reference])). Scan the whole list — like
+      // extractObjectOrInterfaceType — so an interface operand isn't missed just
+      // because index 0 happens to be a reference/static. (Empty list → false.)
+      return wire.objectSets.some((os) =>
+        baseSetMayResolveToInterface(os, clientCtx)
       );
-    // These either change the result type away from the interface (searchAround,
-    // asType, asBaseObjectTypes) or cannot be resolved synchronously
-    // (interfaceLinkSearchAround, reference, static, methodInput); treat them as
-    // non-interface so the flag is dropped rather than sent for a set whose
-    // result may not be an interface.
+    // Always an "object", searchAround for interfaces uses "interfaceLinkSearchAround"
     case "base":
     case "searchAround":
+      return false;
+    // interfaceLinkSearchAround resolves to whatever the interface link targets,
+    // which needs async resolution (see extractObjectOrInterfaceType) and this
+    // path is synchronous. Rather than risk dropping a meaningful flag we send it
+    // (return true), accepting cache fragmentation when the result is actually
+    // objects — the server ignores the flag for non-interface results.
     case "interfaceLinkSearchAround":
-    case "asType":
-    case "asBaseObjectTypes":
+      return true;
+    case "asType": {
+      // The narrowed-to kind is recorded synchronously when narrowToType() is
+      // called (see extractObjectOrInterfaceType), so resolve it precisely. Drop
+      // the flag only when we know it was narrowed to an object; otherwise
+      // (interface, or unrecorded because the set was built on a different client)
+      // send it rather than risk dropping a meaningful flag.
+      const kind =
+        clientCtx.narrowTypeInterfaceOrObjectMapping[wire.entityType];
+      return kind === "interface";
+    }
+    // Effectively unreachable at this position: methodInput only lives inside RDP
+    // definitions (we recurse through withProperties.objectSet, never into
+    // derivedProperties), and reference/static are always wrapped behind a
+    // base/interfaceBase first operand by the hydrate utils. Returning false is
+    // inconsequential here; kept for exhaustiveness.
     case "reference":
     case "static":
     case "methodInput":
       return false;
     default: {
-      ((_: never) => {})(wire);
+      ((_: never) => {
+        // eslint-disable-next-line no-console
+        console.warn("Unknown object set type:", wire);
+      })(wire);
       return false;
     }
   }
