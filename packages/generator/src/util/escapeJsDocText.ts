@@ -15,15 +15,8 @@
  */
 
 /**
- * Escapes arbitrary ontology metadata (descriptions, display names, etc.) so it
- * can be safely embedded inside a generated JSDoc block comment.
- *
- * A block comment is terminated by the first star-slash sequence, so if that
- * sequence appears in the metadata it would prematurely close the comment and
- * leave the remainder of the text as invalid TypeScript, breaking SDK
- * generation. We insert a backslash between the star and slash to neutralize
- * it. This matches TSDoc's escaping rules, so renderers that understand TSDoc
- * still display the original text.
+ * Escapes text so it can be embedded in a JSDoc block comment without
+ * prematurely closing it.
  */
 export function escapeJsDocText(text: string): string {
   return text.replace(/\*\//gu, "*\\/");
