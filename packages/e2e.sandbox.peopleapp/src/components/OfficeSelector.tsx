@@ -1,5 +1,6 @@
 import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
+
 import { $ } from "../foundryClient.js";
 import type { Employee } from "../generatedNoCheck2/index.js";
 import { modifyEmployee, Office } from "../generatedNoCheck2/index.js";
@@ -25,8 +26,11 @@ export function OfficeSelector({
   const [isAssigning, setIsAssigning] = useState(false);
   const [assignError, setAssignError] = useState<Error | null>(null);
   const [assignSuccess, setAssignSuccess] = useState(false);
-  const { data: offices, isLoading: officesLoading, error: officesError } =
-    useOsdkObjects(Office, {});
+  const {
+    data: offices,
+    isLoading: officesLoading,
+    error: officesError,
+  } = useOsdkObjects(Office, {});
 
   const handleAssignOffice = async () => {
     setIsAssigning(true);
@@ -110,7 +114,7 @@ export function OfficeSelector({
                         setSelectedOfficeId(e.target.value || null)}
                     >
                       <option value="">-- No office --</option>
-                      {offices?.map(office => (
+                      {offices?.map((office) => (
                         <option
                           key={office.$primaryKey}
                           value={office.$primaryKey}

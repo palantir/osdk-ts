@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+
+import { findUp } from "find-up";
 import serialize from "serialize-javascript";
 
 export async function cli(): Promise<void> {
@@ -62,7 +63,11 @@ export async function cli(): Promise<void> {
         const packageJson = JSON.parse(body.toString("utf-8"));
 
         for (
-          const d of ["dependencies", "devDependencies", "peerDependencies"]
+          const d of [
+            "dependencies",
+            "devDependencies",
+            "peerDependencies",
+          ]
         ) {
           if (sourcePackageJson[d]) {
             if (!packageJson[d]) {
@@ -85,10 +90,13 @@ export async function cli(): Promise<void> {
       ) {
         output = safeRaw(body.toString("utf-8"));
       } else {
-        output = serialize({
-          type: "base64",
-          body: body.toString("base64"),
-        }, { space: 2 });
+        output = serialize(
+          {
+            type: "base64",
+            body: body.toString("base64"),
+          },
+          { space: 2 },
+        );
       }
 
       result += `["${destPath}", ${output}],\n`;

@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { extractInjectedScripts } from "../extractInjectedScripts.js";
 
 const EXAMPLE_SCRIPTS = `

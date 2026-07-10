@@ -1,6 +1,7 @@
 import { useDebouncedCallback, useLinks, useOsdkAction } from "@osdk/react";
 import type { Point } from "geojson";
 import { useEffect, useState } from "react";
+
 import { Button } from "../../components/Button.js";
 import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";
@@ -16,8 +17,11 @@ interface OfficeDetailsProps {
 
 export function OfficeDetails({ office, onOfficeDeleted }: OfficeDetailsProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { applyAction, isPending: isDeleting, error: deleteError } =
-    useOsdkAction(deleteOffice);
+  const {
+    applyAction,
+    isPending: isDeleting,
+    error: deleteError,
+  } = useOsdkAction(deleteOffice);
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -136,19 +140,16 @@ function EditableOfficeName({ office }: { office: Office.OsdkInstance }) {
     setLocalName(office.name ?? "");
   }, [office.name]);
 
-  const debouncedSave = useDebouncedCallback(
-    async (newName: string) => {
-      await applyAction({
-        Office: office,
-        name: newName,
-        location: office.location!,
-        $optimisticUpdate: (ctx) => {
-          ctx.updateObject(office.$clone({ name: newName }));
-        },
-      });
-    },
-    1000,
-  );
+  const debouncedSave = useDebouncedCallback(async (newName: string) => {
+    await applyAction({
+      Office: office,
+      name: newName,
+      location: office.location!,
+      $optimisticUpdate: (ctx) => {
+        ctx.updateObject(office.$clone({ name: newName }));
+      },
+    });
+  }, 1000);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
@@ -187,12 +188,10 @@ function Occupants({ office }: { office: Office.OsdkInstance }) {
   return (
     <>
       <H2>Occupants</H2>
-      {isLoading
-        && <LoadingMessage message="Loading occupants..." />}
-      {error
-        && (
-          <ErrorMessage message={`Error loading occupants: ${error.message}`} />
-        )}
+      {isLoading && <LoadingMessage message="Loading occupants..." />}
+      {error && (
+        <ErrorMessage message={`Error loading occupants: ${error.message}`} />
+      )}
       {links && links.length > 0
         ? (
           <div>
@@ -200,7 +199,7 @@ function Occupants({ office }: { office: Office.OsdkInstance }) {
               {links.length} employees in this office
             </p>
             <ul className="list-none">
-              {links.map(employee => (
+              {links.map((employee) => (
                 <li
                   key={employee.$primaryKey}
                   className="py-2 px-3 mb-1 rounded bg-gray-50"
@@ -209,8 +208,8 @@ function Occupants({ office }: { office: Office.OsdkInstance }) {
                     {(employee as any).fullName ?? "No name available"}
                   </div>
                   <div className="text-sm text-gray-600">
-                    {(employee as any).jobTitle ?? "No job title"}{" "}
-                    - #{(employee as any).employeeNumber}
+                    {(employee as any).jobTitle ?? "No job title"} - #
+                    {(employee as any).employeeNumber}
                   </div>
                 </li>
               ))}

@@ -110,11 +110,13 @@ function convertMessage(
             break;
         }
       }
-      return [{
-        role: "assistant",
-        content: text.length > 0 ? text : null,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-      }];
+      return [
+        {
+          role: "assistant",
+          content: text.length > 0 ? text : null,
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+      ];
     }
 
     case "tool":

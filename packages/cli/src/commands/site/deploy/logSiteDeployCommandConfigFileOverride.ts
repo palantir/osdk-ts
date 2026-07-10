@@ -17,6 +17,7 @@
 import type { SiteConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
+
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export async function logSiteDeployCommandConfigFileOverride(
@@ -24,7 +25,8 @@ export async function logSiteDeployCommandConfigFileOverride(
   config: SiteConfig | undefined,
 ): Promise<void> {
   if (
-    config?.autoVersion != null && args.autoVersion !== config.autoVersion.type
+    config?.autoVersion != null
+    && args.autoVersion !== config.autoVersion.type
   ) {
     consola.debug(
       `Overriding "autoVersion" from config file with ${args.autoVersion}`,
@@ -48,10 +50,7 @@ export async function logSiteDeployCommandConfigFileOverride(
     );
   }
 
-  if (
-    config?.uploadOnly != null
-    && args.uploadOnly !== config.uploadOnly
-  ) {
+  if (config?.uploadOnly != null && args.uploadOnly !== config.uploadOnly) {
     consola.debug(
       `Overriding "uploadOnly" from config file with ${args.uploadOnly}`,
     );

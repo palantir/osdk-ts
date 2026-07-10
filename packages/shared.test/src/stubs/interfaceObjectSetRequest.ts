@@ -20,6 +20,7 @@ import type {
   ObjectSet,
 } from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
+
 import {
   employeeFullObjectScoped,
   employeeFullObjectScoped2,
@@ -117,22 +118,25 @@ const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
 const eqSearchBodyFullScope: LoadObjectSetV2MultipleObjectTypesRequest = {
   objectSet: {
     type: "intersect",
-    objectSets: [{
-      type: "filter",
-      objectSet: {
+    objectSets: [
+      {
+        type: "filter",
+        objectSet: {
+          type: "interfaceBase",
+          interfaceType: FooInterface.apiName,
+        },
+        where: {
+          type: "eq",
+          field: "fooSpt",
+          value: "The Grinch",
+        },
+      },
+      {
         type: "interfaceBase",
         interfaceType: FooInterface.apiName,
+        includeAllBaseObjectProperties: true,
       },
-      where: {
-        type: "eq",
-        field: "fooSpt",
-        value: "The Grinch",
-      },
-    }, {
-      type: "interfaceBase",
-      interfaceType: FooInterface.apiName,
-      includeAllBaseObjectProperties: true,
-    }],
+    ],
   },
   select: [],
   selectV2: [],

@@ -1,6 +1,7 @@
 import type { DerivedProperty } from "@osdk/api";
 import { useLinks, useOsdkObjects } from "@osdk/react";
 import React from "react";
+
 import type { Office } from "../generatedNoCheck2/index.js";
 import { $Interfaces, Employee } from "../generatedNoCheck2/index.js";
 import { useFullChain } from "../hooks/useFullChain.js";
@@ -42,60 +43,63 @@ interface OrgTreeNodeViewProps {
   isRoot?: boolean;
 }
 
-const OrgTreeNodeView = React.memo(
-  function OrgTreeNodeView(
-    { node, depth, onSelectEmployee, onToggleExpand, isRoot }:
-      OrgTreeNodeViewProps,
-  ) {
-    const level = getHierarchyLevel(node.employee.jobTitle);
-    const hasReports = node.reports.length > 0;
-    const canExpand = !node.isExpanded && hasReports;
-    const canCollapse = node.isExpanded && hasReports;
+const OrgTreeNodeView = React.memo(function OrgTreeNodeView({
+  node,
+  depth,
+  onSelectEmployee,
+  onToggleExpand,
+  isRoot,
+}: OrgTreeNodeViewProps) {
+  const level = getHierarchyLevel(node.employee.jobTitle);
+  const hasReports = node.reports.length > 0;
+  const canExpand = !node.isExpanded && hasReports;
+  const canCollapse = node.isExpanded && hasReports;
 
-    return (
-      <div>
-        {!isRoot && (
-          <div
-            className="flex items-center gap-1"
-            style={{ paddingLeft: `${(depth - 1) * 12}px` }}
+  return (
+    <div>
+      {!isRoot && (
+        <div
+          className="flex items-center gap-1"
+          style={{ paddingLeft: `${(depth - 1) * 12}px` }}
+        >
+          <button
+            onClick={() => onToggleExpand(node.employee.employeeNumber)}
+            className="size-4 flex items-center justify-center text-[10px] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] transition-colors"
+            disabled={!hasReports && !node.isLoading}
           >
-            <button
-              onClick={() => onToggleExpand(node.employee.employeeNumber)}
-              className="size-4 flex items-center justify-center text-[10px] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] transition-colors"
-              disabled={!hasReports && !node.isLoading}
-            >
-              {node.isLoading
-                ? <span className="animate-spin">⟳</span>
-                : canExpand
-                ? (
-                  "▶"
-                )
-                : canCollapse
-                ? (
-                  "▼"
-                )
-                : (
-                  "·"
-                )}
-            </button>
-            <div
-              className="size-2 rounded-sm shrink-0"
-              style={{ backgroundColor: HIERARCHY_COLORS[level] }}
-            />
-            <button
-              onClick={() => onSelectEmployee(node.employee)}
-              className="text-[11px] text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors"
-            >
-              {node.employee.fullName ?? `#${node.employee.employeeNumber}`}
-            </button>
-            {node.reports.length > 0 && (
-              <span className="text-[9px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                ({node.reports.length})
-              </span>
-            )}
-          </div>
-        )}
-        {node.isExpanded && node.reports.map((child) => (
+            {node.isLoading
+              ? <span className="animate-spin">⟳</span>
+              : canExpand
+              ? (
+                "▶"
+              )
+              : canCollapse
+              ? (
+                "▼"
+              )
+              : (
+                "·"
+              )}
+          </button>
+          <div
+            className="size-2 rounded-sm shrink-0"
+            style={{ backgroundColor: HIERARCHY_COLORS[level] }}
+          />
+          <button
+            onClick={() => onSelectEmployee(node.employee)}
+            className="text-[11px] text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors"
+          >
+            {node.employee.fullName ?? `#${node.employee.employeeNumber}`}
+          </button>
+          {node.reports.length > 0 && (
+            <span className="text-[9px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
+              ({node.reports.length})
+            </span>
+          )}
+        </div>
+      )}
+      {node.isExpanded
+        && node.reports.map((child) => (
           <OrgTreeNodeView
             key={child.employee.employeeNumber}
             node={child}
@@ -104,10 +108,9 @@ const OrgTreeNodeView = React.memo(
             onToggleExpand={onToggleExpand}
           />
         ))}
-      </div>
-    );
-  },
-);
+    </div>
+  );
+});
 
 export function EmployeePanel({
   employee,
@@ -198,7 +201,8 @@ export function EmployeePanel({
     enabled: !!managerObj,
   });
   const managerOfficeObj = managerOffice?.[0];
-  const isCrossOffice = managerOfficeObj && employeeOfficeObj
+  const isCrossOffice = managerOfficeObj
+    && employeeOfficeObj
     && managerOfficeObj.primaryKey_ !== employeeOfficeObj.primaryKey_;
 
   const { links: colleagues, isLoading: colleaguesLoading } = useLinks(
@@ -236,12 +240,7 @@ export function EmployeePanel({
     "lead",
     {
       enabled: !!managerObj,
-      $select: [
-        "fullName",
-        "employeeNumber",
-        "jobTitle",
-        "primaryOfficeId",
-      ],
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
     },
   );
   const skipLevelManagerObj = skipLevelManager?.[0];
@@ -406,7 +405,9 @@ export function EmployeePanel({
                 Full Reporting Chain
               </div>
               <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                <span>{chainDepth} lvl{chainDepth !== 1 ? "s" : ""}</span>
+                <span>
+                  {chainDepth} lvl{chainDepth !== 1 ? "s" : ""}
+                </span>
                 {chainLoading && <LoadingIndicator size="sm" />}
                 {chainComplete && (
                   <span className="text-[var(--officenetwork-status-ready)]">
@@ -503,7 +504,9 @@ export function EmployeePanel({
               <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
                 <span>{orgTotalCount} total</span>
                 <span>·</span>
-                <span>{orgMaxDepth} lvl{orgMaxDepth !== 1 ? "s" : ""}</span>
+                <span>
+                  {orgMaxDepth} lvl{orgMaxDepth !== 1 ? "s" : ""}
+                </span>
                 {orgLoading && <LoadingIndicator size="sm" />}
               </div>
             </div>
@@ -556,7 +559,7 @@ export function EmployeePanel({
             >
               Interface Comparison
             </div>
-            {(workerLoading || personLoading)
+            {workerLoading || personLoading
               ? <LoadingIndicator size="sm" />
               : (
                 <div className="space-y-2">

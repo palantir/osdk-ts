@@ -19,6 +19,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import { getNoRecordValue } from "../constants/statusTypes.js";
 import type { Assignment } from "../generatedNoCheck2/index.js";
 
@@ -111,9 +112,10 @@ function buildCountOfTypeRdp(
 ): { creators: StatusRdpCreators; countKey: string } {
   const countKey = `_su_${uid}_count`;
   const count: StatusRdpCreators[string] = (base) =>
-    base.pivotTo(STATUS_LINK).where({ type: { $eq: type } }).aggregate(
-      "$count",
-    );
+    base
+      .pivotTo(STATUS_LINK)
+      .where({ type: { $eq: type } })
+      .aggregate("$count");
   return { creators: { [countKey]: count }, countKey };
 }
 

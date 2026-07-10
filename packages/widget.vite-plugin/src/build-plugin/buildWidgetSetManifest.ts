@@ -23,6 +23,7 @@ import type {
   WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api";
+
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "./validateWidgetSet.js";

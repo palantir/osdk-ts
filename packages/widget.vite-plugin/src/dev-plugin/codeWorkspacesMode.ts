@@ -15,6 +15,7 @@
  */
 
 import fs from "fs";
+
 import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 
 const CODE_WORKSPACES = "code-workspaces";

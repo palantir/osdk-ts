@@ -23,6 +23,7 @@ import {
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+
 import { client } from "./client.js";
 
 export async function runInterfacesTest(): Promise<void> {

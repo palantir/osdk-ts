@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "@osdk/faux";
 import * as path from "node:path";
+
+import { FauxFoundry } from "@osdk/faux";
 import type { ResolvedConfig } from "vite";
+
 import { Level as LoggerLevel, Logger } from "./Logger.js";
 import { OacConfig } from "./OacConfig.js";
 

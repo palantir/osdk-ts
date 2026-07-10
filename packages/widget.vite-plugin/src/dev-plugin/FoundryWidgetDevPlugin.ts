@@ -16,9 +16,11 @@
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import color from "picocolors";
 import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
+
 import {
   CONFIG_FILE_SUFFIX,
   DEV_PLUGIN_ID,
@@ -61,7 +63,8 @@ export function FoundryWidgetDevPlugin(
     // Only apply this plugin during development, skip during tests and build-mode module evaluation
     apply(config, { command }) {
       if (
-        config.mode === MODULE_EVALUATION_MODE || process.env.VITEST != null
+        config.mode === MODULE_EVALUATION_MODE
+        || process.env.VITEST != null
       ) {
         return false;
       }
@@ -126,19 +129,14 @@ export function FoundryWidgetDevPlugin(
        * Make the entrypoints available to the setup page so that it can load them in iframes in
        * order to trigger module parsing.
        */
-      server.middlewares.use(
-        serverPath(server, ENTRYPOINTS_PATH),
-        (_, res) => {
-          res.setHeader("Content-Type", "application/json");
-          res.end(
-            JSON.stringify(
-              htmlEntrypoints.map((entrypoint) =>
-                serverPath(server, entrypoint)
-              ),
-            ),
-          );
-        },
-      );
+      server.middlewares.use(serverPath(server, ENTRYPOINTS_PATH), (_, res) => {
+        res.setHeader("Content-Type", "application/json");
+        res.end(
+          JSON.stringify(
+            htmlEntrypoints.map((entrypoint) => serverPath(server, entrypoint)),
+          ),
+        );
+      });
 
       /**
        * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
@@ -230,7 +228,8 @@ export function FoundryWidgetDevPlugin(
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
-        importer.endsWith("index.html") && !standardizedSource.includes("@fs")
+        importer.endsWith("index.html")
+        && !standardizedSource.includes("@fs")
         // In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
         // These files are not valid code entrypoints, so we ignore them here.
         && path.extname(standardizedSource) !== ".html"
@@ -244,7 +243,9 @@ export function FoundryWidgetDevPlugin(
       // Also check the config file being imported is in src to avoid picking up imports for other
       // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
-        standardizedSource.replace(/\.[^/.]+$/, "").endsWith(CONFIG_FILE_SUFFIX)
+        standardizedSource
+          .replace(/\.[^/.]+$/, "")
+          .endsWith(CONFIG_FILE_SUFFIX)
         && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
@@ -300,7 +301,9 @@ function printSetupPageUrl(server: ViteDevServer) {
     const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
     server.config.logger.info(
       `  ${color.green("➜")}  ${
-        color.bold("Click to enter developer mode for your widget set")
+        color.bold(
+          "Click to enter developer mode for your widget set",
+        )
       }: ${color.green(setupRoute)}`,
     );
   }

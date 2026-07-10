@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import path from "node:path";
+
 import type {
   WidgetManifestConfig,
   WidgetSetInputSpec,
 } from "@osdk/widget.api";
-import path from "node:path";
 import type { ViteDevServer } from "vite";
+
 import { buildWidgetManifestConfig } from "../build-plugin/buildWidgetSetManifest.js";
 import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 import { VITE_INJECTIONS_PATH } from "../common/constants.js";

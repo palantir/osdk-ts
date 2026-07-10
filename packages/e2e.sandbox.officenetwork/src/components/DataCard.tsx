@@ -8,9 +8,13 @@ interface DataCardProps {
   isSelected?: boolean;
 }
 
-export function DataCard(
-  { label, value, accent = "cyan", onClick, isSelected }: DataCardProps,
-) {
+export function DataCard({
+  label,
+  value,
+  accent = "cyan",
+  onClick,
+  isSelected,
+}: DataCardProps) {
   const accentColors = {
     cyan: "var(--accent-cyan)",
     violet: "var(--accent-violet)",
@@ -58,9 +62,5 @@ export function DataList({ children, columns = 1 }: DataListProps) {
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
   };
 
-  return (
-    <div className={`grid ${gridCols[columns]} gap-2`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${gridCols[columns]} gap-2`}>{children}</div>;
 }

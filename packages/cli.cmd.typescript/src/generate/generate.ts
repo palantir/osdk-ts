@@ -16,12 +16,10 @@
 
 import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
+
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
-export const generateCommand: CommandModule<
-  {},
-  TypescriptGenerateArgs
-> = {
+export const generateCommand: CommandModule<{}, TypescriptGenerateArgs> = {
   command: "generate",
   describe: "Generate TypeScript SDK from ontology",
   builder: (argv) => {
@@ -133,42 +131,43 @@ export const generateCommand: CommandModule<
             default: false,
           },
         } as const,
-      ).group(
+      )
+      .group(
         ["ontologyPath", "outDir", "version"],
         "Generate from a local file",
-      ).group(
+      )
+      .group(
         ["foundryUrl", "clientId", "outDir", "ontologyWritePath", "version"],
         "OR Generate from Foundry",
-      ).group(["packageName", "as"], "Package generation options")
-      .check(
-        (args) => {
-          if (!args.ontologyPath && !args.foundryUrl) {
-            throw new YargsCheckError(
-              "Must specify either ontologyPath or foundryUrl and clientId",
-            );
-          }
+      )
+      .group(["packageName", "as"], "Package generation options")
+      .check((args) => {
+        if (!args.ontologyPath && !args.foundryUrl) {
+          throw new YargsCheckError(
+            "Must specify either ontologyPath or foundryUrl and clientId",
+          );
+        }
 
-          if (args.version !== "dev" && !isValidSemver(args.version)) {
-            throw new YargsCheckError(
-              "Version must be 'dev' or a valid semver version",
-            );
-          }
+        if (args.version !== "dev" && !isValidSemver(args.version)) {
+          throw new YargsCheckError(
+            "Version must be 'dev' or a valid semver version",
+          );
+        }
 
-          if (args.asPackage && !args.packageName) {
-            throw new YargsCheckError(
-              "Must specify packageName when generating as a package",
-            );
-          }
+        if (args.asPackage && !args.packageName) {
+          throw new YargsCheckError(
+            "Must specify packageName when generating as a package",
+          );
+        }
 
-          if (args.asPackage && !args.version) {
-            throw new YargsCheckError(
-              "Must specify version when generating as a package",
-            );
-          }
+        if (args.asPackage && !args.version) {
+          throw new YargsCheckError(
+            "Must specify version when generating as a package",
+          );
+        }
 
-          return true;
-        },
-      );
+        return true;
+      });
   },
   handler: async (args) => {
     const command = await import("./handleGenerate.mjs");

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { inspect } from "node:util";
+
 import type {
   BaseServerObject,
   FauxActionImpl,
@@ -21,7 +23,6 @@ import type {
   FauxFoundry,
 } from "@osdk/faux";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 
 inspect.defaultOptions = {
@@ -86,10 +87,7 @@ function createActionImplementation(
       switch (operation.type) {
         case "createObject": {
           // Handle create object operation
-          const objectType = getObjectTypeForOperation(
-            operation,
-            fullMetadata,
-          );
+          const objectType = getObjectTypeForOperation(operation, fullMetadata);
 
           // we don't store the PK with the other properties
           const primaryKeyProp = objectType.objectType.primaryKey;
@@ -126,10 +124,7 @@ function createActionImplementation(
             "objectToModifyParameter",
           );
 
-          const targetObject = batch.getObject(
-            objectType.apiName,
-            primaryKey,
-          );
+          const targetObject = batch.getObject(objectType.apiName, primaryKey);
           invariant(
             targetObject,
             `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
@@ -319,7 +314,7 @@ function handleObjectLinks(
   params: Record<string, unknown>,
 ): void {
   // HACK HACK HACK
-  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach(link => {
+  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach((link) => {
     const cardinality = link.cardinality;
 
     if (cardinality === "ONE") {
@@ -356,5 +351,5 @@ function anyValueMatches(
   obj: BaseServerObject | Record<string, unknown>,
   primaryKey: string | number | boolean,
 ) {
-  return Object.values(obj).some(val => val === primaryKey);
+  return Object.values(obj).some((val) => val === primaryKey);
 }

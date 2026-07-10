@@ -17,7 +17,9 @@
 import fs from "node:fs";
 import https from "node:https";
 import path from "node:path";
+
 import type { Logger, Plugin, ProxyOptions, UserConfig } from "vite";
+
 import {
   type DiscoveryEntry,
   type DiscoveryService,
@@ -147,9 +149,7 @@ export function smartClientPlugin(): Plugin {
         const width = Math.max(...setupProxies.map((p) => p.prefix.length));
         resolvedConfig.logger.info("[vite-plugin-superrepo] proxies:");
         for (const { prefix, target } of setupProxies) {
-          resolvedConfig.logger.info(
-            `  ${prefix.padEnd(width)} → ${target}`,
-          );
+          resolvedConfig.logger.info(`  ${prefix.padEnd(width)} → ${target}`);
         }
       }
     },

@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptOsdkPackage } from "./promptOsdkPackage.js";
 

@@ -15,9 +15,11 @@
  */
 
 import React from "react";
+
 import { useStatusUpdateFilters } from "../../hooks/useStatusUpdateFilters.js";
 import { StatusUpdatesFilters } from "../../tables/StatusUpdatesTable/StatusUpdatesFilters.js";
 import { StatusUpdatesTable } from "../../tables/StatusUpdatesTable/StatusUpdatesTable.js";
+
 import styles from "./StatusUpdatesTab.module.css";
 
 /**

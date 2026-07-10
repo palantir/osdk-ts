@@ -1,5 +1,6 @@
 import { useLinks } from "@osdk/react";
 import React from "react";
+
 import type { Employee } from "../generatedNoCheck2/index.js";
 
 interface ChainNode {
@@ -69,9 +70,7 @@ export function useFullChain(
       return;
     }
 
-    const newChain: ChainNode[] = [
-      { employee, isLoading: level0.isLoading },
-    ];
+    const newChain: ChainNode[] = [{ employee, isLoading: level0.isLoading }];
 
     const levels = [
       { manager: level0.manager, isLoading: level1.isLoading },
@@ -111,18 +110,21 @@ export function useFullChain(
     level5.isLoading,
   ]);
 
-  const isLoading = level0.isLoading || level1.isLoading || level2.isLoading
-    || level3.isLoading || level4.isLoading || level5.isLoading;
+  const isLoading = level0.isLoading
+    || level1.isLoading
+    || level2.isLoading
+    || level3.isLoading
+    || level4.isLoading
+    || level5.isLoading;
 
   const lastNode = chain[chain.length - 1];
   const lastEmployee = lastNode?.employee;
-  const isTopOfChain = lastEmployee !== undefined && (
-    lastEmployee.leadEmployeeNumber === lastEmployee.employeeNumber
-    || lastEmployee.leadEmployeeNumber === undefined
-    || lastEmployee.leadEmployeeNumber == null
-    || lastEmployee.jobTitle?.toLowerCase().includes("ceo")
-    || lastEmployee.jobTitle?.toLowerCase().includes("chief executive")
-  );
+  const isTopOfChain = lastEmployee !== undefined
+    && (lastEmployee.leadEmployeeNumber === lastEmployee.employeeNumber
+      || lastEmployee.leadEmployeeNumber === undefined
+      || lastEmployee.leadEmployeeNumber == null
+      || lastEmployee.jobTitle?.toLowerCase().includes("ceo")
+      || lastEmployee.jobTitle?.toLowerCase().includes("chief executive"));
   const reachedMaxDepth = chain.length >= 6;
   const isComplete = !isLoading && chain.length > 0
     && (isTopOfChain || reachedMaxDepth);

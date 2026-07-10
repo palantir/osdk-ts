@@ -26,17 +26,15 @@ export async function fetchEmployeePage(client: Client): Promise<void> {
   expectType<string | undefined>(result.data[0].businessTitle);
 
   // Rough shape is correct
-  expectType<
-    {
-      data: {
-        adUsername: string | undefined;
-        businessTitle: string | undefined;
-        employeeNumber: number | undefined;
-        favPlace: { type: "Point"; coordinates: number[] } | undefined;
-        firstFullTimeStartDate: string | undefined;
-      }[];
-    }
-  >(result);
+  expectType<{
+    data: {
+      adUsername: string | undefined;
+      businessTitle: string | undefined;
+      employeeNumber: number | undefined;
+      favPlace: { type: "Point"; coordinates: number[] } | undefined;
+      firstFullTimeStartDate: string | undefined;
+    }[];
+  }>(result);
 
   console.log(result.data[0].favPlace?.coordinates);
   console.log(result.data[0].firstFullTimeStartDate);

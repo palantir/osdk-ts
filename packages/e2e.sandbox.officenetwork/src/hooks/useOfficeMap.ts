@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Office } from "../generatedNoCheck2/index.js";
 
 export function useOfficeMap(

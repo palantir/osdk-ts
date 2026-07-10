@@ -15,8 +15,10 @@
  */
 
 import React from "react";
+
 import { STATUS_TYPES } from "../../constants/statusTypes.js";
 import type { LatestStatusSelection } from "../../utils/statusFilter.js";
+
 import styles from "./LatestStatusFilter.module.css";
 
 export interface LatestStatusFilterProps {

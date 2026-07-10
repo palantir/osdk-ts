@@ -1,22 +1,20 @@
 import React from "react";
 
-export function Button(
-  {
-    children,
-    onClick,
-    disabled,
-    active = false,
-    variant = "primary",
-    type = "button",
-  }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-    disabled?: boolean;
-    active?: boolean;
-    variant?: "primary" | "secondary" | "tab" | "danger";
-    type?: "button" | "submit" | "reset";
-  },
-) {
+export function Button({
+  children,
+  onClick,
+  disabled,
+  active = false,
+  variant = "primary",
+  type = "button",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  variant?: "primary" | "secondary" | "tab" | "danger";
+  type?: "button" | "submit" | "reset";
+}) {
   return (
     <button
       className={`

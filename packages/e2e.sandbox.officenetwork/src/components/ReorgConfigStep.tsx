@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Office } from "../generatedNoCheck2/index.js";
 import type {
   ReorgAlgorithm,
@@ -58,9 +59,7 @@ export function ReorgConfigStep({
     <div className="p-4 space-y-6">
       {/* Reorg Type */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Reorg Type
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Reorg Type</h3>
         <div className="space-y-2">
           {reorgTypes.map((type) => (
             <label
@@ -94,9 +93,7 @@ export function ReorgConfigStep({
 
       {/* Algorithm */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Algorithm
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Algorithm</h3>
         <div className="space-y-2">
           {algorithms.map((algo) => (
             <label
@@ -131,9 +128,7 @@ export function ReorgConfigStep({
       {/* Swap Offices */}
       {config.algorithm === "swap" && (
         <section>
-          <h3 className="officenetwork-section-label mb-3">
-            Swap Offices
-          </h3>
+          <h3 className="officenetwork-section-label mb-3">Swap Offices</h3>
           <div className="space-y-2">
             <div>
               <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block">
@@ -188,9 +183,7 @@ export function ReorgConfigStep({
       {/* Consolidate Target */}
       {config.algorithm === "consolidate" && (
         <section>
-          <h3 className="officenetwork-section-label mb-3">
-            Target Office
-          </h3>
+          <h3 className="officenetwork-section-label mb-3">Target Office</h3>
           <select
             value={config.consolidateOfficeId ?? ""}
             onChange={(e) =>
@@ -209,9 +202,7 @@ export function ReorgConfigStep({
 
       {/* Constraints */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Constraints
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Constraints</h3>
         <div className="space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
             <input

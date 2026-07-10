@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import React from "react";
+
 import type { PinDirection } from "../types/table.js";
 import { applyVisibilityState } from "../utils/applyVisibilityState.js";
 

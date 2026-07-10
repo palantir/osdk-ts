@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-
 import * as fs from "node:fs";
+
+import { consola } from "consola";
 
 // Environment variable names
 const JEMMA_JOB_CUSTOM_METADATA_PATH = "JEMMA_JOB_CUSTOM_METADATA_PATH";

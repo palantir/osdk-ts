@@ -41,12 +41,8 @@ export function ListItem({
       } ${className}`}
       onClick={onClick}
     >
-      <div className="font-medium">
-        {primaryContent}
-      </div>
-      <div className="text-sm text-gray-600">
-        {secondaryContent}
-      </div>
+      <div className="font-medium">{primaryContent}</div>
+      <div className="text-sm text-gray-600">{secondaryContent}</div>
     </li>
   );
 }

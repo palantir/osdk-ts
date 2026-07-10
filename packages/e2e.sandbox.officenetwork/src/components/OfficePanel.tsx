@@ -1,4 +1,5 @@
 import { useLinks, useOsdkAggregation } from "@osdk/react";
+
 import { Employee } from "../generatedNoCheck2/index.js";
 import type { Office } from "../generatedNoCheck2/index.js";
 import {
@@ -14,10 +15,16 @@ interface OfficePanelProps {
   onClose: () => void;
 }
 
-export function OfficePanel(
-  { office, onSelectEmployee, onClose }: OfficePanelProps,
-) {
-  const { links: occupants, isLoading, error } = useLinks(office, "occupants", {
+export function OfficePanel({
+  office,
+  onSelectEmployee,
+  onClose,
+}: OfficePanelProps) {
+  const {
+    links: occupants,
+    isLoading,
+    error,
+  } = useLinks(office, "occupants", {
     $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
   });
 
@@ -38,7 +45,9 @@ export function OfficePanel(
 
   const coords = office.location
     ? `${office.location.coordinates[1].toFixed(4)}, ${
-      office.location.coordinates[0].toFixed(4)
+      office.location.coordinates[0].toFixed(
+        4,
+      )
     }`
     : "No coordinates";
 
@@ -105,9 +114,7 @@ export function OfficePanel(
       {/* Occupants List */}
       <div className="flex-1 overflow-auto">
         <div className="p-2">
-          <div className="officenetwork-section-label px-2 py-2">
-            Occupants
-          </div>
+          <div className="officenetwork-section-label px-2 py-2">Occupants</div>
           {occupants && occupants.length > 0
             ? (
               <div className="space-y-px">

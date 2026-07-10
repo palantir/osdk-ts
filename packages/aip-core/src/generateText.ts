@@ -66,9 +66,10 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
 
   onStepFinish?: (step: StepResult<TOOLS>) => void | Promise<void>;
   onFinish?: (
-    event:
-      & StepResult<TOOLS>
-      & { steps: Array<StepResult<TOOLS>>; totalUsage: LanguageModelUsage },
+    event: StepResult<TOOLS> & {
+      steps: Array<StepResult<TOOLS>>;
+      totalUsage: LanguageModelUsage;
+    },
   ) => void | PromiseLike<void>;
 }
 

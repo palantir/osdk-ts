@@ -15,7 +15,9 @@
  */
 
 import fs from "fs";
+
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
 import * as codeWorkspacesMode from "../codeWorkspacesMode.js";
 
 const FOUNDRY_PROXY_URL = "foundry.proxy.url";

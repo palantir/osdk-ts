@@ -16,9 +16,11 @@ import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React, { useCallback, useMemo, useState } from "react";
+
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+
 import "./page.css";
 
 interface ModifyEmployeeDepartmentAction
@@ -166,9 +168,7 @@ interface StatusMessage {
 
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
-    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>(
-      {},
-    );
+    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);

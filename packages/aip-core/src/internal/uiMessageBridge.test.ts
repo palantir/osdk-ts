@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { UIMessage } from "../uiMessage.js";
 import { uiMessagesToModelMessages } from "./uiMessageBridge.js";
 
@@ -95,10 +96,7 @@ describe("uiMessagesToModelMessages", () => {
   });
 
   it("drops UI system messages when `system` prop is provided (no double-prepend)", () => {
-    const messages = [
-      uiMsg("system", "from UI"),
-      uiMsg("user", "hello"),
-    ];
+    const messages = [uiMsg("system", "from UI"), uiMsg("user", "hello")];
     expect(uiMessagesToModelMessages(messages, "from transport")).toEqual([
       { role: "system", content: "from transport" },
       { role: "user", content: "hello" },

@@ -75,19 +75,17 @@ export interface StreamTextOptions<TOOLS extends ToolSet = ToolSet> {
   onError?: (error: Error) => void | PromiseLike<void>;
 
   /** Fires once after the stream completes successfully. */
-  onFinish?: (
-    event: {
-      finishReason: FinishReason;
-      text: string;
-      reasoningText: string | undefined;
-      toolCalls: Array<ToolCall>;
-      usage: LanguageModelUsage;
-      totalUsage: LanguageModelUsage;
-      warnings: Array<Warning> | undefined;
-      response: ResponseMetadata | undefined;
-      request: RequestMetadata | undefined;
-    },
-  ) => void | PromiseLike<void>;
+  onFinish?: (event: {
+    finishReason: FinishReason;
+    text: string;
+    reasoningText: string | undefined;
+    toolCalls: Array<ToolCall>;
+    usage: LanguageModelUsage;
+    totalUsage: LanguageModelUsage;
+    warnings: Array<Warning> | undefined;
+    response: ResponseMetadata | undefined;
+    request: RequestMetadata | undefined;
+  }) => void | PromiseLike<void>;
 }
 
 /**

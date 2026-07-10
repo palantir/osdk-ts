@@ -15,8 +15,10 @@
  */
 
 import { readFile } from "fs/promises";
+
 import resolvePackagePath from "resolve-package-path";
 import { expect, test, vi } from "vitest";
+
 import type { PackageJson } from "../../common/PackageJson.js";
 import { visitNpmPackages } from "../visitNpmPackages.js";
 
@@ -28,15 +30,15 @@ test("visitNpmPackages", async () => {
     name: "package1",
     version: "0.1.0",
     dependencies: {
-      "package2": "0.2.0",
-      "package3": "0.3.0",
+      package2: "0.2.0",
+      package3: "0.3.0",
     },
   };
   const packageJson2: PackageJson = {
     name: "package2",
     version: "0.2.0",
     dependencies: {
-      "package3": "0.3.0",
+      package3: "0.3.0",
     },
   };
   const packageJson3: PackageJson = {
@@ -49,7 +51,7 @@ test("visitNpmPackages", async () => {
     [packageJson2.name]: "/path/to/node_modules/package2/package.json",
     [packageJson3.name]: "/path/to/node_modules/package3/package.json",
   } as const;
-  const packageJsons: Record<typeof packageJsonPaths[string], PackageJson> = {
+  const packageJsons: Record<(typeof packageJsonPaths)[string], PackageJson> = {
     [packageJsonPaths[packageJson1.name]]: packageJson1,
     [packageJsonPaths[packageJson2.name]]: packageJson2,
     [packageJsonPaths[packageJson3.name]]: packageJson3,

@@ -19,6 +19,7 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/foundry.ontologies";
+
 import { createLazyQueryImpl } from "../createLazyQueryImpl.js";
 import { employee1, employee2 } from "./objects.js";
 import {
@@ -152,7 +153,7 @@ export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
   parameters: {
     interfaceObject: {
       objectTypeApiName: "Employee",
-      "primaryKeyValue": employee1.__primaryKey,
+      primaryKeyValue: employee1.__primaryKey,
     },
   },
 };
@@ -160,7 +161,7 @@ export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
 export const queryTypeAcceptsInterfaceResponse: ExecuteQueryResponse = {
   value: {
     objectTypeApiName: "Employee",
-    "primaryKeyValue": employee2.__primaryKey,
+    primaryKeyValue: employee2.__primaryKey,
   },
 };
 
@@ -351,9 +352,7 @@ export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
 };
 
 export const queryTypeReturnsArrayOfObjectsResponse: ExecuteQueryResponse = {
-  value: [
-    employee1.__primaryKey,
-  ],
+  value: [employee1.__primaryKey],
 };
 
 export const emptyBody: string = JSON.stringify({

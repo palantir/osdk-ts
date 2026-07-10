@@ -15,7 +15,9 @@
  */
 
 import fs from "fs";
+
 import { expect, test, vi } from "vitest";
+
 import { extractBuildOutputs } from "../extractBuildOutputs.js";
 
 vi.mock("fs");

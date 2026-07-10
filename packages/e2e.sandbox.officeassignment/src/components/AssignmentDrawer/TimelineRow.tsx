@@ -15,10 +15,12 @@
  */
 
 import React from "react";
+
 import type { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import { formatTimestamp } from "../../utils/formatDate.js";
 import { makeTypeValue } from "../../utils/typeValue.js";
 import { ToggleExclusionButton } from "../actions/ToggleExclusionButton.js";
+
 import styles from "./StatusTimeline.module.css";
 
 export interface TimelineRowProps {

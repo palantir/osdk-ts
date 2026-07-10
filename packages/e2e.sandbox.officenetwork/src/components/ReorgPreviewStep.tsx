@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { useOfficeMap } from "../hooks/useOfficeMap.js";
 import type { EmployeeChange, ReorgConfig } from "../hooks/useReorgState.js";
@@ -31,7 +32,8 @@ export function ReorgPreviewStep({
 
   React.useEffect(() => {
     if (
-      config.algorithm !== "manual" && changes.size === 0
+      config.algorithm !== "manual"
+      && changes.size === 0
       && selectedEmployees.length > 0
     ) {
       const generatedChanges = generateChanges(
@@ -166,7 +168,8 @@ export function ReorgPreviewStep({
                       ? (
                         <select
                           value={change?.targetOfficeId
-                            ?? employee.primaryOfficeId ?? ""}
+                            ?? employee.primaryOfficeId
+                            ?? ""}
                           onChange={(e) =>
                             onSetChange(employee.employeeNumber, {
                               ...change,

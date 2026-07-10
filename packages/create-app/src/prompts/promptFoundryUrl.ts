@@ -17,9 +17,11 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptFoundryUrl(
-  { foundryUrl }: { foundryUrl?: string },
-): Promise<string> {
+export async function promptFoundryUrl({
+  foundryUrl,
+}: {
+  foundryUrl?: string;
+}): Promise<string> {
   while (foundryUrl == null || !foundryUrl.startsWith("https://")) {
     if (foundryUrl != null) {
       consola.fail("Please enter a valid Foundry URL");

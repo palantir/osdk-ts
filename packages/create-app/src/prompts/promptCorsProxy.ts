@@ -17,9 +17,11 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptCorsProxy(
-  { corsProxy }: { corsProxy?: boolean },
-): Promise<boolean> {
+export async function promptCorsProxy({
+  corsProxy,
+}: {
+  corsProxy?: boolean;
+}): Promise<boolean> {
   if (corsProxy != null) {
     return corsProxy;
   }

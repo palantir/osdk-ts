@@ -15,6 +15,7 @@
  */
 
 import type { FauxActionImpl, TypeHelpers as TH } from "@osdk/faux";
+
 import type { MoveOffice } from "../actionTypes.js";
 import { officeObjectType } from "../objectTypeV2.js";
 

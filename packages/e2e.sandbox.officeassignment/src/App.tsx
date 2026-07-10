@@ -15,10 +15,12 @@
  */
 
 import React from "react";
-import styles from "./App.module.css";
+
 import { Tabs, type TabSpec } from "./components/Tabs/Tabs.js";
 import { AssignmentsTab } from "./tabs/AssignmentsTab/AssignmentsTab.js";
 import { StatusUpdatesTab } from "./tabs/StatusUpdatesTab/StatusUpdatesTab.js";
+
+import styles from "./App.module.css";
 
 const TAB_ASSIGNMENTS = "assignments";
 const TAB_STATUS_UPDATES = "statusUpdates";

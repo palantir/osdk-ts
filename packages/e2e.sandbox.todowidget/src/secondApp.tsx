@@ -9,6 +9,7 @@ import {
   Skeleton,
 } from "@radix-ui/themes";
 import React, { useEffect } from "react";
+
 import type Config from "./second.config.js";
 
 const useWidgetContext = useFoundryWidgetContext.withTypes<typeof Config>();

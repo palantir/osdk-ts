@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "../validateWidgetSet.js";
 

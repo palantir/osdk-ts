@@ -15,6 +15,7 @@
  */
 
 import chalk from "chalk";
+
 import { logger } from "./logger.js";
 
 export async function loggingFetch(
@@ -22,9 +23,9 @@ export async function loggingFetch(
   init?: RequestInit | undefined,
 ): Promise<Response> {
   const url = new URL(
-    (typeof input === "string")
+    typeof input === "string"
       ? input
-      : (input instanceof URL)
+      : input instanceof URL
       ? input.toString()
       : input.url,
   );

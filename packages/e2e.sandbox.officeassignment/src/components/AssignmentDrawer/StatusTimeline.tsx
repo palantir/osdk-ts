@@ -16,19 +16,19 @@
 
 import { useOsdkObjects } from "@osdk/react";
 import React from "react";
+
 import { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import { ErrorBanner, LoadingBar } from "../common/index.js";
-import styles from "./StatusTimeline.module.css";
 import { TimelineRow } from "./TimelineRow.js";
+
+import styles from "./StatusTimeline.module.css";
 
 export interface StatusTimelineProps {
   assignmentId: string;
 }
 
 /** Newest-first timeline of an assignment's status updates. */
-export function StatusTimeline(
-  props: StatusTimelineProps,
-): React.JSX.Element {
+export function StatusTimeline(props: StatusTimelineProps): React.JSX.Element {
   const { assignmentId } = props;
   const { data, isLoading, error } = useOsdkObjects(StatusUpdate, {
     where: { assignmentId: { $eq: assignmentId } },

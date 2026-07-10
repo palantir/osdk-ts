@@ -21,6 +21,7 @@ import type {
   FilterState,
 } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
+
 import { ASSIGNMENT_BASE_WHERE } from "../constants/baseFilter.js";
 import { Assignment } from "../generatedNoCheck2/index.js";
 import { ASSIGNMENT_FILTER_DEFS } from "../tables/AssignmentsTable/AssignmentsFilterDefs.js";
@@ -86,8 +87,11 @@ export function useAssignmentFilters(): UseAssignmentFiltersResult {
     [client],
   );
 
-  const { matchedKeys, isLoading: isMatching, error: matchError } =
-    useMatchedAssignmentKeys(latestSelections, composeAcrossTypes);
+  const {
+    matchedKeys,
+    isLoading: isMatching,
+    error: matchError,
+  } = useMatchedAssignmentKeys(latestSelections, composeAcrossTypes);
 
   // Narrow the object set by the latest-status matched keys.
   const narrowedObjectSet = React.useMemo(

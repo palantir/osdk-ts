@@ -1,5 +1,6 @@
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { modifyEmployee } from "../generatedNoCheck2/index.js";
 import type {
@@ -54,8 +55,11 @@ function isNetworkError(error: unknown): boolean {
   }
   if (error instanceof TypeError) {
     const message = error.message.toLowerCase();
-    return message.includes("network") || message.includes("fetch failed")
-      || message.includes("failed to fetch");
+    return (
+      message.includes("network")
+      || message.includes("fetch failed")
+      || message.includes("failed to fetch")
+    );
   }
   if (typeof DOMException !== "undefined" && error instanceof DOMException) {
     return error.name === "NetworkError";
@@ -89,17 +93,21 @@ export function ReorgExecuteStep({
   }, [offices]);
 
   const addLog = React.useCallback((message: string) => {
-    setLogs((
-      prev,
-    ) => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    setLogs((prev) => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] ${message}`,
+    ]);
   }, []);
 
   const executeReorg = React.useCallback(async () => {
     const changesToExecute = Array.from(changes.entries()).filter(
       ([employeeNumber, change]) => {
         const employee = employeeMap.get(employeeNumber);
-        return employee && change.targetOfficeId
-          && change.targetOfficeId !== employee.primaryOfficeId;
+        return (
+          employee
+          && change.targetOfficeId
+          && change.targetOfficeId !== employee.primaryOfficeId
+        );
       },
     );
 
@@ -243,7 +251,9 @@ export function ReorgExecuteStep({
 
   React.useEffect(() => {
     if (
-      !hasStartedRef.current && execution.status === "idle" && changes.size > 0
+      !hasStartedRef.current
+      && execution.status === "idle"
+      && changes.size > 0
     ) {
       hasStartedRef.current = true;
       void executeReorg();

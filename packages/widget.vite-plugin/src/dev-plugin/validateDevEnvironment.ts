@@ -16,6 +16,7 @@
 
 import color from "picocolors";
 import type { Logger } from "vite";
+
 import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 
 const FOUNDRY_CONTAINER_RUNTIME_TYPE = "FOUNDRY_CONTAINER_RUNTIME_TYPE";

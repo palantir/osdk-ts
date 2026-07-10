@@ -19,6 +19,7 @@ import type {
   LanguageModelV3Prompt,
 } from "@ai-sdk/provider";
 import { describe, expect, it, vi } from "vitest";
+
 import { mockPlatformClient } from "../../internal/__test__/mockPlatformClient.js";
 import { FoundryChatLanguageModel } from "../foundry-chat-language-model.js";
 
@@ -66,11 +67,13 @@ function defaultResponse(): unknown {
     object: "chat.completion",
     created: 1_700_000_000,
     model: "gpt-4o",
-    choices: [{
-      index: 0,
-      message: { role: "assistant", content: "Hello!" },
-      finish_reason: "stop",
-    }],
+    choices: [
+      {
+        index: 0,
+        message: { role: "assistant", content: "Hello!" },
+        finish_reason: "stop",
+      },
+    ],
     usage: {
       prompt_tokens: 10,
       completion_tokens: 5,
@@ -100,10 +103,12 @@ describe("FoundryChatLanguageModel", () => {
     it("sends an OpenAI-shaped request and returns parsed result", async () => {
       const { model, fetchMock } = createModel({});
 
-      const result = await model.doGenerate(callOptions({
-        temperature: 0.5,
-        maxOutputTokens: 100,
-      }));
+      const result = await model.doGenerate(
+        callOptions({
+          temperature: 0.5,
+          maxOutputTokens: 100,
+        }),
+      );
 
       // Verify request
       const [url, init] = fetchMock.mock.calls[0];
@@ -128,34 +133,40 @@ describe("FoundryChatLanguageModel", () => {
           object: "chat.completion",
           created: 1_700_000_000,
           model: "gpt-4o",
-          choices: [{
-            index: 0,
-            message: {
-              role: "assistant",
-              content: null,
-              tool_calls: [{
-                id: "call_1",
-                type: "function",
-                function: {
-                  name: "getWeather",
-                  arguments: "{\"location\":\"London\"}",
-                },
-              }],
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: "assistant",
+                content: null,
+                tool_calls: [
+                  {
+                    id: "call_1",
+                    type: "function",
+                    function: {
+                      name: "getWeather",
+                      arguments: "{\"location\":\"London\"}",
+                    },
+                  },
+                ],
+              },
+              finish_reason: "tool_calls",
             },
-            finish_reason: "tool_calls",
-          }],
+          ],
           usage: { prompt_tokens: 10, completion_tokens: 8, total_tokens: 18 },
         },
       });
 
       const result = await model.doGenerate(callOptions());
 
-      expect(result.content).toEqual([{
-        type: "tool-call",
-        toolCallId: "call_1",
-        toolName: "getWeather",
-        input: "{\"location\":\"London\"}",
-      }]);
+      expect(result.content).toEqual([
+        {
+          type: "tool-call",
+          toolCallId: "call_1",
+          toolName: "getWeather",
+          input: "{\"location\":\"London\"}",
+        },
+      ]);
       expect(result.finishReason.unified).toBe("tool-calls");
     });
 
@@ -166,15 +177,17 @@ describe("FoundryChatLanguageModel", () => {
           object: "chat.completion",
           created: 1_700_000_000,
           model: "gpt-4o",
-          choices: [{
-            index: 0,
-            message: {
-              role: "assistant",
-              content: "The answer is 42.",
-              reasoning_content: "Let me think step by step...",
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: "assistant",
+                content: "The answer is 42.",
+                reasoning_content: "Let me think step by step...",
+              },
+              finish_reason: "stop",
             },
-            finish_reason: "stop",
-          }],
+          ],
           usage: { prompt_tokens: 5, completion_tokens: 10, total_tokens: 15 },
         },
       });
@@ -193,8 +206,9 @@ describe("FoundryChatLanguageModel", () => {
         responseBody: { error: "Internal Server Error" },
       });
 
-      await expect(model.doGenerate(callOptions()))
-        .rejects.toThrow("LMS chat/completions request failed: 500");
+      await expect(model.doGenerate(callOptions())).rejects.toThrow(
+        "LMS chat/completions request failed: 500",
+      );
     });
 
     it("warns on unsupported topK parameter", async () => {
@@ -212,31 +226,37 @@ describe("FoundryChatLanguageModel", () => {
     it("converts tools to OpenAI function format", async () => {
       const { model, fetchMock } = createModel({});
 
-      await model.doGenerate(callOptions({
-        tools: [{
-          type: "function",
-          name: "getWeather",
-          description: "Get weather",
-          inputSchema: {
-            type: "object",
-            properties: { location: { type: "string" } },
-          },
-        }],
-        toolChoice: { type: "auto" },
-      }));
+      await model.doGenerate(
+        callOptions({
+          tools: [
+            {
+              type: "function",
+              name: "getWeather",
+              description: "Get weather",
+              inputSchema: {
+                type: "object",
+                properties: { location: { type: "string" } },
+              },
+            },
+          ],
+          toolChoice: { type: "auto" },
+        }),
+      );
 
       const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
-      expect(body.tools).toEqual([{
-        type: "function",
-        function: {
-          name: "getWeather",
-          description: "Get weather",
-          parameters: {
-            type: "object",
-            properties: { location: { type: "string" } },
+      expect(body.tools).toEqual([
+        {
+          type: "function",
+          function: {
+            name: "getWeather",
+            description: "Get weather",
+            parameters: {
+              type: "object",
+              properties: { location: { type: "string" } },
+            },
           },
         },
-      }]);
+      ]);
       expect(body.tool_choice).toBe("auto");
     });
   });
@@ -250,11 +270,13 @@ describe("FoundryChatLanguageModel", () => {
             object: "chat.completion.chunk",
             created: 1_700_000_000,
             model: "gpt-4o",
-            choices: [{
-              index: 0,
-              delta: { role: "assistant", content: "He" },
-              finish_reason: null,
-            }],
+            choices: [
+              {
+                index: 0,
+                delta: { role: "assistant", content: "He" },
+                finish_reason: null,
+              },
+            ],
           })
         }`,
         "",
@@ -264,11 +286,13 @@ describe("FoundryChatLanguageModel", () => {
             object: "chat.completion.chunk",
             created: 1_700_000_000,
             model: "gpt-4o",
-            choices: [{
-              index: 0,
-              delta: { content: "llo!" },
-              finish_reason: null,
-            }],
+            choices: [
+              {
+                index: 0,
+                delta: { content: "llo!" },
+                finish_reason: null,
+              },
+            ],
           })
         }`,
         "",
@@ -317,8 +341,9 @@ describe("FoundryChatLanguageModel", () => {
         responseBody: "Internal Server Error",
       });
 
-      await expect(model.doStream(callOptions()))
-        .rejects.toThrow("LMS chat/completions request failed: 500");
+      await expect(model.doStream(callOptions())).rejects.toThrow(
+        "LMS chat/completions request failed: 500",
+      );
     });
   });
 });

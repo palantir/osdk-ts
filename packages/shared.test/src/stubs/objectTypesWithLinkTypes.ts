@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
+
 import {
   allPropertyTypesSelfLink,
   leadLinkType,

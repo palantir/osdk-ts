@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Office } from "../generatedNoCheck2/index.js";
 
 interface OfficeSelectorProps {
@@ -51,7 +52,7 @@ export function OfficeSelector({
           backgroundSize: "1rem",
         }}
       >
-        <option value="" disabled>
+        <option value="" disabled={true}>
           {isLoading ? "Loading..." : "Select Office"}
         </option>
         {offices.map((office) => (

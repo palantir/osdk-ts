@@ -17,6 +17,7 @@
 import type { Client, PlatformClient } from "@osdk/client";
 import { createClient, createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
+
 import { logger } from "./logger.js";
 import { loggingFetch } from "./loggingFetch.js";
 

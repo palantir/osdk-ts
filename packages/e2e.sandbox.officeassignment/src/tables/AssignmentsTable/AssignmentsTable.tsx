@@ -18,6 +18,7 @@ import type { ObjectSet, WhereClause } from "@osdk/api";
 import type { ObjectTableProps } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import React from "react";
+
 import { Assignment } from "../../generatedNoCheck2/index.js";
 import {
   type OrderByEntry,
@@ -28,12 +29,11 @@ import {
   type AssignmentColumnRdps,
   createAssignmentColumnDefinitions,
 } from "./AssignmentColumnDefinitions.js";
+
 import styles from "./AssignmentsTable.module.css";
 
 const DEFAULT_ORDER_BY: Array<OrderByEntry<Assignment, AssignmentColumnRdps>> =
-  [
-    { property: "assignmentId", direction: "asc" },
-  ];
+  [{ property: "assignmentId", direction: "asc" }];
 
 // Static column definitions — no runtime inputs, so hoisted out of the component.
 const BASE_COLUMN_DEFS = createAssignmentColumnDefinitions();

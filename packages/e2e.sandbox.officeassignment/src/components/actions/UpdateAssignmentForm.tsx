@@ -21,6 +21,7 @@ import {
   type FormState,
 } from "@osdk/react-components/experimental/action-form";
 import React from "react";
+
 import type { Assignment } from "../../generatedNoCheck2/index.js";
 import { updateAssignment } from "../../generatedNoCheck2/index.js";
 import { ErrorBanner } from "../common/index.js";
@@ -36,9 +37,10 @@ type EditableFieldKey =
   | "floorId"
   | "managerId";
 
-const TEXT_FIELDS: ReadonlyArray<
-  { fieldKey: EditableFieldKey; label: string }
-> = [
+const TEXT_FIELDS: ReadonlyArray<{
+  fieldKey: EditableFieldKey;
+  label: string;
+}> = [
   { fieldKey: "title", label: "Title" },
   { fieldKey: "function", label: "Function" },
   { fieldKey: "officeId", label: "Office ID" },

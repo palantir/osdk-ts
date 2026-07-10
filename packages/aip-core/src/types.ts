@@ -34,9 +34,7 @@ export interface UserModelMessage {
 
 export interface AssistantModelMessage {
   role: "assistant";
-  content:
-    | string
-    | Array<TextPart | ReasoningPart | ToolCallPart | FilePart>;
+  content: string | Array<TextPart | ReasoningPart | ToolCallPart | FilePart>;
   providerOptions?: ProviderOptions;
 }
 

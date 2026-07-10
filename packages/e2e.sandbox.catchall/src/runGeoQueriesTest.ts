@@ -19,55 +19,45 @@ import {
   createTestGeoAction,
   WeatherStation,
 } from "@osdk/e2e.generated.catchall";
+
 import { client } from "./client.js";
 
 export async function runGeoQueriesTest(
   runAction: boolean = false,
 ): Promise<void> {
-  const result = await client(WeatherStation).where({
-    geohash: {
-      $within: {
-        $distance: [1000, "miles"],
-        $of: [0, 0],
+  const result = await client(WeatherStation)
+    .where({
+      geohash: {
+        $within: {
+          $distance: [1000, "miles"],
+          $of: [0, 0],
+        },
       },
-    },
-  }).fetchPage();
+    })
+    .fetchPage();
 
   console.log(result.data[0].geohash);
 
   // drew a polygon that intersects NY, NJ and PA
-  const intersectResult = await client(BoundariesUsState).where({
-    geometry10M: {
-      $intersects: {
-        $polygon: [
-          [
+  const intersectResult = await client(BoundariesUsState)
+    .where({
+      geometry10M: {
+        $intersects: {
+          $polygon: [
             [
-              -75.09653518696345,
-              41.45348773788706,
-            ],
-            [
-              -74.72935560273072,
-              40.946390252360715,
-            ],
-            [
-              -74.06735144976177,
-              41.20045829999643,
-            ],
-            [
-              -74.3141382218981,
-              41.67866397375818,
-            ],
-            [
-              -75.09653518696345,
-              41.45348773788706,
+              [-75.09653518696345, 41.45348773788706],
+              [-74.72935560273072, 40.946390252360715],
+              [-74.06735144976177, 41.20045829999643],
+              [-74.3141382218981, 41.67866397375818],
+              [-75.09653518696345, 41.45348773788706],
             ],
           ],
-        ],
+        },
       },
-    },
-  }).fetchPage();
+    })
+    .fetchPage();
 
-  console.log(intersectResult.data.map(data => data.usState));
+  console.log(intersectResult.data.map((data) => data.usState));
   console.log(intersectResult.data[0].geometry10M);
 
   const intersectResultGeojson = await client(BoundariesUsState)
@@ -78,35 +68,21 @@ export async function runGeoQueriesTest(
             type: "Polygon",
             coordinates: [
               [
-                [
-                  -75.09653518696345,
-                  41.45348773788706,
-                ],
-                [
-                  -74.72935560273072,
-                  40.946390252360715,
-                ],
-                [
-                  -74.06735144976177,
-                  41.20045829999643,
-                ],
-                [
-                  -74.3141382218981,
-                  41.67866397375818,
-                ],
-                [
-                  -75.09653518696345,
-                  41.45348773788706,
-                ],
+                [-75.09653518696345, 41.45348773788706],
+                [-74.72935560273072, 40.946390252360715],
+                [-74.06735144976177, 41.20045829999643],
+                [-74.3141382218981, 41.67866397375818],
+                [-75.09653518696345, 41.45348773788706],
               ],
             ],
           },
         },
       },
-    }).fetchPage();
+    })
+    .fetchPage();
 
   // should be every state except NJ,NY,PA
-  console.log(intersectResultGeojson.data.map(data => data.usState));
+  console.log(intersectResultGeojson.data.map((data) => data.usState));
 
   // drew a bbox that intersects NY, NJ and PA
   const intersectResultBoundingBox = await client(BoundariesUsState)
@@ -119,15 +95,18 @@ export async function runGeoQueriesTest(
           41.676311210175015,
         ],
       },
-    }).fetchPage();
+    })
+    .fetchPage();
 
-  console.log(intersectResultBoundingBox.data.map(data => data.usState));
+  console.log(intersectResultBoundingBox.data.map((data) => data.usState));
 
-  const nonNullGeoProps = await client(BoundariesUsState).where({
-    geometry10M: { $isNull: false },
-  }).fetchPage();
+  const nonNullGeoProps = await client(BoundariesUsState)
+    .where({
+      geometry10M: { $isNull: false },
+    })
+    .fetchPage();
 
-  console.log(nonNullGeoProps.data.map(data => data.usState));
+  console.log(nonNullGeoProps.data.map((data) => data.usState));
 
   if (runAction) {
     await client(createTestGeoAction).applyAction({
@@ -135,15 +114,25 @@ export async function runGeoQueriesTest(
       geo_title: "oops",
       geoshape_prop: {
         type: "Polygon",
-        coordinates: [[[0, 1], [1, 1], [2, 2], [3, 3], [0, 1]]],
+        coordinates: [
+          [
+            [0, 1],
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [0, 1],
+          ],
+        ],
       },
     });
   }
 
-  const statesContainingAko = await client(BoundariesUsState).where({
-    "name": { $matchesRegex: ".{0,}ako.{0,}" },
-  }).fetchPage();
-  console.log(statesContainingAko.data.map(data => data.name));
+  const statesContainingAko = await client(BoundariesUsState)
+    .where({
+      name: { $matchesRegex: ".{0,}ako.{0,}" },
+    })
+    .fetchPage();
+  console.log(statesContainingAko.data.map((data) => data.name));
 }
 
 void runGeoQueriesTest();

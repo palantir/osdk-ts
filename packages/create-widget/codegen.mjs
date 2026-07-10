@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import dedent from "dedent";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import dedent from "dedent";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -6,10 +6,9 @@ export function InlineSpinner({ isLoading = true }: { isLoading?: boolean }) {
       {isLoading
         ? (
           <div className="mx-1 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent">
-          </div>
+border border-solid border-yellow-800 border-t-transparent" />
         )
-        : <div className="mx-1 w-4 h-4"></div>}
+        : <div className="mx-1 w-4 h-4" />}
     </div>
   );
 }

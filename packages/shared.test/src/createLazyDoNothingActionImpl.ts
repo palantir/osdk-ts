@@ -37,10 +37,7 @@ export function createLazyDoNothingActionImpl(
   >,
 ): FauxActionImpl {
   const stableToRet = new Map(
-    reqRespPairs.map(pair => [
-      stableStringify(pair[0]),
-      pair[1],
-    ]),
+    reqRespPairs.map((pair) => [stableStringify(pair[0]), pair[1]]),
   );
 
   return (

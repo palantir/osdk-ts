@@ -158,9 +158,7 @@ const REASONING_PART_ID = "reasoning-0";
 async function parseSseStream(
   args: ParseSseStreamArgs,
 ): Promise<StreamStepResult> {
-  const reader = args.body
-    .pipeThrough(new TextDecoderStream())
-    .getReader();
+  const reader = args.body.pipeThrough(new TextDecoderStream()).getReader();
 
   let buffer = "";
   let textBuf = "";
@@ -242,7 +240,8 @@ async function parseSseStream(
 
             const reasoningDelta = delta.reasoning ?? delta.reasoning_content;
             if (
-              typeof reasoningDelta === "string" && reasoningDelta.length > 0
+              typeof reasoningDelta === "string"
+              && reasoningDelta.length > 0
             ) {
               reasoningStarted = true;
               reasoningBuf += reasoningDelta;
@@ -258,8 +257,11 @@ async function parseSseStream(
                 if (typeof tc.index !== "number") {
                   continue;
                 }
-                const acc = toolCallAcc.get(tc.index)
-                  ?? { id: "", name: "", args: "" };
+                const acc = toolCallAcc.get(tc.index) ?? {
+                  id: "",
+                  name: "",
+                  args: "",
+                };
                 if (tc.id != null) {
                   acc.id = tc.id;
                 }
@@ -320,10 +322,12 @@ async function parseSseStream(
     timestamp: responseCreated != null
       ? new Date(responseCreated * 1000)
       : undefined,
-    messages: [{
-      role: "assistant",
-      content: buildAssistantContent(textBuf, toolCalls),
-    }],
+    messages: [
+      {
+        role: "assistant",
+        content: buildAssistantContent(textBuf, toolCalls),
+      },
+    ],
   };
 
   return {

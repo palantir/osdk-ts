@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { generateFoundryConfigJson } from "./generateFoundryConfigJson.js";
 
 const expected = `

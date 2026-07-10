@@ -15,6 +15,7 @@
  */
 
 import { GraphqlFormatting } from "@osdk/e2e.generated.catchall";
+
 import { z2vClient } from "./client.js";
 
 export async function runApplyFormatterTest(): Promise<void> {

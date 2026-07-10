@@ -1,6 +1,7 @@
 import type { Osdk, PropertyKeys } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
+
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -23,9 +24,11 @@ interface EmployeeListItemProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-function EmployeeListItem(
-  { item, isSelected, onSelect }: EmployeeListItemProps,
-) {
+function EmployeeListItem({
+  item,
+  isSelected,
+  onSelect,
+}: EmployeeListItemProps) {
   return (
     <ListItem
       isSelected={isSelected}

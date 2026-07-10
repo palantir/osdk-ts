@@ -19,6 +19,7 @@ import {
   GtfsTripTrackObject,
   RhemmingsObjectWithGtsrProperty2,
 } from "@osdk/e2e.generated.catchall";
+
 import { dsClient } from "./client.js";
 
 export async function runGeotimeSeriesReferenceTests(): Promise<void> {
@@ -38,8 +39,9 @@ export async function runGeotimeSeriesReferenceTests(): Promise<void> {
   });
   console.log(allPoints![0].value);
 
-  const secondResult = await dsClient(RhemmingsObjectWithGtsrProperty2)
-    .fetchOne("track-id");
+  const secondResult = await dsClient(
+    RhemmingsObjectWithGtsrProperty2,
+  ).fetchOne("track-id");
 
   for await (
     const t of secondResult.gtsr!.asyncIterValues({

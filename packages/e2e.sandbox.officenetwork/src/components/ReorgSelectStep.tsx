@@ -1,4 +1,5 @@
 import React, { startTransition } from "react";
+
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { useOfficeMap } from "../hooks/useOfficeMap.js";
 import type { ReorgConfig } from "../hooks/useReorgState.js";

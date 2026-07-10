@@ -20,15 +20,13 @@ import type {
   SiteConfig,
 } from "@osdk/foundry-config-json";
 import type { CommandModule } from "yargs";
+
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logSiteDeployCommandConfigFileOverride } from "./logSiteDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  SiteDeployArgs
-> = {
+const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
   command: "deploy",
   describe: "Deploy a new site version",
   builder: async (argv) => {
@@ -46,9 +44,7 @@ const command: CommandModule<
         directory: {
           type: "string",
           description: "Directory containing site files",
-          ...directory
-            ? { default: directory }
-            : { demandOption: true },
+          ...(directory ? { default: directory } : { demandOption: true }),
         },
         uploadOnly: {
           type: "boolean",
@@ -58,26 +54,22 @@ const command: CommandModule<
         version: {
           type: "string",
           description: "New version of site to deploy",
-          ...autoVersion == null
-            ? { conflicts: "autoVersion" }
-            : {},
+          ...(autoVersion == null ? { conflicts: "autoVersion" } : {}),
         },
         autoVersion: {
           coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
           choices: ["git-describe", "package-json"],
           description: "Enable auto versioning",
-          ...(autoVersion != null)
+          ...(autoVersion != null
             ? { default: autoVersion.type }
-            : { conflicts: "version" },
+            : { conflicts: "version" }),
         },
         gitTagPrefix: {
           type: "string",
           description:
             "Prefix to match git tags on when 'git-describe' auto versioning is used. If not provided, all tags are matched and the prefix 'v' is stripped if present.",
-          ...gitTagPrefix
-            ? { default: gitTagPrefix }
-            : {},
+          ...(gitTagPrefix ? { default: gitTagPrefix } : {}),
         },
         snapshot: {
           type: "boolean",
@@ -91,23 +83,15 @@ const command: CommandModule<
             "Optional id to associate with snapshot version as an alias",
         },
       })
-      .group(
-        ["directory", "version", "uploadOnly"],
-        "Deploy Options",
-      )
-      .group(
-        ["autoVersion", "gitTagPrefix"],
-        "Auto Version Options",
-      )
-      .group(
-        ["snapshot", "snapshotId"],
-        "Snapshot Options",
-      )
+      .group(["directory", "version", "uploadOnly"], "Deploy Options")
+      .group(["autoVersion", "gitTagPrefix"], "Auto Version Options")
+      .group(["snapshot", "snapshotId"], "Snapshot Options")
       .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
         // So this case is for when nothing is provided.
         if (
-          autoVersion == null && args.autoVersion == null
+          autoVersion == null
+          && args.autoVersion == null
           && args.version == null
         ) {
           throw new YargsCheckError(
@@ -152,11 +136,9 @@ const command: CommandModule<
         }
 
         return true;
-      }).middleware((args) =>
-        logSiteDeployCommandConfigFileOverride(
-          args,
-          siteConfig,
-        )
+      })
+      .middleware((args) =>
+        logSiteDeployCommandConfigFileOverride(args, siteConfig)
       );
   },
   handler: async (args) => {

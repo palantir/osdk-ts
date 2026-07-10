@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Employee } from "../generatedNoCheck2/index.js";
 
 interface EmployeeSelectorProps {
@@ -15,8 +16,8 @@ export function EmployeeSelector({
   isLoading,
 }: EmployeeSelectorProps) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const employee = employees.find((emp) =>
-      String(emp.employeeNumber) === e.target.value
+    const employee = employees.find(
+      (emp) => String(emp.employeeNumber) === e.target.value,
     );
     if (employee) {
       onSelectEmployee(employee);
@@ -61,7 +62,7 @@ export function EmployeeSelector({
           backgroundSize: "1rem",
         }}
       >
-        <option value="" disabled>
+        <option value="" disabled={true}>
           {isLoading ? "Loading..." : `Select Employee (${employees.length})`}
         </option>
         {sortedEmployees.map((employee) => (

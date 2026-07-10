@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { LmsChatTransport } from "./lmsChatTransport.js";
 import type { LanguageModel } from "./model.js";
 import type {
@@ -107,9 +108,9 @@ function uiMsg(role: UIMessage["role"], text: string): UIMessage {
   return { id: `m-${role}-${text}`, role, parts: [{ type: "text", text }] };
 }
 
-function firstCall<A extends Array<unknown>>(
-  mock: { mock: { calls: Array<A> } },
-): A {
+function firstCall<A extends Array<unknown>>(mock: {
+  mock: { calls: Array<A> };
+}): A {
   const call = mock.mock.calls[0];
   if (call == null) {
     throw new Error("expected mock to have been called at least once");
@@ -124,12 +125,14 @@ describe("LmsChatTransport", () => {
 
   it("converts UIMessage[] to ModelMessage[] and forwards to streamText", async () => {
     streamTextMock.mockReturnValue(
-      fakeStreamTextResult([{
-        type: "finish",
-        finishReason: "stop",
-        rawFinishReason: "stop",
-        usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
-      }]),
+      fakeStreamTextResult([
+        {
+          type: "finish",
+          finishReason: "stop",
+          rawFinishReason: "stop",
+          usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+        },
+      ]),
     );
     const t = new LmsChatTransport({
       model: fakeModel(),
@@ -215,9 +218,7 @@ describe("LmsChatTransport", () => {
 
   it("forwards a streamText error chunk as a UIMessage error chunk", async () => {
     streamTextMock.mockReturnValue(
-      fakeStreamTextResult([
-        { type: "error", error: new Error("boom") },
-      ]),
+      fakeStreamTextResult([{ type: "error", error: new Error("boom") }]),
     );
     const t = new LmsChatTransport({ model: fakeModel() });
 

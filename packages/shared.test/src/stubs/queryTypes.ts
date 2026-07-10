@@ -507,56 +507,56 @@ export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
 };
 
 export const queryTypeReturnsArray: QueryTypeV2 = {
-  "apiName": "queryTypeReturnsArray",
-  "output": {
-    "type": "array",
-    "subType": { "type": "string" },
+  apiName: "queryTypeReturnsArray",
+  output: {
+    type: "array",
+    subType: { type: "string" },
   },
-  "parameters": {
-    "people": {
-      "dataType": {
-        "type": "array",
-        "subType": { "type": "string" },
+  parameters: {
+    people: {
+      dataType: {
+        type: "array",
+        subType: { type: "string" },
       },
-      "required": true,
+      required: true,
     },
   },
-  "rid":
+  rid:
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
-  "version": "0.1.1",
+  version: "0.1.1",
   typeReferences: {},
 };
 
 export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
-  "apiName": "queryTypeReturnsArrayOfObjects",
-  "output": {
-    "type": "array",
-    "subType": {
+  apiName: "queryTypeReturnsArrayOfObjects",
+  output: {
+    type: "array",
+    subType: {
       type: "object",
       objectApiName: "Employee",
       objectTypeApiName: "Employee",
     },
   },
-  "parameters": {
-    "people": {
-      "dataType": {
-        "type": "array",
-        "subType": { "type": "string" },
+  parameters: {
+    people: {
+      dataType: {
+        type: "array",
+        subType: { type: "string" },
       },
-      "required": true,
+      required: true,
     },
   },
-  "rid":
+  rid:
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
-  "version": "0.1.1",
+  version: "0.1.1",
   typeReferences: {},
 };
 
 export const queryTypeReturnsMap: QueryTypeV2 = {
-  "apiName": "queryTypeReturnsMap",
-  "output": {
-    "type": "entrySet",
-    "keyType": {
+  apiName: "queryTypeReturnsMap",
+  output: {
+    type: "entrySet",
+    keyType: {
       type: "object",
       objectApiName: "Employee",
       objectTypeApiName: "Employee",
@@ -565,11 +565,11 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
       type: "float",
     },
   },
-  "parameters": {
-    "peopleMap": {
-      "dataType": {
-        "type": "entrySet",
-        "keyType": {
+  parameters: {
+    peopleMap: {
+      dataType: {
+        type: "entrySet",
+        keyType: {
           type: "object",
           objectApiName: "Employee",
           objectTypeApiName: "Employee",
@@ -578,12 +578,12 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
           type: "string",
         },
       },
-      "required": true,
+      required: true,
     },
   },
-  "rid":
+  rid:
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
-  "version": "0.1.1",
+  version: "0.1.1",
   typeReferences: {},
 };
 

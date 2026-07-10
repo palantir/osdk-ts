@@ -15,7 +15,9 @@
  */
 
 import * as fs from "node:fs";
+
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { maybeUpdateJemmaCustomMetadata } from "./maybeUpdateJemmaCustomMetadata.js";
 
 vi.mock("node:fs");

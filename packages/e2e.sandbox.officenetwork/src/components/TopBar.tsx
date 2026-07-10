@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { LensMode } from "../utils/lensTheme.js";
 
 interface TopBarProps {
@@ -24,9 +25,7 @@ const lenses: TabConfig[] = [
   { id: "team", label: "Team", shortcut: "5" },
 ];
 
-const workflows: TabConfig[] = [
-  { id: "reorg", label: "Reorg", shortcut: "6" },
-];
+const workflows: TabConfig[] = [{ id: "reorg", label: "Reorg", shortcut: "6" }];
 
 function TabButton({
   tab,

@@ -17,16 +17,14 @@
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import type { CommandModule } from "yargs";
+
 import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
 import { logWidgetSetDeployCommandConfigFileOverride } from "./logWidgetSetDeployCommandConfigFileOverride.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-const command: CommandModule<
-  CommonWidgetSetArgs,
-  WidgetSetDeployArgs
-> = {
+const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
   command: "deploy",
   describe:
     `Deploy a new widget set version\n\nThe widget set files must contain a `
@@ -46,24 +44,18 @@ const command: CommandModule<
         directory: {
           type: "string",
           description: "Directory containing widget set files",
-          ...directory
-            ? { default: directory }
-            : { demandOption: true },
+          ...(directory ? { default: directory } : { demandOption: true }),
         },
         repository: {
           type: "string",
           coerce: (application) => application as StemmaRepositoryRid,
-          ...repository
-            ? { default: repository }
-            : {},
+          ...(repository ? { default: repository } : {}),
           description:
             "Code repository resource identifier (rid) publishing the widget set",
         },
       })
-      .group(
-        ["directory", "repository"],
-        "Deploy Options",
-      ).middleware((args) =>
+      .group(["directory", "repository"], "Deploy Options")
+      .middleware((args) =>
         logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig)
       );
   },

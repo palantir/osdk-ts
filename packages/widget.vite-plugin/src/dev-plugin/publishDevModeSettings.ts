@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ServerResponse } from "node:http";
 import { inspect } from "node:util";
+
+import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ViteDevServer } from "vite";
+
 import type { DevModeManifest } from "./buildDevModeManifest.js";
 import {
   getCodeWorkspacesFoundryUrl,
@@ -50,9 +52,7 @@ class ResponseError extends Error {
   }
 }
 
-function getHintForError(
-  parsed: { errorName?: string },
-): string | undefined {
+function getHintForError(parsed: { errorName?: string }): string | undefined {
   if (
     parsed.errorName === "Api:WidgetIdNotFound"
     || parsed.errorName === "WidgetIdNotFound"
@@ -79,9 +79,7 @@ export async function publishDevModeSettings(
   try {
     const foundryConfig = await loadFoundryConfig("widgetSet");
     if (foundryConfig == null) {
-      throw new Error(
-        "foundry.config.json file not found.",
-      );
+      throw new Error("foundry.config.json file not found.");
     }
     const rawFoundryUrl = isCodeWorkspacesMode(server.config.mode)
       ? getCodeWorkspacesFoundryUrl()
@@ -109,10 +107,7 @@ export async function publishDevModeSettings(
       );
     }
 
-    const enableResponse = await enableDevMode(
-      foundryUrl,
-      server.config.mode,
-    );
+    const enableResponse = await enableDevMode(foundryUrl, server.config.mode);
     if (enableResponse.status !== 200) {
       server.config.logger.warn(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
@@ -126,31 +121,31 @@ export async function publishDevModeSettings(
     }
 
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({
-      status: "success",
-      // In Code Workspaces the preview UI automatically handles this redirect
-      redirectUrl: isCodeWorkspacesMode(server.config.mode)
-        ? null
-        : new URL(
-          `workspace/custom-widgets/preview/${widgetSetRid}`,
-          foundryUrl,
-        ).toString(),
-    }));
+    res.end(
+      JSON.stringify({
+        status: "success",
+        // In Code Workspaces the preview UI automatically handles this redirect
+        redirectUrl: isCodeWorkspacesMode(server.config.mode)
+          ? null
+          : new URL(
+            `workspace/custom-widgets/preview/${widgetSetRid}`,
+            foundryUrl,
+          ).toString(),
+      }),
+    );
   } catch (error: unknown) {
     server.config.logger.error(
-      `Failed to start dev mode: ${(error as Error)}\n\n${inspect(error)}`,
+      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`,
     );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
     res.end(
-      JSON.stringify(
-        {
-          status: "error",
-          error: inspect(error),
-          response: error instanceof ResponseError ? error.response : undefined,
-          hint: error instanceof ResponseError ? error.hint : undefined,
-        },
-      ),
+      JSON.stringify({
+        status: "error",
+        error: inspect(error),
+        response: error instanceof ResponseError ? error.response : undefined,
+        hint: error instanceof ResponseError ? error.hint : undefined,
+      }),
     );
   }
 }

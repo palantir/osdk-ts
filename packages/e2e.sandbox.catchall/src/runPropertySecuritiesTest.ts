@@ -15,6 +15,7 @@
  */
 
 import { MasonHeavyEquipment, MasonMovie } from "@osdk/e2e.generated.catchall";
+
 import { dsClient, dsmtClient } from "./client.js";
 
 export async function runPropertySecuritiesTest(): Promise<void> {
@@ -23,13 +24,7 @@ export async function runPropertySecuritiesTest(): Promise<void> {
   });
   const movieObject1 = objects.data[0];
   console.log("Unsupported View Securities for MasonMovie object:");
-  console.log(
-    JSON.stringify(
-      movieObject1.$propertySecurities,
-      null,
-      2,
-    ),
-  );
+  console.log(JSON.stringify(movieObject1.$propertySecurities, null, 2));
 
   const heavyEquipmentObject1 = await dsmtClient(MasonHeavyEquipment).fetchOne(
     "equipment_34968",
@@ -40,11 +35,7 @@ export async function runPropertySecuritiesTest(): Promise<void> {
 
   console.log("Securities for MasonHeavyEquipment object:");
   console.log(
-    JSON.stringify(
-      heavyEquipmentObject1.$propertySecurities,
-      null,
-      2,
-    ),
+    JSON.stringify(heavyEquipmentObject1.$propertySecurities, null, 2),
   );
 }
 

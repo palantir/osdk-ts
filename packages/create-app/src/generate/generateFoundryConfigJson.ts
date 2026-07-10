@@ -23,19 +23,21 @@ export function generateFoundryConfigJson({
   application: string;
   directory: string;
 }): string {
-  return JSON.stringify(
-    {
-      foundryUrl,
-      site: {
-        application,
-        directory,
-        autoVersion: {
-          type: "git-describe",
-          tagPrefix: "",
+  return (
+    JSON.stringify(
+      {
+        foundryUrl,
+        site: {
+          application,
+          directory,
+          autoVersion: {
+            type: "git-describe",
+            tagPrefix: "",
+          },
         },
       },
-    },
-    null,
-    2,
-  ) + "\n";
+      null,
+      2,
+    ) + "\n"
+  );
 }

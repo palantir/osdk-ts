@@ -15,6 +15,7 @@
  */
 
 import { GraphqlFormatting } from "@osdk/e2e.generated.catchall";
+
 import { z2vClient } from "./client.js";
 
 export async function runPropertyValueFormattingTest(): Promise<void> {
@@ -36,10 +37,7 @@ export async function runPropertyValueFormattingTest(): Promise<void> {
     "timestamp formatting",
     metadata.properties.timestampDatetime.valueFormatting,
   );
-  console.log(
-    "date formatting",
-    metadata.properties.dateShort.valueFormatting,
-  );
+  console.log("date formatting", metadata.properties.dateShort.valueFormatting);
   console.log(
     "Known user formatting",
     metadata.properties.stringUser.valueFormatting,

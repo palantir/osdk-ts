@@ -1,4 +1,5 @@
 import type { Point } from "geojson";
+
 import "maplibre-gl/dist/maplibre-gl.css";
 import Map, { Marker } from "react-map-gl/maplibre";
 

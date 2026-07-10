@@ -17,9 +17,11 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptWidgetSetRid(
-  { widgetSet }: { widgetSet?: string },
-): Promise<string> {
+export async function promptWidgetSetRid({
+  widgetSet,
+}: {
+  widgetSet?: string;
+}): Promise<string> {
   while (
     widgetSet == null
     || !/^ri\.widgetregistry\.\.widget-set\.[^.]+$/.test(widgetSet)

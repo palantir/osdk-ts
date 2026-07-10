@@ -15,6 +15,7 @@
  */
 
 import { getOpenAiBaseUrl } from "@osdk/language-models";
+
 import {
   _getFoundryInternal,
   type LanguageModel,
@@ -165,11 +166,13 @@ export function convertMessage(
             break;
         }
       }
-      return [{
-        role: "assistant",
-        content: text.length > 0 ? text : null,
-        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-      }];
+      return [
+        {
+          role: "assistant",
+          content: text.length > 0 ? text : null,
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+      ];
     }
 
     case "tool":
@@ -249,14 +252,12 @@ function isJsonSchemaLike(value: unknown): boolean {
   return (
     typeof value === "object"
     && value != null
-    && (
-      "type" in value
+    && ("type" in value
       || "properties" in value
       || "$ref" in value
       || "oneOf" in value
       || "anyOf" in value
-      || "allOf" in value
-    )
+      || "allOf" in value)
   );
 }
 
@@ -358,7 +359,8 @@ export function buildAssistantContent(
     return text;
   }
   const parts: Array<
-    { type: "text"; text: string } | {
+    | { type: "text"; text: string }
+    | {
       type: "tool-call";
       toolCallId: string;
       toolName: string;
@@ -391,9 +393,7 @@ export function filterHeaders(
   return out;
 }
 
-export async function safeReadText(
-  res: Response,
-): Promise<string | undefined> {
+export async function safeReadText(res: Response): Promise<string | undefined> {
   try {
     return await res.text();
   } catch {

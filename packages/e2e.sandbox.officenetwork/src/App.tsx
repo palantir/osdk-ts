@@ -1,6 +1,7 @@
 import type { DerivedProperty, WhereClause } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react";
 import React from "react";
+
 import { AggregationStatsPanel } from "./components/AggregationStatsPanel.js";
 import { EmployeeFilters } from "./components/EmployeeFilters.js";
 import { EmployeePanel } from "./components/EmployeePanel.js";
@@ -97,12 +98,15 @@ function App() {
     WhereClause<typeof Employee> | undefined
   >();
 
-  const { data: offices, isLoading: officesLoading, error: officesError } =
-    useOsdkObjects(Office, {
-      pageSize: 100,
-      orderBy: { name: "asc" },
-      withProperties: officeWithRdps,
-    });
+  const {
+    data: offices,
+    isLoading: officesLoading,
+    error: officesError,
+  } = useOsdkObjects(Office, {
+    pageSize: 100,
+    orderBy: { name: "asc" },
+    withProperties: officeWithRdps,
+  });
 
   const {
     data: employees,
@@ -129,13 +133,10 @@ function App() {
     console.error("Error loading employees:", employeesError);
   }
 
-  const handleSelectOffice = React.useCallback(
-    (office: OfficeWithRdps) => {
-      setSelectedOffice(office);
-      setSelectedEmployee(null);
-    },
-    [],
-  );
+  const handleSelectOffice = React.useCallback((office: OfficeWithRdps) => {
+    setSelectedOffice(office);
+    setSelectedEmployee(null);
+  }, []);
 
   const handleSelectEmployee = React.useCallback(
     (employee: Employee.OsdkInstance) => {
@@ -155,8 +156,8 @@ function App() {
         setFilteredLevel(null);
         const employeeOfficeId = employee.primaryOfficeId;
         if (employeeOfficeId && offices) {
-          const office = offices.find((o) =>
-            o.primaryKey_ === employeeOfficeId
+          const office = offices.find(
+            (o) => o.primaryKey_ === employeeOfficeId,
           );
           if (office) {
             setSelectedOffice(office);

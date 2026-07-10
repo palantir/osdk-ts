@@ -21,6 +21,7 @@ import type {
   WidgetSetInputSpec,
 } from "@osdk/widget.api";
 import { describe, expect, test } from "vitest";
+
 import {
   buildWidgetManifestConfig,
   buildWidgetSetManifest,
@@ -45,10 +46,12 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
 };
 
 describe("buildWidgetManifestConfig", () => {
-  const ENTRYPOINT_JS = [{
-    path: "scripts/widget.js",
-    type: "module" as const,
-  }];
+  const ENTRYPOINT_JS = [
+    {
+      path: "scripts/widget.js",
+      type: "module" as const,
+    },
+  ];
   const ENTRYPOINT_CSS = [{ path: "styles/widget.css" }];
 
   test("maps config fields to manifest format", () => {
@@ -203,9 +206,14 @@ describe("buildWidgetSetManifest", () => {
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      [createMockWidgetBuild("widget", undefined, ["/scripts/widget.js"], [
-        "/styles/widget.css",
-      ])],
+      [
+        createMockWidgetBuild(
+          "widget",
+          undefined,
+          ["/scripts/widget.js"],
+          ["/styles/widget.css"],
+        ),
+      ],
       {},
     );
 
@@ -221,9 +229,14 @@ describe("buildWidgetSetManifest", () => {
     const manifest = buildWidgetSetManifest(
       WIDGET_SET_RID,
       WIDGET_SET_VERSION,
-      [createMockWidgetBuild("widget", undefined, ["scripts/widget.js"], [
-        "styles/widget.css",
-      ])],
+      [
+        createMockWidgetBuild(
+          "widget",
+          undefined,
+          ["scripts/widget.js"],
+          ["styles/widget.css"],
+        ),
+      ],
       {},
     );
 
@@ -248,18 +261,17 @@ function createMockWidgetBuild(
   stylesheets?: string[],
 ): WidgetBuildOutputs {
   return {
-    scripts: scripts?.map(src => ({
+    scripts: scripts?.map((src) => ({
       type: "script" as const,
       scriptType: "module" as const,
       src,
-    }))
-      ?? [
-        {
-          type: "script",
-          scriptType: "module",
-          src: `/scripts/${id}.js`,
-        },
-      ],
+    })) ?? [
+      {
+        type: "script",
+        scriptType: "module",
+        src: `/scripts/${id}.js`,
+      },
+    ],
     stylesheets: stylesheets ?? [`/styles/${id}.css`],
     widgetConfig: {
       id,

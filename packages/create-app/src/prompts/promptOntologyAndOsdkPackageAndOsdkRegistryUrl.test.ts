@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptOntologyAndOsdkPackageAndOsdkRegistryUrl } from "./promptOntologyAndOsdkPackageAndOsdkRegistryUrl.js";
 
@@ -97,13 +98,11 @@ test("it accepts valid initial values without prompt", async () => {
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
@@ -115,13 +114,11 @@ test("it accepts osdk package valid initial value without prompt", async () => {
       osdkPackage: VALID_OSDK_PACKAGE,
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 
@@ -133,13 +130,11 @@ test("it accepts ontology valid initial value without prompt", async () => {
       ontology: VALID_ONTOLOGY,
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 
@@ -151,13 +146,11 @@ test("it accepts osdk registry url valid initial value without prompt", async ()
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 
@@ -187,13 +180,11 @@ test("it prompts osdk package if initial value is invalid", async () => {
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      osdkPackage: VALID_OSDK_PACKAGE,
-      ontology: VALID_ONTOLOGY,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    osdkPackage: VALID_OSDK_PACKAGE,
+    ontology: VALID_ONTOLOGY,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
@@ -206,13 +197,11 @@ test("it prompts osdk registry url if initial value is invalid", async () => {
       osdkRegistryUrl: "invalid",
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
@@ -224,13 +213,11 @@ test("it strips trailing slash from osdk registry url", async () => {
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL + "/",
       sdkVersion: "2.x",
     }),
-  ).toEqual(
-    {
-      ontology: VALID_ONTOLOGY,
-      osdkPackage: VALID_OSDK_PACKAGE,
-      osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
-    },
-  );
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 

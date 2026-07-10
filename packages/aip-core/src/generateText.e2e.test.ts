@@ -30,6 +30,7 @@
 
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it } from "vitest";
+
 import { generateText } from "./generateText.js";
 import {
   assertDefined,

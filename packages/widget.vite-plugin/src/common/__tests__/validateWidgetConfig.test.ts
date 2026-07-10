@@ -16,6 +16,7 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import { describe, expect, test } from "vitest";
+
 import { validateWidgetConfig } from "../validateWidgetConfig.js";
 
 describe("validateWidgetConfig", () => {

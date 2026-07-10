@@ -15,8 +15,10 @@
  */
 
 import React from "react";
-import styles from "./MetricsHeader.module.css";
+
 import { MetricTag } from "./MetricTag.js";
+
+import styles from "./MetricsHeader.module.css";
 
 export interface MetricsHeaderProps {
   title: string;

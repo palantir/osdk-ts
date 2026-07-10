@@ -82,7 +82,9 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
       ) {
         throw new Error(
           `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${
-            JSON.stringify(parameterConfig.allowedType)
+            JSON.stringify(
+              parameterConfig.allowedType,
+            )
           }'`,
         );
       }

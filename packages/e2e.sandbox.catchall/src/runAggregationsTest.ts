@@ -19,6 +19,7 @@ import {
   OsdkTestObject,
 } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
+
 import { client } from "./client.js";
 
 export async function runAggregationsTest(): Promise<void> {
@@ -27,19 +28,19 @@ export async function runAggregationsTest(): Promise<void> {
       usState: {
         $startsWith: "N",
       },
-    }).fetchPage();
+    })
+    .fetchPage();
 
-  console.log(testStringClause.data.map(data => data.usState));
+  console.log(testStringClause.data.map((data) => data.usState));
 
-  const testAggregateCountNoGroup = await client(BoundariesUsState)
-    .aggregate({
-      $select: {
-        $count: "unordered",
-        "latitude:max": "unordered",
-        "latitude:min": "unordered",
-        "latitude:avg": "unordered",
-      },
-    });
+  const testAggregateCountNoGroup = await client(BoundariesUsState).aggregate({
+    $select: {
+      $count: "unordered",
+      "latitude:max": "unordered",
+      "latitude:min": "unordered",
+      "latitude:avg": "unordered",
+    },
+  });
 
   // Should be 51 because it includes DC
   console.log(
@@ -48,59 +49,63 @@ export async function runAggregationsTest(): Promise<void> {
     testAggregateCountNoGroup.latitude.max,
     testAggregateCountNoGroup.latitude.min,
   );
-  const testAggregateCountWithGroups = await client(BoundariesUsState)
-    .aggregate({
-      $select: {
-        $count: "unordered",
-        "latitude:max": "unordered",
-        "latitude:min": "unordered",
-        "latitude:avg": "unordered",
+  const testAggregateCountWithGroups = await client(
+    BoundariesUsState,
+  ).aggregate({
+    $select: {
+      $count: "unordered",
+      "latitude:max": "unordered",
+      "latitude:min": "unordered",
+      "latitude:avg": "unordered",
+    },
+    $groupBy: {
+      usState: "exact",
+      longitude: {
+        $fixedWidth: 10,
       },
-      $groupBy: {
-        usState: "exact",
-        longitude: {
-          $fixedWidth: 10,
-        },
-      },
-    });
+    },
+  });
 
-  const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
-    .aggregate({
-      $select: {
-        $count: "unordered",
-        "latitude:max": "unordered",
-        "latitude:min": "unordered",
-        "latitude:avg": "unordered",
+  const testAggregateCountWithFixedGroups = await client(
+    BoundariesUsState,
+  ).aggregate({
+    $select: {
+      $count: "unordered",
+      "latitude:max": "unordered",
+      "latitude:min": "unordered",
+      "latitude:avg": "unordered",
+    },
+    $groupBy: {
+      longitude: {
+        $exactWithLimit: 40,
       },
-      $groupBy: {
-        longitude: {
-          $exactWithLimit: 40,
-        },
-      },
-    });
+    },
+  });
 
-  const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
-    .aggregate({
-      $select: {
-        $count: "unordered",
+  const testAggregateCountWithRangeGroups = await client(
+    BoundariesUsState,
+  ).aggregate({
+    $select: {
+      $count: "unordered",
+    },
+    $groupBy: {
+      latitude: {
+        $ranges: [
+          [34, 39],
+          [39, 42],
+          [43, 45],
+        ],
       },
-      $groupBy: {
-        latitude: {
-          $ranges: [[34, 39], [
-            39,
-            42,
-          ], [43, 45]],
-        },
-      },
-    });
+    },
+  });
 
   const testExactMatchWithDefault = await client(OsdkTestObject).aggregate({
     $select: {
       $count: "unordered",
     },
     $groupBy: {
-      "description": {
-        "$exact": { $limit: 300, $defaultValue: "default_value" },
+      description: {
+        $exact: { $limit: 300, $defaultValue: "default_value" },
       },
     },
   });
@@ -110,7 +115,7 @@ export async function runAggregationsTest(): Promise<void> {
       $count: "unordered",
     },
     $groupBy: {
-      "description": { "$exact": { $limit: 300, $includeNullValue: true } },
+      description: { $exact: { $limit: 300, $includeNullValue: true } },
     },
   });
 
@@ -123,10 +128,7 @@ export async function runAggregationsTest(): Promise<void> {
   );
 
   console.log(testAggregateCountWithGroups[0].$group.longitude);
-  console.log(
-    "Limit worked:",
-    testAggregateCountWithFixedGroups.length === 40,
-  );
+  console.log("Limit worked:", testAggregateCountWithFixedGroups.length === 40);
 
   for (const group of testAggregateCountWithRangeGroups) {
     console.log(

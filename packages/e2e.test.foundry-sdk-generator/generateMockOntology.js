@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-// @ts-check
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+// @ts-check
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { $ } from "execa";
 
 async function setup() {
   const dir = await fs.mkdtemp(
@@ -75,10 +76,7 @@ async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
-    interfaceTypes: [
-      "FooInterface",
-      "BarInterface",
-    ],
+    interfaceTypes: ["FooInterface", "BarInterface"],
     linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
     palantirOnlyTest: true,
     _: [],

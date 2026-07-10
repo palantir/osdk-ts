@@ -28,6 +28,7 @@ import type {
 } from "@ai-sdk/provider";
 import type { PlatformClient } from "@osdk/client";
 import { getOpenAiBaseUrl } from "@osdk/language-models";
+
 import type { OpenAiAssistantToolCall } from "./convert-prompt.js";
 import { convertPrompt } from "./convert-prompt.js";
 import { mapFinishReason } from "./map-finish-reason.js";
@@ -128,18 +129,16 @@ export class FoundryChatLanguageModel implements LanguageModelV3 {
     const messages = convertPrompt(options.prompt, warnings);
 
     const tools = options.tools
-      ?.filter(
-        (t): t is LanguageModelV3FunctionTool => {
-          if (t.type === "function") return true;
-          warnings.push({
-            type: "unsupported",
-            feature: `${t.type} tool type`,
-            details:
-              `Only "function" tools are supported; "${t.type}" tools are ignored`,
-          });
-          return false;
-        },
-      )
+      ?.filter((t): t is LanguageModelV3FunctionTool => {
+        if (t.type === "function") return true;
+        warnings.push({
+          type: "unsupported",
+          feature: `${t.type} tool type`,
+          details:
+            `Only "function" tools are supported; "${t.type}" tools are ignored`,
+        });
+        return false;
+      })
       .map((t) => ({
         type: "function" as const,
         function: {

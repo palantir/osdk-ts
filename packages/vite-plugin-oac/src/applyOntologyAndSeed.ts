@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as path from "node:path";
 import { inspect } from "node:util";
+
+import type { FauxFoundry } from "@osdk/faux";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+
 import { applySeed } from "./applySeed.js";
 import { ontologyFullMetadataPath } from "./generateOntologyAssets.js";
 import { type OacContext } from "./OacContext.js";
@@ -44,14 +46,13 @@ export async function applyOntologyAndSeed(
   } catch (e) {
     ctx.logger.error(
       `Unhandled error from preSeed hook. Ignoring and continuing. ${
-        inspect(e)
+        inspect(
+          e,
+        )
       }`,
     );
   }
 
   ctx.logger.debug("applying seed data");
-  await applySeed(
-    fauxFoundry,
-    path.resolve(ctx.ontologyDir, "seed.ts"),
-  );
+  await applySeed(fauxFoundry, path.resolve(ctx.ontologyDir, "seed.ts"));
 }

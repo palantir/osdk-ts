@@ -18,26 +18,34 @@ import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 import type { SdkVersion } from "../templates.js";
 
-export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
-  { ontology, osdkPackage, osdkRegistryUrl, skipOsdk, sdkVersion }: {
-    ontology?: string;
-    osdkPackage?: string;
-    osdkRegistryUrl?: string;
-    skipOsdk?: boolean;
-    sdkVersion: SdkVersion;
-  },
-): Promise<
-  { ontology?: string; osdkPackage?: string; osdkRegistryUrl?: string }
-> {
+export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+  ontology,
+  osdkPackage,
+  osdkRegistryUrl,
+  skipOsdk,
+  sdkVersion,
+}: {
+  ontology?: string;
+  osdkPackage?: string;
+  osdkRegistryUrl?: string;
+  skipOsdk?: boolean;
+  sdkVersion: SdkVersion;
+}): Promise<{
+  ontology?: string;
+  osdkPackage?: string;
+  osdkRegistryUrl?: string;
+}> {
   if (skipOsdk) {
     return {};
   }
 
   if (
-    sdkVersion !== "1.x" && osdkPackage == null && ontology == null
+    sdkVersion !== "1.x"
+    && osdkPackage == null
+    && ontology == null
     && osdkRegistryUrl == null
   ) {
-    const skip = await consola.prompt(
+    const skip = (await consola.prompt(
       "Will you be using an OSDK in your application?",
       {
         type: "select",
@@ -49,7 +57,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
           },
         ],
       },
-    ) as "yes" | "no";
+    )) as "yes" | "no";
 
     if (skip === "no") {
       return {};

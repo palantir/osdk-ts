@@ -15,6 +15,7 @@
  */
 
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+
 import type { Assignment } from "../../generatedNoCheck2/index.js";
 import type { AssignmentInstance } from "../../types/table.js";
 import { formatDate } from "../../utils/formatDate.js";

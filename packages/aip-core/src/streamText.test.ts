@@ -16,6 +16,7 @@
 
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
+
 import { foundryModel } from "./model.js";
 import { streamText, type TextStreamChunk } from "./streamText.js";
 
@@ -88,20 +89,22 @@ function chunkFrame(args: {
     object: "chat.completion.chunk",
     created: 1_700_000_000,
     model: "gpt-4o",
-    choices: [{
-      index: 0,
-      delta: {
-        content: args.delta?.content,
-        reasoning: args.delta?.reasoning,
-        tool_calls: args.toolCalls?.map((tc) => ({
-          index: tc.index,
-          id: tc.id,
-          type: "function",
-          function: { name: tc.name, arguments: tc.arguments },
-        })),
+    choices: [
+      {
+        index: 0,
+        delta: {
+          content: args.delta?.content,
+          reasoning: args.delta?.reasoning,
+          tool_calls: args.toolCalls?.map((tc) => ({
+            index: tc.index,
+            id: tc.id,
+            type: "function",
+            function: { name: tc.name, arguments: tc.arguments },
+          })),
+        },
+        finish_reason: args.finishReason ?? null,
       },
-      finish_reason: args.finishReason ?? null,
-    }],
+    ],
     usage: args.usage != null
       ? {
         prompt_tokens: args.usage.prompt,
@@ -190,12 +193,7 @@ describe("streamText", () => {
 
     const chunks = await collectChunks(result.fullStream);
     const types = chunks.map((c: TextStreamChunk) => c.type);
-    expect(types).toEqual([
-      "text-delta",
-      "text-delta",
-      "text-delta",
-      "finish",
-    ]);
+    expect(types).toEqual(["text-delta", "text-delta", "text-delta", "finish"]);
 
     expect(await result.text).toBe("Hello, world!");
     expect(await result.finishReason).toBe("stop");
@@ -229,10 +227,14 @@ describe("streamText", () => {
     const body = new ReadableStream<Uint8Array>({
       start(c) {
         const frame1 = `data: ${
-          chunkFrame({ delta: { content: "split " } })
+          chunkFrame({
+            delta: { content: "split " },
+          })
         }\n\n`;
         const frame2 = `data: ${
-          chunkFrame({ delta: { content: "frames" } })
+          chunkFrame({
+            delta: { content: "frames" },
+          })
         }\n\n`;
         const frame3 = `data: ${chunkFrame({ finishReason: "stop" })}\n\n`;
         const done = `data: [DONE]\n\n`;
@@ -259,12 +261,14 @@ describe("streamText", () => {
     const { client } = createMockClient({
       frames: [
         chunkFrame({
-          toolCalls: [{
-            index: 0,
-            id: "call-1",
-            name: "getWeather",
-            arguments: "{\"ci",
-          }],
+          toolCalls: [
+            {
+              index: 0,
+              id: "call-1",
+              name: "getWeather",
+              arguments: "{\"ci",
+            },
+          ],
         }),
         chunkFrame({
           toolCalls: [{ index: 0, arguments: "ty\":\"SF\"}" }],
@@ -279,9 +283,16 @@ describe("streamText", () => {
     const result = streamText({ model, prompt: "what's SF weather?" });
 
     const chunks = await collectChunks(result.fullStream);
-    const toolCalls = chunks.filter((c): c is Extract<TextStreamChunk, {
-      type: "tool-call";
-    }> => c.type === "tool-call");
+    const toolCalls = chunks.filter(
+      (
+        c,
+      ): c is Extract<
+        TextStreamChunk,
+        {
+          type: "tool-call";
+        }
+      > => c.type === "tool-call",
+    );
     expect(toolCalls).toHaveLength(1);
     expect(toolCalls[0]).toEqual({
       type: "tool-call",
@@ -291,12 +302,14 @@ describe("streamText", () => {
     });
 
     expect(await result.finishReason).toBe("tool-calls");
-    expect(await result.toolCalls).toEqual([{
-      type: "tool-call",
-      toolCallId: "call-1",
-      toolName: "getWeather",
-      input: { city: "SF" },
-    }]);
+    expect(await result.toolCalls).toEqual([
+      {
+        type: "tool-call",
+        toolCallId: "call-1",
+        toolName: "getWeather",
+        input: { city: "SF" },
+      },
+    ]);
   });
 
   it("invokes onChunk and onFinish callbacks", async () => {

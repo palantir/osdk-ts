@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import consola from "consola";
 import { getRandomValues, subtle } from "node:crypto";
 import { createServer } from "node:http";
 import { exit } from "node:process";
 import { parse } from "node:url";
+
+import consola from "consola";
 import open from "open";
+
 import { ensureTrailingSlash } from "../../../util/ensureTrailingSlash.js";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
@@ -195,7 +197,8 @@ async function getTokenWithCodeVerifier(
   } catch (e) {
     throw new Error(
       `Failed to get token: ${
-        (e as { cause?: any })?.cause?.toString() ?? e?.toString()
+        (e as { cause?: any })?.cause?.toString()
+          ?? e?.toString()
           ?? "Unknown error"
       }`,
     );

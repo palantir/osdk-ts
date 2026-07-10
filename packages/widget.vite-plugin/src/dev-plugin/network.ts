@@ -28,40 +28,31 @@ export function setWidgetSetManifest(
     foundryUrl,
   );
   url.searchParams.set("preview", "true");
-  return fetch(
-    url,
-    {
-      body: JSON.stringify({
-        widgetSetRid,
-        manifest,
-      }),
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${getFoundryToken(viteMode)}`,
-        accept: "application/json",
-        "content-type": "application/json",
-      },
+  return fetch(url, {
+    body: JSON.stringify({
+      widgetSetRid,
+      manifest,
+    }),
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${getFoundryToken(viteMode)}`,
+      accept: "application/json",
+      "content-type": "application/json",
     },
-  );
+  });
 }
 
 export function enableDevMode(
   foundryUrl: string,
   viteMode: string | undefined,
 ): Promise<Response> {
-  const url = new URL(
-    "api/v2/widgets/devModeSettingsV2/enable",
-    foundryUrl,
-  );
+  const url = new URL("api/v2/widgets/devModeSettingsV2/enable", foundryUrl);
   url.searchParams.set("preview", "true");
-  return fetch(
-    url,
-    {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${getFoundryToken(viteMode)}`,
-        accept: "application/json",
-      },
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${getFoundryToken(viteMode)}`,
+      accept: "application/json",
     },
-  );
+  });
 }

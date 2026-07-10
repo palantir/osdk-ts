@@ -16,14 +16,16 @@
 
 import { useOsdkObject } from "@osdk/react";
 import React from "react";
+
 import { Assignment } from "../../generatedNoCheck2/index.js";
 import { formatDate } from "../../utils/formatDate.js";
 import { EndAssignmentButton } from "../actions/EndAssignmentButton.js";
 import { RecordStatusUpdateForm } from "../actions/RecordStatusUpdateForm.js";
 import { UpdateAssignmentForm } from "../actions/UpdateAssignmentForm.js";
 import { Drawer, ErrorBanner, LoadingBar } from "../common/index.js";
-import styles from "./AssignmentDrawer.module.css";
 import { StatusTimeline } from "./StatusTimeline.js";
+
+import styles from "./AssignmentDrawer.module.css";
 
 export interface AssignmentDrawerProps {
   assignmentId: string | undefined;
@@ -47,18 +49,20 @@ export function AssignmentDrawer(
 
   const title = object?.title ?? assignmentId ?? "Assignment";
 
-  const info: InfoItem[] = object == null ? [] : [
-    { label: "Status", value: object.assignmentStatus ?? "—" },
-    { label: "Type", value: object.assignmentType ?? "—" },
-    { label: "Employee ID", value: object.employeeId ?? "—" },
-    { label: "Function", value: object.function ?? "—" },
-    { label: "Office ID", value: object.officeId ?? "—" },
-    { label: "Floor ID", value: object.floorId ?? "—" },
-    { label: "Manager ID", value: object.managerId ?? "—" },
-    { label: "Start", value: formatDate(object.startDate) || "—" },
-    { label: "End", value: formatDate(object.endDate) || "—" },
-    { label: "Tenure (days)", value: object.tenureDays ?? "—" },
-  ];
+  const info: InfoItem[] = object == null
+    ? []
+    : [
+      { label: "Status", value: object.assignmentStatus ?? "—" },
+      { label: "Type", value: object.assignmentType ?? "—" },
+      { label: "Employee ID", value: object.employeeId ?? "—" },
+      { label: "Function", value: object.function ?? "—" },
+      { label: "Office ID", value: object.officeId ?? "—" },
+      { label: "Floor ID", value: object.floorId ?? "—" },
+      { label: "Manager ID", value: object.managerId ?? "—" },
+      { label: "Start", value: formatDate(object.startDate) || "—" },
+      { label: "End", value: formatDate(object.endDate) || "—" },
+      { label: "Tenure (days)", value: object.tenureDays ?? "—" },
+    ];
 
   return (
     <Drawer isOpen={assignmentId != null} onClose={onClose} title={title}>

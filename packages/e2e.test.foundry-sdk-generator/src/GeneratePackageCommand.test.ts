@@ -18,6 +18,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 describe("Generate Package Command", () => {
@@ -37,10 +38,10 @@ describe("Generate Package Command", () => {
 
       const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
-      const scriptsExport = packageJson["exports"]?.["."]?.["script"];
+      const scriptsExport = packageJson.exports?.["."]?.script;
       expect(scriptsExport).toEqual({
-        "types": "./dist/bundle/index.d.mts",
-        "default": "./dist/bundle/index.mjs",
+        types: "./dist/bundle/index.d.mts",
+        default: "./dist/bundle/index.mjs",
       });
 
       const esmPath = path.join(generatedPath, scriptsExport.default);

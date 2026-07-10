@@ -16,6 +16,7 @@
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
 import type { PropertySecurities } from "@osdk/foundry.ontologies";
+
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -439,10 +440,13 @@ export const securedEmployee = {
     value: "2003-01-01",
     propertySecurityIndex: 0,
   },
-  favoriteRestaurants: [{ value: "Pasta Place", propertySecurityIndex: 1 }, {
-    value: "Sushi Spot",
-    propertySecurityIndex: 0,
-  }],
+  favoriteRestaurants: [
+    { value: "Pasta Place", propertySecurityIndex: 1 },
+    {
+      value: "Sushi Spot",
+      propertySecurityIndex: 0,
+    },
+  ],
 } as const;
 
 // Mixed secured and regular properties for testing

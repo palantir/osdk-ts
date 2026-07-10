@@ -18,10 +18,11 @@ export type SdkVersion = "1.x" | "2.x";
 
 export type ModuleImportFiles = Map<
   string,
-  {
+  | {
     type: "base64";
     body: string;
-  } | {
+  }
+  | {
     type: "raw";
     body: string;
   }
@@ -35,9 +36,7 @@ export interface Template {
   hidden?: boolean;
   isBeta?: boolean;
   files: {
-    [K in SdkVersion]?: () => Promise<
-      ModuleImportFiles
-    >;
+    [K in SdkVersion]?: () => Promise<ModuleImportFiles>;
   };
 }
 

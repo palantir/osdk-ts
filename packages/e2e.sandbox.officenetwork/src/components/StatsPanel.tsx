@@ -1,4 +1,5 @@
 import { useOsdkFunction } from "@osdk/react";
+
 import { fooEa } from "../generatedNoCheck2/index.js";
 import { LoadingIndicator } from "./LoadingIndicator.js";
 
@@ -9,10 +10,12 @@ interface StatsPanelProps {
   isLoadingEmployees: boolean;
 }
 
-export function StatsPanel(
-  { officeCount, isLoadingOffices, employeeCount, isLoadingEmployees }:
-    StatsPanelProps,
-) {
+export function StatsPanel({
+  officeCount,
+  isLoadingOffices,
+  employeeCount,
+  isLoadingEmployees,
+}: StatsPanelProps) {
   const {
     data: fooResult,
     isLoading: fooLoading,

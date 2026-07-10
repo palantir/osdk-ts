@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
+
+import Handlebars from "handlebars";
+
 import { consola } from "./consola.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
@@ -95,7 +97,7 @@ export async function run({
     osdkPackage,
   };
   const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       file = dir + "/" + file;
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {

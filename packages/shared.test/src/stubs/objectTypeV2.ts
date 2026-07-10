@@ -107,7 +107,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "vector",
         dimension: 1536,
-        supportsSearchWith: [{ "value": "COSINE_SIMILARITY" }],
+        supportsSearchWith: [{ value: "COSINE_SIMILARITY" }],
         embeddingModel: {
           type: "lms",
           value: "OPENAI_TEXT_EMBEDDING_ADA_002",
@@ -158,9 +158,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "array",
         subType: { type: "double" },
-        reducers: [
-          { direction: "DESCENDING_NULLS_LAST" },
-        ],
+        reducers: [{ direction: "DESCENDING_NULLS_LAST" }],
       },
       rid: "rid",
       typeClasses: [],

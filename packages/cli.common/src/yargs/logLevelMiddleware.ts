@@ -15,6 +15,7 @@
  */
 
 import { consola } from "consola";
+
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;

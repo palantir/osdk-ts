@@ -1,4 +1,5 @@
 import React from "react";
+
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import {
   type EmployeeChange,
@@ -243,15 +244,15 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
                 {state.step === "preview" ? "Execute" : "Next"}
               </button>
             )}
-            {state.step === "execute" && state.execution.status === "success"
-              && (
-                <button
-                  onClick={onClose}
-                  className="px-4 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity"
-                >
-                  Done
-                </button>
-              )}
+            {state.step === "execute"
+              && state.execution.status === "success" && (
+              <button
+                onClick={onClose}
+                className="px-4 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity"
+              >
+                Done
+              </button>
+            )}
           </div>
         </div>
       </div>

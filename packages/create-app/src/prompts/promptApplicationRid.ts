@@ -17,9 +17,11 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptApplicationRid(
-  { application }: { application?: string },
-): Promise<string> {
+export async function promptApplicationRid({
+  application,
+}: {
+  application?: string;
+}): Promise<string> {
   while (
     application == null
     || !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/.test(

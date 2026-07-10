@@ -16,7 +16,9 @@
 
 import { readFile } from "fs/promises";
 import path from "path";
+
 import resolvePackagePath from "resolve-package-path";
+
 import type { PackageJson } from "./PackageJson.js";
 
 export async function visitNpmPackages(
@@ -33,19 +35,13 @@ export async function visitNpmPackages(
     }
 
     const packageJson = await parsePackageJson(packageJsonPath);
-    onVisit(
-      packageJsonPath,
-      packageJson,
-    );
+    onVisit(packageJsonPath, packageJson);
     visited.add(packageJsonPath);
 
     const context = path.dirname(packageJsonPath);
     const npmDependencies = Object.keys(packageJson.dependencies ?? {});
     for (const childName of npmDependencies) {
-      const childPackageJsonPath = findPackageJsonPath(
-        childName,
-        context,
-      );
+      const childPackageJsonPath = findPackageJsonPath(childName, context);
       await visitNpmPackagesInternal(childPackageJsonPath);
     }
   };

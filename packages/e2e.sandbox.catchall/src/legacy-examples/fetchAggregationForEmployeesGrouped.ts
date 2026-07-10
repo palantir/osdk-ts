@@ -88,7 +88,7 @@ fetchAggregationForEmployeesGrouped()
           locationType: string | undefined;
         };
 
-        "employeeNumber": {
+        employeeNumber: {
           max: number | undefined;
           avg: number | undefined;
           min: number | undefined;

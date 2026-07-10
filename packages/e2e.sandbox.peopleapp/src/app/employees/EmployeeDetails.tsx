@@ -1,5 +1,6 @@
 import { useLinks } from "@osdk/react";
 import React from "react";
+
 import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";
 import { LoadingMessage } from "../../components/LoadingMessage.js";
@@ -12,12 +13,11 @@ interface EmployeeDetailsProps {
 
 export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
   // Only use useLinks when we have an employee to avoid unnecessary API calls
-  const { links: officeLink, isLoading: isOfficeLoading, error: officeError } =
-    useLinks(
-      employee ?? [],
-      "primaryOffice",
-      {},
-    );
+  const {
+    links: officeLink,
+    isLoading: isOfficeLoading,
+    error: officeError,
+  } = useLinks(employee ?? [], "primaryOffice", {});
 
   if (!employee) {
     return (
@@ -91,9 +91,7 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
             <div className="text-gray-600">Location:</div>
             <div>
               {officeLink[0].location
-                ? (
-                  `Location available`
-                )
+                ? `Location available`
                 : "No location data"}
             </div>
           </div>

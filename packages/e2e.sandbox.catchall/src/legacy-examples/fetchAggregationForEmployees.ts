@@ -70,9 +70,12 @@ fetchAggregationForEmployees()
 
   // adUsername shouldn't be present
   expectType<
-    TypeOf<{
-      adUsername: any;
-    }, typeof result>
+    TypeOf<
+      {
+        adUsername: any;
+      },
+      typeof result
+    >
   >(false);
 
   // Runtime Verification

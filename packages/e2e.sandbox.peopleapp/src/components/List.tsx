@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/client";
 import type { UseOsdkListResult } from "@osdk/react";
 import type { ReactNode } from "react";
 import React from "react";
+
 import { ErrorMessage } from "./ErrorMessage.js";
 import { H2 } from "./headers.js";
 import { InlineSpinner } from "./InlineSpinner.js";
@@ -51,14 +52,16 @@ export function List<T extends ObjectTypeDefinition>({
         )
         : (
           <ul className={className}>
-            {data.filter(item => item != null).map(item => (
-              <Component
-                key={item.$primaryKey}
-                item={item}
-                isSelected={item.$primaryKey === selectedItem?.$primaryKey}
-                onSelect={() => onSelect(item)}
-              />
-            ))}
+            {data
+              .filter((item) => item != null)
+              .map((item) => (
+                <Component
+                  key={item.$primaryKey}
+                  item={item}
+                  isSelected={item.$primaryKey === selectedItem?.$primaryKey}
+                  onSelect={() => onSelect(item)}
+                />
+              ))}
           </ul>
         )}
     </div>

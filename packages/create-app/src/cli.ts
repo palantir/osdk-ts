@@ -159,9 +159,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const application: string = await promptApplicationRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const { osdkPackage, ontology, osdkRegistryUrl } =
-    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
-      { ...parsed, sdkVersion },
-    );
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+      ...parsed,
+      sdkVersion,
+    });
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
 

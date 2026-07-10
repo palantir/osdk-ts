@@ -17,12 +17,14 @@
 
 // @ts-check
 
-import { consola } from "consola";
-import { findUpSync } from "find-up";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { consola } from "consola";
+import { findUpSync } from "find-up";
 import * as semver from "semver";
+
 import { determineMinVersion } from "./determineMinVersion.mjs";
 import { generatePeerRange } from "./generatePeerRange.mjs";
 import { parseChangelog } from "./parseChangelog.mjs";
@@ -49,13 +51,7 @@ const workspaceDirPath = getWorkspaceDirPath();
 const clientPackageVersion = getClientPackageVersion();
 
 updateConstVariable(
-  path.join(
-    workspaceDirPath,
-    "packages",
-    "client",
-    "src",
-    "Client.ts",
-  ),
+  path.join(workspaceDirPath, "packages", "client", "src", "Client.ts"),
   "MaxOsdkVersion",
   clientPackageVersion,
 );
@@ -152,7 +148,10 @@ function updateConstVariable(filePath, variableName, value) {
     fs.writeFileSync(filePath, newContents);
     consola.info(
       `Updated ${variableName} in ${
-        path.relative(workspaceDirPath, filePath)
+        path.relative(
+          workspaceDirPath,
+          filePath,
+        )
       } to ${value}`,
     );
   }
@@ -186,7 +185,10 @@ function getClientPackageVersion() {
   if (!currentSemver) {
     consola.error(
       `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
+        path.relative(
+          workspaceDirPath,
+          clientPackageJsonPath,
+        )
       } )}`,
     );
     process.exit(20);
@@ -196,7 +198,10 @@ function getClientPackageVersion() {
   if (major == null || minor == null || patch == null) {
     consola.error(
       `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
+        path.relative(
+          workspaceDirPath,
+          clientPackageJsonPath,
+        )
       } )}`,
     );
     process.exit(21);
@@ -228,8 +233,9 @@ function getPeerPackageVersion(packageName) {
  * @param {Record<string, { strategy: string, range?: string }>} peersConfig - Per-peer strategy config
  */
 function updatePeerDependencies(packageDir, peersConfig) {
-  const loosePeers = Object.entries(peersConfig)
-    .filter(([, cfg]) => cfg.strategy === "loose");
+  const loosePeers = Object.entries(peersConfig).filter(
+    ([, cfg]) => cfg.strategy === "loose",
+  );
   const changelogPeers = Object.entries(peersConfig)
     .filter(([, cfg]) => cfg.strategy === "changelog")
     .map(([name]) => name);
@@ -306,9 +312,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
 
     const currentPeerVersion = getPeerPackageVersion(peerName);
     if (!currentPeerVersion) {
-      consola.warn(
-        `Could not read version for ${peerName}, skipping`,
-      );
+      consola.warn(`Could not read version for ${peerName}, skipping`);
       continue;
     }
 
