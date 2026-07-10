@@ -18,12 +18,13 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
+  ActionDefinition,
 } from "@osdk/client";
 
 /**
  * Declare which resources a function needs access to.
  *
- * For `objects`, `interfaces` and `queries`, you may provide either:
+ * For `objects`, `interfaces`, `actions` and `queries`, you may provide either:
  * - A string alias from resources.json (e.g. `"myObject"`)
  * - An OSDK type reference imported from your generated ontology SDK (e.g. `Employee`)
  *
@@ -31,6 +32,7 @@ import type {
  */
 export interface ScopeResources {
   queries?: Array<string | QueryDefinition>;
+  actions?: Array<string | ActionDefinition>;
   objects?: Array<string | ObjectTypeDefinition>;
   interfaces?: Array<string | InterfaceDefinition>;
   links?: string[];
