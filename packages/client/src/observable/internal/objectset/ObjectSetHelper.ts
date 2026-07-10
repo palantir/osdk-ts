@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -101,8 +103,9 @@ export class ObjectSetHelper extends AbstractHelper<
 
   getQuery(options: ObjectSetQueryOptions): ObjectSetQuery {
     const { baseObjectSet } = options;
-    const baseObjectSetWire = JSON.stringify(getWireObjectSet(baseObjectSet));
-    const operations = this.buildCanonicalizedOperations(options);
+    const baseWire = getWireObjectSet(baseObjectSet);
+    const baseObjectSetWire = JSON.stringify(baseWire);
+    const operations = this.buildCanonicalizedOperations(options, baseWire);
 
     const objectSetCacheKey = this.cacheKeys.get<ObjectSetCacheKey>(
       "objectSet",
@@ -123,7 +126,8 @@ export class ObjectSetHelper extends AbstractHelper<
   }
 
   private buildCanonicalizedOperations(
-    options: ObjectSetQueryOptions
+    options: ObjectSetQueryOptions,
+    baseWire: WireObjectSet
   ): Canonical<ObjectSetOperations> {
     const operations: ObjectSetOperations = {};
 
@@ -177,6 +181,16 @@ export class ObjectSetHelper extends AbstractHelper<
 
     if (options.$loadPropertySecurityMetadata) {
       operations.loadPropertySecurity = true;
+    }
+
+    // The flag is interface-only on the server. Gate on the base wire type:
+    // an Interface Object Set keeps it (so it enters the cache key), a Base
+    // Object Set drops it so it never fragments the cache over a no-op flag.
+    if (
+      options.$includeAllBaseObjectProperties &&
+      baseWire.type === "interfaceBase"
+    ) {
+      operations.includeAllBaseObjectProperties = true;
     }
 
     return operations as Canonical<ObjectSetOperations>;

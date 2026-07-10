@@ -15,7 +15,7 @@
  */
 
 import type { DerivedProperty, ObjectSet } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -111,5 +111,46 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     });
 
     expect(query.rdpConfig).toBeUndefined();
+  });
+
+  // The flag is interface-only on the server, so it must only participate in the
+  // cache key for Interface Object Sets. For Base Object Sets it is a no-op and
+  // must be dropped, so it never fragments the cache.
+  describe("$includeAllBaseObjectProperties cache-key gating", () => {
+    it("produces a distinct cache key for an Interface Object Set when the flag is set", () => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet: client(FooInterface) as ObjectSet<any>,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet: client(FooInterface) as ObjectSet<any>,
+        mode: "offline",
+      });
+
+      // The flag is kept for an interface base, so the canonical operations
+      // (and therefore the cache key) differ.
+      expect(withFlag.cacheKey.otherKeys).not.toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    });
+
+    it("ignores the flag for a Base Object Set, reusing the same cache key", () => {
+      const withFlag = store.objectSets.getQuery({
+        baseObjectSet: client(Employee) as ObjectSet<any>,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+      const withoutFlag = store.objectSets.getQuery({
+        baseObjectSet: client(Employee) as ObjectSet<any>,
+        mode: "offline",
+      });
+
+      // The flag is dropped for a base object set, so the canonical operations
+      // are identical whether or not it was passed.
+      expect(withFlag.cacheKey.otherKeys).toEqual(
+        withoutFlag.cacheKey.otherKeys
+      );
+    });
   });
 });
