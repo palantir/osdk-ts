@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { ActionDefinition } from '@osdk/client';
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
