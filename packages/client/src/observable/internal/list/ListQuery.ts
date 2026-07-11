@@ -706,7 +706,10 @@ export abstract class ListQuery extends BaseListQuery<
       "object",
       obj.$objectType,
       pk,
-      this.rdpConfig ?? undefined
+      this.rdpConfig ?? undefined,
+      undefined,
+      undefined,
+      this.includeAllBaseObjectProperties ? true : undefined
     );
   }
 }

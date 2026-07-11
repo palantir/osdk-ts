@@ -51,20 +51,54 @@ function createMockRdp(...fields: string[]): Canonical<Rdp> {
 function createMockObjectCacheKey(
   apiName: string,
   pk: string,
-  rdpConfig?: Canonical<Rdp>
+  rdpConfig?: Canonical<Rdp>,
+  includeAllBaseObjectProperties?: true
 ): ObjectCacheKey {
   return {
     type: "object" as const,
-    otherKeys: [apiName, pk, rdpConfig],
+    otherKeys: [
+      apiName,
+      pk,
+      rdpConfig,
+      undefined,
+      undefined,
+      includeAllBaseObjectProperties,
+    ],
     __cacheKey: {
       value: {} as ObjectHolder,
       query: {} as ObjectQuery,
-      args: [apiName, pk, rdpConfig],
+      args: [
+        apiName,
+        pk,
+        rdpConfig,
+        undefined,
+        undefined,
+        includeAllBaseObjectProperties,
+      ],
     },
   };
 }
 
 describe("ObjectCacheKeyRegistry", () => {
+  it("isolates variants with different base-property shapes", () => {
+    const registry = new ObjectCacheKeyRegistry();
+    const narrowed = createMockObjectCacheKey("Employee", "emp1");
+    const full = createMockObjectCacheKey("Employee", "emp1", undefined, true);
+
+    registry.register(narrowed, "Employee", "emp1");
+    registry.register(full, "Employee", "emp1");
+
+    expect(registry.getVariants("Employee", "emp1")).toEqual(
+      new Set([narrowed])
+    );
+    expect(registry.getVariants("Employee", "emp1", true)).toEqual(
+      new Set([full])
+    );
+    expect(registry.getAllVariants("Employee", "emp1")).toEqual(
+      new Set([narrowed, full])
+    );
+  });
+
   it("registers and retrieves variant cache keys", () => {
     const registry = new ObjectCacheKeyRegistry();
 
