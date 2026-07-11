@@ -58,7 +58,6 @@
     "transpileLegacy": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "^typecheck",
         "^transpile",

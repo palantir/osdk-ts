@@ -3,7 +3,6 @@
   "tasks": {
     "transpileEsm": {
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "^transpileEsm",
         "codegen"

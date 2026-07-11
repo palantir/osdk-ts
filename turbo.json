@@ -60,11 +60,6 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
-    /* Psuedo task to depend on the script contents */
-    "//#babel-config": {
-      "inputs": ["babel.config.mjs"]
-    },
-
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
     },
@@ -182,7 +177,6 @@
     "transpileEsm": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "codegen"
       ],
@@ -201,7 +195,6 @@
     "transpileBrowser": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "codegen"
       ],
@@ -222,7 +215,6 @@
     "transpileCjs": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "^transpileCjs",
 
