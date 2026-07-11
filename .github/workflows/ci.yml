@@ -301,6 +301,25 @@ jobs:
             turbo-${{ runner.os }}-build-${{ github.sha }}
             turbo-${{ runner.os }}-build-
 
+      # Overlay THIS run's Node-24 build cache on top of the per-node warming
+      # cache above. turbo cache entries are hash-named, so this makes the
+      # current-SHA build artifacts (crucially `codegen`, which is
+      # node-independent) present in .turbo/cache regardless of which stale
+      # per-node cache the restore-keys matched. Without this, a leftover
+      # `test-node<N>-*` cache is restored ahead of this SHA's build cache
+      # (actions/cache stops at the first matching restore-key), codegen's hash
+      # misses, and it re-executes on the leg — re-running its `pnpm run format`
+      # step on Node 18/20. The build cache holds no `test` entries, so this
+      # cannot mask a per-node test result. `build-<sha>` was already saved by
+      # the build job, so this is an exact-key hit and won't re-save (using the
+      # full `actions/cache` action rather than the `restore` sub-action, which
+      # isn't on the org's allowed-actions list).
+      - name: Restore Node-24 build artifacts (make codegen a cache hit)
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-build-${{ github.sha }}
+
       - name: Install dependencies
         run: pnpm install
 
