@@ -41,9 +41,9 @@ jobs:
           pnpm exec changeset status --since=origin/main
 
 
-  # Build all artifacts once on a single Node version. tsc/babel/esbuild emit
+  # Build all artifacts once on a single Node version. tsc/babel/rolldown emit
   # identical output regardless of the host Node version (the build target is
-  # controlled by tsconfig `target` / tsup `target`, not the runtime), so a
+  # controlled by tsconfig `target` / tsdown `target`, not the runtime), so a
   # build matrix produces the same bytes 4x. Node-18 syntax compatibility is
   # guaranteed by the ES2022 build target and proven by the `test` matrix below.
   # The turbo cache populated here is consumed by the `test` jobs.

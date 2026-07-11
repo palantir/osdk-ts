@@ -35,7 +35,7 @@ await yargs(hideBin(process.argv))
       if (args.mechanism === "normal" && args.format === "esm") {
         await transpileWithBabel(args.format, args.target);
       } else if (args.mechanism === "bundle") {
-        await transpileWithTsup(args.format, args.target);
+        await transpileWithTsdown(args.format, args.target);
       } else if (args.mechanism === "types" && args.format === "esm") {
         await transformTypes();
       } else {
@@ -143,7 +143,7 @@ async function transformTypes() {
  * @param {"esm" | "cjs"} format
  * @param {"browser" | "node"} target
  */
-async function transpileWithTsup(format, target) {
+async function transpileWithTsdown(format, target) {
   invariant(format === "esm" || format === "cjs", "format must be esm or cjs");
   invariant(
     target === "browser" || target === "node",
@@ -160,14 +160,12 @@ async function transpileWithTsup(format, target) {
 
   const [
     { build },
-    { default: babel },
     PACKAGE_VERSION,
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
     PACKAGE_CLI_VERSION,
   ] = await Promise.all([
-    import("tsup"),
-    import("esbuild-plugin-babel"),
+    import("tsdown"),
     Promise.resolve(pkgJson.version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
@@ -215,18 +213,28 @@ async function transpileWithTsup(format, target) {
     // don't try to load config files from disk
     config: false,
 
-    // these packages are not CJS compatible so we need to bundle them up when we do tsup with cjs
+    // these packages are not CJS compatible so we need to bundle them up for cjs
     noExternal: format === "cjs" ? noExternalList : [],
 
     // prevent devDependencies from being inlined into the bundle
     external: externalDevDeps,
     format: [format],
-    outExtension: ({ format }) => {
+
+    // browser bundles target the browser platform; everything else is node.
+    // (rolldown forces cjs to `node` regardless.)
+    platform: target === "browser" ? "browser" : "node",
+
+    outExtensions: () => {
       return {
         js: format === "cjs" ? ".cjs" : ".js",
       };
     },
     outDir,
+
+    // Compile-time constants, inlined via define (`process.env.X`/
+    // `import.meta.env.X`). Note NODE_ENV is intentionally NOT listed: it stays
+    // a runtime check so the consuming bundle decides prod vs. dev. TS/JSX are
+    // handled natively by rolldown/oxc, so no babel step is needed here.
     env: {
       PACKAGE_VERSION,
       PACKAGE_API_VERSION,
@@ -236,30 +244,16 @@ async function transpileWithTsup(format, target) {
       MODE: process.env.production ? "production" : "development",
     },
     clean: false, // we do this ourselves so its granular
-    silent: true,
-    // tsup's dts build always injects the `baseUrl` compiler option (defaulting
-    // it to "."), which TypeScript 6 reports as deprecated. Our tsconfigs no
-    // longer set `ignoreDeprecations`, so we scope it to the dts build here
-    // rather than relaxing the option for `tsc` typechecks.
-    dts: format === "cjs"
-      ? { compilerOptions: { ignoreDeprecations: "6.0" } }
-      : false,
+    logLevel: "silent",
+    dts: format === "cjs",
 
     sourcemap: true,
-    splitting: true,
     shims: true, // so we can use __dirname in both esm and cjs
-    minify: false, // !options.watch,
-    keepNames: false,
+    // dead-code elimination only (no renaming/whitespace compression) so the
+    // constant-folded `MODE` branches are stripped, matching the babel path.
+    minify: "dce-only",
     treeshake: true,
     target: "es2022",
-    esbuildPlugins: [
-      /** @type {any} */ (babel({
-        config: {
-          presets: ["@babel/preset-typescript", "@babel/preset-react"],
-          plugins: ["babel-plugin-dev-expression"],
-        },
-      })),
-    ],
   });
 }
 

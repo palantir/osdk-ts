@@ -190,7 +190,7 @@
         "bin/**",
         "src/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json"
       ],
       "outputs": [
@@ -226,7 +226,7 @@
         "@osdk/monorepo.tsconfig#typecheck",
         "^transpileCjs",
 
-        // tsup may be trying to resolve the module types and not the cjs types
+        // tsdown may be trying to resolve the module types and not the cjs types
         "^transpileTypes",
         "codegen"
       ],
@@ -234,7 +234,7 @@
         "bin/**",
         "src/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json"
       ],
       "outputs": [

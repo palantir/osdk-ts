@@ -20,7 +20,7 @@
     ".vscode/settings.json",
     "examples/",
     "examples-extra/**/dist",
-    "**/tsup.config.bundled_*",
+    "**/tsdown.config.bundled_*",
     "**/api-docs/",
     "**/*.report.api.md",
     // The shared.* packages below are formatted by oxfmt, not dprint (oxc migration, see oxfmt.config.ts)

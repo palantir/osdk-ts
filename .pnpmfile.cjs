@@ -16,8 +16,7 @@
 
 function readPackage(pkg, context) {
   if (
-    (pkg.name === "tsup" && pkg.dependencies?.rollup === "^4.19.0")
-    || (pkg.name === "vite" && pkg.dependencies?.rollup === "^4.13.0")
+    pkg.name === "vite" && pkg.dependencies?.rollup === "^4.13.0"
   ) {
     pkg.dependencies = {
       ...pkg.dependencies,

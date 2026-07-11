@@ -44,8 +44,8 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.124",
+    "tsdown": "^0.22.3",
     "tslib": "^2.8.1",
-    "tsup": "^8.5.0",
     "typescript": "^6.0.3"
   },
   "publishConfig": {

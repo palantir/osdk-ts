@@ -1476,7 +1476,7 @@ function standardPackageRules(shared, options) {
     fileContents({
       ...shared,
       options: {
-        file: "tsup.config.js",
+        file: "tsdown.config.ts",
         template: undefined, // delete it
       },
     }),

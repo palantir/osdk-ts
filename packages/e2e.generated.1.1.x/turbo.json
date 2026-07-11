@@ -47,7 +47,7 @@
       "inputs": [
         "bin/**",
         "src/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json",
         "tsconfig.cjs.json",
         "transpile.sh"
@@ -68,7 +68,7 @@
         "bin/**",
         "src/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json",
         "tsconfig.cjs.json"
       ],
