@@ -8,13 +8,12 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "dependencies": {
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1",
+    "@ampproject/remapping": "^2.3.0",
     "@tsdown/css": "^0.22.3",
-    "babel-plugin-dev-expression": "^0.2.3",
-    "babel-plugin-minify-dead-code-elimination": "^0.5.2",
     "execa": "^9.6.0",
     "find-up": "^7.0.0",
+    "magic-string": "^0.30.21",
+    "oxc-parser": "^0.139.0",
     "oxc-transform": "^0.139.0",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1",

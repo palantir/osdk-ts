@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // @ts-check
+import remapping from "@ampproject/remapping";
 import { findUp } from "find-up";
 import {
   copyFile,
@@ -13,6 +14,7 @@ import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { applyDevExpression, devExpressionPlugin } from "./devExpression.mjs";
 
 await yargs(hideBin(process.argv))
   .command("*", "default command", (argv) => {
@@ -33,7 +35,7 @@ await yargs(hideBin(process.argv))
   }, async (args) => {
     try {
       if (args.mechanism === "normal" && args.format === "esm") {
-        await transpileWithBabel(args.format, args.target);
+        await transpileWithOxc(args.format, args.target);
       } else if (args.mechanism === "bundle") {
         await transpileWithTsdown(args.format, args.target);
       } else if (args.mechanism === "types" && args.format === "esm") {
@@ -210,6 +212,10 @@ async function transpileWithTsdown(format, target) {
       "src/public/**/*.mts",
     ],
 
+    // Strip `invariant()` messages in production (replaces babel-plugin-dev-expression,
+    // which the old tsup path ran). rolldown composes the plugin's sourcemap.
+    plugins: [devExpressionPlugin()],
+
     // don't try to load config files from disk
     config: false,
 
@@ -261,7 +267,7 @@ async function transpileWithTsdown(format, target) {
  * @param {"esm" } format
  * @param {"browser" | "node"} target
  */
-async function transpileWithBabel(format, target) {
+async function transpileWithOxc(format, target) {
   invariant(format === "esm", "format must be esm");
   invariant(
     target === "browser" || target === "node",
@@ -278,27 +284,37 @@ async function transpileWithBabel(format, target) {
   await mkdir(outDir, { recursive: true });
 
   const [
-    babel,
+    { transformSync },
     PACKAGE_VERSION,
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
     PACKAGE_CLI_VERSION,
   ] = await Promise.all([
-    import("@babel/core"),
+    import("oxc-transform"),
     readFile("package.json", "utf-8").then(f => JSON.parse(f).version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
     readPackageVersion("packages/cli"),
   ]);
 
-  Object.assign(process.env, {
-    PACKAGE_VERSION,
-    PACKAGE_API_VERSION,
-    PACKAGE_CLIENT_VERSION,
-    PACKAGE_CLI_VERSION,
-    TARGET: target,
-    MODE: process.env.production ? "production" : "development",
-  });
+  // Compile-time constants, inlined via define (`process.env.X`/
+  // `import.meta.env.X`). oxc constant-folds the resulting literal conditions
+  // (e.g. the `MODE !== "production"` guards). NODE_ENV is intentionally NOT
+  // listed: it stays a runtime check so the consuming bundle decides prod vs.
+  // dev. TS/JSX are handled natively by oxc, so no babel step is needed.
+  const define = Object.fromEntries(
+    Object.entries({
+      PACKAGE_VERSION,
+      PACKAGE_API_VERSION,
+      PACKAGE_CLIENT_VERSION,
+      PACKAGE_CLI_VERSION,
+      TARGET: target,
+      MODE: process.env.production ? "production" : "development",
+    }).flatMap(([k, v]) => [
+      [`process.env.${k}`, JSON.stringify(v)],
+      [`import.meta.env.${k}`, JSON.stringify(v)],
+    ]),
+  );
 
   const fileEndingsToCopy = [
     ".d.ts",
@@ -308,6 +324,7 @@ async function transpileWithBabel(format, target) {
     ".css",
   ];
 
+  // source extension -> output extension
   const extMap = {
     ".js": ".js",
     ".jsx": ".js",
@@ -315,6 +332,15 @@ async function transpileWithBabel(format, target) {
     ".mts": ".mjs",
     ".ts": ".js",
     ".tsx": ".js",
+  };
+  // source extension -> oxc `lang`
+  const langMap = {
+    ".js": "js",
+    ".jsx": "jsx",
+    ".mjs": "js",
+    ".mts": "ts",
+    ".ts": "ts",
+    ".tsx": "tsx",
   };
   const fileEndingsToCompile = Object.keys(extMap);
 
@@ -341,47 +367,65 @@ async function transpileWithBabel(format, target) {
       await copyFile(fullFilePath, destPathWrongExt);
       continue;
     }
-    if (!fileEndingsToCompile.some(e => f.name.endsWith(e))) {
+    const srcExt = path.extname(destPathWrongExt);
+    if (!fileEndingsToCompile.includes(srcExt)) {
       continue;
     }
 
     const destPath = path.join(
       path.dirname(destPathWrongExt),
-      path.basename(destPathWrongExt, path.extname(destPathWrongExt)) + (
-        extMap[path.extname(destPathWrongExt)] ?? path.extname(destPathWrongExt)
-      ),
+      path.basename(destPathWrongExt, srcExt) + (extMap[srcExt] ?? srcExt),
     );
 
-    const result = await babel.transformFileAsync(fullFilePath, {
-      sourceMaps: true,
+    const source = await readFile(fullFilePath, "utf-8");
 
-      // don't look for a config file (default would try to find one)
-      configFile: false,
+    // Strip `invariant()` messages in production (replaces babel-plugin-dev-expression,
+    // which the old babel path ran). Runs on the source before oxc; `null` when the
+    // file has no invariant() calls, leaving the source untouched.
+    const preStripped = applyDevExpression(source, fullFilePath);
 
-      presets: [
-        "@babel/preset-typescript",
-        "@babel/preset-react",
-      ],
+    const result = transformSync(
+      fullFilePath,
+      preStripped ? preStripped.code : source,
+      {
+        lang: langMap[srcExt],
+        sourcemap: true,
+        define,
+        jsx: { runtime: "automatic" },
+      },
+    );
 
-      plugins: [
-        ["babel-plugin-dev-expression"],
-        ["babel-plugin-transform-inline-environment-variables", {
-          "include": [
-            "PACKAGE_VERSION",
-            "PACKAGE_API_VERSION",
-            "PACKAGE_CLIENT_VERSION",
-            "PACKAGE_CLI_VERSION",
-            "TARGET",
-            "MODE",
-          ],
-        }],
-        ["minify-dead-code-elimination"],
-      ],
-    });
+    if (result.errors && result.errors.length > 0) {
+      for (const e of result.errors) {
+        console.error(fullFilePath);
+        console.error(e);
+      }
+      process.exit(1);
+    }
 
+    let code = result.code;
     if (result.map) {
+      // If we ran the invariant transform, compose its map (rewritten <- source)
+      // under oxc's map (output <- rewritten) so positions resolve to the original
+      // source. Rename oxc's intermediate source first so remapping treats the
+      // dev-expression map as the leaf (and doesn't recurse forever).
+      if (preStripped) {
+        const intermediate = "\0devExpressionInput";
+        result.map.sources = [intermediate];
+        result.map = remapping(
+          result.map,
+          (s) => (s === intermediate ? preStripped.map : null),
+          { excludeContent: false },
+        );
+        result.map.sourcesContent = [source];
+      }
+
       const mapFilePath = destPath + ".map";
       result.map.file = path.basename(destPath);
+      // Use the bare file name for `sources` (matching the previous babel
+      // output); the embedded `sourcesContent` is what debuggers resolve
+      // against.
+      result.map.sources = result.map.sources.map(s => path.basename(s));
 
       // this lets us mark the loggers for the sourceMap
       // to be ignored by browsers so you still see
@@ -393,18 +437,16 @@ async function transpileWithBabel(format, target) {
           s === "MinimalLogger.ts" || s === "BrowserLogger.ts"
         )
       ) {
-        // @ts-ignore
         (result.map.ignoreList ??= []).push(0);
       }
 
       await mkdir(path.dirname(mapFilePath), { recursive: true });
       await writeFile(mapFilePath, JSON.stringify(result.map));
 
-      result.code += "\n//# sourceMappingURL=" + path.basename(mapFilePath);
+      code += "\n//# sourceMappingURL=" + path.basename(mapFilePath);
     }
-    // console.log("writing to: ", destPath);
     await mkdir(path.dirname(destPath), { recursive: true });
-    await writeFile(destPath, result.code);
+    await writeFile(destPath, code);
   }
 }
 

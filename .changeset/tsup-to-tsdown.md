@@ -25,6 +25,7 @@
 "@osdk/osdk-docs-context": patch
 "@osdk/react": patch
 "@osdk/react-components": patch
+"@osdk/react-devtools": patch
 "@osdk/react-sdk-docs": patch
 "@osdk/seed-compiler": patch
 "@osdk/seed-helpers": patch
@@ -40,6 +41,7 @@
 "@osdk/widget.api": patch
 "@osdk/widget.client": patch
 "@osdk/widget.client-react": patch
+"@osdk/widget.vite-plugin": patch
 ---
 
-Migrate the bundler from tsup to tsdown (Rolldown-based). CJS/bundle output is now produced by tsdown with equivalent behavior.
+Migrate the build tooling from tsup/babel to tsdown (Rolldown) and oxc-transform. Bundled (CJS) output is produced by tsdown; per-file ESM/browser output is produced by oxc-transform. Behavior is equivalent; JSX now uses the automatic runtime.

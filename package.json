@@ -24,8 +24,6 @@
     "@arethetypeswrong/cli": "^0.17.4",
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.28.4",
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1",
     "@changesets/changelog-git": "^0.2.1",
     "@changesets/cli": "^2.29.6",
     "@microsoft/api-documenter": "^7.30.5",
