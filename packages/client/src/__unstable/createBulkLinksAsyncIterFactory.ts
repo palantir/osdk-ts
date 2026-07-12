@@ -53,9 +53,10 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const helper = await mcc.forObjectByApiName(objs[0].$objectType);
 
     const objectTypeRid = helper.getRid();
-    const [propertyMapping, fullLinkMapping] = await Promise.all(
-      [helper.getPropertyMapping(), helper.getLinkMapping()],
-    );
+    const [propertyMapping, fullLinkMapping] = await Promise.all([
+      helper.getPropertyMapping(),
+      helper.getLinkMapping(),
+    ]);
 
     const linkMapping = Object.fromEntries(
       Object.entries(fullLinkMapping).filter(([apiName]) =>
