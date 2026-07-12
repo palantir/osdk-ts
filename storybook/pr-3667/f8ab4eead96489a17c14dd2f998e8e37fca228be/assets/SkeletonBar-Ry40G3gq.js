@@ -1,1 +1,0 @@
-import{c as a}from"./index-on836xgG.js";import{j as o}from"./iframe-D0upskcb.js";const n={skeletonBar:"SkeletonBar-module__skeletonBar___puu23UdW"};function i({width:e,height:s,maxWidth:t,className:r}){return o.jsx("div",{"aria-hidden":"true",className:a(n.skeletonBar,r),style:{width:e,height:s,maxWidth:t}})}export{i as S};
