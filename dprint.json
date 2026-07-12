@@ -97,7 +97,8 @@
     "packages/e2e.sandbox.officenetwork/",
     "packages/e2e.sandbox.peopleapp/",
     "packages/e2e.sandbox.todoapp/",
-    "packages/e2e.sandbox.todowidget/"
+    "packages/e2e.sandbox.todowidget/",
+    "packages/typescript-sdk-docs-examples/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

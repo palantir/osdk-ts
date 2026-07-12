@@ -23,7 +23,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
-  .where({
-    contactInfo: { phone: { $eq: "555-1234" } },
-  });
+const EmployeeObjectSet = client(Employee).where({
+  contactInfo: { phone: { $eq: "555-1234" } },
+});

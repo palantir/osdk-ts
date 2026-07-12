@@ -25,11 +25,12 @@ import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
   .withProperties({
-    "newPropertyName": (baseObjectSet) =>
+    newPropertyName: (baseObjectSet) =>
       baseObjectSet.pivotTo("assignedEquipment").aggregate("$count"),
   })
   .where({
-    "newPropertyName": { $gt: 0 },
-  }).aggregate({
+    newPropertyName: { $gt: 0 },
+  })
+  .aggregate({
     $select: { "newPropertyName:max": "unordered" },
   });
