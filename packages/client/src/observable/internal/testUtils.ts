@@ -540,9 +540,9 @@ function nonOptionalValue<T extends object, K extends keyof T>(
   key: K
 ): NonNullable<T[K]> {
   return key in src
-    // TypeScript 6 no longer treats T[K] as assignable to NonNullable<T[K]>
-    // here; this test helper only reads present keys, so the value is non-null.
-    ? src[key] as NonNullable<T[K]>
+    ? // TypeScript 6 no longer treats T[K] as assignable to NonNullable<T[K]>
+      // here; this test helper only reads present keys, so the value is non-null.
+      (src[key] as NonNullable<T[K]>)
     : expect.toBeOneOf([expect.anything(), undefined]);
 }
 

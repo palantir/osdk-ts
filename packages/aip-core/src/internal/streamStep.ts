@@ -164,7 +164,7 @@ async function parseSseStream(
       // which TypeScript 6's updated lib.dom no longer considers assignable to the
       // ReadableWritablePair the stream's Uint8Array<ArrayBufferLike> chunk type
       // expects. The conversion is sound at runtime.
-      new TextDecoderStream() as ReadableWritablePair<string, Uint8Array>,
+      new TextDecoderStream() as ReadableWritablePair<string, Uint8Array>
     )
     .getReader();
 

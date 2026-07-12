@@ -566,7 +566,7 @@ export class ObservableClientMonitor {
         a: typeof apiName,
         pk: typeof primaryKey,
         opts: typeof options,
-        obs: typeof wrappedObserver,
+        obs: typeof wrappedObserver
       ) => Unsubscribable;
       const unsubscribable = forwardOriginal(
         apiName,
