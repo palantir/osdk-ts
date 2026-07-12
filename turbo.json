@@ -60,11 +60,6 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
-    /* Psuedo task to depend on the script contents */
-    "//#babel-config": {
-      "inputs": ["babel.config.mjs"]
-    },
-
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
     },
@@ -171,6 +166,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -182,15 +179,16 @@
     "transpileEsm": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "codegen"
       ],
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json"
       ],
       "outputs": [
@@ -201,13 +199,14 @@
     "transpileBrowser": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "codegen"
       ],
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -222,19 +221,20 @@
     "transpileCjs": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "^transpileCjs",
 
-        // tsup may be trying to resolve the module types and not the cjs types
+        // tsdown may be trying to resolve the module types and not the cjs types
         "^transpileTypes",
         "codegen"
       ],
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json"
       ],
       "outputs": [

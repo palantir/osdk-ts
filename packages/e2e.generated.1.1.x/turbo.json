@@ -47,7 +47,7 @@
       "inputs": [
         "bin/**",
         "src/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json",
         "tsconfig.cjs.json",
         "transpile.sh"
@@ -58,7 +58,6 @@
     "transpileLegacy": {
       "outputLogs": "new-only",
       "dependsOn": [
-        "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
         "^typecheck",
         "^transpile",
@@ -68,7 +67,7 @@
         "bin/**",
         "src/**",
         "templates/**",
-        "tsup.config.js",
+        "tsdown.config.ts",
         "tsconfig.json",
         "tsconfig.cjs.json"
       ],

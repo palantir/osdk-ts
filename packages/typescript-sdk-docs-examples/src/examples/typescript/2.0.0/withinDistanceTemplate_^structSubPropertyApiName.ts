@@ -23,9 +23,6 @@ import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
-  .where({
-    entrance: {
-      $within: { $distance: [100, "miles"], $of: [-74.0060, 40.7128] },
-    },
-  });
+const OfficeObjectSet = client(Office).where({
+  entrance: { $within: { $distance: [100, "miles"], $of: [-74.006, 40.7128] } },
+});

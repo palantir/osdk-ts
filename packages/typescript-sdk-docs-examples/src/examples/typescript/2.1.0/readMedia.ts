@@ -28,7 +28,7 @@ const mediaMetadata = await result.trainingMaterial?.fetchMetadata();
 console.log(
   mediaMetadata?.mediaType,
   mediaMetadata?.sizeBytes,
-  mediaMetadata?.path,
+  mediaMetadata?.path
 );
 // Fetch contents of a media property
 const mediaContent = await result.trainingMaterial?.fetchContents();

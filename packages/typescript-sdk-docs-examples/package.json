@@ -27,11 +27,10 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate && rm -rf src/examples/* && generate-examples && pnpm run format",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "format": "npx dprint fmt",
+    "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "format": "oxfmt -c ../../oxfmt.config.ts .",
     "generateExamples": "rm -rf src/examples/* && generate-examples && pnpm run format",
-    "lint": "eslint . && dprint check",
-    "lint:fix": "eslint src --fix",
+    "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -48,9 +47,6 @@
     "@osdk/typescript-docs-example-generator": "workspace:~",
     "@osdk/typescript-sdk-docs": "workspace:~",
     "@types/node": "^20.8.0",
-    "@typescript-eslint/eslint-plugin": "^8.60.1",
-    "@typescript-eslint/parser": "^8.60.1",
-    "eslint": "^8.50.0",
     "typescript": "~6.0.3"
   },
   "publishConfig": {

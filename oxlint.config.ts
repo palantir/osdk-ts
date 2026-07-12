@@ -320,7 +320,7 @@ export default defineConfig({
 
   ignorePatterns: [
     ...(core.ignorePatterns ?? []),
-    "**/tsup.config.bundled_*",
+    "**/tsdown.config.bundled_*",
     // vitest.config.mts is generated/owned by monorepolint (formatted with dprint);
     // don't let oxlint --fix reorder it or //#check-mrl will fail.
     "**/vitest.config.mts",

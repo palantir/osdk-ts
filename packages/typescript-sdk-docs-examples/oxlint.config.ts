@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { defineConfig } from "tsup";
+import { defineConfig } from "oxlint";
 
-export default defineConfig(async (options) =>
-  (await import("./tsup.mjs")).default(options, {})
-);
+import root from "../../oxlint.config.ts";
+
+// src/examples/ is generated documentation snippets (via `generate-examples`).
+// They are illustrative code, not hand-written source, so they are exempt from
+// linting (the previous ESLint setup tolerated their patterns too). oxfmt still
+// formats them via `codegen`'s format step.
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: [...(root.ignorePatterns ?? []), "src/examples/"],
+});

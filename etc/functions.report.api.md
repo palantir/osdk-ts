@@ -46,12 +46,12 @@ export { Attachment }
 
 // @public (undocumented)
 export type Byte<T extends number = number> = T & {
-    	__byteBrand?: void
+    	__byteBrand?: void;
 };
 
 // @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
-    	__markingBrand?: "classification"
+    	__markingBrand?: "classification";
 };
 
 // Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
@@ -61,7 +61,7 @@ export function createEditBatch<T extends AnyEdit = never>(_client: Client): Edi
 
 // @public (undocumented)
 type Custom = string & {
-    	readonly __brand: "Custom"
+    	readonly __brand: "Custom";
 };
 
 // @public (undocumented)
@@ -69,12 +69,12 @@ function custom(alias: string): Custom;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
-    	__dateBrand?: void
+    	__dateBrand?: void;
 };
 
 // @public (undocumented)
 export type Double<T extends number = number> = T & {
-    	__doubleBrand?: void
+    	__doubleBrand?: void;
 };
 
 // @public (undocumented)
@@ -151,7 +151,7 @@ export interface EmailNotification {
 
 // @public (undocumented)
 export type Float<T extends number = number> = T & {
-    	__floatBrand?: void
+    	__floatBrand?: void;
 };
 
 // @public (undocumented)
@@ -172,24 +172,24 @@ export { GeometryCollection }
 
 // @public (undocumented)
 export type GroupId = GroupId_2 & {
-    	__groupIdBrand?: void
+    	__groupIdBrand?: void;
 };
 
 // @public (undocumented)
 export type Integer<T extends number = number> = T & {
-    	__integerBrand?: void
+    	__integerBrand?: void;
 };
 
 export { LineString }
 
 // @public (undocumented)
 export type Long<T extends string = string> = T & {
-    	__longBrand?: void
+    	__longBrand?: void;
 };
 
 // @public (undocumented)
 export type MandatoryMarking<T extends string = string> = T & {
-    	__markingBrand?: "mandatory"
+    	__markingBrand?: "mandatory";
 };
 
 export { MediaReference }
@@ -255,11 +255,11 @@ export { Polygon }
 
 // @public (undocumented)
 export type Principal = {
-    	type: "user"
-    	id: string
+    	type: "user";
+    	id: string;
 } | {
-    	type: "group"
-    	id: string
+    	type: "group";
+    	id: string;
 };
 
 export { Range_2 as Range }
@@ -274,7 +274,7 @@ export interface RidLinkTarget {
 
 // @public (undocumented)
 export type Short<T extends number = number> = T & {
-    	_shortBrand?: void
+    	_shortBrand?: void;
 };
 
 // @public (undocumented)
@@ -290,7 +290,7 @@ export { ThreeDimensionalAggregation }
 
 // @public (undocumented)
 export type TimestampISOString<T extends string = string> = T & {
-    	__timestampBrand?: void
+    	__timestampBrand?: void;
 };
 
 export { TwoDimensionalAggregation }
@@ -313,7 +313,7 @@ export class UserFacingError extends Error {
 
 // @public (undocumented)
 export type UserId = UserId_2 & {
-    	__userIdBrand?: void
+    	__userIdBrand?: void;
 };
 
 // (No @packageDocumentation comment for this package)

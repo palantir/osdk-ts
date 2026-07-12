@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+/**
+ * Babel config for the Expo / Metro example apps ONLY.
+ *
+ * These are the sole consumers: Metro resolves this file via babel's upward
+ * root-mode from each Expo app (example-expo-sdk-2.x, its -no-osdk variant, and
+ * create-app.template.expo.v2 once scaffolded). Metro applies babel-preset-expo
+ * itself; this file layers on the plugins below.
+ *
+ * Nothing else reads it: @vitejs/plugin-react runs with configFile:false,
+ * Storybook uses @storybook/react-vite's own plugin, and the SDK build
+ * (@osdk/monorepo.tool.transpile) uses oxc-transform / tsdown rather than babel.
+ */
+
 import { findUp } from "find-up";
 import { readFile } from "fs/promises";
 import * as path from "node:path";

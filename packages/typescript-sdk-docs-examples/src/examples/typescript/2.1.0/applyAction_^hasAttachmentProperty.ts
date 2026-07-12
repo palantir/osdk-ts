@@ -19,12 +19,13 @@
 
 // Example: applyAction (Variation: ^hasAttachmentProperty)
 
-// Edit this import if your client location differs
 import type { MediaReference, MediaUpload } from "@osdk/api";
+
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {
@@ -35,17 +36,17 @@ async function callAction() {
 
   // You can also pass an existing media reference into your Action
   const objectPage = await client(Equipment).fetchPage();
-  const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!
-    .getMediaReference();
+  const mediaReference: MediaReference =
+    objectPage.data[0].trainingMaterial!.getMediaReference();
 
   const result = await client(documentEquipment).applyAction(
     {
-      "equipmentId": "mac-1234",
-      "instructionalVideo": mediaReference,
+      equipmentId: "mac-1234",
+      instructionalVideo: mediaReference,
     },
     {
       $returnEdits: true,
-    },
+    }
   );
   if (result.type === "edits") {
     // use the result object to report back on action results

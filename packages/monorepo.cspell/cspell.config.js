@@ -79,7 +79,7 @@ const cspell = {
 
     // Just too complex right now. We should fix this later.
     "eslint.config.mjs",
-    "tsup.config.js",
+    "tsdown.config.ts",
     ".lintstagedrc.mjs",
     ".envrc.sample",
     ".monorepolint.config.mjs",

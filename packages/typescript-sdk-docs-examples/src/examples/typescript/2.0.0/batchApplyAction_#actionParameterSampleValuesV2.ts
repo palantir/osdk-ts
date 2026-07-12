@@ -19,15 +19,12 @@
 
 // Example: batchApplyAction (Variation: #actionParameterSampleValuesV2)
 
-// Edit this import if your client location differs
 import { refreshData } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callBatchAction() {
-  const result = await client(refreshData).batchApplyAction([
-    {},
-    {},
-  ], {
+  const result = await client(refreshData).batchApplyAction([{}, {}], {
     $returnEdits: true,
   });
   if (result.type === "edits") {
