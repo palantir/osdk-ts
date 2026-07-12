@@ -166,6 +166,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -183,6 +185,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsdown.config.ts",
         "tsconfig.json"
@@ -201,6 +205,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsconfig.json"
       ],
@@ -225,6 +231,8 @@
       "inputs": [
         "bin/**",
         "src/**",
+        "!src/generatedNoCheck/**",
+        "!src/generatedNoCheck2/**",
         "templates/**",
         "tsdown.config.ts",
         "tsconfig.json"
