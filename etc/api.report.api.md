@@ -42,8 +42,8 @@ export interface ActionMetadata {
     displayName?: string;
     	// (undocumented)
     modifiedEntities?: Partial<Record<any, {
-        		created: boolean
-        		modified: boolean
+        		created: boolean;
+        		modified: boolean;
         	}>>;
     	// (undocumented)
     parameters: Record<any, ActionMetadata.Parameter<any>>;
@@ -101,8 +101,8 @@ export namespace ActionMetadata {
             		}
         		// (undocumented)
         export type StructFieldDefinition<T extends DataType.BaseActionParameterTypes> = T | {
-            			type: T
-            			nullable: boolean
+            			type: T;
+            			nullable: boolean;
             		};
         	}
     	// (undocumented)
@@ -123,9 +123,9 @@ export namespace ActionParam {
     	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
-            			implementedBy: infer U
-            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
-        		$primaryKey: string | number
+            			implementedBy: infer U;
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string;
+        		$primaryKey: string | number;
         	};
     	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
     //
@@ -141,28 +141,28 @@ export namespace ActionParam {
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
     export type StructType<T extends Record<string, keyof DataValueClientToWire | {
-        		type: keyof DataValueClientToWire
-        		nullable: boolean
+        		type: keyof DataValueClientToWire;
+        		nullable: boolean;
         	}>> = { [K in keyof T as T[K] extends {
-            		type: infer U
-            		nullable: infer R
-            	} ? R extends true ? never : K : K] : T[K] extends {
-            		type: infer U
-            		nullable: infer R
+            		type: infer U;
+            		nullable: infer R;
+            	} ? R extends true ? never : K : K]: T[K] extends {
+            		type: infer U;
+            		nullable: infer R;
             	} ? U extends keyof DataValueClientToWire ? R extends true ? never : DataValueClientToWire[U] : never : T[K] extends keyof DataValueClientToWire ? DataValueClientToWire[T[K]] : never } & { [K in keyof T as T[K] extends {
-            		type: infer U
-            		nullable: infer R
-            	} ? R extends true ? K : never : never]? : T[K] extends {
-            		type: infer U
-            		nullable: infer R
+            		type: infer U;
+            		nullable: infer R;
+            	} ? R extends true ? K : never : never]?: T[K] extends {
+            		type: infer U;
+            		nullable: infer R;
             	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | undefined : never : never : never };
 }
 
 // @public (undocumented)
 export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatchActionOptions> = Op extends {
-    	$validateOnly: true
+    	$validateOnly: true;
 } ? ActionValidationResponse : Op extends {
-    	$returnEdits: true
+    	$returnEdits: true;
 } ? ActionEditResponse : undefined;
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
@@ -196,8 +196,8 @@ export interface Affix {
 
 // @public (undocumented)
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
-    	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
-    	$groupBy?: GroupByClause<Q>
+    	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
+    	$groupBy?: GroupByClause<Q>;
 };
 
 // Warning: (ae-forgotten-export) The symbol "ContainsExactMatchWithNull" needs to be exported by the entry point index.d.ts
@@ -208,11 +208,11 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 	Q extends ObjectOrInterfaceDefinition,
 	AO extends AggregateOpts<Q>
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
-    	$groupBy: AO["$groupBy"]
-    	$select: UnorderedAggregationClause<Q>
+    	$groupBy: AO["$groupBy"];
+    	$select: UnorderedAggregationClause<Q>;
 } : SingleKeyObject<AO["$groupBy"]> extends never ? AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
-    	$groupBy: AO["$groupBy"]
-    	$select: UnorderedAggregationClause<Q>
+    	$groupBy: AO["$groupBy"];
+    	$select: UnorderedAggregationClause<Q>;
 } : AggregateOptsThatErrors<Q, AO>;
 
 // @public (undocumented)
@@ -224,12 +224,12 @@ export type AggregationResultsWithGroups<
 	A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 	G extends GroupByClause<Q> | undefined
 > = ({
-    	$group: { [P in keyof G & PropertyKeys<Q>] : G[P] extends {
-            		$ranges: GroupByRange<infer T>[]
+    	$group: { [P in keyof G & PropertyKeys<Q>]: G[P] extends {
+            		$ranges: GroupByRange<infer T>[];
             	} ? {
-            		startValue: T
-            		endValue: T
-            	} : MaybeNullable_2<G[P], OsdkObjectPropertyTypeNotUndefined<CompileTimeMetadata<Q>["properties"][P]>> }
+            		startValue: T;
+            		endValue: T;
+            	} : MaybeNullable_2<G[P], OsdkObjectPropertyTypeNotUndefined<CompileTimeMetadata<Q>["properties"][P]>> };
 } & AggregationResultsWithoutGroups<Q, A>)[];
 
 // Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
@@ -239,7 +239,7 @@ export type AggregationResultsWithGroups<
 export type AggregationResultsWithoutGroups<
 	Q extends ObjectOrInterfaceDefinition,
 	AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
-> = { [PropName in ExtractPropName<keyof AC & string>] : PropName extends "$count" ? number : { [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>] : MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]> } };
+> = { [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count" ? number : { [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]> } };
 
 // Warning: (ae-forgotten-export) The symbol "AggregatableKeys" needs to be exported by the entry point index.d.ts
 //
@@ -256,8 +256,8 @@ export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];
 
 // @public (undocumented)
 export type AllowedBucketKeyTypes = AllowedBucketTypes | {
-    	startValue: AllowedBucketTypes
-    	endValue: AllowedBucketTypes
+    	startValue: AllowedBucketTypes;
+    	endValue: AllowedBucketTypes;
 };
 
 // @public (undocumented)
@@ -268,21 +268,21 @@ export type AndWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$and: WhereClause<T, RDPs>[]
+    	$and: WhereClause<T, RDPs>[];
 };
 
 // @public (undocumented)
 export type ApplyActionOptions = {
-    	$returnEdits?: true
-    	$validateOnly?: false
+    	$returnEdits?: true;
+    	$validateOnly?: false;
 } | {
-    	$validateOnly?: true
-    	$returnEdits?: false
+    	$validateOnly?: true;
+    	$returnEdits?: false;
 };
 
 // @public (undocumented)
 export type ApplyBatchActionOptions = {
-    	$returnEdits?: boolean
+    	$returnEdits?: boolean;
 };
 
 // Warning: (ae-forgotten-export) The symbol "ApplyModifiersArg" needs to be exported by the entry point index.d.ts
@@ -302,7 +302,7 @@ export interface AsyncIterArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -361,7 +361,7 @@ export interface AudioSpecification {
 export type Augment<
 	X extends ObjectOrInterfaceDefinition,
 	T extends string
-> = { [K in CompileTimeMetadata<X>["apiName"]] : T[] };
+> = { [K in CompileTimeMetadata<X>["apiName"]]: T[] };
 
 // @public (undocumented)
 export type Augments = Record<string, string[]>;
@@ -382,7 +382,7 @@ export interface BandInfo {
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     	// (undocumented)
     readonly $objectSetInternals: {
-        		def: Q
+        		def: Q;
         	};
 }
 
@@ -419,7 +419,7 @@ export interface CommonDicomDataElements {
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
-    	__DefinitionMetadata?: {}
+    	__DefinitionMetadata?: {};
 }> = NonNullable<T["__DefinitionMetadata"]>;
 
 // Warning: (ae-forgotten-export) The symbol "ValidToFrom" needs to be exported by the entry point index.d.ts
@@ -449,7 +449,7 @@ export type DataType = "UNDEFINED" | "BYTE" | "UINT16" | "INT16" | "UINT32" | "I
 export interface DataValueClientToWire {
     	// (undocumented)
     attachment: string | AttachmentUpload | (Blob & {
-        		readonly name: string
+        		readonly name: string;
         	});
     	// (undocumented)
     boolean: boolean;
@@ -482,7 +482,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     objectType: string;
     	scenarioReference: {
-        		getScenarioReference(): string
+        		getScenarioReference(): string;
         	};
     	// (undocumented)
     set: Set<any>;
@@ -494,18 +494,18 @@ export interface DataValueClientToWire {
     struct: Record<string, any>;
     	// (undocumented)
     threeDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes
+        		key: AllowedBucketKeyTypes;
         		groups: {
-            			key: AllowedBucketKeyTypes
-            			value: AllowedBucketTypes
-            		}[]
+            			key: AllowedBucketKeyTypes;
+            			value: AllowedBucketTypes;
+            		}[];
         	}[];
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
     twoDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes
-        		value: AllowedBucketTypes
+        		key: AllowedBucketKeyTypes;
+        		value: AllowedBucketTypes;
         	}[];
 }
 
@@ -555,18 +555,18 @@ export interface DataValueWireToClient {
     struct: Record<string, any>;
     	// (undocumented)
     threeDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes
+        		key: AllowedBucketKeyTypes;
         		groups: {
-            			key: AllowedBucketKeyTypes
-            			value: AllowedBucketTypes
-            		}[]
+            			key: AllowedBucketKeyTypes;
+            			value: AllowedBucketTypes;
+            		}[];
         	}[];
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
     twoDimensionalAggregation: {
-        		key: AllowedBucketKeyTypes
-        		value: AllowedBucketTypes
+        		key: AllowedBucketKeyTypes;
+        		value: AllowedBucketTypes;
         	}[];
 }
 
@@ -635,7 +635,7 @@ export namespace DerivedProperty {
     	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: Creator<Q, SimplePropertyDef>
+        		[key: string]: Creator<Q, SimplePropertyDef>;
         	};
     	// (undocumented)
     export type Creator<
@@ -696,7 +696,7 @@ export type DicomMediaType = "IMAGE" | "MULTI_FRAME_IMAGE" | "VIDEO" | "STRUCTUR
 
 // @public (undocumented)
 export type DicomMetaInformation = {
-    	type: "v1"
+    	type: "v1";
 } & DicomMetaInformationV1;
 
 // @public (undocumented)
@@ -719,26 +719,26 @@ export interface Dimensions {
 
 // @public (undocumented)
 export const DistanceUnitMapping: {
-    	centimeter: "CENTIMETERS"
-    	centimeters: "CENTIMETERS"
-    	cm: "CENTIMETERS"
-    	meter: "METERS"
-    	meters: "METERS"
-    	m: "METERS"
-    	kilometer: "KILOMETERS"
-    	kilometers: "KILOMETERS"
-    	km: "KILOMETERS"
-    	inch: "INCHES"
-    	inches: "INCHES"
-    	foot: "FEET"
-    	feet: "FEET"
-    	yard: "YARDS"
-    	yards: "YARDS"
-    	mile: "MILES"
-    	miles: "MILES"
-    	nautical_mile: "NAUTICAL_MILES"
-    	nauticalMile: "NAUTICAL_MILES"
-    	"nautical miles": "NAUTICAL_MILES"
+    	centimeter: "CENTIMETERS";
+    	centimeters: "CENTIMETERS";
+    	cm: "CENTIMETERS";
+    	meter: "METERS";
+    	meters: "METERS";
+    	m: "METERS";
+    	kilometer: "KILOMETERS";
+    	kilometers: "KILOMETERS";
+    	km: "KILOMETERS";
+    	inch: "INCHES";
+    	inches: "INCHES";
+    	foot: "FEET";
+    	feet: "FEET";
+    	yard: "YARDS";
+    	yards: "YARDS";
+    	mile: "MILES";
+    	miles: "MILES";
+    	nautical_mile: "NAUTICAL_MILES";
+    	nauticalMile: "NAUTICAL_MILES";
+    	"nautical miles": "NAUTICAL_MILES";
 };
 
 // @public (undocumented)
@@ -766,28 +766,28 @@ export type DurationFormatStyle = HumanReadableFormat | TimeCodeFormat;
 
 // @public (undocumented)
 export const DurationMapping: {
-    	quarter: "QUARTERS"
-    	quarters: "QUARTERS"
-    	sec: "SECONDS"
-    	seconds: "SECONDS"
-    	min: "MINUTES"
-    	minute: "MINUTES"
-    	minutes: "MINUTES"
-    	hr: "HOURS"
-    	hrs: "HOURS"
-    	hour: "HOURS"
-    	hours: "HOURS"
-    	day: "DAYS"
-    	days: "DAYS"
-    	wk: "WEEKS"
-    	week: "WEEKS"
-    	weeks: "WEEKS"
-    	mos: "MONTHS"
-    	month: "MONTHS"
-    	months: "MONTHS"
-    	yr: "YEARS"
-    	year: "YEARS"
-    	years: "YEARS"
+    	quarter: "QUARTERS";
+    	quarters: "QUARTERS";
+    	sec: "SECONDS";
+    	seconds: "SECONDS";
+    	min: "MINUTES";
+    	minute: "MINUTES";
+    	minutes: "MINUTES";
+    	hr: "HOURS";
+    	hrs: "HOURS";
+    	hour: "HOURS";
+    	hours: "HOURS";
+    	day: "DAYS";
+    	days: "DAYS";
+    	wk: "WEEKS";
+    	week: "WEEKS";
+    	weeks: "WEEKS";
+    	mos: "MONTHS";
+    	month: "MONTHS";
+    	months: "MONTHS";
+    	yr: "YEARS";
+    	year: "YEARS";
+    	years: "YEARS";
 };
 
 // @public (undocumented)
@@ -833,8 +833,8 @@ export type FetchLinksPageResult<
 	Q extends ObjectOrInterfaceDefinition,
 	LINK_TYPE extends LinkTypeApiNamesFor<Q>
 > = {
-    	data: Array<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE>>
-    	nextPageToken?: string
+    	data: Array<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE>>;
+    	nextPageToken?: string;
 };
 
 // @public (undocumented)
@@ -851,7 +851,7 @@ export interface FetchPageArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -887,62 +887,62 @@ export interface GcpList {
 // @public (undocumented)
 export type GeoFilter_Intersects = {
     	$intersects: {
-        		$bbox: BBox
-        		$polygon?: never
+        		$bbox: BBox;
+        		$polygon?: never;
         	} | BBox | {
-        		$polygon: Polygon["coordinates"]
-        		$bbox?: never
-        	} | Polygon
+        		$polygon: Polygon["coordinates"];
+        		$bbox?: never;
+        	} | Polygon;
 };
 
 // @public (undocumented)
 export type GeoFilter_Within = {
     	$within: {
-        		$distance: [number, keyof typeof DistanceUnitMapping]
-        		$of: [number, number] | Readonly<Point>
-        		$bbox?: never
-        		$polygon?: never
+        		$distance: [number, keyof typeof DistanceUnitMapping];
+        		$of: [number, number] | Readonly<Point>;
+        		$bbox?: never;
+        		$polygon?: never;
         	} | {
-        		$bbox: BBox
-        		$distance?: never
-        		$of?: never
-        		$polygon?: never
+        		$bbox: BBox;
+        		$distance?: never;
+        		$of?: never;
+        		$polygon?: never;
         	} | BBox | {
-        		$polygon: Polygon["coordinates"]
-        		$bbox?: never
-        		$distance?: never
-        		$of?: never
-        	} | Polygon
+        		$polygon: Polygon["coordinates"];
+        		$bbox?: never;
+        		$distance?: never;
+        		$of?: never;
+        	} | Polygon;
 };
 
 // @public (undocumented)
 export interface GeoFilterOptions {
     	// (undocumented)
     $intersects: {
-        		$bbox: BBox
-        		$polygon?: never
+        		$bbox: BBox;
+        		$polygon?: never;
         	} | BBox | {
-        		$polygon: Polygon["coordinates"]
-        		$bbox?: never
+        		$polygon: Polygon["coordinates"];
+        		$bbox?: never;
         	} | Polygon;
     	// (undocumented)
     $isNull: boolean;
     	// (undocumented)
     $within: {
-        		$distance: [number, keyof typeof DistanceUnitMapping]
-        		$of: [number, number] | Readonly<Point>
-        		$bbox?: never
-        		$polygon?: never
+        		$distance: [number, keyof typeof DistanceUnitMapping];
+        		$of: [number, number] | Readonly<Point>;
+        		$bbox?: never;
+        		$polygon?: never;
         	} | {
-        		$bbox: BBox
-        		$distance?: never
-        		$of?: never
-        		$polygon?: never
+        		$bbox: BBox;
+        		$distance?: never;
+        		$of?: never;
+        		$polygon?: never;
         	} | BBox | {
-        		$polygon: Polygon["coordinates"]
-        		$bbox?: never
-        		$distance?: never
-        		$of?: never
+        		$polygon: Polygon["coordinates"];
+        		$bbox?: never;
+        		$distance?: never;
+        		$of?: never;
         	} | Polygon;
 }
 
@@ -1001,7 +1001,7 @@ export interface Group {
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in AggregatableKeys<Q>]? : GroupByEntry<Q, P> };
+export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P> };
 
 // @public (undocumented)
 export type GroupByRange<T> = [T, T];
@@ -1107,50 +1107,50 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
 
 // @public (undocumented)
 export type IntervalRule = {
-    	$match: string
-    	$maxGaps?: number
-    	$ordered: boolean
-    	$prefixOnLastTerm?: never
-    	$and?: never
-    	$or?: never
-    	$fuzzy?: never
-    	$fuzziness?: never
+    	$match: string;
+    	$maxGaps?: number;
+    	$ordered: boolean;
+    	$prefixOnLastTerm?: never;
+    	$and?: never;
+    	$or?: never;
+    	$fuzzy?: never;
+    	$fuzziness?: never;
 } | {
-    	$match: string
-    	$prefixOnLastTerm: true
-    	$maxGaps?: never
-    	$ordered?: never
-    	$and?: never
-    	$or?: never
-    	$fuzzy?: never
-    	$fuzziness?: never
+    	$match: string;
+    	$prefixOnLastTerm: true;
+    	$maxGaps?: never;
+    	$ordered?: never;
+    	$and?: never;
+    	$or?: never;
+    	$fuzzy?: never;
+    	$fuzziness?: never;
 } | {
-    	$and: IntervalRule[]
-    	$maxGaps?: number
-    	$ordered: boolean
-    	$match?: never
-    	$prefixOnLastTerm?: never
-    	$or?: never
-    	$fuzzy?: never
-    	$fuzziness?: never
+    	$and: IntervalRule[];
+    	$maxGaps?: number;
+    	$ordered: boolean;
+    	$match?: never;
+    	$prefixOnLastTerm?: never;
+    	$or?: never;
+    	$fuzzy?: never;
+    	$fuzziness?: never;
 } | {
-    	$or: IntervalRule[]
-    	$match?: never
-    	$prefixOnLastTerm?: never
-    	$and?: never
-    	$fuzzy?: never
-    	$fuzziness?: never
-    	$maxGaps?: never
-    	$ordered?: never
+    	$or: IntervalRule[];
+    	$match?: never;
+    	$prefixOnLastTerm?: never;
+    	$and?: never;
+    	$fuzzy?: never;
+    	$fuzziness?: never;
+    	$maxGaps?: never;
+    	$ordered?: never;
 } | {
-    	$fuzzy: string
-    	$fuzziness?: number
-    	$match?: never
-    	$prefixOnLastTerm?: never
-    	$and?: never
-    	$or?: never
-    	$maxGaps?: never
-    	$ordered?: never
+    	$fuzzy: string;
+    	$fuzziness?: number;
+    	$match?: never;
+    	$prefixOnLastTerm?: never;
+    	$and?: never;
+    	$or?: never;
+    	$maxGaps?: never;
+    	$ordered?: never;
 };
 
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
@@ -1176,8 +1176,8 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 // @public (undocumented)
 export interface Logger {
     	child(bindings: Record<string, any>, options?: {
-        		level?: string
-        		msgPrefix?: string
+        		level?: string;
+        		msgPrefix?: string;
         	}): Logger;
     	debug: Logger.LogFn;
     	error: Logger.LogFn;
@@ -1209,9 +1209,9 @@ export interface Mailbox {
 
 // @public (undocumented)
 export type MailboxOrGroup = ({
-    	type: "mailbox"
+    	type: "mailbox";
 } & MailboxWrapper) | ({
-    	type: "group"
+    	type: "group";
 } & GroupWrapper);
 
 // @public (undocumented)
@@ -1225,7 +1225,7 @@ export type MaybeScore<
 	T extends Osdk.Instance<any>,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
 > = ORDER_BY_OPTIONS extends "relevance" ? T & {
-    	$score: number
+    	$score: number;
 } : T;
 
 // @public (undocumented)
@@ -1246,23 +1246,23 @@ export interface MediaFullMetadata {
 
 // @public
 export type MediaItemMetadata = ({
-    	type: "document"
+    	type: "document";
 } & DocumentMediaItemMetadata) | ({
-    	type: "imagery"
+    	type: "imagery";
 } & ImageryMediaItemMetadata) | ({
-    	type: "audio"
+    	type: "audio";
 } & AudioMediaItemMetadata) | ({
-    	type: "video"
+    	type: "video";
 } & VideoMediaItemMetadata) | ({
-    	type: "dicom"
+    	type: "dicom";
 } & DicomMediaItemMetadata) | ({
-    	type: "email"
+    	type: "email";
 } & EmailMediaItemMetadata) | ({
-    	type: "model3d"
+    	type: "model3d";
 } & Model3dMediaItemMetadata) | ({
-    	type: "spreadsheet"
+    	type: "spreadsheet";
 } & SpreadsheetMediaItemMetadata) | ({
-    	type: "untyped"
+    	type: "untyped";
 } & UntypedMediaItemMetadata);
 
 // @public
@@ -1292,14 +1292,14 @@ export interface MediaReference {
     mimeType: string;
     	// (undocumented)
     reference: {
-        		type: "mediaSetViewItem"
+        		type: "mediaSetViewItem";
         		mediaSetViewItem: {
-            			mediaItemRid: string
-            			mediaSetRid: string
-            			mediaSetViewRid: string
-            			token?: string
-            			readToken?: string
-            		}
+            			mediaItemRid: string;
+            			mediaSetRid: string;
+            			mediaSetViewRid: string;
+            			token?: string;
+            			readToken?: string;
+            		};
         	};
 }
 
@@ -1316,9 +1316,9 @@ export type MinimalDirectedObjectLinkInstance<
 	Q extends ObjectOrInterfaceDefinition,
 	LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
 > = {
-    	source: ObjectIdentifiers<Q>
-    	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>
-    	linkType: LINK_TYPE_API_NAME
+    	source: ObjectIdentifiers<Q>;
+    	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>;
+    	linkType: LINK_TYPE_API_NAME;
 };
 
 // @public (undocumented)
@@ -1345,7 +1345,7 @@ export type NotWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$not: WhereClause<T, RDPs>
+    	$not: WhereClause<T, RDPs>;
 };
 
 // @public (undocumented)
@@ -1486,8 +1486,8 @@ export type NumberScaleType = "THOUSANDS" | "MILLIONS" | "BILLIONS";
 
 // @public (undocumented)
 export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
-    	readonly $apiName: Q["apiName"]
-    	readonly $primaryKey: PrimaryKeyType<Q>
+    	readonly $apiName: Q["apiName"];
+    	readonly $primaryKey: PrimaryKeyType<Q>;
 };
 
 // @public (undocumented)
@@ -1553,12 +1553,12 @@ export namespace ObjectMetadata {
     export interface InterfacePropertyStructImplementation {
         		// (undocumented)
         mapping: Record<string, {
-            			type: "property"
-            			propertyApiName: string
+            			type: "property";
+            			propertyApiName: string;
             		} | {
-            			type: "structFieldOfProperty"
-            			propertyApiName: string
-            			structFieldApiName: string
+            			type: "structFieldOfProperty";
+            			propertyApiName: string;
+            			structFieldApiName: string;
             		}>;
         		// (undocumented)
         type: "struct";
@@ -1585,7 +1585,7 @@ export namespace ObjectMetadata {
         hasReducers?: boolean;
         		// (undocumented)
         mainValue?: {
-            			fields: readonly string[]
+            			fields: readonly string[];
             		};
         		// (undocumented)
         multiplicity?: boolean;
@@ -1603,8 +1603,8 @@ export namespace ObjectMetadata {
         	}
     	// (undocumented)
     export type PropertyTypeMetadata = {
-        		type: "marking"
-        		markingType?: "CBAC" | "MANDATORY"
+        		type: "marking";
+        		markingType?: "CBAC" | "MANDATORY";
         	};
 }
 
@@ -1664,7 +1664,7 @@ export namespace ObjectSetArgs {
         $orderBy?: ORDER_BY_OPTIONS;
         	}
     	// (undocumented)
-    export type OrderByOptions<L extends string> = { [K in L]? : "asc" | "desc" } | "relevance";
+    export type OrderByOptions<L extends string> = { [K in L]?: "asc" | "desc" } | "relevance";
     	// (undocumented)
     export interface Select<
     		OBJECT_KEYS extends string = never,
@@ -1696,8 +1696,8 @@ export namespace ObjectSetSubscription {
         		// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
         onChange?: (objectUpdate: ObjectUpdate<O, P, R>) => void;
         		onError?: (errors: {
-            			subscriptionClosed: boolean
-            			error: any
+            			subscriptionClosed: boolean;
+            			error: any;
             		}) => void;
         		onOutOfDate?: () => void;
         		onSuccessfulSubscription?: () => void;
@@ -1717,7 +1717,7 @@ export namespace ObjectSetSubscription {
 
 // @public (undocumented)
 export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
-    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? CompileTimeMetadata<Q> extends InterfaceMetadata ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number] : never : never)
+    	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? CompileTimeMetadata<Q> extends InterfaceMetadata ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number] : never : never);
 };
 
 // @public (undocumented)
@@ -1761,7 +1761,7 @@ export type OrWhereClause<
 	T extends ObjectOrInterfaceDefinition,
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
-    	$or: WhereClause<T, RDPs>[]
+    	$or: WhereClause<T, RDPs>[];
 };
 
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
@@ -1790,41 +1790,41 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
     		P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & ([P] extends [PropertyKeys<Q>] ? Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> : Pick<HasModifiers<P> extends true ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>> : CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & ([P] extends [PropertyKeys<Q>] ? Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> : Pick<HasModifiers<P> extends true ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>> : CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
-            			linksType?: any
-            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
-        		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
+            			linksType?: any;
+            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never;
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>;
+        		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]?: CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
-            			ObjectMetadata: ObjectMetadata
+            			ObjectMetadata: ObjectMetadata;
             		} : {
-            			ObjectMetadata: ObjectMetadata
-            			InterfaceMetadata: InterfaceMetadata
-            		}
+            			ObjectMetadata: ObjectMetadata;
+            			InterfaceMetadata: InterfaceMetadata;
+            		};
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <PropertyApiName extends PropertyKeys<Q>>(propertyApiName: PropertyApiName, options?: {
-            			locale?: string
-            			timezoneId?: string
-            		}) => string | undefined
+            			locale?: string;
+            			timezoneId?: string;
+            		}) => string | undefined;
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$propertySecurities" extends OPTIONS ? {
-        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
+        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>;
         	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
-        		readonly $rid: string
+        		readonly $rid: string;
         	} : {});
 }
 
 // @public (undocumented)
 export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<Q> & {
-    	readonly $objectSpecifier: ObjectSpecifier<Q>
-    	readonly $objectType: string
-    	readonly $title: string | undefined
+    	readonly $objectSpecifier: ObjectSpecifier<Q>;
+    	readonly $objectType: string;
+    	readonly $title: string | undefined;
 };
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
-    	readonly $apiName: N
-    	readonly $objectType: string
-    	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes]
+    	readonly $apiName: N;
+    	readonly $objectType: string;
+    	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes];
 };
 
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
@@ -1841,7 +1841,7 @@ export type OsdkObjectCreatePropertyType<
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
+export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L> };
 
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
@@ -1903,7 +1903,7 @@ export interface PropertyDef<
     hasReducers: HAS_REDUCERS;
     	// (undocumented)
     mainValue: MAIN_VALUE_FIELDS extends readonly string[] ? {
-        		fields: MAIN_VALUE_FIELDS
+        		fields: MAIN_VALUE_FIELDS;
         	} : undefined;
     	// (undocumented)
     multiplicity: M extends "array" ? true : false;
@@ -1925,7 +1925,7 @@ export namespace PropertyKeys {
     		Q extends ObjectOrInterfaceDefinition,
     		T extends WirePropertyTypes
     	> = keyof IncludeValuesExtending<CompileTimeMetadata<Q>["properties"], {
-        		type: T
+        		type: T;
         	}>;
 }
 
@@ -1959,11 +1959,11 @@ export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberForm
 
 // @public
 export type PropertySecurity = ({
-    	type: "propertyMarkings"
+    	type: "propertyMarkings";
 } & PropertyMarkings) | {
-    	type: "unsupportedPolicy"
+    	type: "unsupportedPolicy";
 } | {
-    	type: "errorComputingSecurity"
+    	type: "errorComputingSecurity";
 };
 
 // @public (undocumented)
@@ -2097,14 +2097,14 @@ export namespace QueryParam {
     	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
-            			implementedBy: infer U
-            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
-        		$primaryKey: string | number
-        		$apiName?: never
+            			implementedBy: infer U;
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string;
+        		$primaryKey: string | number;
+        		$apiName?: never;
         	} | {
-        		$apiName: T["apiName"]
-        		$objectType: string
-        		$primaryKey: string | number
+        		$apiName: T["apiName"];
+        		$objectType: string;
+        		$primaryKey: string | number;
         	};
     	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
@@ -2136,7 +2136,7 @@ export namespace QueryParam {
 
 // @public (undocumented)
 export type QueryParameterDefinition<T_Target extends ObjectTypeDefinition = any> = {
-    	description?: string
+    	description?: string;
 } & QueryDataTypeDefinition<T_Target>;
 
 // @public
@@ -2174,11 +2174,11 @@ export namespace QueryResult {
 //
 // @public (undocumented)
 type Range_2<T extends AllowedBucketTypes_2> = {
-    	startValue?: T
-    	endValue: T
+    	startValue?: T;
+    	endValue: T;
 } | {
-    	startValue: T
-    	endValue?: T
+    	startValue: T;
+    	endValue?: T;
 };
 export { Range_2 as Range }
 
@@ -2255,7 +2255,7 @@ export type SingleOsdkResult<
 	RDPs extends Record<string, SimplePropertyDef> = {},
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
+> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>]: RDPs[K] }>, ORDER_BY_OPTIONS>;
 
 // @public (undocumented)
 export type SpreadsheetDecodeFormat = "XLSX";
@@ -2290,11 +2290,11 @@ export type ThreeDimensionalAggregation<
 	U extends AllowedBucketKeyTypes_2,
 	V extends AllowedBucketTypes_2
 > = {
-    	key: T
+    	key: T;
     	groups: {
-        		key: U
-        		value: V
-        	}[]
+        		key: U;
+        		value: V;
+        	}[];
 }[];
 
 // Warning: (ae-forgotten-export) The symbol "AggregationKeyDataType" needs to be exported by the entry point index.d.ts
@@ -2310,28 +2310,28 @@ export interface TimeCodeFormat {
 
 // @public (undocumented)
 export const TimeseriesDurationMapping: {
-    	sec: "SECONDS"
-    	seconds: "SECONDS"
-    	min: "MINUTES"
-    	minute: "MINUTES"
-    	minutes: "MINUTES"
-    	hr: "HOURS"
-    	hrs: "HOURS"
-    	hour: "HOURS"
-    	hours: "HOURS"
-    	day: "DAYS"
-    	days: "DAYS"
-    	wk: "WEEKS"
-    	week: "WEEKS"
-    	weeks: "WEEKS"
-    	mos: "MONTHS"
-    	month: "MONTHS"
-    	months: "MONTHS"
-    	yr: "YEARS"
-    	year: "YEARS"
-    	years: "YEARS"
-    	ms: "MILLISECONDS"
-    	milliseconds: "MILLISECONDS"
+    	sec: "SECONDS";
+    	seconds: "SECONDS";
+    	min: "MINUTES";
+    	minute: "MINUTES";
+    	minutes: "MINUTES";
+    	hr: "HOURS";
+    	hrs: "HOURS";
+    	hour: "HOURS";
+    	hours: "HOURS";
+    	day: "DAYS";
+    	days: "DAYS";
+    	wk: "WEEKS";
+    	week: "WEEKS";
+    	weeks: "WEEKS";
+    	mos: "MONTHS";
+    	month: "MONTHS";
+    	months: "MONTHS";
+    	yr: "YEARS";
+    	year: "YEARS";
+    	years: "YEARS";
+    	ms: "MILLISECONDS";
+    	milliseconds: "MILLISECONDS";
 };
 
 // @public (undocumented)
@@ -2352,29 +2352,29 @@ export interface TimeSeriesProperty<T extends number | string> {
 
 // @public (undocumented)
 export type TimeSeriesQuery = {
-    	$before: number
-    	$unit: keyof typeof TimeseriesDurationMapping
-    	$after?: never
-    	$startTime?: never
-    	$endTime?: never
+    	$before: number;
+    	$unit: keyof typeof TimeseriesDurationMapping;
+    	$after?: never;
+    	$startTime?: never;
+    	$endTime?: never;
 } | {
-    	$after: number
-    	$unit: keyof typeof TimeseriesDurationMapping
-    	$before?: never
-    	$startTime?: never
-    	$endTime?: never
+    	$after: number;
+    	$unit: keyof typeof TimeseriesDurationMapping;
+    	$before?: never;
+    	$startTime?: never;
+    	$endTime?: never;
 } | {
-    	$startTime: string
-    	$endTime?: string
-    	$before?: never
-    	$after?: never
-    	$unit?: never
+    	$startTime: string;
+    	$endTime?: string;
+    	$before?: never;
+    	$after?: never;
+    	$unit?: never;
 } | {
-    	$startTime?: string
-    	$endTime: string
-    	$before?: never
-    	$after?: never
-    	$unit?: never
+    	$startTime?: string;
+    	$endTime: string;
+    	$before?: never;
+    	$after?: never;
+    	$unit?: never;
 };
 
 // @public (undocumented)
@@ -2382,8 +2382,8 @@ export type TwoDimensionalAggregation<
 	T extends AllowedBucketKeyTypes_2,
 	U extends AllowedBucketTypes_2
 > = {
-    	key: T
-    	value: U
+    	key: T;
+    	value: U;
 }[];
 
 // @public (undocumented)
@@ -2403,8 +2403,8 @@ export interface UnitInterpretation {
 export interface UnknownMediaItemMetadata {
     	// (undocumented)
     raw: {
-        		type: string
-        		[key: string]: unknown
+        		type: string;
+        		[key: string]: unknown;
         	};
     	// (undocumented)
     type: "unknown";
@@ -2423,8 +2423,8 @@ export interface UntypedMediaItemMetadata {
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]? : any } & {
-    	$count?: any
+> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]?: any } & {
+    	$count?: any;
 });
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts

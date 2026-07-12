@@ -123,9 +123,9 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 
 // @public
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
-    	logger?: Logger
-    	UNSTABLE_DO_NOT_USE_BRANCH?: string
-    	headers?: Record<string, string>
+    	logger?: Logger;
+    	UNSTABLE_DO_NOT_USE_BRANCH?: string;
+    	headers?: Record<string, string>;
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
@@ -215,12 +215,12 @@ export { Result }
 
 // @public (undocumented)
 export type ResultOrError<T extends object> = ({
-    	type: "ok"
-    	err?: never
+    	type: "ok";
+    	err?: never;
 } & T) | {
-    	type: "err"
-    	data?: never
-    	err?: unknown
+    	type: "err";
+    	data?: never;
+    	err?: unknown;
 };
 
 export { SingleLinkAccessor }

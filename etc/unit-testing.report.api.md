@@ -90,20 +90,20 @@ export interface QueryStubBuilder<T> {
 //
 // @public (undocumented)
 export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R> : T extends AsyncIterableIterator<infer U> ? FetchPageStubBuilder<U> : T extends PageResult<infer U> ? FetchPageStubBuilder<U> : T extends {
-    	value: PageResult<infer U>
-    	error?: never
+    	value: PageResult<infer U>;
+    	error?: never;
 } ? FetchPageStubBuilder<U> : T extends {
-    	value: infer U
-    	error?: never
+    	value: infer U;
+    	error?: never;
 } ? IsOsdkObject<U> extends true ? FetchOneStubBuilder<U> : AggregateStubBuilder<U> : T extends {
-    	error: Error
-    	value?: never
+    	error: Error;
+    	value?: never;
 } ? never : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
 
 // @public (undocumented)
 export type StubClient = {
-    	<Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>
-    	<Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>
+    	<Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
+    	<Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
 };
 
 // (No @packageDocumentation comment for this package)

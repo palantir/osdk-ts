@@ -61,7 +61,7 @@ function isTestFile(relativePath) {
 }
 
 async function transformTypes() {
-  const { isolatedDeclaration } = await import("oxc-transform");
+  const { isolatedDeclarationSync } = await import("oxc-transform");
 
   const inDir = path.resolve("src");
   const outDir = path.resolve("build/types");
@@ -96,7 +96,7 @@ async function transformTypes() {
       continue;
     }
 
-    const result = isolatedDeclaration(
+    const result = isolatedDeclarationSync(
       fullFilePath,
       await readFile(fullFilePath, "utf-8"),
       {
