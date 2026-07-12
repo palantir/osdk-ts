@@ -203,6 +203,18 @@ async function transpileWithTsdown(format, target) {
   const devDepNames = Object.keys(pkgJson.devDependencies ?? {});
   const externalDevDeps = devDepNames.filter(d => !noExternalList.includes(d));
 
+  // The noExternalList packages are ESM-only / not CJS-compatible, so the CJS
+  // bundle must inline them — otherwise it emits `require()` of an ESM module
+  // (e.g. @osdk/foundry.ontologies) which throws ERR_REQUIRE_ESM on Node < 22.
+  // Other deps (workspace @osdk packages ship their own CJS build; third-party
+  // deps like fetch-retry are CJS) are fine left external. Match each entry as
+  // its package root OR any subpath (e.g. ".../Action") — tsdown's plain-string
+  // noExternal match, unlike tsup's, does not cover subpaths.
+  const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const noExternalPatterns = noExternalList.map(
+    n => new RegExp("^" + escapeRe(n) + "(/|$)"),
+  );
+
   await build({
     entry: [
       "src/index.ts",
@@ -220,7 +232,7 @@ async function transpileWithTsdown(format, target) {
     config: false,
 
     // these packages are not CJS compatible so we need to bundle them up for cjs
-    noExternal: format === "cjs" ? noExternalList : [],
+    noExternal: format === "cjs" ? noExternalPatterns : [],
 
     // prevent devDependencies from being inlined into the bundle
     external: externalDevDeps,
