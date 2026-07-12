@@ -237,7 +237,13 @@ async function transpileWithTsup(format, target) {
     },
     clean: false, // we do this ourselves so its granular
     silent: true,
-    dts: format === "cjs",
+    // tsup's dts build always injects the `baseUrl` compiler option (defaulting
+    // it to "."), which TypeScript 6 reports as deprecated. Our tsconfigs no
+    // longer set `ignoreDeprecations`, so we scope it to the dts build here
+    // rather than relaxing the option for `tsc` typechecks.
+    dts: format === "cjs"
+      ? { compilerOptions: { ignoreDeprecations: "6.0" } }
+      : false,
 
     sourcemap: true,
     splitting: true,
