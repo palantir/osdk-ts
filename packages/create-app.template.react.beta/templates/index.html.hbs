@@ -1,6 +1,58 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        {{! Install listeners iff previewing within iframe }}
+        if (window.parent === window) return;
+
+        function post(data) {
+          data.source = "osdk-preview";
+          try { window.parent.postMessage(data, "*"); } catch (_) {}
+        }
+
+        function appHasContent() {
+          var root = document.getElementById("root");
+          return root != null && root.childElementCount > 0;
+        }
+
+        function reportIfBlank(data) {
+          {{!--
+            window.error fires DURING React's render phase, before React 
+            commits its error boundary / Router errorElement fallback into
+            #root. Defer the check one task so the app's own error UI (if any) 
+            has rendered. If the app rendered nothing, then post the signal. 
+           --}}
+          setTimeout(function () {
+            if (appHasContent()) return;
+            post(data);
+          }, 0);
+        }
+
+        window.addEventListener("error", function (e) {
+          reportIfBlank({
+            kind: "error",
+            message: e.message,
+            filename: e.filename,
+            lineno: e.lineno,
+            colno: e.colno,
+            stack: e.error && e.error.stack,
+          });
+        });
+
+        window.addEventListener("unhandledrejection", function (e) {
+          var r = e.reason;
+          reportIfBlank({
+            kind: "unhandledrejection",
+            message: String((r && r.message) || r),
+            stack: r && r.stack,
+          });
+        });
+
+        {{! Reset any previous errors }}
+        post({ kind: "ready" });
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/react.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
