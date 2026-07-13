@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CipherChannelStrategy } from "@osdk/foundry.ontologies";
+
+export type { CipherChannelStrategy } from "@osdk/foundry.ontologies";
+
 /**
  * Representation of a `cipherText` property. The encrypted
  * value is not stored; call {@link CipherText.decrypt} to retrieve the
@@ -42,14 +46,6 @@ export interface CipherText {
    * @returns the encrypted value
    */
   getValue(): string;
-}
-
-// TODO: re-export from @osdk/foundry.ontologies
-export enum CipherChannelStrategy {
-  PREFER_EXISTING = "PREFER_EXISTING", // default
-  PREFER_DEFAULT = "PREFER_DEFAULT",
-  EXISTING_ONLY = "EXISTING_ONLY",
-  DEFAULT_ONLY = "DEFAULT_ONLY",
 }
 
 /**
