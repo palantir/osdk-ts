@@ -294,7 +294,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
       [actionRequestWithStruct, actionResponse],
       [actionRequestWithStructAcceptNull, actionResponse],
       [actionRequestWithStructAcceptUndefined, actionResponse],
-    ]),
+    ])
   );
 
   fauxOntology.registerActionType(
