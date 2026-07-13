@@ -237,7 +237,6 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
-    "@tanstack/react-table": "^8.21.3",
     "@testing-library/react": "^16.3.0",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.24",
