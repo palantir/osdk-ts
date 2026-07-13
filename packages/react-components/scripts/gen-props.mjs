@@ -38,7 +38,7 @@
  *   node scripts/gen-props.mjs           # write the tables
  *   node scripts/gen-props.mjs --check   # fail if any doc is out of date
  *
- * `--check` backs the `check-gen-props` task (part of `pnpm turbo check`),
+ * `--check` backs the `check-gen-props` task,
  * which fails CI when a committed table has drifted from its source.
  */
 
