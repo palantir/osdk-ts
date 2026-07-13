@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-// `Error.captureStackTrace`/`Error.prepareStackTrace`/`CallSite` are real V8
-// APIs (Chrome, Node, Electron), already declared as globals here via
-// `@types/node`. They're typed as always present because Node always has
-// them — but this code runs in arbitrary browsers, where Firefox/Safari
-// genuinely lack them at runtime despite what the ambient types claim. The
-// `typeof Error.captureStackTrace === "function"` check below is a real
-// runtime feature test, not a type-narrowing no-op.
+// V8-only stack APIs (Error.captureStackTrace / prepareStackTrace / CallSite)
+// are typed as always-present by @types/node, but Firefox/Safari lack them at
+// runtime — so the `typeof ... === "function"` check below is a real feature
+// test, not a type-narrowing no-op.
 
 export interface CallerLocation {
   readonly fileName: string;
@@ -28,15 +25,12 @@ export interface CallerLocation {
   readonly column: number;
 }
 
-// The only text-parsing path left (captureViaCallSites below needs no
-// regex at all) — reached only when Error.captureStackTrace is absent, i.e.
-// non-V8 engines (Firefox, Safari), which format frames as
-// `name@file:line:column`. Anchored to end-of-line and excluding `@` from
-// the captured group so a line this can't cleanly parse fails closed
-// (returns undefined) rather than matching a garbled/partial location.
+// Non-V8 engines (Firefox/Safari) format frames as `name@file:line:column`.
+// Anchored to end-of-line and excluding `@` from the captured group so a line
+// it can't parse fails closed (undefined) instead of matching a partial
+// location.
 const LINE_LOCATION_REGEX = /@([^@]*):(\d+):(\d+)\s*$/u;
 
-/** Exported for direct unit testing of the line-parsing fallback. */
 export function parseLineLocation(line: string): CallerLocation | undefined {
   const match = LINE_LOCATION_REGEX.exec(line);
   if (!match) {
@@ -50,15 +44,8 @@ export function parseLineLocation(line: string): CallerLocation | undefined {
 }
 
 /**
- * V8 prefixes `.stack` with an "Error" (or "Error: message") header line
- * before the frames; Firefox/Safari do not — their frames start at index 0.
- * Detecting which shape a stack has (rather than assuming one) keeps this
- * correct on both, and lets it be verified with synthetic stacks of either
- * shape — a real Firefox/Safari stack with no header line can't be produced here,
- * since this only ever runs under V8 (Vitest/Node).
- *
- * `framesBeforeCaller` counts stack frames between the capture point and
- * the real caller, not counting the header.
+ * Returns the caller's stack line, skipping V8's "Error" header if present.
+ * `framesBeforeCaller` = frames from the capture point to the caller.
  */
 export function locateCallerLine(
   stack: string,
@@ -103,28 +90,16 @@ function captureViaCallSites(
 
 /**
  * Returns the location of whoever called `boundaryFn`, skipping `boundaryFn`
- * and everything inside it. On V8 (Chrome, Node, Electron) this is done by
- * function *identity* via `Error.captureStackTrace` + the structured
- * CallSite API — immune to identifier renaming/minification, no text
- * matching against our own names involved.
- *
- * On engines without that API (Firefox, Safari) there is no identity-based
- * elision available, so this falls back to skipping a fixed, statically
- * known number of frames instead: the `new Error()` below is captured from
- * directly inside this function, which `boundaryFn` must call directly (no
- * intermediate calls) — so the real caller is always exactly 2 frames below
- * this one (this function's own frame, then `boundaryFn`'s), independent of
- * whether the engine prefixes the stack with a header line or not.
+ * itself. On V8 this elides by function identity via `Error.captureStackTrace`
+ * + the CallSite API (minification-proof). Elsewhere it skips a fixed 2 frames,
+ * which requires `boundaryFn` to call this directly.
  */
 export function captureCallerLocation(
   boundaryFn: (...args: unknown[]) => unknown
 ): CallerLocation | undefined {
-  // Best-effort by contract (the `| undefined` return type): this calls into
-  // host/engine internals and mutates a shared global, across arbitrary
-  // browser environments we don't control. If that ever throws, callers
-  // (a console.* wrapper, mid-call) must still get `undefined` back rather
-  // than an exception — losing source attribution is fine, breaking the
-  // user's own console.log is not.
+  // Best-effort: this pokes host/engine internals and mutates a shared global.
+  // If it throws, callers (a live console.* wrapper) must still get `undefined`
+  // back rather than an exception.
   try {
     const captureStackTrace = Error.captureStackTrace;
     if (typeof captureStackTrace === "function") {

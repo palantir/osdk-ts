@@ -17,7 +17,7 @@
 import {
   captureCallerLocation,
   formatCallerLocation,
-} from "../utils/callerLocation.js";
+} from "../utils/browser-compat/callerLocation.js";
 import { CircularBuffer } from "../utils/CircularBuffer.js";
 import { SubscribableStore } from "./SubscribableStore.js";
 
@@ -233,11 +233,9 @@ export class ConsoleLogStore extends SubscribableStore {
         this: Console,
         ...args: unknown[]
       ) {
-        // Capture the source synchronously, before any async boundary, so the
-        // user's frame is still on the stack. captureCallerLocation() skips
-        // this wrapper by function *identity* (V8) or a fixed frame count
-        // (non-V8) — it never matches our own function/file names as text,
-        // so it can't be defeated by a minifier or bundler renaming them.
+        // Capture the source synchronously, while the user's frame is still on
+        // the stack. captureCallerLocation() skips this wrapper by identity, so
+        // minification can't break it.
         //
         // Browser DevTools source-link attribution (the clickable link beside
         // each console row) is decided by V8 and follows wherever the original
