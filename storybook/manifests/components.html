@@ -2574,6 +2574,7 @@ const customValidateFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
     fieldComponent: &quot;TEXT_INPUT&quot;,
     label: &quot;Email&quot;,
     isRequired: true,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validate: async (value: unknown) =&gt; {
       if (typeof value !== &quot;string&quot; || value.length === 0) {
         return undefined;
@@ -14438,6 +14439,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           const str = String(value ?? &quot;&quot;);
           return str.trim().length &gt;= 2
@@ -14448,6 +14450,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
           return emailRegex.test(String(value ?? &quot;&quot;))
@@ -14458,6 +14461,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;employeeNumber&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           return Number(value) &gt; 0
             ? undefined
@@ -14482,6 +14486,7 @@ export const EditableWithValidation: Story = {
             placeholder: &quot;Search job titles…&quot;,
           }),
         },
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           return value ? undefined : &quot;Job title is required&quot;;
         },
@@ -14514,6 +14519,7 @@ export const EditableWithValidation: Story = {
             placeholder: &quot;Select date...&quot;,
           }),
         },
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           if (!value || isNaN(Date.parse(value as string))) {
             return &quot;Please enter a valid date&quot;;
@@ -14530,6 +14536,7 @@ export const EditableWithValidation: Story = {
     ],
     editMode: &quot;always&quot;,
     onSubmitEdits: fn(
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         return true;
       }
@@ -15693,6 +15700,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               const str = String(value ?? &quot;&quot;);
               return str.trim().length &gt;= 2
@@ -15703,6 +15711,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
               return emailRegex.test(String(value ?? &quot;&quot;))
@@ -15713,6 +15722,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;employeeNumber&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               return Number(value) &gt; 0
                 ? undefined
@@ -15737,6 +15747,7 @@ import {
                 placeholder: &quot;Search job titles…&quot;,
               }),
             },
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               return value ? undefined : &quot;Job title is required&quot;;
             },
@@ -15769,6 +15780,7 @@ import {
                 placeholder: &quot;Select date...&quot;,
               }),
             },
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               if (!value || isNaN(Date.parse(value as string))) {
                 return &quot;Please enter a valid date&quot;;
@@ -15785,6 +15797,7 @@ import {
         ]}
         editMode=&quot;always&quot;
         onSubmitEdits={fn(
+          // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
           async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
             return true;
           }
@@ -22216,6 +22229,7 @@ const customValidateFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
     fieldComponent: &quot;TEXT_INPUT&quot;,
     label: &quot;Email&quot;,
     isRequired: true,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validate: async (value: unknown) =&gt; {
       if (typeof value !== &quot;string&quot; || value.length === 0) {
         return undefined;
@@ -34080,6 +34094,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           const str = String(value ?? &quot;&quot;);
           return str.trim().length &gt;= 2
@@ -34090,6 +34105,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
           return emailRegex.test(String(value ?? &quot;&quot;))
@@ -34100,6 +34116,7 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;employeeNumber&quot; },
         editable: true,
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           return Number(value) &gt; 0
             ? undefined
@@ -34124,6 +34141,7 @@ export const EditableWithValidation: Story = {
             placeholder: &quot;Search job titles…&quot;,
           }),
         },
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           return value ? undefined : &quot;Job title is required&quot;;
         },
@@ -34156,6 +34174,7 @@ export const EditableWithValidation: Story = {
             placeholder: &quot;Select date...&quot;,
           }),
         },
+        // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
         validateEdit: async (value: unknown) =&gt; {
           if (!value || isNaN(Date.parse(value as string))) {
             return &quot;Please enter a valid date&quot;;
@@ -34172,6 +34191,7 @@ export const EditableWithValidation: Story = {
     ],
     editMode: &quot;always&quot;,
     onSubmitEdits: fn(
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         return true;
       }
@@ -35335,6 +35355,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               const str = String(value ?? &quot;&quot;);
               return str.trim().length &gt;= 2
@@ -35345,6 +35366,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
               return emailRegex.test(String(value ?? &quot;&quot;))
@@ -35355,6 +35377,7 @@ import {
           {
             locator: { type: &quot;property&quot;, id: &quot;employeeNumber&quot; },
             editable: true,
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               return Number(value) &gt; 0
                 ? undefined
@@ -35379,6 +35402,7 @@ import {
                 placeholder: &quot;Search job titles…&quot;,
               }),
             },
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               return value ? undefined : &quot;Job title is required&quot;;
             },
@@ -35411,6 +35435,7 @@ import {
                 placeholder: &quot;Select date...&quot;,
               }),
             },
+            // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
             validateEdit: async (value: unknown) =&gt; {
               if (!value || isNaN(Date.parse(value as string))) {
                 return &quot;Please enter a valid date&quot;;
@@ -35427,6 +35452,7 @@ import {
         ]}
         editMode=&quot;always&quot;
         onSubmitEdits={fn(
+          // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
           async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
             return true;
           }
