@@ -169,7 +169,7 @@ jobs:
         run: pnpm exec turbo run transpile transpileTypes
 
       - name: Typecheck and API checks
-        run: pnpm exec turbo run typecheck check-attw check-api check-bundle
+        run: pnpm exec turbo run typecheck check-attw check-api check-bundle check-gen-props
 
       - name: Verify nothing changed
         run: git diff --exit-code
