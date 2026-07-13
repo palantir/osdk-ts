@@ -66,7 +66,7 @@ describe("usePdfDocument", () => {
     expect(result.current.error).toBeUndefined();
   });
 
-  it("should pass url option for string src", () => {
+  it("should pass url option for string src", async () => {
     const deferred = pDefer();
     mockedGetDocument.mockReturnValue({
       promise: deferred.promise,
@@ -75,12 +75,14 @@ describe("usePdfDocument", () => {
 
     renderHook(() => usePdfDocument("https://example.com/test.pdf"));
 
-    expect(mockedGetDocument).toHaveBeenCalledWith({
-      url: "https://example.com/test.pdf",
+    await waitFor(() => {
+      expect(mockedGetDocument).toHaveBeenCalledWith({
+        url: "https://example.com/test.pdf",
+      });
     });
   });
 
-  it("should pass data option for ArrayBuffer src", () => {
+  it("should pass data option for ArrayBuffer src", async () => {
     const buffer = new ArrayBuffer(10);
     const deferred = pDefer();
     mockedGetDocument.mockReturnValue({
@@ -90,10 +92,12 @@ describe("usePdfDocument", () => {
 
     renderHook(() => usePdfDocument(buffer));
 
-    expect(mockedGetDocument).toHaveBeenCalledWith({ data: buffer });
+    await waitFor(() => {
+      expect(mockedGetDocument).toHaveBeenCalledWith({ data: buffer });
+    });
   });
 
-  it("should pass data option for Uint8Array src", () => {
+  it("should pass data option for Uint8Array src", async () => {
     const bytes = new Uint8Array([1, 2, 3, 4]);
     const deferred = pDefer();
     mockedGetDocument.mockReturnValue({
@@ -103,7 +107,9 @@ describe("usePdfDocument", () => {
 
     renderHook(() => usePdfDocument(bytes));
 
-    expect(mockedGetDocument).toHaveBeenCalledWith({ data: bytes });
+    await waitFor(() => {
+      expect(mockedGetDocument).toHaveBeenCalledWith({ data: bytes });
+    });
   });
 
   it("should read a Blob src into an ArrayBuffer before loading", async () => {
@@ -183,7 +189,7 @@ describe("usePdfDocument", () => {
     expect(result.current.numPages).toBe(0);
   });
 
-  it("should destroy loading task on unmount", () => {
+  it("should destroy loading task on unmount", async () => {
     const destroyFn = vi.fn(() => Promise.resolve());
     const deferred = pDefer();
     mockedGetDocument.mockReturnValue({
@@ -192,6 +198,12 @@ describe("usePdfDocument", () => {
     } as unknown as ReturnType<typeof getDocument>);
 
     const { unmount } = renderHook(() => usePdfDocument("test.pdf"));
+
+    // Let the load start before unmounting so there is a task to destroy.
+    await waitFor(() => {
+      expect(mockedGetDocument).toHaveBeenCalled();
+    });
+
     unmount();
 
     expect(destroyFn).toHaveBeenCalled();

@@ -29,21 +29,17 @@ type GetDocumentParams = Parameters<typeof getDocument>[0];
 /**
  * Resolve a {@link PdfSource} to pdfjs `getDocument` parameters.
  *
- * String URLs and in-memory bytes (ArrayBuffer/Uint8Array) resolve
- * synchronously; a Blob is read into an ArrayBuffer first, so it resolves to a
- * promise. Callers can branch on `instanceof Promise` to keep the synchronous
- * path synchronous.
+ * A Blob is read into an ArrayBuffer first; URLs and in-memory bytes
+ * (ArrayBuffer/Uint8Array) resolve immediately. Always returns a promise so
+ * callers have a single code path regardless of source type.
  */
-function toDocumentParams(
-  src: PdfSource
-): GetDocumentParams | Promise<GetDocumentParams> {
-  if (typeof src === "string") {
-    return { url: src };
-  }
+function toDocumentParams(src: PdfSource): Promise<GetDocumentParams> {
   if (src instanceof Blob) {
     return src.arrayBuffer().then((data) => ({ data }));
   }
-  return { data: src };
+  return Promise.resolve(
+    typeof src === "string" ? { url: src } : { data: src }
+  );
 }
 
 const pdfWorker = {
@@ -100,19 +96,12 @@ export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
         );
       };
 
-      // Blob sources must be read asynchronously; URL and in-memory byte
-      // sources resolve synchronously so getDocument is called this tick.
-      const params = toDocumentParams(src);
-      if (params instanceof Promise) {
-        params.then(startLoad, (err: unknown) => {
-          if (!cancelled) {
-            setError(err instanceof Error ? err : new Error(String(err)));
-            setLoading(false);
-          }
-        });
-      } else {
-        startLoad(params);
-      }
+      toDocumentParams(src).then(startLoad, (err: unknown) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
+        }
+      });
 
       return () => {
         cancelled = true;
