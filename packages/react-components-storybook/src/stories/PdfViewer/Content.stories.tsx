@@ -40,7 +40,7 @@ const meta: Meta<PdfViewerContentProps> = {
   ),
   argTypes: {
     src: {
-      description: "PDF source — URL string or ArrayBuffer",
+      description: "PDF source — URL string, ArrayBuffer, Uint8Array, or Blob",
       control: false,
     },
     initialPage: {

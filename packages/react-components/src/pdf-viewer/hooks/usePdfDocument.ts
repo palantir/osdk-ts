@@ -22,6 +22,26 @@ const pdfWorkerUrl = new URL(
 );
 import { useEffect, useState } from "react";
 
+import type { PdfSource } from "../types.js";
+
+type GetDocumentParams = Parameters<typeof getDocument>[0];
+
+/**
+ * Resolve a {@link PdfSource} to pdfjs `getDocument` parameters.
+ *
+ * A Blob is read into an ArrayBuffer first; URLs and in-memory bytes
+ * (ArrayBuffer/Uint8Array) resolve immediately. Always returns a promise so
+ * callers have a single code path regardless of source type.
+ */
+function toDocumentParams(src: PdfSource): Promise<GetDocumentParams> {
+  if (src instanceof Blob) {
+    return src.arrayBuffer().then((data) => ({ data }));
+  }
+  return Promise.resolve(
+    typeof src === "string" ? { url: src } : { data: src }
+  );
+}
+
 const pdfWorker = {
   workerInitialized: false,
   ensureWorker() {
@@ -37,9 +57,7 @@ interface UsePdfDocumentResult {
   error: Error | undefined;
 }
 
-export function usePdfDocument(
-  src: string | ArrayBuffer
-): UsePdfDocumentResult {
+export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
   const [document, setDocument] = useState<PDFDocumentProxy | undefined>(
     undefined
   );
@@ -53,31 +71,41 @@ export function usePdfDocument(
       setLoading(true);
       setError(undefined);
 
-      const loadingTask = getDocument(
-        typeof src === "string" ? { url: src } : { data: src }
-      );
-
       let cancelled = false;
+      let loadingTask: ReturnType<typeof getDocument> | undefined;
 
-      loadingTask.promise.then(
-        (pdf) => {
-          if (!cancelled) {
-            setDocument(pdf);
-            setNumPages(pdf.numPages);
-            setLoading(false);
-          }
-        },
-        (err: unknown) => {
-          if (!cancelled) {
-            setError(err instanceof Error ? err : new Error(String(err)));
-            setLoading(false);
-          }
+      const startLoad = (params: GetDocumentParams) => {
+        if (cancelled) {
+          return;
         }
-      );
+        loadingTask = getDocument(params);
+        loadingTask.promise.then(
+          (pdf) => {
+            if (!cancelled) {
+              setDocument(pdf);
+              setNumPages(pdf.numPages);
+              setLoading(false);
+            }
+          },
+          (err: unknown) => {
+            if (!cancelled) {
+              setError(err instanceof Error ? err : new Error(String(err)));
+              setLoading(false);
+            }
+          }
+        );
+      };
+
+      toDocumentParams(src).then(startLoad, (err: unknown) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
+        }
+      });
 
       return () => {
         cancelled = true;
-        void loadingTask.destroy();
+        void loadingTask?.destroy();
       };
     },
     [src]

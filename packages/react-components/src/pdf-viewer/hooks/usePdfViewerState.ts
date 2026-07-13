@@ -22,7 +22,7 @@ import {
   PAGE_WIDTH_SCALE_VALUE,
   SCALE_STEP,
 } from "../constants.js";
-import type { PdfDownloadResult, SidebarMode } from "../types.js";
+import type { PdfDownloadResult, PdfSource, SidebarMode } from "../types.js";
 import { usePdfOutline } from "./usePdfOutline.js";
 import type {
   UsePdfViewerCoreOptions,
@@ -252,7 +252,7 @@ export function usePdfViewerState({
 
 /** Derive a download filename from an explicit name, the src URL, or a fallback. */
 function resolveDownloadFilename(
-  src: string | ArrayBuffer,
+  src: PdfSource,
   filename: string | undefined
 ): string {
   if (filename != null) {
