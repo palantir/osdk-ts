@@ -72,7 +72,7 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
-export { CipherChannelStrategy } from "./object/CipherText.js";
+export type { CipherChannelStrategy } from "./object/CipherText.js";
 export type {
   CipherText,
   CipherTextValue,
