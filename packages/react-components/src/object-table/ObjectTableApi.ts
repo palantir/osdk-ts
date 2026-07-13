@@ -52,6 +52,11 @@ interface SharedColumnDefinition<
     never
   >,
 > {
+  /**
+   * Defines what the column shows:
+   * an object/interface property, a linked object property (derived property), a function
+   * column, or a custom column — and carries that locator's configuration.
+   */
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
   /**
@@ -298,9 +303,9 @@ export interface ObjectTableProps<
    * If provided, the table fetches through this object set instead of fetching based on
    * objectType. Supported for both object and interface types.
    *
-   * For an interface object set, rows expose the interface's declared properties (plus any
-   * `withProperties` derived from `rdp` column locators); the underlying concrete object's
-   * non-interface properties are not loaded. Use objectType-based fetching if you need those.
+   * For an interface object set, rows expose the interface's declared properties;
+   * the underlying concrete object's non-interface properties are not loaded.
+   * Use objectType-based fetching if you need those.
    */
   objectSet?: ObjectSet<Q>;
 
