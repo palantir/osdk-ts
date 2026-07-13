@@ -46,7 +46,7 @@ interface AuthlessProductionArgs {
 }
 
 export function generateEnvDevelopment(
-  args: AuthDevelopmentArgs | AuthlessDevelopmentArgs,
+  args: AuthDevelopmentArgs | AuthlessDevelopmentArgs
 ): string {
   return args.authless
     ? authlessEnvDevelopment(args)
@@ -54,16 +54,14 @@ export function generateEnvDevelopment(
 }
 
 export function generateEnvProduction(
-  args: AuthProductionArgs | AuthlessProductionArgs,
+  args: AuthProductionArgs | AuthlessProductionArgs
 ): string {
-  return args.authless
-    ? authlessEnvProduction(args)
-    : authEnvProduction(args);
+  return args.authless ? authlessEnvProduction(args) : authEnvProduction(args);
 }
 
 function ontologySection(
   envPrefix: string,
-  ontology: string | undefined,
+  ontology: string | undefined
 ): string {
   if (ontology == null) {
     return "";
@@ -140,8 +138,9 @@ function authEnvProduction({
   clientId,
   ontology,
 }: AuthProductionArgs): string {
-  const applicationUrlOrDefault = applicationUrl
-    ?? "<Fill in the domain at which you deploy your application>";
+  const applicationUrlOrDefault =
+    applicationUrl ??
+    "<Fill in the domain at which you deploy your application>";
 
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development.
@@ -158,10 +157,8 @@ function authEnvProduction({
 # URL here and in Developer Console.
 
 ${
-    applicationUrl == null
-      ? "# "
-      : ""
-  }${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
+  applicationUrl == null ? "# " : ""
+}${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
 
 
 # This URL is the Foundry host that your OSDK will use. It typically does not
@@ -182,8 +179,8 @@ function authlessEnvProduction({
   applicationUrl,
   ontology,
 }: AuthlessProductionArgs): string {
-  const applicationUrlOrDefault = applicationUrl
-    ?? "<Fill in your application's subdomain URL>";
+  const applicationUrlOrDefault =
+    applicationUrl ?? "<Fill in your application's subdomain URL>";
 
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development.
@@ -191,9 +188,7 @@ function authlessEnvProduction({
 
 # This URL is the Foundry proxy URL for your application.
 ${
-    applicationUrl == null
-      ? "# "
-      : ""
-  }${envPrefix}FOUNDRY_API_URL=${applicationUrlOrDefault}/proxy
+  applicationUrl == null ? "# " : ""
+}${envPrefix}FOUNDRY_API_URL=${applicationUrlOrDefault}/proxy
 ${ontologySection(envPrefix, ontology)}`;
 }

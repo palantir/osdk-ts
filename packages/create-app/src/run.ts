@@ -189,34 +189,34 @@ export async function run({
 
   const envDevelopment = authless
     ? generateEnvDevelopment({
-      authless: true,
-      envPrefix: template.envPrefix,
-      ontology,
-    })
+        authless: true,
+        envPrefix: template.envPrefix,
+        ontology,
+      })
     : generateEnvDevelopment({
-      authless: false,
-      envPrefix: template.envPrefix,
-      foundryUrl,
-      clientId: clientId ?? "",
-      corsProxy,
-      ontology,
-    });
+        authless: false,
+        envPrefix: template.envPrefix,
+        foundryUrl,
+        clientId: clientId ?? "",
+        corsProxy,
+        ontology,
+      });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = authless
     ? generateEnvProduction({
-      authless: true,
-      envPrefix: template.envPrefix,
-      applicationUrl,
-      ontology,
-    })
+        authless: true,
+        envPrefix: template.envPrefix,
+        applicationUrl,
+        ontology,
+      })
     : generateEnvProduction({
-      authless: false,
-      envPrefix: template.envPrefix,
-      foundryUrl,
-      applicationUrl,
-      clientId: clientId ?? "",
-      ontology,
-    });
+        authless: false,
+        envPrefix: template.envPrefix,
+        foundryUrl,
+        applicationUrl,
+        clientId: clientId ?? "",
+        ontology,
+      });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
