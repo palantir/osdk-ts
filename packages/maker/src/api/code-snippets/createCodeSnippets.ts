@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+import * as path from "path";
+
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import { consola } from "consola";
-import * as fs from "fs";
 import Mustache from "mustache";
-import * as path from "path";
+
 import type { ActionType } from "../action/ActionType.js";
 import type { OntologyDefinition } from "../common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
@@ -34,7 +36,7 @@ import {
 export function createCodeSnippets(
   ontology: OntologyDefinition,
   packageName: string | undefined,
-  outputDir: string | undefined,
+  outputDir: string | undefined
 ): void {
   if (outputDir === undefined) {
     outputDir = "./code-snippets";
@@ -64,7 +66,7 @@ export function createCodeSnippets(
       }
       fs.writeFileSync(
         path.join(outputDir, object.apiName),
-        JSON.stringify(snippet),
+        JSON.stringify(snippet)
       );
     }
   }
@@ -73,14 +75,14 @@ export function createCodeSnippets(
 
 function generateInterfaceSnippet(
   interfaceType: InterfaceType,
-  packageName: string,
+  packageName: string
 ) {
   const interfaceContext = {
-    "interfaceApiName": interfaceType.apiName,
-    "packageName": packageName,
-    "objectOrInterfaceApiName": interfaceType.apiName,
-    "propertyNames": Object.keys(interfaceType.propertiesV3),
-    "interfaceName": interfaceType.displayMetadata.displayName,
+    interfaceApiName: interfaceType.apiName,
+    packageName: packageName,
+    objectOrInterfaceApiName: interfaceType.apiName,
+    propertyNames: Object.keys(interfaceType.propertiesV3),
+    interfaceName: interfaceType.displayMetadata.displayName,
   };
 
   return getSnippets(interfaceSnippets, interfaceContext);
@@ -88,17 +90,17 @@ function generateInterfaceSnippet(
 
 function generateObjectSnippet(objectType: ObjectType, packageName: string) {
   const objectContext = {
-    "objectType": objectType.apiName,
-    "packageName": packageName,
-    "objectOrInterfaceApiName": objectType.apiName,
+    objectType: objectType.apiName,
+    packageName: packageName,
+    objectOrInterfaceApiName: objectType.apiName,
   };
   return getSnippets(objectSnippets, objectContext);
 }
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
-    "actionApiName": actionType.apiName,
-    "packageName": packageName,
+    actionApiName: actionType.apiName,
+    packageName: packageName,
   };
   return getSnippets(actionSnippets, actionContext);
 }
@@ -108,21 +110,19 @@ function getSnippets(
     | typeof interfaceSnippets
     | typeof actionSnippets
     | typeof objectSnippets,
-  context: {},
+  context: {}
 ) {
   const allSnippets = {};
-  for (
-    const templateName of Object.keys(snippetType).filter(key =>
-      isNaN(Number(key))
-    )
-  ) {
+  for (const templateName of Object.keys(snippetType).filter((key) =>
+    isNaN(Number(key))
+  )) {
     const versions = Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions);
-    const latestTemplate = versions
-      .slice()
-      .reverse()
-      .find(v => v.snippets[templateName])
-      ?.snippets[templateName]
-      .at(-1)?.template ?? "";
+    const latestTemplate =
+      versions
+        .slice()
+        .reverse()
+        .find((v) => v.snippets[templateName])
+        ?.snippets[templateName].at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
     const snippetName = snippetNameMapping.get(templateName);
 

@@ -79,7 +79,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
   async function publishStatus(
     status: ServiceLifecycle,
     level: StatusLevel,
-    message?: string,
+    message?: string
   ): Promise<void> {
     const base = readStatusBaseUrl();
     if (!base) return;

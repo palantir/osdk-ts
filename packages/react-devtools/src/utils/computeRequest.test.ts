@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
 import type { ComputeRequest } from "../types/compute.js";
 import { visitComputeRequest } from "./computeRequest.js";
 

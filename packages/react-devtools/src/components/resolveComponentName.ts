@@ -17,7 +17,7 @@
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 
 export function deriveComponentName(
-  bindings: ComponentHookBinding[],
+  bindings: ComponentHookBinding[]
 ): string | null {
   const objectTypes = new Set<string>();
   const actionNames = new Set<string>();
@@ -39,7 +39,7 @@ export function deriveComponentName(
   const parts: string[] = [];
 
   if (objectTypes.size > 0) {
-    const types = Array.from(objectTypes).slice(0, 2);
+    const types = [...objectTypes].slice(0, 2);
     parts.push(types.join(", "));
     if (objectTypes.size > 2) {
       parts[parts.length - 1] += ` +${objectTypes.size - 2}`;
@@ -47,7 +47,7 @@ export function deriveComponentName(
   }
 
   if (actionNames.size > 0) {
-    const actions = Array.from(actionNames).slice(0, 2);
+    const actions = [...actionNames].slice(0, 2);
     parts.push(`Actions: ${actions.join(", ")}`);
   }
 
@@ -58,18 +58,18 @@ export function deriveComponentName(
   return parts.join(" | ");
 }
 
-export function resolveComponentName(
-  bindings: ComponentHookBinding[],
-): string {
+export function resolveComponentName(bindings: ComponentHookBinding[]): string {
   if (bindings.length === 0) {
     return "Anonymous";
   }
 
   const firstBinding = bindings[0];
-  return firstBinding.componentDisplayName
-    || (firstBinding.componentName !== "Unknown"
+  return (
+    firstBinding.componentDisplayName ||
+    (firstBinding.componentName !== "Unknown"
       ? firstBinding.componentName
-      : null)
-    || deriveComponentName(bindings)
-    || "Anonymous";
+      : null) ||
+    deriveComponentName(bindings) ||
+    "Anonymous"
+  );
 }

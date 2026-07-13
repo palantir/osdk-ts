@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { JobId as _JobId } from "../__components.js";
 
 /**
@@ -24,11 +25,11 @@ import type { JobId as _JobId } from "../__components.js";
  */
 export async function softCancel(
   ctx: ConjureContext,
-  jobId: _JobId,
+  jobId: _JobId
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/jobs/${jobId}/soft-cancel`,
-    "PUT",
+    "PUT"
   );
 }

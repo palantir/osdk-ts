@@ -18,14 +18,14 @@ import type { ObjectSet } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 
 export async function getEmployeeNames(
-  employees: ObjectSet<Employee>,
+  employees: ObjectSet<Employee>
 ): Promise<string[]> {
   const page = await employees.fetchPage();
   return page.data.map((emp) => emp.fullName ?? "Unknown");
 }
 
 export async function countEmployees(
-  employees: ObjectSet<Employee>,
+  employees: ObjectSet<Employee>
 ): Promise<number> {
   const result = await employees.aggregate({
     $select: { $count: "unordered" },

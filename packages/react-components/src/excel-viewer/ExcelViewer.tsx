@@ -17,25 +17,29 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback } from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseExcelViewer } from "./BaseExcelViewer.js";
-import styles from "./BaseExcelViewer.module.css";
 import type {
   ExcelViewerMediaProps,
   ParsedSpreadsheet,
 } from "./ExcelViewerApi.js";
 import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
 
+import styles from "./BaseExcelViewer.module.css";
+
 export function ExcelViewer({
   media,
   className,
   ...excelViewerProps
 }: ExcelViewerMediaProps): React.ReactElement {
-  const { data: spreadsheet, loading, error } = useMediaContents<
-    ParsedSpreadsheet
-  >(
+  const {
+    data: spreadsheet,
+    loading,
+    error,
+  } = useMediaContents<ParsedSpreadsheet>(
     media,
-    useCallback(parseSpreadsheetFromResponse, []),
+    useCallback(parseSpreadsheetFromResponse, [])
   );
 
   const rootClassName = classnames(styles.container, className);

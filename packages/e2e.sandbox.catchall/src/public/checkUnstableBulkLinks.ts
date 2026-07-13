@@ -25,20 +25,23 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/e2e.generated.catchall";
+
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
-const locatorString = <Q extends ObjectOrInterfaceDefinition>(
-  { $apiName, $primaryKey }: ObjectIdentifiers<Q>,
-) => `${$apiName}:${$primaryKey}`;
+const locatorString = <Q extends ObjectOrInterfaceDefinition>({
+  $apiName,
+  $primaryKey,
+}: ObjectIdentifiers<Q>) => `${$apiName}:${$primaryKey}`;
 
-const objectIdentifier = <Q extends ObjectOrInterfaceDefinition>(
-  { $apiName, $primaryKey }: Osdk.Instance<Q>,
-): ObjectIdentifiers<Q> => ({ $apiName, $primaryKey });
+const objectIdentifier = <Q extends ObjectOrInterfaceDefinition>({
+  $apiName,
+  $primaryKey,
+}: Osdk.Instance<Q>): ObjectIdentifiers<Q> => ({ $apiName, $primaryKey });
 
-const fetchAll = async <T>(
-  objectSet: { asyncIter: () => AsyncIterableIterator<T> },
-) => {
+const fetchAll = async <T>(objectSet: {
+  asyncIter: () => AsyncIterableIterator<T>;
+}) => {
   const result = [];
   for await (const obj of objectSet.asyncIter()) result.push(obj);
   return result;
@@ -49,13 +52,17 @@ export const buildGraph = async (): Promise<void> => {
 
   // Fetch objects
   const allVentures = new Map(
-    (await fetchAll(venturesObjectSet)).map(
-      venture => [objectIdentifier(venture), venture],
-    ),
+    (await fetchAll(venturesObjectSet)).map((venture) => [
+      objectIdentifier(venture),
+      venture,
+    ])
   );
-  const allLinkedEmployees = new Map((await fetchAll(
-    venturesObjectSet.pivotTo("employees"),
-  )).map(employee => [objectIdentifier(employee), employee]));
+  const allLinkedEmployees = new Map(
+    (await fetchAll(venturesObjectSet.pivotTo("employees"))).map((employee) => [
+      objectIdentifier(employee),
+      employee,
+    ])
+  );
 
   // Fetch links and build graph
   const ventureToEmployees = new Map<
@@ -63,12 +70,11 @@ export const buildGraph = async (): Promise<void> => {
     Osdk.Instance<Employee>[]
   >();
 
-  for await (
-    const { source, target, linkType } of venturesObjectSet
-      .experimental_asyncIterLinks([
-        "employees",
-      ])
-  ) {
+  for await (const {
+    source,
+    target,
+    linkType,
+  } of venturesObjectSet.experimental_asyncIterLinks(["employees"])) {
     const sourceVenture = allVentures.get(source)!;
     const targetEmployee = allLinkedEmployees.get(target)!;
     if (!ventureToEmployees.has(sourceVenture)) {
@@ -82,39 +88,31 @@ export const buildGraph = async (): Promise<void> => {
     console.log(
       `Venture ${venture.$title} has `,
       ventureToEmployees.has(venture)
-        ? `employees ${
-          ventureToEmployees.get(venture)!.map(venture => venture.$title).join(
-            ", ",
-          )
-        }`
-        : "no ventures.",
+        ? `employees ${ventureToEmployees
+            .get(venture)!
+            .map((venture) => venture.$title)
+            .join(", ")}`
+        : "no ventures."
     );
   }
 };
 
 export const checkAsyncIterLinks = async (): Promise<void> => {
   // one link
-  for await (
-    const { source, target, linkType } of client(Venture)
-      .experimental_asyncIterLinks([
-        "employees",
-      ])
-  ) {
+  for await (const { source, target, linkType } of client(
+    Venture
+  ).experimental_asyncIterLinks(["employees"])) {
     console.log(
-      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`
     );
   }
 
   // multiple links
-  for await (
-    const { source, target, linkType } of client(Employee)
-      .experimental_asyncIterLinks([
-        "ventures",
-        "peeps",
-      ])
-  ) {
+  for await (const { source, target, linkType } of client(
+    Employee
+  ).experimental_asyncIterLinks(["ventures", "peeps"])) {
     console.log(
-      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`
     );
   }
 };
@@ -123,21 +121,17 @@ export const checkAsyncIterLinks = async (): Promise<void> => {
 export async function checkUnstableBulkLinks(): Promise<void> {
   // Test one to many
   const stations = await client(WeatherStation).fetchPage();
-  for await (
-    const {
-      object,
-      linkApiName,
-      otherObjectApiName,
-      otherObjectPk,
-    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
-      stations.data,
-      [
-        "boundariesUsState",
-      ],
-    )
-  ) {
+  for await (const {
+    object,
+    linkApiName,
+    otherObjectApiName,
+    otherObjectPk,
+  } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
+    stations.data,
+    ["boundariesUsState"]
+  )) {
     logger.info(
-      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
+      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`
     );
   }
 
@@ -148,22 +142,17 @@ export async function checkUnstableBulkLinks(): Promise<void> {
   // test many to many
   logger.debug("Fetching the bulk links");
 
-  for await (
-    const {
-      object,
-      linkApiName,
-      otherObjectApiName,
-      otherObjectPk,
-    } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
-      employees,
-      [
-        "ventures",
-        "amishsSyncGroup",
-      ],
-    )
-  ) {
+  for await (const {
+    object,
+    linkApiName,
+    otherObjectApiName,
+    otherObjectPk,
+  } of client(__EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks).getBulkLinks(
+    employees,
+    ["ventures", "amishsSyncGroup"]
+  )) {
     logger.info(
-      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
+      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`
     );
   }
 }

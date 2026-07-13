@@ -22,6 +22,7 @@ import type {
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
+
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
@@ -33,7 +34,7 @@ import { withoutNamespace } from "./utils.js";
  */
 export function convertInterfaceType(
   iface: Ontologies.InterfaceType,
-  allInterfaces: Record<string, Ontologies.InterfaceType>,
+  allInterfaces: Record<string, Ontologies.InterfaceType>
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 
@@ -64,7 +65,7 @@ export function convertInterfaceType(
         };
       } else {
         consola.warn(
-          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`,
+          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`
         );
       }
     }

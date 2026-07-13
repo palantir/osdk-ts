@@ -23,6 +23,7 @@ import type {
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
+
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ObserveObjectSetOptions<
@@ -88,8 +89,9 @@ export interface ObserveObjectSetOptions<
   $loadPropertySecurityMetadata?: boolean;
 }
 
-export interface ObjectSetQueryOptions
-  extends ObserveObjectSetOptions<any, any>
-{
+export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<
+  any,
+  any
+> {
   baseObjectSet: ObjectSet<any>;
 }

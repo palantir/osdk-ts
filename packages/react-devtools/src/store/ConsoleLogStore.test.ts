@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ConsoleLogStore } from "./ConsoleLogStore.js";
 import type { ConsoleLogLevel } from "./ConsoleLogStore.js";
 
@@ -129,7 +130,7 @@ describe("ConsoleLogStore", () => {
     it("should serialize BigInt values", async () => {
       store.install();
 
-      console.log(BigInt(42));
+      console.log(42n);
       await flushMicrotasks();
 
       const entries = store.getEntries();
@@ -174,7 +175,7 @@ describe("ConsoleLogStore", () => {
       await flushMicrotasks();
 
       const entries = store.getEntries();
-      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/);
+      expect(entries[0].args[0]).toMatch(/\[Function:.*\]/u);
     });
 
     it("should serialize Error with stack", async () => {
@@ -244,7 +245,7 @@ describe("ConsoleLogStore", () => {
       const entries = store.getEntries();
       const serialized = entries[0].args[0];
       expect(serialized).not.toContain("[Circular]");
-      expect(serialized).toContain("\"x\":1");
+      expect(serialized).toContain('"x":1');
     });
 
     it("should truncate individual args over 10KB", async () => {
@@ -288,7 +289,7 @@ describe("ConsoleLogStore", () => {
       const realOriginal = console.log;
       store.install();
 
-      const externalPatch = function(..._args: unknown[]) {};
+      const externalPatch = function externalPatch(..._args: unknown[]) {};
       console.log = externalPatch;
 
       store.uninstall();
@@ -347,7 +348,7 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       const hasLongTruncated = entries[0].args.some(
-        (a) => a.includes("...truncated") && a.includes("bytes"),
+        (a) => a.includes("...truncated") && a.includes("bytes")
       );
       expect(hasLongTruncated).toBe(true);
     });

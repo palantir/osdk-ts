@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetObjectTypesRequest as _api_GetObjectTypesRequest,
   GetObjectTypesResponse as _api_GetObjectTypesResponse,
@@ -25,7 +26,7 @@ import type {
  */
 export async function getObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetObjectTypesRequest,
+  request: _api_GetObjectTypesRequest
 ): Promise<_api_GetObjectTypesResponse> {
   return conjureFetch(ctx, `/objectSets/objectTypes`, "POST", request);
 }

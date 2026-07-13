@@ -24,8 +24,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (
@@ -134,8 +133,7 @@ export const CustomAnnotation: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
+        code: `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {

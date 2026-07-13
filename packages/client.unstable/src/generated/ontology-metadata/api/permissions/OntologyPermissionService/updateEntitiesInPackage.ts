@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
 import type {
-  UpdateEntitiesInPackageRequest
-    as _api_permissions_UpdateEntitiesInPackageRequest,
-  UpdateEntitiesInPackageResponse
-    as _api_permissions_UpdateEntitiesInPackageResponse,
+  UpdateEntitiesInPackageRequest as _api_permissions_UpdateEntitiesInPackageRequest,
+  UpdateEntitiesInPackageResponse as _api_permissions_UpdateEntitiesInPackageResponse,
 } from "../__components.js";
 
 /**
@@ -38,12 +37,12 @@ import type {
 export async function updateEntitiesInPackage(
   ctx: ConjureContext,
   packageRid: _api_OntologyPackageRid,
-  request: _api_permissions_UpdateEntitiesInPackageRequest,
+  request: _api_permissions_UpdateEntitiesInPackageRequest
 ): Promise<_api_permissions_UpdateEntitiesInPackageResponse> {
   return conjureFetch(
     ctx,
     `/permissions/packages/${packageRid}`,
     "PUT",
-    request,
+    request
   );
 }

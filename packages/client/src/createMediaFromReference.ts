@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaFullMetadata,
+  MediaMetadata,
+  MediaReference,
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
+
 import type { Client } from "./Client.js";
 import { additionalContext } from "./Client.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 export function createMediaFromReference(
   client: Client,
-  mediaReference: MediaReference,
+  mediaReference: MediaReference
 ): Media {
   return createMediaFromReferenceInternal(
     client[additionalContext],
-    mediaReference,
+    mediaReference
   );
 }
 
 export function createMediaFromReferenceInternal(
   client: MinimalClient,
-  mediaReference: MediaReference,
+  mediaReference: MediaReference
 ): Media {
   const { mediaSetRid, mediaItemRid } =
     mediaReference.reference.mediaSetViewItem;
@@ -45,7 +52,7 @@ export function createMediaFromReferenceInternal(
         mediaSetRid,
         mediaItemRid,
         { preview: true },
-        token ? { ReadToken: token } : undefined,
+        token ? { ReadToken: token } : undefined
       );
     },
 
@@ -55,7 +62,7 @@ export function createMediaFromReferenceInternal(
         mediaSetRid,
         mediaItemRid,
         { preview: true },
-        token ? { ReadToken: token } : undefined,
+        token ? { ReadToken: token } : undefined
       );
 
       invariant(info.sizeBytes != null, "Expected sizeBytes in media info");
@@ -66,6 +73,17 @@ export function createMediaFromReferenceInternal(
         sizeBytes: info.sizeBytes,
         mediaType: info.mimeType,
       };
+    },
+
+    async fetchFullMetadata(): Promise<MediaFullMetadata> {
+      const raw = await MediaSets.metadata(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        { preview: true },
+        token ? { ReadToken: token } : undefined
+      );
+      return { itemMetadata: validateMediaItemMetadata(raw) };
     },
 
     getMediaReference(): MediaReference {

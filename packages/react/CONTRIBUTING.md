@@ -382,6 +382,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
 1. Create a file in `.changeset/` with a descriptive name (e.g., `.changeset/add-use-osdk-aggregation.md`).
 2. Use YAML front matter to list affected packages and semver bump type:
+
    ```md
    ---
    "@osdk/react": minor
@@ -389,6 +390,7 @@ Every PR that changes published package code needs **exactly one changeset** per
 
    Add useOsdkAggregation hook for server-side aggregation queries
    ```
+
 3. Write a specific summary describing what was added or changed.
 4. Check `.changeset/` before creating — do not create duplicate changesets on the same branch.
 5. CI will fail if a changeset is missing for changed packages.

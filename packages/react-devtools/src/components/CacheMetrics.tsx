@@ -16,8 +16,10 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import type { MetricsSnapshot } from "../types/index.js";
 import { formatNumber, formatTime } from "../utils/format.js";
+
 import styles from "./MonitoringPanel.module.scss";
 
 const CACHE_HIT_EXCELLENT = 0.8;
@@ -28,16 +30,19 @@ export interface CacheMetricsProps {
 }
 
 export const CacheMetrics: React.FC<CacheMetricsProps> = ({ metrics }) => {
-  const totalObjects = metrics.aggregates.totalObjectsFromCache
-    + metrics.aggregates.totalObjectsFromNetwork;
-  const objectBasedRate = totalObjects > 0
-    ? metrics.aggregates.totalObjectsFromCache / totalObjects
-    : 0;
-  const rateClass = objectBasedRate >= CACHE_HIT_EXCELLENT
-    ? styles.success
-    : objectBasedRate >= CACHE_HIT_GOOD
-    ? styles.warning
-    : styles.danger;
+  const totalObjects =
+    metrics.aggregates.totalObjectsFromCache +
+    metrics.aggregates.totalObjectsFromNetwork;
+  const objectBasedRate =
+    totalObjects > 0
+      ? metrics.aggregates.totalObjectsFromCache / totalObjects
+      : 0;
+  const rateClass =
+    objectBasedRate >= CACHE_HIT_EXCELLENT
+      ? styles.success
+      : objectBasedRate >= CACHE_HIT_GOOD
+        ? styles.warning
+        : styles.danger;
 
   return (
     <>
@@ -56,10 +61,11 @@ export const CacheMetrics: React.FC<CacheMetricsProps> = ({ metrics }) => {
         <span className={styles.metricLabel}>Cache Savings</span>
         <span className={classNames(styles.metricValue, styles.success)}>
           {formatNumber(
-            metrics.aggregates.cacheHits
-              + metrics.aggregates.revalidations
-              + metrics.aggregates.deduplications,
-          )} requests saved
+            metrics.aggregates.cacheHits +
+              metrics.aggregates.revalidations +
+              metrics.aggregates.deduplications
+          )}{" "}
+          requests saved
         </span>
         <span className={styles.metricSubtext}>
           {formatNumber(metrics.aggregates.deduplications)} deduped

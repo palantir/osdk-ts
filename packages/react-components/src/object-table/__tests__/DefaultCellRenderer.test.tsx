@@ -18,6 +18,7 @@ import type { CellContext } from "@tanstack/react-table";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { CellEditInfo, EditFieldConfig } from "../utils/types.js";
 
@@ -37,7 +38,7 @@ function createCellContext(
     rowData?: unknown;
     tableMeta?: Record<string, unknown>;
     columnMeta?: Record<string, unknown>;
-  },
+  }
 ): CellContext<unknown, unknown> {
   return {
     getValue: () => value,
@@ -96,33 +97,41 @@ describe("renderDefaultCell", () => {
 
   describe("marking columns", () => {
     it("renders a CbacBanner for a CBAC marking column with a single id", () => {
-      const result = renderDefaultCell(createCellContext("marking-1", {
-        columnMeta: { markingType: "CBAC" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext("marking-1", {
+          columnMeta: { markingType: "CBAC" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cbac-banner").textContent).toBe("marking-1");
     });
 
     it("renders a CbacBanner for a CBAC marking column with multiple ids", () => {
-      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
-        columnMeta: { markingType: "CBAC" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext(["m-1", "m-2"], {
+          columnMeta: { markingType: "CBAC" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cbac-banner").textContent).toBe("m-1,m-2");
     });
 
     it("renders nothing for an empty CBAC marking value", () => {
-      const result = renderDefaultCell(createCellContext(null, {
-        columnMeta: { markingType: "CBAC" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext(null, {
+          columnMeta: { markingType: "CBAC" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.queryByTestId("cbac-banner")).toBeNull();
     });
 
     it("renders one CbacBanner per id for a MANDATORY marking column", () => {
-      const result = renderDefaultCell(createCellContext(["m-1", "m-2"], {
-        columnMeta: { markingType: "MANDATORY" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext(["m-1", "m-2"], {
+          columnMeta: { markingType: "MANDATORY" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
       expect(banners).toHaveLength(2);
@@ -136,7 +145,7 @@ describe("renderDefaultCell", () => {
       const result = renderDefaultCell(
         createCellContext(["m-1", "m-1", "m-2"], {
           columnMeta: { markingType: "MANDATORY" },
-        }),
+        })
       );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
@@ -148,9 +157,11 @@ describe("renderDefaultCell", () => {
     });
 
     it("renders a single CbacBanner for a single-valued MANDATORY marking", () => {
-      const result = renderDefaultCell(createCellContext("m-1", {
-        columnMeta: { markingType: "MANDATORY" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext("m-1", {
+          columnMeta: { markingType: "MANDATORY" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       const banners = screen.getAllByTestId("cbac-banner");
       expect(banners).toHaveLength(1);
@@ -158,9 +169,11 @@ describe("renderDefaultCell", () => {
     });
 
     it("falls back to the default renderer when markingType is absent", () => {
-      const result = renderDefaultCell(createCellContext("plain-value", {
-        columnMeta: { dataType: "marking" },
-      }));
+      const result = renderDefaultCell(
+        createCellContext("plain-value", {
+          columnMeta: { dataType: "marking" },
+        })
+      );
       render(<div data-testid="cell">{result}</div>);
       expect(screen.getByTestId("cell").textContent).toBe("plain-value");
       expect(screen.queryByTestId("cbac-banner")).toBeNull();
@@ -189,24 +202,26 @@ describe("renderDefaultCell", () => {
       originalRowData: rowData,
     };
 
-    const result = renderDefaultCell(createCellContext("initial", {
-      rowId: "row-1",
-      columnId: "col-1",
-      rowData,
-      tableMeta: {
-        onCellEdit: vi.fn(),
-        isInEditMode: true,
-        focusedRowId: "row-1",
-        cellEdits: {
-          "row-2_col-other": otherRowEdit,
-          "row-1_col-sibling": sameRowEdit,
+    const result = renderDefaultCell(
+      createCellContext("initial", {
+        rowId: "row-1",
+        columnId: "col-1",
+        rowData,
+        tableMeta: {
+          onCellEdit: vi.fn(),
+          isInEditMode: true,
+          focusedRowId: "row-1",
+          cellEdits: {
+            "row-2_col-other": otherRowEdit,
+            "row-1_col-sibling": sameRowEdit,
+          },
         },
-      },
-      columnMeta: {
-        editable: true,
-        editFieldConfig,
-      },
-    }));
+        columnMeta: {
+          editable: true,
+          editFieldConfig,
+        },
+      })
+    );
 
     render(<div data-testid="cell">{result}</div>);
 

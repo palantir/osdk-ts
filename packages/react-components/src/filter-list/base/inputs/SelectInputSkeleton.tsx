@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
 
 export function SelectInputSkeleton(): React.ReactElement {

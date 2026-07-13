@@ -15,15 +15,16 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { Job as _Job, JobStatus as _JobStatus } from "../__components.js";
 export async function getJobStatusV2(
   ctx: ConjureContext,
-  job: _Job,
+  job: _Job
 ): Promise<_JobStatus> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/jobs/status/v2`,
     "PUT",
-    job,
+    job
   );
 }

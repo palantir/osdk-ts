@@ -33,6 +33,7 @@ import {
   startOfWeek,
   startOfYear,
 } from "date-fns";
+
 import type { BaseServerObject } from "./BaseServerObject.js";
 
 interface GroupBucket {
@@ -57,31 +58,36 @@ const DURATION_START_FNS: Record<string, (date: Date) => Date> = {
 export function aggregateObjects(
   objects: BaseServerObject[],
   aggregations: AggregationV2[],
-  groupBys: AggregationGroupByV2[],
+  groupBys: AggregationGroupByV2[]
 ): AggregateObjectsResponseV2 {
   if (groupBys.length === 0) {
     return {
       accuracy: "ACCURATE",
-      data: [{
-        group: {},
-        metrics: aggregations.map(agg => computeSingleMetric(objects, agg)),
-      }],
+      data: [
+        {
+          group: {},
+          metrics: aggregations.map((agg) => computeSingleMetric(objects, agg)),
+        },
+      ],
     };
   }
 
   const groupedBuckets = groupObjects(objects, groupBys);
 
-  const data = Array.from(groupedBuckets.values()).map(bucket => ({
+  const data = Array.from(groupedBuckets.values()).map((bucket) => ({
     group: bucket.groupValue,
-    metrics: aggregations.map(agg => computeSingleMetric(bucket.objects, agg)),
+    metrics: aggregations.map((agg) =>
+      computeSingleMetric(bucket.objects, agg)
+    ),
   }));
 
   let maxGroupCount;
   for (const groupBy of groupBys) {
     if (groupBy.type === "exact" && groupBy.maxGroupCount != null) {
-      maxGroupCount = maxGroupCount != null
-        ? Math.min(maxGroupCount, groupBy.maxGroupCount)
-        : groupBy.maxGroupCount;
+      maxGroupCount =
+        maxGroupCount != null
+          ? Math.min(maxGroupCount, groupBy.maxGroupCount)
+          : groupBy.maxGroupCount;
     }
   }
 
@@ -93,7 +99,7 @@ export function aggregateObjects(
 
 function groupObjects(
   objects: BaseServerObject[],
-  groupBys: AggregationGroupByV2[],
+  groupBys: AggregationGroupByV2[]
 ): Map<string, GroupBucket> {
   const buckets = new Map<string, GroupBucket>();
   for (const obj of objects) {
@@ -112,7 +118,7 @@ function groupObjects(
 
 function computeGroupValue(
   obj: BaseServerObject,
-  groupBys: AggregationGroupByV2[],
+  groupBys: AggregationGroupByV2[]
 ): { key: string; groupValue: AggregationGroupValueV2 } | undefined {
   const groupValue: AggregationGroupValueV2 = {};
   const keyParts: string[] = [];
@@ -134,7 +140,7 @@ function computeGroupValue(
 
 function computeSingleGroupValue(
   obj: BaseServerObject,
-  groupBy: AggregationGroupByV2,
+  groupBy: AggregationGroupByV2
 ): { keyPart: string; value: AggregationGroupValueV2 } | undefined {
   const field = getPropertyField(groupBy.field, groupBy.propertyIdentifier);
   const rawValue = obj[field];
@@ -185,8 +191,9 @@ function computeSingleGroupValue(
       }
       for (const range of groupBy.ranges) {
         const { startValue, endValue } = range;
-        const inRange = compareValue(rawValue, startValue) >= 0
-          && compareValue(rawValue, endValue) < 0;
+        const inRange =
+          compareValue(rawValue, startValue) >= 0 &&
+          compareValue(rawValue, endValue) < 0;
         if (inRange) {
           return {
             keyPart: `${field}:${startValue}-${endValue}`,
@@ -220,14 +227,14 @@ function computeSingleGroupValue(
     default:
       groupBy satisfies never;
       throw new Error(
-        `FauxFoundry: unsupported groupBy type: ${JSON.stringify(groupBy)}`,
+        `FauxFoundry: unsupported groupBy type: ${JSON.stringify(groupBy)}`
       );
   }
 }
 
 function compareValue(
   value: unknown,
-  target: string | number | undefined,
+  target: string | number | undefined
 ): number {
   if (target == null) {
     return 1;
@@ -256,7 +263,7 @@ function numericAgg(
   objects: BaseServerObject[],
   field: string,
   name: string,
-  compute: (values: number[]) => number | undefined,
+  compute: (values: number[]) => number | undefined
 ): AggregationMetricResultV2 {
   const values = getNumericValues(objects, field);
   const value = values.length === 0 ? undefined : compute(values);
@@ -265,7 +272,7 @@ function numericAgg(
 
 function computeSingleMetric(
   objects: BaseServerObject[],
-  aggregation: AggregationV2,
+  aggregation: AggregationV2
 ): AggregationMetricResultV2 {
   switch (aggregation.type) {
     case "count":
@@ -273,31 +280,31 @@ function computeSingleMetric(
     case "min": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
       return numericAgg(
         objects,
         field,
         aggregation.name ?? `${field}.min`,
-        vals => Math.min(...vals),
+        (vals) => Math.min(...vals)
       );
     }
     case "max": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
       return numericAgg(
         objects,
         field,
         aggregation.name ?? `${field}.max`,
-        vals => Math.max(...vals),
+        (vals) => Math.max(...vals)
       );
     }
     case "sum": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
       const name = aggregation.name ?? `${field}.sum`;
       const values = getNumericValues(objects, field);
@@ -307,25 +314,24 @@ function computeSingleMetric(
     case "avg": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
       return numericAgg(
         objects,
         field,
         aggregation.name ?? `${field}.avg`,
-        vals => vals.reduce((a, b) => a + b, 0) / vals.length,
+        (vals) => vals.reduce((a, b) => a + b, 0) / vals.length
       );
     }
     case "approximateDistinct":
     case "exactDistinct": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
-      const name = aggregation.name
-        ?? `${field}.${aggregation.type}`;
+      const name = aggregation.name ?? `${field}.${aggregation.type}`;
       const uniqueValues = new Set(
-        objects.map(obj => obj[field]).filter(v => v != null),
+        objects.map((obj) => obj[field]).filter((v) => v != null)
       );
       return { name, value: uniqueValues.size };
     }
@@ -333,10 +339,9 @@ function computeSingleMetric(
     case "approximatePercentile": {
       const field = getPropertyField(
         aggregation.field,
-        aggregation.propertyIdentifier,
+        aggregation.propertyIdentifier
       );
-      const name = aggregation.name
-        ?? `${field}.approximatePercentile`;
+      const name = aggregation.name ?? `${field}.approximatePercentile`;
       const values = getNumericValues(objects, field);
       if (values.length === 0) {
         return { name, value: undefined };
@@ -349,25 +354,25 @@ function computeSingleMetric(
     default:
       aggregation satisfies never;
       throw new Error(
-        `FauxFoundry: unsupported aggregation type: ${
-          JSON.stringify(aggregation)
-        }`,
+        `FauxFoundry: unsupported aggregation type: ${JSON.stringify(
+          aggregation
+        )}`
       );
   }
 }
 
 function getNumericValues(
   objects: BaseServerObject[],
-  field: string,
+  field: string
 ): number[] {
   return objects
-    .map(obj => obj[field])
+    .map((obj) => obj[field])
     .filter((v): v is number => typeof v === "number" && !isNaN(v));
 }
 
 function getPropertyField(
   field: PropertyApiName | undefined,
-  propertyIdentifier: PropertyIdentifier | undefined,
+  propertyIdentifier: PropertyIdentifier | undefined
 ): string {
   if (field != null) {
     return field;
@@ -379,7 +384,7 @@ function getPropertyField(
         return propertyIdentifier.apiName;
       case "propertyWithLoadLevel":
         throw new Error(
-          "Property identifiers with load level are not supported",
+          "Property identifiers with load level are not supported"
         );
       case "structField":
         throw new Error("Struct field property identifiers are not supported");
@@ -387,6 +392,6 @@ function getPropertyField(
   }
 
   throw new Error(
-    "Field or property identifier are both undefined, exactly one must be defined",
+    "Field or property identifier are both undefined, exactly one must be defined"
   );
 }

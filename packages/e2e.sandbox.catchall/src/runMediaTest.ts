@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { Media, MediaReference, MediaUpload } from "@osdk/api";
+import type {
+  Media,
+  MediaItemMetadata,
+  MediaReference,
+  MediaUpload,
+} from "@osdk/api";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
@@ -26,56 +31,229 @@ import {
   MnayanOsdkMediaObject,
 } from "@osdk/e2e.generated.catchall";
 import { uploadMedia } from "@osdk/functions";
+
 import { client, mjClient } from "./client.js";
 
 async function runReadMediaTest(ref: Media): Promise<Blob> {
   const mediaMetadata = await ref.fetchMetadata();
   if (mediaMetadata.sizeBytes !== 18484484) {
-    throw (new Error(
-      `Media Metadata was incorrect: expected: 18484484 bytes and got ${mediaMetadata.sizeBytes} bytes`,
-    ));
+    throw new Error(
+      `Media Metadata was incorrect: expected: 18484484 bytes and got ${mediaMetadata.sizeBytes} bytes`
+    );
   }
   if (mediaMetadata.mediaType !== "image/png") {
-    throw (new Error(
-      `Media Metadata was incorrect: expected type image/png and got ${mediaMetadata.mediaType}`,
-    ));
+    throw new Error(
+      `Media Metadata was incorrect: expected type image/png and got ${mediaMetadata.mediaType}`
+    );
   }
 
   const mediaContents = await ref.fetchContents();
 
   if (!mediaContents.ok) {
-    throw (new Error("Failed to fetch media contents"));
+    throw new Error("Failed to fetch media contents");
   }
 
   const mediaMimeType = mediaContents.headers.get("Content-Type");
   if (mediaMimeType !== "image/png") {
-    throw (new Error(
-      `MediaMimeType was incorrect: expected image/png and got ${mediaMimeType} instead`,
-    ));
+    throw new Error(
+      `MediaMimeType was incorrect: expected image/png and got ${mediaMimeType} instead`
+    );
   }
 
   return mediaContents.blob();
 }
 
+// ─── Canonical per-variant access patterns ─────────────────────────────────
+// One function per variant of `MediaItemMetadata`, demonstrating the fields
+// accessible after narrowing via the corresponding `is*` type guard. Compile
+// errors here mean the @osdk/api mirror drifted from `@osdk/foundry.mediasets`
+// (which the @osdk/client type-equality test would also catch).
+
+function readDocumentMetadata(
+  m: Extract<MediaItemMetadata, { type: "document" }>
+): void {
+  console.log("document:", {
+    format: m.format,
+    pages: m.pages,
+    sizeBytes: m.sizeBytes,
+    title: m.title,
+    author: m.author,
+  });
+}
+
+function readImageryMetadata(
+  m: Extract<MediaItemMetadata, { type: "imagery" }>
+): void {
+  console.log("imagery:", {
+    format: m.format,
+    dimensions: m.dimensions,
+    bandCount: m.bands.length,
+    iccProfile: m.iccProfile,
+    geo: m.geo,
+    pages: m.pages,
+    orientation: m.orientation,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readAudioMetadata(
+  m: Extract<MediaItemMetadata, { type: "audio" }>
+): void {
+  console.log("audio:", {
+    format: m.format,
+    bitRate: m.specification.bitRate,
+    durationSeconds: m.specification.durationSeconds,
+    numberOfChannels: m.specification.numberOfChannels,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readVideoMetadata(
+  m: Extract<MediaItemMetadata, { type: "video" }>
+): void {
+  console.log("video:", {
+    format: m.format,
+    bitRate: m.specification.bitRate,
+    durationSeconds: m.specification.durationSeconds,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readDicomMetadata(
+  m: Extract<MediaItemMetadata, { type: "dicom" }>
+): void {
+  console.log("dicom:", {
+    mediaType: m.mediaType,
+    metaInformation: m.metaInformation,
+    modality: m.commonDataElements.modality,
+    patientId: m.commonDataElements.patientId,
+    numberFrames: m.commonDataElements.numberFrames,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readEmailMetadata(
+  m: Extract<MediaItemMetadata, { type: "email" }>
+): void {
+  console.log("email:", {
+    format: m.format,
+    senderCount: m.sender.length,
+    date: m.date,
+    attachmentCount: m.attachmentCount,
+    toCount: m.to.length,
+    ccCount: m.cc.length,
+    subject: m.subject,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readModel3dMetadata(
+  m: Extract<MediaItemMetadata, { type: "model3d" }>
+): void {
+  console.log("model3d:", {
+    format: m.format,
+    modelType: m.modelType,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readSpreadsheetMetadata(
+  m: Extract<MediaItemMetadata, { type: "spreadsheet" }>
+): void {
+  console.log("spreadsheet:", {
+    format: m.format,
+    sheetCount: m.sheetNames.length,
+    title: m.title,
+    author: m.author,
+    sizeBytes: m.sizeBytes,
+  });
+}
+
+function readUntypedMetadata(
+  m: Extract<MediaItemMetadata, { type: "untyped" }>
+): void {
+  console.log("untyped:", { sizeBytes: m.sizeBytes });
+}
+
+async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
+  if (ref.fetchFullMetadata == null) {
+    throw new Error(
+      "Media implementation does not expose fetchFullMetadata; backing OSDK build is too old"
+    );
+  }
+  const { itemMetadata } = await ref.fetchFullMetadata();
+
+  // Fixture is image/png, so the imagery branch fires; the other cases are
+  // exhaustively typed so adding a new variant breaks the build.
+  console.log("Full metadata variant:", itemMetadata.type);
+  switch (itemMetadata.type) {
+    case "document":
+      readDocumentMetadata(itemMetadata);
+      break;
+    case "imagery":
+      readImageryMetadata(itemMetadata);
+      break;
+    case "audio":
+      readAudioMetadata(itemMetadata);
+      break;
+    case "video":
+      readVideoMetadata(itemMetadata);
+      break;
+    case "dicom":
+      readDicomMetadata(itemMetadata);
+      break;
+    case "email":
+      readEmailMetadata(itemMetadata);
+      break;
+    case "model3d":
+      readModel3dMetadata(itemMetadata);
+      break;
+    case "spreadsheet":
+      readSpreadsheetMetadata(itemMetadata);
+      break;
+    case "untyped":
+      readUntypedMetadata(itemMetadata);
+      break;
+    case "unknown":
+      console.log(
+        "Unknown MediaItemMetadata variant (SDK may be stale):",
+        itemMetadata.raw.type
+      );
+      break;
+    default: {
+      const _exhaustive: never = itemMetadata;
+      throw new Error(
+        `Unhandled MediaItemMetadata variant: ${JSON.stringify(_exhaustive)}`
+      );
+    }
+  }
+
+  if (itemMetadata.type !== "imagery") {
+    throw new Error(
+      `Full media metadata variant was incorrect: expected "imagery" and got "${itemMetadata.type}"`
+    );
+  }
+}
+
 async function runCreateMediaReferenceTest(
-  data: Blob,
+  data: Blob
 ): Promise<MediaReference> {
   // should not work
   // Won't allow property keys not of media ref type
-  await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  )
+  await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
     .createMediaReference({
       data,
       fileName: "test15.png",
       objectType: MnayanOsdkMediaObject,
       // @ts-expect-error
       propertyType: "path",
-    }).then((_) => {
-      throw (new Error(
-        "This create media reference should not resolve as it is not being assigned to a media reference property",
-      ));
-    }).catch(() => {
+    })
+    .then((_) => {
+      throw new Error(
+        "This create media reference should not resolve as it is not being assigned to a media reference property"
+      );
+    })
+    .catch(() => {
       console.log("Request failed as expected");
     });
 
@@ -84,23 +262,28 @@ async function runCreateMediaReferenceTest(
   console.log("ephemeral upload success!");
 
   // should work
-  return client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
-    .createMediaReference({
-      data,
-      fileName: "test15.png",
-      objectType: MnayanOsdkMediaObject,
-      propertyType: "mediaReference",
-    });
+  return client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference
+  ).createMediaReference({
+    data,
+    fileName: "test15.png",
+    objectType: MnayanOsdkMediaObject,
+    propertyType: "mediaReference",
+  });
 }
 
 async function runUploadMediaTest(data: Blob): Promise<void> {
   const payload: MediaUpload = { data, fileName: "test15.png" };
 
-  const result = await client($Actions.createUnstructuredImageExample)
-    .applyAction({
+  const result = await client(
+    $Actions.createUnstructuredImageExample
+  ).applyAction(
+    {
       media_reference: payload,
       path: "test15.png",
-    }, { $returnEdits: true });
+    },
+    { $returnEdits: true }
+  );
 }
 
 async function runMediaQueryTest(): Promise<void> {
@@ -109,36 +292,39 @@ async function runMediaQueryTest(): Promise<void> {
   const { findUp } = await import("find-up");
 
   const workspaceRoot = path.dirname(
-    (await findUp("pnpm-workspace.yaml")) ?? "",
+    (await findUp("pnpm-workspace.yaml")) ?? ""
   );
   const imagePath = path.join(
     workspaceRoot,
-    "packages/e2e.sandbox.catchall/src/images/palantir.png",
+    "packages/e2e.sandbox.catchall/src/images/palantir.png"
   );
   const imageBuffer = await fs.readFile(imagePath);
   const data = new Blob([new Uint8Array(imageBuffer)], { type: "image/png" });
 
   // Test Direct Upload
-  let output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: { data, fileName: "palantir.png" },
-    });
+  let output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput
+  ).executeFunction({
+    mediaReference: { data, fileName: "palantir.png" },
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 
   // Test Media Reference Upload
-  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: output.getMediaReference(),
-    });
+  output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput
+  ).executeFunction({
+    mediaReference: output.getMediaReference(),
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 
   // Test Media Upload
-  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: output,
-    });
+  output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput
+  ).executeFunction({
+    mediaReference: output,
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 }
@@ -210,13 +396,13 @@ const slicePdf: MediaTransformation = {
 };
 
 async function runTransformAndWaitTest(
-  mediaReference: MediaReference,
+  mediaReference: MediaReference
 ): Promise<void> {
   const transformation = imageResize;
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
   const result = await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait
   ).transformAndWait({
     mediaReference,
     transformation,
@@ -225,7 +411,7 @@ async function runTransformAndWaitTest(
   if (!result.ok) {
     const body = await result.text();
     throw new Error(
-      `transformAndWait failed with status ${result.status}: ${body}`,
+      `transformAndWait failed with status ${result.status}: ${body}`
     );
   }
 
@@ -236,21 +422,25 @@ async function runTransformAndWaitTest(
 
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
-    "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
+    "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7"
   );
 
   console.log("Object id:", result?.id);
   console.log(
     "Object Media reference:",
-    result?.mediaReference?.getMediaReference(),
+    result?.mediaReference?.getMediaReference()
   );
 
   if (!result.mediaReference) {
-    throw (new Error("Object does not contain expected media reference"));
+    throw new Error("Object does not contain expected media reference");
   }
   console.log("Reading Media Reference");
   const testImage: Blob = await runReadMediaTest(result.mediaReference);
   console.log("SUCCESS: Reading Media Reference");
+
+  console.log("Reading Full Media Metadata");
+  await runReadMediaFullMetadataTest(result.mediaReference);
+  console.log("SUCCESS: Reading Full Media Metadata");
 
   console.log("Creating Media Reference");
   const mediaRef: MediaReference = await runCreateMediaReferenceTest(testImage);
@@ -258,14 +448,14 @@ export async function runMediaTest(): Promise<void> {
 
   // test applying via a function backed action
   console.log("Applying Media Reference via Function Backed Action");
-  await client(
-    $Actions.createMediaViaFunction,
-  )
-    .applyAction({
+  await client($Actions.createMediaViaFunction).applyAction(
+    {
       mediaItem: mediaRef,
-    }, {
+    },
+    {
       $returnEdits: true,
-    });
+    }
+  );
   console.log("SUCCESS: Applying Media Reference via Function Backed Action");
 
   // test direct media upload

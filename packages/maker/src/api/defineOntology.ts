@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+import * as path from "path";
+
 import type {
   ActionTypeStatus,
   OntologyIr,
@@ -28,8 +31,7 @@ import type {
   ParameterRenderHint,
   SectionId,
 } from "@osdk/client.unstable";
-import * as fs from "fs";
-import * as path from "path";
+
 import { convertActionParameters } from "../conversion/toMarketplace/convertActionParameters.js";
 import { convertActionSections } from "../conversion/toMarketplace/convertActionSections.js";
 import { convertActionValidation } from "../conversion/toMarketplace/convertActionValidation.js";
@@ -70,24 +72,21 @@ export let dependencies: Record<string, string>;
 /** @internal */
 export let namespace: string;
 
-export function updateOntology<
-  T extends OntologyEntityType,
->(
-  entity: T,
-): void {
+export function updateOntology<T extends OntologyEntityType>(entity: T): void {
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
     ontologyDefinition[entity.__type][entity.apiName] = entity;
     return;
   }
   // value types are a special case
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-      === undefined
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] ===
+    undefined
   ) {
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
   }
-  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-    .push(entity);
+  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName].push(
+    entity
+  );
 }
 
 export async function defineOntology(
@@ -98,7 +97,7 @@ export async function defineOntology(
   codeSnippetFiles?: boolean,
   snippetPackageName?: string,
   snippetFileOutputDir?: string,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -124,7 +123,7 @@ export async function defineOntology(
     // eslint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
-      e,
+      e
     );
     throw e;
   }
@@ -138,7 +137,7 @@ export async function defineOntology(
     createCodeSnippets(
       ontologyDefinition,
       snippetPackageName,
-      snippetFileOutputDir,
+      snippetFileOutputDir
     );
   }
 
@@ -160,7 +159,7 @@ export function writeStaticObjects(outputDir: string): void {
     fs.mkdirSync(codegenDir, { recursive: true });
   }
 
-  Object.values(typeDirs).forEach(typeDirNameFromMap => {
+  Object.values(typeDirs).forEach((typeDirNameFromMap) => {
     const currentTypeDirPath = path.join(codegenDir, typeDirNameFromMap);
     if (fs.existsSync(currentTypeDirPath)) {
       fs.rmSync(currentTypeDirPath, { recursive: true, force: true });
@@ -180,9 +179,10 @@ export function writeStaticObjects(outputDir: string): void {
 
       Object.entries(entities).forEach(
         ([apiName, entity]: [string, OntologyEntityType]) => {
-          const entityFileNameBase = camel(withoutNamespace(apiName))
-            + (ontologyTypeEnumKey as OntologyEntityTypeEnum
-                === OntologyEntityTypeEnum.VALUE_TYPE
+          const entityFileNameBase =
+            camel(withoutNamespace(apiName)) +
+            ((ontologyTypeEnumKey as OntologyEntityTypeEnum) ===
+            OntologyEntityTypeEnum.VALUE_TYPE
               ? "ValueType"
               : "");
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
@@ -190,10 +190,10 @@ export function writeStaticObjects(outputDir: string): void {
           const entityJSON = JSON.stringify(
             sanitizeTypes(entity),
             null,
-            2,
+            2
           ).replace(
-            /("__type"\s*:\s*)"([^"]*)"/g,
-            (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
+            /("__type"\s*:\s*)"([^"]*)"/gu,
+            (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
           );
           const content = `
 import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -210,20 +210,20 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
         `;
           fs.writeFileSync(filePath, content, { flag: "w" });
           entityModuleNames.push(entityFileNameBase);
-        },
+        }
       );
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`
         );
       }
-    },
+    }
   );
 
   if (topLevelExportStatements.length > 0) {
-    const mainIndexContent = dependencyInjectionString()
-      + topLevelExportStatements.join("\n") + "\n";
+    const mainIndexContent =
+      dependencyInjectionString() + topLevelExportStatements.join("\n") + "\n";
     const mainIndexFilePath = path.join(outputDir, "index.ts");
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
@@ -233,59 +233,60 @@ export function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
-  mandatoryMarkingGroupName?: string,
+  mandatoryMarkingGroupName?: string
 ): OntologyIrObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markingGroupName: classificationMarkingGroupName,
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingGroupName: mandatoryMarkingGroupName,
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markingGroupName: classificationMarkingGroupName,
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingGroupName: mandatoryMarkingGroupName,
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     datasourceName: apiName,
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
 }
 
-export function sanitizeTypes(
-  entity: OntologyEntityType,
-): OntologyEntityType {
+export function sanitizeTypes(entity: OntologyEntityType): OntologyEntityType {
   switch (entity.__type) {
     case OntologyEntityTypeEnum.INTERFACE_TYPE:
       return filterCyclicReferences({
         ...entity,
         linkedInterfaces: (entity.linkedInterfaces ?? []).map(
-          interfaceTypeOrApiName =>
+          (interfaceTypeOrApiName) =>
             typeof interfaceTypeOrApiName === "string"
               ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-                interfaceTypeOrApiName
-              ]
-              : interfaceTypeOrApiName,
+                  interfaceTypeOrApiName
+                ]
+              : interfaceTypeOrApiName
         ),
       });
     case OntologyEntityTypeEnum.OBJECT_TYPE:
       return entity.implementsInterfaces === undefined
         ? entity
         : {
-          ...entity,
-          implementsInterfaces: sanitizeImplements(entity.implementsInterfaces),
-        };
+            ...entity,
+            implementsInterfaces: sanitizeImplements(
+              entity.implementsInterfaces
+            ),
+          };
     case OntologyEntityTypeEnum.LINK_TYPE:
       return sanitizeLinkInterfaces(entity);
     default:
@@ -294,27 +295,27 @@ export function sanitizeTypes(
 }
 
 function sanitizeImplements(
-  implementsInterfaces: Array<InterfaceImplementation>,
+  implementsInterfaces: Array<InterfaceImplementation>
 ): Array<InterfaceImplementation> {
-  return implementsInterfaces.map(impl => ({
+  return implementsInterfaces.map((impl) => ({
     ...impl,
     implements: filterCyclicReferences(impl.implements),
   }));
 }
 
 function sanitizeImplementer(
-  object: ObjectTypeDefinition | ObjectType,
+  object: ObjectTypeDefinition | ObjectType
 ): ObjectTypeDefinition | ObjectType {
   return object.implementsInterfaces === undefined
     ? object
     : {
-      ...object,
-      implementsInterfaces: sanitizeImplements(object.implementsInterfaces),
-    };
+        ...object,
+        implementsInterfaces: sanitizeImplements(object.implementsInterfaces),
+      };
 }
 
 function sanitizeLinkSideObject(
-  object: ObjectTypeDefinition | ObjectType | string,
+  object: ObjectTypeDefinition | ObjectType | string
 ): ObjectTypeDefinition | ObjectType | string {
   return typeof object === "string" ? object : sanitizeImplementer(object);
 }
@@ -349,7 +350,7 @@ function sanitizeLinkInterfaces(link: LinkType): LinkType {
 }
 
 function sanitizeIntermediarySide(
-  side: IntermediaryObjectLinkReference,
+  side: IntermediaryObjectLinkReference
 ): IntermediaryObjectLinkReference {
   return {
     ...side,
@@ -361,12 +362,12 @@ function sanitizeIntermediarySide(
 function filterCyclicReferences(
   iface: InterfaceType,
   ancestors = new Set<string>(),
-  expanded = new Set<string>(),
+  expanded = new Set<string>()
 ): InterfaceType {
   ancestors.add(iface.apiName);
 
   const processLinked = (
-    linked: InterfaceType | string,
+    linked: InterfaceType | string
   ): InterfaceType | string => {
     if (typeof linked === "string") return linked;
     if (ancestors.has(linked.apiName)) return linked.apiName;
@@ -386,24 +387,25 @@ function filterCyclicReferences(
     ...iface,
     linkedInterfaces: (iface.linkedInterfaces ?? []).map(processLinked),
     extendsInterfaces: iface.extendsInterfaces.map(
-      parent => processLinked(parent) as InterfaceType,
+      (parent) => processLinked(parent) as InterfaceType
     ),
   };
 }
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
-  const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  const step1 = apiName.replace(/([a-z0-9])([A-Z])/gu, "$1-$2");
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
   // then convert the whole string to lowercase
   // e.g., apiName, APIname, and apiNAME will all be converted to api-name
-  const linkTypeId = step1.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+  const linkTypeId = step1
+    .replace(/([A-Z])([A-Z][a-z])/gu, "$1-$2")
     .toLowerCase();
 
-  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/u;
   if (!VALIDATION_PATTERN.test(linkTypeId)) {
     throw new Error(
-      `LinkType id '${linkTypeId}' must be lower case with dashes.`,
+      `LinkType id '${linkTypeId}' must be lower case with dashes.`
     );
   }
   return linkTypeId;
@@ -461,15 +463,15 @@ export function convertObjectStatus(status: any): any {
 }
 
 export function convertAction(
-  action: ActionType,
+  action: ActionType
 ): OntologyIrActionTypeBlockDataV2 {
   const actionValidation = convertActionValidation(action);
   const actionParameters: Record<ParameterId, OntologyIrParameter> =
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -501,34 +503,35 @@ export function convertAction(
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
           successMessage: action.submissionMetadata?.successMessage
-            ? [{
-              type: "message",
-              message: action.submissionMetadata.successMessage,
-            }]
+            ? [
+                {
+                  type: "message",
+                  message: action.submissionMetadata.successMessage,
+                },
+              ]
             : [],
           typeClasses: action.typeClasses ?? [],
           applyingMessage: [],
-          ...(action.submissionMetadata?.submitButtonDisplayMetadata
-            && {
-              submitButtonDisplayMetadata:
-                action.submissionMetadata.submitButtonDisplayMetadata,
-            }),
-          ...(action.submissionMetadata?.undoButtonConfiguration
-            && {
-              undoButtonConfiguration:
-                action.submissionMetadata.undoButtonConfiguration,
-            }),
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+            submitButtonDisplayMetadata:
+              action.submissionMetadata.submitButtonDisplayMetadata,
+          }),
+          ...(action.submissionMetadata?.undoButtonConfiguration && {
+            undoButtonConfiguration:
+              action.submissionMetadata.undoButtonConfiguration,
+          }),
         },
         parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
-        status: typeof action.status === "string"
-          ? {
-            type: action.status,
-            [action.status]: {},
-          } as unknown as ActionTypeStatus
-          : action.status,
+        status:
+          typeof action.status === "string"
+            ? ({
+                type: action.status,
+                [action.status]: {},
+              } as unknown as ActionTypeStatus)
+            : action.status,
         entities: action.entities,
       },
     },
@@ -536,7 +539,7 @@ export function convertAction(
 }
 
 export function extractAllowedValues(
-  allowedValues: ActionParameterAllowedValues,
+  allowedValues: ActionParameterAllowedValues
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
     case "oneOf":
@@ -547,8 +550,7 @@ export function extractAllowedValues(
           oneOf: {
             labelledValues: allowedValues.oneOf,
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -576,12 +578,8 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
               : { regex: { regex, failureMessage: "Invalid input" } }),
@@ -629,22 +627,23 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -669,18 +668,17 @@ export function extractAllowedValues(
           [k]: {},
         },
       } as unknown as OntologyIrAllowedParameterValues;
-      // TODO(dpaquin): there's probably a TS clean way to do this
+    // TODO(dpaquin): there's probably a TS clean way to do this
   }
 }
 
 export function renderHintFromBaseType(
   parameter: ActionParameter,
-  validation?: ActionParameterValidation,
+  validation?: ActionParameterValidation
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -696,8 +694,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        validation?.allowedValues?.type === "user" ||
+        validation?.allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -724,7 +722,7 @@ export function renderHintFromBaseType(
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`
         );
       }
     case "timeSeriesReference":
@@ -762,7 +760,7 @@ function camel(str: string): string {
   if (!str) {
     return str;
   }
-  let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
+  let result = str.replace(/[-_]+(.)?/gu, (_, c) => (c ? c.toUpperCase() : ""));
   result = result.charAt(0).toLowerCase() + result.slice(1);
   return result;
 }

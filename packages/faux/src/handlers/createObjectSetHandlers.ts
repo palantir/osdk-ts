@@ -15,6 +15,7 @@
  */
 
 import type { RequestHandler } from "msw";
+
 import { aggregateObjects } from "../FauxFoundry/aggregateObjects.js";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { getObjectsFromSet } from "../FauxFoundry/getObjectsFromSet.js";
@@ -22,20 +23,17 @@ import { OntologiesV2 } from "../mock/index.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
-  fauxFoundry: FauxFoundry,
+  fauxFoundry: FauxFoundry
 ): Array<RequestHandler> => [
   /**
    * Load ObjectSet Objects
    */
-  OntologiesV2.OntologyObjectSets.load(
-    baseUrl,
-    async ({ request, params }) => {
-      const a = fauxFoundry
-        .getDataStore(params.ontologyApiName)
-        .getObjectsFromObjectSet(await request.json());
-      return a;
-    },
-  ),
+  OntologiesV2.OntologyObjectSets.load(baseUrl, async ({ request, params }) => {
+    const a = fauxFoundry
+      .getDataStore(params.ontologyApiName)
+      .getObjectsFromObjectSet(await request.json());
+    return a;
+  }),
 
   /**
    * Aggregate Objects in ObjectSet
@@ -47,12 +45,8 @@ export const createObjectSetHandlers = (
       const ds = fauxFoundry.getDataStore(params.ontologyApiName);
       const objects = getObjectsFromSet(ds, body.objectSet, undefined);
 
-      return aggregateObjects(
-        objects,
-        body.aggregation,
-        body.groupBy,
-      );
-    },
+      return aggregateObjects(objects, body.aggregation, body.groupBy);
+    }
   ),
 
   /**
@@ -65,7 +59,9 @@ export const createObjectSetHandlers = (
         .getDataStore(params.ontologyApiName)
         .getObjectsFromObjectSet(await request.json());
 
-      const objectApiNames = new Set(pagedResponse.data.map(o => o.__apiName));
+      const objectApiNames = new Set(
+        pagedResponse.data.map((o) => o.__apiName)
+      );
 
       return {
         interfaceToObjectTypeMappings: fauxFoundry
@@ -75,6 +71,6 @@ export const createObjectSetHandlers = (
         ...pagedResponse,
         propertySecurities: [],
       };
-    },
+    }
   ),
 ];

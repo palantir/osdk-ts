@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { schemaFromMetadata } from "./schema.js";
 
 describe("schemaFromMetadata", () => {

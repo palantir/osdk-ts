@@ -29,10 +29,12 @@ import {
 import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
+
 import { usePortalContainer } from "../shared/PortalContainerContext.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
-import styles from "./TableHeaderWithPopover.module.css";
 import type { ColumnOption } from "./utils/types.js";
+
+import styles from "./TableHeaderWithPopover.module.css";
 
 interface HeaderMenuItemProps {
   onClick: () => void;
@@ -54,7 +56,7 @@ function HeaderMenuItem({
         styles.osdkCenterContainer,
         styles.osdkContentGap,
         styles.osdkHeaderMenuItem,
-        active && styles.osdkHeaderActiveMenuItem,
+        active && styles.osdkHeaderActiveMenuItem
       )}
       onClick={onClick}
     >
@@ -87,9 +89,7 @@ export interface HeaderMenuFeatureFlags {
   showConfigItem?: boolean;
 }
 
-interface TableHeaderWithPopoverProps<
-  TData extends RowData,
-> {
+interface TableHeaderWithPopoverProps<TData extends RowData> {
   table: Table<TData>;
   header: Header<TData, unknown>;
   isColumnPinned: false | "left" | "right";
@@ -101,9 +101,7 @@ interface TableHeaderWithPopoverProps<
   onColumnHeaderClick?: (columnId: string) => void;
 }
 
-export function TableHeaderWithPopover<
-  TData extends RowData,
->({
+export function TableHeaderWithPopover<TData extends RowData>({
   header,
   table,
   isColumnPinned,
@@ -122,10 +120,7 @@ export function TableHeaderWithPopover<
     showConfigItem = false,
   } = featureFlags ?? {};
 
-  const {
-    setColumnPinning,
-    setSorting,
-  } = table;
+  const { setColumnPinning, setSorting } = table;
 
   const currentSorting = table.getState().sorting;
 
@@ -171,13 +166,10 @@ export function TableHeaderWithPopover<
     }
   }, [header.column, onResetSize]);
 
-  const handleInteraction = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      setIsOpen((prev) => !prev);
-    },
-    [],
-  );
+  const handleInteraction = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const handleHeaderClick = useCallback(() => {
     onColumnHeaderClick?.(header.column.id);
@@ -195,13 +187,14 @@ export function TableHeaderWithPopover<
 
   const isSorted = header.column.getIsSorted();
   const isSortable = header.column.getCanSort();
-  const sortIndex = currentSorting?.findIndex(s => s.id === header.column.id)
-    ?? -1;
+  const sortIndex =
+    currentSorting?.findIndex((s) => s.id === header.column.id) ?? -1;
 
-  const hasAnyMenuItems = showPinningItems
-    || (showSortingItems && isSortable)
-    || showResizeItem
-    || showConfigItem;
+  const hasAnyMenuItems =
+    showPinningItems ||
+    (showSortingItems && isSortable) ||
+    showResizeItem ||
+    showConfigItem;
 
   return (
     <>
@@ -211,7 +204,7 @@ export function TableHeaderWithPopover<
           className={classNames(
             styles.osdkCenterContainer,
             styles.osdkContentGap,
-            styles.osdkHeaderContainer,
+            styles.osdkHeaderContainer
           )}
           onContextMenu={handleInteraction}
         >
@@ -220,39 +213,30 @@ export function TableHeaderWithPopover<
               styles.osdkCenterContainer,
               styles.osdkContentGap,
               styles.osdkHeaderContentLeft,
-              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
+              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable
             )}
             onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
           >
-            {isColumnPinned && (
-              <Pin
-                className={styles.osdkHeaderIcon}
-              />
-            )}
+            {isColumnPinned && <Pin className={styles.osdkHeaderIcon} />}
             <TableHeaderContent header={header} />
           </div>
           <div
             className={classNames(
               styles.osdkCenterContainer,
               styles.osdkContentGap,
-              styles.osdkHeaderContentRight,
+              styles.osdkHeaderContentRight
             )}
           >
             {isSorted && (
               <div className={styles.osdkCenterContainer}>
-                {isSorted === "asc"
-                  ? (
-                    <SortAlphabetical
-                      className={styles.osdkHeaderIcon}
-                    />
-                  )
-                  : (
-                    <SortAlphabeticalDesc
-                      className={styles.osdkHeaderIcon}
-                    />
-                  )}
-                {currentSorting.length > 1 && sortIndex >= 0
-                  && <span className={styles.sortIndex}>{sortIndex + 1}</span>}
+                {isSorted === "asc" ? (
+                  <SortAlphabetical className={styles.osdkHeaderIcon} />
+                ) : (
+                  <SortAlphabeticalDesc className={styles.osdkHeaderIcon} />
+                )}
+                {currentSorting.length > 1 && sortIndex >= 0 && (
+                  <span className={styles.sortIndex}>{sortIndex + 1}</span>
+                )}
               </div>
             )}
             {hasAnyMenuItems && (
@@ -260,20 +244,16 @@ export function TableHeaderWithPopover<
                 aria-label={`Open header menu for column with id=${header.column.id}`}
                 className={classNames(
                   styles.osdkCenterContainer,
-                  styles.osdkHeaderPopoverTrigger,
+                  styles.osdkHeaderPopoverTrigger
                 )}
               >
-                <ChevronDown
-                  className={styles.osdkHeaderIcon}
-                />
+                <ChevronDown className={styles.osdkHeaderIcon} />
               </Menu.Trigger>
             )}
           </div>
           <Menu.Portal container={portalContainer}>
             <Menu.Positioner sideOffset={4}>
-              <Menu.Popup
-                className={styles.osdkHeaderPopup}
-              >
+              <Menu.Popup className={styles.osdkHeaderPopup}>
                 {showPinningItems && !isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handlePinLeft}
@@ -304,7 +284,7 @@ export function TableHeaderWithPopover<
                       label="Sort descending"
                       active={isSorted === "desc"}
                     />
-                    {columnOptions?.some(col => col.canSort) && (
+                    {columnOptions?.some((col) => col.canSort) && (
                       <HeaderMenuItem
                         onClick={handleOpenMultiSort}
                         icon={Sort}
@@ -313,14 +293,13 @@ export function TableHeaderWithPopover<
                     )}
                   </>
                 )}
-                {showSortingItems && !!currentSorting?.length
-                  && (
-                    <HeaderMenuItem
-                      onClick={handleClearAllSorts}
-                      icon={Remove}
-                      label="Clear all sorts"
-                    />
-                  )}
+                {showSortingItems && !!currentSorting?.length && (
+                  <HeaderMenuItem
+                    onClick={handleClearAllSorts}
+                    icon={Remove}
+                    label="Clear all sorts"
+                  />
+                )}
                 {showResizeItem && (
                   <HeaderMenuItem
                     onClick={handleResetSize}

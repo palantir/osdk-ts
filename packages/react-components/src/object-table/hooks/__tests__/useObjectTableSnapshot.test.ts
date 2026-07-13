@@ -27,6 +27,7 @@ import type { Client } from "@osdk/client";
 import type { Column, Table } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
 import { DEFAULT_SNAPSHOT_ROW_LIMIT } from "../../utils/objectTableSnapshot.js";
@@ -69,7 +70,7 @@ type TestInstance = Osdk.Instance<
 /** Builds a fake tanstack-table leaf column with the fields the hook reads. */
 function makeColumn(
   id: string,
-  columnDef: { header?: unknown; meta?: { columnName?: string } } = {},
+  columnDef: { header?: unknown; meta?: { columnName?: string } } = {}
 ): Column<TestInstance> {
   return {
     id,
@@ -91,14 +92,12 @@ function makeTable(columns: Array<Column<TestInstance>>): Table<TestInstance> {
  * Builds a fake object set whose `asyncIter` yields the provided objects. The
  * returned spy lets tests assert the options (e.g. `$orderBy`) the hook passes.
  */
-function makeObjectSet(
-  objects: ReadonlyArray<Record<string, unknown>>,
-): {
+function makeObjectSet(objects: ReadonlyArray<Record<string, unknown>>): {
   objectSet: ObjectSet<TestObject, TestRDPs>;
   asyncIter: ReturnType<typeof vi.fn>;
 } {
   const asyncIter = vi.fn((_options?: unknown) =>
-    (async function*() {
+    (async function* () {
       for (const object of objects) {
         yield object;
       }
@@ -117,10 +116,11 @@ function renderGetSnapshot<
   RDPs extends Record<string, SimplePropertyDef>,
   FC extends Record<string, QueryDefinition<{}>>,
 >(
-  args:
-    & Omit<Parameters<typeof useObjectTableSnapshot<Q, RDPs, FC>>[0], "orderBy">
-    & { orderBy?: OrderBy<Q> },
-  client: Client = fakeClient,
+  args: Omit<
+    Parameters<typeof useObjectTableSnapshot<Q, RDPs, FC>>[0],
+    "orderBy"
+  > & { orderBy?: OrderBy<Q> },
+  client: Client = fakeClient
 ) {
   mockClient = client;
   // `orderBy` is a required field on the hook args; default it to undefined so
@@ -152,7 +152,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot()).rejects.toContain(
-        "total row count exceeds row limit",
+        "total row count exceeds row limit"
       );
       // It should fail fast without paginating the object set.
       expect(asyncIter).not.toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot({ rowLimit: 10 })).rejects.toContain(
-        "total row count exceeds row limit",
+        "total row count exceeds row limit"
       );
     });
 
@@ -229,7 +229,7 @@ describe(useObjectTableSnapshot, () => {
       });
 
       await expect(getSnapshot({ rowLimit: 1 })).rejects.toContain(
-        "total row count exceeds row limit",
+        "total row count exceeds row limit"
       );
     });
 
@@ -456,16 +456,19 @@ describe(useObjectTableSnapshot, () => {
       });
       const { objectSet } = makeObjectSet(OBJECTS);
 
-      const getSnapshot = renderGetSnapshot({
-        objectOrInterfaceType: TestObjectType,
-        table: makeTable([
-          makeColumn("name", { header: "Name" }),
-          makeColumn("greeting", { header: "Greeting" }),
-        ]),
-        columnDefinitions: functionColumnDefinitions,
-        objectSet,
-        totalCount: "2",
-      }, client);
+      const getSnapshot = renderGetSnapshot(
+        {
+          objectOrInterfaceType: TestObjectType,
+          table: makeTable([
+            makeColumn("name", { header: "Name" }),
+            makeColumn("greeting", { header: "Greeting" }),
+          ]),
+          columnDefinitions: functionColumnDefinitions,
+          objectSet,
+          totalCount: "2",
+        },
+        client
+      );
 
       const snapshot = await getSnapshot();
       expect(executeFunction).toHaveBeenCalledOnce();
@@ -477,14 +480,17 @@ describe(useObjectTableSnapshot, () => {
       const { client, executeFunction } = makeFunctionClient({ "1": "Hi" });
       const { objectSet } = makeObjectSet(OBJECTS);
 
-      const getSnapshot = renderGetSnapshot({
-        objectOrInterfaceType: TestObjectType,
-        // Only the property column is visible; "greeting" is not.
-        table: makeTable([makeColumn("name", { header: "Name" })]),
-        columnDefinitions: functionColumnDefinitions,
-        objectSet,
-        totalCount: "2",
-      }, client);
+      const getSnapshot = renderGetSnapshot(
+        {
+          objectOrInterfaceType: TestObjectType,
+          // Only the property column is visible; "greeting" is not.
+          table: makeTable([makeColumn("name", { header: "Name" })]),
+          columnDefinitions: functionColumnDefinitions,
+          objectSet,
+          totalCount: "2",
+        },
+        client
+      );
 
       const snapshot = await getSnapshot();
       expect(executeFunction).not.toHaveBeenCalled();

@@ -16,8 +16,10 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import { formatNumber } from "../utils/format.js";
 import type { UnusedFieldReport } from "../utils/UnusedFieldAnalyzer.js";
+
 import styles from "./MonitoringPanel.module.scss";
 
 export interface ObjectLoadingMetricsProps {
@@ -37,11 +39,10 @@ export const ObjectLoadingMetrics: React.FC<ObjectLoadingMetricsProps> = ({
     );
   }
 
-  const efficiencyPercent = ((unusedFieldReport.averageEfficiency ?? 0) * 100)
-    .toFixed(0);
-  const wasteKb = ((unusedFieldReport.totalWastedBytes ?? 0) / 1024).toFixed(
-    1,
-  );
+  const efficiencyPercent = (
+    (unusedFieldReport.averageEfficiency ?? 0) * 100
+  ).toFixed(0);
+  const wasteKb = ((unusedFieldReport.totalWastedBytes ?? 0) / 1024).toFixed(1);
 
   return (
     <>
@@ -53,8 +54,8 @@ export const ObjectLoadingMetrics: React.FC<ObjectLoadingMetricsProps> = ({
             unusedFieldReport.inefficientComponents === 0
               ? styles.success
               : unusedFieldReport.inefficientComponents < 5
-              ? styles.warning
-              : styles.danger,
+                ? styles.warning
+                : styles.danger
           )}
         >
           {formatNumber(unusedFieldReport.inefficientComponents)} of{" "}
@@ -67,12 +68,8 @@ export const ObjectLoadingMetrics: React.FC<ObjectLoadingMetricsProps> = ({
 
       <div className={styles.metric}>
         <span className={styles.metricLabel}>Wasted Bandwidth</span>
-        <span className={styles.metricValue}>
-          {wasteKb}KB
-        </span>
-        <span className={styles.metricSubtext}>
-          unused fields loaded
-        </span>
+        <span className={styles.metricValue}>{wasteKb}KB</span>
+        <span className={styles.metricSubtext}>unused fields loaded</span>
       </div>
 
       <div className={styles.metric}>

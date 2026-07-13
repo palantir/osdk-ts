@@ -1,5 +1,47 @@
 # @osdk/api
 
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 2.42.0
+
+### Minor Changes
+
+- 830d791: Migrate @osdk/api, @osdk/functions, and @osdk/unit-testing to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the check-api core libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving; the public API surface is unchanged.
+
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+## 2.39.0
+
+## 2.38.0
+
+## 2.37.0
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
 ## 2.33.0
 
 ## 2.32.0

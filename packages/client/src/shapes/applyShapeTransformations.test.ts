@@ -18,6 +18,7 @@ import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type { ShapePropertyConfig } from "@osdk/api/shapes-internal";
 import type { ShapeDefinition } from "@osdk/api/unstable";
 import { describe, expect, it } from "vitest";
+
 import {
   applyShapeTransformations,
   applyShapeTransformationsToArray,
@@ -26,7 +27,7 @@ import {
 type MockShape = ShapeDefinition<ObjectOrInterfaceDefinition>;
 
 function createMockShape(
-  props: Record<string, ShapePropertyConfig>,
+  props: Record<string, ShapePropertyConfig>
 ): MockShape {
   return {
     __shapeId: "test-shape",
@@ -42,7 +43,7 @@ function createMockShape(
 
 function createMockObject(
   properties: Record<string, unknown>,
-  primaryKey: string | number = "pk1",
+  primaryKey: string | number = "pk1"
 ) {
   const obj = {
     $primaryKey: primaryKey,

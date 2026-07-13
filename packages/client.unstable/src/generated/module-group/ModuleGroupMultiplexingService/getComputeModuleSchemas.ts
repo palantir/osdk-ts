@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { QueryRunnerSchema as _QueryRunnerSchema } from "../__components.js";
 
 /**
@@ -26,13 +27,13 @@ import type { QueryRunnerSchema as _QueryRunnerSchema } from "../__components.js
 export async function getComputeModuleSchemas(
   ctx: ConjureContext,
   rid: string,
-  branch: string,
+  branch: string
 ): Promise<Array<_QueryRunnerSchema> | null | undefined> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/schemas`,
     "GET",
     undefined,
-    { rid, branch },
+    { rid, branch }
   );
 }

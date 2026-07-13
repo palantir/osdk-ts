@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
 import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
@@ -83,12 +84,12 @@ export function CbacPicker({
       const newSelection = toggleMarking(
         markingId,
         selectedIdsRef.current,
-        categoryGroups,
+        categoryGroups
       );
       setSelectedIds(newSelection);
       onChange(newSelection);
     },
-    [readOnly, categoryGroups, onChange],
+    [readOnly, categoryGroups, onChange]
   );
 
   const handleDismiss = React.useCallback(() => {

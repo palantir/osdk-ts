@@ -20,19 +20,18 @@ import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import { defineAction, kebab } from "./defineAction.js";
 
 export function defineDeleteInterfaceObjectAction(
-  defInput: InterfaceActionTypeUserDefinition,
+  defInput: InterfaceActionTypeUserDefinition
 ): ActionType {
   const def = cloneDefinition(defInput);
   return defineAction({
-    apiName: def.apiName
-      ?? `delete-interface-object-${
-        kebab(
-          def.interfaceType.apiName.split(".").pop()
-            ?? def.interfaceType.apiName,
-        )
-      }`,
-    displayName: def.displayName
-      ?? `Delete ${def.interfaceType.displayMetadata.displayName}`,
+    apiName:
+      def.apiName ??
+      `delete-interface-object-${kebab(
+        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName
+      )}`,
+    displayName:
+      def.displayName ??
+      `Delete ${def.interfaceType.displayMetadata.displayName}`,
     parameters: [
       {
         id: "objectToDeleteParameter",
@@ -48,12 +47,14 @@ export function defineDeleteInterfaceObjectAction(
       },
     ],
     status: def.status ?? "active",
-    rules: [{
-      type: "deleteObjectRule",
-      deleteObjectRule: {
-        objectToDelete: "objectToDeleteParameter",
+    rules: [
+      {
+        type: "deleteObjectRule",
+        deleteObjectRule: {
+          objectToDelete: "objectToDeleteParameter",
+        },
       },
-    }],
+    ],
     entities: {
       affectedInterfaceTypes: [def.interfaceType.apiName],
       affectedObjectTypes: [],

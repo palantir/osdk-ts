@@ -19,7 +19,7 @@ import * as fs from "node:fs/promises";
 
 export async function safeStat(
   filePath: string,
-  type?: "should exist" | "should not exist",
+  type?: "should exist" | "should not exist"
 ): Promise<Stats | undefined> {
   try {
     const ret = await fs.stat(filePath);

@@ -78,15 +78,14 @@ export namespace EmployeeApiTest {
     // Array with reducers for modifier tests
     readonly salaryHistory: number[] | undefined;
     // Array of structs with both mainValue and reducers for modifier tests
-    readonly bonusHistory:
-      | Array<{ year: number; amount: number }>
-      | undefined;
+    readonly bonusHistory: Array<{ year: number; amount: number }> | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<EmployeeApiTest, EmployeeApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    EmployeeApiTest,
+    EmployeeApiTest.ObjectSet
+  > {}
 }
 
 export interface EmployeeApiTest extends $ObjectTypeDefinition {
@@ -107,15 +106,52 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       color: "blue";
       name: "person";
     };
-    implements: ["FooInterface"];
+    implements: ["FooInterface", "ReducerInterface"];
     interfaceMap: {
       FooInterface: {
         fooSpt: "fullName";
+      };
+      ReducerInterface: {
+        ifaceAddress: "addressStruct";
+        ifaceSalary: "salaryHistory";
+        ifaceBonus: "bonusHistory";
       };
     };
     inverseInterfaceMap: {
       FooInterface: {
         fullName: "fooSpt";
+      };
+      ReducerInterface: {
+        addressStruct: "ifaceAddress";
+        salaryHistory: "ifaceSalary";
+        bonusHistory: "ifaceBonus";
+      };
+    };
+    interfaceImplementations: {
+      FooInterface: {
+        fooSpt: { type: "localProperty"; propertyApiName: "fullName" };
+      };
+      ReducerInterface: {
+        ifaceAddress: {
+          type: "structField";
+          propertyApiName: "addressStruct";
+          structFieldApiName: "city";
+        };
+        ifaceSalary: {
+          type: "reduced";
+          implementation: {
+            type: "localProperty";
+            propertyApiName: "salaryHistory";
+          };
+        };
+        ifaceBonus: {
+          type: "reduced";
+          implementation: {
+            type: "structField";
+            propertyApiName: "bonusHistory";
+            structFieldApiName: "amount";
+          };
+        };
       };
     };
     links: {

@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type { CipherText } from "../object/CipherText.js";
 import type { Media, MediaReference } from "../object/Media.js";
 import type {
   GeotimeSeriesProperty,
@@ -28,6 +29,7 @@ export interface PropertyValueWireToClient {
   attachment: Attachment;
   boolean: boolean;
   byte: number;
+  cipherText: CipherText;
   datetime: string;
   decimal: string;
   double: number;
@@ -52,18 +54,20 @@ export type GetClientPropertyValueFromWire<
   T extends
     | keyof PropertyValueWireToClient
     | Record<string, keyof PropertyValueWireToClient>,
-> = T extends keyof PropertyValueWireToClient ? PropertyValueWireToClient[T]
+> = T extends keyof PropertyValueWireToClient
+  ? PropertyValueWireToClient[T]
   : T extends Record<string, keyof PropertyValueWireToClient>
     ? { [K in keyof T]: PropertyValueWireToClient[T[K]] }
-  : never;
+    : never;
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we accept
  */
 export interface PropertyValueClientToWire {
-  attachment: string | AttachmentUpload | Blob & { readonly name: string };
+  attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
   byte: number;
+  cipherText: CipherText;
   datetime: string;
   decimal: string | number;
   double: number;
@@ -87,15 +91,17 @@ export type GetWirePropertyValueFromClient<
   T extends
     | keyof PropertyValueClientToWire
     | Record<string, keyof PropertyValueClientToWire>,
-> = T extends keyof PropertyValueClientToWire ? PropertyValueClientToWire[T]
+> = T extends keyof PropertyValueClientToWire
+  ? PropertyValueClientToWire[T]
   : T extends Record<string, keyof PropertyValueClientToWire>
     ? { [K in keyof T]: PropertyValueClientToWire[T[K]] }
-  : never;
+    : never;
 
 export interface PropertyValueWireToCreate {
   attachment: Attachment | string;
   boolean: boolean;
   byte: number;
+  cipherText: CipherText;
   datetime: string;
   decimal: string;
   double: number;
@@ -120,7 +126,8 @@ export type GetCreatePropertyValueFromWire<
   T extends
     | keyof PropertyValueWireToCreate
     | Record<string, keyof PropertyValueWireToCreate>,
-> = T extends keyof PropertyValueWireToCreate ? PropertyValueWireToCreate[T]
+> = T extends keyof PropertyValueWireToCreate
+  ? PropertyValueWireToCreate[T]
   : T extends Record<string, keyof PropertyValueWireToCreate>
     ? { [K in keyof T]: PropertyValueWireToCreate[T[K]] | undefined }
-  : never;
+    : never;

@@ -16,6 +16,7 @@
 
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { TextInputField } from "../fields/TextInputField.js";
 
 describe("TextInputField", () => {
@@ -23,7 +24,7 @@ describe("TextInputField", () => {
 
   it("marks the input as disabled", () => {
     render(
-      <TextInputField value="locked" onChange={vi.fn()} disabled={true} />,
+      <TextInputField value="locked" onChange={vi.fn()} disabled={true} />
     );
 
     const input = screen.getByRole("textbox") as HTMLInputElement;

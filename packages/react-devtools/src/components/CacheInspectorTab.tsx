@@ -16,7 +16,6 @@
 
 import {
   Button,
-  ButtonGroup,
   Card,
   Collapse,
   Icon,
@@ -26,26 +25,15 @@ import {
 } from "@blueprintjs/core";
 import type { CacheEntry } from "@osdk/client/observable";
 import React, { useMemo, useState } from "react";
+
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
-import styles from "./CacheInspectorTab.module.scss";
 import { CopyableCodeBlock } from "./CopyableCodeBlock.js";
+import { Metric } from "./Metric.js";
+import { Metrics } from "./Metrics.js";
 
-function getTypeColor(type: string) {
-  switch (type) {
-    case "object":
-      return "primary";
-    case "list":
-      return "success";
-    case "link":
-      return "warning";
-    case "objectSet":
-      return "danger";
-    default:
-      return undefined;
-  }
-}
+import styles from "./CacheInspectorTab.module.scss";
 
 function getStatusIcon(status: string) {
   switch (status) {
@@ -59,21 +47,6 @@ function getStatusIcon(status: string) {
       return "time";
     default:
       return "help";
-  }
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "loaded":
-      return "success";
-    case "loading":
-      return "primary";
-    case "error":
-      return "danger";
-    case "init":
-      return "none";
-    default:
-      return undefined;
   }
 }
 
@@ -95,9 +68,9 @@ const emptySnapshot: CacheSnapshot = {
   stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
 };
 
-export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
-  { monitorStore },
-) => {
+export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
+  monitorStore,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
   const snapshotStore = React.useMemo(
@@ -106,11 +79,11 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         const entries = await monitorStore.loadCacheEntries();
         const totalSize = entries.reduce(
           (sum: number, e: CacheEntry) => sum + e.metadata.size,
-          0,
+          0
         );
         const totalHits = entries.reduce(
           (sum: number, e: CacheEntry) => sum + (e.metadata.hitCount ?? 0),
-          0,
+          0
         );
         return {
           entries,
@@ -121,27 +94,30 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
           },
         };
       }, 2000),
-    [monitorStore],
+    [monitorStore]
   );
   const polledSnapshot = React.useSyncExternalStore(
     snapshotStore.subscribe,
-    snapshotStore.getSnapshot,
+    snapshotStore.getSnapshot
   );
 
   const snapshot: CacheSnapshot = polledSnapshot ?? emptySnapshot;
 
-  const filteredEntries = useMemo(() =>
-    snapshot.entries.filter(entry => {
-      if (!searchQuery.trim()) {
-        return true;
-      }
-      const query = searchQuery.toLowerCase();
-      return (
-        entry.key.toLowerCase().includes(query)
-        || entry.objectType.toLowerCase().includes(query)
-        || entry.type.toLowerCase().includes(query)
-      );
-    }), [snapshot.entries, searchQuery]);
+  const filteredEntries = useMemo(
+    () =>
+      snapshot.entries.filter((entry) => {
+        if (!searchQuery.trim()) {
+          return true;
+        }
+        const query = searchQuery.toLowerCase();
+        return (
+          entry.key.toLowerCase().includes(query) ||
+          entry.objectType.toLowerCase().includes(query) ||
+          entry.type.toLowerCase().includes(query)
+        );
+      }),
+    [snapshot.entries, searchQuery]
+  );
 
   const toggleExpanded = (key: string) => {
     const newSet = new Set(expandedKeys);
@@ -162,7 +138,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
       snapshotStore.forceRefresh();
     } catch (error) {
       setInvalidateError(
-        error instanceof Error ? error : new Error(String(error)),
+        error instanceof Error ? error : new Error(String(error))
       );
     }
   };
@@ -177,7 +153,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         snapshotStore.forceRefresh();
       } catch (error) {
         setInvalidateError(
-          error instanceof Error ? error : new Error(String(error)),
+          error instanceof Error ? error : new Error(String(error))
         );
       }
     }
@@ -186,58 +162,41 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
   return (
     <div className={styles.cacheInspector}>
       <div className={styles.toolbar}>
-        <h3 className={styles.title}>Cache Inspector</h3>
-
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Entries</span>
-            <span className={styles.statValue}>
-              {snapshot.stats.totalEntries}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Size</span>
-            <span className={styles.statValue}>
-              {formatBytes(snapshot.stats.totalSize)}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Hits</span>
-            <span className={styles.statValue}>{snapshot.stats.totalHits}</span>
-          </div>
-        </div>
+        <Metrics columns={2}>
+          <Metric title="Size" value={formatBytes(snapshot.stats.totalSize)} />
+          <Metric title="Entries" value={snapshot.stats.totalEntries} />
+        </Metrics>
       </div>
 
       <div className={styles.toolbarActions}>
         <div className={styles.search}>
           <InputGroup
             leftIcon="search"
-            placeholder="Search cache entries..."
+            placeholder="Search cache"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             fill={true}
           />
         </div>
 
-        <ButtonGroup>
-          <Button
-            icon="refresh"
-            onClick={() => snapshotStore.forceRefresh()}
-            size="small"
-          >
-            Refresh
-          </Button>
-          <Button
-            icon="trash"
-            intent="danger"
-            onClick={() => void handleClearAll()}
-            size="small"
-          >
-            Clear All
-          </Button>
-        </ButtonGroup>
+        <Button
+          icon="refresh"
+          onClick={() => snapshotStore.forceRefresh()}
+          size="small"
+          className={styles.toolbarButton}
+        >
+          Refresh
+        </Button>
+        <Button
+          icon="trash"
+          intent="danger"
+          variant="outlined"
+          onClick={() => void handleClearAll()}
+          size="small"
+          className={styles.toolbarButtonDanger}
+        >
+          Clear cache
+        </Button>
       </div>
 
       {invalidateError && (
@@ -302,37 +261,28 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     size={14}
                     className={styles.expandIcon}
                   />
-                  <Tag
-                    minimal={true}
-                    intent={getTypeColor(entry.type)}
-                    className={styles.typeTag}
-                  >
+                  <Tag minimal={true} className={styles.typeTag}>
                     {entry.type}
                   </Tag>
                   <span className={styles.objectType}>{entry.objectType}</span>
-                  {entry.metadata.isOptimistic && (
-                    <Tooltip content="Has optimistic updates">
-                      <Tag minimal={true} intent="warning" icon="time">
-                        Optimistic
-                      </Tag>
-                    </Tooltip>
-                  )}
                 </div>
 
                 <div className={styles.entryHeaderRight}>
                   <Tooltip content={`Status: ${entry.metadata.status}`}>
                     <Tag
                       minimal={true}
-                      intent={getStatusColor(entry.metadata.status)}
+                      intent={
+                        entry.metadata.status === "error" ? "danger" : undefined
+                      }
                       icon={getStatusIcon(entry.metadata.status)}
                     >
                       {entry.metadata.status}
                     </Tag>
                   </Tooltip>
                   <Tooltip
-                    content={`Last updated: ${
-                      new Date(entry.metadata.timestamp).toLocaleString()
-                    }`}
+                    content={`Last updated: ${new Date(
+                      entry.metadata.timestamp
+                    ).toLocaleString()}`}
                   >
                     <span className={styles.age}>
                       {formatRelativeTime(entry.metadata.timestamp)}
@@ -347,6 +297,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     icon="refresh"
                     variant="minimal"
                     size="small"
+                    className={styles.iconButton}
                     onClick={(e) => {
                       e.stopPropagation();
                       void handleInvalidate(entry);
@@ -364,23 +315,23 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     </CopyableCodeBlock>
                   </div>
 
-                  {entry.type === "list"
-                    && (entry.where != null || entry.orderBy != null) && (
-                    <div className={styles.section}>
-                      <h4>Query Parameters</h4>
-                      <CopyableCodeBlock className={styles.codeBlock}>
-                        {JSON.stringify(
-                          {
-                            where: entry.where,
-                            orderBy: entry.orderBy,
-                            pageSize: entry.pageSize,
-                          },
-                          null,
-                          2,
-                        )}
-                      </CopyableCodeBlock>
-                    </div>
-                  )}
+                  {entry.type === "list" &&
+                    (entry.where != null || entry.orderBy != null) && (
+                      <div className={styles.section}>
+                        <h4>Query Parameters</h4>
+                        <CopyableCodeBlock className={styles.codeBlock}>
+                          {JSON.stringify(
+                            {
+                              where: entry.where,
+                              orderBy: entry.orderBy,
+                              pageSize: entry.pageSize,
+                            },
+                            null,
+                            2
+                          )}
+                        </CopyableCodeBlock>
+                      </div>
+                    )}
 
                   {entry.type === "link" && entry.linkName != null && (
                     <div className={styles.section}>

@@ -16,6 +16,7 @@
 
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import {
   getStatusTypeSpec,
   STATUS_TYPES,
@@ -24,6 +25,7 @@ import type { Assignment } from "../../generatedNoCheck2/index.js";
 import { recordStatusUpdate } from "../../generatedNoCheck2/index.js";
 import { makeTypeValue } from "../../utils/typeValue.js";
 import { ErrorBanner } from "../common/index.js";
+
 import styles from "./actions.module.css";
 
 export interface RecordStatusUpdateFormProps {
@@ -32,7 +34,7 @@ export interface RecordStatusUpdateFormProps {
 
 /** Records a new StatusUpdate. The caller supplies timestamp, timestampEpochMs and typeValue. */
 export function RecordStatusUpdateForm(
-  props: RecordStatusUpdateFormProps,
+  props: RecordStatusUpdateFormProps
 ): React.JSX.Element {
   const { assignment } = props;
   const { applyAction, isPending, error } = useOsdkAction(recordStatusUpdate);
@@ -75,7 +77,7 @@ export function RecordStatusUpdateForm(
         // unhandled rejection.
         .catch(() => {});
     },
-    [applyAction, assignment, type, effectiveValue, comment],
+    [applyAction, assignment, type, effectiveValue, comment]
   );
 
   return (
@@ -89,7 +91,9 @@ export function RecordStatusUpdateForm(
             onChange={(e) => setType(e.target.value)}
           >
             {STATUS_TYPES.map((spec) => (
-              <option key={spec.type} value={spec.type}>{spec.type}</option>
+              <option key={spec.type} value={spec.type}>
+                {spec.type}
+              </option>
             ))}
           </select>
         </label>
@@ -100,8 +104,11 @@ export function RecordStatusUpdateForm(
             value={effectiveValue}
             onChange={(e) => setValue(e.target.value)}
           >
-            {recordableValues.map((v) => <option key={v} value={v}>{v}
-            </option>)}
+            {recordableValues.map((v) => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
           </select>
         </label>
       </div>

@@ -18,7 +18,9 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
+
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
+
 import styles from "./NumberInputField.module.css";
 
 /**
@@ -33,7 +35,7 @@ import styles from "./NumberInputField.module.css";
  *
  * Rejects obviously invalid strings like "1.2.3" or "+-5".
  */
-const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
+const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/u;
 
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
@@ -74,7 +76,7 @@ export function NumberInputField({
       setDisplayValue(newValue);
       onChange?.(parseNumericValue(newValue));
     },
-    [onChange],
+    [onChange]
   );
 
   const applyStep = useCallback(
@@ -86,7 +88,7 @@ export function NumberInputField({
       setDisplayValue(formatted);
       onChange?.(next);
     },
-    [displayValue, onChange, step, min, max],
+    [displayValue, onChange, step, min, max]
   );
 
   const handleKeyDown = useCallback(
@@ -97,7 +99,7 @@ export function NumberInputField({
       e.preventDefault();
       applyStep(e.key === "ArrowUp" ? 1 : -1);
     },
-    [applyStep],
+    [applyStep]
   );
 
   const handleStepUp = useCallback(() => {
@@ -167,7 +169,7 @@ function formatNumberForDisplay(value: number | null): string {
 function clamp(
   value: number,
   min: number | undefined,
-  max: number | undefined,
+  max: number | undefined
 ): number {
   if (min != null && value < min) return min;
   if (max != null && value > max) return max;

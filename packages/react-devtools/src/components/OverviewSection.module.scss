@@ -1,0 +1,22 @@
+@use 'tokens' as t;
+
+.overviewSection {
+  border-radius: 0;
+  // A real top border as the section divider (matches the 1px divider used elsewhere).
+  border-top: 1px solid t.$border-default;
+
+  // Clear Blueprint's `.bp6-elevation-0` box-shadow outline so that we don't have borders on the left and right
+  &:global(.bp6-elevation-0) {
+    box-shadow: none;
+  }
+
+  .overviewSectionCard {
+    background: t.$bg-surface;
+
+    // Interior padding is opt-in via the `padded` prop; sections whose content
+    // owns its own spacing (e.g. the cache lists) render flush without it.
+    &.padded {
+      padding: 12px;
+    }
+  }
+}

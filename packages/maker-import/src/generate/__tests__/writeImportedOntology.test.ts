@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type * as Ontologies from "@osdk/foundry.ontologies";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+import type * as Ontologies from "@osdk/foundry.ontologies";
 import { afterEach, describe, expect, it } from "vitest";
+
 import { mapActionParameterType } from "../mapActionParameterType.js";
 import { mapPropertyType } from "../mapPropertyType.js";
 import {
@@ -30,7 +32,7 @@ const TEST_OUTPUT_DIR = path.resolve(
   "..",
   "..",
   "..",
-  "test-output",
+  "test-output"
 );
 
 afterEach(() => {
@@ -76,24 +78,24 @@ describe("mapPropertyType", () => {
         type: "array",
         subType: { type: "string" },
         reducers: [],
-      }),
+      })
     ).toEqual({ type: "string", array: true });
   });
 
   it("returns undefined for unsupported types", () => {
     expect(mapPropertyType({ type: "marking" })).toBeUndefined();
-    expect(mapPropertyType({ type: "struct", structFieldTypes: [] }))
-      .toBeUndefined();
     expect(
-      mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
-    )
-      .toBeUndefined();
+      mapPropertyType({ type: "struct", structFieldTypes: [] })
+    ).toBeUndefined();
+    expect(
+      mapPropertyType({ type: "timeseries", itemType: { type: "string" } })
+    ).toBeUndefined();
     expect(
       mapPropertyType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
-      }),
+      })
     ).toBeUndefined();
     expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
   });
@@ -113,7 +115,7 @@ describe("mapActionParameterType", () => {
         type: "object",
         objectApiName: "employee",
         objectTypeApiName: "Employee",
-      }),
+      })
     ).toEqual({
       type: "objectReference",
       objectReference: { objectTypeId: "Employee" },
@@ -125,7 +127,7 @@ describe("mapActionParameterType", () => {
       mapActionParameterType({
         type: "objectSet",
         objectTypeApiName: "Employee",
-      }),
+      })
     ).toEqual({
       type: "objectSetRid",
       objectSetRid: { objectTypeId: "Employee" },
@@ -137,7 +139,7 @@ describe("mapActionParameterType", () => {
       mapActionParameterType({
         type: "array",
         subType: { type: "string" },
-      }),
+      })
     ).toBe("stringList");
   });
 
@@ -150,7 +152,7 @@ describe("mapActionParameterType", () => {
           objectTypeApiName: "Employee",
           objectApiName: "employee",
         },
-      }),
+      })
     ).toEqual({
       type: "objectReferenceList",
       objectReferenceList: { objectTypeId: "Employee" },
@@ -165,7 +167,7 @@ describe("mapActionParameterType", () => {
           { name: "name", fieldType: { type: "string" }, required: true },
           { name: "count", fieldType: { type: "integer" }, required: true },
         ],
-      }),
+      })
     ).toEqual({
       type: "struct",
       struct: {
@@ -187,7 +189,7 @@ describe("mapActionParameterType", () => {
             { name: "key", fieldType: { type: "string" }, required: true },
           ],
         },
-      }),
+      })
     ).toEqual({
       type: "structList",
       structList: {
@@ -200,7 +202,7 @@ describe("mapActionParameterType", () => {
 
   it("maps objectType parameters", () => {
     expect(mapActionParameterType({ type: "objectType" })).toBe(
-      "objectTypeReference",
+      "objectTypeReference"
     );
   });
 
@@ -210,7 +212,7 @@ describe("mapActionParameterType", () => {
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
-      }),
+      })
     ).toBeUndefined();
   });
 });
@@ -285,10 +287,12 @@ describe("writeImportedOntology", () => {
             typeClasses: [],
           },
         },
-        operations: [{
-          type: "createObject",
-          objectTypeApiName: "com.example.Employee",
-        }],
+        operations: [
+          {
+            type: "createObject",
+            objectTypeApiName: "com.example.Employee",
+          },
+        ],
         rid: "ri.ontology.main.ontology.1",
       },
     },
@@ -303,12 +307,12 @@ describe("writeImportedOntology", () => {
 
     const objectFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "codegen/object-types/employee.ts"),
-      "utf-8",
+      "utf-8"
     );
     expect(objectFile).toContain("wrapWithProxy");
     expect(objectFile).toContain("OntologyEntityTypeEnum.OBJECT_TYPE");
-    expect(objectFile).toContain("\"com.example.Employee\"");
-    expect(objectFile).toContain("\"employeeId\"");
+    expect(objectFile).toContain('"com.example.Employee"');
+    expect(objectFile).toContain('"employeeId"');
     expect(objectFile).toContain("export const employee");
     expect(objectFile).toContain("ri.ontology.main.ontology.1");
   });
@@ -318,12 +322,12 @@ describe("writeImportedOntology", () => {
 
     const actionFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "codegen/action-types/createEmployee.ts"),
-      "utf-8",
+      "utf-8"
     );
     expect(actionFile).toContain("wrapWithProxy");
     expect(actionFile).toContain("OntologyEntityTypeEnum.ACTION_TYPE");
-    expect(actionFile).toContain("\"com.example.createEmployee\"");
-    expect(actionFile).toContain("\"objectReference\"");
+    expect(actionFile).toContain('"com.example.createEmployee"');
+    expect(actionFile).toContain('"objectReference"');
     expect(actionFile).toContain("export const createEmployee");
   });
 
@@ -332,7 +336,7 @@ describe("writeImportedOntology", () => {
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8",
+      "utf-8"
     );
     expect(indexFile).toContain("export { employee }");
     expect(indexFile).toContain("export { createEmployee }");
@@ -357,9 +361,7 @@ describe("writeImportedOntology", () => {
     writeImportedOntology(emptyMetadata, TEST_OUTPUT_DIR);
 
     // Should not create index.ts for empty ontology
-    expect(
-      fs.existsSync(path.join(TEST_OUTPUT_DIR, "index.ts")),
-    ).toBe(false);
+    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, "index.ts"))).toBe(false);
   });
 
   it("disambiguates cross-namespace name conflicts within same type", () => {
@@ -432,18 +434,18 @@ describe("writeImportedOntology", () => {
     // Both should get unique files using full namespace
     expect(
       fs.existsSync(
-        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comAFoo.ts"),
-      ),
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comAFoo.ts")
+      )
     ).toBe(true);
     expect(
       fs.existsSync(
-        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comBFoo.ts"),
-      ),
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comBFoo.ts")
+      )
     ).toBe(true);
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8",
+      "utf-8"
     );
     expect(indexFile).toContain("export { comAFoo }");
     expect(indexFile).toContain("export { comBFoo }");
@@ -504,9 +506,9 @@ describe("writeImportedOntology", () => {
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8",
+      "utf-8"
     );
-    const exports = indexFile.split("\n").filter(l => l.includes("export"));
+    const exports = indexFile.split("\n").filter((l) => l.includes("export"));
     // Should have exactly 2 exports, both named differently
     expect(exports).toHaveLength(2);
     // Since both are "Foo" (no namespace), fullCamel still gives "foo",
@@ -518,10 +520,7 @@ describe("writeImportedOntology", () => {
 
 describe("resolveVarNames", () => {
   it("returns short names when no conflicts", () => {
-    expect(resolveVarNames(["com.a.Foo", "com.a.Bar"])).toEqual([
-      "foo",
-      "bar",
-    ]);
+    expect(resolveVarNames(["com.a.Foo", "com.a.Bar"])).toEqual(["foo", "bar"]);
   });
 
   it("escalates to full camelCase for same-short-name conflicts", () => {
@@ -536,8 +535,10 @@ describe("resolveVarNames", () => {
   });
 
   it("handles mix of conflicting and unique names", () => {
-    expect(
-      resolveVarNames(["com.a.Foo", "com.b.Foo", "com.a.Bar"]),
-    ).toEqual(["comAFoo", "comBFoo", "bar"]);
+    expect(resolveVarNames(["com.a.Foo", "com.b.Foo", "com.a.Bar"])).toEqual([
+      "comAFoo",
+      "comBFoo",
+      "bar",
+    ]);
   });
 });

@@ -1,5 +1,77 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.43.0
+
+### Minor Changes
+
+- da96711: Make client and durableContext types run-time injected types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.43.0
+
+## 2.42.0
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client.unstable@2.42.0
+
+## 2.41.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+
+## 2.38.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.35.0
+
+## 2.34.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+- 4a25731: fix interface osdk and function gen for superrepo
+- 48eb46e: Fix full metadata link gen
+
+### Patch Changes
+
+- @osdk/client.unstable@2.34.0
+
 ## 2.33.0
 
 ### Minor Changes

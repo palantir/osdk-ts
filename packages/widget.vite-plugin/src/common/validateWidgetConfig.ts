@@ -16,7 +16,7 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 
-const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/;
+const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;
@@ -26,7 +26,7 @@ const DESCRIPTION_MAX_LENGTH = 250;
  * for a widget config (e.g. that widget IDs and parameter IDs are camelCase.)
  */
 export function validateWidgetConfig(
-  config: WidgetConfig<ParameterConfig>,
+  config: WidgetConfig<ParameterConfig>
 ): void {
   validateWidgetId(config.id);
   validateWidgetName(config.name);
@@ -37,12 +37,12 @@ export function validateWidgetConfig(
 function validateWidgetId(id: string): void {
   if (id.length > ID_MAX_LENGTH) {
     throw new Error(
-      `Widget id length can be at most ${ID_MAX_LENGTH} characters`,
+      `Widget id length can be at most ${ID_MAX_LENGTH} characters`
     );
   }
   if (!ID_PATTERN.test(id)) {
     throw new Error(
-      `Widget id "${id}" does not match allowed pattern (must be camelCase)`,
+      `Widget id "${id}" does not match allowed pattern (must be camelCase)`
     );
   }
 }
@@ -50,7 +50,7 @@ function validateWidgetId(id: string): void {
 function validateWidgetName(name: string): void {
   if (name.length > NAME_MAX_LENGTH) {
     throw new Error(
-      `Widget name length can be at most ${NAME_MAX_LENGTH} characters`,
+      `Widget name length can be at most ${NAME_MAX_LENGTH} characters`
     );
   }
 }
@@ -58,7 +58,7 @@ function validateWidgetName(name: string): void {
 function validateWidgetDescription(description?: string): void {
   if (description != null && description.length > DESCRIPTION_MAX_LENGTH) {
     throw new Error(
-      `Widget description length can be at most ${DESCRIPTION_MAX_LENGTH} characters`,
+      `Widget description length can be at most ${DESCRIPTION_MAX_LENGTH} characters`
     );
   }
 }
@@ -67,23 +67,23 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
   for (const [parameterId, parameterConfig] of Object.entries(parameters)) {
     if (parameterId.length > ID_MAX_LENGTH) {
       throw new Error(
-        `Parameter id length can be at most ${ID_MAX_LENGTH} characters`,
+        `Parameter id length can be at most ${ID_MAX_LENGTH} characters`
       );
     }
     if (!ID_PATTERN.test(parameterId)) {
       throw new Error(
-        `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`,
+        `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`
       );
     }
     if (parameterConfig.type === "objectSet") {
       if (
-        typeof parameterConfig.allowedType.internalDoNotUseMetadata?.rid
-          !== "string"
+        typeof parameterConfig.allowedType.internalDoNotUseMetadata?.rid !==
+        "string"
       ) {
         throw new Error(
-          `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${
-            JSON.stringify(parameterConfig.allowedType)
-          }'`,
+          `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${JSON.stringify(
+            parameterConfig.allowedType
+          )}'`
         );
       }
     }

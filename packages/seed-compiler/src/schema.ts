@@ -40,9 +40,7 @@ export type SchemaMap = Map<string, ObjectTypeSchema>;
  * Only `objectTypes` are read; the other top-level fields (action types,
  * query types, interfaces, etc.) are not relevant to seed validation.
  */
-export function schemaFromMetadata(
-  metadata: OntologyFullMetadata,
-): SchemaMap {
+export function schemaFromMetadata(metadata: OntologyFullMetadata): SchemaMap {
   const map: SchemaMap = new Map();
 
   for (const [apiName, full] of Object.entries(metadata.objectTypes)) {

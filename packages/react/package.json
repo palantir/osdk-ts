@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "2.33.0",
+  "version": "2.43.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -61,6 +61,15 @@
       "require": "./build/cjs/public/experimental/admin.cjs",
       "default": "./build/browser/public/experimental/admin.js"
     },
+    "./experimental/aip": {
+      "browser": "./build/browser/public/experimental/aip.js",
+      "import": {
+        "types": "./build/types/public/experimental/aip.d.ts",
+        "default": "./build/esm/public/experimental/aip.js"
+      },
+      "require": "./build/cjs/public/experimental/aip.cjs",
+      "default": "./build/browser/public/experimental/aip.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -76,8 +85,8 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "prepack": "rm -rf docs && cp -r ../../docs/react docs",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
@@ -90,6 +99,7 @@
     "fast-deep-equal": "^3.1.3"
   },
   "peerDependencies": {
+    "@osdk/aip-core": ">=0.5.0 <1.0.0",
     "@osdk/api": "^2.15.0",
     "@osdk/client": "^2.15.0",
     "@osdk/foundry.admin": "*",
@@ -99,6 +109,9 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "peerDependenciesMeta": {
+    "@osdk/aip-core": {
+      "optional": true
+    },
     "@osdk/foundry.admin": {
       "optional": true
     },
@@ -107,6 +120,7 @@
     }
   },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/client.test.ontology": "workspace:*",

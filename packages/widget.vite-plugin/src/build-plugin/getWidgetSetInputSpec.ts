@@ -18,11 +18,12 @@ import type {
   OntologySdkInputSpec,
   WidgetSetInputSpec,
 } from "@osdk/widget.api";
+
 import type { PackageJson } from "../common/PackageJson.js";
 import { visitNpmPackages } from "../common/visitNpmPackages.js";
 
 export async function getWidgetSetInputSpec(
-  packageJsonPath: string,
+  packageJsonPath: string
 ): Promise<WidgetSetInputSpec> {
   const sdks = await discoverOntologySdkInputSpecs(packageJsonPath);
   return {
@@ -33,7 +34,7 @@ export async function getWidgetSetInputSpec(
 }
 
 async function discoverOntologySdkInputSpecs(
-  packageJsonPath: string,
+  packageJsonPath: string
 ): Promise<Array<OntologySdkInputSpec>> {
   const sdks = new Set<string>();
   const onVisit = (_packageJsonPath: string, packageJson: PackageJson) => {

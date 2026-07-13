@@ -1,6 +1,6 @@
 {
   "name": "@osdk/osdk-docs-context",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "description": "OSDK Documentation Context utilities and examples registry",
   "license": "Apache-2.0",
   "repository": {
@@ -32,9 +32,9 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "generate-osdk-context --output-dir . && pnpm run format",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "format": "npx dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "format": "oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",

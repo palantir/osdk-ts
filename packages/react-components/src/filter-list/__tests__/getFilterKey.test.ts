@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import type { MockObjectType } from "./testUtils.js";
@@ -29,21 +30,19 @@ import {
 
 describe("getFilterKey", () => {
   it("returns key for property filter", () => {
-    const definition = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      { type: "EXACT_MATCH", values: [] },
-    );
+    const definition = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: [],
+    });
     expect(getFilterKey(definition)).toBe("name");
   });
 
   it("returns id over key for property filter when id is set", () => {
     const definition = {
-      ...createPropertyFilterDef(
-        "name",
-        "LISTOGRAM",
-        { type: "EXACT_MATCH", values: [] },
-      ),
+      ...createPropertyFilterDef("name", "LISTOGRAM", {
+        type: "EXACT_MATCH",
+        values: [],
+      }),
       id: "name-filter-1",
     } as FilterDefinitionUnion<typeof MockObjectType>;
     expect(getFilterKey(definition)).toBe("name-filter-1");
@@ -79,7 +78,7 @@ describe("getFilterKey", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] },
+      { type: "EXACT_MATCH", values: [] }
     );
     expect(getFilterKey(definition)).toBe("status");
   });
@@ -90,7 +89,7 @@ describe("getFilterKey", () => {
         "status",
         "LISTOGRAM",
         ["Active", "Inactive"],
-        { type: "EXACT_MATCH", values: [] },
+        { type: "EXACT_MATCH", values: [] }
       ),
       id: "status-filter-1",
     } as FilterDefinitionUnion<typeof MockObjectType>;

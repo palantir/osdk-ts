@@ -19,7 +19,7 @@
   padding: calc(var(--osdk-surface-spacing) * 1.5)
     calc(var(--osdk-surface-spacing) * 1.75);
   border: var(--osdk-button-border);
-  border-radius: var(--osdk-surface-border-radius);
+  border-radius: var(--osdk-button-border-radius);
   box-shadow: var(--osdk-button-shadow);
   font-size: var(--osdk-typography-size-body-medium);
   cursor: pointer;

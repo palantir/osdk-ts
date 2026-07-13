@@ -1,5 +1,148 @@
 # @osdk/client
 
+## 2.43.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/api@2.43.0
+  - @osdk/client.unstable@2.43.0
+  - @osdk/generator-converters@2.43.0
+
+## 2.42.0
+
+### Minor Changes
+
+- 0021ee4: Migrate @osdk/client, @osdk/client.unstable, and @osdk/client.unstable.tpsa to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eighth and ninth increments of the repo-wide oxc migration). The conjure-generated src/generated trees in @osdk/client.unstable and @osdk/client.unstable.tpsa are re-included (linted and oxfmt-formatted, matching the prior ESLint + dprint coverage) via per-package nested oxlint configs; @osdk/client's newly-surfaced error-level lint rules are turned off in its nested config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [0021ee4]
+  - @osdk/api@2.42.0
+  - @osdk/client.unstable@2.42.0
+  - @osdk/generator-converters@2.42.0
+
+## 2.41.0
+
+### Minor Changes
+
+- 9b150d7: Add nullity check for decrypt
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+  - @osdk/shared.test@2.30.0
+  - @osdk/client.unstable@2.41.0
+
+## 2.40.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+- ac0303b: Add `createClientWithSubscribe` (unstable) to allow overriding `objectSet.subscribe` behavior with a custom `subscribeFn`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/shared.test@2.29.0
+  - @osdk/api@2.40.0
+  - @osdk/client.unstable@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters@2.39.0
+
+## 2.38.0
+
+### Minor Changes
+
+- 11c7eb8: Revert the empty-where-clause runtime checks added in #3348. `modernToLegacyWhereClause` no longer throws on an empty clause, and `.where({})` no longer short-circuits to a no-op, restoring the pre-#3348 behavior where an empty clause lowers to an empty AND. Note: this reintroduces the original behavior where a `.where({})` (including no-filter `useOsdkObjects`/`useOsdkAggregation` queries via the observable layer) emits an empty AND on the wire, which some object-storage backends reject on the aggregate path.
+- bbb89ce: Fix `SyntaxError: The requested module 'big.js' does not provide an export named 'Big'`
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters@2.38.0
+- @osdk/shared.test@2.28.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+- 75a5c26: Add test for fetchOneWithErrors with cross-type pivot to validate correct primary key usage
+- 915d245: Sort decimal and long properties numerically in observable client orderBy, including derived (RDP) get and min/max properties, instead of lexicographically
+- 01bea93: Fix runtime-derived-property (RDP) cache merges dropping or stale-serving derived values. A write now declares the derived fields it actually computed, so: a derived value that becomes null clears instead of retaining the stale cached value; a derived field shared by two queries with overlapping rdp sets is no longer dropped when one propagates to the other; a query using both `$select` and a derived property keeps the derived field on a partial write; and a subscription update, which carries base props only, preserves the cached derived values instead of clearing them on every tick.
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/api@2.37.0
+  - @osdk/client.unstable@2.37.0
+  - @osdk/generator-converters@2.37.0
+  - @osdk/shared.test@2.27.0
+
+## 2.36.0
+
+### Minor Changes
+
+- 83d2603: withScenario / createScenario now ignore an active transaction on the supplied client (logging a console.warn and scoping to the scenario) instead of throwing.
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/client.unstable@2.35.0
+- @osdk/generator-converters@2.35.0
+- @osdk/shared.test@2.26.0
+
+## 2.34.0
+
+### Minor Changes
+
+- db028a0: Add optional struct param support for actions.
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/shared.test@2.25.0
+  - @osdk/api@2.34.0
+  - @osdk/client.unstable@2.34.0
+
 ## 2.33.0
 
 ### Patch Changes

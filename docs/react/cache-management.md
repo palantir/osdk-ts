@@ -194,6 +194,24 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
 }
 ```
 
+## Dev-Mode Debugging
+
+The observable client has dev-only debugging knobs on the `OsdkProvider` `devMode` prop. They have no effect in production builds, where the relevant code is stripped at build time.
+
+The client's loggers default to the `error` level, which hides the `debug` tracing the observable layer emits. Raise the level to surface it:
+
+```tsx
+<OsdkProvider client={client} devMode={{ logLevel: "debug" }}>
+```
+
+The cache internals can also log their behavior. `refCounts` logs cache-entry reference-count lifecycle (creation, live counts, time-to-live countdown, cleanup, finalization) and shortens the retention window so cleanup is observable sooner; `cacheKeys` logs cache-key canonicalization lookups:
+
+```tsx
+<OsdkProvider client={client} devMode={{ debug: { refCounts: true, cacheKeys: true } }}>
+```
+
+If you are configuring the observable client directly, the same options are available as `createObservableClient(client, extraUserAgents, { devMode: { logLevel: "debug", debug: { refCounts: true } } })`.
+
 ## Best Practices
 
 1. **Reuse query parameters.** Two components that pass identical `where` / `orderBy` / `withProperties` share one cache entry. Hoist the parameter object to a module-level constant or memoize it so React doesn't construct a new one each render.

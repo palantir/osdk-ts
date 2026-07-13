@@ -18,9 +18,11 @@ import { Button } from "@base-ui/react/button";
 import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
+
 import type { MarkingSelectionState } from "../types.js";
-import styles from "./MarkingButton.module.css";
 import { getDisplayLabel, isDisallowed } from "./selectionStateHelpers.js";
+
+import styles from "./MarkingButton.module.css";
 
 export interface MarkingButtonProps {
   id: string;
@@ -70,8 +72,7 @@ export const MarkingButton: React.MemoExoticComponent<
     onToggle(id);
   }, [onToggle, id]);
 
-  const hasDescription = description !== undefined
-    && description.length > 0;
+  const hasDescription = description !== undefined && description.length > 0;
   const isButtonDisabled = disabled ?? isDisallowed(selectionState);
   const showTooltip = hasDescription || isDisallowed(selectionState);
   const hint = getSelectionHint(selectionState);
@@ -80,13 +81,14 @@ export const MarkingButton: React.MemoExoticComponent<
     <Button
       className={classnames(
         styles.markingButton,
-        selectionStateClassMap[selectionState],
+        selectionStateClassMap[selectionState]
       )}
       onClick={isButtonDisabled ? undefined : handleToggle}
       disabled={showTooltip ? undefined : isButtonDisabled}
       aria-disabled={showTooltip ? isButtonDisabled : undefined}
-      aria-pressed={selectionState === "SELECTED"
-        || selectionState === "IMPLIED"}
+      aria-pressed={
+        selectionState === "SELECTED" || selectionState === "IMPLIED"
+      }
       title={showTooltip ? undefined : label}
     >
       {getDisplayLabel(label, selectionState)}
@@ -107,11 +109,7 @@ export const MarkingButton: React.MemoExoticComponent<
             {hasDescription && (
               <p className={styles.tooltipDescription}>{description}</p>
             )}
-            {hint != null && (
-              <p className={styles.tooltipHint}>
-                {hint}
-              </p>
-            )}
+            {hint != null && <p className={styles.tooltipHint}>{hint}</p>}
           </Tooltip.Popup>
         </Tooltip.Positioner>
       </Tooltip.Portal>

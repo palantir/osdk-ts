@@ -42,88 +42,87 @@ export type { PortalContainer };
 export type FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-> = K extends unknown ? {
-    // Distribute over each field key so a field's key, value type, and allowed
-    // components stay correlated when K is the default union of all keys.
-    [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
-      /**
-       * The field's unique key
-       */
-      fieldKey: K;
+> = K extends unknown
+  ? {
+      // Distribute over each field key so a field's key, value type, and allowed
+      // components stay correlated when K is the default union of all keys.
+      [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+        /**
+         * The field's unique key
+         */
+        fieldKey: K;
 
-      /**
-       * Display label for the field
-       */
-      label: string;
+        /**
+         * Display label for the field
+         */
+        label: string;
 
-      /**
-       * Default value of the field
-       */
-      defaultValue?: FieldValueType<Q, K>;
+        /**
+         * Default value of the field
+         */
+        defaultValue?: FieldValueType<Q, K>;
 
-      /**
-       * Whether the field is required
-       */
-      isRequired?: boolean;
+        /**
+         * Whether the field is required
+         */
+        isRequired?: boolean;
 
-      /**
-       * Placeholder text
-       */
-      placeholder?: string;
+        /**
+         * Placeholder text
+         */
+        placeholder?: string;
 
-      /**
-       * Additional information to display on this field.
-       * Accepts plain text or rich content (e.g. JSX with links or formatting).
-       * Rendered as a tooltip icon next to the label by default, or below the
-       * label when helperTextPlacement is "bottom".
-       */
-      helperText?: React.ReactNode;
+        /**
+         * Additional information to display on this field.
+         * Accepts plain text or rich content (e.g. JSX with links or formatting).
+         * Rendered as a tooltip icon next to the label by default, or below the
+         * label when helperTextPlacement is "bottom".
+         */
+        helperText?: React.ReactNode;
 
-      /**
-       * The placement of the helper text either below the field or in a tooltip
-       *
-       * @default "tooltip"
-       */
-      helperTextPlacement?: "bottom" | "tooltip";
+        /**
+         * The placement of the helper text either below the field or in a tooltip
+         *
+         * @default "tooltip"
+         */
+        helperTextPlacement?: "bottom" | "tooltip";
 
-      /**
-       * Whether the field is disabled
-       */
-      disabled?: boolean;
+        /**
+         * Whether the field is disabled
+         */
+        disabled?: boolean;
 
-      /**
-       * A callback to customize error messages when a built-in validation rule fails.
-       * Receives a discriminated union with the constraint data (e.g., the min value
-       * that was exceeded) so the message can reference the threshold.
-       *
-       * Return a string to override the default message, or `undefined` to keep it.
-       */
-      onValidationError?: (error: ValidationError) => string | undefined;
+        /**
+         * A callback to customize error messages when a built-in validation rule fails.
+         * Receives a discriminated union with the constraint data (e.g., the min value
+         * that was exceeded) so the message can reference the threshold.
+         *
+         * Return a string to override the default message, or `undefined` to keep it.
+         */
+        onValidationError?: (error: ValidationError) => string | undefined;
 
-      /**
-       * Additional function to validate the field.
-       *
-       * Return `undefined` if valid, or an error message string if invalid.
-       */
-      validate?: (
-        value: FieldValueType<Q, K>,
-      ) => Promise<string | undefined>;
+        /**
+         * Additional function to validate the field.
+         *
+         * Return `undefined` if valid, or an error message string if invalid.
+         */
+        validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
 
-      /**
-       * The form field component type to render
-       */
-      fieldComponent: C;
+        /**
+         * The form field component type to render
+         */
+        fieldComponent: C;
 
-      /**
-       * The component props for the form field.
-       * Excludes runtime props (value, onChange) which are managed by ActionForm.
-       */
-      fieldComponentProps: DistributiveOmit<
-        FormFieldPropsByType[C],
-        FormManagedProps<C>
-      >;
-    };
-  }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
+        /**
+         * The component props for the form field.
+         * Excludes runtime props (value, onChange) which are managed by ActionForm.
+         */
+        fieldComponentProps: DistributiveOmit<
+          FormFieldPropsByType[C],
+          FormManagedProps<C>
+        >;
+      };
+    }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
   : never;
 
 /**
@@ -161,9 +160,10 @@ export interface FormFieldPropsByType {
 /**
  * Dropdown field props with selectable items
  */
-export interface DropdownFieldProps<V, Multiple extends boolean = false>
-  extends BaseFormFieldProps<Multiple extends true ? V[] : V>
-{
+export interface DropdownFieldProps<
+  V,
+  Multiple extends boolean = false,
+> extends BaseFormFieldProps<Multiple extends true ? V[] : V> {
   /**
    * Available items for the dropdown
    */
@@ -299,39 +299,39 @@ export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
 /**
  * Text area field props
  */
-export interface TextAreaFieldProps extends
-  BaseFormFieldProps<string>,
-  Pick<
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    | "rows"
-    | "wrap"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "minLength"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "maxLength"
-  >
-{
+export interface TextAreaFieldProps
+  extends
+    BaseFormFieldProps<string>,
+    Pick<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      | "rows"
+      | "wrap"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "minLength"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "maxLength"
+    > {
   placeholder?: string;
 }
 
-export interface TextInputFieldProps extends
-  BaseFormFieldProps<string>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "minLength"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "maxLength"
-  >
-{
+export interface TextInputFieldProps
+  extends
+    BaseFormFieldProps<string>,
+    Pick<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "minLength"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "maxLength"
+    > {
   placeholder?: string;
 }
 
@@ -400,9 +400,9 @@ export interface Option<V> {
 /**
  * Object set field displays the summary of the count of the given object set
  */
-export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled">
-{
+export interface ObjectSetFieldProps<
+  T extends ObjectTypeDefinition,
+> extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled"> {
   /**
    * Message displayed when no object set is provided.
    *
@@ -413,22 +413,22 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
 
 type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
   | {
-    /**
-     * The object type definition to search across.
-     */
-    objectType: Q;
-    objectSet?: never;
-  }
+      /**
+       * The object type definition to search across.
+       */
+      objectType: Q;
+      objectSet?: never;
+    }
   | {
-    /**
-     * A pre-scoped object set to search within.
-     *
-     * Use this when selectable options should be limited to a subset of
-     * objects. User-entered search text is applied within this set.
-     */
-    objectSet: ObjectSet<Q>;
-    objectType?: never;
-  };
+      /**
+       * A pre-scoped object set to search within.
+       *
+       * Use this when selectable options should be limited to a subset of
+       * objects. User-entered search text is applied within this set.
+       */
+      objectSet: ObjectSet<Q>;
+      objectType?: never;
+    };
 
 /**
  * Object select field props for selecting object instances from the ontology.
@@ -439,20 +439,19 @@ type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
  */
 export type ObjectSelectFieldProps<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> =
-  & Omit<
-    DropdownFieldProps<Osdk.Instance<Q>>,
-    | "items"
-    | "itemToStringLabel"
-    | "itemToKey"
-    | "isItemEqual"
-    | "isSearchable"
-    | "query"
-    | "onQueryChange"
-    | "disableClientSideFiltering"
-    | "renderItemList"
-  >
-  & ObjectSelectDataSource<Q>;
+> = Omit<
+  DropdownFieldProps<Osdk.Instance<Q>>,
+  | "items"
+  | "itemToStringLabel"
+  | "itemToKey"
+  | "isItemEqual"
+  | "isSearchable"
+  | "query"
+  | "onQueryChange"
+  | "disableClientSideFiltering"
+  | "renderItemList"
+> &
+  ObjectSelectDataSource<Q>;
 
 /**
  * Custom field props for user-defined renderers
@@ -464,9 +463,10 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
 
-export interface UnsupportedFieldProps
-  extends Pick<BaseFormFieldProps<string>, "id" | "error">
-{}
+export interface UnsupportedFieldProps extends Pick<
+  BaseFormFieldProps<string>,
+  "id" | "error"
+> {}
 
 export interface BaseFormFieldProps<V> {
   /**
@@ -531,20 +531,24 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 export type FieldValueType<
   Q extends ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
-> = ActionParameters<Q>[K]["type"] extends
-  ActionMetadata.DataType.Object<infer T> ? ActionParam.ObjectType<T>
-  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
-    infer T
-  > ? ActionParam.ObjectSetType<T>
-  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Interface<
-    infer T
-  > ? ActionParam.InterfaceType<T>
-  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
-    infer T
-  > ? ActionParam.StructType<T>
-  : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
-    ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
-  : never;
+> =
+  ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Object<infer T>
+    ? ActionParam.ObjectType<T>
+    : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
+          infer T
+        >
+      ? ActionParam.ObjectSetType<T>
+      : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Interface<
+            infer T
+          >
+        ? ActionParam.InterfaceType<T>
+        : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
+              infer T
+            >
+          ? ActionParam.StructType<T>
+          : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
+            ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+            : never;
 
 /**
  * Extracts the parameter type descriptor for a specific action parameter.
@@ -602,14 +606,13 @@ export type FieldType =
  * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
  * fieldComponentProps so it bypasses form state cloning.
  */
-type FormManagedProps<K extends FieldComponent> = "onChange" extends
-  keyof FormFieldPropsByType[K] ? "value" | "onChange" | "disabled"
-  : "onChange" | "disabled";
+type FormManagedProps<K extends FieldComponent> =
+  "onChange" extends keyof FormFieldPropsByType[K]
+    ? "value" | "onChange" | "disabled"
+    : "onChange" | "disabled";
 
-type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<
-    T,
-    Extract<keyof T, K>
-  >
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, Extract<keyof T, K>>
   : never;
 
 /**
@@ -645,22 +648,35 @@ export type RendererFieldDefinition = {
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   | "CUSTOM"
-  | (P extends { type: "objectSet" } ? "OBJECT_SET"
-    : P extends { type: "object" } ? "OBJECT_SELECT"
-    : P extends { type: "interface" } ? "UNSUPPORTED"
-    : P extends { type: "struct" } ? "UNSUPPORTED"
-    : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
-    : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
-    : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
-    : P extends "marking" | "geohash" | "geoshape" | "objectType"
-      ? "UNSUPPORTED"
-    : P extends
-      | "double"
-      | "integer"
-      | "long"
-      | "float"
-      | "short"
-      | "byte"
-      | "decimal" ? "NUMBER_INPUT"
-    : never);
+  | (P extends { type: "objectSet" }
+      ? "OBJECT_SET"
+      : P extends { type: "object" }
+        ? "OBJECT_SELECT"
+        : P extends { type: "interface" }
+          ? "UNSUPPORTED"
+          : P extends { type: "struct" }
+            ? "UNSUPPORTED"
+            : P extends "mediaReference" | "attachment"
+              ? "FILE_PICKER"
+              : P extends "boolean"
+                ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
+                : P extends "string"
+                  ? "TEXT_INPUT" | "TEXT_AREA"
+                  : P extends "datetime" | "timestamp"
+                    ? "DATETIME_PICKER"
+                    : P extends
+                          | "marking"
+                          | "geohash"
+                          | "geoshape"
+                          | "objectType"
+                      ? "UNSUPPORTED"
+                      : P extends
+                            | "double"
+                            | "integer"
+                            | "long"
+                            | "float"
+                            | "short"
+                            | "byte"
+                            | "decimal"
+                        ? "NUMBER_INPUT"
+                        : never);

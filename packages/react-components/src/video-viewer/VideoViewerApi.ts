@@ -30,9 +30,10 @@ export interface BaseVideoViewerProps {
   onError?: () => void;
 }
 
-export interface VideoViewerMediaProps
-  extends Omit<BaseVideoViewerProps, "src">
-{
+export interface VideoViewerMediaProps extends Omit<
+  BaseVideoViewerProps,
+  "src"
+> {
   /** The Media object to fetch video contents from */
   media: Media;
 }

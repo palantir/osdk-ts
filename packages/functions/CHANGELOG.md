@@ -1,5 +1,41 @@
 # @osdk/functions
 
+## 1.16.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+
+## 1.15.0
+
+### Minor Changes
+
+- 830d791: Migrate @osdk/api, @osdk/functions, and @osdk/unit-testing to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the check-api core libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving; the public API surface is unchanged.
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client@2.42.0
+
+## 1.14.0
+
+### Minor Changes
+
+- 9186c14: Added datasets and mediaSets to ScopeResources
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/client@2.40.0
+
 ## 1.13.0
 
 ### Minor Changes

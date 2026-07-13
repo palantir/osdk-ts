@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { RenderFilterInput } from "../BaseFilterListApi.js";
 import { FilterListItem } from "../FilterListItem.js";
@@ -50,7 +51,7 @@ function renderItem({
       onFilterRemoved={onFilterRemoved}
       renderInput={renderInputStub}
       searchField={searchField}
-    />,
+    />
   );
 }
 
@@ -63,7 +64,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: [] },
       });
       expect(
-        screen.getByRole("button", { name: /search values/i }),
+        screen.getByRole("button", { name: /search values/iu })
       ).toBeDefined();
     });
 
@@ -73,7 +74,7 @@ describe("FilterListItem", () => {
         searchField: false,
       });
       expect(
-        screen.queryByRole("button", { name: /search values/i }),
+        screen.queryByRole("button", { name: /search values/iu })
       ).toBeNull();
     });
 
@@ -82,7 +83,7 @@ describe("FilterListItem", () => {
         filterState: { type: "NUMBER_RANGE", minValue: 1, maxValue: 5 },
       });
       expect(
-        screen.queryByRole("button", { name: /search values/i }),
+        screen.queryByRole("button", { name: /search values/iu })
       ).toBeNull();
     });
 
@@ -93,7 +94,7 @@ describe("FilterListItem", () => {
         onFilterRemoved,
       });
       const removeButton = screen.getByRole("button", {
-        name: /remove department filter/i,
+        name: /remove department filter/iu,
       });
       fireEvent.click(removeButton);
       expect(onFilterRemoved).toHaveBeenCalledWith("department");
@@ -104,7 +105,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: ["a"] },
       });
       expect(
-        screen.queryByRole("button", { name: /remove department filter/i }),
+        screen.queryByRole("button", { name: /remove department filter/iu })
       ).toBeNull();
     });
 
@@ -113,7 +114,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: ["a"] },
       });
       expect(
-        screen.getByRole("button", { name: /more actions/i }),
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -122,7 +123,7 @@ describe("FilterListItem", () => {
         filterState: { type: "NUMBER_RANGE", minValue: 1, maxValue: 5 },
       });
       expect(
-        screen.queryByRole("button", { name: /more actions/i }),
+        screen.queryByRole("button", { name: /more actions/iu })
       ).toBeNull();
     });
 
@@ -130,7 +131,7 @@ describe("FilterListItem", () => {
       renderItem({
         filterState: { type: "SELECT", selectedValues: ["a"] },
       });
-      const overflow = screen.getByRole("button", { name: /more actions/i });
+      const overflow = screen.getByRole("button", { name: /more actions/iu });
       expect(overflow.getAttribute("aria-pressed")).toBe("false");
       fireEvent.click(overflow);
       expect(overflow.getAttribute("aria-pressed")).toBe("true");
@@ -151,7 +152,7 @@ describe("FilterListItem", () => {
         },
       });
       expect(
-        screen.getByRole("button", { name: /search values/i }),
+        screen.getByRole("button", { name: /search values/iu })
       ).toBeDefined();
     });
 
@@ -166,7 +167,7 @@ describe("FilterListItem", () => {
         },
       });
       expect(
-        screen.getByRole("button", { name: /more actions/i }),
+        screen.getByRole("button", { name: /more actions/iu })
       ).toBeDefined();
     });
 
@@ -180,7 +181,7 @@ describe("FilterListItem", () => {
           },
         },
       });
-      const overflow = screen.getByRole("button", { name: /more actions/i });
+      const overflow = screen.getByRole("button", { name: /more actions/iu });
       expect(overflow.getAttribute("aria-pressed")).toBe("false");
       fireEvent.click(overflow);
       expect(overflow.getAttribute("aria-pressed")).toBe("true");

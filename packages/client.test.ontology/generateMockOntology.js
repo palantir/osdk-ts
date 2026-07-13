@@ -16,50 +16,53 @@
 
 // @ts-check
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
 import { rmSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
+
+import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
+import { LegacyFauxFoundry } from "@osdk/shared.test";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, "src", "generatedNoCheck");
 
 try {
   rmSync(outDir, { recursive: true, force: true });
-} catch (e) {
+} catch {
   // ignored, only needed for regeneration
 }
 
 const fauxFoundry = new LegacyFauxFoundry();
 const fullOntology = fauxFoundry
   .getDefaultOntology()
-  .getFilteredOntologyMetadata(
-    {
-      actionTypes: fauxFoundry.getDefaultOntology().getAllActionTypes().map((
-        actionType,
-      ) => actionType.apiName),
-      objectTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().map((
-        objectType,
-      ) => objectType.objectType.apiName),
-      interfaceTypes: fauxFoundry.getDefaultOntology().getAllInterfaceTypes()
-        .map((
-          interfaceType,
-        ) => interfaceType.apiName),
-      linkTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().flatMap(
-        x => x.linkTypes.map(y => y.apiName),
+  .getFilteredOntologyMetadata({
+    actionTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllActionTypes()
+      .map((actionType) => actionType.apiName),
+    objectTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllObjectTypes()
+      .map((objectType) => objectType.objectType.apiName),
+    interfaceTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllInterfaceTypes()
+      .map((interfaceType) => interfaceType.apiName),
+    linkTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllObjectTypes()
+      .flatMap((x) => x.linkTypes.map((y) => y.apiName)),
+    // @ts-ignore
+    queryTypes: [
+      ...new Set(
+        fauxFoundry
+          .getDefaultOntology()
+          .getAllQueryTypes()
+          .map((x) => x.apiName)
       ),
-      // @ts-ignore
-      queryTypes: [
-        ...new Set(
-          fauxFoundry.getDefaultOntology().getAllQueryTypes().map(x =>
-            x.apiName
-          ),
-        ),
-      ],
-    },
-  );
+    ],
+  });
 
 const ontologyWithoutUnsupportedAction = {
   ...fullOntology,
@@ -90,5 +93,5 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   undefined,
   true,
-  ["addOne"],
+  ["addOne"]
 );

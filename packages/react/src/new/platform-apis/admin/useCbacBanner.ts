@@ -16,6 +16,7 @@
 
 import { CbacBanners } from "@osdk/foundry.admin";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
 
@@ -56,14 +57,15 @@ export interface UseCbacBannerResult {
  * Get the CBAC banner data for the given marking IDs.
  * @param options Options to control the query.
  */
-export function useCbacBanner(
-  { markingIds, enabled: externalEnabled = true }: UseCbacBannerOptions,
-): UseCbacBannerResult {
+export function useCbacBanner({
+  markingIds,
+  enabled: externalEnabled = true,
+}: UseCbacBannerOptions): UseCbacBannerResult {
   const { client } = React.useContext(OsdkContext);
 
   const stableMarkingIds = React.useMemo(
     () => markingIds,
-    [JSON.stringify(markingIds)],
+    [JSON.stringify(markingIds)]
   );
 
   const enabled = stableMarkingIds.length > 0 && externalEnabled;

@@ -16,6 +16,7 @@
 
 import { Users } from "@osdk/foundry.admin";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext } from "../../OsdkContext.js";
 
@@ -55,14 +56,14 @@ export interface UseUserViewMarkingsResult {
  * When omitted, fetches markings for the current user.
  * @param options Options to control the query.
  */
-export function useUserViewMarkings(
-  { userId, enabled = true }: UseUserViewMarkingsOptions = {},
-): UseUserViewMarkingsResult {
+export function useUserViewMarkings({
+  userId,
+  enabled = true,
+}: UseUserViewMarkingsOptions = {}): UseUserViewMarkingsResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(async () => {
-    const resolvedUserId = userId
-      ?? (await Users.getCurrent(client)).id;
+    const resolvedUserId = userId ?? (await Users.getCurrent(client)).id;
     return Users.getMarkings(client, resolvedUserId);
   }, [client, userId]);
 

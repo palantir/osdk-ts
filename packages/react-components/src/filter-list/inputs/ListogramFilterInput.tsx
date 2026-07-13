@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -71,7 +72,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "EXACT_MATCH"
         ? coerceToStringArray(filterState.values)
         : [],
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -91,12 +92,11 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
-  const sortBy = displayMode === "minimal"
-    ? "value" as const
-    : "count" as const;
+  const sortBy =
+    displayMode === "minimal" ? ("value" as const) : ("count" as const);
 
   const { data, maxCount, isLoading, error } = useFilterPropertyAggregation(
     objectType,
@@ -104,7 +104,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     objectSet,
     whereClause,
     linkedFilters,
-    { sortBy, selectedValues, showFilteredOutValues },
+    { sortBy, selectedValues, showFilteredOutValues }
   );
 
   return (
@@ -135,5 +135,5 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const ListogramFilterInput: typeof ListogramFilterInputInner = memo(
-  ListogramFilterInputInner,
+  ListogramFilterInputInner
 ) as typeof ListogramFilterInputInner;

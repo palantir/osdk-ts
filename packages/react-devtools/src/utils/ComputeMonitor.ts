@@ -15,6 +15,7 @@
  */
 
 import type { Logger } from "@osdk/api";
+
 import type { ComputeStore } from "../store/ComputeStore.js";
 import {
   hashPayload,
@@ -25,11 +26,11 @@ import type { EventTimeline } from "./EventTimeline.js";
 import { createMonitorLogger } from "./logger.js";
 
 const RID_PLACEHOLDER = "ri.compute.tools.rid.placeholder";
-const COMPUTE_COST_ENDPOINTS = [
+const COMPUTE_COST_ENDPOINTS = new Set([
   `/api/v2/ontologies/${RID_PLACEHOLDER}/objectSets/loadObjects`,
   `/api/v2/ontologies/${RID_PLACEHOLDER}/objectSets/aggregate`,
   `/api/v2/ontologies/${RID_PLACEHOLDER}/objectSets/loadObjectsMultipleObjectTypes`,
-];
+]);
 
 const OSDK_URL_PREFIXES = [
   "/api/v2/ontologies/",
@@ -44,7 +45,7 @@ function isOsdkUrl(pathname: string): boolean {
 }
 
 const RID_REGEX =
-  /ri\.([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)?\.([a-z][a-z0-9-]*)\.([a-zA-Z0-9\-._]+)/;
+  /ri\.([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)?\.([a-z][a-z0-9-]*)\.([a-zA-Z0-9\-._]+)/u;
 
 export class ComputeMonitor {
   private readonly originalFetch: typeof globalThis.fetch;
@@ -57,7 +58,7 @@ export class ComputeMonitor {
     computeStore: ComputeStore,
     logger: Logger = createMonitorLogger(),
     originalFetch: typeof globalThis.fetch = globalThis.fetch,
-    eventTimeline?: EventTimeline,
+    eventTimeline?: EventTimeline
   ) {
     this.computeStore = computeStore;
     this.logger = logger;
@@ -75,7 +76,7 @@ export class ComputeMonitor {
 
     this.interceptedFetch = async (
       input: RequestInfo | URL,
-      init?: RequestInit,
+      init?: RequestInit
     ): Promise<Response> => {
       const pathname = self.extractPathnameFromRequest(input);
 
@@ -121,7 +122,7 @@ export class ComputeMonitor {
           }
         }
         throw new Error(
-          "OSDK network requests are paused by OSDK ComputeTools",
+          "OSDK network requests are paused by OSDK ComputeTools"
         );
       }
 
@@ -130,8 +131,8 @@ export class ComputeMonitor {
           reason: !shouldTrack
             ? "endpoint not tracked"
             : !isRecording
-            ? "not recording"
-            : "body not string",
+              ? "not recording"
+              : "body not string",
         });
         return self.originalFetch(input, init);
       }
@@ -187,7 +188,7 @@ export class ComputeMonitor {
         if (typeof computeUsage === "number") {
           self.logger.debug(
             "Fulfilling request with compute usage:",
-            computeUsage,
+            computeUsage
           );
           self.computeStore.fulfillRequest(requestId, {
             computeUsage,
@@ -196,18 +197,16 @@ export class ComputeMonitor {
             responsePayload: truncatePayload(stringifyPayload(jsonRes)),
           });
         } else if (res.status === 200) {
-          self.logger.warn(
-            "Request succeeded but no computeUsage in response",
-          );
+          self.logger.warn("Request succeeded but no computeUsage in response");
           self.computeStore.fulfillWithoutUsage(requestId, {
             responsePayloadBytes: arrayBuffer.byteLength,
             responsePayloadHash: hashPayload(jsonRes),
             responsePayload: truncatePayload(stringifyPayload(jsonRes)),
           });
         } else if (
-          typeof jsonRes.errorCode === "string"
-          && typeof jsonRes.errorInstanceId === "string"
-          && typeof jsonRes.errorName === "string"
+          typeof jsonRes.errorCode === "string" &&
+          typeof jsonRes.errorInstanceId === "string" &&
+          typeof jsonRes.errorName === "string"
         ) {
           self.computeStore.failRequest(requestId, {
             type: "api-gateway-error",
@@ -231,10 +230,10 @@ export class ComputeMonitor {
           requestId,
           error instanceof Error
             ? {
-              type: "fetch-error",
-              message: error.message,
-            }
-            : { type: "unknown" },
+                type: "fetch-error",
+                message: error.message,
+              }
+            : { type: "unknown" }
         );
         throw error;
       }
@@ -265,6 +264,6 @@ export class ComputeMonitor {
 
   private doesEndpointTrackComputeCost(pathname: string): boolean {
     const normalized = pathname.replace(RID_REGEX, RID_PLACEHOLDER);
-    return COMPUTE_COST_ENDPOINTS.includes(normalized);
+    return COMPUTE_COST_ENDPOINTS.has(normalized);
   }
 }

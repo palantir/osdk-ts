@@ -41,23 +41,23 @@ import {
 } from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
-  defInput: InterfaceActionTypeUserDefinition,
+  defInput: InterfaceActionTypeUserDefinition
 ): ActionType {
   const def = cloneDefinition(defInput);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,
     Object.keys(allProperties),
-    def.interfaceType.apiName,
+    def.interfaceType.apiName
   );
   const actionInterfaceProperties = Object.entries(allProperties).filter(
     ([apiName, type]) => {
       return isPropertyParameter(
         def,
         apiName,
-        getInterfacePropertyTypeType(type),
+        getInterfacePropertyTypeType(type)
       );
-    },
+    }
   );
   const sptNames = actionInterfaceProperties
     .filter(([_apiName, type]) => isInterfaceSharedPropertyType(type))
@@ -65,33 +65,30 @@ export function defineModifyInterfaceObjectAction(
   const parameterNames = new Set(
     actionInterfaceProperties.map(([apiName, _type]) =>
       getInterfaceParameterName(def, apiName)
-    ),
+    )
   );
   const propertyMap = Object.fromEntries(
-    Object.entries(allProperties).map((
-      [id, prop],
-    ) => [getInterfaceParameterName(def, id), prop]),
+    Object.entries(allProperties).map(([id, prop]) => [
+      getInterfaceParameterName(def, id),
+      prop,
+    ])
   );
 
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(
-      getInterfaceParameterName(def, param),
-    )
+  Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
+    parameterNames.add(getInterfaceParameterName(def, param))
   );
   parameterNames.add(MODIFY_INTERFACE_OBJECT_PARAMETER);
-  const actionApiName = def.apiName ?? `modify-${
-    kebab(
-      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
-    )
-  }${
-    def.objectType === undefined
-      ? ""
-      : `-${
-        kebab(
-          def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
-        )
-      }`
-  }`;
+  const actionApiName =
+    def.apiName ??
+    `modify-${kebab(
+      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName
+    )}${
+      def.objectType === undefined
+        ? ""
+        : `-${kebab(
+            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+          )}`
+    }`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(MODIFY_INTERFACE_OBJECT_PARAMETER)) {
       def.parameterOrdering.unshift(MODIFY_INTERFACE_OBJECT_PARAMETER);
@@ -99,7 +96,7 @@ export function defineModifyInterfaceObjectAction(
     validateParameterOrdering(
       def.parameterOrdering,
       parameterNames,
-      actionApiName,
+      actionApiName
     );
   }
   const parameters = createParameters(
@@ -107,16 +104,15 @@ export function defineModifyInterfaceObjectAction(
     propertyMap,
     parameterNames,
     Object.fromEntries(
-      Object.entries(allProperties).map((
-        [id, prop],
-      ) => [id, prop.required ?? true]),
-    ),
+      Object.entries(allProperties).map(([id, prop]) => [
+        id,
+        prop.required ?? true,
+      ])
+    )
   );
   let sptMappings = {};
   const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => {
+    Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => {
       if (sptNames.includes(id)) {
         sptMappings = {
           ...sptMappings,
@@ -124,17 +120,20 @@ export function defineModifyInterfaceObjectAction(
         };
       }
       return [id, convertInterfacePropertyMappingValue(value)];
-    }),
+    })
   );
 
   return defineAction({
     apiName: actionApiName,
-    displayName: def.displayName
-      ?? `Modify ${def.interfaceType.displayMetadata.displayName}`,
+    displayName:
+      def.displayName ??
+      `Modify ${def.interfaceType.displayMetadata.displayName}`,
     parameters,
-    status: def.status ?? (def.interfaceType.status.type !== "deprecated"
-      ? def.interfaceType.status.type
-      : def.interfaceType.status),
+    status:
+      def.status ??
+      (def.interfaceType.status.type !== "deprecated"
+        ? def.interfaceType.status.type
+        : def.interfaceType.status),
     entities: {
       affectedInterfaceTypes: [def.interfaceType.apiName],
       affectedObjectTypes: [],
@@ -149,69 +148,71 @@ export function defineModifyInterfaceObjectAction(
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: {
             ...Object.fromEntries(
-              sptNames.map(
-                id => [id, {
+              sptNames.map((id) => [
+                id,
+                {
                   type: "parameterId",
                   parameterId: def.useNonNamespacedParameters
                     ? getNonNamespacedParameterName(def, id)
                     : id,
-                }],
-              ),
+                },
+              ])
             ),
             ...sptMappings,
           },
           interfacePropertyValues: {
             ...Object.fromEntries(
-              actionInterfaceProperties
-                .map(([id, _type]) => [
-                  id,
-                  {
-                    type: "logicRuleValue",
-                    logicRuleValue: {
-                      type: "parameterId",
-                      parameterId: def.useNonNamespacedParameters
-                        ? getNonNamespacedParameterName(def, id)
-                        : id,
-                    },
+              actionInterfaceProperties.map(([id, _type]) => [
+                id,
+                {
+                  type: "logicRuleValue",
+                  logicRuleValue: {
+                    type: "parameterId",
+                    parameterId: def.useNonNamespacedParameters
+                      ? getNonNamespacedParameterName(def, id)
+                      : id,
                   },
-                ]),
+                },
+              ])
             ),
             ...mappings,
           },
         },
       },
     ],
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
+    parameterOrdering:
+      def.parameterOrdering ??
+      createDefaultParameterOrdering(
         def,
         Array.from(parameterNames),
         parameters,
-        MODIFY_INTERFACE_OBJECT_PARAMETER,
+        MODIFY_INTERFACE_OBJECT_PARAMETER
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
+          validation: convertValidationRule(
+            def.actionLevelValidation,
+            parameters
+          ),
+        }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.enableLayoutSwitch && {
+      enableLayoutSwitch: def.enableLayoutSwitch,
+    }),
     ...(def.tableConfiguration && {
       displayAndFormat: {
         table: def.tableConfiguration,
       },
     }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
+    ...(def.sections && {
+      sections: Object.fromEntries(
+        def.sections.map((section) => [section.id, section])
+      ),
+    }),
+    ...(def.submissionMetadata && {
+      submissionMetadata: def.submissionMetadata,
+    }),
     ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });

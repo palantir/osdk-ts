@@ -36,16 +36,17 @@ export type MainValueTypeOf<P extends ObjectMetadata.Property> =
     ? P["type"] extends Record<string, WirePropertyTypes>
       ? Single extends keyof P["type"]
         ? GetClientPropertyValueFromWire<P["type"][Single]>
+        : never
       : never
-    : never
     : P["mainValue"] extends { fields: readonly (infer F extends string)[] }
-      ? P["type"] extends Record<string, WirePropertyTypes> ? {
-          [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
-            P["type"][K]
-          >;
-        }
-      : never
-    : never;
+      ? P["type"] extends Record<string, WirePropertyTypes>
+        ? {
+            [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
+              P["type"][K]
+            >;
+          }
+        : never
+      : never;
 
 /**
  * Extract the reduced type from an array property.
@@ -55,20 +56,24 @@ export type ReducedTypeOf<P extends ObjectMetadata.Property> =
   P["hasReducers"] extends true
     ? P["type"] extends WirePropertyTypes
       ? GetClientPropertyValueFromWire<P["type"]>
-    : never
+      : never
     : never;
 
 /** Get keys of properties that have mainValue defined */
 export type PropsWithMainValue<Q extends ObjectOrInterfaceDefinition> = {
-  [K in PropertyKeys<Q>]: CompileTimeMetadata<Q>["properties"][K] extends
-    { mainValue: { fields: readonly string[] } } ? K
+  [K in PropertyKeys<Q>]: CompileTimeMetadata<Q>["properties"][K] extends {
+    mainValue: { fields: readonly string[] };
+  }
+    ? K
     : never;
 }[PropertyKeys<Q>];
 
 /** Get keys of properties that have reducers defined */
 export type PropsWithReducers<Q extends ObjectOrInterfaceDefinition> = {
-  [K in PropertyKeys<Q>]: CompileTimeMetadata<Q>["properties"][K] extends
-    { hasReducers: true } ? K
+  [K in PropertyKeys<Q>]: CompileTimeMetadata<Q>["properties"][K] extends {
+    hasReducers: true;
+  }
+    ? K
     : never;
 }[PropertyKeys<Q>];
 
@@ -85,29 +90,29 @@ export type ApplyModifierToProperty<
   ? MainValueTypeOf<P> | (P["nullable"] extends true ? undefined : never)
   : M extends "applyReducers"
     ? ReducedTypeOf<P> | (P["nullable"] extends true ? undefined : never)
-  : M extends "applyReducersAndExtractMainValue"
-    ? MainValueOfReduced<P> | (P["nullable"] extends true ? undefined : never)
-  : never;
+    : M extends "applyReducersAndExtractMainValue"
+      ? MainValueOfReduced<P> | (P["nullable"] extends true ? undefined : never)
+      : never;
 
 type MainValueOfReduced<P extends ObjectMetadata.Property> =
   P["mainValue"] extends { fields: readonly [infer Single extends string] }
     ? P["type"] extends Record<string, WirePropertyTypes>
       ? Single extends keyof P["type"]
         ? GetClientPropertyValueFromWire<P["type"][Single]>
+        : never
       : never
-    : never
     : P["mainValue"] extends { fields: readonly (infer F extends string)[] }
-      ? P["type"] extends Record<string, WirePropertyTypes> ? {
-          [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
-            P["type"][K]
-          >;
-        }
-      : never
-    : never;
+      ? P["type"] extends Record<string, WirePropertyTypes>
+        ? {
+            [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
+              P["type"][K]
+            >;
+          }
+        : never
+      : never;
 
 export type PropsWithBoth<Q extends ObjectOrInterfaceDefinition> =
-  & PropsWithMainValue<Q>
-  & PropsWithReducers<Q>;
+  PropsWithMainValue<Q> & PropsWithReducers<Q>;
 
 export type PropsWithOnlyMainValue<Q extends ObjectOrInterfaceDefinition> =
   Exclude<PropsWithMainValue<Q>, PropsWithReducers<Q>>;
@@ -115,31 +120,27 @@ export type PropsWithOnlyMainValue<Q extends ObjectOrInterfaceDefinition> =
 export type PropsWithOnlyReducers<Q extends ObjectOrInterfaceDefinition> =
   Exclude<PropsWithReducers<Q>, PropsWithMainValue<Q>>;
 
-export type ApplyModifiersArg<
-  Q extends ObjectOrInterfaceDefinition,
-> =
-  & {
-    [P in PropsWithOnlyMainValue<Q>]?: "applyMainValue";
-  }
-  & {
-    [P in PropsWithOnlyReducers<Q>]?: "applyReducers";
-  }
-  & {
-    [P in PropsWithBoth<Q>]?:
-      | "applyMainValue"
-      | "applyReducers"
-      | "applyReducersAndExtractMainValue";
-  };
+export type ApplyModifiersArg<Q extends ObjectOrInterfaceDefinition> = {
+  [P in PropsWithOnlyMainValue<Q>]?: "applyMainValue";
+} & {
+  [P in PropsWithOnlyReducers<Q>]?: "applyReducers";
+} & {
+  [P in PropsWithBoth<Q>]?:
+    | "applyMainValue"
+    | "applyReducers"
+    | "applyReducersAndExtractMainValue";
+};
 
 export type ApplyModifiersToProps<
   Q extends ObjectOrInterfaceDefinition,
   MODIFIERS extends Record<string, PropertyModifierValue>,
 > = {
   [K in PropertyKeys<Q>]: K extends keyof MODIFIERS
-    ? MODIFIERS[K] extends PropertyModifierValue ? ApplyModifierToProperty<
-        CompileTimeMetadata<Q>["properties"][K],
-        MODIFIERS[K]
-      >
-    : CompileTimeMetadata<Q>["props"][K]
+    ? MODIFIERS[K] extends PropertyModifierValue
+      ? ApplyModifierToProperty<
+          CompileTimeMetadata<Q>["properties"][K],
+          MODIFIERS[K]
+        >
+      : CompileTimeMetadata<Q>["props"][K]
     : CompileTimeMetadata<Q>["props"][K];
 };

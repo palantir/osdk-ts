@@ -18,9 +18,11 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classnames from "classnames";
 import React, { memo, useMemo } from "react";
+
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
+
 import styles from "./FilterListItem.module.css";
 
 interface SortableFilterListItemProps<D> {
@@ -29,10 +31,7 @@ interface SortableFilterListItemProps<D> {
   filterKey: string;
   label: string;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   searchField?: boolean;
@@ -58,10 +57,13 @@ function SortableFilterListItemInner<D>({
     isDragging,
   } = useSortable({ id });
 
-  const style = useMemo<React.CSSProperties>(() => ({
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-  }), [transform, transition]);
+  const style = useMemo<React.CSSProperties>(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition: transition ?? undefined,
+    }),
+    [transform, transition]
+  );
 
   return (
     <div
@@ -86,5 +88,5 @@ function SortableFilterListItemInner<D>({
 }
 
 export const SortableFilterListItem = memo(
-  SortableFilterListItemInner,
+  SortableFilterListItemInner
 ) as typeof SortableFilterListItemInner;

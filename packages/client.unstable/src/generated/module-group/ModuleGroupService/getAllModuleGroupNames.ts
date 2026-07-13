@@ -15,13 +15,14 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ModuleGroupName as _ModuleGroupName } from "../__components.js";
 
 /**
  * Returns the names of all module groups created by the calling user.
  */
 export async function getAllModuleGroupNames(
-  ctx: ConjureContext,
+  ctx: ConjureContext
 ): Promise<Array<_ModuleGroupName>> {
   return conjureFetch(ctx, `/module-group`, "GET");
 }

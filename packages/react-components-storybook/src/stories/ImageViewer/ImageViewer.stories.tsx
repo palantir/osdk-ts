@@ -48,7 +48,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 function createMockImageMedia(
   dataUrl: string,
   mimeType: string,
-  filename: string,
+  filename: string
 ): Media {
   return {
     fetchContents: async () => {
@@ -102,11 +102,7 @@ export default meta;
 
 export const Default: StoryObj<ImageViewerMediaProps> = {
   args: {
-    media: createMockImageMedia(
-      sampleImageDataUrl,
-      "image/png",
-      "sample.png",
-    ),
+    media: createMockImageMedia(sampleImageDataUrl, "image/png", "sample.png"),
     alt: "Sample image loaded from Media",
   },
   render: (args: ImageViewerMediaProps) => (
@@ -117,8 +113,7 @@ export const Default: StoryObj<ImageViewerMediaProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
+        code: `import { ImageViewer } from "@osdk/react-components/experimental/image-viewer";
 
 <ImageViewer media={myOsdkMedia} alt="My image" />`,
       },

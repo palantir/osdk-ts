@@ -17,115 +17,124 @@
 import type { Parameter, ParameterId } from "@osdk/client.unstable";
 import type { BaseParameterType } from "@osdk/client.unstable/api";
 import type { ActionType } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 const FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX =
-  /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/;
+  /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/u;
 
 export function convertActionParameters(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): Record<ParameterId, Parameter> {
-  return Object.fromEntries((action.parameters ?? []).map(parameter => {
-    let convertedType: BaseParameterType;
+  return Object.fromEntries(
+    (action.parameters ?? []).map((parameter) => {
+      let convertedType: BaseParameterType;
 
-    if (typeof parameter.type === "string") {
-      // Simple string types like "string", "integer", etc.
-      convertedType = { type: parameter.type, [parameter.type]: {} } as any;
-    } else {
-      // Complex types that need ObjectTypeId conversion
-      switch (parameter.type.type) {
-        case "objectReference":
-          convertedType = {
-            type: "objectReference",
-            objectReference: {
-              ...parameter.type.objectReference,
-              objectTypeId: ridGenerator.generateObjectTypeId(
-                parameter.type.objectReference.objectTypeId,
-              ),
-            },
-          };
-          break;
+      if (typeof parameter.type === "string") {
+        // Simple string types like "string", "integer", etc.
+        convertedType = { type: parameter.type, [parameter.type]: {} } as any;
+      } else {
+        // Complex types that need ObjectTypeId conversion
+        switch (parameter.type.type) {
+          case "objectReference":
+            convertedType = {
+              type: "objectReference",
+              objectReference: {
+                ...parameter.type.objectReference,
+                objectTypeId: ridGenerator.generateObjectTypeId(
+                  parameter.type.objectReference.objectTypeId
+                ),
+              },
+            };
+            break;
 
-        case "objectReferenceList":
-          convertedType = {
-            type: "objectReferenceList",
-            objectReferenceList: {
-              ...parameter.type.objectReferenceList,
-              objectTypeId: ridGenerator.generateObjectTypeId(
-                parameter.type.objectReferenceList.objectTypeId,
-              ),
-            },
-          };
-          break;
+          case "objectReferenceList":
+            convertedType = {
+              type: "objectReferenceList",
+              objectReferenceList: {
+                ...parameter.type.objectReferenceList,
+                objectTypeId: ridGenerator.generateObjectTypeId(
+                  parameter.type.objectReferenceList.objectTypeId
+                ),
+              },
+            };
+            break;
 
-        case "interfaceReference":
-          convertedType = {
-            type: "interfaceReference",
-            interfaceReference: {
-              // the functionsIR uses resolved rids over the wire, so function-backed action
-              // interface parameters should be unconverted
-              interfaceTypeRid: resolveInterfaceTypeRid(
-                parameter.type.interfaceReference.interfaceTypeRid,
-                ridGenerator,
-              ),
-            },
-          };
-          break;
-        case "interfaceReferenceList":
-          convertedType = {
-            type: "interfaceReferenceList",
-            interfaceReferenceList: {
-              interfaceTypeRid: resolveInterfaceTypeRid(
-                parameter.type.interfaceReferenceList.interfaceTypeRid,
-                ridGenerator,
-              ),
-            },
-          };
-          break;
+          case "interfaceReference":
+            convertedType = {
+              type: "interfaceReference",
+              interfaceReference: {
+                // the functionsIR uses resolved rids over the wire, so function-backed action
+                // interface parameters should be unconverted
+                interfaceTypeRid: resolveInterfaceTypeRid(
+                  parameter.type.interfaceReference.interfaceTypeRid,
+                  ridGenerator
+                ),
+              },
+            };
+            break;
+          case "interfaceReferenceList":
+            convertedType = {
+              type: "interfaceReferenceList",
+              interfaceReferenceList: {
+                interfaceTypeRid: resolveInterfaceTypeRid(
+                  parameter.type.interfaceReferenceList.interfaceTypeRid,
+                  ridGenerator
+                ),
+              },
+            };
+            break;
 
-        case "objectSetRid":
-          convertedType = {
-            type: "objectSetRid",
-            objectSetRid: {
-              objectTypeId: ridGenerator.generateObjectTypeId(
-                parameter.type.objectSetRid.objectTypeId,
-              ),
-            },
-          };
-          break;
+          case "objectSetRid":
+            convertedType = {
+              type: "objectSetRid",
+              objectSetRid: {
+                objectTypeId: ridGenerator.generateObjectTypeId(
+                  parameter.type.objectSetRid.objectTypeId
+                ),
+              },
+            };
+            break;
 
-        case "objectTypeReference":
-          convertedType = {
-            type: "objectTypeReference",
-            objectTypeReference: {},
-          };
-          break;
+          case "objectTypeReference":
+            convertedType = {
+              type: "objectTypeReference",
+              objectTypeReference: {},
+            };
+            break;
 
-        default:
-          // Pass through other types unchanged
-          convertedType = parameter.type;
+          default:
+            // Pass through other types unchanged
+            convertedType = parameter.type;
+        }
       }
-    }
 
-    return [parameter.id, {
-      id: parameter.id,
-      rid: ridGenerator.generateRidForParameter(action.apiName, parameter.id),
-      type: convertedType,
-      displayMetadata: {
-        displayName: parameter.displayName,
-        description: parameter.description ?? "",
-        typeClasses: [],
-        structFields: {},
-        structFieldsV2: [],
-      },
-    }];
-  }));
+      return [
+        parameter.id,
+        {
+          id: parameter.id,
+          rid: ridGenerator.generateRidForParameter(
+            action.apiName,
+            parameter.id
+          ),
+          type: convertedType,
+          displayMetadata: {
+            displayName: parameter.displayName,
+            description: parameter.description ?? "",
+            typeClasses: [],
+            structFields: {},
+            structFieldsV2: [],
+          },
+        },
+      ];
+    })
+  );
 }
 
 function resolveInterfaceTypeRid(
   interfaceTypeRidOrApiName: string,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): string {
   return FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX.test(interfaceTypeRidOrApiName)
     ? interfaceTypeRidOrApiName

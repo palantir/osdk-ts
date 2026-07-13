@@ -25,6 +25,6 @@ import { MarkdownViewerMedia as _MarkdownViewerMedia } from "../../markdown-rend
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const MarkdownViewerMedia: typeof _MarkdownViewerMedia = withOsdkMetrics(
   _MarkdownViewerMedia,
-  "MarkdownViewerMedia",
+  "MarkdownViewerMedia"
 );
 export type { MarkdownViewerMediaProps } from "../../markdown-renderer/MarkdownViewerMedia.js";

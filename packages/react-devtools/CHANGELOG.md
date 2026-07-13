@@ -1,5 +1,42 @@
 # @osdk/react-devtools
 
+## 0.14.0
+
+### Minor Changes
+
+- df15011: Detect actions and resolve memo component names in the component tree, and clarify the components and cache-hit-rate copy
+
+## 0.13.0
+
+### Minor Changes
+
+- 928a117: render only the Components, Console, and Cache tabs in the devtools panel, replacing the Performance, Compute, Intercept, and Debugging tabs. The cache sections now render flush, dropping the extra section padding via an `OverviewSection` `padded` prop
+- ebb4850: fix outlined primary buttons ("View documentation", "Copy fix prompt") in the devtools panel to use the soft blue tint and readable blue label instead of a solid fill with low-contrast text
+- e3a6fa4: add client metrics (cache, latency, and optimistic-update effectiveness) computed from the metrics store
+- 63139b8: add the Cache tab: a cache entry inspector with size and entries stats stacked above a cache history timeline
+- b5c9ab3: rebuild the Components base tab as a collapsible ontology tree showing the object types, actions, and properties each component touches, with search and per-component health badges
+- b03e461: fix devtools panel tooltips and popover menus not responding to hover or clicks, caused by portaled overlays inheriting the panel's pointer-events:none
+- cfa111e: surface performance recommendations as a section on the Overview tab
+- a4b03d5: Use real metrics in the Overview tab
+- 7995be0: Restyle the monitoring panel header background and remove the uppercase transform from the title
+- 7449f91: Restyle the MonitoringPanel devtools tab bar to use Blueprint Tabs
+
+## 0.12.0
+
+### Minor Changes
+
+- 644f6f1: add copy-prompt builder and CopyPromptButton for actionable performance recommendations
+- f71b440: isolate devtools styling in a shadow root so it no longer overrides app theme tokens
+- ea126f7: Add Overview tab primitives (Metric, Metrics, OverviewSection) and a dummy-data OverviewTab to the monitoring panel.
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 0.11.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+
 ## 0.10.0
 
 ### Minor Changes

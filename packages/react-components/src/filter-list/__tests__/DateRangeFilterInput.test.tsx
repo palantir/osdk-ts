@@ -19,6 +19,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { DateRangeFilterInput } from "../inputs/DateRangeFilterInput.js";
 import { MockObjectType } from "./testUtils.js";
 
@@ -49,13 +50,13 @@ describe("DateRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />,
+      />
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     // Find the histogram call by its $groupBy aggregate shape
     const histogramCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy != null,
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy != null
     );
     expect(histogramCall).toBeDefined();
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
@@ -73,13 +74,13 @@ describe("DateRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />,
+      />
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     // Find the null count call by its lack of $groupBy
     const nullCountCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null,
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null
     );
     expect(nullCountCall).toBeDefined();
     const nullCountWhere = nullCountCall![1].where;
@@ -100,12 +101,12 @@ describe("DateRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />,
+      />
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     const nullCountCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null,
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null
     );
     expect(nullCountCall).toBeDefined();
     // An empty {} inside $and is rejected by the aggregation API, so the

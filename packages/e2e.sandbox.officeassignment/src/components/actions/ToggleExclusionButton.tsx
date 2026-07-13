@@ -17,9 +17,11 @@
 import type { Osdk } from "@osdk/api";
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import type { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import { toggleStatusExclusion } from "../../generatedNoCheck2/index.js";
 import { ErrorBanner } from "../common/index.js";
+
 import styles from "./actions.module.css";
 
 export interface ToggleExclusionButtonProps {
@@ -28,11 +30,11 @@ export interface ToggleExclusionButtonProps {
 
 /** Flips `isExcluded` on a StatusUpdate row. The action expects the new (flipped) value. */
 export function ToggleExclusionButton(
-  props: ToggleExclusionButtonProps,
+  props: ToggleExclusionButtonProps
 ): React.JSX.Element {
   const { statusUpdate } = props;
   const { applyAction, isPending, error } = useOsdkAction(
-    toggleStatusExclusion,
+    toggleStatusExclusion
   );
   const currentlyExcluded = statusUpdate.isExcluded === true;
 
@@ -43,8 +45,9 @@ export function ToggleExclusionButton(
     });
   }, [applyAction, statusUpdate, currentlyExcluded]);
 
-  const errorMessage = error?.actionValidation?.message
-    ?? (error != null ? "Failed to toggle exclusion." : undefined);
+  const errorMessage =
+    error?.actionValidation?.message ??
+    (error != null ? "Failed to toggle exclusion." : undefined);
 
   return (
     <>

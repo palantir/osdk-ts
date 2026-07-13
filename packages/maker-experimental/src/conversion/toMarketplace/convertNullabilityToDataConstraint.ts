@@ -18,9 +18,10 @@ import type { DataConstraints } from "@osdk/client.unstable";
 import type { Nullability, PropertyTypeType } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
-export function convertNullabilityToDataConstraint(
-  prop: { type: PropertyTypeType; nullability?: Nullability },
-): DataConstraints | undefined {
+export function convertNullabilityToDataConstraint(prop: {
+  type: PropertyTypeType;
+  nullability?: Nullability;
+}): DataConstraints | undefined {
   if (typeof prop.type === "object" && prop.type.type === "marking") {
     if (prop.nullability === undefined) {
       return {
@@ -34,7 +35,7 @@ export function convertNullabilityToDataConstraint(
     }
     invariant(
       prop.nullability?.noNulls && prop.nullability?.noEmptyCollections,
-      "Marking property type has noNulls or noEmptyCollections set to false, marking properties must not be nullable",
+      "Marking property type has noNulls or noEmptyCollections set to false, marking properties must not be nullable"
     );
     return {
       propertyTypeConstraints: [],
@@ -42,9 +43,11 @@ export function convertNullabilityToDataConstraint(
       nullabilityV2: prop.nullability,
     };
   }
-  return prop.nullability === undefined ? undefined : {
-    propertyTypeConstraints: [],
-    nullability: undefined,
-    nullabilityV2: prop.nullability,
-  };
+  return prop.nullability === undefined
+    ? undefined
+    : {
+        propertyTypeConstraints: [],
+        nullability: undefined,
+        nullabilityV2: prop.nullability,
+      };
 }

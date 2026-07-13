@@ -23,6 +23,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { mockFetchResponse } from "../createClient.test.js";
@@ -40,7 +41,7 @@ describe("ScenarioClient methods", () => {
       ontologyRid,
       async () => "Token",
       undefined,
-      fetchFunction,
+      fetchFunction
     );
   });
 
@@ -60,10 +61,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com",
+        "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/,
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/editedEntityTypes$/u
       );
       expect(result.objectTypes).toEqual(["Employee", "Office"]);
       expect(result.linkTypes).toEqual([
@@ -92,10 +93,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com",
+        "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/,
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/edited$/u
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
@@ -137,7 +138,7 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(2);
       const secondUrl = new URL(
         fetchFunction.mock.calls[1][0] as string,
-        "https://mock.com",
+        "https://mock.com"
       );
       expect(secondUrl.searchParams.get("pageToken")).toBe("tok-2");
     });
@@ -172,10 +173,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com",
+        "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/,
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/u
       );
       expect(result).toEqual(["lead", "peeps"]);
     });
@@ -221,10 +222,10 @@ describe("ScenarioClient methods", () => {
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
         fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com",
+        "https://mock.com"
       );
       expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/,
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objects\/Employee\/links\/lead\/edited$/u
       );
       expect(url.searchParams.get("pageSize")).toBe("100");
       expect(url.searchParams.get("pageToken")).toBe("tok-1");
@@ -283,16 +284,15 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, page2);
 
       const pairs: string[] = [];
-      for await (
-        const { source, target, linkType } of scenario.editedLinksAsyncIter(
-          Employee,
-          "lead",
-        )
-      ) {
+      for await (const {
+        source,
+        target,
+        linkType,
+      } of scenario.editedLinksAsyncIter(Employee, "lead")) {
         pairs.push(
-          `${String(source.$primaryKey)}-${
-            String(target.$primaryKey)
-          }-${linkType as string}`,
+          `${String(source.$primaryKey)}-${String(
+            target.$primaryKey
+          )}-${linkType as string}`
         );
       }
 

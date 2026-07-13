@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { updateVersionsIfTheyExist } from "./handleGenerate.mjs";
 
 describe(updateVersionsIfTheyExist, () => {

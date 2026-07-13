@@ -19,7 +19,7 @@ import { DocumentViewer as _DocumentViewer } from "../../document-viewer/Documen
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const DocumentViewer: typeof _DocumentViewer = withOsdkMetrics(
   _DocumentViewer,
-  "DocumentViewer",
+  "DocumentViewer"
 );
 export type { DocumentViewerProps } from "../../document-viewer/DocumentViewerApi.js";
 export { ViewerType } from "../../document-viewer/DocumentViewerApi.js";

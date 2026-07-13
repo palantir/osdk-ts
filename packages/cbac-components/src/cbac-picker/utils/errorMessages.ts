@@ -25,8 +25,10 @@ interface ApiErrorLike {
 }
 
 function isApiErrorLike(error: Error): error is Error & ApiErrorLike {
-  return "statusCode" in error
-    && typeof (error as ApiErrorLike).statusCode === "number";
+  return (
+    "statusCode" in error &&
+    typeof (error as ApiErrorLike).statusCode === "number"
+  );
 }
 
 function formatByStatusCode(error: Error & ApiErrorLike): CbacErrorMessage {
@@ -56,8 +58,8 @@ function formatByStatusCode(error: Error & ApiErrorLike): CbacErrorMessage {
     };
   }
   if (
-    typeof error.errorDescription === "string"
-    && error.errorDescription.length > 0
+    typeof error.errorDescription === "string" &&
+    error.errorDescription.length > 0
   ) {
     return {
       title: error.errorDescription,
@@ -83,8 +85,8 @@ export function formatCbacError(error: Error): CbacErrorMessage {
   }
 
   if (
-    error.message.toLowerCase().includes("network")
-    || error.message.toLowerCase().includes("fetch")
+    error.message.toLowerCase().includes("network") ||
+    error.message.toLowerCase().includes("fetch")
   ) {
     return {
       title: "Network error",

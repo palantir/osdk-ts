@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type { GetGothamPropertyTypesResponse as _api_typemapping_GetGothamPropertyTypesResponse } from "../typemapping/__components.js";
 
@@ -32,11 +33,11 @@ import type { GetGothamPropertyTypesResponse as _api_typemapping_GetGothamProper
  */
 export async function getGothamPropertyTypes(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid,
+  ontologyRid: _api_OntologyRid
 ): Promise<_api_typemapping_GetGothamPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/getGothamPropertyTypes/${ontologyRid}`,
-    "GET",
+    "GET"
   );
 }

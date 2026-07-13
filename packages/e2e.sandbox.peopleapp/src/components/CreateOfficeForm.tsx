@@ -1,5 +1,6 @@
 import { useOsdkAction } from "@osdk/react";
 import { useRef, useState } from "react";
+
 import { $Actions } from "../generatedNoCheck2/index.js";
 import { useOfficeFormAction } from "../hooks/useOfficeFormAction.js";
 import { Button } from "./Button.js";
@@ -15,7 +16,7 @@ export function CreateOfficeForm() {
 
   // Get the createOffice action
   const { applyAction, isPending, error } = useOsdkAction(
-    $Actions.createOffice,
+    $Actions.createOffice
   );
 
   // State for success message
@@ -35,10 +36,7 @@ export function CreateOfficeForm() {
       </H2>
 
       <div className="flex grow">
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit}
-        >
+        <form ref={formRef} onSubmit={handleSubmit}>
           {/* Messages */}
           <SuccessMessage
             show={formState.success || showSuccess}

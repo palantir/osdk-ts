@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyPackageRid as _api_OntologyPackageRid,
   PackagedEntityRid as _api_PackagedEntityRid,
@@ -25,7 +26,7 @@ import type {
  */
 export async function getAllEntitiesInPackage(
   ctx: ConjureContext,
-  packageRid: _api_OntologyPackageRid,
+  packageRid: _api_OntologyPackageRid
 ): Promise<Array<_api_PackagedEntityRid>> {
   return conjureFetch(ctx, `/ontology/packages/${packageRid}/entities`, "GET");
 }

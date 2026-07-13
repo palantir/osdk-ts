@@ -17,6 +17,7 @@
 import { throttle } from "lodash-es";
 import type { LegacyRef } from "react";
 import { useCallback, useEffect, useRef } from "react";
+
 import { useEventCallback } from "./useEventCallback.js";
 
 const THRESHOLD = 0.5;
@@ -42,9 +43,10 @@ export interface UseInfiniteScrollOptions {
  * It returns a callback that must be set as the ref of the target element at the bottom of the
  * scroll container.
  */
-export function useInfiniteScroll(
-  { callback, loadedCount }: UseInfiniteScrollOptions,
-): LegacyRef<HTMLDivElement> {
+export function useInfiniteScroll({
+  callback,
+  loadedCount,
+}: UseInfiniteScrollOptions): LegacyRef<HTMLDivElement> {
   const observer = useRef<IntersectionObserver>();
   const targetRef = useRef<Element | undefined>();
 
@@ -57,14 +59,14 @@ export function useInfiniteScroll(
    * with the scroll container, invoke the callback.
    */
   const handleObserverUpdate: IntersectionObserverCallback = useCallback(
-    entries => {
+    (entries) => {
       const ent = entries[0];
       if (ent && ent.isIntersecting) {
         throttledCallback();
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    []
   );
 
   /**
@@ -89,7 +91,7 @@ export function useInfiniteScroll(
       if (observer.current == null) {
         observer.current = new IntersectionObserver(
           handleObserverUpdate,
-          OPTIONS,
+          OPTIONS
         );
       }
       observer.current.observe(node);

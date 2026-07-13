@@ -17,8 +17,10 @@
 import {
   type FilterDefinitionUnion,
   FilterList,
+  type FilterListProps,
 } from "@osdk/react-components/experimental/filter-list";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+
 import { Employee } from "../generatedNoCheck2/index.js";
 
 const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -64,8 +66,8 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   } as FilterDefinitionUnion<Employee>,
 ];
 
-const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
-  def.id != null && ["department", "locationCity"].includes(def.id)
+const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter(
+  (def) => def.id != null && ["department", "locationCity"].includes(def.id)
 );
 
 const FILTER_SIDEBAR_WIDTH = 256;
@@ -125,52 +127,40 @@ function AddFilterButton({
 }
 
 interface EmployeeFiltersProps {
-  onFilterClauseChanged?: (
-    clause: Parameters<
-      NonNullable<
-        React.ComponentProps<typeof FilterList>["onFilterClauseChanged"]
-      >
-    >[0],
-  ) => void;
+  onFilterClauseChanged?: FilterListProps<Employee>["onFilterClauseChanged"];
 }
 
 export function EmployeeFilters({
   onFilterClauseChanged,
 }: EmployeeFiltersProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [filterDefinitions, setFilterDefinitions] = useState<
-    FilterDefinitionUnion<Employee>[]
-  >(INITIAL_FILTERS);
+  const [filterDefinitions, setFilterDefinitions] =
+    useState<FilterDefinitionUnion<Employee>[]>(INITIAL_FILTERS);
 
   const activeIds = useMemo(
     () =>
-      new Set(
-        filterDefinitions.map((d) => d.id).filter((id) => id != null),
-      ),
-    [filterDefinitions],
+      new Set(filterDefinitions.map((d) => d.id).filter((id) => id != null)),
+    [filterDefinitions]
   );
 
   const availableFilters = useMemo(
     () =>
       ALL_FILTER_DEFINITIONS.filter(
-        (def) => def.id != null && !activeIds.has(def.id),
+        (def) => def.id != null && !activeIds.has(def.id)
       ),
-    [activeIds],
+    [activeIds]
   );
 
   const handleAddFilter = useCallback(
     (def: FilterDefinitionUnion<Employee>) => {
       setFilterDefinitions((prev) => [...prev, def]);
     },
-    [],
+    []
   );
 
-  const handleRemoveFilter = useCallback(
-    (filterKey: string) => {
-      setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
-    },
-    [],
-  );
+  const handleRemoveFilter = useCallback((filterKey: string) => {
+    setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
+  }, []);
 
   const renderAddFilterButton = useCallback(
     () => (
@@ -179,7 +169,7 @@ export function EmployeeFilters({
         onAdd={handleAddFilter}
       />
     ),
-    [availableFilters, handleAddFilter],
+    [availableFilters, handleAddFilter]
   );
 
   const containerStyle = useMemo(
@@ -187,7 +177,7 @@ export function EmployeeFilters({
       width: collapsed ? undefined : FILTER_SIDEBAR_WIDTH,
       height: "100%" as const,
     }),
-    [collapsed],
+    [collapsed]
   );
 
   return (

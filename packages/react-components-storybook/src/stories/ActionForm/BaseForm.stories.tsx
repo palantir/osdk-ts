@@ -26,6 +26,7 @@ import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import {
@@ -250,7 +251,7 @@ const meta: Meta<BaseFormStoryProps> = {
     },
     isPending: {
       description:
-        "Whether the form is in a pending state. Shows \"Submitting\u2026\" and disables the button.",
+        'Whether the form is in a pending state. Shows "Submitting\u2026" and disables the button.',
       control: "boolean",
       defaultValue: false,
       table: {
@@ -419,7 +420,7 @@ function ControlledFormStory(): React.ReactElement {
     (fieldKey: string, value: unknown) => {
       setFormState((prev) => ({ ...prev, [fieldKey]: value }));
     },
-    [],
+    []
   );
 
   return (
@@ -431,7 +432,7 @@ function ControlledFormStory(): React.ReactElement {
             formState,
             (_key, value) =>
               value instanceof File ? `File: ${value.name}` : value,
-            2,
+            2
           )}
         </pre>
       </div>
@@ -518,7 +519,7 @@ const disabledFieldInitialState: Record<string, unknown> = {
 const CUSTOM_STATUS_OPTIONS = ["Requires approval", "Ready to submit"];
 
 function renderDisabledCustomField(
-  props: BaseFormFieldProps<unknown>,
+  props: BaseFormFieldProps<unknown>
 ): React.ReactNode {
   const selectedValue = props.value != null ? String(props.value) : undefined;
 
@@ -534,9 +535,11 @@ function renderDisabledCustomField(
           key={option}
           type="button"
           disabled={props.disabled}
-          className={option === selectedValue
-            ? "osdkCustomChoiceButton osdkCustomChoiceButtonSelected"
-            : "osdkCustomChoiceButton"}
+          className={
+            option === selectedValue
+              ? "osdkCustomChoiceButton osdkCustomChoiceButtonSelected"
+              : "osdkCustomChoiceButton"
+          }
           onClick={() => props.onChange?.(option)}
         >
           {option}
@@ -550,17 +553,17 @@ function DisabledFieldsStory(): React.ReactElement {
   const client = useOsdkClient();
   const employeeObjectSet = useMemo(
     () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [client],
+    [client]
   );
   const [formState, setFormState] = useState<Record<string, unknown>>(
-    disabledFieldInitialState,
+    disabledFieldInitialState
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
       setFormState((prev) => ({ ...prev, [fieldKey]: value }));
     },
-    [],
+    []
   );
 
   const disabledFormContent: ReadonlyArray<FormContentItem> = useMemo(
@@ -695,7 +698,7 @@ function DisabledFieldsStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet],
+    [employeeObjectSet]
   );
 
   return (
@@ -991,7 +994,7 @@ export const WithValidation: Story = {
   },
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 const customValidateFormContent: ReadonlyArray<FormContentItem> = [
   field({
@@ -1166,7 +1169,7 @@ function ObjectSetFieldStory(): React.ReactElement {
   // prevent structural assignability, so an assertion is needed here.
   const employeeObjectSet = useMemo(
     () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [client],
+    [client]
   );
 
   const objectSetFormContent: ReadonlyArray<FormContentItem> = useMemo(
@@ -1189,14 +1192,11 @@ function ObjectSetFieldStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet],
+    [employeeObjectSet]
   );
 
   return (
-    <BaseForm
-      formContent={objectSetFormContent}
-      onSubmit={handleSubmit}
-    />
+    <BaseForm formContent={objectSetFormContent} onSubmit={handleSubmit} />
   );
 }
 
@@ -1676,8 +1676,7 @@ export const ScrollableDialogForm: Story = {
           "When the form has many fields inside a height-constrained container like a dialog, the fields area scrolls while the footer stays pinned at the bottom.",
       },
       source: {
-        code:
-          `// The footer pins automatically when the form overflows its container.
+        code: `// The footer pins automatically when the form overflows its container.
 // No extra CSS or props needed — just place BaseForm inside a
 // height-constrained parent (dialog, panel, sidebar).
 <Dialog isOpen={true} title="New employee">
@@ -2138,10 +2137,10 @@ function ScopedObjectSelectStory(): React.ReactElement {
   const client = useOsdkClient();
   const marketingEmployees = useMemo(
     () =>
-      client(Employee).where({ department: "Marketing" }) as ObjectSet<
-        ObjectTypeDefinition
-      >,
-    [client],
+      client(Employee).where({
+        department: "Marketing",
+      }) as ObjectSet<ObjectTypeDefinition>,
+    [client]
   );
   const scopedObjectSelectFormContent = useMemo(
     (): ReadonlyArray<FormContentItem> => [
@@ -2156,7 +2155,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
         },
       }),
     ],
-    [marketingEmployees],
+    [marketingEmployees]
   );
 
   return (
@@ -2325,9 +2324,9 @@ function renderUserIdLabel(item: unknown): React.ReactNode {
   return (
     <span className="osdkRichDropdownLabel">
       <strong>{user?.name ?? userId}</strong>
-      {user?.team != null
-        ? <span className="osdkRichDropdownDescription">{user.team}</span>
-        : null}
+      {user?.team != null ? (
+        <span className="osdkRichDropdownDescription">{user.team}</span>
+      ) : null}
     </span>
   );
 }

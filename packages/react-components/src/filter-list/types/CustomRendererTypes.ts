@@ -16,6 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
+
 import type {
   BaseFilterState,
   FilterDefinitionControls,
@@ -24,9 +25,9 @@ import type {
 /**
  * State for custom filter
  */
-export interface CustomFilterState<T = Record<string, unknown>>
-  extends BaseFilterState
-{
+export interface CustomFilterState<
+  T = Record<string, unknown>,
+> extends BaseFilterState {
   type: "custom";
   customState: T;
 }
@@ -82,16 +83,12 @@ export interface CustomFilterDefinition<
    * Render the input portion of the filter
    * Used when rendering within a filter item wrapper
    */
-  renderInput?: (
-    props: CustomFilterInputRendererProps<Q, State>,
-  ) => ReactNode;
+  renderInput?: (props: CustomFilterInputRendererProps<Q, State>) => ReactNode;
   /**
    * Render the complete filter item
    * Used when you need full control over the item appearance
    */
-  renderItem?: (
-    props: CustomFilterItemRendererProps<Q, State>,
-  ) => ReactNode;
+  renderItem?: (props: CustomFilterItemRendererProps<Q, State>) => ReactNode;
   /**
    * Convert filter state to a WhereClause for filtering
    * Required for the filter to affect the object set

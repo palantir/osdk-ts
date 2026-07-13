@@ -33,7 +33,9 @@ type actionParam_primitiveType_attachment =
 type actionParam_primitiveType_string = string;
 
 /** A struct-typed action parameter — fields are mapped through DataValueClientToWire. */
-type actionParam_structType = { name: string; age: number; joined: string };
+type actionParam_structType =
+  & { name: string; age: number; joined: string }
+  & {};
 
 /** The validation-only response returned when $validateOnly: true. */
 type actionValidationResponse = ValidateActionResponseV2;

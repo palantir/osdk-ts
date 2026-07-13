@@ -15,18 +15,17 @@
  */
 
 import type { CacheSnapshot } from "@osdk/client/observable";
+
 import type {
   ComponentHookBinding,
   ComponentQueryRegistry,
 } from "./ComponentQueryRegistry.js";
 import type { PropertyAccessTracker } from "./PropertyAccessTracker.js";
 
-export interface PropertyAccessTrackerWithAnalysis
-  extends PropertyAccessTracker
-{
+export interface PropertyAccessTrackerWithAnalysis extends PropertyAccessTracker {
   getAccessedProperties(
     componentId: string,
-    querySignature: string,
+    querySignature: string
   ): Set<string>;
 }
 
@@ -60,46 +59,47 @@ export interface UnusedFieldReport {
   recommendation: string;
 }
 
-const QUERY_SIGNATURE_RE = /^(\w+):(.+)/;
+const QUERY_SIGNATURE_RE = /^(\w+):(.+)/u;
 
 export class UnusedFieldAnalyzer {
   constructor(
     private registry: ComponentQueryRegistry,
     private propertyTracker: PropertyAccessTrackerWithAnalysis | undefined,
     private estimateCacheEntrySize: (data: unknown) => number = (data) =>
-      UnusedFieldAnalyzer.defaultSizeEstimator(data),
+      UnusedFieldAnalyzer.defaultSizeEstimator(data)
   ) {}
 
   analyzeBinding(
     binding: ComponentHookBinding,
-    cacheSnapshot: CacheSnapshot,
+    cacheSnapshot: CacheSnapshot
   ): FieldUsageReport {
     const { componentId, querySignature, componentName } = binding;
 
     const accessed = this.getAccessedProperties(componentId, querySignature);
 
-    const cacheEntry = cacheSnapshot.entries?.find(e =>
-      e.key === querySignature
+    const cacheEntry = cacheSnapshot.entries?.find(
+      (e) => e.key === querySignature
     );
     const fetchedProps = cacheEntry?.data ? Object.keys(cacheEntry.data) : [];
 
-    const cleanFetched = fetchedProps.filter(p =>
-      !p.startsWith("$") && p !== "__typename"
+    const cleanFetched = fetchedProps.filter(
+      (p) => !p.startsWith("$") && p !== "__typename"
     );
 
-    const unused = cleanFetched.filter(prop => !accessed.has(prop));
+    const unused = cleanFetched.filter((prop) => !accessed.has(prop));
 
-    const entrySize = cacheEntry?.metadata.size
-      ?? this.estimateCacheEntrySize(cacheEntry?.data);
-    const wastedBytes = unused.length > 0 && cleanFetched.length > 0
-      ? Math.floor(entrySize * (unused.length / cleanFetched.length))
-      : 0;
+    const entrySize =
+      cacheEntry?.metadata.size ??
+      this.estimateCacheEntrySize(cacheEntry?.data);
+    const wastedBytes =
+      unused.length > 0 && cleanFetched.length > 0
+        ? Math.floor(entrySize * (unused.length / cleanFetched.length))
+        : 0;
 
-    const efficiency = cleanFetched.length > 0
-      ? accessed.size / cleanFetched.length
-      : 1;
+    const efficiency =
+      cleanFetched.length > 0 ? accessed.size / cleanFetched.length : 1;
 
-    const suggestion = this.generateSuggestion(binding, Array.from(accessed));
+    const suggestion = this.generateSuggestion(binding, [...accessed]);
 
     const renderCount = binding.renderCount;
 
@@ -107,7 +107,7 @@ export class UnusedFieldAnalyzer {
       componentName,
       querySignature,
       fetched: cleanFetched,
-      accessed: Array.from(accessed),
+      accessed: [...accessed],
       unused,
       efficiency,
       wastedBytes,
@@ -119,26 +119,27 @@ export class UnusedFieldAnalyzer {
   generateGlobalReport(cacheSnapshot: CacheSnapshot): UnusedFieldReport {
     const allBindings = this.registry
       .getAllBindings()
-      .filter(b => !b.unmountedAt);
+      .filter((b) => !b.unmountedAt);
 
-    const analyses = allBindings.map(b =>
+    const analyses = allBindings.map((b) =>
       this.analyzeBinding(b, cacheSnapshot)
     );
 
     const inefficient = analyses
-      .filter(a => a.efficiency < 0.7) // Using <70% of fetched data
+      .filter((a) => a.efficiency < 0.7) // Using <70% of fetched data
       .sort((a, b) => a.efficiency - b.efficiency);
 
     const totalWaste = analyses.reduce((sum, a) => sum + a.wastedBytes, 0);
     const commonUnused = this.findCommonUnusedFields(analyses);
-    const avgEfficiency = analyses.length > 0
-      ? analyses.reduce((sum, a) => sum + a.efficiency, 0) / analyses.length
-      : 1;
+    const avgEfficiency =
+      analyses.length > 0
+        ? analyses.reduce((sum, a) => sum + a.efficiency, 0) / analyses.length
+        : 1;
 
     const recommendation = this.generateGlobalRecommendation(
       analyses,
       totalWaste,
-      commonUnused,
+      commonUnused
     );
 
     return {
@@ -154,24 +155,24 @@ export class UnusedFieldAnalyzer {
 
   private getAccessedProperties(
     componentId: string,
-    querySignature: string,
+    querySignature: string
   ): Set<string> {
     if (!this.propertyTracker) {
       return new Set<string>();
     }
     return this.propertyTracker.getAccessedProperties(
       componentId,
-      querySignature,
+      querySignature
     );
   }
 
   private findCommonUnusedFields(
-    analyses: FieldUsageReport[],
+    analyses: FieldUsageReport[]
   ): CommonUnusedField[] {
-    const fieldCount: Map<
+    const fieldCount = new Map<
       string,
       { unused: number; total: number; objectType?: string }
-    > = new Map();
+    >();
 
     for (const analysis of analyses) {
       const match = analysis.querySignature.match(QUERY_SIGNATURE_RE);
@@ -179,15 +180,18 @@ export class UnusedFieldAnalyzer {
 
       for (const field of analysis.unused) {
         const key = `${objectType}:${field}`;
-        const current = fieldCount.get(key)
-          || { unused: 0, total: 0, objectType };
+        const current = fieldCount.get(key) || {
+          unused: 0,
+          total: 0,
+          objectType,
+        };
         current.unused++;
         current.total++;
         fieldCount.set(key, current);
       }
     }
 
-    return Array.from(fieldCount.entries())
+    return [...fieldCount.entries()]
       .map(([key, { unused, total, objectType }]) => ({
         field: key,
         objectType,
@@ -195,13 +199,13 @@ export class UnusedFieldAnalyzer {
         totalQueries: total,
         unusedRate: unused / total,
       }))
-      .filter(f => f.unusedRate > 0.7 && f.totalQueries > 2) // 70%+ unused, 3+ queries
+      .filter((f) => f.unusedRate > 0.7 && f.totalQueries > 2) // 70%+ unused, 3+ queries
       .sort((a, b) => b.unusedCount - a.unusedCount);
   }
 
   private generateSuggestion(
     binding: ComponentHookBinding,
-    usedProps: string[],
+    usedProps: string[]
   ): string {
     const { hookType, queryParams, componentName } = binding;
 
@@ -214,14 +218,12 @@ const { object } = useOsdkObject(${queryParams.objectType}, id);
 // Optimized: Only fetch what you use
 const { object } = useOsdkObject(${queryParams.objectType}, id, {
   $select: [${
-        usedProps.length > 0
-          ? usedProps.map(p => `"${p}"`).join(", ")
-          : "\"id\"" // fallback
-      }]
+    usedProps.length > 0 ? usedProps.map((p) => `"${p}"`).join(", ") : '"id"'
+  }]
 });
 
 // This query will be more efficient!
-      `.trim();
+      `.trim(); // fallback
     } else if (hookType === "useOsdkObjects" && queryParams.type === "list") {
       return `
 // In ${componentName}.tsx:
@@ -234,10 +236,8 @@ const { data } = useOsdkObjects(${queryParams.objectType}, {
 const { data } = useOsdkObjects(${queryParams.objectType}, {
   where: ${JSON.stringify(queryParams.where || {})},
   $select: [${
-        usedProps.length > 0
-          ? usedProps.map(p => `"${p}"`).join(", ")
-          : "\"id\""
-      }]
+    usedProps.length > 0 ? usedProps.map((p) => `"${p}"`).join(", ") : '"id"'
+  }]
 });
       `.trim();
     }
@@ -248,20 +248,20 @@ const { data } = useOsdkObjects(${queryParams.objectType}, {
   private generateGlobalRecommendation(
     analyses: FieldUsageReport[],
     totalWaste: number,
-    commonUnused: CommonUnusedField[],
+    commonUnused: CommonUnusedField[]
   ): string {
     if (analyses.length === 0) {
       return "No queries analyzed yet";
     }
 
-    const inefficientCount = analyses.filter(a => a.efficiency < 0.7).length;
+    const inefficientCount = analyses.filter((a) => a.efficiency < 0.7).length;
     const inefficiencyRate = inefficientCount / analyses.length;
 
     if (inefficiencyRate > 0.5) {
       return `
-🔴 HIGH PRIORITY: ${inefficientCount} of ${analyses.length} components are fetching unused data (${
-        (totalWaste / 1024).toFixed(1)
-      }KB total waste).
+🔴 HIGH PRIORITY: ${inefficientCount} of ${analyses.length} components are fetching unused data (${(
+        totalWaste / 1024
+      ).toFixed(1)}KB total waste).
 
 Consider adding $select clauses to your queries to only fetch used properties.
 This will reduce bandwidth, improve performance, and lower data costs.
@@ -272,9 +272,9 @@ Start with the top offenders listed above.
       return `
 🟡 MEDIUM PRIORITY: ${inefficientCount} components have unused fields.
 
-You could optimize these queries with $select to save ~${
-        (totalWaste / 1024).toFixed(1)
-      }KB bandwidth.
+You could optimize these queries with $select to save ~${(
+        totalWaste / 1024
+      ).toFixed(1)}KB bandwidth.
       `.trim();
     } else {
       return `
@@ -292,13 +292,13 @@ Continue monitoring as features change.
     if (Array.isArray(data)) {
       return data.reduce<number>(
         (sum, item) => sum + UnusedFieldAnalyzer.defaultSizeEstimator(item),
-        0,
+        0
       );
     }
     if (typeof data === "object") {
       return Object.values(data as Record<string, unknown>).reduce<number>(
         (sum, value) => sum + UnusedFieldAnalyzer.defaultSizeEstimator(value),
-        0,
+        0
       );
     }
     return 100; // Rough estimate for unknowns

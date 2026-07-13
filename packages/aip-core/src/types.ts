@@ -34,9 +34,7 @@ export interface UserModelMessage {
 
 export interface AssistantModelMessage {
   role: "assistant";
-  content:
-    | string
-    | Array<TextPart | ReasoningPart | ToolCallPart | FilePart>;
+  content: string | Array<TextPart | ReasoningPart | ToolCallPart | FilePart>;
   providerOptions?: ProviderOptions;
 }
 
@@ -102,12 +100,12 @@ export type ToolResultOutput =
   | { type: "error-text"; value: string }
   | { type: "error-json"; value: unknown }
   | {
-    type: "content";
-    value: Array<
-      | { type: "text"; text: string }
-      | { type: "media"; data: string; mediaType: string }
-    >;
-  };
+      type: "content";
+      value: Array<
+        | { type: "text"; text: string }
+        | { type: "media"; data: string; mediaType: string }
+      >;
+    };
 
 /**
  * Tool definition.
@@ -204,10 +202,10 @@ export interface ReasoningOutput {
 export type ContentPart<TOOLS extends ToolSet = ToolSet> =
   | { type: "text"; text: string; providerMetadata?: ProviderMetadata }
   | {
-    type: "reasoning";
-    text: string;
-    providerMetadata?: ProviderMetadata;
-  }
+      type: "reasoning";
+      text: string;
+      providerMetadata?: ProviderMetadata;
+    }
   | (ToolCall<keyof TOOLS & string> & { type: "tool-call" })
   | (ToolResult<keyof TOOLS & string> & { type: "tool-result" });
 

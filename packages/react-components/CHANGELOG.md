@@ -1,5 +1,52 @@
 # @osdk/react-components
 
+## 0.37.0
+
+### Minor Changes
+
+- df15011: Detect actions and resolve memo component names in the component tree, and clarify the components and cache-hit-rate copy
+
+## 0.36.0
+
+### Minor Changes
+
+- 12e5e63: Add `--osdk-button-border-radius` token so a theme can round buttons independently of inputs/cards.
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 0.35.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- e39a728: Migrate @osdk/react-components to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint, with package-specific rule carve-outs in a nested oxlint config
+- 908ad19: Reduce checkbox icon size and center checkmark within the checkbox
+
+## 0.34.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+- d24cc61: Pin the `@osdk/aip-core` peerDependency range to `>=0.5.0 <1.0.0` instead of `workspace:^` so a minor bump of `@osdk/aip-core` (e.g. 0.5.0 -> 0.6.0) no longer falls out of the caret range and triggers a major-bump cascade across the release plan.
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+## 0.33.0
+
+### Minor Changes
+
+- bcf7007: Style number input stepper buttons with button appearance instead of input styling
+
+## 0.32.0
+
+### Minor Changes
+
+- 137978c: ObjectTable now honors a caller-supplied `objectSet` for interface types (previously it was ignored for interfaces and the table fell back to fetching by type, leaving only a property `where` to filter). This lets an interface-backed table be driven by a composed/filtered object set, e.g. a pivot-derived set. For an interface object set, rows expose the interface's declared properties (plus any `withProperties`); concrete-only properties are not loaded.
+
+## 0.31.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
 ## 0.30.0
 
 ### Minor Changes

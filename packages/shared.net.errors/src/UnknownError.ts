@@ -22,9 +22,10 @@ export class UnknownError extends PalantirApiError {
     message: string,
     errorName?: string,
     originalError?: Error,
-    statusCode?: number,
+    statusCode?: number
   ) {
     super(message, errorName, undefined, undefined, statusCode);
+    this.name = "UnknownError";
     this.originalError = originalError;
   }
 }

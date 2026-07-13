@@ -18,20 +18,20 @@ import type { Client } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
 import type { Integer } from "@osdk/functions";
 
-export async function basicAggregate(
-  client: Client,
-): Promise<Integer> {
-  const aggregation = await client(Employee).where({ employeeId: { "$eq": 5 } })
+export async function basicAggregate(client: Client): Promise<Integer> {
+  const aggregation = await client(Employee)
+    .where({ employeeId: { $eq: 5 } })
     .aggregate({ $select: { "employeeLocation:exactDistinct": "asc" } });
   if (aggregation.employeeLocation.exactDistinct !== 3) {
     throw new Error(
-      `Unexpected aggregation result: ${JSON.stringify(aggregation)}`,
+      `Unexpected aggregation result: ${JSON.stringify(aggregation)}`
     );
   }
 
-  const aggregation2 = await client(Employee).where({
-    employeeId: { "$eq": 5 },
-  })
+  const aggregation2 = await client(Employee)
+    .where({
+      employeeId: { $eq: 5 },
+    })
     .aggregate({
       $select: {
         "employeeId:max": "unordered",
@@ -41,12 +41,12 @@ export async function basicAggregate(
     });
 
   if (
-    aggregation2[0].$group.employeeId !== 5
-    || aggregation2[0].employeeId.max !== 5
-    || aggregation2[0].fullName.approximateDistinct !== 1
+    aggregation2[0].$group.employeeId !== 5 ||
+    aggregation2[0].employeeId.max !== 5 ||
+    aggregation2[0].fullName.approximateDistinct !== 1
   ) {
     throw new Error(
-      `Unexpected aggregation result: ${JSON.stringify(aggregation2)}`,
+      `Unexpected aggregation result: ${JSON.stringify(aggregation2)}`
     );
   }
 

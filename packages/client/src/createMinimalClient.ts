@@ -16,6 +16,7 @@
 
 import type { Logger } from "@osdk/api";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+
 import type {
   ClientCacheKey,
   MinimalClient,
@@ -29,6 +30,7 @@ import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
 } from "./ontology/StandardOntologyProvider.js";
+import type { SubscribeFn } from "./SubscribeFn.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 /** @internal */
@@ -43,16 +45,18 @@ export function createMinimalClient(
     scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
+    subscribeFn?: SubscribeFn;
   } = {},
   fetchFn: (
     input: Request | URL | string,
-    init?: RequestInit | undefined,
+    init?: RequestInit | undefined
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
   createOntologyProviderFactory: (
-    a: OntologyCachingOptions & { logger?: Logger },
-  ) => (minimalClient: MinimalClient) => OntologyProvider =
-    createStandardOntologyProviderFactory,
+    a: OntologyCachingOptions & { logger?: Logger }
+  ) => (
+    minimalClient: MinimalClient
+  ) => OntologyProvider = createStandardOntologyProviderFactory
 ) {
   if (process.env.NODE_ENV !== "production") {
     try {
@@ -71,7 +75,7 @@ export function createMinimalClient(
       tokenProvider,
       USER_AGENT,
       fetchFn,
-      options.headers,
+      options.headers
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
@@ -84,14 +88,24 @@ export function createMinimalClient(
     requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
-  } satisfies Omit<
-    MinimalClient,
-    "ontologyProvider"
-  > as any;
+  } satisfies Omit<MinimalClient, "ontologyProvider" | "subscribeFn"> as any;
 
-  return Object.freeze(Object.assign(minimalClient, {
-    ontologyProvider: createOntologyProviderFactory(
-      options,
-    )(minimalClient),
-  }));
+  return Object.freeze(
+    Object.assign(minimalClient, {
+      ontologyProvider: createOntologyProviderFactory(options)(minimalClient),
+      subscribeFn:
+        options.subscribeFn ??
+        (((objectType, objectSet, listener, properties, shouldLoadRids) =>
+          import("./objectSet/ObjectSetListenerWebsocket.js").then(
+            ({ ObjectSetListenerWebsocket }) =>
+              ObjectSetListenerWebsocket.getInstance(minimalClient).subscribe(
+                objectType,
+                objectSet,
+                listener,
+                properties,
+                shouldLoadRids
+              )
+          )) satisfies SubscribeFn),
+    })
+  );
 }

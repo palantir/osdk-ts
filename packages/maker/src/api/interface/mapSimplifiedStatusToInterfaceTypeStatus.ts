@@ -15,10 +15,11 @@
  */
 
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
+
 import type { SimplifiedInterfaceTypeStatus } from "../defineInterface.js";
 
 export function mapSimplifiedStatusToInterfaceTypeStatus(
-  status: SimplifiedInterfaceTypeStatus,
+  status: SimplifiedInterfaceTypeStatus
 ): InterfaceTypeStatus {
   switch (status.type) {
     case "deprecated":

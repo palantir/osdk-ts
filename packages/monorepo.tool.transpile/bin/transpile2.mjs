@@ -192,6 +192,7 @@ async function transpileWithTsup(format, target) {
     "@osdk/create-app.template.tutorial-todo-aip-app.beta",
     "@osdk/create-app.template.tutorial-todo-app",
     "@osdk/create-app.template.tutorial-todo-app.beta",
+    "@osdk/create-app.template.typescript-library.beta",
     "@osdk/create-app.template.vue",
     "@osdk/create-app.template.vue.v2",
     // create-widget templates (private, must be bundled)

@@ -1,5 +1,47 @@
 # @osdkkit/react
 
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 2.42.0
+
+### Minor Changes
+
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+
+## 2.41.0
+
+### Minor Changes
+
+- d24cc61: Pin the `@osdk/aip-core` peerDependency range to `>=0.5.0 <1.0.0` instead of `workspace:^` so a minor bump of `@osdk/aip-core` (e.g. 0.5.0 -> 0.6.0) no longer falls out of the caret range and triggers a major-bump cascade across the release plan.
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+## 2.40.0
+
+### Minor Changes
+
+- 70839ec: add an `enabled` option to `useOsdkAggregation` to conditionally defer the aggregation
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+
+## 2.39.0
+
+## 2.38.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
 ## 2.33.0
 
 ## 2.32.0

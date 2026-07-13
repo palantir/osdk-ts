@@ -28,16 +28,15 @@ type subscribeToNoTypeObjectSetFn = <R extends boolean = false>(
   opts?: Pick<
     ObjectSetSubscription.Options<ObjectOrInterfaceDefinition, never, R>,
     "includeRid"
-  >,
+  >
 ) => { unsubscribe: () => void };
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet:
-  Experiment<
-    "2.19.0",
-    "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
-    { subscribeToNoTypeObjectSet: subscribeToNoTypeObjectSetFn }
-  > = {
-    name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
-    type: "experiment",
-    version: "2.19.0",
-  };
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet: Experiment<
+  "2.19.0",
+  "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
+  { subscribeToNoTypeObjectSet: subscribeToNoTypeObjectSetFn }
+> = {
+  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
+  type: "experiment",
+  version: "2.19.0",
+};

@@ -26,5 +26,5 @@ import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 import { VideoViewer as _VideoViewer } from "../../video-viewer/VideoViewer.js";
 export const VideoViewer: typeof _VideoViewer = withOsdkMetrics(
   _VideoViewer,
-  "VideoViewer",
+  "VideoViewer"
 );

@@ -19,6 +19,7 @@ import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
@@ -142,7 +143,7 @@ describe("ActionForm", () => {
           actionDefinition={TestAction}
           formTitle="Custom Title"
           showFormTitle={true}
-        />,
+        />
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
@@ -150,7 +151,7 @@ describe("ActionForm", () => {
 
     it("does not render a form title when showFormTitle is false", () => {
       render(
-        <ActionForm actionDefinition={TestAction} showFormTitle={false} />,
+        <ActionForm actionDefinition={TestAction} showFormTitle={false} />
       );
 
       expect(screen.queryByRole("heading")).toBeNull();
@@ -175,8 +176,8 @@ describe("ActionForm", () => {
     it("generates default fields from fetched metadata", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByRole("textbox", { name: /^name/ })).toBeDefined();
-      expect(screen.getByRole("textbox", { name: /^email/ })).toBeDefined();
+      expect(screen.getByRole("textbox", { name: /^name/u })).toBeDefined();
+      expect(screen.getByRole("textbox", { name: /^email/u })).toBeDefined();
     });
 
     it("renders default field labels from parameter keys", () => {
@@ -200,7 +201,7 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />,
+        />
       );
 
       expect(screen.getByText("Full Name")).toBeDefined();
@@ -222,17 +223,17 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />,
+        />
       );
 
       const input = screen.getByRole("textbox", { name: "Full Name" });
       expect(input).toHaveProperty("disabled", true);
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice" }),
+          expect.objectContaining({ name: "Alice" })
         );
       });
     });
@@ -242,8 +243,8 @@ describe("ActionForm", () => {
     it("renders submit button", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByRole("button", { name: /submit/i }).textContent).toBe(
-        "Submit",
+      expect(screen.getByRole("button", { name: /submit/iu }).textContent).toBe(
+        "Submit"
       );
     });
 
@@ -255,7 +256,7 @@ describe("ActionForm", () => {
 
       render(<ActionForm actionDefinition={TestAction} />);
 
-      const button = screen.getByRole("button", { name: /submitting/i });
+      const button = screen.getByRole("button", { name: /submitting/iu });
       expect((button as HTMLButtonElement).disabled).toBe(true);
       expect(button.textContent).toBe("Submitting\u2026");
     });
@@ -268,14 +269,14 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
       );
 
       // Fill required field before submitting
-      fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
         target: { value: "Alice" },
       });
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
@@ -290,10 +291,10 @@ describe("ActionForm", () => {
       render(<ActionForm actionDefinition={TestAction} onError={onError} />);
 
       // Fill required field before submitting
-      fireEvent.input(screen.getByRole("textbox", { name: /^name/ }), {
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
         target: { value: "Alice" },
       });
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onError).toHaveBeenCalledWith({
@@ -309,11 +310,11 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
       );
 
       // Submit without filling the required "name" field
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(screen.getByRole("alert")).toBeDefined();
@@ -340,10 +341,10 @@ describe("ActionForm", () => {
       mockApplyAction.mockResolvedValue(result);
 
       render(
-        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
@@ -365,14 +366,14 @@ describe("ActionForm", () => {
         <ActionForm
           actionDefinition={TestAction}
           formFieldDefinitions={customDefs}
-        />,
+        />
       );
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Ada Lovelace" }),
+          expect.objectContaining({ name: "Ada Lovelace" })
         );
       });
     });
@@ -399,17 +400,17 @@ describe("ActionForm", () => {
 
       render(<ControlledWrapper />);
 
-      const textInput = screen.getByRole("textbox", { name: /^name/ });
+      const textInput = screen.getByRole("textbox", { name: /^name/u });
       fireEvent.change(textInput, { target: { value: "Updated" } });
 
-      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
           expect.objectContaining({
             name: "Updated",
             email: "initial@test.com",
-          }),
+          })
         );
       });
     });

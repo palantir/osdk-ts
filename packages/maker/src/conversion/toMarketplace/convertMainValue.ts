@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrStructMainValue } from "@osdk/client.unstable";
+
 import {
   isStruct,
   type PropertyTypeType,
@@ -25,11 +26,12 @@ import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIr
 export function convertMainValue(
   type: PropertyTypeType,
   apiName?: string,
-  sharedPropertyType?: SharedPropertyType,
+  sharedPropertyType?: SharedPropertyType
 ): OntologyIrStructMainValue | undefined {
   if (
-    sharedPropertyType && isStruct(sharedPropertyType.type)
-    && sharedPropertyType.type.mainValue
+    sharedPropertyType &&
+    isStruct(sharedPropertyType.type) &&
+    sharedPropertyType.type.mainValue
   ) {
     return {
       fieldApiNames: Array.isArray(sharedPropertyType.type.mainValue.fields)
@@ -37,7 +39,7 @@ export function convertMainValue(
         : [sharedPropertyType.type.mainValue.fields],
       structApiName: sharedPropertyType.apiName,
       type: propertyTypeTypeToOntologyIrType(
-        sharedPropertyType.type.mainValue.type,
+        sharedPropertyType.type.mainValue.type
       ),
     };
   }

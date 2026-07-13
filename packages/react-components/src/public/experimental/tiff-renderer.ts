@@ -23,6 +23,6 @@ import { TiffViewerMedia as _TiffViewerMedia } from "../../images/tiff-renderer/
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const TiffViewerMedia: typeof _TiffViewerMedia = withOsdkMetrics(
   _TiffViewerMedia,
-  "TiffViewerMedia",
+  "TiffViewerMedia"
 );
 export type { TiffViewerMediaProps } from "../../images/tiff-renderer/TiffViewerMedia.js";

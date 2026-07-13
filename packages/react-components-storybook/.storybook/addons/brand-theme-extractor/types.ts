@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-export interface ExtractedColor {
-  rgb: [number, number, number];
-  hex: string;
-  luminance: number;
-  chroma: number;
-  count: number;
-}
-
 export interface TokenAssignment {
   role: string;
-  /** Index into the palette array, or -1 for a custom value */
+  /** Legacy field, always -1. Kept for state compatibility. */
   colorIndex: number;
   /** Custom value (hex for colors, string for other tokens) */
   customValue?: string;
@@ -36,27 +28,35 @@ export interface BrandThemeGlobals {
   active: boolean;
   colorMode: ThemeColorMode;
   selectedPresetId: string;
-  palette: ExtractedColor[];
   assignments: TokenAssignment[];
 }
 
 export type ColorTokenRole =
   | "background"
   | "surface"
+  | "surface-hover"
+  | "surface-active"
   | "text"
   | "text-muted"
+  | "text-subtle"
   | "primary"
+  | "primary-hover"
+  | "primary-active"
   | "primary-foreground"
   | "secondary"
   | "secondary-foreground"
   | "icon-color"
   | "border"
+  | "input-bg"
+  | "overlay"
   | "danger"
   | "success"
   | "warning";
 
 export type TypographyTokenRole =
   | "font-family"
+  | "font-family-mono"
+  | "font-size-xsmall"
   | "font-size-small"
   | "font-size-medium"
   | "font-size-large"
@@ -66,6 +66,7 @@ export type TypographyTokenRole =
 
 export type SurfaceTokenRole =
   | "border-radius"
+  | "button-border-radius"
   | "spacing"
   | "border-width"
   | "shadow";
@@ -90,4 +91,8 @@ export interface TokenRoleDefinition {
   cssProperties: string[];
   inputType: "color" | "text" | "px" | "number" | "ms" | "shadow" | "font";
   defaultValue?: string;
+  /** Semantic key used in DESIGN.md YAML frontmatter (e.g. "canvas", "ink", "primary") */
+  designMdKey: string;
+  /** DESIGN.md section this token belongs to (e.g. "colors", "typography", "rounded") */
+  designMdSection: string;
 }

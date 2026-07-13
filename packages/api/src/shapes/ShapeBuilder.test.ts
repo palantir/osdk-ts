@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import { createShapeBuilder, createShapeLinkBuilder } from "./ShapeBuilder.js";
 import type { ShapePropertyConfig } from "./ShapeDefinition.js";
@@ -36,7 +37,7 @@ describe("createShapeBuilder", () => {
       .build();
 
     expect(shape.__baseTypeApiName).toBe("Employee");
-    expect(shape.__shapeId).toMatch(/^[0-9a-f]{8}$/);
+    expect(shape.__shapeId).toMatch(/^[0-9a-f]{8}$/u);
     const props = shape.__props as Record<string, ShapePropertyConfig>;
     expect(props.name.nullabilityOp.type).toBe("select");
     expect(props.age.nullabilityOp.type).toBe("select");
@@ -84,8 +85,12 @@ describe("createShapeBuilder", () => {
   });
 
   it("produces deterministic shapeId", () => {
-    const a = createShapeBuilder(MockEmployee).select("name" as never).build();
-    const b = createShapeBuilder(MockEmployee).select("name" as never).build();
+    const a = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
+    const b = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
     expect(a.__shapeId).toBe(b.__shapeId);
   });
 

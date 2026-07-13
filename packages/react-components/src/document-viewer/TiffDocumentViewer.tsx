@@ -17,13 +17,15 @@
 import { Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import React from "react";
+
 import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
 import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 import { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 import type { PdfViewerProps } from "../pdf-viewer/types.js";
-import styles from "./DocumentViewer.module.css";
 import { ViewerType } from "./DocumentViewerApi.js";
 import { useTiffToPdf } from "./hooks/useTiffToPdf.js";
+
+import styles from "./DocumentViewer.module.css";
 
 interface TiffDocumentViewerProps {
   media: Media;
@@ -40,10 +42,7 @@ export function TiffDocumentViewer({
   tiffRendererProps,
   pdfViewerProps,
 }: TiffDocumentViewerProps): React.ReactElement {
-  const { viewerType, pdfData, loading } = useTiffToPdf(
-    media,
-    enableTiffToPdf,
-  );
+  const { viewerType, pdfData, loading } = useTiffToPdf(media, enableTiffToPdf);
 
   if (loading) {
     return (
@@ -58,11 +57,7 @@ export function TiffDocumentViewer({
 
   if (viewerType === ViewerType.Pdf && pdfData != null) {
     return (
-      <BasePdfViewer
-        src={pdfData}
-        className={className}
-        {...pdfViewerProps}
-      />
+      <BasePdfViewer src={pdfData} className={className} {...pdfViewerProps} />
     );
   }
 

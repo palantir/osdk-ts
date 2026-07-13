@@ -20,6 +20,7 @@ import type {
   ActionValidationResponse,
 } from "@osdk/api";
 import type { ActionValidationError } from "@osdk/client";
+
 import type {
   ActionParameters,
   FieldKey,
@@ -36,29 +37,29 @@ import type {
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
-    /**
-     * Current form values (controlled mode). Provide together with
-     * `onFormStateChange`; omit both for uncontrolled mode.
-     */
-    formState: FormState<Q>;
-    /**
-     * Called with a state updater whenever a field value changes. Required
-     * in controlled mode.
-     */
-    onFormStateChange: (
-      updater: (prevState: FormState<Q>) => FormState<Q>,
-    ) => void;
-  })
+      /**
+       * Current form values (controlled mode). Provide together with
+       * `onFormStateChange`; omit both for uncontrolled mode.
+       */
+      formState: FormState<Q>;
+      /**
+       * Called with a state updater whenever a field value changes. Required
+       * in controlled mode.
+       */
+      onFormStateChange: (
+        updater: (prevState: FormState<Q>) => FormState<Q>
+      ) => void;
+    })
   | (ActionFormConfigProps<Q> & {
-    formState?: undefined;
-    onFormStateChange?: (
-      updater: (prevState: FormState<Q>) => FormState<Q>,
-    ) => void;
-  });
+      formState?: undefined;
+      onFormStateChange?: (
+        updater: (prevState: FormState<Q>) => FormState<Q>
+      ) => void;
+    });
 
-interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
-{
+interface ActionFormConfigProps<
+  Q extends ActionDefinition<unknown>,
+> extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled"> {
   actionDefinition: Q;
 
   /**
@@ -84,8 +85,8 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
   onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
-      args: ActionParameters<Q>,
-    ) => Promise<ActionEditResponse | undefined>,
+      args: ActionParameters<Q>
+    ) => Promise<ActionEditResponse | undefined>
   ) => Promise<unknown> | void;
 
   /**
@@ -160,17 +161,16 @@ export interface FormSectionDefinition {
  * `onSubmit` receives the current form state so callers can access values
  * even in uncontrolled mode.
  */
-export type BaseFormProps =
-  & BaseFormCommonProps
-  & (
+export type BaseFormProps = BaseFormCommonProps &
+  (
     | {
-      formState: Record<string, unknown>;
-      onFieldValueChange: (fieldKey: string, value: unknown) => void;
-    }
+        formState: Record<string, unknown>;
+        onFieldValueChange: (fieldKey: string, value: unknown) => void;
+      }
     | {
-      formState?: undefined;
-      onFieldValueChange?: (fieldKey: string, value: unknown) => void;
-    }
+        formState?: undefined;
+        onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+      }
   );
 
 interface BaseFormCommonProps {

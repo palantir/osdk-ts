@@ -15,16 +15,17 @@
  */
 
 import type { OntologyIrValueTypeBlockData } from "@osdk/client.unstable";
+
 import { type OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import { convertValueTypesToIr } from "./convertValueTypesToIr.js";
 
 export function convertOntologyToValueTypeIr(
-  ontology: OntologyDefinition,
+  ontology: OntologyDefinition
 ): OntologyIrValueTypeBlockData {
   return {
     valueTypes: convertValueTypesToIr(
-      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
+      ontology[OntologyEntityTypeEnum.VALUE_TYPE]
     ),
   };
 }

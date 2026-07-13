@@ -19,6 +19,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ListQueryOptions<

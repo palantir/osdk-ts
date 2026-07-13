@@ -17,10 +17,12 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseVideoViewer } from "./BaseVideoViewer.js";
-import styles from "./BaseVideoViewer.module.css";
 import type { VideoViewerMediaProps } from "./VideoViewerApi.js";
+
+import styles from "./BaseVideoViewer.module.css";
 
 const transformToObjectUrl = async (response: Response): Promise<string> => {
   const blob = await response.blob();
@@ -36,15 +38,15 @@ export function VideoViewer({
   className,
   ...videoViewerProps
 }: VideoViewerMediaProps): React.ReactElement {
-  const { data: src, loading, error } = useMediaContents(
-    media,
-    transformToObjectUrl,
-    cleanupObjectUrl,
-  );
+  const {
+    data: src,
+    loading,
+    error,
+  } = useMediaContents(media, transformToObjectUrl, cleanupObjectUrl);
 
   const mimeType = useMemo(
     () => videoViewerProps.mimeType ?? media.getMediaReference().mimeType,
-    [videoViewerProps.mimeType, media],
+    [videoViewerProps.mimeType, media]
   );
 
   const rootClassName = classnames(styles.container, className);

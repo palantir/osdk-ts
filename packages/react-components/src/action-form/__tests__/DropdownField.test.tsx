@@ -22,6 +22,7 @@ import {
   within,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { DropdownField } from "../fields/DropdownField.js";
 
 describe("DropdownField", () => {
@@ -36,7 +37,7 @@ describe("DropdownField", () => {
 
     it("renders a combobox input when isSearchable is true", () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       expect(screen.getByRole("combobox")).toBeDefined();
@@ -70,7 +71,7 @@ describe("DropdownField", () => {
           items={USER_ITEMS}
           itemToStringLabel={testUserNameLabel}
           isItemEqual={isSameTestUser}
-        />,
+        />
       );
 
       expect(screen.getByRole("combobox").textContent).toContain("Alice");
@@ -85,7 +86,7 @@ describe("DropdownField", () => {
           renderItemLabel={renderTestUserLabel}
           itemToKey={testUserToKey}
           isItemEqual={isSameTestUser}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -110,13 +111,13 @@ describe("DropdownField", () => {
           renderItemLabel={renderArrayItemLabel}
           itemToKey={arrayItemToKey}
           isItemEqual={isSameArrayItem}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
       expect(within(trigger).getByText("Alice")).toBeDefined();
       expect(within(trigger).getByTestId("array-role-Alice").textContent).toBe(
-        "Admin",
+        "Admin"
       );
 
       fireEvent.click(trigger);
@@ -125,7 +126,7 @@ describe("DropdownField", () => {
         const option = screen.getByRole("option", { name: "Bob User" });
         expect(within(option).getByText("Bob")).toBeDefined();
         expect(within(option).getByTestId("array-role-Bob").textContent).toBe(
-          "User",
+          "User"
         );
       });
     });
@@ -140,16 +141,18 @@ describe("DropdownField", () => {
             value={null}
             items={STRING_ITEMS}
             portalContainer={portalContainer}
-          />,
+          />
         );
 
         fireEvent.click(screen.getByRole("combobox"));
 
         await vi.waitFor(() => {
           expect(
-            portalContainer.contains(screen.getByRole("option", {
-              name: "Alice",
-            })),
+            portalContainer.contains(
+              screen.getByRole("option", {
+                name: "Alice",
+              })
+            )
           ).toBe(true);
         });
       } finally {
@@ -167,7 +170,7 @@ describe("DropdownField", () => {
       });
 
       const dismissLayer = document.querySelector(
-        "[data-osdk-portal-dismiss-layer]",
+        "[data-osdk-portal-dismiss-layer]"
       );
       if (!(dismissLayer instanceof HTMLElement)) {
         throw new Error("Expected dropdown dismiss layer to be rendered");
@@ -181,9 +184,7 @@ describe("DropdownField", () => {
     });
 
     it("does not render the portal dismiss layer when modal is false", async () => {
-      render(
-        <DropdownField value={null} items={STRING_ITEMS} modal={false} />,
-      );
+      render(<DropdownField value={null} items={STRING_ITEMS} modal={false} />);
 
       fireEvent.click(screen.getByRole("combobox"));
 
@@ -192,13 +193,13 @@ describe("DropdownField", () => {
       });
 
       expect(
-        document.querySelector("[data-osdk-portal-dismiss-layer]"),
+        document.querySelector("[data-osdk-portal-dismiss-layer]")
       ).toBeNull();
     });
 
     it("marks the select trigger disabled and does not open the popup when disabled", () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} disabled={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} disabled={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -217,7 +218,7 @@ describe("DropdownField", () => {
           value={["Alice"]}
           items={STRING_ITEMS}
           isMultiple={true}
-        />,
+        />
       );
 
       expect(screen.getByRole("combobox")).toBeDefined();
@@ -228,7 +229,7 @@ describe("DropdownField", () => {
   describe("searchable (Combobox variant)", () => {
     it("renders a trigger button when isSearchable is true", () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -237,11 +238,7 @@ describe("DropdownField", () => {
 
     it("displays selected value in the searchable trigger", () => {
       render(
-        <DropdownField
-          value="Alice"
-          items={STRING_ITEMS}
-          isSearchable={true}
-        />,
+        <DropdownField value="Alice" items={STRING_ITEMS} isSearchable={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -258,14 +255,12 @@ describe("DropdownField", () => {
           itemToKey={testUserToKey}
           isItemEqual={isSameTestUser}
           isSearchable={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
       expect(within(trigger).getByText("Alice")).toBeDefined();
-      expect(within(trigger).getByTestId("role-1").textContent).toBe(
-        "Admin",
-      );
+      expect(within(trigger).getByTestId("role-1").textContent).toBe("Admin");
 
       fireEvent.click(trigger);
 
@@ -280,11 +275,10 @@ describe("DropdownField", () => {
       await vi.waitFor(() => {
         const option = screen.getByRole("option", { name: "Bob User" });
         expect(within(option).getByText("Bob")).toBeDefined();
+        expect(within(option).getByTestId("role-2").textContent).toBe("User");
         expect(
-          within(option).getByTestId("role-2").textContent,
-        ).toBe("User");
-        expect(screen.queryByRole("option", { name: "Alice Admin" }))
-          .toBeNull();
+          screen.queryByRole("option", { name: "Alice Admin" })
+        ).toBeNull();
       });
     });
 
@@ -298,13 +292,13 @@ describe("DropdownField", () => {
           itemToKey={arrayItemToKey}
           isItemEqual={isSameArrayItem}
           isSearchable={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
       expect(within(trigger).getByText("Alice")).toBeDefined();
       expect(within(trigger).getByTestId("array-role-Alice").textContent).toBe(
-        "Admin",
+        "Admin"
       );
     });
 
@@ -319,16 +313,14 @@ describe("DropdownField", () => {
           isItemEqual={isSameTestUser}
           isSearchable={true}
           isMultiple={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
       expect(within(trigger).getByText("Alice")).toBeDefined();
-      expect(within(trigger).getByTestId("role-1").textContent).toBe(
-        "Admin",
-      );
+      expect(within(trigger).getByTestId("role-1").textContent).toBe("Admin");
       expect(
-        screen.getByRole("button", { name: "Remove Alice Admin" }),
+        screen.getByRole("button", { name: "Remove Alice Admin" })
       ).toBeDefined();
     });
 
@@ -342,7 +334,7 @@ describe("DropdownField", () => {
           isSearchable={true}
           isMultiple={true}
           disabled={true}
-        />,
+        />
       );
 
       const remove = screen.getByRole("button", { name: "Remove Alice" });
@@ -360,7 +352,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           placeholder="Pick one…"
-        />,
+        />
       );
 
       expect(screen.getByText("Pick one…")).toBeDefined();
@@ -373,7 +365,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           placeholder="Pick one…"
-        />,
+        />
       );
 
       expect(screen.queryByText("Pick one…")).toBeNull();
@@ -381,7 +373,7 @@ describe("DropdownField", () => {
 
     it("renders items after clicking the trigger", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -396,7 +388,7 @@ describe("DropdownField", () => {
 
     it("shows search input inside popup after opening", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -409,7 +401,7 @@ describe("DropdownField", () => {
 
     it("closes searchable popup when pressing the portal dismiss layer", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -419,7 +411,7 @@ describe("DropdownField", () => {
       });
 
       const dismissLayer = document.querySelector(
-        "[data-osdk-portal-dismiss-layer]",
+        "[data-osdk-portal-dismiss-layer]"
       );
       if (!(dismissLayer instanceof HTMLElement)) {
         throw new Error("Expected dropdown dismiss layer to be rendered");
@@ -439,7 +431,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           isMultiple={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -455,7 +447,7 @@ describe("DropdownField", () => {
           onChange={onChange}
           isSearchable={true}
           isMultiple={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -476,7 +468,7 @@ describe("DropdownField", () => {
 
     it("shows 'No results' when search matches nothing", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -496,7 +488,7 @@ describe("DropdownField", () => {
 
     it("filters items to matching subset when searching", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -527,7 +519,7 @@ describe("DropdownField", () => {
             items={STRING_ITEMS}
             isSearchable={true}
             portalContainer={portalContainer}
-          />,
+          />
         );
 
         fireEvent.click(screen.getByRole("combobox"));
@@ -557,17 +549,17 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           isMultiple={true}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
       fireEvent.click(trigger);
 
       await vi.waitFor(() => {
-        const alice = screen.getByRole("option", { name: /Alice/ });
+        const alice = screen.getByRole("option", { name: /Alice/u });
         expect(alice.getAttribute("aria-selected")).toBe("true");
 
-        const bob = screen.getByRole("option", { name: /Bob/ });
+        const bob = screen.getByRole("option", { name: /Bob/u });
         expect(bob.getAttribute("aria-selected")).toBe("false");
       });
     });
@@ -577,11 +569,7 @@ describe("DropdownField", () => {
     it("does not call onBlur when popover opens", async () => {
       const onBlur = vi.fn();
       render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-          onBlur={onBlur}
-        />,
+        <DropdownField value={null} items={STRING_ITEMS} onBlur={onBlur} />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -596,11 +584,7 @@ describe("DropdownField", () => {
     it("calls onBlur when popover closes", async () => {
       const onBlur = vi.fn();
       render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-          onBlur={onBlur}
-        />,
+        <DropdownField value={null} items={STRING_ITEMS} onBlur={onBlur} />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -625,7 +609,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           onChange={onChange}
           onBlur={onBlur}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -649,7 +633,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           onBlur={onBlur}
-        />,
+        />
       );
 
       const trigger = screen.getByRole("combobox");
@@ -680,7 +664,7 @@ describe("DropdownField", () => {
           isSearchable={true}
           isMultiple={true}
           onBlur={onBlur}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -713,11 +697,7 @@ describe("DropdownField", () => {
     it("calls onChange with null when clear button is clicked in single select", () => {
       const onChange = vi.fn();
       render(
-        <DropdownField
-          value="Alice"
-          items={STRING_ITEMS}
-          onChange={onChange}
-        />,
+        <DropdownField value="Alice" items={STRING_ITEMS} onChange={onChange} />
       );
 
       fireEvent.click(screen.getByLabelText("Clear"));
@@ -733,7 +713,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           onChange={onChange}
           isMultiple={true}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByLabelText("Clear"));
@@ -743,11 +723,7 @@ describe("DropdownField", () => {
 
     it("shows clear button in searchable combobox when a value is selected", () => {
       render(
-        <DropdownField
-          value="Alice"
-          items={STRING_ITEMS}
-          isSearchable={true}
-        />,
+        <DropdownField value="Alice" items={STRING_ITEMS} isSearchable={true} />
       );
 
       expect(screen.getByLabelText("Clear")).toBeDefined();
@@ -755,7 +731,7 @@ describe("DropdownField", () => {
 
     it("does not show clear button in searchable combobox when no value is selected", () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
       );
 
       expect(screen.queryByLabelText("Clear")).toBeNull();
@@ -769,7 +745,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           onChange={onChange}
           disabled={true}
-        />,
+        />
       );
 
       const clear = screen.getByLabelText("Clear");
@@ -789,7 +765,7 @@ describe("DropdownField", () => {
           onChange={onChange}
           isSearchable={true}
           disabled={true}
-        />,
+        />
       );
 
       const clear = screen.getByLabelText("Clear");

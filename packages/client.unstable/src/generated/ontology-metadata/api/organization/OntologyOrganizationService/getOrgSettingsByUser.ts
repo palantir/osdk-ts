@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetOrgSettingsByUserRequest as _api_organization_GetOrgSettingsByUserRequest,
-  GetOrgSettingsByUserResponse
-    as _api_organization_GetOrgSettingsByUserResponse,
+  GetOrgSettingsByUserResponse as _api_organization_GetOrgSettingsByUserResponse,
 } from "../__components.js";
 
 /**
@@ -28,7 +28,7 @@ import type {
  */
 export async function getOrgSettingsByUser(
   ctx: ConjureContext,
-  request: _api_organization_GetOrgSettingsByUserRequest,
+  request: _api_organization_GetOrgSettingsByUserRequest
 ): Promise<_api_organization_GetOrgSettingsByUserResponse> {
   return conjureFetch(ctx, `/organization/getSettings/user`, "POST", request);
 }

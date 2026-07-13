@@ -33,6 +33,7 @@ import type {
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client2";
+
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
@@ -41,14 +42,14 @@ import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OldSharedClient = import("@osdk/shared.client").SharedClient;
 
-export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
-    SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
+export type CheckVersionBound<Q> =
+  Q extends VersionBound<infer V>
+    ? SatisfiesSemver<V, MaxOsdkVersion> extends true
+      ? Q
       : Q & {
-        [ErrorMessage]:
-          `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-      }
-  )
-  : Q;
+          [ErrorMessage]: `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
+        }
+    : Q;
 
 export interface Client extends SharedClient, OldSharedClient {
   /**
@@ -69,8 +70,9 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns an object set scoped to all objects of this type.
    */
   <Q extends ObjectTypeDefinition>(
-    o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
+    o: Q
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
   /**
@@ -81,9 +83,10 @@ export interface Client extends SharedClient, OldSharedClient {
    * ```
    * @returns a minimal object set over all objects implementing the interface.
    */
-  <Q extends (InterfaceDefinition)>(
-    o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
+  <Q extends InterfaceDefinition>(
+    o: Q
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
   /**
@@ -97,9 +100,7 @@ export interface Client extends SharedClient, OldSharedClient {
    * ```
    * @returns a callable for applying (or batch-applying) the action.
    */
-  <Q extends ActionDefinition<any>>(
-    o: Q,
-  ): ActionSignatureFromDef<Q>;
+  <Q extends ActionDefinition<any>>(o: Q): ActionSignatureFromDef<Q>;
 
   /**
    * @param o - The query definition to invoke.
@@ -109,9 +110,7 @@ export interface Client extends SharedClient, OldSharedClient {
    * ```
    * @returns a callable for executing the query function.
    */
-  <Q extends QueryDefinition<any>>(
-    o: Q,
-  ): QuerySignatureFromDef<Q>;
+  <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
 
   /**
    * @param experiment - The experiment marker that gates an unstable feature.
@@ -130,7 +129,7 @@ export interface Client extends SharedClient, OldSharedClient {
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
-    experiment: Q,
+    experiment: Q
   ): ExperimentFns<Q>;
 
   /**
@@ -146,18 +145,23 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns a promise resolving to the metadata for the given definition.
    */
   fetchMetadata<
-    Q extends (
+    Q extends
       | ObjectTypeDefinition
       | InterfaceDefinition
       | ActionDefinition<any>
-      | QueryDefinition<any>
-    ),
-  >(o: Q): Promise<
-    Q extends ObjectTypeDefinition ? ObjectMetadata
-      : Q extends InterfaceDefinition ? InterfaceMetadata
-      : Q extends ActionDefinition<any> ? ActionMetadata
-      : Q extends QueryDefinition<any> ? QueryMetadata
-      : never
+      | QueryDefinition<any>,
+  >(
+    o: Q
+  ): Promise<
+    Q extends ObjectTypeDefinition
+      ? ObjectMetadata
+      : Q extends InterfaceDefinition
+        ? InterfaceMetadata
+        : Q extends ActionDefinition<any>
+          ? ActionMetadata
+          : Q extends QueryDefinition<any>
+            ? QueryMetadata
+            : never
   >;
 
   /** @internal */
@@ -169,7 +173,7 @@ export interface Client extends SharedClient, OldSharedClient {
 export const additionalContext: unique symbol = Symbol("additionalContext");
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.33.0";
+const MaxOsdkVersion = "2.43.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage: unique symbol = Symbol("ErrorMessage");

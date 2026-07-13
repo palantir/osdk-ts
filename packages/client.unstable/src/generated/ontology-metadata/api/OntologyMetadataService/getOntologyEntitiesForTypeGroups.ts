@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetOntologyEntitiesForTypeGroupsRequest
-    as _api_GetOntologyEntitiesForTypeGroupsRequest,
-  GetOntologyEntitiesForTypeGroupsResponse
-    as _api_GetOntologyEntitiesForTypeGroupsResponse,
+  GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest,
+  GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getOntologyEntitiesForTypeGroups(
   ctx: ConjureContext,
-  request: _api_GetOntologyEntitiesForTypeGroupsRequest,
+  request: _api_GetOntologyEntitiesForTypeGroupsRequest
 ): Promise<_api_GetOntologyEntitiesForTypeGroupsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/entitiesForTypeGroups`,
     "PUT",
-    request,
+    request
   );
 }

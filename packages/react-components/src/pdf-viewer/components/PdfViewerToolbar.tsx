@@ -31,7 +31,9 @@ import {
 } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
+
 import { MAX_SCALE, MIN_SCALE } from "../constants.js";
+
 import styles from "./PdfViewerToolbar.module.css";
 
 export interface PdfViewerToolbarProps {
@@ -82,9 +84,12 @@ export function PdfViewerToolbar({
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
   // Sync input display when currentPage changes from scrolling
-  useEffect(function syncPageInput() {
-    setPageInputValue(String(currentPage));
-  }, [currentPage]);
+  useEffect(
+    function syncPageInput() {
+      setPageInputValue(String(currentPage));
+    },
+    [currentPage]
+  );
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 1) {
@@ -106,7 +111,7 @@ export function PdfViewerToolbar({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPageInputValue(e.target.value);
     },
-    [],
+    []
   );
 
   const handlePageInputKeyDown = useCallback(
@@ -120,7 +125,7 @@ export function PdfViewerToolbar({
         }
       }
     },
-    [pageInputValue, numPages, onPageChange, currentPage],
+    [pageInputValue, numPages, onPageChange, currentPage]
   );
 
   const handlePageInputBlur = useCallback(() => {
@@ -204,7 +209,7 @@ export function PdfViewerToolbar({
         <Button
           className={classnames(
             styles.toolbarButton,
-            autoSize && styles.toolbarButtonActive,
+            autoSize && styles.toolbarButtonActive
           )}
           onClick={onAutoSizeToggle}
           aria-label={autoSize ? "Disable fit to width" : "Fit to width"}
@@ -246,15 +251,19 @@ export function PdfViewerToolbar({
           <Button
             className={classnames(
               styles.toolbarButton,
-              highlightModeActive && styles.toolbarButtonActive,
+              highlightModeActive && styles.toolbarButtonActive
             )}
             onClick={onHighlightToggle}
-            aria-label={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
-            title={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
+            aria-label={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
+            title={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
             aria-pressed={highlightModeActive}
             type="button"
           >

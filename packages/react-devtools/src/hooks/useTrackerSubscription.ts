@@ -30,25 +30,19 @@ export function useTrackerSubscription<TTracker extends Subscribable, TData>(
   tracker: TTracker | null,
   getData: (tracker: TTracker, limit: number) => TData,
   emptyData: TData,
-  options: TrackerSubscriptionOptions = {},
+  options: TrackerSubscriptionOptions = {}
 ): { data: TData; refresh: () => void } {
-  const {
-    autoRefresh = true,
-    refreshInterval = 1000,
-    limit = 10,
-  } = options;
+  const { autoRefresh = true, refreshInterval = 1000, limit = 10 } = options;
 
   const getDataRef = React.useRef(getData);
   const emptyDataRef = React.useRef(emptyData);
   getDataRef.current = getData;
   emptyDataRef.current = emptyData;
 
-  const storeRef = React.useRef<
-    {
-      data: TData;
-      listeners: Set<() => void>;
-    } | null
-  >(null);
+  const storeRef = React.useRef<{
+    data: TData;
+    listeners: Set<() => void>;
+  } | null>(null);
 
   if (storeRef.current == null) {
     storeRef.current = {
@@ -99,18 +93,15 @@ export function useTrackerSubscription<TTracker extends Subscribable, TData>(
         }
       };
     },
-    [tracker, autoRefresh, refreshInterval, limit],
+    [tracker, autoRefresh, refreshInterval, limit]
   );
 
-  const getSnapshot = React.useCallback(
-    (): TData => {
-      if (storeRef.current == null) {
-        return emptyData;
-      }
-      return storeRef.current.data;
-    },
-    [emptyData],
-  );
+  const getSnapshot = React.useCallback((): TData => {
+    if (storeRef.current == null) {
+      return emptyData;
+    }
+    return storeRef.current.data;
+  }, [emptyData]);
 
   const data = React.useSyncExternalStore(subscribe, getSnapshot);
 

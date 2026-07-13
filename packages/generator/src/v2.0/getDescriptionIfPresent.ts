@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { escapeJsDocText } from "../util/escapeJsDocText.js";
+
 export function getDescriptionIfPresent(
   description?: string,
   includeNewline?: boolean,
 ): string {
   if (description) {
     // Preserve line breaks in multi-line descriptions
-    const lines = description.split("\n");
+    const lines = escapeJsDocText(description).split("\n");
     const formattedLines = lines.map(line => ` * ${line}`).join("\n");
     return `/**
 ${formattedLines}

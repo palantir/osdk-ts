@@ -29,7 +29,7 @@ export type EditablePredicate<TData extends RowData = RowData> =
  * column-level question used to drive table-wide UI like the bottom edit bar.
  */
 export function isColumnDeclaredEditable<TData extends RowData>(
-  editable: EditablePredicate<TData> | undefined,
+  editable: EditablePredicate<TData> | undefined
 ): boolean {
   return editable === true || typeof editable === "function";
 }
@@ -40,7 +40,7 @@ export function isColumnDeclaredEditable<TData extends RowData>(
  */
 export function isCellEditable<TData extends RowData>(
   editable: EditablePredicate<TData> | undefined,
-  object: TData,
+  object: TData
 ): boolean {
   if (typeof editable === "function") {
     return editable(object);

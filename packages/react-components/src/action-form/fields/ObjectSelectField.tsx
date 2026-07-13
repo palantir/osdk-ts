@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import { useObjectSet, useOsdkObjects } from "@osdk/react";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
 import { AsyncDropdownField } from "./AsyncDropdownField.js";
@@ -36,20 +37,18 @@ type ObjectSelectOsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 /** Stable empty array so the component doesn't re-render when data is undefined. */
 const EMPTY_OBJECT_SELECT_ITEMS: ObjectSelectOsdkObject[] = [];
 
-export const ObjectSelectField: React.NamedExoticComponent<
-  ObjectSelectFieldProps
-> = memo(function ObjectSelectFieldFn(props): React.ReactElement {
-  const source = resolveObjectSelectSource(props);
-  return <ObjectSelectInner {...props} source={source} />;
-});
+export const ObjectSelectField: React.NamedExoticComponent<ObjectSelectFieldProps> =
+  memo(function ObjectSelectFieldFn(props): React.ReactElement {
+    const source = resolveObjectSelectSource(props);
+    return <ObjectSelectInner {...props} source={source} />;
+  });
 
 type ResolvedObjectSelectSource<Q extends ObjectTypeDefinition> =
   | { kind: "objectType"; objectType: Q; objectSet?: undefined }
   | { kind: "objectSet"; objectType: Q; objectSet: ObjectSet<Q> };
 
 type ObjectSelectInnerProps<Q extends ObjectTypeDefinition> =
-  & ObjectSelectFieldProps<Q>
-  & {
+  ObjectSelectFieldProps<Q> & {
     source: ResolvedObjectSelectSource<Q>;
   };
 
@@ -77,7 +76,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       onChange?.(newValue);
       setQuery("");
     },
-    [onChange],
+    [onChange]
   );
 
   // Search by the object's title via the special `$title` filter so the where
@@ -145,7 +144,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
 });
 
 function resolveObjectSelectSource(
-  props: ObjectSelectFieldProps<ObjectTypeDefinition>,
+  props: ObjectSelectFieldProps<ObjectTypeDefinition>
 ): ResolvedObjectSelectSource<ObjectTypeDefinition> {
   if ("objectSet" in props && props.objectSet != null) {
     return {
@@ -168,7 +167,7 @@ function itemToKey(obj: ObjectSelectOsdkObject): string {
 
 function isItemEqual(
   a: ObjectSelectOsdkObject,
-  b: ObjectSelectOsdkObject,
+  b: ObjectSelectOsdkObject
 ): boolean {
   return a.$primaryKey === b.$primaryKey;
 }

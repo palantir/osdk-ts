@@ -19,13 +19,17 @@ import type { QueryDefinition } from "../ontology/QueryDefinition.js";
 import type { Experiment } from "./Experiment.js";
 
 type StreamingArgs<QD extends QueryDefinition<any>> =
-  CompileTimeMetadata<QD>["signature"] extends (...args: infer A) => any ? A
+  CompileTimeMetadata<QD>["signature"] extends (...args: infer A) => any
+    ? A
     : never[];
 
 type StreamingElement<QD extends QueryDefinition<any>> =
-  CompileTimeMetadata<QD>["signature"] extends
-    (...args: any[]) => Promise<infer R>
-    ? R extends ReadonlyArray<infer E> ? E : R
+  CompileTimeMetadata<QD>["signature"] extends (
+    ...args: any[]
+  ) => Promise<infer R>
+    ? R extends ReadonlyArray<infer E>
+      ? E
+      : R
     : never;
 
 /**
@@ -40,13 +44,12 @@ type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
   ...args: StreamingArgs<QD>
 ) => AsyncIterable<StreamingElement<QD>>;
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction:
-  Experiment<
-    "2.19.0",
-    "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
-    { executeStreamingFunction: executeStreamingFunctionFn }
-  > = {
-    name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
-    type: "experiment",
-    version: "2.19.0",
-  };
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction: Experiment<
+  "2.19.0",
+  "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
+  { executeStreamingFunction: executeStreamingFunctionFn }
+> = {
+  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
+  type: "experiment",
+  version: "2.19.0",
+};

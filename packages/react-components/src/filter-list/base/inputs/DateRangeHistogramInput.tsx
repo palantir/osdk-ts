@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useMemo } from "react";
+
 import { formatDateForInput } from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
@@ -28,9 +29,9 @@ const defaultDateConfig: RangeInputConfig<Date> = {
   minLabel: "From",
   maxLabel: "To",
   formatTooltip: (min, max, count) =>
-    `${formatDateForInput(min)} - ${
-      formatDateForInput(max)
-    }: ${count.toLocaleString()}`,
+    `${formatDateForInput(min)} - ${formatDateForInput(
+      max
+    )}: ${count.toLocaleString()}`,
 };
 
 interface DateRangeHistogramInputProps {
@@ -61,15 +62,15 @@ function DateRangeHistogramInputInner({
     () =>
       formatDate != null
         ? {
-          ...defaultDateConfig,
-          formatDate,
-          formatTooltip: (min, max, count) =>
-            `${formatDate(min)} - ${
-              formatDate(max)
-            }: ${count.toLocaleString()}`,
-        }
+            ...defaultDateConfig,
+            formatDate,
+            formatTooltip: (min, max, count) =>
+              `${formatDate(min)} - ${formatDate(
+                max
+              )}: ${count.toLocaleString()}`,
+          }
         : defaultDateConfig,
-    [formatDate],
+    [formatDate]
   );
 
   const histogramData = useMemo(() => {
@@ -93,7 +94,7 @@ function DateRangeHistogramInputInner({
     const { buckets, subtitle } = createDateHistogramBuckets(
       valueCountPairs,
       { min: new Date(minMs), max: new Date(maxMs) },
-      formatDate,
+      formatDate
     );
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
@@ -109,5 +110,5 @@ function DateRangeHistogramInputInner({
 }
 
 export const DateRangeHistogramInput = memo(
-  DateRangeHistogramInputInner,
+  DateRangeHistogramInputInner
 ) as typeof DateRangeHistogramInputInner;

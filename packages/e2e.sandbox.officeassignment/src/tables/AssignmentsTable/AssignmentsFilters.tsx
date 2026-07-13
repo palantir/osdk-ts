@@ -21,6 +21,7 @@ import type {
 } from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
+
 import { Assignment } from "../../generatedNoCheck2/index.js";
 import type { IdentifiedFilterDef } from "../../types/filters.js";
 
@@ -31,10 +32,10 @@ interface AssignmentsFiltersProps {
   onFilterClauseChanged: (clause: WhereClause<Assignment>) => void;
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Assignment>,
-    newState: FilterState,
+    newState: FilterState
   ) => void;
   onFilterVisibilityChange?: (
-    newStates: Array<{ filterKey: string; isVisible: boolean }>,
+    newStates: Array<{ filterKey: string; isVisible: boolean }>
   ) => void;
   onReset?: () => void;
   initialFilterStates?: Map<string, FilterState>;
@@ -82,5 +83,5 @@ export const AssignmentsFilters = React.memo<AssignmentsFiltersProps>(
         addFilterMode="uncontrolled"
       />
     );
-  },
+  }
 );

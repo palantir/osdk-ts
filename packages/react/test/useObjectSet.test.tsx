@@ -22,6 +22,7 @@ import type {
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useObjectSet } from "../src/new/useObjectSet.js";
 
@@ -93,10 +94,9 @@ describe(useObjectSet, () => {
     it("should NOT call observeObjectSet when enabled is false", () => {
       const wrapper = createWrapper();
 
-      renderHook(
-        () => useObjectSet(mockObjectSet, { enabled: false }),
-        { wrapper },
-      );
+      renderHook(() => useObjectSet(mockObjectSet, { enabled: false }), {
+        wrapper,
+      });
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();
     });
@@ -109,7 +109,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { enabled: false },
-        },
+        }
       );
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { objectSet: objectSet1 },
-        },
+        }
       );
 
       expect(result.current.data).toBeUndefined();
@@ -162,7 +162,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { objectSet: objectSet1 },
-        },
+        }
       );
 
       const mockData = {
@@ -186,10 +186,9 @@ describe(useObjectSet, () => {
     it("should return loading state initially", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       expect(result.current.data).toBeUndefined();
       expect(result.current.isLoading).toBe(true);
@@ -199,10 +198,9 @@ describe(useObjectSet, () => {
     it("should return data when loaded", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const mockData = {
         resolvedList: [{ $primaryKey: "1", name: "Test" }],
@@ -221,10 +219,9 @@ describe(useObjectSet, () => {
     it("should return fetchMore when available", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const mockFetchMore = vitest.fn();
       const mockData = {
@@ -244,10 +241,9 @@ describe(useObjectSet, () => {
     it("should not return fetchMore when hasMore is false", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const mockFetchMore = vitest.fn();
       const mockData = {
@@ -269,10 +265,9 @@ describe(useObjectSet, () => {
     it("should return error when observer.error is called", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const testError = new Error("test error");
 
@@ -286,10 +281,9 @@ describe(useObjectSet, () => {
     it("should set isLoading to false on error", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       expect(result.current.isLoading).toBe(true);
 
@@ -304,14 +298,12 @@ describe(useObjectSet, () => {
   describe("interface-based object sets", () => {
     it("should accept an InterfaceDefinition-typed object set", () => {
       const wrapper = createWrapper();
-      const interfaceObjectSet = createMockInterfaceObjectSet(
-        MockInterfaceType,
-      );
+      const interfaceObjectSet =
+        createMockInterfaceObjectSet(MockInterfaceType);
 
-      const { result } = renderHook(
-        () => useObjectSet(interfaceObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(interfaceObjectSet), {
+        wrapper,
+      });
 
       expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
       expect(result.current.data).toBeUndefined();
@@ -325,7 +317,7 @@ describe(useObjectSet, () => {
 
       const { result } = renderHook(
         () => useObjectSet(mockObjectSet, { enabled: false }),
-        { wrapper },
+        { wrapper }
       );
 
       expect(result.current.isLoading).toBe(false);
@@ -336,10 +328,9 @@ describe(useObjectSet, () => {
     it("should return isOptimistic from payload", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const mockData = {
         resolvedList: [{ $primaryKey: "1", name: "Test" }],
@@ -357,10 +348,9 @@ describe(useObjectSet, () => {
     it("should default isOptimistic to false", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       expect(result.current.isOptimistic).toBe(false);
     });
@@ -370,10 +360,9 @@ describe(useObjectSet, () => {
     it("should return hasMore from payload", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       const mockData = {
         resolvedList: [{ $primaryKey: "1", name: "Test" }],
@@ -392,10 +381,9 @@ describe(useObjectSet, () => {
     it("should default hasMore to false", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       expect(result.current.hasMore).toBe(false);
     });
@@ -405,10 +393,9 @@ describe(useObjectSet, () => {
     it("should call invalidateObjectType when refetch is called", async () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(mockObjectSet),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
 
       await act(async () => {
         await result.current.refetch();
@@ -441,7 +428,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { orderBy: { name: "asc" as const } },
-        },
+        }
       );
 
       expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
@@ -457,10 +444,7 @@ describe(useObjectSet, () => {
     it("should not call observeObjectSet when objectSet is undefined", () => {
       const wrapper = createWrapper();
 
-      const { result } = renderHook(
-        () => useObjectSet(undefined),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useObjectSet(undefined), { wrapper });
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();
       expect(result.current.isLoading).toBe(false);
@@ -476,7 +460,7 @@ describe(useObjectSet, () => {
           initialProps: {
             objectSet: undefined as typeof mockObjectSet | undefined,
           },
-        },
+        }
       );
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();

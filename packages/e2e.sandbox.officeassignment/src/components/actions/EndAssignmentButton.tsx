@@ -16,9 +16,11 @@
 
 import { useOsdkAction } from "@osdk/react";
 import React from "react";
+
 import type { Assignment } from "../../generatedNoCheck2/index.js";
 import { endAssignment } from "../../generatedNoCheck2/index.js";
 import { ErrorBanner } from "../common/index.js";
+
 import styles from "./actions.module.css";
 
 export interface EndAssignmentButtonProps {
@@ -27,7 +29,7 @@ export interface EndAssignmentButtonProps {
 
 /** Ends an assignment (sets status=Ended + endDate). Disabled when already ended. */
 export function EndAssignmentButton(
-  props: EndAssignmentButtonProps,
+  props: EndAssignmentButtonProps
 ): React.JSX.Element {
   const { assignment } = props;
   const { applyAction, isPending, error } = useOsdkAction(endAssignment);

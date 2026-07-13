@@ -1,5 +1,29 @@
 # @osdk/typescript-sdk-docs
 
+## 0.17.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 0.16.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+
+## 0.15.0
+
+### Minor Changes
+
+- 58b3367: Migrate @osdk/language-models, @osdk/react-sdk-docs, and @osdk/typescript-sdk-docs to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (second increment of the repo-wide oxc migration)
+
+## 0.14.0
+
+### Minor Changes
+
+- 0bd4a2e: Document array element-subtype filters via $contains
+
 ## 0.13.0
 
 ### Minor Changes

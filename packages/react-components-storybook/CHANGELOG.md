@@ -1,5 +1,89 @@
 # @osdk/react-components-storybook
 
+## 0.36.0
+
+### Minor Changes
+
+- d99575d: Make the Components Overview page fill the full available height so the ObjectTable, FilterList, and DocumentViewer stretch to the viewport.
+
+## 0.35.0
+
+### Minor Changes
+
+- 3833cdd: Render the AipAgentChat story as a folder under Components (matching CbacPicker) with a Docs page and beta badge
+- f5fd886: Hide the canvas Code tab on the Overview story
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/faux@0.34.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 56f6317: Enable DESIGN.md and CSS export for built-in Workshop Light and Dark themes
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+- 7884819: Add Component Overview story with tabbed layout showing FilterList, ObjectTable, PdfViewer, and ActionForm
+- 9e4f284: Add brand theme plugin to Storybook: theme preset picker toolbar with built-in/custom categories, interactive token mapping panel with WCAG contrast checking, style presets for radius/spacing, CSS/Markdown export, and dark mode support
+
+### Patch Changes
+
+- Updated dependencies [6010d45]
+  - @osdk/faux@0.33.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 0ed0b5c: Restyle AipAgentChat to match Threads 2.0 design with light gray user bubbles, plain-text assistant messages, rounded inlined composer, centered max-width layout, and no composer divider. Add reusable Callout base component with intent-tinted backgrounds and dark mode support. Add AipAgentChat storybook stories.
+
+### Patch Changes
+
+- Updated dependencies [15a35f2]
+  - @osdk/faux@0.32.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/faux@0.31.0
+
+## 0.31.0
+
+### Patch Changes
+
+- @osdk/faux@0.30.0
+
+## 0.30.0
+
+### Minor Changes
+
+- c24b0cf: Align OSDK component tokens with Blueprint styling: use box-shadow instead of border for inputs, buttons, and selects; add proper dark mode token overrides; group Storybook theme presets into built-in and custom categories
+
+### Patch Changes
+
+- @osdk/faux@0.29.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/faux@0.28.0
+
+## 0.28.0
+
+### Minor Changes
+
+- b237ef9: Run Storybook interaction (play-function) tests in CI via @storybook/addon-vitest, add a MultipleSelection play function, disable MSW per-request console logging, and bump @vitest/browser to the patched 3.2.5+.
+
+### Patch Changes
+
+- Updated dependencies [ab19740]
+  - @osdk/faux@0.27.0
+
 ## 0.27.0
 
 ### Patch Changes

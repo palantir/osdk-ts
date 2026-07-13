@@ -34,7 +34,7 @@ export interface MappedPropertyType {
  * Returns undefined for unsupported types (with a warning).
  */
 export function mapPropertyType(
-  dataType: ObjectPropertyType,
+  dataType: ObjectPropertyType
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":

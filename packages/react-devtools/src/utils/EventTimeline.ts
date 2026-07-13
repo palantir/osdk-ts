@@ -127,7 +127,7 @@ export class EventTimeline {
     // Track counts by type
     this.eventCounts.set(
       event.type,
-      (this.eventCounts.get(event.type) ?? 0) + 1,
+      (this.eventCounts.get(event.type) ?? 0) + 1
     );
 
     // Notify subscribers
@@ -137,39 +137,39 @@ export class EventTimeline {
   findEventsInWindow(
     timestamp: number,
     windowMs: number,
-    eventType?: MonitorEvent["type"],
-  ): MonitorEvent[] {
-    const allEvents = eventType
-      ? this.getEventsByType(eventType)
-      : this.events.toArray();
-
-    return allEvents.filter((e) =>
-      Math.abs(e.timestamp - timestamp) <= windowMs
-    );
-  }
-
-  findEventsBefore(
-    timestamp: number,
-    windowMs: number,
-    eventType?: MonitorEvent["type"],
+    eventType?: MonitorEvent["type"]
   ): MonitorEvent[] {
     const allEvents = eventType
       ? this.getEventsByType(eventType)
       : this.events.toArray();
 
     return allEvents.filter(
-      (e) => e.timestamp <= timestamp && timestamp - e.timestamp <= windowMs,
+      (e) => Math.abs(e.timestamp - timestamp) <= windowMs
+    );
+  }
+
+  findEventsBefore(
+    timestamp: number,
+    windowMs: number,
+    eventType?: MonitorEvent["type"]
+  ): MonitorEvent[] {
+    const allEvents = eventType
+      ? this.getEventsByType(eventType)
+      : this.events.toArray();
+
+    return allEvents.filter(
+      (e) => e.timestamp <= timestamp && timestamp - e.timestamp <= windowMs
     );
   }
 
   findRenderTrigger(renderEvent: RenderEvent): EmissionEvent | null {
     const CORRELATION_WINDOW = 16;
 
-    const recentEmissions = this.getEventsByType("EMISSION")
-      .filter(e =>
-        e.timestamp <= renderEvent.timestamp
-        && renderEvent.timestamp - e.timestamp <= CORRELATION_WINDOW
-      );
+    const recentEmissions = this.getEventsByType("EMISSION").filter(
+      (e) =>
+        e.timestamp <= renderEvent.timestamp &&
+        renderEvent.timestamp - e.timestamp <= CORRELATION_WINDOW
+    );
 
     if (recentEmissions.length === 0) {
       return null;
@@ -186,12 +186,12 @@ export class EventTimeline {
 
     const start = allEvents.find(
       (e): e is ActionStartEvent =>
-        e.type === "ACTION_START" && e.actionId === actionId,
+        e.type === "ACTION_START" && e.actionId === actionId
     );
 
     const complete = allEvents.find(
       (e): e is ActionCompleteEvent =>
-        e.type === "ACTION_COMPLETE" && e.actionId === actionId,
+        e.type === "ACTION_COMPLETE" && e.actionId === actionId
     );
 
     if (!start) {
@@ -204,20 +204,19 @@ export class EventTimeline {
 
     // Find all events between start and complete
     const actionEvents = allEvents.filter(
-      (e) =>
-        e.timestamp >= start.timestamp && e.timestamp <= complete.timestamp,
+      (e) => e.timestamp >= start.timestamp && e.timestamp <= complete.timestamp
     );
 
     // Separate optimistic updates from refetches
     const emissions = actionEvents.filter(
-      (e): e is EmissionEvent => e.type === "EMISSION",
+      (e): e is EmissionEvent => e.type === "EMISSION"
     );
     const optimisticUpdates = emissions.filter((e) => e.isOptimistic === true);
     const refetches = emissions.filter((e) => !e.isOptimistic);
 
     // Find renders triggered during the action
     const renders = actionEvents.filter(
-      (e): e is RenderEvent => e.type === "RENDER",
+      (e): e is RenderEvent => e.type === "RENDER"
     );
 
     return {
@@ -236,11 +235,11 @@ export class EventTimeline {
   }
 
   getEventsByType<T extends MonitorEvent["type"]>(
-    type: T,
+    type: T
   ): Extract<MonitorEvent, { type: T }>[] {
-    return this.events.toArray().filter(
-      (e): e is Extract<MonitorEvent, { type: T }> => e.type === type,
-    );
+    return this.events
+      .toArray()
+      .filter((e): e is Extract<MonitorEvent, { type: T }> => e.type === type);
   }
 
   getAllEvents(): MonitorEvent[] {
@@ -273,14 +272,14 @@ export class EventTimeline {
 
   findLast<T extends MonitorEvent["type"]>(
     type: T,
-    predicate: (event: Extract<MonitorEvent, { type: T }>) => boolean,
+    predicate: (event: Extract<MonitorEvent, { type: T }>) => boolean
   ): Extract<MonitorEvent, { type: T }> | null {
     const arr = this.events.getLast(this.events.getSize());
     for (let i = arr.length - 1; i >= 0; i--) {
       const event = arr[i];
       if (
-        event.type === type
-        && predicate(event as Extract<MonitorEvent, { type: T }>)
+        event.type === type &&
+        predicate(event as Extract<MonitorEvent, { type: T }>)
       ) {
         return event as Extract<MonitorEvent, { type: T }>;
       }
@@ -291,7 +290,7 @@ export class EventTimeline {
   getLastEmission(subscriptionId: string): EmissionEvent | null {
     return this.findLast(
       "EMISSION",
-      (e) => e.subscriptionId === subscriptionId,
+      (e) => e.subscriptionId === subscriptionId
     );
   }
 }

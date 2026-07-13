@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { BulkGetEntitySdkVersionsRequest } from "../BulkGetEntitySdkVersionsRequest.js";
 import type { BulkGetEntitySdkVersionsResponse } from "../BulkGetEntitySdkVersionsResponse.js";
@@ -27,12 +28,12 @@ import type { BulkGetEntitySdkVersionsResponse } from "../BulkGetEntitySdkVersio
 export async function bulkGetEntitySdkVersions(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: BulkGetEntitySdkVersionsRequest,
+  request: BulkGetEntitySdkVersionsRequest
 ): Promise<BulkGetEntitySdkVersionsResponse> {
   return conjureFetch(
     ctx,
     `/application-sdks/${applicationRid}/entity-sdk-versions`,
     "PUT",
-    request,
+    request
   );
 }

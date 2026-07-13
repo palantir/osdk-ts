@@ -16,9 +16,7 @@
 
 import type { DataValue } from "@osdk/foundry.ontologies";
 
-export function toPropertyDataValue(
-  value: unknown,
-): DataValue {
+export function toPropertyDataValue(value: unknown): DataValue {
   if (value == null) {
     return null; // This differs from how actions handles null, which expects a specific enum value.
   }
@@ -31,7 +29,7 @@ export function toPropertyDataValue(
     const result: Record<string, DataValue> = {};
     for (const key in value) {
       result[key] = toPropertyDataValue(
-        (value as Record<string, unknown>)[key],
+        (value as Record<string, unknown>)[key]
       );
     }
     return result;

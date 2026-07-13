@@ -46,27 +46,29 @@ const MAX_STRING_SIZE = 10240; // 10KB
 const MAX_TOTAL_SIZE = 10240; // 10KB
 
 const INTERNAL_FRAME_PATTERN =
-  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/;
+  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/u;
 
 // BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
 // pattern from its createStyle(). We filter these from the devtools console
 // because devtools monitors the same operations through its own instrumentation.
 const BROWSER_LOGGER_CSS = "border: 1px solid";
 function isBrowserLoggerCall(args: unknown[]): boolean {
-  return typeof args[0] === "string"
-    && args[0].startsWith("%c")
-    && typeof args[1] === "string"
-    && args[1].includes(BROWSER_LOGGER_CSS);
+  return (
+    typeof args[0] === "string" &&
+    args[0].startsWith("%c") &&
+    typeof args[1] === "string" &&
+    args[1].includes(BROWSER_LOGGER_CSS)
+  );
 }
 
-const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/;
-const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/;
-const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/;
+const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/u;
+const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/u;
+const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/u;
 
 function serializeValue(
   value: unknown,
   depth: number,
-  seen: WeakSet<object>,
+  seen: WeakSet<object>
 ): string {
   if (value == null) {
     return String(value);
@@ -132,7 +134,7 @@ function serializeValue(
       const val = serializeValue(
         (obj as Record<string, unknown>)[key],
         depth + 1,
-        seen,
+        seen
       );
       entries.push(`"${key}":${val}`);
     }
@@ -148,7 +150,7 @@ function serializeArg(arg: unknown): string {
   const seen = new WeakSet<object>();
   const result = serializeValue(arg, 0, seen);
   if (result.length > MAX_STRING_SIZE) {
-    return result.slice(0, MAX_STRING_SIZE) + "...truncated";
+    return `${result.slice(0, MAX_STRING_SIZE)}...truncated`;
   }
   return result;
 }
@@ -186,6 +188,22 @@ function getCallerLocation(): string | undefined {
   return undefined;
 }
 
+/**
+ * React DevTools' installHook re-emits console.error/warn (to append the React
+ * component stack) through our wrapper, which surfaces as a duplicate entry
+ * whose resolved source is installHook.js. Recognize those frames so the
+ * re-emission can be dropped — the app's own call is captured separately with
+ * its real source, since our wrapper sits on top of installHook's.
+ */
+function isReactDevtoolsFrame(source: string): boolean {
+  return (
+    source.startsWith("installHook.js") ||
+    source.includes("react_devtools") ||
+    source.includes("react-devtools") ||
+    source.includes("react-router-dom")
+  );
+}
+
 function capEntrySize(args: string[]): string[] {
   let totalSize = 0;
   for (const arg of args) {
@@ -196,7 +214,7 @@ function capEntrySize(args: string[]): string[] {
     return args;
   }
 
-  const result = args.slice();
+  const result = [...args];
   while (totalSize > MAX_TOTAL_SIZE) {
     let longestIndex = 0;
     let longestLength = 0;
@@ -268,13 +286,15 @@ export class ConsoleLogStore extends SubscribableStore {
         // captured (one extra entry, no infinite loop). Strict synchronous
         // reentrancy guarding is incompatible with the microtask deferral that
         // makes the source attribution improvement possible.
-        const skipCapture = store.suppressed || store.capturing
-          || isBrowserLoggerCall(args);
+        const skipCapture =
+          store.suppressed || store.capturing || isBrowserLoggerCall(args);
         const source = skipCapture ? undefined : getCallerLocation();
+        const skip =
+          skipCapture || (source !== undefined && isReactDevtoolsFrame(source));
 
         Function.prototype.apply.call(original, this ?? console, args);
 
-        if (skipCapture) {
+        if (skip) {
           return;
         }
 
@@ -318,7 +338,7 @@ export class ConsoleLogStore extends SubscribableStore {
     for (const level of CONSOLE_LEVELS) {
       const original = this.originals.get(level);
       const ourWrapper = this.wrappers.get(level);
-      if (original && ourWrapper && console[level] === ourWrapper) { // eslint-disable-line no-console
+      if (original && ourWrapper && console[level] === ourWrapper) {
         console[level] = original; // eslint-disable-line no-console
       }
     }

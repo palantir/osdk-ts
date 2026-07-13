@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetValueTypeRequest } from "../GetValueTypeRequest.js";
 import type { GetValueTypeResponse } from "../GetValueTypeResponse.js";
 import type { ValueTypeRid } from "../ValueTypeRid.js";
@@ -25,12 +26,12 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
 export async function getValueType(
   ctx: ConjureContext,
   valueTypeRid: ValueTypeRid,
-  request: GetValueTypeRequest,
+  request: GetValueTypeRequest
 ): Promise<GetValueTypeResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/get/${valueTypeRid}`,
     "POST",
-    request,
+    request
   );
 }

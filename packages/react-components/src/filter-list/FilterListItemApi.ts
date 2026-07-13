@@ -22,6 +22,7 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ReactNode } from "react";
+
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
@@ -72,24 +73,27 @@ export type FilterComponentType =
  * Gets valid component types for a given property type
  */
 export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
-  P extends "boolean" ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
-    : P extends "string" ?
-        | "LISTOGRAM"
-        | "TEXT_TAGS"
-        | "CONTAINS_TEXT"
-        | "SINGLE_SELECT"
-        | "MULTI_SELECT"
-    : P extends "datetime" | "timestamp"
-      ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
-    : P extends
-      | "double"
-      | "integer"
-      | "long"
-      | "float"
-      | "short"
-      | "byte"
-      | "decimal" ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
-    : never;
+  P extends "boolean"
+    ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
+    : P extends "string"
+      ?
+          | "LISTOGRAM"
+          | "TEXT_TAGS"
+          | "CONTAINS_TEXT"
+          | "SINGLE_SELECT"
+          | "MULTI_SELECT"
+      : P extends "datetime" | "timestamp"
+        ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
+        : P extends
+              | "double"
+              | "integer"
+              | "long"
+              | "float"
+              | "short"
+              | "byte"
+              | "decimal"
+          ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
+          : never;
 
 /**
  * Union of all possible filter states
@@ -164,9 +168,9 @@ export interface BaseFilterState {
   includeNull?: boolean;
 }
 
-export interface ExactMatchFilterState<T = string | boolean>
-  extends BaseFilterState
-{
+export interface ExactMatchFilterState<
+  T = string | boolean,
+> extends BaseFilterState {
   type: "EXACT_MATCH";
   values: T[];
 }
@@ -204,9 +208,9 @@ export interface NumberRangeFilterState extends BaseFilterState {
  * Consolidated state type for select-based filters.
  * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, and MULTI_DATE.
  */
-export interface SelectFilterState<T = string | boolean | number | Date>
-  extends BaseFilterState
-{
+export interface SelectFilterState<
+  T = string | boolean | number | Date,
+> extends BaseFilterState {
   type: "SELECT";
   selectedValues: T[];
 }
@@ -248,15 +252,16 @@ export interface DateFormattingProps {
  * is typed as `never` so attempting to set it is a TypeScript error.
  */
 export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
-  "datetime" | "timestamp" ? DateFormattingProps
+  | "datetime"
+  | "timestamp"
+  ? DateFormattingProps
   : { formatDate?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > extends FilterDefinitionControls {
   /**
    * Discriminator for filter definition type
@@ -360,12 +365,10 @@ interface PropertyFilterDefinitionBase<
 export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> =
-  & PropertyFilterDefinitionBase<Q, K, C>
-  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinitionBase<Q, K, C> &
+  PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
 
 /**
  * Props for a single filter list item component.
@@ -374,9 +377,8 @@ export type PropertyFilterDefinition<
 export type FilterListItemProps<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > = PropertyFilterDefinition<Q, K, C> & {
   objectSet: ObjectSet<Q>;
 

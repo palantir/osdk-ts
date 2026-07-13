@@ -20,6 +20,7 @@
 // break tests that have hard coded line numbers and line offsets.
 
 import { queryAcceptsObject } from "@osdk/client.test.ontology";
+
 import type { Client } from "../Client.js";
 
 const client: Client = {} as any;

@@ -56,7 +56,7 @@ export interface Logger {
    */
   child(
     bindings: Record<string, any>,
-    options?: { level?: string; msgPrefix?: string },
+    options?: { level?: string; msgPrefix?: string }
   ): Logger;
 }
 
