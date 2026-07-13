@@ -963,7 +963,7 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -1069,6 +1069,9 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
+        case "addInterfaceLinkRuleV2":
+        case "deleteInterfaceLinkRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }
