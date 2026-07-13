@@ -42,7 +42,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
  * definition. When provided, every object's api name must be present.
  * @param propertySecurities - optional property securities for the objects
  */
-export function hydrateOsdkObject(
+export async function hydrateOsdkObject(
   client: Client,
   objects: OntologyObjectV2[],
   objectDefsByApiName?: Record<string, ObjectMetadata>,
