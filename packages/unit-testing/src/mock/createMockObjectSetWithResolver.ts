@@ -117,7 +117,8 @@ export function resolveStub(
   calls: Call[],
   errorMsg: string
 ): unknown {
-  for (const stub of stubs) {
+  for (let s = stubs.length - 1; s >= 0; s--) {
+    const stub = stubs[s];
     if (stub.calls.length !== calls.length) continue;
     if (
       stub.calls.every(
