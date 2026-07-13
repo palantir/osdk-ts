@@ -27,9 +27,6 @@ import type {
   TimeSeriesProperty,
 } from "../timeseries/timeseries.js";
 
-/**
- * Map from the PropertyDefinition type to the typescript type that we return
- */
 export interface PropertyValueWireToClient {
   attachment: Attachment;
   boolean: boolean;
@@ -65,9 +62,6 @@ export type GetClientPropertyValueFromWire<
     ? { [K in keyof T]: PropertyValueWireToClient[T[K]] }
     : never;
 
-/**
- * Map from the PropertyDefinition type to the typescript type that we accept
- */
 export interface PropertyValueClientToWire {
   attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
@@ -92,6 +86,7 @@ export interface PropertyValueClientToWire {
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
   vector: number[];
 }
+
 export type GetWirePropertyValueFromClient<
   T extends
     | keyof PropertyValueClientToWire
@@ -102,10 +97,6 @@ export type GetWirePropertyValueFromClient<
     ? { [K in keyof T]: PropertyValueClientToWire[T[K]] }
     : never;
 
-/**
- * Shared entries for the create/update property-value maps. Entries that differ
- * between the maps below are declared per-map; the rest live here.
- */
 interface PropertyValueWireToCreateBase {
   attachment: Attachment | string;
   boolean: boolean;
@@ -131,30 +122,28 @@ interface PropertyValueWireToCreateBase {
 }
 
 /**
- * Map from the PropertyDefinition type to the typescript type accepted when
- * creating an object.
+ * User facing creation types for each properties
  */
 export interface PropertyValueWireToCreate extends PropertyValueWireToCreateBase {
   cipherText: CreateCipherText | CipherText;
 }
 
 /**
- * Map from the PropertyDefinition type to the typescript type accepted when
- * updating an object.
+ * User facing update types for each properties
  */
 export interface PropertyValueWireToUpdate extends PropertyValueWireToCreateBase {
   cipherText: UpdateCipherText | CipherText;
 }
 
 /**
- * Map from the PropertyDefinition type to the wire type emitted for a create edit.
+ * Wire facing creation types for each properties
  */
 export interface PropertyValueCreateToWire extends PropertyValueWireToCreateBase {
   cipherText: CreateCipherText | CipherTextValue;
 }
 
 /**
- * Map from the PropertyDefinition type to the wire type emitted for an update edit.
+ * Wire facing update types for each properties
  */
 export interface PropertyValueUpdateToWire extends PropertyValueWireToCreateBase {
   cipherText: UpdateCipherText | CipherTextValue;

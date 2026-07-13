@@ -51,12 +51,6 @@ export type OsdkObjectPropertyTypeNotUndefined<
   T extends ObjectMetadata.Property,
 > = MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>;
 
-/**
- * The type accepted when creating an object property.
- *
- * @param T - ObjectMetadata.Property in literal form
- * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
- */
 export type OsdkObjectCreatePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
@@ -64,12 +58,6 @@ export type OsdkObjectCreatePropertyType<
   ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined
   : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
 
-/**
- * The type accepted when updating an object property.
- *
- * @param T - ObjectMetadata.Property in literal form
- * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
- */
 export type OsdkObjectUpdatePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
@@ -77,12 +65,6 @@ export type OsdkObjectUpdatePropertyType<
   ? MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>> | undefined
   : MaybeNullable<T, MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>>>;
 
-/**
- * The wire type emitted for a create object property edit.
- *
- * @param T - ObjectMetadata.Property in literal form
- * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
- */
 export type OsdkObjectCreateWirePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
@@ -93,12 +75,6 @@ export type OsdkObjectCreateWirePropertyType<
       MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>>
     >;
 
-/**
- * The wire type emitted for an update object property edit.
- *
- * @param T - ObjectMetadata.Property in literal form
- * @param STRICTLY_ENFORCE_NULLABLE - S for strict. If false, always `|undefined`
- */
 export type OsdkObjectUpdateWirePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
