@@ -40,7 +40,6 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
  * definition. When provided, every object's api name must be present.
  * @param propertySecurities - optional property securities for the objects
  *
- * @internal Unstable API. Do not depend on this outside of experimental usage.
  */
 export function hydrateOsdkObject(
   client: Client,
