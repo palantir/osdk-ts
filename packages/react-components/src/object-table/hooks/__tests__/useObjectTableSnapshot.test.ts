@@ -424,7 +424,7 @@ describe(useObjectTableSnapshot, () => {
      * `executeFunction` when called with a query definition.
      */
     function makeFunctionClient(executeResult: Record<string, unknown>) {
-      const executeFunction = vi.fn(async () => executeResult);
+      const executeFunction = vi.fn(() => executeResult);
       const pageObjectSet = {};
       const baseObjectSet = { where: vi.fn(() => pageObjectSet) };
       const client = vi.fn((arg: { type?: string }) =>

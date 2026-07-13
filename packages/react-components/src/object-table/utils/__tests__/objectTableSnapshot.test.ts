@@ -68,6 +68,7 @@ function makePage(primaryKeys: number[]): AnyPagedObjects {
 describe("fetchFunctionColumnPage", () => {
   it("maps each object key to its raw cell value when no getValue is set", async () => {
     const locator = makeFunctionLocator("computed");
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     const executeFunction = vi.fn(async () => ({ "1": "alpha", "2": "beta" }));
 
     const result = await fetchFunctionColumnPage(
@@ -86,6 +87,7 @@ describe("fetchFunctionColumnPage", () => {
     const locator = makeFunctionLocator("computed", {
       getValue: (raw) => (raw as { v: number }).v * 2,
     });
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     const executeFunction = vi.fn(async () => ({
       "1": { v: 10 },
       "2": { v: 21 },
@@ -104,6 +106,7 @@ describe("fetchFunctionColumnPage", () => {
   it("fills every object's cell with the Error when the query rejects", async () => {
     const failure = new Error("boom");
     const locator = makeFunctionLocator("computed");
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     const executeFunction = vi.fn(async () => {
       throw failure;
     });
@@ -123,6 +126,7 @@ describe("fetchFunctionColumnValues", () => {
   it("merges per-page maps into one map per column", async () => {
     const locator = makeFunctionLocator("computed");
     const executeFunction = vi.fn(
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       async (_q: QueryDefinition<{}>, _params: unknown) => {
         const callIndex = executeFunction.mock.calls.length;
         return callIndex === 1 ? { "1": "page1-a" } : { "2": "page2-a" };
@@ -144,6 +148,7 @@ describe("fetchFunctionColumnValues", () => {
     const locator = makeFunctionLocator("computed");
     const failure = new Error("page1 failed");
     const executeFunction = vi.fn(
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       async (_q: QueryDefinition<{}>, _params: unknown) => {
         const callIndex = executeFunction.mock.calls.length;
         if (callIndex === 1) throw failure;

@@ -25,6 +25,7 @@ import { useStableObjectSet } from "../core/useStableObjectSet.js";
 const client = createClient(
   "https://stack.palantir.com/",
   "ri.ontology.main.ontology.dummy",
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
   async () => "token"
 );
 

@@ -122,7 +122,7 @@ describe("Store Invalidation Type Isolation", () => {
     // Note: There are no direct Todo-Employee links in the test ontology
   }
 
-  beforeAll(async () => {
+  beforeAll(() => {
     // Set up the mock environment and client
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),

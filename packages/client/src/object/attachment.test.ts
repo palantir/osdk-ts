@@ -31,7 +31,7 @@ describe("attachments", () => {
   let apiServer: SetupServer;
   let client: Client;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     ({ client, apiServer, fauxFoundry } = startNodeApiServer(
       new LegacyFauxFoundry(),
       createClient

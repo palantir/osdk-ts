@@ -30,6 +30,7 @@ function createMockClient(overrides?: Partial<PlatformClient>): PlatformClient {
   return {
     baseUrl: "https://example.palantirfoundry.com",
     fetch: vi.fn(),
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     tokenProvider: async () => "test-token-abc",
     ...overrides,
   } as PlatformClient;
@@ -47,6 +48,7 @@ describe("createFetch", () => {
 describe("getFoundryToken", () => {
   it("returns the token from the client's token provider", async () => {
     const client = createMockClient({
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       tokenProvider: async () => "my-foundry-token",
     });
 
@@ -121,6 +123,7 @@ describe("accepts an OSDK Client (context nested under symbolClientContext)", ()
     const client = createClient(
       "https://example.palantirfoundry.com/",
       "ri.a.b.ontology",
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       async () => "nested-token",
       {},
       mockFetch

@@ -35,7 +35,7 @@ describe("Select", () => {
   afterEach(cleanup);
 
   describe("object values with isItemEqualToValue", () => {
-    it("selects an item using structural equality via isItemEqualToValue", async () => {
+    it("selects an item using structural equality via isItemEqualToValue", () => {
       const onValueChange = vi.fn();
       // Value is structurally equal but referentially different from USERS[0]
       const selectedValue: User = { id: 1, name: "Alice" };

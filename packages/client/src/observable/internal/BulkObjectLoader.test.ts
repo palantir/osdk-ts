@@ -32,7 +32,7 @@ describe(BulkObjectLoader, () => {
   let client: Mock<Client> & Client;
   let mockClient: MockClientHelper;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockClient = createClientMockHelper();
     client = mockClient.client;
 

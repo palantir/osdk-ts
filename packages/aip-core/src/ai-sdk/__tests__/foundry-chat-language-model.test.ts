@@ -31,6 +31,7 @@ function createModel(opts: {
   model: FoundryChatLanguageModel;
   fetchMock: ReturnType<typeof vi.fn>;
 } {
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
   const fetchMock = vi.fn<typeof globalThis.fetch>(async () => {
     if (opts.stream) {
       const body = opts.responseBody as string;

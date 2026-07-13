@@ -20,6 +20,7 @@ import type { Arguments } from "yargs";
 
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function logSiteCommandConfigFileOverride(
   args: Arguments<CommonSiteArgs>,
   config: FoundryConfig<"site"> | undefined

@@ -85,6 +85,7 @@ await generateClientSdkVersionTwoPointZero(
     mkdir: async (path, options) => {
       await mkdir(path, options);
     },
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     readdir: async (path) => readdir(path),
   },
   outDir,

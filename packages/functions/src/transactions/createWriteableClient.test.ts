@@ -47,7 +47,7 @@ describe("createWriteableClient", () => {
 
     mockedRequestHandler = vi.fn<
       Parameters<typeof MockOntologiesV2.OntologyTransactions.postEdits>[1]
-    >(async () => ({ status: 200, body: {} }));
+    >(() => ({ status: 200, body: {} }));
     apiServer.use(
       MockOntologiesV2.OntologyTransactions.postEdits(
         baseUrl,

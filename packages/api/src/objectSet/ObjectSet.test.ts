@@ -1453,7 +1453,7 @@ describe("ObjectSet", () => {
     });
   });
 
-  describe("asyncIterLinks", async () => {
+  describe("asyncIterLinks", () => {
     it("typechecks self-referential one link", async () => {
       for await (const {
         source,

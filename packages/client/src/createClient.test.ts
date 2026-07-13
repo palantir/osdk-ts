@@ -53,7 +53,7 @@ describe(createClient, () => {
     client = createClient(
       "https://mock.com",
       ontologyRid,
-      async () => "Token",
+      () => "Token",
       undefined,
       fetchFunction
     );
@@ -88,7 +88,7 @@ describe(createClient, () => {
       const clientWithHeaders = createClient(
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         { headers: { "Fetch-User-Agent": "my-app/1.0" } },
         customFetch
       );
@@ -109,12 +109,12 @@ describe(createClient, () => {
   });
 
   describe("check url formatting", () => {
-    it("urls are correctly formatted", async () => {
+    it("urls are correctly formatted", () => {
       const spy = vi.spyOn(SharedClientContext, "createSharedClientContext");
       const client = createClient(
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction
       );
@@ -123,7 +123,7 @@ describe(createClient, () => {
       createClient(
         "https://mock1.com/",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction
       );
@@ -132,7 +132,7 @@ describe(createClient, () => {
       createClient(
         "https://mock2.com/stuff/first/foo",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction
       );
@@ -143,7 +143,7 @@ describe(createClient, () => {
       createClient(
         "https://mock3.com/stuff/first/foo/",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         undefined,
         fetchFunction
       );
@@ -158,7 +158,7 @@ describe(createClient, () => {
 
       void metadataCacheClient({
         baseUrl: "https://mock4.com/",
-        ontologyProvider: { getObjectDefinition: async () => ({}) },
+        ontologyProvider: { getObjectDefinition: () => ({}) },
       } as any);
 
       expect(
@@ -176,7 +176,7 @@ describe(createClient, () => {
         async () => {},
         "https://mock.com",
         ontologyRid,
-        async () => "Token",
+        () => "Token",
         {},
         fetchFunction
       );

@@ -211,7 +211,7 @@ describe(Store, () => {
     let cache: Store;
     let fauxFoundry: FauxFoundry;
 
-    beforeAll(async () => {
+    beforeAll(() => {
       // Set up the mock environment and client
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/"),
@@ -877,7 +877,7 @@ describe(Store, () => {
       };
     });
 
-    it("basic single object works", async () => {
+    it("basic single object works", () => {
       const emp = employeesAsServerReturns[0];
 
       const cacheKey = cacheKeys.get<ObjectCacheKey>(
@@ -906,7 +906,7 @@ describe(Store, () => {
     });
 
     describe("optimistic updates", () => {
-      it("rolls back objects", async () => {
+      it("rolls back objects", () => {
         const emp = employeesAsServerReturns[0];
         updateObject(cache, emp); // pre-seed the cache with the "real" value
 
@@ -1040,7 +1040,7 @@ describe(Store, () => {
         });
       });
 
-      it("rolls back to an updated real value via list", async () => {
+      it("rolls back to an updated real value via list", () => {
         const emp = employeesAsServerReturns[0];
         updateObject(cache, emp); // pre-seed the cache with the "real" value
 
@@ -1450,7 +1450,7 @@ describe(Store, () => {
       const subFn1 = mockSingleSubCallback();
       const subFn2 = mockSingleSubCallback();
 
-      beforeEach(async () => {
+      beforeEach(() => {
         subFn1.complete.mockClear();
         subFn1.next.mockClear();
         subFn1.error.mockClear();
@@ -1636,7 +1636,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(subFn, undefined!, "init");
       });
 
-      it("does basic observation and unsubscribe", async () => {
+      it("does basic observation and unsubscribe", () => {
         const emp = employeesAsServerReturns.find(
           (x) => x.$primaryKey === JOHN_DOE_ID
         )!;
@@ -1659,7 +1659,7 @@ describe(Store, () => {
         expect(subFn.next).not.toHaveBeenCalled();
       });
 
-      it("observes with list update", async () => {
+      it("observes with list update", () => {
         const emp = employeesAsServerReturns.find(
           (x) => x.$primaryKey === JOHN_DOE_ID
         )!;
@@ -2120,7 +2120,7 @@ describe(Store, () => {
     let fauxFoundry: FauxFoundry;
     let store: Store;
 
-    beforeAll(async () => {
+    beforeAll(() => {
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
         createClient,
@@ -2139,7 +2139,7 @@ describe(Store, () => {
       apiServer.resetHandlers();
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
       store = new Store(client);
     });
 
@@ -2356,7 +2356,7 @@ describe(Store, () => {
       });
     });
 
-    describe("orderBy", async () => {
+    describe("orderBy", () => {
       let nextPk = 0;
 
       let fauxObjectA: Osdk.Instance<Todo>;

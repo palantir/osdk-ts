@@ -193,6 +193,7 @@ export function createMockClient(): MockClient {
     queryStubs.length = 0;
   };
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   mockClient.fetchMetadata = async () => {
     invariant(false, "fetchMetadata is not supported in mocks");
   };
@@ -204,6 +205,7 @@ export function createMockClient(): MockClient {
   Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
     value: createPlatformClient(
       "https://mock.invalid/",
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async () => "mock-token"
     ),
     enumerable: false,

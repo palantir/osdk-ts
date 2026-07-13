@@ -38,7 +38,7 @@ describe("createScenario", () => {
     client = createClient(
       "https://mock.com",
       ontologyRid,
-      async () => "Token",
+      () => "Token",
       undefined,
       fetchFunction
     );
@@ -82,7 +82,7 @@ describe("createScenario", () => {
       async () => {},
       "https://mock.com",
       ontologyRid,
-      async () => "Token",
+      () => "Token",
       {},
       fetchFunction
     );
