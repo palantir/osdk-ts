@@ -1363,11 +1363,15 @@ function EmployeeTableWithDownload() {
 
 `ObjectTable` is assembled from a set of building-block hooks that are exported so you can build a **fully custom table** while keeping OSDK data fetching, sorting, selection, editing, and snapshot behavior. Reach for these when you need markup or interactions that `ObjectTable`'s props don't cover.
 
-The hooks are unopinionated about rendering — they produce the state and column definitions you feed into your own [`@tanstack/react-table`](https://tanstack.com/table) instance. Because you construct that `Table` yourself, **`@tanstack/react-table` is a peer dependency**: install the same major version in your app.
+The hooks are unopinionated about rendering — they produce the state and column definitions you feed into your own [`@tanstack/react-table`](https://tanstack.com/table) instance, which you construct in your app:
 
 ```sh
 npm install @tanstack/react-table
 ```
+
+> **⚠️ Match the `@tanstack/react-table` version.** `@osdk/react-components` bundles its own copy of `@tanstack/react-table`, and the hook return types (`ColumnDef`, `Table`, `SortingState`, `OnChangeFn`, …) come from that copy. TanStack types are **invariant** in their type parameters, and this package augments `@tanstack/react-table` via `declare module` (adding table/column `meta` fields). If your app resolves a **different** `@tanstack/react-table` version than the one this package uses, you may hit confusing type errors — e.g. a `ColumnDef` or `Table` produced by these hooks reported as not assignable to the one from your copy, or the augmented `meta` fields missing.
+>
+> Install a version that matches the one this package depends on (see `@tanstack/react-table` in `@osdk/react-components`'s `package.json`) — and dedupe so a single copy is resolved (e.g. a pnpm `overrides` / npm `overrides` / yarn `resolutions` entry if a transitive dependency pulls in another version).
 
 Available hooks (import from `@osdk/react-components/experimental/object-table`):
 

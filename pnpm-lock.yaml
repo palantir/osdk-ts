@@ -3576,6 +3576,9 @@ importers:
       '@osdk/react-components':
         specifier: workspace:~
         version: link:../react-components
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^6.0.168
         version: 6.0.168(zod@4.4.3)
@@ -4746,6 +4749,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@18.3.1)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-virtual':
         specifier: ^3.13.13
         version: 3.13.17(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4807,9 +4813,6 @@ importers:
       '@osdk/react':
         specifier: workspace:*
         version: link:../react
-      '@tanstack/react-table':
-        specifier: ^8.21.3
-        version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
