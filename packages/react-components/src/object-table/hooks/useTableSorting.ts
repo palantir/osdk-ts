@@ -26,7 +26,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import type { OrderBy } from "../utils/types.js";
 
-export interface UseTableSortingOptions<
+export interface UseTableSortingProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -65,7 +65,7 @@ export const useTableSorting = <
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
-}: UseTableSortingOptions<Q, RDPs, FunctionColumns>): UseTableSortingResult<
+}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResult<
   Q,
   RDPs
 > => {

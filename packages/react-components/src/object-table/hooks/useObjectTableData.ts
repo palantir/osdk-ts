@@ -46,7 +46,7 @@ type WithProperties<
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
 
-export interface UseObjectTableDataOptions<
+export interface UseObjectTableDataProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -114,11 +114,10 @@ export function useObjectTableData<
   dedupeIntervalMs = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
   pageSize = DEFAULT_PAGE_SIZE,
   streamUpdates,
-}: UseObjectTableDataOptions<
+}: UseObjectTableDataProps<Q, RDPs, FunctionColumns>): UseObjectTableDataResult<
   Q,
-  RDPs,
-  FunctionColumns
->): UseObjectTableDataResult<Q, RDPs> {
+  RDPs
+> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;

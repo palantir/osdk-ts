@@ -46,7 +46,7 @@ import {
 } from "../utils/objectTableSnapshot.js";
 import type { OrderBy } from "../utils/types.js";
 
-export interface UseObjectTableSnapshotOptions<
+export interface UseObjectTableSnapshotProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
@@ -95,7 +95,7 @@ export function useObjectTableSnapshot<
   pageSize = DEFAULT_PAGE_SIZE,
   totalCount,
   orderBy,
-}: UseObjectTableSnapshotOptions<Q, RDPs, FunctionColumns>): ObjectTableHandle<
+}: UseObjectTableSnapshotProps<Q, RDPs, FunctionColumns>): ObjectTableHandle<
   Q,
   RDPs
 > {

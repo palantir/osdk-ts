@@ -28,7 +28,7 @@ import type {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 
-export interface UseColumnVisibilityOptions<
+export interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -64,7 +64,7 @@ export const useColumnVisibility = <
 >({
   allColumns,
   onColumnVisibilityChanged,
-}: UseColumnVisibilityOptions<
+}: UseColumnVisibilityProps<
   Q,
   RDPs,
   FunctionColumns,

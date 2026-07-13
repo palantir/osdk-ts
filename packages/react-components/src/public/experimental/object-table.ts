@@ -73,11 +73,11 @@ export {
 export {
   type FunctionColumnData,
   useFunctionColumnsData,
-  type UseFunctionColumnsDataOptions,
+  type UseFunctionColumnsDataProps,
 } from "../../object-table/hooks/useFunctionColumnsData.js";
 export {
   useObjectTableData,
-  type UseObjectTableDataOptions,
+  type UseObjectTableDataProps,
   type UseObjectTableDataResult,
 } from "../../object-table/hooks/useObjectTableData.js";
 
@@ -88,62 +88,62 @@ export {
 } from "../../object-table/hooks/useColumnDefs.js";
 export {
   useSelectionColumn,
-  type UseSelectionColumnOptions,
+  type UseSelectionColumnProps,
 } from "../../object-table/hooks/useSelectionColumn.js";
 
 // Column state
 export {
   useColumnPinning,
-  type UseColumnPinningOptions,
+  type UseColumnPinningProps,
   type UseColumnPinningResult,
 } from "../../object-table/hooks/useColumnPinning.js";
 export {
   useColumnResize,
-  type UseColumnResizeOptions,
+  type UseColumnResizeProps,
   type UseColumnResizeResult,
 } from "../../object-table/hooks/useColumnResize.js";
 export {
   useColumnVisibility,
-  type UseColumnVisibilityOptions,
+  type UseColumnVisibilityProps,
   type UseColumnVisibilityResult,
 } from "../../object-table/hooks/useColumnVisibility.js";
 
 // Row state
 export {
   useFocusedRow,
-  type UseFocusedRowOptions,
+  type UseFocusedRowProps,
   type UseFocusedRowResult,
 } from "../../object-table/hooks/useFocusedRow.js";
 export {
   useRowSelection,
   type UseRowSelectionChange,
-  type UseRowSelectionOptions,
+  type UseRowSelectionProps,
   type UseRowSelectionResult,
 } from "../../object-table/hooks/useRowSelection.js";
 
 // Sorting
 export {
   useTableSorting,
-  type UseTableSortingOptions,
+  type UseTableSortingProps,
   type UseTableSortingResult,
 } from "../../object-table/hooks/useTableSorting.js";
 
 // Editing
 export {
   useEditableTable,
-  type UseEditableTableOptions,
+  type UseEditableTableProps,
 } from "../../object-table/hooks/useEditableTable.js";
 
 // Snapshot / export
 export {
   useObjectTableSnapshot,
-  type UseObjectTableSnapshotOptions,
+  type UseObjectTableSnapshotProps,
 } from "../../object-table/hooks/useObjectTableSnapshot.js";
 
 // Cell context menu
 export {
   useCellContextMenu,
-  type UseCellContextMenuOptions,
+  type UseCellContextMenuProps,
   type UseCellContextMenuResult,
 } from "../../object-table/hooks/useCellContextMenu.js";
 

@@ -17,7 +17,7 @@
 import type { ColumnSizingState, OnChangeFn } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
 
-export interface UseColumnResizeOptions {
+export interface UseColumnResizeProps {
   onColumnResize?: (columnId: string, newWidth: number | null) => void;
 }
 
@@ -28,7 +28,7 @@ export interface UseColumnResizeResult {
 
 export const useColumnResize = ({
   onColumnResize,
-}: UseColumnResizeOptions): UseColumnResizeResult => {
+}: UseColumnResizeProps): UseColumnResizeResult => {
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
   const onColumnSizingChange: OnChangeFn<ColumnSizingState> = useCallback(

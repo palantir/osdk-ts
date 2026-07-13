@@ -18,7 +18,7 @@ import { useCallback, useState } from "react";
 
 import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 
-export interface UseFocusedRowOptions<TData> {
+export interface UseFocusedRowProps<TData> {
   /**
    * Controlled focused row id. `undefined` enables uncontrolled mode
    * (internal state). `null` means "no row focused" under controlled
@@ -59,7 +59,7 @@ export function useFocusedRow<TData>({
   focusedRowId,
   onFocusedRowChanged,
   getRowById,
-}: UseFocusedRowOptions<TData>): UseFocusedRowResult<TData> {
+}: UseFocusedRowProps<TData>): UseFocusedRowResult<TData> {
   // Explicit check for undefined instead of != null
   // because null is a valid value to clear a focused row
   const isControlled = focusedRowId !== undefined;

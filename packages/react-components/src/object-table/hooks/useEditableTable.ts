@@ -31,7 +31,7 @@ import type {
   EditModeState,
 } from "../utils/types.js";
 
-export interface UseEditableTableOptions<
+export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -61,7 +61,7 @@ export function useEditableTable<
   editMode = "manual",
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableOptions<Q, RDPs, FunctionColumns>): EditableConfig<
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   unknown
 > {

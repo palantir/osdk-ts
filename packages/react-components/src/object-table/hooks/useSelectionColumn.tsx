@@ -29,7 +29,7 @@ import {
   SELECTION_COLUMN_WIDTH,
 } from "../utils/constants.js";
 
-export interface UseSelectionColumnOptions {
+export interface UseSelectionColumnProps {
   selectionMode?: "single" | "multiple" | "none";
   isAllSelected: boolean;
   hasSelection: boolean;
@@ -46,7 +46,7 @@ export const useSelectionColumn = <
   hasSelection,
   onToggleAll,
   onToggleRow,
-}: UseSelectionColumnOptions): ColumnDef<
+}: UseSelectionColumnProps): ColumnDef<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
 > | null => {
   // TODO: Replace with useLatestRef
