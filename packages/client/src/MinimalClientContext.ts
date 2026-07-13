@@ -20,7 +20,7 @@ import type { SharedClientContext } from "@osdk/shared.client2";
 import type { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
-import type { SubscribeFn } from "./SubscribeFn.js";
+import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
 
 declare const tag: unique symbol;
 
@@ -39,8 +39,12 @@ export interface MinimalClient extends SharedClientContext {
   objectSetFactory: ObjectSetFactory<any, any>;
   /** @internal */
   objectFactory: typeof convertWireToOsdkObjects;
-  /** @internal */
-  subscribeFn: SubscribeFn;
+  /**
+   * Optional injectable transport for `objectSet.subscribe()`. When set,
+   * {@link ObjectSetListenerWebsocket} uses it instead of constructing a real `WebSocket`.
+   * @internal
+   */
+  createSubscriptionConnection?: CreateSubscriptionConnectionFn;
 
   transactionId?: string;
   flushEdits?: () => Promise<void>;

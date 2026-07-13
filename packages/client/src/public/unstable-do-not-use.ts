@@ -24,10 +24,13 @@ export {
 export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export {
-  createClientWithSubscribe,
+  createClientWithSubscriptionConnection,
   createClientWithTransaction,
 } from "../createClient.js";
-export type { SubscribeFn } from "../SubscribeFn.js";
+export type {
+  CreateSubscriptionConnectionFn,
+  SubscriptionConnection,
+} from "../SubscriptionConnection.js";
 
 export { createScenario } from "../scenarios/createScenario.js";
 export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
