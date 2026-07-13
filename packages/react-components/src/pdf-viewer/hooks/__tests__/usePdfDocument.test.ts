@@ -93,6 +93,78 @@ describe("usePdfDocument", () => {
     expect(mockedGetDocument).toHaveBeenCalledWith({ data: buffer });
   });
 
+  it("should pass data option for Uint8Array src", () => {
+    const bytes = new Uint8Array([1, 2, 3, 4]);
+    const deferred = pDefer();
+    mockedGetDocument.mockReturnValue({
+      promise: deferred.promise,
+      destroy: vi.fn(() => Promise.resolve()),
+    } as unknown as ReturnType<typeof getDocument>);
+
+    renderHook(() => usePdfDocument(bytes));
+
+    expect(mockedGetDocument).toHaveBeenCalledWith({ data: bytes });
+  });
+
+  it("should read a Blob src into an ArrayBuffer before loading", async () => {
+    const buffer = new Uint8Array([5, 6, 7, 8]).buffer;
+    const blob = new Blob([buffer], { type: "application/pdf" });
+    const mockPdf = { numPages: 2 };
+    mockedGetDocument.mockReturnValue({
+      promise: Promise.resolve(mockPdf),
+      destroy: vi.fn(() => Promise.resolve()),
+    } as unknown as ReturnType<typeof getDocument>);
+
+    const { result } = renderHook(() => usePdfDocument(blob));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(mockedGetDocument).toHaveBeenCalledTimes(1);
+    const params = mockedGetDocument.mock.calls[0][0] as { data: ArrayBuffer };
+    expect(new Uint8Array(params.data)).toEqual(new Uint8Array(buffer));
+    expect(result.current.document).toEqual(mockPdf);
+    expect(result.current.numPages).toBe(2);
+  });
+
+  it("should set error state when reading a Blob src fails", async () => {
+    const readError = new Error("blob read failed");
+    const blob = new Blob([new Uint8Array([1]).buffer]);
+    // Real Blob (so `instanceof Blob` holds) whose read rejects.
+    blob.arrayBuffer = () => Promise.reject(readError);
+
+    const { result } = renderHook(() => usePdfDocument(blob));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBe(readError);
+    expect(result.current.document).toBeUndefined();
+    expect(result.current.numPages).toBe(0);
+    expect(mockedGetDocument).not.toHaveBeenCalled();
+  });
+
+  it("should not load a Blob src if unmounted before it resolves", async () => {
+    const destroyFn = vi.fn(() => Promise.resolve());
+    const deferred = pDefer();
+    mockedGetDocument.mockReturnValue({
+      promise: deferred.promise,
+      destroy: destroyFn,
+    } as unknown as ReturnType<typeof getDocument>);
+
+    const blob = new Blob([new Uint8Array([1]).buffer]);
+    const { unmount } = renderHook(() => usePdfDocument(blob));
+
+    // Unmount before the blob's arrayBuffer() microtask resolves.
+    unmount();
+
+    await waitFor(() => {
+      expect(mockedGetDocument).not.toHaveBeenCalled();
+    });
+  });
+
   it("should set error state on load failure", async () => {
     const error = new Error("Failed to load");
     mockedGetDocument.mockReturnValue({

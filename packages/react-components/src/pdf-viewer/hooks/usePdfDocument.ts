@@ -22,6 +22,30 @@ const pdfWorkerUrl = new URL(
 );
 import { useEffect, useState } from "react";
 
+import type { PdfSource } from "../types.js";
+
+type GetDocumentParams = Parameters<typeof getDocument>[0];
+
+/**
+ * Resolve a {@link PdfSource} to pdfjs `getDocument` parameters.
+ *
+ * String URLs and in-memory bytes (ArrayBuffer/Uint8Array) resolve
+ * synchronously; a Blob is read into an ArrayBuffer first, so it resolves to a
+ * promise. Callers can branch on `instanceof Promise` to keep the synchronous
+ * path synchronous.
+ */
+function toDocumentParams(
+  src: PdfSource
+): GetDocumentParams | Promise<GetDocumentParams> {
+  if (typeof src === "string") {
+    return { url: src };
+  }
+  if (src instanceof Blob) {
+    return src.arrayBuffer().then((data) => ({ data }));
+  }
+  return { data: src };
+}
+
 const pdfWorker = {
   workerInitialized: false,
   ensureWorker() {
@@ -37,9 +61,7 @@ interface UsePdfDocumentResult {
   error: Error | undefined;
 }
 
-export function usePdfDocument(
-  src: string | ArrayBuffer
-): UsePdfDocumentResult {
+export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
   const [document, setDocument] = useState<PDFDocumentProxy | undefined>(
     undefined
   );
@@ -53,31 +75,48 @@ export function usePdfDocument(
       setLoading(true);
       setError(undefined);
 
-      const loadingTask = getDocument(
-        typeof src === "string" ? { url: src } : { data: src }
-      );
-
       let cancelled = false;
+      let loadingTask: ReturnType<typeof getDocument> | undefined;
 
-      loadingTask.promise.then(
-        (pdf) => {
-          if (!cancelled) {
-            setDocument(pdf);
-            setNumPages(pdf.numPages);
-            setLoading(false);
+      const startLoad = (params: GetDocumentParams) => {
+        if (cancelled) {
+          return;
+        }
+        loadingTask = getDocument(params);
+        loadingTask.promise.then(
+          (pdf) => {
+            if (!cancelled) {
+              setDocument(pdf);
+              setNumPages(pdf.numPages);
+              setLoading(false);
+            }
+          },
+          (err: unknown) => {
+            if (!cancelled) {
+              setError(err instanceof Error ? err : new Error(String(err)));
+              setLoading(false);
+            }
           }
-        },
-        (err: unknown) => {
+        );
+      };
+
+      // Blob sources must be read asynchronously; URL and in-memory byte
+      // sources resolve synchronously so getDocument is called this tick.
+      const params = toDocumentParams(src);
+      if (params instanceof Promise) {
+        params.then(startLoad, (err: unknown) => {
           if (!cancelled) {
             setError(err instanceof Error ? err : new Error(String(err)));
             setLoading(false);
           }
-        }
-      );
+        });
+      } else {
+        startLoad(params);
+      }
 
       return () => {
         cancelled = true;
-        void loadingTask.destroy();
+        void loadingTask?.destroy();
       };
     },
     [src]
