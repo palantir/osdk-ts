@@ -25,7 +25,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
-interface UseColumnPinningProps<
+export interface UseColumnPinningProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -48,7 +48,7 @@ interface UseColumnPinningProps<
   >["onColumnsPinnedChanged"];
 }
 
-interface UseColumnPinningResults {
+export interface UseColumnPinningResult {
   columnPinning: ColumnPinningState;
   onColumnPinningChange: OnChangeFn<ColumnPinningState>;
 }
@@ -64,11 +64,7 @@ export const useColumnPinning = <
   columnDefinitions,
   hasSelectionColumn,
   onColumnsPinnedChanged,
-}: UseColumnPinningProps<
-  Q,
-  RDPs,
-  FunctionColumns
->): UseColumnPinningResults => {
+}: UseColumnPinningProps<Q, RDPs, FunctionColumns>): UseColumnPinningResult => {
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
     left: [],
     right: [],

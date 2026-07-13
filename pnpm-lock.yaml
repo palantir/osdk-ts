@@ -3576,6 +3576,9 @@ importers:
       '@osdk/react-components':
         specifier: workspace:~
         version: link:../react-components
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^6.0.168
         version: 6.0.168(zod@4.4.3)

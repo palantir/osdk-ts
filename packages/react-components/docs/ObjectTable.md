@@ -17,6 +17,8 @@ Before using ObjectTable, make sure you have completed the library setup describ
 - [Column Definitions](#column-definitions)
 - [Examples](#examples)
 - [Advanced Features](#advanced-features)
+- [Exporting Data](#exporting-data)
+- [Headless Hooks](#headless-hooks)
 - [TypeScript Tips](#typescript-tips)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
@@ -1360,6 +1362,106 @@ function EmployeeTableWithDownload() {
 ```
 
 `getSnapshot()` accepts an optional `{ rowLimit }` that bounds the snapshot size — when the total row count exceeds it, the promise rejects with a string error message. `row.getValue(columnId)` returns the raw cell value (or the thrown `Error` instance for failed function-backed cells, or `undefined` for unknown column ids) — your formatter handles the rest.
+
+## Headless Hooks
+
+`ObjectTable` is assembled from a set of building-block hooks that are exported so you can build a **fully custom table** while keeping OSDK data fetching, sorting, selection, editing, and snapshot behavior. Reach for these when you need markup or interactions that `ObjectTable`'s props don't cover.
+
+The hooks are unopinionated about rendering — they produce the state and column definitions you feed into your own [`@tanstack/react-table`](https://tanstack.com/table) instance, which you construct in your app:
+
+```sh
+npm install @tanstack/react-table
+```
+
+> **⚠️ Match the `@tanstack/react-table` version.** `@osdk/react-components` bundles its own copy of `@tanstack/react-table`, and the hook return types (`ColumnDef`, `Table`, `SortingState`, `OnChangeFn`, …) come from that copy. TanStack types are **invariant** in their type parameters, and this package augments `@tanstack/react-table` via `declare module` (adding table/column `meta` fields). If your app resolves a **different** `@tanstack/react-table` version than the one this package uses, you may hit confusing type errors — e.g. a `ColumnDef` or `Table` produced by these hooks reported as not assignable to the one from your copy, or the augmented `meta` fields missing.
+>
+> Install a version that matches the one this package depends on (see `@tanstack/react-table` in `@osdk/react-components`'s `package.json`) — and dedupe so a single copy is resolved (e.g. a pnpm `overrides` / npm `overrides` / yarn `resolutions` entry if a transitive dependency pulls in another version).
+
+Available hooks (import from `@osdk/react-components/experimental/object-table`):
+
+| Hook                                                           | Responsibility                                                                             |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `useObjectTableData`                                           | Loads rows (by type or from an object set), applies filter/sort/derived + function columns |
+| `useColumnDefs`                                                | Builds TanStack column definitions from `columnDefinitions` (or object metadata)           |
+| `useTableSorting`                                              | Controlled/uncontrolled sort state ↔ OSDK `orderBy`                                        |
+| `useRowSelection`                                              | Single/multiple/range row selection (controlled or uncontrolled)                           |
+| `useSelectionColumn`                                           | The leading checkbox column definition                                                     |
+| `useColumnPinning` / `useColumnResize` / `useColumnVisibility` | Column pinning, sizing, and visibility/order state                                         |
+| `useFocusedRow`                                                | Controlled/uncontrolled focused-row state                                                  |
+| `useEditableTable`                                             | Cell-edit session state (pending edits, validation, submit)                                |
+| `useFunctionColumnsData`                                       | Fetches function-backed column values                                                      |
+| `useObjectTableSnapshot`                                       | Builds the `getSnapshot()` export handle for a table instance                              |
+| `useCellContextMenu`                                           | Per-cell context-menu open/position state                                                  |
+
+A minimal custom table wiring data, columns, and sorting together:
+
+```tsx
+import type { Employee } from "@my/osdk";
+import {
+  useColumnDefs,
+  useObjectTableData,
+  useTableSorting,
+} from "@osdk/react-components/experimental/object-table";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+function CustomEmployeeTable() {
+  const { sorting, onSortingChange } = useTableSorting<Employee>({});
+  const { data, isLoading } = useObjectTableData<Employee>({
+    objectOrInterfaceType: Employee,
+    sorting,
+  });
+  const { columns } = useColumnDefs<Employee>(Employee);
+
+  const table = useReactTable({
+    data: data ?? [],
+    columns,
+    state: { sorting },
+    onSortingChange,
+    manualSorting: true,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => String(row.$primaryKey),
+  });
+
+  return (
+    <table aria-busy={isLoading}>
+      <thead>
+        {table.getHeaderGroups().map((group) => (
+          <tr key={group.id}>
+            {group.headers.map((header) => (
+              <th
+                key={header.id}
+                onClick={header.column.getToggleSortingHandler()}
+              >
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext()
+                )}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+Add `useRowSelection` + `useSelectionColumn` for selection, `useColumnPinning` / `useColumnResize` / `useColumnVisibility` for column state, and `useObjectTableSnapshot` for export — each returns state and change handlers you thread into `useReactTable`'s `state` / `on*Change` options, exactly as `ObjectTable` does internally.
 
 ## TypeScript Tips
 

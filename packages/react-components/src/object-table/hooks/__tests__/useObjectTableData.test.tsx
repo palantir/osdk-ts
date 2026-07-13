@@ -128,7 +128,11 @@ describe(useObjectTableData, () => {
     ];
     renderHook(
       () =>
-        useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          filter: filterClause,
+          sorting: orderBy,
+        }),
       { wrapper }
     );
 
@@ -142,9 +146,12 @@ describe(useObjectTableData, () => {
   });
 
   it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
-    renderHook(() => useObjectTableData(TestObjectType, undefined), {
-      wrapper,
-    });
+    renderHook(
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      {
+        wrapper,
+      }
+    );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
       TestObjectType,
@@ -165,9 +172,16 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    renderHook(() => useObjectTableData(TestObjectType, columnDefinitions), {
-      wrapper,
-    });
+    renderHook(
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
+      {
+        wrapper,
+      }
+    );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
       TestObjectType,
@@ -215,9 +229,16 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    renderHook(() => useObjectTableData(TestObjectType, columnDefinitions), {
-      wrapper,
-    });
+    renderHook(
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
+      {
+        wrapper,
+      }
+    );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
       TestObjectType,
@@ -242,7 +263,11 @@ describe(useObjectTableData, () => {
     ];
 
     const { rerender } = renderHook(
-      ({ colDefs }) => useObjectTableData(TestObjectType, colDefs),
+      ({ colDefs }) =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions: colDefs,
+        }),
       {
         initialProps: { colDefs: columnDefinitions },
         wrapper,
@@ -282,7 +307,10 @@ describe(useObjectTableData, () => {
 
     const { rerender } = renderHook(
       ({ colDefs }: { colDefs: ColDefs }) =>
-        useObjectTableData(TestObjectType, colDefs),
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions: colDefs,
+        }),
       {
         initialProps: { colDefs: initialColumnDefinitions as ColDefs },
         wrapper,
@@ -309,9 +337,12 @@ describe(useObjectTableData, () => {
   });
 
   it("returns useOsdkObjects result structure", () => {
-    const { result } = renderHook(() => useObjectTableData(TestObjectType), {
-      wrapper,
-    });
+    const { result } = renderHook(
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      {
+        wrapper,
+      }
+    );
 
     expect(result.current).toHaveProperty("data");
     expect(result.current).toHaveProperty("isLoading");
@@ -320,7 +351,10 @@ describe(useObjectTableData, () => {
   });
 
   it("when no objectSet provided, only enables useOsdkObjects", () => {
-    renderHook(() => useObjectTableData(TestObjectType), { wrapper });
+    renderHook(
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      { wrapper }
+    );
 
     expect(useOsdkObjects).toHaveBeenCalledWith(
       TestObjectType,
@@ -342,13 +376,10 @@ describe(useObjectTableData, () => {
   it(" when objectSet is provided, only enables useObjectSet", () => {
     renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
-          undefined,
-          undefined,
-          undefined,
-          mockObjectSet
-        ),
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          objectSet: mockObjectSet,
+        }),
       { wrapper }
     );
 
@@ -372,13 +403,10 @@ describe(useObjectTableData, () => {
   it("when objectSet is provided for an interface, enables useObjectSet (not useOsdkObjects)", () => {
     renderHook(
       () =>
-        useObjectTableData(
-          TestInterfaceType,
-          undefined,
-          undefined,
-          undefined,
-          mockObjectSet as any
-        ),
+        useObjectTableData({
+          objectOrInterfaceType: TestInterfaceType,
+          objectSet: mockObjectSet as any,
+        }),
       { wrapper }
     );
 
@@ -417,14 +445,13 @@ describe(useObjectTableData, () => {
 
     renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
-          undefined,
-          filterClause,
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          filter: filterClause,
           sorting,
-          mockObjectSet,
-          objectSetOptions
-        ),
+          objectSet: mockObjectSet,
+          objectSetOptions,
+        }),
       { wrapper }
     );
 
@@ -483,7 +510,11 @@ describe(useObjectTableData, () => {
     ];
 
     const { result } = renderHook(
-      () => useObjectTableData(TestObjectType, columnDefinitions),
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
       { wrapper }
     );
 
@@ -571,13 +602,11 @@ describe(useObjectTableData, () => {
 
     const { result } = renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
           columnDefinitions,
-          undefined,
-          undefined,
-          mockObjectSet
-        ),
+          objectSet: mockObjectSet,
+        }),
       { wrapper }
     );
 
@@ -618,17 +647,10 @@ describe(useObjectTableData, () => {
     it("forwards streamUpdates to useOsdkObjects when no objectSet is provided", () => {
       renderHook(
         () =>
-          useObjectTableData(
-            TestObjectType,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            true
-          ),
+          useObjectTableData({
+            objectOrInterfaceType: TestObjectType,
+            streamUpdates: true,
+          }),
         { wrapper }
       );
 
@@ -641,17 +663,11 @@ describe(useObjectTableData, () => {
     it("forwards streamUpdates to useObjectSet when an objectSet is provided", () => {
       renderHook(
         () =>
-          useObjectTableData(
-            TestObjectType,
-            undefined,
-            undefined,
-            undefined,
-            mockObjectSet,
-            undefined,
-            undefined,
-            undefined,
-            true
-          ),
+          useObjectTableData({
+            objectOrInterfaceType: TestObjectType,
+            objectSet: mockObjectSet,
+            streamUpdates: true,
+          }),
         { wrapper }
       );
 
@@ -662,7 +678,10 @@ describe(useObjectTableData, () => {
     });
 
     it("passes streamUpdates=undefined to both hooks when not provided", () => {
-      renderHook(() => useObjectTableData(TestObjectType), { wrapper });
+      renderHook(
+        () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+        { wrapper }
+      );
 
       expect(useOsdkObjects).toHaveBeenCalledWith(
         TestObjectType,

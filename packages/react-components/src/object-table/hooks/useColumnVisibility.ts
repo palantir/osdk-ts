@@ -28,7 +28,7 @@ import type {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 
-interface UseColumnVisibilityProps<
+export interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -46,7 +46,7 @@ interface UseColumnVisibilityProps<
   ) => void;
 }
 
-interface UseColumnVisibilityResult {
+export interface UseColumnVisibilityResult {
   columnVisibility: VisibilityState;
   onColumnVisibilityChange: OnChangeFn<VisibilityState>;
   columnOrder: ColumnOrderState;

@@ -45,15 +45,6 @@ import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
 
-/**
- * ObjectTable - A headless table component for displaying OSDK object sets
- *
- * @example
- * ```tsx
- * <ObjectTable objectType={MyObjectType} />
- * ```
- */
-
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -117,8 +108,8 @@ export function ObjectTable<
     error,
     totalCount,
     objectSet: resultingObjectSet,
-  } = useObjectTableData<Q, RDPs, FunctionColumns>(
-    objectType,
+  } = useObjectTableData<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
     columnDefinitions,
     filter,
     sorting,
@@ -126,8 +117,8 @@ export function ObjectTable<
     objectSetOptions,
     dedupeIntervalMs,
     pageSize,
-    streamUpdates
-  );
+    streamUpdates,
+  });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
