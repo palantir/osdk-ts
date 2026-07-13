@@ -1,5 +1,14 @@
 # @osdk/react-components
 
+## 0.38.0
+
+### Minor Changes
+
+- a08d0c4: Export ObjectTable's hooks so consumers can build a custom table. `useObjectTableData` now takes a single options object instead of positional arguments. Consumers building their own table with these hooks should install a `@tanstack/react-table` version matching the one this package depends on to avoid type incompatibilities.
+- fea14b8: Generate the props reference tables for components directly from their props interfaces so the docs can no longer drift from the source. A component-agnostic `gen-props` script regenerates any doc whose AUTOGEN markers declare a `src` file and `interface`, and a `check-gen-props` task (added to CI) fails on drift via `--check`.
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- cb30380: BasePdfViewer now accepts a Uint8Array or Blob as its `src`, in addition to the existing URL string and ArrayBuffer inputs.
+
 ## 0.37.0
 
 ### Minor Changes

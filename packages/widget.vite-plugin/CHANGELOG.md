@@ -1,5 +1,17 @@
 # @osdk/widget.vite-plugin
 
+## 3.41.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/foundry-config-json@1.12.0
+  - @osdk/widget.api@3.41.0
+
 ## 3.40.0
 
 ### Minor Changes

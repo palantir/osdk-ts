@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+- ffa3daa: Update unstable subscribe injection with unstable subscribe connection injection
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters@2.44.0
+
 ## 2.43.0
 
 ### Minor Changes
