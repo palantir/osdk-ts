@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/187 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/188 story errors</a></div>
   </div>
 </header>
 <main>
@@ -16434,7 +16434,7 @@ const employee = useOsdkObject(Employee, employeePk);
       <div class="badges">
         <label for="c-22-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-22-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">components-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -16456,13 +16456,13 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  67 | );
-  68 |
-&gt; 69 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  68 | );
+  69 |
+&gt; 70 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
      | ^
-  70 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  71 |   component: PdfViewer,
-  72 |   tags: [&quot;beta&quot;],
+  71 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  72 |   component: PdfViewer,
+  73 |   tags: [&quot;beta&quot;],
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -16495,6 +16495,7 @@ import {
 } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
+import { useEffect, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -16620,6 +16621,50 @@ export const WithPdfUrl: StoryObj&lt;PdfViewerProps&gt; = {
         code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
 
 &lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
+      },
+    },
+  },
+};
+
+function BlobViewerDemo({ url }: { url: string }) {
+  const [blob, setBlob] = useState&lt;Blob | undefined&gt;(undefined);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+    void fetch(url)
+      .then((response) =&gt; response.blob())
+      .then((fetched) =&gt; {
+        if (!cancelled) {
+          setBlob(fetched);
+        }
+      });
+    return () =&gt; {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      {blob == null ? (
+        &quot;Fetching PDF into a Blob…&quot;
+      ) : (
+        &lt;BasePdfViewer src={blob} /&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export const WithBlob: StoryObj&lt;PdfViewerProps&gt; = {
+  render: () =&gt; &lt;BlobViewerDemo url={SAMPLE_PDF_URL} /&gt;,
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+const blob = await (await fetch(&quot;/compressed.tracemonkey-pldi-09.pdf&quot;)).blob();
+
+&lt;BasePdfViewer src={blob} /&gt;`,
       },
     },
   },
@@ -16937,6 +16982,15 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
               <pre><code>const WithPdfUrl = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
     &lt;BasePdfViewer media={mockMedia} src={SAMPLE_PDF_URL} /&gt;
 &lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Blob</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBlob = () =&gt; &lt;BlobViewerDemo url={SAMPLE_PDF_URL} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -17514,7 +17568,7 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
   ),
   argTypes: {
     src: {
-      description: &quot;PDF source — URL string or ArrayBuffer&quot;,
+      description: &quot;PDF source — URL string, ArrayBuffer, Uint8Array, or Blob&quot;,
       control: false,
     },
     initialPage: {
@@ -36022,7 +36076,7 @@ const employee = useOsdkObject(Employee, employeePk);
       <div class="badges">
         <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-error-22-components-documentviewer-renderers-pdfviewer-features-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx">components-documentviewer-renderers-pdfviewer-features · ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx</div>
@@ -36044,13 +36098,13 @@ const employee = useOsdkObject(Employee, employeePk);
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;PdfViewer&quot; component.
-  67 | );
-  68 |
-&gt; 69 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
+  68 | );
+  69 |
+&gt; 70 | const meta: Meta&lt;PdfViewerMediaProps&gt; = {
      | ^
-  70 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
-  71 |   component: PdfViewer,
-  72 |   tags: [&quot;beta&quot;],
+  71 |   title: &quot;Components/DocumentViewer/Renderers/PdfViewer/Features&quot;,
+  72 |   component: PdfViewer,
+  73 |   tags: [&quot;beta&quot;],
 
 ./src/stories/PdfViewer/Features/PdfViewerFeatures.stories.tsx:
 /*
@@ -36083,6 +36137,7 @@ import {
 } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { delay, http } from &quot;msw&quot;;
+import { useEffect, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -36208,6 +36263,50 @@ export const WithPdfUrl: StoryObj&lt;PdfViewerProps&gt; = {
         code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
 
 &lt;BasePdfViewer src=&quot;/compressed.tracemonkey-pldi-09.pdf&quot; /&gt;`,
+      },
+    },
+  },
+};
+
+function BlobViewerDemo({ url }: { url: string }) {
+  const [blob, setBlob] = useState&lt;Blob | undefined&gt;(undefined);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+    void fetch(url)
+      .then((response) =&gt; response.blob())
+      .then((fetched) =&gt; {
+        if (!cancelled) {
+          setBlob(fetched);
+        }
+      });
+    return () =&gt; {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      {blob == null ? (
+        &quot;Fetching PDF into a Blob…&quot;
+      ) : (
+        &lt;BasePdfViewer src={blob} /&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+export const WithBlob: StoryObj&lt;PdfViewerProps&gt; = {
+  render: () =&gt; &lt;BlobViewerDemo url={SAMPLE_PDF_URL} /&gt;,
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BasePdfViewer } from &quot;@osdk/react-components/experimental/pdf-viewer&quot;;
+
+// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+const blob = await (await fetch(&quot;/compressed.tracemonkey-pldi-09.pdf&quot;)).blob();
+
+&lt;BasePdfViewer src={blob} /&gt;`,
       },
     },
   },
@@ -36525,6 +36624,15 @@ export const InteractiveForm: StoryObj&lt;PdfViewerProps&gt; = {
               <pre><code>const WithPdfUrl = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
     &lt;BasePdfViewer media={mockMedia} src={SAMPLE_PDF_URL} /&gt;
 &lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Blob</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBlob = () =&gt; &lt;BlobViewerDemo url={SAMPLE_PDF_URL} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -37102,7 +37210,7 @@ const meta: Meta&lt;PdfViewerContentProps&gt; = {
   ),
   argTypes: {
     src: {
-      description: &quot;PDF source — URL string or ArrayBuffer&quot;,
+      description: &quot;PDF source — URL string, ArrayBuffer, Uint8Array, or Blob&quot;,
       control: false,
     },
     initialPage: {
