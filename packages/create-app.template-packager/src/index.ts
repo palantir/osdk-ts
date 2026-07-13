@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+
+import { findUp } from "find-up";
 import serialize from "serialize-javascript";
 
 type Entry = { type: "base64"; body: string } | { type: "raw"; body: string };
 
 export async function cli(
-  argv: string[] = process.argv.slice(2),
+  argv: string[] = process.argv.slice(2)
 ): Promise<void> {
   const extsToString = new Set([".html", ".cjs", ".hbs", ".gitignore", ".tsx"]);
 
@@ -35,7 +36,7 @@ export async function cli(
   if (!sourcePackageJsonPath) throw new Error("package.json is missing");
 
   const sourcePackageJson = JSON.parse(
-    await fs.readFile(sourcePackageJsonPath, "utf-8"),
+    await fs.readFile(sourcePackageJsonPath, "utf-8")
   );
 
   const entries = new Map<string, Entry>();
@@ -43,7 +44,7 @@ export async function cli(
   for (const pkgName of sharedPackages) {
     const sharedDir = await resolveSharedTemplatesDir(
       pkgName,
-      sourcePackageJsonPath,
+      sourcePackageJsonPath
     );
     await collectFiles(sharedDir, sharedDir, entries, sourcePackageJson);
   }
@@ -52,9 +53,10 @@ export async function cli(
   let result =
     "export const files: Map<string, {type: 'base64', body: string} | {type: 'raw', body: string}> = new Map([\n";
   for (const [destPath, entry] of entries) {
-    const output = entry.type === "raw"
-      ? safeRaw(entry.body)
-      : serialize(entry, { space: 2 });
+    const output =
+      entry.type === "raw"
+        ? safeRaw(entry.body)
+        : serialize(entry, { space: 2 });
     result += `["${destPath}", ${output}],\n`;
   }
   result += `]);`;
@@ -69,7 +71,7 @@ export async function cli(
     dir: string,
     baseDir: string,
     sink: Map<string, Entry>,
-    sourcePkg: Record<string, unknown>,
+    sourcePkg: Record<string, unknown>
   ): Promise<void> {
     for (const filename of await fs.readdir(dir)) {
       const file = dir + "/" + filename;
@@ -87,17 +89,17 @@ export async function cli(
       const body = await fs.readFile(file);
 
       if (
-        destPath === "package.json.hbs"
-        || destPath === "package.json.osdk.hbs"
-        || destPath === "package.json.psdk.hbs"
+        destPath === "package.json.hbs" ||
+        destPath === "package.json.osdk.hbs" ||
+        destPath === "package.json.psdk.hbs"
       ) {
         const packageJson = JSON.parse(body.toString("utf-8"));
-        for (
-          const d of ["dependencies", "devDependencies", "peerDependencies"]
-        ) {
-          const sourceDeps = sourcePkg[d] as
-            | Record<string, string>
-            | undefined;
+        for (const d of [
+          "dependencies",
+          "devDependencies",
+          "peerDependencies",
+        ]) {
+          const sourceDeps = sourcePkg[d] as Record<string, string> | undefined;
           if (sourceDeps) {
             if (!packageJson[d]) {
               packageJson[d] = {};
@@ -106,8 +108,8 @@ export async function cli(
             delete packageJson[d]["@osdk/create-app.template-packager"];
             for (const [key, value] of Object.entries(packageJson[d])) {
               if (
-                key.startsWith("@osdk/monorepo.")
-                || (typeof value === "string" && value.startsWith("workspace:"))
+                key.startsWith("@osdk/monorepo.") ||
+                (typeof value === "string" && value.startsWith("workspace:"))
               ) {
                 delete packageJson[d][key];
               }
@@ -119,8 +121,8 @@ export async function cli(
           body: JSON.stringify(packageJson, undefined, 2),
         });
       } else if (
-        extsToString.has(path.extname(destPath))
-        || path.basename(destPath) === ".gitignore"
+        extsToString.has(path.extname(destPath)) ||
+        path.basename(destPath) === ".gitignore"
       ) {
         sink.set(destPath, { type: "raw", body: body.toString("utf-8") });
       } else {
@@ -147,7 +149,7 @@ function parseSharedFlags(argv: string[]): string[] {
 
 async function resolveSharedTemplatesDir(
   pkgName: string,
-  sourcePackageJsonPath: string,
+  sourcePackageJsonPath: string
 ): Promise<string> {
   let dir = path.dirname(sourcePackageJsonPath);
   while (true) {
@@ -161,7 +163,7 @@ async function resolveSharedTemplatesDir(
     const parent = path.dirname(dir);
     if (parent === dir) {
       throw new Error(
-        `Could not resolve shared template package "${pkgName}" from ${sourcePackageJsonPath}`,
+        `Could not resolve shared template package "${pkgName}" from ${sourcePackageJsonPath}`
       );
     }
     dir = parent;
@@ -169,10 +171,8 @@ async function resolveSharedTemplatesDir(
 }
 
 function safeRaw(q: string): string {
-  return `{ type: "raw",  body: \`${
-    q
-      .replace(/\\/g, "\\\\")
-      .replace(/`/g, "\\`")
-      .replace(/\$/g, "\\$")
-  }\`}`;
+  return `{ type: "raw",  body: \`${q
+    .replace(/\\/gu, "\\\\")
+    .replace(/`/gu, "\\`")
+    .replace(/\$/gu, "\\$")}\`}`;
 }
