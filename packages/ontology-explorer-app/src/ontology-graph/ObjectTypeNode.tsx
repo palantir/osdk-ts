@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import type { ObjectTypeNode as ObjectTypeNodeType } from "./graphElements.js";
 import styles from "./ObjectTypeNode.module.scss";
 
 export function ObjectTypeNode(
-  props: NodeProps<ObjectTypeNodeType>
+  props: NodeProps<ObjectTypeNodeType>,
 ): React.ReactElement {
   const { info } = props.data;
   const isStub = info.loadState === "stub" || info.loadState === "loading";

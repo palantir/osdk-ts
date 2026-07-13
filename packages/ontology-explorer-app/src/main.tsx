@@ -16,10 +16,26 @@
 
 import "./main.scss";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
-import { routeTree } from "./routes/routeTree.js";
+import { App } from "./App.js";
+import { OverviewPage } from "./routes/overview.js";
+
+const rootRoute = createRootRoute({ component: App });
+
+const overviewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: OverviewPage,
+});
+
+const routeTree = rootRoute.addChildren([overviewRoute]);
 
 const queryClient = new QueryClient();
 const router = createRouter({ routeTree });

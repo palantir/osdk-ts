@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import { createRootRoute, createRoute } from "@tanstack/react-router";
-import { App } from "../App.js";
-import { OverviewPage } from "./overview.js";
-
-const rootRoute = createRootRoute({ component: App });
-
-const overviewRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: OverviewPage,
-});
-
-export const routeTree = rootRoute.addChildren([overviewRoute]);
+declare module "*.module.scss" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}

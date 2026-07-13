@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import type { ObjectMetadata } from "@osdk/api";
 import { describe, expect, it, vi } from "vitest";
 
-import { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
 import {
   OntologyGraphModel,
   type OntologyGraphModelDeps,
@@ -77,27 +76,10 @@ function officeMetadata(): ObjectMetadata {
   };
 }
 
-function registerObjectsHook(
-  registry: ComponentQueryRegistry,
-  componentId: string,
-  objectType: string,
-): void {
-  registry.registerBinding({
-    componentId,
-    componentName: `${objectType}List`,
-    hookType: "useOsdkObjects",
-    hookIndex: 0,
-    querySignature: `useOsdkObjects:${objectType}`,
-    queryParams: { type: "list", objectType },
-  });
-}
-
 function makeDeps(
-  registry: ComponentQueryRegistry,
   metadata: Record<string, ObjectMetadata>,
 ): OntologyGraphModelDeps {
   return {
-    getComponentRegistry: () => registry,
     fetchObjectMetadata: (apiName) => {
       const md = metadata[apiName];
       return md
@@ -108,14 +90,12 @@ function makeDeps(
 }
 
 describe("OntologyGraphModel", () => {
-  it("discovers used object types and loads their metadata", async () => {
-    const registry = new ComponentQueryRegistry();
-    registerObjectsHook(registry, "c1", "Employee");
+  it("loads metadata for types marked used", async () => {
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps({ Employee: employeeMetadata() }),
     );
 
-    model.start();
+    model.markUsed(["Employee"]);
 
     await vi.waitFor(() => {
       expect(model.getType("Employee")?.loadState).toBe("loaded");
@@ -135,13 +115,11 @@ describe("OntologyGraphModel", () => {
   });
 
   it("adds link targets as unused stub nodes", async () => {
-    const registry = new ComponentQueryRegistry();
-    registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps({ Employee: employeeMetadata() }),
     );
 
-    model.start();
+    model.markUsed(["Employee"]);
     await vi.waitFor(() => {
       expect(model.getType("Office")).toBeDefined();
     });
@@ -152,16 +130,14 @@ describe("OntologyGraphModel", () => {
   });
 
   it("expands a stub neighbor when loadType is called", async () => {
-    const registry = new ComponentQueryRegistry();
-    registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, {
+      makeDeps({
         Employee: employeeMetadata(),
         Office: officeMetadata(),
       }),
     );
 
-    model.start();
+    model.markUsed(["Employee"]);
     await vi.waitFor(() => {
       expect(model.getType("Office")?.loadState).toBe("stub");
     });
@@ -174,29 +150,27 @@ describe("OntologyGraphModel", () => {
   });
 
   it("records an error when metadata fetch fails", async () => {
-    const registry = new ComponentQueryRegistry();
-    registerObjectsHook(registry, "c1", "Missing");
-    const model = new OntologyGraphModel(makeDeps(registry, {}));
+    const model = new OntologyGraphModel(makeDeps({}));
 
-    model.start();
+    model.markUsed(["Missing"]);
     await vi.waitFor(() => {
       expect(model.getType("Missing")?.loadState).toBe("error");
     });
-    expect(model.getType("Missing")?.error).toContain("no metadata for Missing");
+    expect(model.getType("Missing")?.error).toContain(
+      "no metadata for Missing",
+    );
   });
 
   it("notifies subscribers and bumps version as types load", async () => {
-    const registry = new ComponentQueryRegistry();
-    registerObjectsHook(registry, "c1", "Employee");
     const model = new OntologyGraphModel(
-      makeDeps(registry, { Employee: employeeMetadata() }),
+      makeDeps({ Employee: employeeMetadata() }),
     );
 
     const listener = vi.fn();
     const unsubscribe = model.subscribe(listener);
     const startVersion = model.getVersion();
 
-    model.start();
+    model.markUsed(["Employee"]);
     await vi.waitFor(() => {
       expect(model.getType("Employee")?.loadState).toBe("loaded");
     });
@@ -204,5 +178,21 @@ describe("OntologyGraphModel", () => {
     expect(listener).toHaveBeenCalled();
     expect(model.getVersion()).toBeGreaterThan(startVersion);
     unsubscribe();
+  });
+
+  it("does not demote a type back to unused", async () => {
+    const model = new OntologyGraphModel(
+      makeDeps({ Employee: employeeMetadata() }),
+    );
+
+    model.markUsed(["Employee"]);
+    await vi.waitFor(() => {
+      expect(model.getType("Employee")?.loadState).toBe("loaded");
+    });
+
+    // Marking used again (e.g. a later registry sync that no longer includes
+    // "Employee") must not flip `used` back to false.
+    model.markUsed([]);
+    expect(model.getType("Employee")?.used).toBe(true);
   });
 });

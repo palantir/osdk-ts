@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-export async function fetchLocalOntologyMetadata(): Promise<string> {
-  const res = await fetch("/api/ontology");
-  if (!res.ok) {
-    const message = await res.text().catch(() => res.statusText);
-    throw new Error(`Failed to fetch ontology: ${message}`);
-  }
-  return res.text();
-}
+// Placeholder. scripts/build-css.mjs replaces the transpiled
+// build/esm/styles.js with a runtime-injection module that adds the
+// ontology-graph styles (including React Flow's) to document.head when the
+// package is imported.

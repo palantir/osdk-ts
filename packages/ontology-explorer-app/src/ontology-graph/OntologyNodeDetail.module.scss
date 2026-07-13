@@ -140,14 +140,3 @@
   font-size: 10px;
   color: var(--dt-blue);
 }
-
-.compFile {
-  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
-    monospace;
-  font-size: 9px;
-  color: var(--dt-text-tertiary);
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import {
 } from "@xyflow/react";
 import React, { useCallback, useMemo, useState } from "react";
 
-import type { OntologyTypeInfo } from "../../store/OntologyGraphModel.js";
 import { getLayoutedElements } from "./getLayoutedElements.js";
 import {
   OBJECT_TYPE_NODE,
@@ -38,6 +37,7 @@ import {
   toFlowElements,
 } from "./graphElements.js";
 import { ObjectTypeNode } from "./ObjectTypeNode.js";
+import type { OntologyTypeInfo } from "./OntologyGraphModel.js";
 
 import styles from "./OntologyGraphFlow.module.scss";
 
@@ -51,7 +51,7 @@ export interface OntologyGraphFlowProps {
 }
 
 function changesIncludeUserInteractions(
-  changes: NodeChange<ObjectTypeNodeType>[]
+  changes: NodeChange<ObjectTypeNodeType>[],
 ): boolean {
   return changes.some(({ type }) => type === "position" || type === "select");
 }
@@ -86,15 +86,16 @@ function OntologyGraphFlowInner({
     (changes) => {
       setNodes((prev) => applyNodeChanges(changes, prev));
       if (!changesIncludeUserInteractions(changes)) {
-        reactFlow.fitView();
+        // fire-and-forget view animation; nothing depends on it resolving
+        void reactFlow.fitView();
       }
     },
-    [reactFlow]
+    [reactFlow],
   );
 
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes) => setEdges((prev) => applyEdgeChanges(changes, prev)),
-    []
+    [],
   );
 
   const displayNodes = useMemo(
@@ -103,7 +104,7 @@ function OntologyGraphFlowInner({
         ...node,
         selected: node.id === selectedApiName,
       })),
-    [nodes, selectedApiName]
+    [nodes, selectedApiName],
   );
 
   return (
@@ -127,7 +128,7 @@ function OntologyGraphFlowInner({
 }
 
 export function OntologyGraphFlow(
-  props: OntologyGraphFlowProps
+  props: OntologyGraphFlowProps,
 ): React.ReactElement {
   return (
     <ReactFlowProvider>

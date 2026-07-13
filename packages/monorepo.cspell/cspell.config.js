@@ -131,7 +131,21 @@ const cspell = {
     "oauth",
     "css",
   ],
-  words: ["todoapp"],
+  words: [
+    "todoapp",
+
+    // ontology graph rendering (react-devtools + ontology-explorer-app);
+    // spans .ts/.tsx components and the .mjs css build script, so kept global
+    "dagre",
+    "dagrejs",
+    "edgesep",
+    "graphlib",
+    "layouted",
+    "nodesep",
+    "rankdir",
+    "ranksep",
+    "xyflow",
+  ],
   suggestWords: [],
   ignoreWords: [],
   import: [],

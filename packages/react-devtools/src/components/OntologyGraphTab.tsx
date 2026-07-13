@@ -15,14 +15,20 @@
  */
 
 import { NonIdealState } from "@blueprintjs/core";
+import {
+  OntologyGraphFlow,
+  OntologyGraphModel,
+  OntologyNodeDetail,
+} from "@osdk/ontology-explorer-app/ontology-graph";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { useComponentRegistry } from "../hooks/useComponentRegistry.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
-import { OntologyGraphModel } from "../store/OntologyGraphModel.js";
-import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
-import { OntologyGraphFlow } from "./ontology-graph/OntologyGraphFlow.js";
-import { OntologyNodeDetail } from "./ontology-graph/OntologyNodeDetail.js";
+import {
+  collectUsedObjectTypes,
+  toOntologyNodeUsages,
+  usagesForType,
+} from "../store/ontologyGraphBindings.js";
 
 import styles from "./OntologyGraphTab.module.scss";
 
@@ -31,48 +37,32 @@ export interface OntologyGraphTabProps {
   theme: "light" | "dark";
 }
 
-function usagesForType(
-  bindings: ComponentHookBinding[],
-  apiName: string
-): ComponentHookBinding[] {
-  return bindings.filter((binding) => {
-    if (binding.unmountedAt) {
-      return false;
-    }
-    const params = binding.queryParams;
-    if (
-      params.type === "object" ||
-      params.type === "list" ||
-      params.type === "aggregation"
-    ) {
-      return params.objectType === apiName;
-    }
-    if (params.type === "links") {
-      return params.sourceObject === apiName;
-    }
-    return false;
-  });
-}
-
 export const OntologyGraphTab: React.FC<OntologyGraphTabProps> = ({
   monitorStore,
   theme,
 }) => {
   const model = useMemo(
-    () => new OntologyGraphModel(monitorStore),
+    () =>
+      new OntologyGraphModel({
+        fetchObjectMetadata: (apiName) =>
+          monitorStore.fetchObjectMetadata(apiName),
+      }),
     [monitorStore]
   );
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      model.start();
-      const unsubscribe = model.subscribe(callback);
+      const registry = monitorStore.getComponentRegistry();
+      const syncUsed = () => model.markUsed(collectUsedObjectTypes(registry));
+      syncUsed();
+      const unsubscribeModel = model.subscribe(callback);
+      const unsubscribeRegistry = registry.subscribe(syncUsed);
       return () => {
-        unsubscribe();
-        model.stop();
+        unsubscribeModel();
+        unsubscribeRegistry();
       };
     },
-    [model]
+    [model, monitorStore]
   );
   const getSnapshot = useCallback(() => model.getVersion(), [model]);
   const version = React.useSyncExternalStore(subscribe, getSnapshot);
@@ -105,7 +95,9 @@ export const OntologyGraphTab: React.FC<OntologyGraphTabProps> = ({
     if (!selectedApiName) {
       return [];
     }
-    return usagesForType(registry.getAllBindings(), selectedApiName);
+    return toOntologyNodeUsages(
+      usagesForType(registry.getAllBindings(), selectedApiName)
+    );
     // registryVersion drives recomputation as components mount/unmount
   }, [registry, registryVersion, selectedApiName]);
 
@@ -129,6 +121,8 @@ export const OntologyGraphTab: React.FC<OntologyGraphTabProps> = ({
             <OntologyNodeDetail
               info={selectedInfo}
               usages={usages}
+              usagesTitle="Used by components"
+              usagesEmptyLabel="No mounted components use this type"
               onClose={() => setSelectedApiName(null)}
             />
           )}

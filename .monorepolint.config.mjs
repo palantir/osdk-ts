@@ -399,8 +399,12 @@ const archetypeRules = archetypes(
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
       react: true,
+      // @osdk/ontology-explorer-app is imported by @osdk/react-devtools (a
+      // published package), so it must be published too — a published
+      // package cannot depend on a private one.
+      private: false,
+      cssExport: ["styles.css"],
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
         "plugins": [{ "name": "typescript-plugin-css-modules" }],

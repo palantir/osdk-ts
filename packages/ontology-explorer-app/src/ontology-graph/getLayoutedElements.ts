@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ const DEFAULT_NODE_HEIGHT_PX = 80;
  */
 export function getLayoutedElements<N extends Node, E extends Edge>(
   nodes: N[],
-  edges: E[]
+  edges: E[],
 ): { nodes: N[]; edges: E[] } {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
@@ -54,10 +54,10 @@ export function getLayoutedElements<N extends Node, E extends Edge>(
       // Shift the dagre node position (anchor = center) to the top-left so it
       // matches the React Flow node anchor point.
       // https://reactflow.dev/learn/layouting/layouting#dagre
-      const x =
-        position.x - (node.measured?.width ?? DEFAULT_NODE_WIDTH_PX) / 2;
-      const y =
-        position.y - (node.measured?.height ?? DEFAULT_NODE_HEIGHT_PX) / 2;
+      const x = position.x
+        - (node.measured?.width ?? DEFAULT_NODE_WIDTH_PX) / 2;
+      const y = position.y
+        - (node.measured?.height ?? DEFAULT_NODE_HEIGHT_PX) / 2;
       return { ...node, position: { x, y } };
     }),
     edges,

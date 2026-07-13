@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,42 @@
 import { Button, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React from "react";
 
-import type { OntologyTypeInfo } from "../../store/OntologyGraphModel.js";
-import type { ComponentHookBinding } from "../../utils/ComponentQueryRegistry.js";
+import type { OntologyTypeInfo } from "./OntologyGraphModel.js";
 
 import styles from "./OntologyNodeDetail.module.scss";
 
-export interface OntologyNodeDetailProps {
-  info: OntologyTypeInfo;
-  usages: ComponentHookBinding[];
-  onClose: () => void;
+/**
+ * One caller-supplied "this type is used by X" entry. The component does no
+ * interpretation of `label`/`detail` — callers format whatever is meaningful
+ * for their context (e.g. a devtools caller might format a component name +
+ * hook type + file path; a static-ontology caller might have nothing to show
+ * here at all).
+ */
+export interface OntologyNodeUsage {
+  /** Stable identity for the React key. Falls back to array index if omitted. */
+  key?: string;
+  label: string;
+  detail?: string;
+  /** Full text shown on hover over `detail` (e.g. an untruncated file path). */
+  detailTitle?: string;
 }
 
-function shortFilePath(filePath: string | undefined): string | undefined {
-  if (!filePath) {
-    return undefined;
-  }
-  const withoutQuery = filePath.split("?")[0];
-  const parts = withoutQuery.split("/");
-  return parts.slice(-2).join("/");
+export interface OntologyNodeDetailProps {
+  info: OntologyTypeInfo;
+  usages: OntologyNodeUsage[];
+  onClose: () => void;
+  /** @defaultValue "Used by" */
+  usagesTitle?: string;
+  /** @defaultValue "No usages found" */
+  usagesEmptyLabel?: string;
 }
 
 export function OntologyNodeDetail({
   info,
   usages,
   onClose,
+  usagesTitle = "Used by",
+  usagesEmptyLabel = "No usages found",
 }: OntologyNodeDetailProps): React.ReactElement {
   const isLoading = info.loadState === "loading" || info.loadState === "stub";
 
@@ -117,25 +129,17 @@ export function OntologyNodeDetail({
 
       <div className={styles.section}>
         <div className={styles.sectionTitle}>
-          Used by components ({usages.length})
+          {usagesTitle} ({usages.length})
         </div>
         {usages.length === 0 && (
-          <div className={styles.empty}>
-            No mounted components use this type
-          </div>
+          <div className={styles.empty}>{usagesEmptyLabel}</div>
         )}
-        {usages.map((usage) => (
-          <div
-            key={usage.componentId + usage.hookType}
-            className={styles.compRow}
-          >
-            <span className={styles.compName}>
-              {usage.componentDisplayName ?? usage.componentName}
-            </span>
-            <span className={styles.compHook}>{usage.hookType}</span>
-            {shortFilePath(usage.filePath) && (
-              <span className={styles.compFile} title={usage.filePath}>
-                {shortFilePath(usage.filePath)}
+        {usages.map((usage, index) => (
+          <div key={usage.key ?? index} className={styles.compRow}>
+            <span className={styles.compName}>{usage.label}</span>
+            {usage.detail && (
+              <span className={styles.compHook} title={usage.detailTitle}>
+                {usage.detail}
               </span>
             )}
           </div>

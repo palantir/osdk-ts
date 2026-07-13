@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export async function fetchLocalOntologyMetadata(): Promise<string> {
-  const res = await fetch("/api/ontology");
-  if (!res.ok) {
-    const message = await res.text().catch(() => res.statusText);
-    throw new Error(`Failed to fetch ontology: ${message}`);
-  }
-  return res.text();
-}
+export * from "../ontology-graph/index.js";

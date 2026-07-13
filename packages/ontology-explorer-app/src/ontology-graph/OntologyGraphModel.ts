@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 import type { ObjectMetadata } from "@osdk/api";
 
-import type { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
-
 /**
- * The subset of {@link MonitorStore} the ontology graph needs. Narrowing the
- * dependency keeps the model unit-testable without a full monitor store.
+ * What {@link OntologyGraphModel} needs to load full metadata for a type. Kept
+ * to a single method so any metadata source (a live OSDK client, a static
+ * ontology dump, a test double) can satisfy it.
  */
 export interface OntologyGraphModelDeps {
-  getComponentRegistry(): ComponentQueryRegistry;
   fetchObjectMetadata(apiName: string): Promise<ObjectMetadata>;
 }
 
@@ -53,8 +51,9 @@ export interface OntologyTypeInfo {
   properties: OntologyPropertyInfo[];
   links: OntologyLinkInfo[];
   /**
-   * `used` — referenced directly by the app (via a hook).
-   * A node that only appears as a link target starts as `used: false`.
+   * `used` — explicitly marked as in-use by the caller (e.g. a live app query,
+   * or a top-level type in a static ontology dump). A node that only appears
+   * as a link target starts as `used: false`.
    */
   used: boolean;
   loadState: "stub" | "loading" | "loaded" | "error";
@@ -73,40 +72,18 @@ function makeStub(apiName: string, used: boolean): OntologyTypeInfo {
 }
 
 /**
- * Collects the set of object-type apiNames the app has referenced, from the
- * component/query registry. Covers object/list/aggregation queries (which carry
- * an `objectType`) and link traversals (whose `sourceObject` is a type apiName).
- */
-function collectUsedObjectTypes(registry: ComponentQueryRegistry): Set<string> {
-  const result = new Set<string>();
-  for (const binding of registry.getAllBindings()) {
-    const params = binding.queryParams;
-    let apiName: string | undefined;
-    if (
-      params.type === "object" ||
-      params.type === "list" ||
-      params.type === "aggregation"
-    ) {
-      apiName = params.objectType;
-    } else if (params.type === "links") {
-      apiName = params.sourceObject;
-    }
-    if (apiName && apiName !== "Unknown") {
-      result.add(apiName);
-    }
-  }
-  return result;
-}
-
-/**
- * Builds and maintains the ontology graph for the devtools Ontology Graph tab.
+ * Builds and maintains a graph of ontology object types for rendering. Nodes
+ * are whichever apiNames the caller marks as {@link markUsed}; full metadata
+ * (properties + links) is fetched lazily per type via {@link
+ * OntologyGraphModelDeps.fetchObjectMetadata}. Link targets are added as stub
+ * nodes so edges render, and can be expanded on demand with {@link loadType}.
  *
- * Nodes are the object types the running app references (discovered from the
- * component registry); full metadata (properties + links) is fetched lazily per
- * type via the client. Link targets are added as stub nodes so edges render, and
- * can be expanded on demand with {@link loadType}.
+ * This model has no knowledge of where "used" types come from — that's the
+ * caller's job. A React DevTools-style caller might mark a type used the
+ * moment a component queries it; a static-ontology-explorer caller might mark
+ * every top-level type used immediately after fetching the ontology dump.
  *
- * This is a small subscribable store, consumed via `useSyncExternalStore`.
+ * A small subscribable store, consumed via `useSyncExternalStore`.
  */
 export class OntologyGraphModel {
   readonly #store: OntologyGraphModelDeps;
@@ -114,27 +91,9 @@ export class OntologyGraphModel {
   readonly #inFlight = new Set<string>();
   readonly #listeners = new Set<() => void>();
   #version = 0;
-  #unsubscribeRegistry: (() => void) | null = null;
-  #started = false;
 
   constructor(store: OntologyGraphModelDeps) {
     this.#store = store;
-  }
-
-  start(): void {
-    if (this.#started) {
-      return;
-    }
-    this.#started = true;
-    const registry = this.#store.getComponentRegistry();
-    this.#unsubscribeRegistry = registry.subscribe(() => this.#syncUsedTypes());
-    this.#syncUsedTypes();
-  }
-
-  stop(): void {
-    this.#unsubscribeRegistry?.();
-    this.#unsubscribeRegistry = null;
-    this.#started = false;
   }
 
   subscribe(listener: () => void): () => void {
@@ -159,17 +118,15 @@ export class OntologyGraphModel {
     void this.#loadType(apiName);
   }
 
-  #notify(): void {
-    this.#version++;
-    for (const listener of this.#listeners) {
-      listener();
-    }
-  }
-
-  #syncUsedTypes(): void {
-    const used = collectUsedObjectTypes(this.#store.getComponentRegistry());
+  /**
+   * Marks the given apiNames as used. New apiNames are added as stub nodes and
+   * immediately queued for metadata loading; apiNames already known keep their
+   * current state except `used` is flipped to `true` if it wasn't already
+   * (this never demotes a type back to unused).
+   */
+  markUsed(apiNames: Iterable<string>): void {
     let changed = false;
-    for (const apiName of used) {
+    for (const apiName of apiNames) {
       const existing = this.#types.get(apiName);
       if (!existing) {
         this.#types.set(apiName, makeStub(apiName, true));
@@ -182,6 +139,13 @@ export class OntologyGraphModel {
     }
     if (changed) {
       this.#notify();
+    }
+  }
+
+  #notify(): void {
+    this.#version++;
+    for (const listener of this.#listeners) {
+      listener();
     }
   }
 
@@ -214,7 +178,7 @@ export class OntologyGraphModel {
 
   #setLoadState(
     apiName: string,
-    loadState: OntologyTypeInfo["loadState"]
+    loadState: OntologyTypeInfo["loadState"],
   ): void {
     const existing = this.#types.get(apiName) ?? makeStub(apiName, false);
     if (existing.loadState === loadState) {
@@ -226,7 +190,7 @@ export class OntologyGraphModel {
 
   #applyMetadata(apiName: string, metadata: ObjectMetadata): void {
     const properties: OntologyPropertyInfo[] = Object.entries(
-      metadata.properties ?? {}
+      metadata.properties ?? {},
     ).map(([propApiName, prop]) => ({
       apiName: propApiName,
       displayName: prop.displayName,
@@ -240,7 +204,7 @@ export class OntologyGraphModel {
         apiName: linkApiName,
         targetType: link.targetType,
         multiplicity: link.multiplicity,
-      })
+      }),
     );
 
     const existing = this.#types.get(apiName) ?? makeStub(apiName, false);
@@ -248,14 +212,12 @@ export class OntologyGraphModel {
       ...existing,
       displayName: metadata.displayName ?? apiName,
       pluralDisplayName: metadata.pluralDisplayName,
-      primaryKeyApiName:
-        metadata.primaryKeyApiName != null
-          ? String(metadata.primaryKeyApiName)
-          : undefined,
-      icon:
-        metadata.icon != null
-          ? { color: metadata.icon.color, name: metadata.icon.name }
-          : undefined,
+      primaryKeyApiName: metadata.primaryKeyApiName != null
+        ? String(metadata.primaryKeyApiName)
+        : undefined,
+      icon: metadata.icon != null
+        ? { color: metadata.icon.color, name: metadata.icon.name }
+        : undefined,
       status: metadata.status,
       properties,
       links,

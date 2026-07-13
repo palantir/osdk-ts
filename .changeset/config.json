@@ -46,7 +46,6 @@
     "@osdk/e2e.test.foundry-sdk-generator",
     "@osdk/e2e.generated.*",
     "@osdk/e2e.sandbox.*",
-    "@osdk/ontology-explorer-app",
     "@osdk/ontology-explorer-server"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,

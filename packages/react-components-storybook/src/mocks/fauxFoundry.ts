@@ -17,6 +17,7 @@
 import { FauxFoundry, TypeHelpers } from "@osdk/faux";
 
 import type { Employee } from "../types/Employee.js";
+import { registerDevtoolsOntology } from "./devtoolsOntology.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
 import { interfaceMetadata } from "./interfaceMetadata.js";
@@ -489,6 +490,8 @@ export async function setupFauxFoundry(): Promise<void> {
       return { value: result };
     }
   );
+
+  registerDevtoolsOntology(fauxFoundry);
 
   // Log registered objects for debugging
   // eslint-disable-next-line no-console
