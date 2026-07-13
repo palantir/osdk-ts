@@ -34,12 +34,13 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
  * throws. When the map is omitted, definitions are resolved via the ontology
  * provider.
  *
+ * Unstable API. Do not depend on this outside of experimental usage.
+ *
  * @param client - the OSDK client
  * @param objects - the raw wire objects to hydrate
  * @param objectDefsByApiName - optional map of object type api name to its
  * definition. When provided, every object's api name must be present.
  * @param propertySecurities - optional property securities for the objects
- *
  */
 export function hydrateOsdkObject(
   client: Client,
