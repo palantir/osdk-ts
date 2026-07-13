@@ -17,7 +17,6 @@
 import type { PdfViewerContentProps } from "@osdk/react-components/experimental/pdf-viewer";
 import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useEffect, useState } from "react";
 import { fn } from "storybook/test";
 
 // cspell:disable-next-line
@@ -69,49 +68,5 @@ export const ZoomedIn: Story = {
 export const StartOnPage5: Story = {
   args: {
     initialPage: 5,
-  },
-};
-
-/**
- * `src` also accepts a `Blob` (and `ArrayBuffer` / `Uint8Array`) for rendering
- * PDF bytes that are already in memory rather than fetched from a URL. This
- * story fetches the sample PDF into a `Blob` and hands it to the viewer.
- */
-export const FromBlob: Story = {
-  render: (args: PdfViewerContentProps) => {
-    const [blob, setBlob] = useState<Blob | undefined>(undefined);
-
-    useEffect(() => {
-      let cancelled = false;
-      void fetch(SAMPLE_PDF_URL)
-        .then((response) => response.blob())
-        .then((fetched) => {
-          if (!cancelled) {
-            setBlob(fetched);
-          }
-        });
-      return () => {
-        cancelled = true;
-      };
-    }, []);
-
-    return (
-      <div style={{ height: "600px" }}>
-        {blob == null ? (
-          "Fetching PDF into a Blob…"
-        ) : (
-          <PdfViewerContent {...args} src={blob} />
-        )}
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `// Render PDF bytes already in memory (Blob, ArrayBuffer, or Uint8Array)
-const blob = await (await fetch(pdfUrl)).blob();
-<PdfViewerContent src={blob} />`,
-      },
-    },
   },
 };

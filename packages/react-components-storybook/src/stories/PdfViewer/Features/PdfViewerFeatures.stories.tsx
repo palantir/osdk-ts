@@ -28,6 +28,7 @@ import {
 } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
+import { useEffect, useState } from "react";
 import { fn } from "storybook/test";
 
 const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -153,6 +154,50 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
         code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
+      },
+    },
+  },
+};
+
+function BlobViewerDemo({ url }: { url: string }) {
+  const [blob, setBlob] = useState<Blob | undefined>(undefined);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch(url)
+      .then((response) => response.blob())
+      .then((fetched) => {
+        if (!cancelled) {
+          setBlob(fetched);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  return (
+    <div style={{ height: "600px" }}>
+      {blob == null ? (
+        "Fetching PDF into a Blob…"
+      ) : (
+        <BasePdfViewer src={blob} />
+      )}
+    </div>
+  );
+}
+
+export const WithBlob: StoryObj<PdfViewerProps> = {
+  render: () => <BlobViewerDemo url={SAMPLE_PDF_URL} />,
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+// src also accepts in-memory bytes: Blob, ArrayBuffer, or Uint8Array
+const blob = await (await fetch("/compressed.tracemonkey-pldi-09.pdf")).blob();
+
+<BasePdfViewer src={blob} />`,
       },
     },
   },
