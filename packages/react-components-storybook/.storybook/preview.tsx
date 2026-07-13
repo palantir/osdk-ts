@@ -137,11 +137,20 @@ const preview: Preview = {
     mswLoader,
   ],
   decorators: [
-    (Story) => (
+    // Stories that mount their own client (e.g. the DevTools panel, which
+    // monitors its own client) can opt out of the shared OsdkProvider with
+    // `parameters: { osdkProvider: false }`. Without this, OsdkProvider
+    // auto-mounts a second, empty devtools panel whenever a story imports
+    // `@osdk/react-devtools` (its register side-effect registers the panel).
+    (Story, context) => (
       <div className="root">
-        <OsdkProvider client={mockClient}>
+        {context.parameters.osdkProvider === false ? (
           <Story />
-        </OsdkProvider>
+        ) : (
+          <OsdkProvider client={mockClient}>
+            <Story />
+          </OsdkProvider>
+        )}
       </div>
     ),
     BrandThemeDecorator,

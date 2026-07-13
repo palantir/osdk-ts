@@ -103,16 +103,6 @@ function OsdkDevToolsDemo() {
         <code>lead</code>/<code>peeps</code> links, and the Office → Department
         → Project → Team chain.
       </p>
-      <p>
-        <em>
-          Storybook's dev preview sometimes mounts two overlapping copies of
-          this floating panel (a pre-existing quirk with the panel's
-          document-body portal, unrelated to the ontology graph itself). If you
-          see two panels stacked on top of each other, drag the top one aside by
-          its header, or click "Minimize" on it, to reach the one underneath —
-          it has the live data.
-        </em>
-      </p>
       <MonitoringPanel monitorStore={monitorStore} />
     </div>
   );
@@ -122,6 +112,10 @@ const meta: Meta = {
   title: "Components/DevTools",
   tags: ["beta"],
   parameters: {
+    // This story mounts its own monitored client, so it doesn't need the
+    // shared OsdkProvider — opting out avoids a second, empty auto-mounted
+    // devtools panel (see .storybook/preview.tsx).
+    osdkProvider: false,
     docs: {
       description: {
         component:
