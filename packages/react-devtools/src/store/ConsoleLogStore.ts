@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  captureCallerLocation,
+  formatCallerLocation,
+} from "../utils/callerLocation.js";
 import { CircularBuffer } from "../utils/CircularBuffer.js";
 import { SubscribableStore } from "./SubscribableStore.js";
 
@@ -45,9 +49,6 @@ const MAX_DEPTH = 3;
 const MAX_STRING_SIZE = 10240; // 10KB
 const MAX_TOTAL_SIZE = 10240; // 10KB
 
-const INTERNAL_FRAME_PATTERN =
-  /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/u;
-
 // BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
 // pattern from its createStyle(). We filter these from the devtools console
 // because devtools monitors the same operations through its own instrumentation.
@@ -60,10 +61,6 @@ function isBrowserLoggerCall(args: unknown[]): boolean {
     args[1].includes(BROWSER_LOGGER_CSS)
   );
 }
-
-const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/u;
-const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/u;
-const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/u;
 
 function serializeValue(
   value: unknown,
@@ -155,39 +152,6 @@ function serializeArg(arg: unknown): string {
   return result;
 }
 
-function getCallerLocation(): string | undefined {
-  const err = new Error();
-  const stack = err.stack;
-  if (!stack) {
-    return undefined;
-  }
-
-  const lines = stack.split("\n");
-
-  for (const line of lines) {
-    if (INTERNAL_FRAME_PATTERN.test(line)) {
-      continue;
-    }
-
-    let match = CHROME_FRAME_REGEX_PAREN.exec(line);
-    if (!match) {
-      match = CHROME_FRAME_REGEX_BARE.exec(line);
-    }
-    if (!match) {
-      match = FIREFOX_FRAME_REGEX.exec(line);
-    }
-
-    if (match) {
-      const filePath = match[1];
-      const lineNum = match[2];
-      const fileName = filePath.split("/").pop() ?? filePath;
-      return `${fileName}:${lineNum}`;
-    }
-  }
-
-  return undefined;
-}
-
 /**
  * React DevTools' installHook re-emits console.error/warn (to append the React
  * component stack) through our wrapper, which surfaces as a duplicate entry
@@ -270,8 +234,10 @@ export class ConsoleLogStore extends SubscribableStore {
         ...args: unknown[]
       ) {
         // Capture the source synchronously, before any async boundary, so the
-        // user's frame is still on the stack. The in-panel `entry.source` is
-        // canonical and accurate — verified by ConsoleLogStore.test.ts.
+        // user's frame is still on the stack. captureCallerLocation() skips
+        // this wrapper by function *identity* (V8) or a fixed frame count
+        // (non-V8) — it never matches our own function/file names as text,
+        // so it can't be defeated by a minifier or bundler renaming them.
         //
         // Browser DevTools source-link attribution (the clickable link beside
         // each console row) is decided by V8 and follows wherever the original
@@ -288,7 +254,9 @@ export class ConsoleLogStore extends SubscribableStore {
         // makes the source attribution improvement possible.
         const skipCapture =
           store.suppressed || store.capturing || isBrowserLoggerCall(args);
-        const source = skipCapture ? undefined : getCallerLocation();
+        const source = skipCapture
+          ? undefined
+          : formatCallerLocation(captureCallerLocation(wrapper));
         const skip =
           skipCapture || (source !== undefined && isReactDevtoolsFrame(source));
 
