@@ -24,6 +24,7 @@ import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
+// oxlint-disable-next-line require-await -- intentionally async
 /**
  * Hydrates raw wire objects into OSDK object instances.
  *
