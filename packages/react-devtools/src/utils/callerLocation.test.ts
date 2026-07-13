@@ -20,6 +20,7 @@ import type { CallerLocation } from "./callerLocation.js";
 import {
   captureCallerLocation,
   formatCallerLocation,
+  locateCallerLine,
   parseLineLocation,
 } from "./callerLocation.js";
 
@@ -53,16 +54,31 @@ describe("callerLocation", () => {
 
     describe("fallback (no Error.captureStackTrace)", () => {
       const originalCaptureStackTrace = Error.captureStackTrace;
+      const originalPrepareStackTrace = Error.prepareStackTrace;
 
       afterEach(() => {
         Error.captureStackTrace = originalCaptureStackTrace;
+        Error.prepareStackTrace = originalPrepareStackTrace;
       });
 
-      it("still resolves the real caller via fixed-frame-count skipping", () => {
-        // `@types/node` types this as always-present, but it genuinely isn't
-        // in every browser (Firefox/Safari) — simulate that by actually
-        // removing it, rather than assigning `undefined` through the type.
+      it("still resolves the real caller via frame-count skipping, on a genuine Firefox/Safari-shaped stack with no header line", () => {
+        // `@types/node` types captureStackTrace as always-present, but it
+        // genuinely isn't in every browser (Firefox/Safari) — simulate that
+        // by actually removing it. `Error.prepareStackTrace` is a separate,
+        // still-present V8 hook that formats *any* Error's `.stack` lazily on
+        // access, regardless of `captureStackTrace` — reusing it here lets
+        // this test exercise the fallback against real (V8-collected) call
+        // sites reformatted into Firefox/Safari's `name@file:l:c` shape (no
+        // header line), rather than V8's own paren-style text the fallback
+        // will never actually see in production.
         Reflect.deleteProperty(Error, "captureStackTrace");
+        Error.prepareStackTrace = (_err, sites) =>
+          sites
+            .map(
+              (site) =>
+                `${site.getFunctionName() ?? "<anonymous>"}@${site.getFileName()}:${site.getLineNumber()}:${site.getColumnNumber()}`
+            )
+            .join("\n");
 
         function boundary(): string | undefined {
           return formatCallerLocation(captureCallerLocation(boundary));
@@ -102,9 +118,9 @@ describe("callerLocation", () => {
   });
 
   describe("parseLineLocation", () => {
-    it("parses a plain Chrome-style parenthesized frame", () => {
+    it("parses a Firefox/Safari-style frame", () => {
       const location = parseLineLocation(
-        "    at MyComponent (http://localhost:5173/src/MyComponent.tsx:42:15)"
+        "MyComponent@http://localhost:5173/src/MyComponent.tsx:42:15"
       );
 
       expect(location).toEqual({
@@ -114,20 +130,49 @@ describe("callerLocation", () => {
       });
     });
 
-    it("fails closed instead of returning the garbled inner match for a nested-paren eval frame", () => {
-      // Anchoring to end-of-line and disallowing parens in the captured group
-      // means a doubly-nested "eval at" frame like this one can't be cleanly
-      // parsed by either supported format — it must return undefined, never
-      // the old regex's wrong inner match ("eval at evaluate (:301").
+    it("parses correctly even when the function name itself contains a space", () => {
+      // A leading space in the name (e.g. Firefox's top-level "global code")
+      // must not be mistaken for a frame-separator by the regex.
       const location = parseLineLocation(
-        "at appCallerFunction (eval at evaluate (:301:30), <anonymous>:43:13)"
+        "global code@http://localhost:5173/src/MyComponent.tsx:1:1"
       );
 
-      expect(location).toBeUndefined();
+      expect(location).toEqual({
+        fileName: "http://localhost:5173/src/MyComponent.tsx",
+        line: 1,
+        column: 1,
+      });
     });
 
     it("returns undefined for a line with no location to parse", () => {
       expect(parseLineLocation("Error")).toBeUndefined();
+    });
+  });
+
+  describe("locateCallerLine", () => {
+    it("skips the header line on a V8-shaped stack", () => {
+      const stack = [
+        "Error",
+        "    at captureCallerLocation (callerLocation.ts:134:20)",
+        "    at boundary (callerLocation.test.ts:10:5)",
+        "    at realCaller (callerLocation.test.ts:20:3)",
+      ].join("\n");
+
+      expect(locateCallerLine(stack, 2)).toBe(
+        "    at realCaller (callerLocation.test.ts:20:3)"
+      );
+    });
+
+    it("has no header line to skip on a Firefox/Safari-shaped stack", () => {
+      const stack = [
+        "captureCallerLocation@callerLocation.ts:134:20",
+        "boundary@callerLocation.test.ts:10:5",
+        "realCaller@callerLocation.test.ts:20:3",
+      ].join("\n");
+
+      expect(locateCallerLine(stack, 2)).toBe(
+        "realCaller@callerLocation.test.ts:20:3"
+      );
     });
   });
 

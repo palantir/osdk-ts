@@ -28,21 +28,17 @@ export interface CallerLocation {
   readonly column: number;
 }
 
-// Anchored to end-of-line so a stack frame with nested parens (V8's
-// "at F (eval at G (FILE:L:C), OTHER:L:C)" shape) can only match the
-// outermost/real, final location — never an inner nested one. Excluding
-// parens from the captured group means a line we can't cleanly parse fails
-// closed (returns undefined) instead of returning a garbled inner match.
-const LINE_LOCATION_REGEX_PAREN = /\(([^()]*):(\d+):(\d+)\)\s*$/u;
-const LINE_LOCATION_REGEX_BARE = /\s(\S*):(\d+):(\d+)\s*$/u;
-const LINE_LOCATION_REGEX_FIREFOX = /@([^@]*):(\d+):(\d+)\s*$/u;
+// The only text-parsing path left (captureViaCallSites below needs no
+// regex at all) — reached only when Error.captureStackTrace is absent, i.e.
+// non-V8 engines (Firefox, Safari), which format frames as
+// `name@file:line:column`. Anchored to end-of-line and excluding `@` from
+// the captured group so a line this can't cleanly parse fails closed
+// (returns undefined) rather than matching a garbled/partial location.
+const LINE_LOCATION_REGEX = /@([^@]*):(\d+):(\d+)\s*$/u;
 
 /** Exported for direct unit testing of the line-parsing fallback. */
 export function parseLineLocation(line: string): CallerLocation | undefined {
-  const match =
-    LINE_LOCATION_REGEX_PAREN.exec(line) ??
-    LINE_LOCATION_REGEX_BARE.exec(line) ??
-    LINE_LOCATION_REGEX_FIREFOX.exec(line);
+  const match = LINE_LOCATION_REGEX.exec(line);
   if (!match) {
     return undefined;
   }
@@ -51,6 +47,26 @@ export function parseLineLocation(line: string): CallerLocation | undefined {
     line: Number(match[2]),
     column: Number(match[3]),
   };
+}
+
+/**
+ * V8 prefixes `.stack` with an "Error" (or "Error: message") header line
+ * before the frames; Firefox/Safari do not — their frames start at index 0.
+ * Detecting which shape a stack has (rather than assuming one) keeps this
+ * correct on both, and lets it be verified with synthetic stacks of either
+ * shape — a real Firefox/Safari stack with no header line can't be produced here,
+ * since this only ever runs under V8 (Vitest/Node).
+ *
+ * `framesBeforeCaller` counts stack frames between the capture point and
+ * the real caller, not counting the header.
+ */
+export function locateCallerLine(
+  stack: string,
+  framesBeforeCaller: number
+): string | undefined {
+  const lines = stack.split("\n");
+  const hasHeader = parseLineLocation(lines[0]) === undefined;
+  return lines[(hasHeader ? 1 : 0) + framesBeforeCaller];
 }
 
 function captureViaCallSites(
@@ -96,8 +112,9 @@ function captureViaCallSites(
  * elision available, so this falls back to skipping a fixed, statically
  * known number of frames instead: the `new Error()` below is captured from
  * directly inside this function, which `boundaryFn` must call directly (no
- * intermediate calls) — so the frame layout is always exactly
- * `["Error" header, this function, boundaryFn, the real caller]`.
+ * intermediate calls) — so the real caller is always exactly 2 frames below
+ * this one (this function's own frame, then `boundaryFn`'s), independent of
+ * whether the engine prefixes the stack with a header line or not.
  */
 export function captureCallerLocation(
   boundaryFn: (...args: unknown[]) => unknown
@@ -118,8 +135,7 @@ export function captureCallerLocation(
     if (!stack) {
       return undefined;
     }
-    const lines = stack.split("\n");
-    const callerLine = lines[3];
+    const callerLine = locateCallerLine(stack, 2);
     if (!callerLine) {
       return undefined;
     }
