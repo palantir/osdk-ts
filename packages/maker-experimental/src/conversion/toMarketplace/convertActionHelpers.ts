@@ -623,7 +623,8 @@ function buildActionMetadata(
           // affectedInterfaceTypes may hold either API names (interface-link
           // actions) or already-resolved RIDs (function-backed actions)
           affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-            (apiNameOrRid) => resolveInterfaceTypeRid(apiNameOrRid, ridGenerator)
+            (apiNameOrRid) =>
+              resolveInterfaceTypeRid(apiNameOrRid, ridGenerator)
           ),
           affectedLinkTypes: action.entities.affectedLinkTypes,
           affectedObjectTypes: action.entities.affectedObjectTypes.map(
