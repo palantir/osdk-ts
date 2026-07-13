@@ -63,7 +63,7 @@
     /* Fails when a doc's AUTOGEN:props table has drifted from its source type. */
     "check-gen-props": {
       "outputLogs": "new-only",
-      "dependsOn": ["//#dprint"],
+      "dependsOn": ["//#global-oxc-config"],
       "inputs": ["src/**/*.{ts,tsx}", "docs/**/*.md", "scripts/gen-props.mjs"]
     },
 
