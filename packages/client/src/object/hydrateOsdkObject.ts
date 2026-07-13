@@ -25,14 +25,13 @@ import { additionalContext } from "../Client.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 /**
- * Hydrates raw wire objects into OSDK object instances without going through a
- * network fetch.
+ * Hydrates raw wire objects into OSDK object instances.
  *
  * When supplied, the `objectDefsByApiName` map (object type api name -> object
  * definition) is used exclusively to resolve each object's type, avoiding calls
  * to the ontology provider; an object whose api name is missing from the map
  * throws. When the map is omitted, definitions are resolved via the ontology
- * provider.
+ * provider network call.
  *
  * Unstable API. Do not depend on this outside of experimental usage.
  *
