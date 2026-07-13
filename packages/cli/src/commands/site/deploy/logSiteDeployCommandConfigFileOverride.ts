@@ -20,6 +20,7 @@ import type { Arguments } from "yargs";
 
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function logSiteDeployCommandConfigFileOverride(
   args: Arguments<SiteDeployArgs>,
   config: SiteConfig | undefined

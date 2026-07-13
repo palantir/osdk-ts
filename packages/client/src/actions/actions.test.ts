@@ -407,7 +407,7 @@ describe.each([
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
-  it("Accepts interfaces if implementing object types unknown", async () => {
+  it("Accepts interfaces if implementing object types unknown", () => {
     const clientBoundTakesInterface = client(deleteBarInterface).applyAction;
 
     type InferredParamType = Parameters<typeof clientBoundTakesInterface>[0];
@@ -697,7 +697,7 @@ describe("ActionResponse remapping", () => {
       }
     `);
   });
-  it("actions are enumerable", async () => {
+  it("actions are enumerable", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
@@ -723,5 +723,5 @@ function wrapper<R>(fn: () => R): typeof fn {
 }
 
 async function example() {
-  await wrapper(async () => Promise.resolve("hi"))();
+  await wrapper(() => Promise.resolve("hi"))();
 }

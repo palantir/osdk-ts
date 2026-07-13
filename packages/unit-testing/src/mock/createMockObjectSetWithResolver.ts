@@ -60,6 +60,7 @@ export function createMockObjectSetWithResolver<
     withProperties: () =>
       // TODO: Add with properties support
       void invariant(false, "withProperties is not supported in mocks") as any,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     fetchPage: async (args?: unknown) =>
       terminal<PageResult<Osdk.Instance<Q>>>("fetchPage", args) as any,
     fetchPageWithErrors: async (args?: unknown) => {
@@ -72,6 +73,7 @@ export function createMockObjectSetWithResolver<
         return { type: "error" as const, error };
       }
     },
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     fetchOne: (async (pk: unknown) =>
       terminal<Osdk.Instance<Q>>("fetchOne", pk)) as any,
     fetchOneWithErrors: (async (pk: unknown) => {
@@ -84,6 +86,7 @@ export function createMockObjectSetWithResolver<
         return { type: "error" as const, error } as any;
       }
     }) as any,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     aggregate: async (req: AggregateOpts<Q>) =>
       terminal<AggregationsResults<Q, AggregateOpts<Q>>>(
         "aggregate",

@@ -30,7 +30,7 @@ describe(useOsdkMetadata, () => {
   it("works", async () => {
     const deferred = pDefer();
     const fakeClient = {
-      fetchMetadata: vitest.fn(async (o) => {
+      fetchMetadata: vitest.fn((o) => {
         return deferred.promise;
       }),
     } as any as Client;

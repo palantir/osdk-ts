@@ -361,7 +361,7 @@ describe("createMockOsdkObject", () => {
         expect(results[1]).toBe(mockPeep2);
       });
 
-      it("throws when aggregate is called on many link stub", async () => {
+      it("throws when aggregate is called on many link stub", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },

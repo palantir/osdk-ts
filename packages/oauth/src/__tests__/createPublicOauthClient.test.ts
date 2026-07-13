@@ -43,7 +43,7 @@ type ProcessedPublicOauthClientOptionsReturn = ReturnType<
 >;
 
 describe("createPublicOauthClient", () => {
-  it("should return the same processed options for both client creation methods", async () => {
+  it("should return the same processed options for both client creation methods", () => {
     const mockProcessOptionsAndAssignDefaults =
       vi.fn<
         (

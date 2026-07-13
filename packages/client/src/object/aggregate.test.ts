@@ -67,7 +67,7 @@ beforeAll(() => {
   clientCtx = createMinimalClient(
     metadata,
     "https://host.com",
-    async () => "myAccessToken",
+    () => "myAccessToken",
     {},
     mockFetch
   );
@@ -75,7 +75,7 @@ beforeAll(() => {
   client = createClient(
     "https://host.com",
     metadata.ontologyRid,
-    async () => "",
+    () => "",
     undefined,
     mockFetch
   );
@@ -592,7 +592,7 @@ describe("aggregate", () => {
       });
     });
 
-    it("disallows null values with default value", async () => {
+    it("disallows null values with default value", () => {
       void client(Todo).aggregate({
         $select: {
           "text:exactDistinct": "unordered",
@@ -713,7 +713,7 @@ describe("aggregate", () => {
     ).rejects.toThrow("Aggregation request failed");
   });
 
-  it("works with where: todo", async () => {
+  it("works with where: todo", () => {
     const f: AggregateOpts<Employee> = {
       $select: {
         "office:approximateDistinct": "unordered",

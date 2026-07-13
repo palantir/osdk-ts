@@ -373,7 +373,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download("report.pdf");
     });
 
@@ -399,7 +399,7 @@ describe("usePdfViewerState", () => {
 
     const { result } = renderHook(() => usePdfViewerState({ src, onDownload }));
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 
@@ -447,7 +447,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 
@@ -472,7 +472,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 
@@ -503,7 +503,7 @@ describe("usePdfViewerState", () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 

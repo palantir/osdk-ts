@@ -43,6 +43,7 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validateEdit: async (value: unknown) => {
       if (typeof value !== "string" || !value.trim()) {
         return "Name cannot be empty";
@@ -177,6 +178,7 @@ function ThemeToggle(): React.ReactElement {
 }
 
 export function EmployeesTable(): React.ReactElement {
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   const handleSubmitEdits = useCallback(async () => {
     alert(`Submitting edits...`);
     return true;

@@ -230,7 +230,7 @@ describe(toDataValue, () => {
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
-  it("converts media uploads correctly", async () => {
+  it("converts media uploads correctly", () => {
     const file: MediaUpload = {
       data: new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
@@ -303,11 +303,11 @@ describe(toDataValue, () => {
     };
 
     const mockMedia: Media = {
-      fetchMetadata: async () => ({
+      fetchMetadata: () => ({
         sizeBytes: 1024,
         mediaType: "image/png",
       }),
-      fetchContents: async () => new Response(),
+      fetchContents: () => new Response(),
       getMediaReference: () => expectedMediaReference,
     };
 

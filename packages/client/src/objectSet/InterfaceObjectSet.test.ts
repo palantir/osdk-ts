@@ -102,7 +102,7 @@ describe("ObjectSet", () => {
     expect(asEmployee2.fullName).toEqual("Santa Claus");
   });
 
-  it("interface links", async () => {
+  it("interface links", () => {
     const objectSet = client(BarInterface).pivotTo("toFoo");
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
