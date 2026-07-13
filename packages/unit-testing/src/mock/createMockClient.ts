@@ -75,7 +75,8 @@ export function createMockClient(): MockClient {
     );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
-    for (const stub of queryStubs) {
+    for (let i = queryStubs.length - 1; i >= 0; i--) {
+      const stub = queryStubs[i];
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
         if (stub.error !== undefined) {
