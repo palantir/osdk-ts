@@ -17,18 +17,18 @@
 import type { ColumnSizingState, OnChangeFn } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
 
-interface UseColumnResizeProps {
+export interface UseColumnResizeOptions {
   onColumnResize?: (columnId: string, newWidth: number | null) => void;
 }
 
-interface UseColumnResizeResults {
+export interface UseColumnResizeResult {
   columnSizing: ColumnSizingState;
   onColumnSizingChange: OnChangeFn<ColumnSizingState>;
 }
 
 export const useColumnResize = ({
   onColumnResize,
-}: UseColumnResizeProps): UseColumnResizeResults => {
+}: UseColumnResizeOptions): UseColumnResizeResult => {
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
   const onColumnSizingChange: OnChangeFn<ColumnSizingState> = useCallback(

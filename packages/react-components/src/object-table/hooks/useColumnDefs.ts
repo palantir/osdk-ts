@@ -30,7 +30,7 @@ import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
-interface UseColumnDefsResult<
+export interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {

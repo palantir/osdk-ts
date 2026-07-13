@@ -117,8 +117,8 @@ export function ObjectTable<
     error,
     totalCount,
     objectSet: resultingObjectSet,
-  } = useObjectTableData<Q, RDPs, FunctionColumns>(
-    objectType,
+  } = useObjectTableData<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
     columnDefinitions,
     filter,
     sorting,
@@ -126,8 +126,8 @@ export function ObjectTable<
     objectSetOptions,
     dedupeIntervalMs,
     pageSize,
-    streamUpdates
-  );
+    streamUpdates,
+  });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,

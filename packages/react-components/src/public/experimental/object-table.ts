@@ -61,3 +61,101 @@ export {
   LoadingCell,
   LoadingCellContent,
 } from "../../object-table/LoadingCell.js";
+
+// Headless hooks — the building blocks `ObjectTable` composes internally.
+// Feed their outputs into your own TanStack `useReactTable` instance (from
+// `@osdk/react-components`'s `@tanstack/react-table` peer dependency) to build a
+// fully custom table while keeping OSDK data fetching, sorting, selection,
+// editing, and snapshot behavior. See the "Headless Hooks" section in
+// `docs/ObjectTable.md` for a worked example.
+
+// Data loading (OSDK-aware)
+export {
+  type FunctionColumnData,
+  useFunctionColumnsData,
+  type UseFunctionColumnsDataOptions,
+} from "../../object-table/hooks/useFunctionColumnsData.js";
+export {
+  useObjectTableData,
+  type UseObjectTableDataOptions,
+  type UseObjectTableDataResult,
+} from "../../object-table/hooks/useObjectTableData.js";
+
+// Column definitions
+export {
+  useColumnDefs,
+  type UseColumnDefsResult,
+} from "../../object-table/hooks/useColumnDefs.js";
+export {
+  useSelectionColumn,
+  type UseSelectionColumnOptions,
+} from "../../object-table/hooks/useSelectionColumn.js";
+
+// Column state
+export {
+  useColumnPinning,
+  type UseColumnPinningOptions,
+  type UseColumnPinningResult,
+} from "../../object-table/hooks/useColumnPinning.js";
+export {
+  useColumnResize,
+  type UseColumnResizeOptions,
+  type UseColumnResizeResult,
+} from "../../object-table/hooks/useColumnResize.js";
+export {
+  useColumnVisibility,
+  type UseColumnVisibilityOptions,
+  type UseColumnVisibilityResult,
+} from "../../object-table/hooks/useColumnVisibility.js";
+
+// Row state
+export {
+  useFocusedRow,
+  type UseFocusedRowOptions,
+  type UseFocusedRowResult,
+} from "../../object-table/hooks/useFocusedRow.js";
+export {
+  useRowSelection,
+  type UseRowSelectionChange,
+  type UseRowSelectionOptions,
+  type UseRowSelectionResult,
+} from "../../object-table/hooks/useRowSelection.js";
+
+// Sorting
+export {
+  useTableSorting,
+  type UseTableSortingOptions,
+  type UseTableSortingResult,
+} from "../../object-table/hooks/useTableSorting.js";
+
+// Editing
+export {
+  useEditableTable,
+  type UseEditableTableOptions,
+} from "../../object-table/hooks/useEditableTable.js";
+
+// Snapshot / export
+export {
+  useObjectTableSnapshot,
+  type UseObjectTableSnapshotOptions,
+} from "../../object-table/hooks/useObjectTableSnapshot.js";
+
+// Cell context menu
+export {
+  useCellContextMenu,
+  type UseCellContextMenuOptions,
+  type UseCellContextMenuResult,
+} from "../../object-table/hooks/useCellContextMenu.js";
+
+// Supporting types referenced by the hook signatures above
+export type { PopoverPosition } from "../../object-table/hooks/useCellContextMenu.js";
+export type {
+  ObjectSetOptions,
+  RowSelectionChange,
+} from "../../object-table/ObjectTableApi.js";
+export type { AsyncCellData } from "../../object-table/utils/AsyncCellData.js";
+export type {
+  EditableConfig,
+  EditModeState,
+  OrderBy,
+} from "../../object-table/utils/types.js";

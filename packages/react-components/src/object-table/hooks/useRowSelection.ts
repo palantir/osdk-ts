@@ -40,7 +40,7 @@ export interface UseRowSelectionChange<
   isSelectAll: boolean;
 }
 
-export interface UseRowSelectionProps<
+export interface UseRowSelectionOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -84,7 +84,7 @@ export function useRowSelection<
   onRowSelection,
   onRowSelectionChanged,
   data,
-}: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
+}: UseRowSelectionOptions<Q, RDPs>): UseRowSelectionResult {
   const [internalRowSelection, setInternalRowSelection] =
     useState<RowSelectionState>({});
 

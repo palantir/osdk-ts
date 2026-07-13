@@ -46,7 +46,48 @@ type WithProperties<
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
 
-interface UseObjectTableDataResult<
+export interface UseObjectTableDataOptions<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  /** The object or interface type to load rows for. */
+  objectOrInterfaceType: Q;
+  /**
+   * Column definitions. Used to extract derived-property (`rdp`) and
+   * function-column locators so the correct `withProperties` / function data
+   * is fetched. Optional — omit to load the type's base properties only.
+   */
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  /** Server-side `where` clause applied to the query. */
+  filter?: WhereClause<Q, RDPs>;
+  /** TanStack sorting state, converted to an OSDK `orderBy` internally. */
+  sorting?: SortingState;
+  /**
+   * A pre-built object set to page through instead of fetching by type. When
+   * provided, rows come from this set (filter / ordering still applied).
+   */
+  objectSet?: ObjectSet<Q>;
+  /** Extra options forwarded to `useObjectSet` when `objectSet` is provided. */
+  objectSetOptions?: ObjectSetOptions<Q>;
+  /**
+   * Minimum interval between duplicate requests, in milliseconds.
+   * @default 60000
+   */
+  dedupeIntervalMs?: number;
+  /**
+   * Number of rows to request per page.
+   * @default 50
+   */
+  pageSize?: number;
+  /** Whether to subscribe to live updates for the loaded objects. */
+  streamUpdates?: boolean;
+}
+
+export interface UseObjectTableDataResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
@@ -63,17 +104,21 @@ export function useObjectTableData<
     string,
     never
   >,
->(
-  objectOrInterfaceType: Q,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  filter?: WhereClause<Q, RDPs>,
-  sorting?: SortingState,
-  objectSet?: ObjectSet<Q>,
-  objectSetOptions?: ObjectSetOptions<Q>,
-  dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
-  pageSize: number = DEFAULT_PAGE_SIZE,
-  streamUpdates?: boolean
-): UseObjectTableDataResult<Q, RDPs> {
+>({
+  objectOrInterfaceType,
+  columnDefinitions,
+  filter,
+  sorting,
+  objectSet,
+  objectSetOptions,
+  dedupeIntervalMs = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  pageSize = DEFAULT_PAGE_SIZE,
+  streamUpdates,
+}: UseObjectTableDataOptions<
+  Q,
+  RDPs,
+  FunctionColumns
+>): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
