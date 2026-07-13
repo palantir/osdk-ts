@@ -172,9 +172,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     );
   }
   if (authless && parsed.scopes != null) {
-    throw new Error(
-      `The ${template.label} template does not accept --scopes.`,
-    );
+    throw new Error(`The ${template.label} template does not accept --scopes.`);
   }
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
