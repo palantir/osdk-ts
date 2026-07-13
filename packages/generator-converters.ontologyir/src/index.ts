@@ -29,6 +29,7 @@ export type {
 export { isInjectedRuntimeInput } from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,

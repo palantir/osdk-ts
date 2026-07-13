@@ -516,6 +516,8 @@ export class OntologyBlockDataToFullMetadataConverter {
           }
         }
         case "functionRule":
+        case "addInterfaceLinkRuleV2":
+        case "deleteInterfaceLinkRule":
           return [];
         default:
           throw new Error("Unknown logic rule type");
@@ -1173,6 +1175,24 @@ export function buildBlockDataInterfaceTypeLookup(
       const apiName = value.interfaceType.apiName!;
       byRid.set(key, apiName);
       byHyphenated.set(hyphenateApiName(apiName), apiName);
+    }
+  }
+  return { byRid, byHyphenated };
+}
+
+export function buildBlockDataInterfaceLinkTypeLookup(
+  blockdata: OntologyBlockDataV2 | undefined,
+): BlockDataApiNameLookup | undefined {
+  if (!blockdata?.interfaceTypes) {
+    return undefined;
+  }
+  const byRid = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const value of Object.values(blockdata.interfaceTypes)) {
+    for (const link of value.interfaceType.links) {
+      const apiName = link.metadata.apiName;
+      byRid.set(link.rid, apiName);
+      byHyphenated.set(apiName.replace(/\./g, "-").toLowerCase(), apiName);
     }
   }
   return { byRid, byHyphenated };
