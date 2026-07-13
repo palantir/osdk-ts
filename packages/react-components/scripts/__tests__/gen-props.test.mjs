@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { mkdtempSync, rmSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
-import path from "path";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import ts from "typescript";
-import { fileURLToPath } from "url";
 import { describe, expect, it, vi } from "vitest";
+
 import {
   buildRows,
   collapseProse,
@@ -34,10 +36,10 @@ import {
 
 const PKG_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../..",
+  "../.."
 );
 
-/** Identity stand-in for the real `dprint` formatter `renderDoc` injects, so
+/** Identity stand-in for the real `oxfmt` formatter `renderDoc` injects, so
  * the tests can assert whether the (expensive) format step ran without
  * spawning the binary. */
 function fakeFormat() {
@@ -51,7 +53,7 @@ function parse(code) {
     code,
     ts.ScriptTarget.Latest,
     /* setParentNodes */ true,
-    ts.ScriptKind.TS,
+    ts.ScriptKind.TS
   );
 }
 
@@ -63,7 +65,7 @@ function propNames(code) {
 describe("collapseType", () => {
   it("collapses padding inside generics and parens", () => {
     expect(collapseType("Record< string, never >")).toBe(
-      "Record<string, never>",
+      "Record<string, never>"
     );
     expect(collapseType("( arg: T, ) => U")).toBe("(arg: T) => U");
   });
@@ -87,10 +89,10 @@ describe("collapseProse", () => {
 describe("getAttr", () => {
   it("reads a marker attribute", () => {
     expect(getAttr("src=foo/Bar.ts interface=BarProps ", "src")).toBe(
-      "foo/Bar.ts",
+      "foo/Bar.ts"
     );
     expect(getAttr("src=foo/Bar.ts interface=BarProps ", "interface")).toBe(
-      "BarProps",
+      "BarProps"
     );
   });
 
@@ -119,11 +121,13 @@ describe("resolveProps", () => {
   });
 
   it("flattens intersections", () => {
-    expect(propNames(`
+    expect(
+      propNames(`
       interface A { a: string; }
       interface B { b: number; }
       type Props = A & B;
-    `)).toEqual(["a", "b"]);
+    `)
+    ).toEqual(["a", "b"]);
   });
 
   it("marks a prop optional when it's optional in or absent from any union branch", () => {
@@ -133,7 +137,7 @@ describe("resolveProps", () => {
           | { mode: string; value: string; onlyA: number }
           | { mode: string; value?: string; onlyB: number };
       `),
-      "Props",
+      "Props"
     ).entries;
     const byName = Object.fromEntries(entries.map((e) => [e.name, e]));
     expect(entries.map((e) => e.name)).toEqual([
@@ -165,12 +169,12 @@ describe("resolveProps", () => {
     try {
       writeFileSync(
         path.join(dir, "base.ts"),
-        `export interface Base { shared: string; }\n`,
+        `export interface Base { shared: string; }\n`
       );
       writeFileSync(
         path.join(dir, "main.ts"),
-        `import type { Base } from "./base.js";\n`
-          + `export interface Props extends Base { own: number; }\n`,
+        `import type { Base } from "./base.js";\n` +
+          `export interface Props extends Base { own: number; }\n`
       );
       const sf = getSourceFile(path.join(dir, "main.ts"));
       expect(resolveProps(sf, "Props").entries.map((e) => e.name)).toEqual([
@@ -208,7 +212,7 @@ describe("buildRows", () => {
           name: string;
         }
       `),
-      "Props",
+      "Props"
     ).entries;
     const rows = buildRows(entries);
     const idRow = rows.find((r) => r.startsWith("| `id`"));
@@ -228,18 +232,18 @@ describe("renderDoc — only does work when it's meant to", () => {
     const srcPath = path.join(dir, "Api.ts");
     writeFileSync(
       srcPath,
-      `export interface Props { a: string; b?: number; }\n`,
+      `export interface Props { a: string; b?: number; }\n`
     );
     const srcAttr = path.relative(PKG_ROOT, srcPath);
     const docPath = path.join(dir, "Doc.md");
     const marker =
-      `<!-- AUTOGEN:props START src=${srcAttr} interface=Props -->\n`
-      + `${blockBody}<!-- AUTOGEN:props END -->\n`;
+      `<!-- AUTOGEN:props START src=${srcAttr} interface=Props -->\n` +
+      `${blockBody}<!-- AUTOGEN:props END -->\n`;
     writeFileSync(docPath, `# Doc\n\n${marker}`);
     return { dir, docPath };
   }
 
-  it("skips a doc that has no AUTOGEN:props marker (no regeneration, no dprint)", () => {
+  it("skips a doc that has no AUTOGEN:props marker (no regeneration, no oxfmt)", () => {
     const dir = mkdtempSync(path.join(tmpdir(), "gen-props-"));
     try {
       const docPath = path.join(dir, "Plain.md");
@@ -252,10 +256,10 @@ describe("renderDoc — only does work when it's meant to", () => {
     }
   });
 
-  it("runs dprint when the table is stale, then skips it once the doc is up to date", () => {
+  it("runs oxfmt when the table is stale, then skips it once the doc is up to date", () => {
     const { dir, docPath } = scaffold("");
     try {
-      // Stale (empty) block → regenerate and run the doc through dprint once.
+      // Stale (empty) block → regenerate and run the doc through oxfmt once.
       const format = fakeFormat();
       const stale = renderDoc(docPath, format);
       expect(format).toHaveBeenCalledTimes(1);
@@ -264,7 +268,7 @@ describe("renderDoc — only does work when it's meant to", () => {
       expect(stale.formatted).toContain("`b`");
 
       // Persist the regenerated doc, then re-run: nothing changed, so the
-      // expensive dprint step is skipped entirely.
+      // expensive oxfmt step is skipped entirely.
       writeFileSync(docPath, stale.formatted);
       const format2 = fakeFormat();
       const fresh = renderDoc(docPath, format2);
