@@ -62,12 +62,7 @@ export {
   LoadingCellContent,
 } from "../../object-table/LoadingCell.js";
 
-// Headless hooks — the building blocks `ObjectTable` composes internally.
-// Feed their outputs into your own TanStack `useReactTable` instance (from
-// `@osdk/react-components`'s `@tanstack/react-table` peer dependency) to build a
-// fully custom table while keeping OSDK data fetching, sorting, selection,
-// editing, and snapshot behavior. See the "Headless Hooks" section in
-// `docs/ObjectTable.md` for a worked example.
+/* --------------------- Headless hooks --------------------- */
 
 // Data loading (OSDK-aware)
 export {

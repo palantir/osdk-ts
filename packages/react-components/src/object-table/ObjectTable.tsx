@@ -45,15 +45,6 @@ import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
 
-/**
- * ObjectTable - A headless table component for displaying OSDK object sets
- *
- * @example
- * ```tsx
- * <ObjectTable objectType={MyObjectType} />
- * ```
- */
-
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
