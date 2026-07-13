@@ -16,4 +16,3 @@
 
 // This package is a carrier for the shared `templates/` directory consumed at
 // codegen time by `create-app.template-packager --shared`. It exposes no code.
-export {};
