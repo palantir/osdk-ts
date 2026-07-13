@@ -164,7 +164,7 @@ async function runTest({
       "--corsProxy",
       corsProxy.toString(),
       "--scopes",
-      "api:read-data",
+      "api:read-data"
     );
   }
 
@@ -225,14 +225,14 @@ async function runTest({
     // AuthCallback should not exist in authless mode
     expect(
       fs.existsSync(
-        path.join(process.cwd(), project, "src", "AuthCallback.tsx"),
-      ),
+        path.join(process.cwd(), project, "src", "AuthCallback.tsx")
+      )
     ).toBe(false);
 
     // .env.development should use api-proxy and not contain CLIENT_ID
     const envDev = fs.readFileSync(
       path.join(process.cwd(), project, ".env.development"),
-      "utf-8",
+      "utf-8"
     );
     expect(envDev).toContain("api-proxy");
     expect(envDev).not.toContain("CLIENT_ID");
@@ -240,7 +240,7 @@ async function runTest({
     // client.ts should use createAuthlessClient
     const clientTs = fs.readFileSync(
       path.join(process.cwd(), project, "src", "client.ts"),
-      "utf-8",
+      "utf-8"
     );
     expect(clientTs).toContain("createAuthlessClient");
   }
