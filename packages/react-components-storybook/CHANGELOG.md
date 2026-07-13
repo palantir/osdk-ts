@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.37.0
+
+### Minor Changes
+
+- f1ab8ce: Fill AI Chat to the full page
+
 ## 0.36.0
 
 ### Minor Changes

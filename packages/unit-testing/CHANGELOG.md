@@ -1,5 +1,20 @@
 # @osdk/unit-testing
 
+## 0.18.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+- Updated dependencies [f733ceb]
+  - @osdk/functions@1.17.0
+  - @osdk/client@2.44.0
+  - @osdk/api@2.44.0
+
 ## 0.17.0
 
 ### Minor Changes

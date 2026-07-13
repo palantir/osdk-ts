@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.44.0
+
+### Minor Changes
+
+- f29a4df: Escape `*/` in ontology descriptions and display names so they cannot prematurely close generated JSDoc comments and break SDK generation.
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters@2.44.0
+
 ## 2.43.0
 
 ### Patch Changes
