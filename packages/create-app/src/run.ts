@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { changeVersionPrefix } from "@osdk/generator-utils";
+import { changeVersionPrefix, lowercase } from "@osdk/generator-utils";
 import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 
@@ -32,12 +32,9 @@ import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
 
-// Lowercases a substituted token value. Used for `package.json` name fields,
-// since npm rejects package names containing uppercase characters but the
-// project name entered by the user may contain them.
-Handlebars.registerHelper("lowercase", (value: unknown) =>
-  String(value).toLowerCase()
-);
+// Register the shared `lowercase` helper so template `package.json` name
+// fields can enforce npm-safe (lowercase) package names.
+Handlebars.registerHelper("lowercase", lowercase);
 
 interface RunArgs {
   project: string;

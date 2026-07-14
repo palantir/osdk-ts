@@ -16,4 +16,5 @@
 
 export { changeVersionPrefix } from "./changeVersionPrefix.js";
 export { getDependencyVersionFromFindUpPackageJson } from "./getDependencyVersionFromFindUpPackageJson.js";
+export { lowercase } from "./lowercase.js";
 export { resolveDependenciesFromFindUp } from "./resolveDependenciesFromFindUp.js";

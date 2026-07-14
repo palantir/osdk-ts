@@ -1,4 +1,5 @@
 ---
+"@osdk/generator-utils": minor
 "@osdk/create-app": patch
 "@osdk/create-widget": patch
 "@osdk/create-app.template.expo.v2": patch
