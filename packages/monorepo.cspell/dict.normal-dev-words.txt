@@ -40,6 +40,7 @@ struct
 structs
 subdependencies
 subdeps
+tombstoned
 trackpad
 tsdoc
 typecheck
@@ -51,4 +52,6 @@ ungroup
 unioned
 unresolve
 Unsubscribable
+upsert
+upserts
 webapi

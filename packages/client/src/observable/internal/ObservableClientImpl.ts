@@ -284,6 +284,10 @@ export class ObservableClientImpl implements ObservableClient {
     );
   }
 
+  public applyChanges(changes: ObservableClient.Changes): Promise<void> {
+    return this.__experimentalStore.applyChanges(changes);
+  }
+
   public invalidateAll(): Promise<void> {
     return this.__experimentalStore.invalidateAll();
   }

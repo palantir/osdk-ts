@@ -33,6 +33,7 @@ import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type {
   CacheEntry,
   CacheSnapshot,
+  ObservableClient,
   ObservableClientOptions,
 } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
@@ -320,6 +321,51 @@ export class Store {
     changes: Changes;
   } {
     return this.layers.batch({ optimisticId, changes }, batchFn);
+  }
+
+  /**
+   * Apply a batch of externally-sourced object changes directly to the cache.
+   *
+   * Upserts reuse the same ingest path as server page fetches and websocket
+   * stream updates (`storeOsdkInstances` -> `writeToStore` -> `propagateWrite`).
+   * Deletes reuse the existing tombstone path used by action results: every
+   * registered cache variant of the object is tombstoned via
+   * `deleteFromStore` -> `propagateWrite`. Objects that were never loaded have
+   * no registered variants and are ignored (there is nothing observing them).
+   *
+   * Everything runs inside a single {@link batch} so the accumulated changes
+   * propagate to observing queries in one revalidation pass. Applying no
+   * changes is a no-op.
+   */
+  public applyChanges(changes: ObservableClient.Changes): Promise<void> {
+    const { upserts, deletes } = changes;
+    const hasUpserts = upserts != null && upserts.length > 0;
+    const hasDeletes = deletes != null && deletes.length > 0;
+
+    if (hasUpserts || hasDeletes) {
+      this.batch({}, (batch) => {
+        if (hasUpserts) {
+          // Spread to a mutable array so the readonly public type is assignable
+          // to storeOsdkInstances' parameter.
+          this.objects.storeOsdkInstances([...upserts], batch);
+        }
+
+        for (const { objectType, primaryKey } of deletes ?? []) {
+          // Tombstone every registered variant (base + RDP/select variants) so
+          // the deletion is recorded in `batch.changes` and lists/object sets
+          // containing the object drop it. Loading an object into any query
+          // registers its cache key, so anything currently observed is covered.
+          for (const cacheKey of this.objectCacheKeyRegistry.getVariants(
+            objectType,
+            primaryKey
+          )) {
+            this.queries.peek(cacheKey)?.deleteFromStore("loaded", batch);
+          }
+        }
+      });
+    }
+
+    return Promise.resolve();
   }
 
   public invalidateObject<T extends ObjectTypeDefinition>(

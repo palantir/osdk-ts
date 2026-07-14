@@ -63,6 +63,44 @@ export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
+
+  /**
+   * A batch of externally-sourced object changes to apply directly to the
+   * observable cache via {@link ObservableClient.applyChanges}.
+   *
+   * Changes are written through the same store ingest path that server fetches,
+   * action results, and websocket stream updates use, so every observing hook
+   * (objects, lists, object sets, links, and dependent functions) updates
+   * reactively without a network round trip. This is the seam an embedded or
+   * offline ontology engine uses to push locally-synced deltas into the hooks.
+   */
+  export interface Changes {
+    /**
+     * Full object or interface instances to insert or update.
+     *
+     * Instances must be produced by the client's object factory — i.e. wire
+     * data converted through the client's `objectFactory`, or an existing
+     * instance's `$clone` — so they carry the internal holder representation
+     * the cache stores. Each instance should carry all of its base properties
+     * (`"$allBaseProperties"`); an instance carrying only a subset of
+     * properties merges into any existing cached value rather than replacing
+     * it.
+     */
+    upserts?: ReadonlyArray<
+      Osdk.Instance<ObjectOrInterfaceDefinition, "$allBaseProperties">
+    >;
+
+    /**
+     * Objects to remove from the cache, identified by their concrete object
+     * type API name and primary key. Removing an object tombstones it along
+     * with every registered cache variant, so lists and object sets that
+     * contain it drop it reactively.
+     */
+    deletes?: ReadonlyArray<{
+      objectType: string;
+      primaryKey: string | number;
+    }>;
+  }
 }
 
 export interface CacheSnapshot {
@@ -566,6 +604,26 @@ export interface ObservableClient extends ObserveLinks {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
   ) => Promise<ActionValidationResponse>;
+
+  /**
+   * Apply a batch of externally-sourced object changes directly to the cache,
+   * bypassing the network.
+   *
+   * Upserts and deletes flow through the same store ingest path used by server
+   * fetches, action results, and websocket stream updates, so all observing
+   * hooks update reactively. Intended for data that arrives outside the normal
+   * fetch/action flow, e.g. an embedded or offline ontology engine streaming
+   * locally-synced deltas, or an external system pushing updates.
+   *
+   * Applying an empty set of changes is a no-op. This method is additive and
+   * non-breaking for callers that never invoke it.
+   *
+   * @param changes - Object upserts and/or deletes to apply
+   * @returns Promise that resolves once the changes have been written to the
+   *   cache. Object observers are notified synchronously; list and object-set
+   *   propagation happens reactively.
+   */
+  applyChanges(changes: ObservableClient.Changes): Promise<void>;
 
   /**
    * Invalidates the entire cache, forcing all queries to refetch.
