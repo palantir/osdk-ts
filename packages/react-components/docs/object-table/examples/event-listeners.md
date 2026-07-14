@@ -11,8 +11,9 @@ Layer side effects (analytics, navigation, telemetry) on top of the table's defa
   onColumnVisibilityChanged={(states) => console.log("visibility", states)}
   onColumnsPinnedChanged={(states) => console.log("pinned", states)}
   onColumnResize={(columnId, newWidth) =>
-    console.log("resize", columnId, newWidth)}
-/>;
+    console.log("resize", columnId, newWidth)
+  }
+/>
 ```
 
 [Open the "event listeners" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-interactions-events--event-listeners)

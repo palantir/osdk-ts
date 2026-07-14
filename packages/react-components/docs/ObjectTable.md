@@ -24,7 +24,7 @@ function OfficesPage() {
 Opt into row selection with `selectionMode`:
 
 ```tsx
-<ObjectTable objectType={Office} selectionMode="multiple" />;
+<ObjectTable objectType={Office} selectionMode="multiple" />
 ```
 
 ## Props
@@ -169,7 +169,7 @@ The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM an
 CSS variables cascade, so overriding one on a parent affects every nested row or cell. Scope overrides under the table's `className` so other tables on the page are unaffected:
 
 ```tsx
-<ObjectTable objectType={Employee} className="my-table" />;
+<ObjectTable objectType={Employee} className="my-table" />
 ```
 
 ```css

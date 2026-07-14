@@ -103,7 +103,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
       id: "managerName",
       creator: DerivedProperty.creator<typeof Employee, string | undefined>(
         (base) => base.lead.select({ fullName: true }),
-        (pivot) => pivot?.fullName,
+        (pivot) => pivot?.fullName
       ),
     },
     renderHeader: () => "Manager",
@@ -217,7 +217,7 @@ Seed an initial sort with `defaultOrderBy`. Sorting stays uncontrolled — the u
 <ObjectTable
   objectType={Employee}
   defaultOrderBy={[{ property: "fullName", direction: "desc" }]}
-/>;
+/>
 ```
 
 [Open the "with default sorting" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-sorting--with-default-sorting)
@@ -253,7 +253,7 @@ function EmployeesTable() {
 Set `selectionMode="single"` to let the user select one row at a time.
 
 ```tsx
-<ObjectTable objectType={Employee} selectionMode="single" />;
+<ObjectTable objectType={Employee} selectionMode="single" />
 ```
 
 [Open the "single selection" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-selection-focus--single-selection)
@@ -272,7 +272,7 @@ Set `selectionMode="multiple"` to show per-row checkboxes plus a header select-a
     // objectSet:    covers the selection, including unloaded rows on select-all
     if (objectSet) void applyBulkAction({ targets: objectSet });
   }}
-/>;
+/>
 ```
 
 [Open the "multiple selection" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-selection-focus--multiple-selection)
@@ -315,7 +315,7 @@ import { useState } from "react";
 
 function EmployeesTable() {
   const [focused, setFocused] = useState<Osdk.Instance<typeof Employee> | null>(
-    null,
+    null
   );
 
   return (
@@ -477,7 +477,7 @@ Provide `renderCellContextMenu` to render a custom menu when the user right-clic
       <div onClick={() => console.log("View", employee.fullName)}>View</div>
     </div>
   )}
-/>;
+/>
 ```
 
 [Open the "with context menu" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-interactions-events--with-context-menu)
@@ -495,8 +495,9 @@ Layer side effects (analytics, navigation, telemetry) on top of the table's defa
   onColumnVisibilityChanged={(states) => console.log("visibility", states)}
   onColumnsPinnedChanged={(states) => console.log("pinned", states)}
   onColumnResize={(columnId, newWidth) =>
-    console.log("resize", columnId, newWidth)}
-/>;
+    console.log("resize", columnId, newWidth)
+  }
+/>
 ```
 
 [Open the "event listeners" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-interactions-events--event-listeners)
@@ -528,7 +529,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 Adjust `rowHeight` (pixels) for denser or roomier rows.
 
 ```tsx
-<ObjectTable objectType={Employee} rowHeight={56} />;
+<ObjectTable objectType={Employee} rowHeight={56} />
 ```
 
 [Open the "custom row height" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-display-states--custom-row-height)
@@ -543,7 +544,7 @@ Override the default "No Data" indicator with `renderEmptyState`, shown when the
   renderEmptyState={() => (
     <div className="empty">No employees match your filters.</div>
   )}
-/>;
+/>
 ```
 
 [Open the "custom empty state" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-display-states--custom-empty-state)
@@ -558,7 +559,7 @@ const getRowAttributes = useCallback(
     "data-status": employee.status,
     "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
   }),
-  [],
+  []
 );
 
 <ObjectTable
@@ -588,7 +589,7 @@ Turn off individual column-header menu items with the `enable*` flags (all defau
   enableColumnPinning={false}
   enableColumnResizing={false}
   enableColumnConfig={false}
-/>;
+/>
 ```
 
 [Open the "disable all header menu features" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-display-states--disable-all-header-menu-features)
@@ -682,5 +683,5 @@ function EmployeeTableWithDownload() {
 Set `streamUpdates` to subscribe via websocket so the table updates automatically as matching objects are added, updated, or removed in Foundry. Cannot be combined with `pivotTo` or `withProperties` — those queries still fetch normally but won't receive real-time updates.
 
 ```tsx
-<ObjectTable objectType={Employee} streamUpdates />;
+<ObjectTable objectType={Employee} streamUpdates />
 ```

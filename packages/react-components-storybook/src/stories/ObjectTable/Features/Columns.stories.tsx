@@ -19,8 +19,7 @@ import {
   WithCustomColumn as WithCustomColumnStory,
   WithCustomRenderers as WithCustomRenderersStory,
   WithDefaultColumnPinning as WithDefaultColumnPinningStory,
-  WithDerivedPropertyOrderingAndFilter
-    as WithDerivedPropertyOrderingAndFilterStory,
+  WithDerivedPropertyOrderingAndFilter as WithDerivedPropertyOrderingAndFilterStory,
   WithFunctionColumn as WithFunctionColumnStory,
 } from "../objectTableStoryDefs.js";
 

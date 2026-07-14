@@ -6,7 +6,7 @@ Seed an initial sort with `defaultOrderBy`. Sorting stays uncontrolled — the u
 <ObjectTable
   objectType={Employee}
   defaultOrderBy={[{ property: "fullName", direction: "desc" }]}
-/>;
+/>
 ```
 
 [Open the "with default sorting" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-sorting--with-default-sorting)

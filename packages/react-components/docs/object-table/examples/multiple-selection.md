@@ -12,7 +12,7 @@ Set `selectionMode="multiple"` to show per-row checkboxes plus a header select-a
     // objectSet:    covers the selection, including unloaded rows on select-all
     if (objectSet) void applyBulkAction({ targets: objectSet });
   }}
-/>;
+/>
 ```
 
 [Open the "multiple selection" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-selection-focus--multiple-selection)

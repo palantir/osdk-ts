@@ -106,8 +106,7 @@ const HEADER = `> **Generated file** — do not edit by hand. Edit the chunks in
 > \`docs/object-table/examples/\` and run
 > \`pnpm --filter @osdk/react-components gen-examples\`.`;
 
-const INTRO =
-  `A catalog of ObjectTable features. Each example is a self-contained chunk in
+const INTRO = `A catalog of ObjectTable features. Each example is a self-contained chunk in
 \`docs/object-table/examples/\` and is also rendered with a live demo in the
 Storybook **Components/ObjectTable/Examples** page.
 
@@ -116,8 +115,10 @@ Storybook **Components/ObjectTable/Examples** page.
 function buildMarkdown() {
   const sections = GROUPS.map(({ title, files }) => {
     const chunks = files.map((name) => {
-      const chunk = readFileSync(join(examplesDir, `${name}.md`), "utf8")
-        .trim();
+      const chunk = readFileSync(
+        join(examplesDir, `${name}.md`),
+        "utf-8"
+      ).trim();
       return chunk;
     });
     return `## ${title}\n\n${chunks.join("\n\n")}`;
@@ -126,9 +127,9 @@ function buildMarkdown() {
   // Front matter: `title` becomes the page heading (Docusaurus synthetic
   // title) so the body has no H1; `toc_inline` opts into the top-of-page table
   // of contents rendered by the DocItem/Content theme override.
-  return `---\ntitle: ObjectTable examples\ntoc_inline: true\n---\n\n${HEADER}\n\n${INTRO}\n\n${
-    sections.join("\n\n")
-  }\n`;
+  return `---\ntitle: ObjectTable examples\ntoc_inline: true\n---\n\n${HEADER}\n\n${INTRO}\n\n${sections.join(
+    "\n\n"
+  )}\n`;
 }
 
 function format(markdown) {
@@ -136,16 +137,15 @@ function format(markdown) {
   // the rest of the repo and never fight with the pre-commit `dprint check`.
   // Pass a bare filename (not a path) so dprint formats stdin as markdown
   // without canonicalizing a file that may not exist yet.
-  return execFileSync("npx", [
-    "dprint",
-    "fmt",
-    "--stdin",
-    "ObjectTableExamples.md",
-  ], {
-    input: markdown,
-    encoding: "utf8",
-    cwd: repoRoot,
-  });
+  return execFileSync(
+    "npx",
+    ["dprint", "fmt", "--stdin", "ObjectTableExamples.md"],
+    {
+      input: markdown,
+      encoding: "utf-8",
+      cwd: repoRoot,
+    }
+  );
 }
 
 const formatted = format(buildMarkdown());
@@ -154,14 +154,14 @@ const isCheck = process.argv.includes("--check");
 if (isCheck) {
   let current = "";
   try {
-    current = readFileSync(outFile, "utf8");
+    current = readFileSync(outFile, "utf-8");
   } catch {
     // missing file -> treated as drift below
   }
   if (current !== formatted) {
     console.error(
-      "docs/ObjectTableExamples.md is out of date.\n"
-        + "Run `pnpm --filter @osdk/react-components gen-examples` and commit the result.",
+      "docs/ObjectTableExamples.md is out of date.\n" +
+        "Run `pnpm --filter @osdk/react-components gen-examples` and commit the result."
     );
     process.exit(1);
   }

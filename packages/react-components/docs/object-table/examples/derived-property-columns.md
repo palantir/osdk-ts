@@ -20,7 +20,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
       id: "managerName",
       creator: DerivedProperty.creator<typeof Employee, string | undefined>(
         (base) => base.lead.select({ fullName: true }),
-        (pivot) => pivot?.fullName,
+        (pivot) => pivot?.fullName
       ),
     },
     renderHeader: () => "Manager",

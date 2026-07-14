@@ -13,7 +13,7 @@ Provide `renderCellContextMenu` to render a custom menu when the user right-clic
       <div onClick={() => console.log("View", employee.fullName)}>View</div>
     </div>
   )}
-/>;
+/>
 ```
 
 [Open the "with context menu" story →](https://palantir.github.io/osdk-ts/storybook/?path=/story/components-objecttable-features-interactions-events--with-context-menu)

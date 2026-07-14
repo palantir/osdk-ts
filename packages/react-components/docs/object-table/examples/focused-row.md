@@ -8,7 +8,7 @@ import { useState } from "react";
 
 function EmployeesTable() {
   const [focused, setFocused] = useState<Osdk.Instance<typeof Employee> | null>(
-    null,
+    null
   );
 
   return (

@@ -106,8 +106,9 @@ const preview: Preview = {
 
         // Within "Components" — same component folder
         if (
-          aParts[0] === "Components" && bParts[0] === "Components"
-          && aParts[1] === bParts[1]
+          aParts[0] === "Components" &&
+          bParts[0] === "Components" &&
+          aParts[1] === bParts[1]
         ) {
           // Sub-section order within a component: the Docs page, the Examples
           // page, then component-root stories (e.g. the Default landing demo),
@@ -125,16 +126,18 @@ const preview: Preview = {
           const sectionOrder = ["Docs", "Examples", "__root__", "Features"];
           const aSub = aParts.length > 2 ? aParts[2] : "__root__";
           const bSub = bParts.length > 2 ? bParts[2] : "__root__";
-          const aRank = aSub === "Building Blocks"
-            ? 99
-            : sectionOrder.indexOf(aSub) === -1
-            ? 50
-            : sectionOrder.indexOf(aSub);
-          const bRank = bSub === "Building Blocks"
-            ? 99
-            : sectionOrder.indexOf(bSub) === -1
-            ? 50
-            : sectionOrder.indexOf(bSub);
+          const aRank =
+            aSub === "Building Blocks"
+              ? 99
+              : sectionOrder.indexOf(aSub) === -1
+                ? 50
+                : sectionOrder.indexOf(aSub);
+          const bRank =
+            bSub === "Building Blocks"
+              ? 99
+              : sectionOrder.indexOf(bSub) === -1
+                ? 50
+                : sectionOrder.indexOf(bSub);
           if (aRank !== bRank) return aRank - bRank;
 
           // Within "Features", order the sub-groups to match the Examples doc.

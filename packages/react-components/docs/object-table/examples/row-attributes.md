@@ -8,7 +8,7 @@ const getRowAttributes = useCallback(
     "data-status": employee.status,
     "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
   }),
-  [],
+  []
 );
 
 <ObjectTable
