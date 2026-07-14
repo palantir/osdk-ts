@@ -87,9 +87,7 @@ Type parameters: `Q extends ObjectOrInterfaceDefinition`, `RDPs extends Record<s
 | `streamUpdates`             | `boolean`                                                                                                                                | Enable streaming updates via websocket subscription. When true, the table will automatically update when matching objects are added, updated, or removed in Foundry.<br /><br />Limitations: `streamUpdates` cannot be used together with `pivotTo` or `withProperties`. The server does not support websocket subscriptions for link-traversal or derived-property queries. Those queries still fetch data normally but won't receive real-time updates. Defaults to `false`. |
 | `pageSize`                  | `number`                                                                                                                                 | Number of objects to fetch per page. Defaults to `50`.                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `columnDefinitions`         | `Array<ColumnDefinition<Q, RDPs, FunctionColumns>>`                                                                                      | Ordered list of column definitions to show in the table<br /><br />If not provided, all of the properties of the object type will be shown in default order.                                                                                                                                                                                                                                                                                                                   |
-| `enableFiltering`           | `boolean`                                                                                                                                | Whether the table is filterable by the user. Defaults to `true`.                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `filter`                    | `WhereClause<Q, RDPs>`                                                                                                                   | The current where clause to filter the objects in the table. If provided, the filter is controlled.                                                                                                                                                                                                                                                                                                                                                                            |
-| `onFilterChanged`           | `(newWhere: WhereClause<Q, RDPs>) => void`                                                                                               | Called when the where clause is changed. Required when filter is controlled.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `enableOrdering`            | `boolean`                                                                                                                                | Whether the table is sortable by the user. Defaults to `true`.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `enableColumnPinning`       | `boolean`                                                                                                                                | Whether columns can be pinned by the user. Defaults to `true`.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `enableColumnResizing`      | `boolean`                                                                                                                                | Whether columns can be resized by the user. Defaults to `true`.                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -111,7 +109,6 @@ Type parameters: `Q extends ObjectOrInterfaceDefinition`, `RDPs extends Record<s
 | `selectionMode`             | `"single" \| "multiple" \| "none"`                                                                                                       | Selection mode for the table rows.<br /><br />If multiple, a checkbox will be shown for each row to allow selecting multiple rows as well as a top-level checkbox in the header to select all rows. Defaults to `"none"`.                                                                                                                                                                                                                                                      |
 | `selectedRows`              | `PrimaryKeyType<Q>[]`                                                                                                                    | The currently selected rows in the table. If provided, the row selection is controlled.                                                                                                                                                                                                                                                                                                                                                                                        |
 | `isAllSelected`             | `boolean`                                                                                                                                | Indicates whether all rows are selected in controlled mode. When true, the table will show all rows as selected regardless of the selectedRows array.                                                                                                                                                                                                                                                                                                                          |
-| `onRowSelection`            | `(selectedRowIds: PrimaryKeyType<Q>[], isSelectAll?: boolean) => void`                                                                   | **Deprecated** — Use `onRowSelectionChanged` instead. The new callback delivers a `RowSelectionChange` object with `selectedRows`, `isSelectAll`, and a derived `objectSet`. This legacy callback continues to fire alongside the new one for backwards compatibility. Called when the row selection changes.                                                                                                                                                                  |
 | `onRowSelectionChanged`     | `(change: RowSelectionChange<Q, RDPs>) => void`                                                                                          | Called when the row selection changes, with a `RowSelectionChange` payload describing the new state.                                                                                                                                                                                                                                                                                                                                                                           |
 | `renderCellContextMenu`     | `(row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>, cellValue: unknown) => React.ReactNode`                            | If provided, will render this context menu when right clicking on a cell                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `renderEmptyState`          | `() => React.ReactNode`                                                                                                                  | Render override for the empty state. Called when the table has no rows and no error. When omitted, a default "No Data" indicator is rendered.                                                                                                                                                                                                                                                                                                                                  |
@@ -158,7 +155,6 @@ Type parameters: `Q extends ObjectOrInterfaceDefinition`, `RDPs extends Record<s
 | `maxWidth`        | `number`                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `resizable`       | `boolean`                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `orderable`       | `boolean`                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `filterable`      | `boolean`                                                                                                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `renderCell`      | `(object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>, locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>) => React.ReactNode` | Custom renderer for the cell value.<br /><br />Interaction with `editable` columns: - When `editMode: "manual"` (default), `renderCell` is used while the table is read-only (Edit Table button visible) and the editable cell takes over once the user enters edit mode. - When `editMode: "always"`, the editable cell always wins on editable columns and `renderCell` is ignored — `editMode: "always"` opts the column into a permanently-editable surface, leaving no read-only state for `renderCell` to render. Use `editMode: "manual"` if you need a custom display alongside editing. |
 | `columnName`      | `string`                                                                                                                                                 | If provided, this will be used in the column header. If both columnName and renderHeader are provided, renderHeader will take precedence in the table header. columnName will still be used in other parts where the column name is displayed.<br /><br />If not provided, for a property column, the property displayName will be used for other columns, the id will be used.                                                                                                                                                                                                                  |
 | `renderHeader`    | `() => React.ReactNode`                                                                                                                                  | If provided, this will be used to render the header component. When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -627,22 +623,11 @@ function EmployeesTable() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  const handleRowSelection = (
-    selectedRowIds: string[],
-    isSelectAll?: boolean,
-  ) => {
-    if (isSelectAll) {
-      if (selectedRowIds.length === 0) {
-        setIsAllSelected(false);
-        setSelectedRows([]);
-      } else {
-        setIsAllSelected(true);
-        setSelectedRows([]);
-      }
-    } else {
-      setIsAllSelected(false);
-      setSelectedRows(selectedRowIds);
-    }
+  const handleRowSelectionChanged = ({ selectedRows, isSelectAll }) => {
+    setIsAllSelected(isSelectAll);
+    setSelectedRows(
+      isSelectAll ? [] : selectedRows.map((row) => row.$primaryKey),
+    );
   };
 
   return (
@@ -653,7 +638,7 @@ function EmployeesTable() {
         selectionMode="multiple"
         selectedRows={selectedRows}
         isAllSelected={isAllSelected}
-        onRowSelection={handleRowSelection}
+        onRowSelectionChanged={handleRowSelectionChanged}
       />
     </div>
   );
@@ -662,11 +647,11 @@ function EmployeesTable() {
 
 **Key points about select all behavior:**
 
-- The `isSelectAll` parameter in `onRowSelection` indicates whether the change was triggered by the "select all" checkbox
+- The `isSelectAll` field in the `onRowSelectionChanged` payload indicates whether the change was triggered by the "select all" checkbox
 - When `isAllSelected` is `true`, the table shows all rows as selected regardless of the `selectedRows` array content
 - This allows efficient handling of "select all" without loading all object IDs
 - Individual row selections automatically set `isAllSelected` to `false`
-- After "select all", new rows loaded via scroll (`fetchMore`) stay visually checked and `onRowSelection` refires with the expanded id list so controlled callers stay in sync
+- After "select all", new rows loaded via scroll (`fetchMore`) stay visually checked and `onRowSelectionChanged` refires with the expanded selection so controlled callers stay in sync
 
 ### Listening to selection changes
 
@@ -699,17 +684,6 @@ function EmployeesTable() {
   }}
 />;
 ```
-
-#### Migrating from `onRowSelection`
-
-The legacy `onRowSelection(selectedRowIds, isSelectAll?)` callback is deprecated but still fires for backwards compatibility. The equivalents in `onRowSelectionChanged` are:
-
-| Legacy parameter           | New payload field                      |
-| -------------------------- | -------------------------------------- |
-| `selectedRowIds`           | `selectedRows.map(r => r.$primaryKey)` |
-| `isSelectAll` (second arg) | `isSelectAll`                          |
-| _(not previously exposed)_ | `selectedRows`                         |
-| _(not previously exposed)_ | `objectSet`                            |
 
 ### Example 12: Custom Column Type
 
@@ -1211,7 +1185,6 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
     orderable: false,
-    filterable: false,
   },
 ];
 ```
@@ -1520,7 +1493,7 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 ### Selection not working
 
 - Ensure `selectionMode` is set to "single" or "multiple"
-- For controlled mode, provide both `selectedRows` and `onRowSelection`
+- For controlled mode, provide both `selectedRows` and `onRowSelectionChanged`
 
 ### Custom rendering not appearing
 
