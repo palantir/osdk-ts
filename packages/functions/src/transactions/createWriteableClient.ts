@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Client, createClient } from "@osdk/client";
 import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
 
-import type { Client, createClient } from "@osdk/client";
 import type {
   AddLinkApiNames,
   AddLinkSources,
@@ -40,9 +40,7 @@ import type {
 } from "./WriteableClient.js";
 import { writeableClientContext } from "./WriteableClient.js";
 
-export function createWriteableClient<
-  X extends AnyEdit = never,
->(
+export function createWriteableClient<X extends AnyEdit = never>(
   transactionId: string,
   ...args: Parameters<typeof createClient>
 ): WriteableClient<X> {
@@ -52,143 +50,138 @@ export function createWriteableClient<
   const client = createClientWithTransaction(
     transactionId,
     () => editRequestManager.flushPendingEdits(),
-    ...args,
+    ...args
   ) as Client;
 
   editRequestManager = new EditRequestManager(
-    client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
+    client as WriteableClient<any> // This cast is safe because we create the writeable client properties below.
   );
 
   // We use define properties because the client has non-enumerable properties that we want to preserve.
-  const writeableClient = Object.defineProperties<Client>(
-    client,
-    {
-      link: {
-        value<
-          SOL extends AddLinkSources<X>,
-          A extends AddLinkApiNames<X, SOL>,
-        >(
-          source: SOL,
-          apiName: A,
-          target: AddLinkTargets<X, SOL, A>,
-        ): Promise<void> {
-          if (!Array.isArray(target)) {
-            return editRequestManager.postEdit({
+  const writeableClient = Object.defineProperties<Client>(client, {
+    link: {
+      value<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
+        source: SOL,
+        apiName: A,
+        target: AddLinkTargets<X, SOL, A>
+      ): Promise<void> {
+        if (!Array.isArray(target)) {
+          return editRequestManager.postEdit({
+            type: "addLink",
+            objectType: source.$apiName,
+            primaryKey: source.$primaryKey,
+            linkType: apiName,
+            linkedObjectPrimaryKey: target.$primaryKey,
+          });
+        }
+        const promises: Promise<void>[] = [];
+
+        for (const elem of target) {
+          promises.push(
+            editRequestManager.postEdit({
               type: "addLink",
               objectType: source.$apiName,
               primaryKey: source.$primaryKey,
               linkType: apiName,
-              linkedObjectPrimaryKey: target.$primaryKey,
-            });
-          }
-          const promises: Promise<void>[] = [];
-
-          for (const elem of target) {
-            promises.push(
-              editRequestManager.postEdit({
-                type: "addLink",
-                objectType: source.$apiName,
-                primaryKey: source.$primaryKey,
-                linkType: apiName,
-                linkedObjectPrimaryKey: elem.$primaryKey,
-              }),
-            );
-          }
-          return Promise.all(promises).then(() => undefined);
-        },
+              linkedObjectPrimaryKey: elem.$primaryKey,
+            })
+          );
+        }
+        return Promise.all(promises).then(() => undefined);
       },
-      unlink: {
-        value<
-          SOL extends RemoveLinkSources<X>,
-          A extends RemoveLinkApiNames<X, SOL>,
-        >(
-          source: SOL,
-          apiName: A,
-          target: RemoveLinkTargets<X, SOL, A>,
-        ): Promise<void> {
-          if (!Array.isArray(target)) {
-            return editRequestManager.postEdit({
-              type: "removeLink",
-              objectType: source.$apiName,
-              primaryKey: source.$primaryKey,
-              linkType: apiName,
-              linkedObjectPrimaryKey: target.$primaryKey,
-            });
-          }
-          const promises: Promise<void>[] = [];
-          for (const elem of target) {
-            promises.push(editRequestManager.postEdit({
+    },
+    unlink: {
+      value<
+        SOL extends RemoveLinkSources<X>,
+        A extends RemoveLinkApiNames<X, SOL>,
+      >(
+        source: SOL,
+        apiName: A,
+        target: RemoveLinkTargets<X, SOL, A>
+      ): Promise<void> {
+        if (!Array.isArray(target)) {
+          return editRequestManager.postEdit({
+            type: "removeLink",
+            objectType: source.$apiName,
+            primaryKey: source.$primaryKey,
+            linkType: apiName,
+            linkedObjectPrimaryKey: target.$primaryKey,
+          });
+        }
+        const promises: Promise<void>[] = [];
+        for (const elem of target) {
+          promises.push(
+            editRequestManager.postEdit({
               type: "removeLink",
               objectType: source.$apiName,
               primaryKey: source.$primaryKey,
               linkType: apiName,
               linkedObjectPrimaryKey: elem.$primaryKey,
-            }));
-          }
-          return Promise.all(promises).then(() => undefined);
-        },
+            })
+          );
+        }
+        return Promise.all(promises).then(() => undefined);
       },
-      create: {
-        async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
-          obj: OTD,
-          properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
-        ): Promise<void> {
-          const propertyMap: { [propertyName: string]: unknown } = {};
-          for (const [key, value] of Object.entries(properties)) {
-            if (key.startsWith("$")) continue;
-            propertyMap[key] = toPropertyDataValue(value);
-          }
-          return editRequestManager.postEdit({
-            type: "addObject",
-            objectType: obj.apiName,
-            properties: propertyMap,
-          });
-        },
+    },
+    create: {
+      // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+      async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
+        obj: OTD,
+        properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>
+      ): Promise<void> {
+        const propertyMap: { [propertyName: string]: unknown } = {};
+        for (const [key, value] of Object.entries(properties)) {
+          if (key.startsWith("$")) continue;
+          propertyMap[key] = toPropertyDataValue(value);
+        }
+        return editRequestManager.postEdit({
+          type: "addObject",
+          objectType: obj.apiName,
+          properties: propertyMap,
+        });
       },
-      update: {
-        value<
-          SOL extends UpdatableObjectOrInterfaceLocators<X>,
-          OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
-        >(
-          locator: SOL,
-          properties: OTD,
-        ): Promise<void> {
-          const propertyMap: { [propertyName: string]: unknown } = {};
-          for (const [key, value] of Object.entries(properties)) {
-            if (key.startsWith("$")) continue;
-            propertyMap[key] = toPropertyDataValue(value);
-          }
-          return editRequestManager.postEdit({
-            type: "modifyObject",
-            objectType: locator.$apiName,
-            primaryKey: locator.$primaryKey,
-            properties: propertyMap,
-          });
-        },
+    },
+    update: {
+      value<
+        SOL extends UpdatableObjectOrInterfaceLocators<X>,
+        OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
+      >(locator: SOL, properties: OTD): Promise<void> {
+        const propertyMap: { [propertyName: string]: unknown } = {};
+        for (const [key, value] of Object.entries(properties)) {
+          if (key.startsWith("$")) continue;
+          propertyMap[key] = toPropertyDataValue(value);
+        }
+        return editRequestManager.postEdit({
+          type: "modifyObject",
+          objectType: locator.$apiName,
+          primaryKey: locator.$primaryKey,
+          properties: propertyMap,
+        });
       },
-      delete: {
-        value<OL extends DeletableObjectOrInterfaceLocators<X>>(
-          obj: OL,
-        ): Promise<void> {
-          return editRequestManager.postEdit({
-            type: "deleteObject",
-            objectType: obj.$apiName,
-            primaryKey: obj.$primaryKey,
-          });
-        },
+    },
+    delete: {
+      value<OL extends DeletableObjectOrInterfaceLocators<X>>(
+        obj: OL
+      ): Promise<void> {
+        return editRequestManager.postEdit({
+          type: "deleteObject",
+          objectType: obj.$apiName,
+          primaryKey: obj.$primaryKey,
+        });
       },
-      [writeableClientContext]: {
-        value: {
-          ontologyRid,
-          transactionId,
-          editRequestManager,
-        } satisfies WriteableClientContext,
-      },
-    } satisfies Record<
-      keyof WriteMethods<any> | typeof writeableClientContext,
-      PropertyDescriptor
-    >,
-  ) as WriteableClient<X>;
+    },
+    [writeableClientContext]: {
+      value: {
+        ontologyRid,
+        transactionId,
+        editRequestManager,
+      } satisfies WriteableClientContext,
+    },
+  } satisfies Record<
+    keyof WriteMethods<any> | typeof writeableClientContext,
+    PropertyDescriptor
+  >) as WriteableClient<X>;
 
   return writeableClient;
 }

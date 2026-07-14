@@ -18,6 +18,7 @@ import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
+
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
 import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
 import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
@@ -25,6 +26,7 @@ import {
   getDefaultBrandThemeState,
   stringifyBrandThemeState,
 } from "./addons/brand-theme-extractor/state.js";
+
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -53,7 +55,7 @@ const fauxFoundryReady = setupFauxFoundry();
 const mockClient = createClient(
   fauxFoundry.baseUrl,
   fauxFoundry.defaultOntologyRid,
-  () => Promise.resolve("myAccessToken"),
+  () => Promise.resolve("myAccessToken")
 );
 
 const preview: Preview = {
@@ -84,7 +86,6 @@ const preview: Preview = {
             "Docs/Changelog",
             "Docs/Guides/Getting Started",
             "Docs/Guides/Usage with OSDK",
-            "Docs/Styling/Overview",
             "Docs/Tokens/Colors",
             "Docs/Tokens/Typography",
             "Docs/Tokens/Spacing",
@@ -94,6 +95,13 @@ const preview: Preview = {
           const ao = ai === -1 ? docsOrder.length : ai;
           const bo = bi === -1 ? docsOrder.length : bi;
           if (ao !== bo) return ao - bo;
+        }
+
+        // Within "Components" — "Overview" always first
+        if (aParts[0] === "Components" && bParts[0] === "Components") {
+          const aIsOverview = aParts[1] === "Overview";
+          const bIsOverview = bParts[1] === "Overview";
+          if (aIsOverview !== bIsOverview) return aIsOverview ? -1 : 1;
         }
 
         // Within "Components" — same component folder
@@ -161,8 +169,8 @@ const preview: Preview = {
     },
     controls: {
       matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
+        color: /(background|color)$/iu,
+        date: /Date$/iu,
       },
     },
     docs: {
@@ -176,9 +184,12 @@ const preview: Preview = {
       handlers: fauxFoundry.handlers,
     },
   },
-  loaders: [async () => {
-    await fauxFoundryReady;
-  }, mswLoader],
+  loaders: [
+    async () => {
+      await fauxFoundryReady;
+    },
+    mswLoader,
+  ],
   decorators: [
     (Story) => (
       <div className="root">

@@ -19,8 +19,10 @@
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
-import styles from "./TiffRenderer.module.css";
+
 import type { TiffRendererProps } from "./types.js";
+
+import styles from "./TiffRenderer.module.css";
 
 // 25 MB limit — TIFF decoding expands compressed data into a full RGBA bitmap
 // in memory, so capping the input size prevents the browser from allocating an
@@ -42,8 +44,7 @@ function decodeTiff(content: Uint8Array): DecodeResult {
   if (content.byteLength > MAX_IMAGE_SIZE) {
     return {
       status: "error",
-      message:
-        `TIFF file exceeds maximum size of ${MAX_IMAGE_SIZE_MB_STRING}MB`,
+      message: `TIFF file exceeds maximum size of ${MAX_IMAGE_SIZE_MB_STRING}MB`,
     };
   }
 
@@ -85,11 +86,11 @@ const ErrorMessage: React.FunctionComponent<{ message: string }> = React.memo(
       <ErrorIcon className={styles.errorIcon} />
       {message}
     </div>
-  ),
+  )
 );
 
-const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> = React
-  .memo(({ imageData }) => {
+const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
+  React.memo(({ imageData }) => {
     const canvasRef = useCallback(
       (canvas: HTMLCanvasElement | null) => {
         if (canvas == null) {
@@ -101,12 +102,12 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> = React
         }
         const renderedImageData = ctx.createImageData(
           imageData.width,
-          imageData.height,
+          imageData.height
         );
         renderedImageData.data.set(imageData.content);
         ctx.putImageData(renderedImageData, 0, 0);
       },
-      [imageData],
+      [imageData]
     );
 
     return (
@@ -119,31 +120,27 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> = React
     );
   });
 
-export const TiffRenderer: React.FunctionComponent<TiffRendererProps> = React
-  .memo(
-    ({ content, onError }) => {
-      const [result, setResult] = useState<DecodeResult | undefined>(
-        undefined,
-      );
-      const onErrorRef = useRef(onError);
-      onErrorRef.current = onError;
+export const TiffRenderer: React.FunctionComponent<TiffRendererProps> =
+  React.memo(({ content, onError }) => {
+    const [result, setResult] = useState<DecodeResult | undefined>(undefined);
+    const onErrorRef = useRef(onError);
+    onErrorRef.current = onError;
 
-      useEffect(() => {
-        const decodeResult = decodeTiff(content);
-        setResult(decodeResult);
-        if (decodeResult.status === "error") {
-          onErrorRef.current?.();
-        }
-      }, [content]);
-
-      if (result == null) {
-        return null;
+    useEffect(() => {
+      const decodeResult = decodeTiff(content);
+      setResult(decodeResult);
+      if (decodeResult.status === "error") {
+        onErrorRef.current?.();
       }
+    }, [content]);
 
-      if (result.status === "error") {
-        return <ErrorMessage message={result.message} />;
-      }
+    if (result == null) {
+      return null;
+    }
 
-      return <TiffCanvas imageData={result.data} />;
-    },
-  );
+    if (result.status === "error") {
+      return <ErrorMessage message={result.message} />;
+    }
+
+    return <TiffCanvas imageData={result.data} />;
+  });

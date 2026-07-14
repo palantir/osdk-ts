@@ -17,43 +17,53 @@
 
 /* eslint-disable no-console */
 
-import { promises as fs } from "fs";
-import path from "path";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import postcss from "postcss";
 import postcssModules from "postcss-modules";
-import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const buildDir = path.join(__dirname, "..", "build", "browser");
 
 async function findCssModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return findCssModules(fullPath);
-    } else if (entry.name.endsWith(".module.css")) {
-      return fullPath;
-    }
-    return null;
-  }));
+  const files = await Promise.all(
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+    entries.map(async (entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        return findCssModules(fullPath);
+      } else if (entry.name.endsWith(".module.css")) {
+        return fullPath;
+      }
+      return null;
+    })
+  );
   return files.flat().filter(Boolean);
 }
 
 async function findJsFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return findJsFiles(fullPath);
-    } else if (
-      entry.name.endsWith(".js") && !entry.name.endsWith(".test.js")
-      && !entry.name.endsWith(".module.css.js")
-    ) {
-      return fullPath;
-    }
-    return null;
-  }));
+  const files = await Promise.all(
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+    entries.map(async (entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        return findJsFiles(fullPath);
+      } else if (
+        entry.name.endsWith(".js") &&
+        !entry.name.endsWith(".test.js") &&
+        !entry.name.endsWith(".module.css.js")
+      ) {
+        return fullPath;
+      }
+      return null;
+    })
+  );
   return files.flat().filter(Boolean);
 }
 
@@ -61,16 +71,16 @@ async function rewriteCssImports() {
   const jsFiles = await findJsFiles(buildDir);
 
   for (const jsFile of jsFiles) {
-    let content = await fs.readFile(jsFile, "utf8");
+    const content = await fs.readFile(jsFile, "utf-8");
 
     // Replace CSS module imports to point to .js files
-    const updatedContent = content.replace(
-      /from\s+["']([^"']+\.module\.css)["']/g,
-      "from \"$1.js\"",
+    const updatedContent = content.replaceAll(
+      /from\s+["']([^"']+\.module\.css)["']/gu,
+      'from "$1.js"'
     );
 
     if (content !== updatedContent) {
-      await fs.writeFile(jsFile, updatedContent, "utf8");
+      await fs.writeFile(jsFile, updatedContent, "utf-8");
     }
   }
 }
@@ -80,7 +90,7 @@ async function processCssModules() {
   let combinedCss = "/* @osdk/cbac-components - Combined styles */\n\n";
 
   for (const cssFile of cssFiles) {
-    const content = await fs.readFile(cssFile, "utf8");
+    const content = await fs.readFile(cssFile, "utf-8");
     const relativePath = path.relative(buildDir, cssFile);
 
     let exportedClasses = {};
@@ -99,14 +109,14 @@ const styles = ${JSON.stringify(exportedClasses, null, 2)};
 
 export default styles;
 `;
-    await fs.writeFile(cssFile + ".js", jsContent, "utf8");
+    await fs.writeFile(`${cssFile}.js`, jsContent, "utf-8");
 
     // Add to combined CSS
     combinedCss += `/* ${relativePath} */\n${result.css}\n\n`;
   }
 
   // Write combined CSS file
-  await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf8");
+  await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf-8");
 
   // Rewrite imports in JS files
   await rewriteCssImports();

@@ -19,7 +19,6 @@ import type {
   NullabilityAdherence,
 } from "../object/FetchPageArgs.js";
 import type { FetchPageResult } from "../object/FetchPageResult.js";
-
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -36,7 +35,7 @@ type fetchPageByRidFn = <
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>
 ) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
 
 export type FetchPageByRidPayload = {
@@ -61,7 +60,7 @@ type fetchPageByRidNoTypeFn = <
     never,
     {},
     PROPERTY_SECURITIES
-  >,
+  >
 ) => Promise<
   FetchPageResult<
     ObjectOrInterfaceDefinition,

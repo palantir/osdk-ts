@@ -24,6 +24,7 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useRef, useState } from "react";
+
 import { fauxFoundry } from "../../../mocks/fauxFoundry.js";
 import { Employee } from "../../../types/Employee.js";
 
@@ -79,8 +80,7 @@ export const WithLoadedDataDownload: Story = {
           "Uses `tableRef.current.getSnapshot()` to build and download a CSV from the ObjectTable's data. The Full name column uses `renderCell`, but the CSV reads the column's accessor value rather than the rendered React element. Function-backed column failures surface as an `Error` instance from `row.getValue`, which the CSV renders as a literal marker.",
       },
       source: {
-        code:
-          `const tableRef = useRef<ObjectTableHandle<typeof Employee>>(null);
+        code: `const tableRef = useRef<ObjectTableHandle<typeof Employee>>(null);
 const PAGE_SIZE = ${PAGE_SIZE};
 
 const handleDownload = async () => {
@@ -124,7 +124,7 @@ function LoadedDataDownloadExample(): React.ReactElement {
 
       await downloadCsv(
         toCsv(snapshot.columns, snapshot.rows),
-        "employees.csv",
+        "employees.csv"
       );
     } finally {
       setIsDownloading(false);
@@ -143,9 +143,7 @@ function LoadedDataDownloadExample(): React.ReactElement {
           type="button"
           style={{
             ...downloadButtonStyle,
-            ...(isDownloading
-              ? { cursor: "not-allowed", opacity: 0.6 }
-              : null),
+            ...(isDownloading ? { cursor: "not-allowed", opacity: 0.6 } : null),
           }}
         >
           {isDownloading ? "Downloading…" : "Download as CSV"}
@@ -201,11 +199,11 @@ function formatCellValue(value: unknown): string {
 }
 
 function escapeCsvCell(value: string): string {
-  if (!/[",\n\r]/.test(value)) {
+  if (!/[",\n\r]/u.test(value)) {
     return value;
   }
 
-  return `"${value.replaceAll("\"", "\"\"")}"`;
+  return `"${value.replaceAll('"', '""')}"`;
 }
 
 async function downloadCsv(csv: string, fileName: string): Promise<void> {

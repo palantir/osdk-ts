@@ -16,6 +16,7 @@
 
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
+
 import { foundryModel } from "./model.js";
 import { streamText, type TextStreamChunk } from "./streamText.js";
 
@@ -62,10 +63,12 @@ function createMockClient(args: MockClientArgs = {}): {
   fetch: ReturnType<typeof vi.fn>;
 } {
   const fetchMock = vi.fn<typeof globalThis.fetch>(
-    async () => args.response ?? sseResponse(args),
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
+    async () => args.response ?? sseResponse(args)
   );
   const client: PlatformClient = {
     baseUrl: args.baseUrl ?? "https://example.palantirfoundry.com",
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     tokenProvider: async () => "test-token",
     fetch: fetchMock,
   };
@@ -88,27 +91,30 @@ function chunkFrame(args: {
     object: "chat.completion.chunk",
     created: 1_700_000_000,
     model: "gpt-4o",
-    choices: [{
-      index: 0,
-      delta: {
-        content: args.delta?.content,
-        reasoning: args.delta?.reasoning,
-        tool_calls: args.toolCalls?.map((tc) => ({
-          index: tc.index,
-          id: tc.id,
-          type: "function",
-          function: { name: tc.name, arguments: tc.arguments },
-        })),
+    choices: [
+      {
+        index: 0,
+        delta: {
+          content: args.delta?.content,
+          reasoning: args.delta?.reasoning,
+          tool_calls: args.toolCalls?.map((tc) => ({
+            index: tc.index,
+            id: tc.id,
+            type: "function",
+            function: { name: tc.name, arguments: tc.arguments },
+          })),
+        },
+        finish_reason: args.finishReason ?? null,
       },
-      finish_reason: args.finishReason ?? null,
-    }],
-    usage: args.usage != null
-      ? {
-        prompt_tokens: args.usage.prompt,
-        completion_tokens: args.usage.completion,
-        total_tokens: args.usage.total,
-      }
-      : undefined,
+    ],
+    usage:
+      args.usage != null
+        ? {
+            prompt_tokens: args.usage.prompt,
+            completion_tokens: args.usage.completion,
+            total_tokens: args.usage.total,
+          }
+        : undefined,
   });
 }
 
@@ -130,7 +136,7 @@ async function collectChunks<T>(stream: ReadableStream<T>): Promise<Array<T>> {
 }
 
 function firstFetchCall(
-  mock: ReturnType<typeof vi.fn>,
+  mock: ReturnType<typeof vi.fn>
 ): [RequestInfo | URL, RequestInit | undefined] {
   const call = mock.mock.calls[0];
   if (call == null) {
@@ -158,7 +164,7 @@ describe("streamText", () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     const [url, init] = firstFetchCall(fetch);
     expect(url).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions"
     );
     expect(init?.method).toBe("POST");
     const headers = init?.headers as Record<string, string>;
@@ -190,12 +196,7 @@ describe("streamText", () => {
 
     const chunks = await collectChunks(result.fullStream);
     const types = chunks.map((c: TextStreamChunk) => c.type);
-    expect(types).toEqual([
-      "text-delta",
-      "text-delta",
-      "text-delta",
-      "finish",
-    ]);
+    expect(types).toEqual(["text-delta", "text-delta", "text-delta", "finish"]);
 
     expect(await result.text).toBe("Hello, world!");
     expect(await result.finishReason).toBe("stop");
@@ -228,12 +229,12 @@ describe("streamText", () => {
     const enc = new TextEncoder();
     const body = new ReadableStream<Uint8Array>({
       start(c) {
-        const frame1 = `data: ${
-          chunkFrame({ delta: { content: "split " } })
-        }\n\n`;
-        const frame2 = `data: ${
-          chunkFrame({ delta: { content: "frames" } })
-        }\n\n`;
+        const frame1 = `data: ${chunkFrame({
+          delta: { content: "split " },
+        })}\n\n`;
+        const frame2 = `data: ${chunkFrame({
+          delta: { content: "frames" },
+        })}\n\n`;
         const frame3 = `data: ${chunkFrame({ finishReason: "stop" })}\n\n`;
         const done = `data: [DONE]\n\n`;
         // Push frame1 in two halves
@@ -259,15 +260,17 @@ describe("streamText", () => {
     const { client } = createMockClient({
       frames: [
         chunkFrame({
-          toolCalls: [{
-            index: 0,
-            id: "call-1",
-            name: "getWeather",
-            arguments: "{\"ci",
-          }],
+          toolCalls: [
+            {
+              index: 0,
+              id: "call-1",
+              name: "getWeather",
+              arguments: '{"ci',
+            },
+          ],
         }),
         chunkFrame({
-          toolCalls: [{ index: 0, arguments: "ty\":\"SF\"}" }],
+          toolCalls: [{ index: 0, arguments: 'ty":"SF"}' }],
         }),
         chunkFrame({
           finishReason: "tool_calls",
@@ -279,9 +282,16 @@ describe("streamText", () => {
     const result = streamText({ model, prompt: "what's SF weather?" });
 
     const chunks = await collectChunks(result.fullStream);
-    const toolCalls = chunks.filter((c): c is Extract<TextStreamChunk, {
-      type: "tool-call";
-    }> => c.type === "tool-call");
+    const toolCalls = chunks.filter(
+      (
+        c
+      ): c is Extract<
+        TextStreamChunk,
+        {
+          type: "tool-call";
+        }
+      > => c.type === "tool-call"
+    );
     expect(toolCalls).toHaveLength(1);
     expect(toolCalls[0]).toEqual({
       type: "tool-call",
@@ -291,12 +301,14 @@ describe("streamText", () => {
     });
 
     expect(await result.finishReason).toBe("tool-calls");
-    expect(await result.toolCalls).toEqual([{
-      type: "tool-call",
-      toolCallId: "call-1",
-      toolName: "getWeather",
-      input: { city: "SF" },
-    }]);
+    expect(await result.toolCalls).toEqual([
+      {
+        type: "tool-call",
+        toolCallId: "call-1",
+        toolName: "getWeather",
+        input: { city: "SF" },
+      },
+    ]);
   });
 
   it("invokes onChunk and onFinish callbacks", async () => {
@@ -348,7 +360,7 @@ describe("streamText", () => {
     const errChunk = chunks.find((c) => c.type === "error");
     expect(errChunk).toBeDefined();
 
-    await expect(result.text).rejects.toThrow(/500/);
+    await expect(result.text).rejects.toThrow(/500/u);
     await new Promise((r) => setTimeout(r, 0));
     expect(onError).toHaveBeenCalledTimes(1);
   });
@@ -390,7 +402,7 @@ describe("streamText", () => {
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
       })
-    ).toThrow(/cannot specify both/);
+    ).toThrow(/cannot specify both/u);
   });
 
   it("skips malformed SSE frames and surfaces a warning", async () => {
@@ -399,10 +411,10 @@ describe("streamText", () => {
       start(c) {
         c.enqueue(enc.encode(`data: not-json{{{\n\n`));
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ delta: { content: "ok" } })}\n\n`),
+          enc.encode(`data: ${chunkFrame({ delta: { content: "ok" } })}\n\n`)
         );
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ finishReason: "stop" })}\n\n`),
+          enc.encode(`data: ${chunkFrame({ finishReason: "stop" })}\n\n`)
         );
         c.enqueue(enc.encode(`data: [DONE]\n\n`));
         c.close();
@@ -427,16 +439,14 @@ describe("streamText", () => {
     const body = new ReadableStream<Uint8Array>({
       start(c) {
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ delta: { content: "x" } })}\n\n`),
+          enc.encode(`data: ${chunkFrame({ delta: { content: "x" } })}\n\n`)
         );
         c.enqueue(
           enc.encode(
-            `data: ${
-              JSON.stringify({
-                error: { message: "upstream model went away" },
-              })
-            }\n\n`,
-          ),
+            `data: ${JSON.stringify({
+              error: { message: "upstream model went away" },
+            })}\n\n`
+          )
         );
         c.close();
       },
@@ -453,6 +463,6 @@ describe("streamText", () => {
     const chunks = await collectChunks(result.fullStream);
     const errChunk = chunks.find((c) => c.type === "error");
     expect(errChunk).toBeDefined();
-    await expect(result.text).rejects.toThrow(/upstream model went away/);
+    await expect(result.text).rejects.toThrow(/upstream model went away/u);
   });
 });

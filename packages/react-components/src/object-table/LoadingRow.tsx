@@ -16,9 +16,11 @@
 
 import type { HeaderGroup, RowData } from "@tanstack/react-table";
 import React from "react";
+
 import { LoadingCell } from "./LoadingCell.js";
-import rowStyles from "./TableRow.module.css";
 import { DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT } from "./utils/constants.js";
+
+import rowStyles from "./TableRow.module.css";
 
 interface LoadingRowProps<TData extends RowData> {
   headers: HeaderGroup<TData>["headers"];
@@ -46,9 +48,8 @@ export function LoadingRow<TData extends RowData>({
       {
         <>
           {Array.from({ length: columnCount }).map((_, index) => {
-            const width = headers.length > index
-              ? headers[index].getSize()
-              : columnWidth;
+            const width =
+              headers.length > index ? headers[index].getSize() : columnWidth;
             return <LoadingCell key={`loading-cell-${index}`} width={width} />;
           })}
         </>

@@ -13,7 +13,7 @@ function shuffleArray<T>(array: T[]): T[] {
 export function generateChanges(
   employees: Employee.OsdkInstance[],
   offices: Office.OsdkInstance[],
-  config: ReorgConfig,
+  config: ReorgConfig
 ): Map<number, EmployeeChange> {
   switch (config.algorithm) {
     case "shuffle":
@@ -29,7 +29,7 @@ export function generateChanges(
 }
 
 function generateManualChanges(
-  employees: Employee.OsdkInstance[],
+  employees: Employee.OsdkInstance[]
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();
   employees.forEach((employee) => {
@@ -43,15 +43,15 @@ function generateManualChanges(
 function generateShuffleChanges(
   employees: Employee.OsdkInstance[],
   offices: Office.OsdkInstance[],
-  config: ReorgConfig,
+  config: ReorgConfig
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();
 
   if (offices.length === 0) return changes;
 
-  const officesWithPk = offices.filter((
-    o,
-  ): o is typeof o & { primaryKey_: string } => o.primaryKey_ != null);
+  const officesWithPk = offices.filter(
+    (o): o is typeof o & { primaryKey_: string } => o.primaryKey_ != null
+  );
   if (officesWithPk.length === 0) return changes;
 
   const officeIds = officesWithPk.map((o) => o.primaryKey_);
@@ -92,23 +92,24 @@ function generateShuffleChanges(
       if (currentOfficeId) {
         targetCounts.set(
           currentOfficeId,
-          (targetCounts.get(currentOfficeId) ?? 0) + 1,
+          (targetCounts.get(currentOfficeId) ?? 0) + 1
         );
       }
       continue;
     }
 
-    const otherOffices = availableOffices.filter((id) =>
-      id !== currentOfficeId
+    const otherOffices = availableOffices.filter(
+      (id) => id !== currentOfficeId
     );
-    const targetOfficeId = otherOffices.length > 0
-      ? otherOffices[Math.floor(Math.random() * otherOffices.length)]
-      : availableOffices[Math.floor(Math.random() * availableOffices.length)];
+    const targetOfficeId =
+      otherOffices.length > 0
+        ? otherOffices[Math.floor(Math.random() * otherOffices.length)]
+        : availableOffices[Math.floor(Math.random() * availableOffices.length)];
 
     changes.set(employee.employeeNumber, { targetOfficeId });
     targetCounts.set(
       targetOfficeId,
-      (targetCounts.get(targetOfficeId) ?? 0) + 1,
+      (targetCounts.get(targetOfficeId) ?? 0) + 1
     );
   }
 
@@ -118,7 +119,7 @@ function generateShuffleChanges(
 function generateSwapChanges(
   employees: Employee.OsdkInstance[],
   _offices: Office.OsdkInstance[],
-  config: ReorgConfig,
+  config: ReorgConfig
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();
 
@@ -139,7 +140,7 @@ function generateSwapChanges(
 function generateConsolidateChanges(
   employees: Employee.OsdkInstance[],
   _offices: Office.OsdkInstance[],
-  config: ReorgConfig,
+  config: ReorgConfig
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();
 

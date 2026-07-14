@@ -16,6 +16,7 @@
 
 import { TypeHelpers as TH } from "@osdk/faux";
 import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
+
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -34,7 +35,7 @@ export const PromoteEmployee: ActionTypeV2 = {
   description: "Update an employee's title and compensation",
   parameters: {
     employeeId: {
-      "displayName": "Employee ID",
+      displayName: "Employee ID",
       dataType: {
         type: "integer",
       },
@@ -42,7 +43,7 @@ export const PromoteEmployee: ActionTypeV2 = {
       typeClasses: [],
     },
     newTitle: {
-      "displayName": "New Title",
+      displayName: "New Title",
       dataType: {
         type: "string",
       },
@@ -50,7 +51,7 @@ export const PromoteEmployee: ActionTypeV2 = {
       typeClasses: [],
     },
     newCompensation: {
-      "displayName": "New Compensation",
+      displayName: "New Compensation",
       dataType: {
         type: "double",
       },
@@ -59,10 +60,12 @@ export const PromoteEmployee: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: employeeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: employeeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -71,7 +74,7 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
   description: "Update an employee's title and compensation",
   parameters: {
     employee: {
-      "displayName": "Employee",
+      displayName: "Employee",
       dataType: {
         type: "object",
         objectApiName: employeeObjectType.apiName,
@@ -98,10 +101,12 @@ export const PromoteEmployeeObject: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: employeeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: employeeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -151,10 +156,12 @@ export const CreateOffice: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
-  operations: [{
-    type: "createObject",
-    objectTypeApiName: officeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "createObject",
+      objectTypeApiName: officeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -267,10 +274,12 @@ export const MoveOffice: ActionTypeV2 = {
     },
   },
   rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
-  operations: [{
-    type: "modifyObject",
-    objectTypeApiName: officeObjectType.apiName,
-  }],
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: officeObjectType.apiName,
+    },
+  ],
   status: "ACTIVE",
 };
 
@@ -423,8 +432,8 @@ export const ActionCreatesInterface: ActionTypeV2 = {
   rid: "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
   operations: [
     {
-      "type": "createInterfaceObject",
-      "interfaceTypeApiName": "FooInterface",
+      type: "createInterfaceObject",
+      interfaceTypeApiName: "FooInterface",
     },
   ],
 };
@@ -465,7 +474,7 @@ export const ActionTakesStruct: ActionTypeV2 = {
             fieldType: {
               type: "integer",
             },
-            required: true,
+            required: false,
           },
         ],
       },

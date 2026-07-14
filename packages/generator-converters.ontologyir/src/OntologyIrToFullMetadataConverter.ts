@@ -40,7 +40,7 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-import { convertDataType } from "./convertDataType.js";
+import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
@@ -469,7 +469,13 @@ export class OntologyIrToFullMetadataConverter {
         version: "0.0.0",
         parameters: func.inputs.reduce<
           Record<ApiName, Ontologies.QueryParameterV2>
-        >((acc, input) => {
+        >((acc, input, index) => {
+          // Discovery emits diagnostics requiring injected context to be the
+          // first function argument, so only strip it from that position.
+          if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
+            return acc;
+          }
+
           acc[input.name] = {
             dataType: convertDataType(
               input.dataType,
@@ -957,7 +963,7 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -1063,6 +1069,9 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
+        case "addInterfaceLinkRuleV2":
+        case "deleteInterfaceLinkRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }

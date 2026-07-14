@@ -21,10 +21,10 @@ export async function promptProject({
 }: {
   project?: string;
 }): Promise<string> {
-  while (project == null || !/^[a-zA-Z0-9-_]+$/.test(project)) {
+  while (project == null || !/^[a-zA-Z0-9-_]+$/u.test(project)) {
     if (project != null) {
       consola.fail(
-        "Project name can only contain alphanumeric characters, hyphens and underscores",
+        "Project name can only contain alphanumeric characters, hyphens and underscores"
       );
     }
     project = await consola.prompt("Project name:", {

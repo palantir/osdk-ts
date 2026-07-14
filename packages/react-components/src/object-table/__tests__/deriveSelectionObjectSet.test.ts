@@ -16,6 +16,7 @@
 
 import type { ObjectSet } from "@osdk/api";
 import { describe, expect, it, vi } from "vitest";
+
 import type { UseRowSelectionChange } from "../hooks/useRowSelection.js";
 import { deriveSelectionObjectSet } from "../utils/deriveSelectionObjectSet.js";
 
@@ -33,10 +34,10 @@ function makeObjectSet(): {
 
 function makeChange(
   primaryKeys: number[],
-  isSelectAll: boolean,
+  isSelectAll: boolean
 ): UseRowSelectionChange<never> {
   return {
-    selectedRows: primaryKeys.map(pk => ({ $primaryKey: pk })),
+    selectedRows: primaryKeys.map((pk) => ({ $primaryKey: pk })),
     isSelectAll,
   } as unknown as UseRowSelectionChange<never>;
 }
@@ -47,7 +48,7 @@ describe("deriveSelectionObjectSet", () => {
 
     const result = deriveSelectionObjectSet(
       objectSet,
-      makeChange([1, 2], false),
+      makeChange([1, 2], false)
     );
 
     expect(where).toHaveBeenCalledWith({
@@ -61,7 +62,7 @@ describe("deriveSelectionObjectSet", () => {
 
     const result = deriveSelectionObjectSet(
       objectSet,
-      makeChange([1, 2], true),
+      makeChange([1, 2], true)
     );
 
     expect(where).not.toHaveBeenCalled();

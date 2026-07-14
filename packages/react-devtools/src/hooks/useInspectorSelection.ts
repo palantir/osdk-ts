@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { DiscoveredPrimitives } from "../utils/ComponentPrimitiveDiscovery.js";
 
@@ -62,22 +63,22 @@ class InspectorSelectionStore {
 
     window.addEventListener(
       "primitives-discovered",
-      handlePrimitivesDiscovered,
+      handlePrimitivesDiscovered
     );
     window.addEventListener(
       "inspector-deactivated",
-      handleSelectionModeDeactivated,
+      handleSelectionModeDeactivated
     );
 
     return () => {
       this.listeners.delete(callback);
       window.removeEventListener(
         "primitives-discovered",
-        handlePrimitivesDiscovered,
+        handlePrimitivesDiscovered
       );
       window.removeEventListener(
         "inspector-deactivated",
-        handleSelectionModeDeactivated,
+        handleSelectionModeDeactivated
       );
     };
   }
@@ -114,7 +115,7 @@ class InspectorSelectionStore {
 }
 
 export function useInspectorSelection(
-  monitorStore: MonitorStore,
+  monitorStore: MonitorStore
 ): InspectorSelectionState {
   const storeRef = React.useRef<InspectorSelectionStore | null>(null);
 
@@ -126,24 +127,21 @@ export function useInspectorSelection(
 
   const subscribe = React.useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store],
+    [store]
   );
 
-  const getSnapshot = React.useCallback(
-    () => store.getSnapshot(),
-    [store],
-  );
+  const getSnapshot = React.useCallback(() => store.getSnapshot(), [store]);
 
   const snapshot = React.useSyncExternalStore(subscribe, getSnapshot);
 
   const activateSelection = React.useCallback(
     () => store.activateSelection(monitorStore),
-    [store, monitorStore],
+    [store, monitorStore]
   );
 
   const clearDiscoveredPrimitives = React.useCallback(
     () => store.clearDiscoveredPrimitives(),
-    [store],
+    [store]
   );
 
   return {

@@ -18,11 +18,12 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ObjectPropertyType, ObjectType } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
+
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 export function convertObjectType(
-  fullMetadata: Ontologies.ObjectTypeFullMetadata,
+  fullMetadata: Ontologies.ObjectTypeFullMetadata
 ): ObjectType {
   const obj = fullMetadata.objectType;
   const properties: Array<ObjectPropertyType> = [];
@@ -31,7 +32,7 @@ export function convertObjectType(
     const mapped = mapPropertyType(propV2.dataType);
     if (!mapped) {
       consola.warn(
-        `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`,
+        `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`
       );
       continue;
     }
@@ -65,7 +66,7 @@ export function convertObjectType(
 }
 
 function mapObjectStatus(
-  status: string,
+  status: string
 ): "active" | "experimental" | undefined {
   switch (status) {
     case "ACTIVE":

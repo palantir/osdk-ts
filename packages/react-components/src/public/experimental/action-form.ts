@@ -18,7 +18,7 @@ import { ActionForm as _ActionForm } from "../../action-form/ActionForm.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const ActionForm: typeof _ActionForm = withOsdkMetrics(
   _ActionForm,
-  "ActionForm",
+  "ActionForm"
 );
 export type {
   ActionFormProps,

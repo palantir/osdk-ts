@@ -22,10 +22,11 @@ import type {
 } from "@osdk/api";
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
+
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import type { OrderBy } from "../utils/types.js";
 
-interface UseTableSortingProps<
+export interface UseTableSortingProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -44,7 +45,7 @@ interface UseTableSortingProps<
   >["onOrderByChanged"];
 }
 
-interface UseTableSortingResults<
+export interface UseTableSortingResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
@@ -64,7 +65,7 @@ export const useTableSorting = <
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
-}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResults<
+}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResult<
   Q,
   RDPs
 > => {
@@ -80,7 +81,7 @@ export const useTableSorting = <
   // If uncontrolled, return the internalSorting state
   const sortingState: SortingState = useMemo(
     () => (orderBy ? convertOrderByToSortingState(orderBy) : internalSorting),
-    [orderBy, internalSorting],
+    [orderBy, internalSorting]
   );
 
   const orderByState: OrderBy<Q, RDPs> = useMemo(() => {
@@ -89,15 +90,14 @@ export const useTableSorting = <
       : convertSortingStateToOrderBy(internalSorting);
 
     return Object.fromEntries(
-      currentOrderBy.map(({ property, direction }) => [property, direction]),
+      currentOrderBy.map(({ property, direction }) => [property, direction])
     ) as OrderBy<Q, RDPs>;
   }, [orderBy, internalSorting]);
 
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
     (updater) => {
-      const newSorting = typeof updater === "function"
-        ? updater(sortingState)
-        : updater;
+      const newSorting =
+        typeof updater === "function" ? updater(sortingState) : updater;
 
       // Update internal state if uncontrolled
       if (!isControlled) {
@@ -109,7 +109,7 @@ export const useTableSorting = <
         onOrderByChanged(newOrderBy);
       }
     },
-    [isControlled, sortingState, onOrderByChanged],
+    [isControlled, sortingState, onOrderByChanged]
   );
 
   return { sorting: sortingState, orderByState, onSortingChange };
@@ -119,7 +119,7 @@ function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(
   orderBy: Array<{
     property: PropertyKeys<Q>;
     direction: "asc" | "desc";
-  }>,
+  }>
 ): SortingState {
   return orderBy.map(({ property, direction }) => ({
     id: property,
@@ -128,7 +128,7 @@ function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(
 }
 
 function convertSortingStateToOrderBy<Q extends ObjectOrInterfaceDefinition>(
-  sorting: SortingState,
+  sorting: SortingState
 ): Array<{
   property: PropertyKeys<Q>;
   direction: "asc" | "desc";

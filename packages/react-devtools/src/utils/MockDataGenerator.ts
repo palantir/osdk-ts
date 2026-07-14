@@ -37,8 +37,8 @@ export class MockDataGenerator {
       const objectType = this.extractObjectTypeFromAction(actionName);
       parameters = this.generateCreateParameters(objectType);
     } else if (
-      actionName.toLowerCase().includes("update")
-      || actionName.toLowerCase().includes("modify")
+      actionName.toLowerCase().includes("update") ||
+      actionName.toLowerCase().includes("modify")
     ) {
       const objectType = this.extractObjectTypeFromAction(actionName);
       parameters = this.generateUpdateParameters(objectType);
@@ -64,7 +64,7 @@ export class MockDataGenerator {
         },
       },
       null,
-      2,
+      2
     );
   }
 
@@ -81,7 +81,7 @@ export class MockDataGenerator {
       case "query":
         return this.generateQueryMockData(primitive.data);
       case "aggregation":
-        return "{\n  \"data\": {},\n  \"status\": \"SUCCESS\"\n}";
+        return '{\n  "data": {},\n  "status": "SUCCESS"\n}';
     }
   }
 
@@ -98,7 +98,7 @@ export class MockDataGenerator {
       case "query":
         return this.generateQueryFunctionCode(primitive.data);
       case "aggregation":
-        return "function generateMock(params) {\n  return {\n    data: {},\n    status: \"SUCCESS\"\n  };\n}";
+        return 'function generateMock(params) {\n  return {\n    data: {},\n    status: "SUCCESS"\n  };\n}';
     }
   }
 
@@ -119,7 +119,7 @@ export class MockDataGenerator {
       addedObjects: [
         {
           primaryKey: actionId,
-          objectType: objectType,
+          objectType,
         },
       ],
       modifiedObjects: [],
@@ -150,7 +150,7 @@ export class MockDataGenerator {
   }
 
   private static generateObjectSetMockData(
-    objectSetData: DiscoveredObjectSet,
+    objectSetData: DiscoveredObjectSet
   ): string {
     const objectType = objectSetData.type;
     const pageSize = objectSetData.pageSize || 10;
@@ -166,7 +166,7 @@ export class MockDataGenerator {
           __title: `${objectType} ${index + 1}`,
           ...this.generateFieldsForObjectType(objectType),
         };
-      },
+      }
     );
 
     const mockData = {
@@ -226,7 +226,7 @@ export class MockDataGenerator {
   }
 
   private static generateActionFunctionCode(
-    actionData: DiscoveredAction,
+    actionData: DiscoveredAction
   ): string {
     const actionName = actionData.name;
 
@@ -267,7 +267,7 @@ function generateId() {
   }
 
   private static generateObjectFunctionCode(
-    objectData: DiscoveredObject,
+    objectData: DiscoveredObject
   ): string {
     const objectType = objectData.type;
 
@@ -293,7 +293,7 @@ function generateId() {
   }
 
   private static generateObjectSetFunctionCode(
-    objectSetData: DiscoveredObjectSet,
+    objectSetData: DiscoveredObjectSet
   ): string {
     const objectType = objectSetData.type;
 
@@ -330,7 +330,7 @@ function generateId() {
     const linkName = linkData.linkName;
     const linkedType = this.inferLinkedTypeFromLinkName(
       linkName,
-      linkData.sourceType,
+      linkData.sourceType
     );
 
     return `function generateMock(params) {
@@ -396,7 +396,7 @@ function generateId() {
   }
 
   private static generateFieldsForObjectType(
-    objectType: string,
+    objectType: string
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -434,7 +434,7 @@ function generateId() {
   }
 
   private static generateDynamicFieldsForObjectType(
-    objectType: string,
+    objectType: string
   ): string {
     if (objectType === "Todo") {
       return `title: \`Todo Item \${index || ""}\`,
@@ -457,18 +457,19 @@ function generateId() {
 
   private static extractObjectTypeFromAction(actionName: string): string {
     const patterns = [
-      /create[_-]?(\w+)/i,
-      /add[_-]?(\w+)/i,
-      /new[_-]?(\w+)/i,
-      /(\w+)[_-]?create/i,
-      /(\w+)[_-]?add/i,
+      /create[_-]?(\w+)/iu,
+      /add[_-]?(\w+)/iu,
+      /new[_-]?(\w+)/iu,
+      /(\w+)[_-]?create/iu,
+      /(\w+)[_-]?add/iu,
     ];
 
     for (const pattern of patterns) {
       const match = actionName.match(pattern);
       if (match && match[1]) {
-        return match[1].charAt(0).toUpperCase()
-          + match[1].slice(1).toLowerCase();
+        return (
+          match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase()
+        );
       }
     }
 
@@ -477,7 +478,7 @@ function generateId() {
 
   private static inferLinkedTypeFromLinkName(
     linkName: string,
-    sourceType: string,
+    sourceType: string
   ): string {
     if (linkName === "occupants" || linkName === "employees") {
       return "Employee";
@@ -494,7 +495,7 @@ function generateId() {
 
     let singular = linkName;
     if (linkName.endsWith("ies")) {
-      singular = linkName.slice(0, -3) + "y";
+      singular = `${linkName.slice(0, -3)}y`;
     } else if (linkName.endsWith("es")) {
       singular = linkName.slice(0, -2);
     } else if (linkName.endsWith("s")) {
@@ -505,7 +506,7 @@ function generateId() {
   }
 
   private static generateCreateParameters(
-    objectType: string,
+    objectType: string
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -532,7 +533,7 @@ function generateId() {
   }
 
   private static generateUpdateParameters(
-    objectType: string,
+    objectType: string
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -558,7 +559,7 @@ function generateId() {
   }
 
   private static generateDeleteParameters(
-    _objectType: string,
+    _objectType: string
   ): Record<string, unknown> {
     return {
       object: { $primaryKey: crypto.randomUUID() },

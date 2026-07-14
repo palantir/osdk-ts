@@ -25,8 +25,8 @@ export function detectEnvironment(): AliasEnvironment {
 
   if (aliasesFileSet && resourcesFileSet) {
     throw new Error(
-      `Ambiguous alias configuration: both ${ALIASES_JSON_FILE_ENV_VAR} and `
-        + `${RESOURCES_JSON_FILE_ENV_VAR} are set. Only one should be configured.`,
+      `Ambiguous alias configuration: both ${ALIASES_JSON_FILE_ENV_VAR} and ` +
+        `${RESOURCES_JSON_FILE_ENV_VAR} are set. Only one should be configured.`
     );
   }
 
@@ -38,7 +38,7 @@ export function detectEnvironment(): AliasEnvironment {
   }
 
   throw new Error(
-    `Unknown alias environment: neither ${ALIASES_JSON_FILE_ENV_VAR} nor ${RESOURCES_JSON_FILE_ENV_VAR} is set.`,
+    `Unknown alias environment: neither ${ALIASES_JSON_FILE_ENV_VAR} nor ${RESOURCES_JSON_FILE_ENV_VAR} is set.`
   );
 }
 
@@ -46,7 +46,7 @@ export function getAliasesFilePath(): string {
   const path = process.env[ALIASES_JSON_FILE_ENV_VAR];
   if (path == null) {
     throw new Error(
-      `${ALIASES_JSON_FILE_ENV_VAR} environment variable is not set`,
+      `${ALIASES_JSON_FILE_ENV_VAR} environment variable is not set`
     );
   }
   return path;
@@ -56,7 +56,7 @@ export function getResourcesFilePath(): string {
   const path = process.env[RESOURCES_JSON_FILE_ENV_VAR];
   if (path == null) {
     throw new Error(
-      `${RESOURCES_JSON_FILE_ENV_VAR} environment variable is not set`,
+      `${RESOURCES_JSON_FILE_ENV_VAR} environment variable is not set`
     );
   }
   return path;

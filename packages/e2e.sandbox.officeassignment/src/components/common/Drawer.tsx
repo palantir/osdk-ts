@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import styles from "./Drawer.module.css";
 
 export interface DrawerProps {
@@ -47,7 +48,9 @@ export function Drawer(props: DrawerProps): React.JSX.Element | null {
         aria-labelledby={titleId}
       >
         <header className={styles.header}>
-          <div id={titleId} className={styles.title}>{title}</div>
+          <div id={titleId} className={styles.title}>
+            {title}
+          </div>
           <button
             type="button"
             className={styles.closeButton}

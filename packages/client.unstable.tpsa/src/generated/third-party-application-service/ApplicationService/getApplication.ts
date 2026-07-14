@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { VersionedApplication } from "../VersionedApplication.js";
 
@@ -26,7 +27,7 @@ import type { VersionedApplication } from "../VersionedApplication.js";
  */
 export async function getApplication(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid,
+  applicationRid: ApplicationRid
 ): Promise<VersionedApplication> {
   return conjureFetch(ctx, `/applications/${applicationRid}`, "GET");
 }

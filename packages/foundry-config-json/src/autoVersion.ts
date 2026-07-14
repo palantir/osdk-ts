@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
+
+import { findUp } from "find-up";
 import { valid } from "semver";
+
 import type { AutoVersionConfig } from "./config.js";
 import { execAsync } from "./execAsync.js";
 
 export class AutoVersionError extends Error {
   constructor(
     public readonly msg: string,
-    public readonly tip?: string,
+    public readonly tip?: string
   ) {
     super(msg);
+    this.name = "AutoVersionError";
   }
 }
 
@@ -36,6 +39,8 @@ export class AutoVersionError extends Error {
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function autoVersion(config: AutoVersionConfig): Promise<string> {
   switch (config.type) {
     case "git-describe":
@@ -45,15 +50,18 @@ export async function autoVersion(config: AutoVersionConfig): Promise<string> {
     default:
       const value: never = config;
       throw new Error(
-        `Unexpected auto version config: (${JSON.stringify(value)})`,
+        `Unexpected auto version config: (${JSON.stringify(value)})`
       );
   }
 }
 
 async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
-  const [matchPrefix, prefixRegex] = tagPrefix !== ""
-    ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
-    : [undefined, new RegExp(`^v?`)];
+  const [matchPrefix, prefixRegex] =
+    tagPrefix !== ""
+      ? // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+        [tagPrefix, new RegExp(`^${tagPrefix}`)]
+      : // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+        [undefined, new RegExp(`^v?`)];
 
   const gitVersion = await gitDescribe(matchPrefix);
   const version = gitVersion.trim().replace(prefixRegex, "");
@@ -65,7 +73,7 @@ async function packageJsonAutoVersion(): Promise<string> {
   const packageJsonPath = await findUp("package.json");
   if (!packageJsonPath) {
     throw new AutoVersionError(
-      `Couldn't find package.json file in the current working directory or its parents: ${process.cwd()}`,
+      `Couldn't find package.json file in the current working directory or its parents: ${process.cwd()}`
     );
   }
 
@@ -75,7 +83,7 @@ async function packageJsonAutoVersion(): Promise<string> {
     packageJson = JSON.parse(fileContent);
   } catch (error) {
     throw new AutoVersionError(
-      `Couldn't read or parse package.json file ${packageJsonPath}. Error: ${error}`,
+      `Couldn't read or parse package.json file ${packageJsonPath}. Error: ${error}`
     );
   }
 
@@ -91,7 +99,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       `git describe --tags --first-parent --dirty${
         matchPrefix != null ? ` --match="${matchPrefix}*"` : ""
       }`,
-      { encoding: "utf8" },
+      { encoding: "utf8" }
     );
     gitVersion = stdout;
   } catch (error: any) {
@@ -99,40 +107,38 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       const errorMessage: string = error.message.toLowerCase();
 
       if (
-        errorMessage.includes("not recognized")
-        || errorMessage.includes("command not found")
-        || errorMessage.includes("no such file or directory")
+        errorMessage.includes("not recognized") ||
+        errorMessage.includes("command not found") ||
+        errorMessage.includes("no such file or directory")
       ) {
         throw new AutoVersionError(
           "Unable to determine auto version using git-describe as git is not installed or found in the PATH.",
-          `You can set up git and try again or supply a --version option to set the version manually`,
+          `You can set up git and try again or supply a --version option to set the version manually`
         );
       }
 
-      if (
-        errorMessage.includes("fatal: not a git repository")
-      ) {
+      if (errorMessage.includes("fatal: not a git repository")) {
         throw new AutoVersionError(
           `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
-          `You can run the command in a git repository and try again or supply a --version option to set the version manually`,
+          `You can run the command in a git repository and try again or supply a --version option to set the version manually`
         );
       }
 
       if (
         errorMessage.includes(
-          "fatal: no names found, cannot describe anything.",
+          "fatal: no names found, cannot describe anything."
         )
       ) {
         throw new AutoVersionError(
           `Unable to determine auto version using git-describe as no matching tags were found.`,
-          `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`,
+          `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`
         );
       }
     }
 
     throw new AutoVersionError(
       `Unable to determine auto version using git-describe: ${error}.`,
-      `You can supply a --version option to set the version manually`,
+      `You can supply a --version option to set the version manually`
     );
   }
 
@@ -142,7 +148,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
 function validateVersion(version: string): void {
   if (valid(version) == null) {
     throw new AutoVersionError(
-      `The version string ${version} is not SemVer compliant.`,
+      `The version string ${version} is not SemVer compliant.`
     );
   }
 }

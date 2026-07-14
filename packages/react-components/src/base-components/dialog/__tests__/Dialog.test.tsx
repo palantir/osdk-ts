@@ -17,6 +17,7 @@
 import { render, screen } from "@testing-library/react";
 import React, { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { PortalContainerProvider } from "../../../shared/PortalContainerContext.js";
 import { Dialog } from "../Dialog.js";
 
@@ -34,12 +35,10 @@ describe(Dialog, () => {
           Dialog content
         </Dialog>
         <div data-testid="dialog-portal-container" ref={portalContainerRef} />
-      </PortalContainerProvider>,
+      </PortalContainerProvider>
     );
 
     const portalContainer = screen.getByTestId("dialog-portal-container");
-    expect(
-      portalContainer.contains(screen.getByRole("dialog")),
-    ).toBe(true);
+    expect(portalContainer.contains(screen.getByRole("dialog"))).toBe(true);
   });
 });

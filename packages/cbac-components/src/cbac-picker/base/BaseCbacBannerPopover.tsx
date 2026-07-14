@@ -19,13 +19,16 @@ import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
 import { ActionButton, SkeletonBar } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
+
 import {
   type AppliedMarkingGroup,
   backgroundFromColors,
 } from "../utils/cbacPickerUtils.js";
+
 export type { AppliedMarkingGroup } from "../utils/cbacPickerUtils.js";
 import { formatCbacError } from "../utils/errorMessages.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
+
 import styles from "./BaseCbacBannerPopover.module.css";
 
 export interface BaseCbacBannerPopoverProps {
@@ -64,10 +67,13 @@ export function BaseCbacBannerPopover({
     onEditClick();
   }, [onEditClick]);
 
-  const pillStyle = React.useMemo((): React.CSSProperties => ({
-    color: textColor,
-    background: backgroundFromColors(backgroundColors),
-  }), [textColor, backgroundColors]);
+  const pillStyle = React.useMemo(
+    (): React.CSSProperties => ({
+      color: textColor,
+      background: backgroundFromColors(backgroundColors),
+    }),
+    [textColor, backgroundColors]
+  );
 
   const showSkeleton = isLoading === true && appliedMarkings.length === 0;
 
@@ -87,7 +93,7 @@ export function BaseCbacBannerPopover({
             <span
               className={classnames(
                 styles.caretIcon,
-                open && styles.caretIconVisible,
+                open && styles.caretIconVisible
               )}
             >
               {open ? <CaretUp size={12} /> : <CaretDown size={12} />}
@@ -149,13 +155,9 @@ const PopoverContent = React.memo(function PopoverContent({
     const errorMessage = formatCbacError(error);
     return (
       <div className={styles.errorContainer}>
-        <p className={styles.errorMessage}>
-          {errorMessage.title}
-        </p>
+        <p className={styles.errorMessage}>{errorMessage.title}</p>
         {errorMessage.remediation && (
-          <p className={styles.errorRemediation}>
-            {errorMessage.remediation}
-          </p>
+          <p className={styles.errorRemediation}>{errorMessage.remediation}</p>
         )}
         {onRetry !== undefined && (
           <ActionButton variant="secondary" onClick={onRetry}>
@@ -182,22 +184,20 @@ const PopoverContent = React.memo(function PopoverContent({
 
       <p className={styles.sectionLabel}>Applied markings</p>
 
-      {hasMarkings
-        ? (
-          appliedMarkings.map((group) => (
-            <div key={group.categoryName} className={styles.markingGroup}>
-              <p className={styles.markingCategoryName}>
-                {group.categoryName}
+      {hasMarkings ? (
+        appliedMarkings.map((group) => (
+          <div key={group.categoryName} className={styles.markingGroup}>
+            <p className={styles.markingCategoryName}>{group.categoryName}</p>
+            {group.markingNames.map((name, i) => (
+              <p key={`${name}-${i}`} className={styles.markingName}>
+                {name}
               </p>
-              {group.markingNames.map((name, i) => (
-                <p key={`${name}-${i}`} className={styles.markingName}>
-                  {name}
-                </p>
-              ))}
-            </div>
-          ))
-        )
-        : <p className={styles.noMarkings}>No markings applied</p>}
+            ))}
+          </div>
+        ))
+      ) : (
+        <p className={styles.noMarkings}>No markings applied</p>
+      )}
 
       {hasWarnings && warnings !== undefined && (
         <>

@@ -19,20 +19,26 @@ import type {
   OntologyIrParameter,
   ParameterId,
 } from "@osdk/client.unstable";
+
 import type { ActionType } from "../../api/action/ActionType.js";
 
 export function convertActionParameters(
-  action: ActionType,
+  action: ActionType
 ): Record<ParameterId, OntologyIrParameter> {
-  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
-    id: p.id,
-    type: (typeof p.type === "string"
-      ? { type: p.type, [p.type]: {} }
-      : p.type) as OntologyIrBaseParameterType,
-    displayMetadata: {
-      displayName: p.displayName,
-      description: p.description ?? "",
-      typeClasses: p.typeClasses ?? [],
-    },
-  }]));
+  return Object.fromEntries(
+    (action.parameters ?? []).map((p) => [
+      p.id,
+      {
+        id: p.id,
+        type: (typeof p.type === "string"
+          ? { type: p.type, [p.type]: {} }
+          : p.type) as OntologyIrBaseParameterType,
+        displayMetadata: {
+          displayName: p.displayName,
+          description: p.description ?? "",
+          typeClasses: p.typeClasses ?? [],
+        },
+      },
+    ])
+  );
 }

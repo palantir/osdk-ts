@@ -16,8 +16,10 @@
 
 import classnames from "classnames";
 import React, { useMemo } from "react";
-import styles from "./BaseEmailViewer.module.css";
+
 import type { BaseEmailViewerProps, EmailAddress } from "./EmailViewerApi.js";
+
+import styles from "./BaseEmailViewer.module.css";
 
 function formatAddress(address: EmailAddress): string {
   if (address.name) {
@@ -40,19 +42,17 @@ export function BaseEmailViewer({
     if (email.html != null) {
       return (
         <div className={styles.bodyContainer}>
-          {
-            /*
-             * Security: allow-same-origin is needed so CSS within the email HTML
-             * resolves correctly. Scripts are blocked because allow-scripts is NOT
-             * set. Never add allow-scripts here — the combination of
-             * allow-same-origin + allow-scripts bypasses the sandbox entirely.
-             *
-             * Known limitation: because the iframe shares the parent origin,
-             * email CSS can make outbound requests via url() (e.g. tracking
-             * pixels in background-image) and can read CSS custom properties.
-             * This is acceptable for an experimental component.
-             */
-          }
+          {/*
+           * Security: allow-same-origin is needed so CSS within the email HTML
+           * resolves correctly. Scripts are blocked because allow-scripts is NOT
+           * set. Never add allow-scripts here — the combination of
+           * allow-same-origin + allow-scripts bypasses the sandbox entirely.
+           *
+           * Known limitation: because the iframe shares the parent origin,
+           * email CSS can make outbound requests via url() (e.g. tracking
+           * pixels in background-image) and can read CSS custom properties.
+           * This is acceptable for an experimental component.
+           */}
           <iframe
             className={styles.bodyIframe}
             sandbox="allow-same-origin"
@@ -63,17 +63,9 @@ export function BaseEmailViewer({
       );
     }
     if (email.text != null) {
-      return (
-        <div className={styles.textBody}>
-          {email.text}
-        </div>
-      );
+      return <div className={styles.textBody}>{email.text}</div>;
     }
-    return (
-      <div className={styles.emptyBody}>
-        No content
-      </div>
-    );
+    return <div className={styles.emptyBody}>No content</div>;
   }, [email.html, email.text]);
 
   return (

@@ -306,12 +306,12 @@ export function useReorgState(): UseReorgStateResult {
 
   const selectedCount = React.useMemo(
     () => state.selection.employeeIds.size,
-    [state.selection.employeeIds],
+    [state.selection.employeeIds]
   );
 
   const changesCount = React.useMemo(
     () => state.selection.changes.size,
-    [state.selection.changes],
+    [state.selection.changes]
   );
 
   const canProceedToSelect = React.useMemo(() => {
@@ -338,8 +338,10 @@ export function useReorgState(): UseReorgStateResult {
   }, [changesCount]);
 
   const isExecuting = React.useMemo(() => {
-    return state.execution.status === "running"
-      || state.execution.status === "rolling-back";
+    return (
+      state.execution.status === "running" ||
+      state.execution.status === "rolling-back"
+    );
   }, [state.execution.status]);
 
   return {

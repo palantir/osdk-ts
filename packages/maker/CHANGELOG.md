@@ -1,5 +1,116 @@
 # @osdk/maker
 
+## 0.46.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/typescript-sdk-docs@0.17.0
+  - @osdk/api@2.43.0
+
+## 0.45.0
+
+### Minor Changes
+
+- f49b4af: Migrate @osdk/maker, @osdk/maker-experimental, and @osdk/maker-import to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [cbcdce1]
+  - @osdk/api@2.42.0
+  - @osdk/typescript-sdk-docs@0.16.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
+## 0.44.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.43.0
+
+### Minor Changes
+
+- fcde4c0: Add `defineDeleteInterfaceLinkAction`.
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.42.0
+
+### Minor Changes
+
+- 1796140: Fix list-type action parameters being generated with a scalar required/notRequired configuration.
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+- @osdk/generator-converters.ontologyir@2.39.0
+
+## 0.41.0
+
+### Patch Changes
+
+- Updated dependencies [58b3367]
+  - @osdk/typescript-sdk-docs@0.15.0
+  - @osdk/api@2.38.0
+  - @osdk/generator-converters.ontologyir@2.38.0
+
+## 0.40.0
+
+### Patch Changes
+
+- Updated dependencies [0bd4a2e]
+  - @osdk/typescript-sdk-docs@0.14.0
+  - @osdk/api@2.37.0
+  - @osdk/generator-converters.ontologyir@2.37.0
+
+## 0.39.0
+
+### Minor Changes
+
+- 59115b1: Add `defineCreateInterfaceLinkAction`
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters.ontologyir@2.35.0
+
+## 0.38.0
+
+### Minor Changes
+
+- 90c415f: Support interface link actions
+
+## 0.37.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/api@2.34.0
+
 ## 0.36.0
 
 ### Minor Changes

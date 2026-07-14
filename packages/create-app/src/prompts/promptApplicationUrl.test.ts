@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptApplicationUrl } from "./promptApplicationUrl.js";
 
@@ -30,7 +31,7 @@ test("it accepts valid application url from prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("yes");
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(await promptApplicationUrl({ skipApplicationUrl: false })).toEqual(
-    valid,
+    valid
   );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
@@ -52,7 +53,7 @@ test("it accepts valid initial value without prompt", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(await promptApplicationUrl({ applicationUrl: "invalid" })).toEqual(
-    valid,
+    valid
   );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
@@ -72,7 +73,7 @@ test("it skips prompting application url if told to fill in later", async () => 
 
 test("it skips prompting completely if told to", async () => {
   expect(await promptApplicationUrl({ skipApplicationUrl: true })).toEqual(
-    undefined,
+    undefined
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });

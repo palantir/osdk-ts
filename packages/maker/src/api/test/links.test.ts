@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
@@ -40,7 +41,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -49,7 +50,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
+        properties: { fizz: { type: "string" }, bar: { type: "string" } },
       });
 
       defineLink({
@@ -402,7 +403,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -411,7 +412,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
+        properties: { fizz: { type: "string" }, bar: { type: "string" } },
       });
 
       defineLink({
@@ -807,7 +808,7 @@ describe("Link Types", () => {
         pluralDisplayName: "People",
         apiName: "person",
         primaryKeyPropertyApiName: "id",
-        properties: { "id": { type: "string" }, "name": { type: "string" } },
+        properties: { id: { type: "string" }, name: { type: "string" } },
       });
 
       defineLink({
@@ -834,12 +835,10 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["person-to-friend"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
       ).toBe("id_to");
     });
 
@@ -850,7 +849,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foos",
         apiName: "foo",
         primaryKeyPropertyApiName: "id",
-        properties: { "id": { type: "string" } },
+        properties: { id: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -859,7 +858,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Bars",
         apiName: "bar",
         primaryKeyPropertyApiName: "id",
-        properties: { "id": { type: "string" } },
+        properties: { id: { type: "string" } },
       });
 
       defineLink({
@@ -886,12 +885,10 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
       ).toBe("id_to");
     });
 
@@ -902,7 +899,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foos",
         apiName: "foo",
         primaryKeyPropertyApiName: "fooId",
-        properties: { "fooId": { type: "string" } },
+        properties: { fooId: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -911,7 +908,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Bars",
         apiName: "bar",
         primaryKeyPropertyApiName: "barId",
-        properties: { "barId": { type: "string" } },
+        properties: { barId: { type: "string" } },
       });
 
       defineLink({
@@ -938,12 +935,10 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
       ).toBe("fooId");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
-          .column,
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
       ).toBe("barId");
     });
 
@@ -954,7 +949,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foos",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -963,7 +958,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Fizzes",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "fizz": { type: "string" } },
+        properties: { fizz: { type: "string" } },
       });
 
       defineLink({
@@ -990,8 +985,9 @@ describe("Link Types", () => {
       const ontology = getOntologyDefinition();
       const link = ontology[OntologyEntityTypeEnum.LINK_TYPE].fizzToFoo;
       expect(
-        "many" in link && !("intermediaryObjectType" in link)
-          && link.includeEmptyBackingDatasource,
+        "many" in link &&
+          !("intermediaryObjectType" in link) &&
+          link.includeEmptyBackingDatasource
       ).toBe(true);
     });
 
@@ -1002,7 +998,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Bar",
         apiName: "barObject",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
       const fizz = defineObject({
@@ -1011,7 +1007,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizzObject",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "fizz": { type: "string" } },
+        properties: { fizz: { type: "string" } },
       });
 
       const intermediaryObject = defineObject({
@@ -1021,9 +1017,9 @@ describe("Link Types", () => {
         apiName: "buzzObject",
         primaryKeyPropertyApiName: "buzz",
         properties: {
-          "buzz": { type: "string" },
-          "barBuzz": { type: "string" },
-          "fizzBuzz": { type: "string" },
+          buzz: { type: "string" },
+          barBuzz: { type: "string" },
+          fizzBuzz: { type: "string" },
         },
       });
 
@@ -1664,7 +1660,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: { "bar": { type: "string" } },
+        properties: { bar: { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -1673,7 +1669,7 @@ describe("Link Types", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
+        properties: { fizz: { type: "string" }, bar: { type: "string" } },
       });
 
       defineLink({
@@ -2272,46 +2268,50 @@ describe("Link Types", () => {
   });
 
   it("serializes roles permission on link type", async () => {
-    await defineOntology("com.palantir.", () => {
-      const objA = defineObject({
-        apiName: "objA",
-        displayName: "ObjA",
-        pluralDisplayName: "ObjAs",
-        primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        properties: { "id": { type: "string" } },
-      });
-      const objB = defineObject({
-        apiName: "objB",
-        displayName: "ObjB",
-        pluralDisplayName: "ObjBs",
-        primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        properties: {
-          "id": { type: "string" },
-          "fk": { type: "string" },
-        },
-      });
+    await defineOntology(
+      "com.palantir.",
+      () => {
+        const objA = defineObject({
+          apiName: "objA",
+          displayName: "ObjA",
+          pluralDisplayName: "ObjAs",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+        });
+        const objB = defineObject({
+          apiName: "objB",
+          displayName: "ObjB",
+          pluralDisplayName: "ObjBs",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            fk: { type: "string" },
+          },
+        });
 
-      defineLink({
-        apiName: "aToB",
-        one: { object: objA, metadata: { apiName: "objAs" } },
-        toMany: { object: objB, metadata: { apiName: "objBs" } },
-        manyForeignKeyProperty: "fk",
-        permission: "roles",
-      });
+        defineLink({
+          apiName: "aToB",
+          one: { object: objA, metadata: { apiName: "objAs" } },
+          toMany: { object: objB, metadata: { apiName: "objBs" } },
+          manyForeignKeyProperty: "fk",
+          permission: "roles",
+        });
 
-      const bpi = dumpOntologyFullMetadata().ontology
-        .blockPermissionInformation!;
-      const ltPerms = Object.values(bpi.linkTypes);
-      expect(ltPerms).toHaveLength(1);
-      expect(ltPerms[0].restrictionStatus).toEqual({
-        restrictedByDatasources: false,
-        editRestrictedByDatasources: false,
-        publicProject: false,
-        ontologyPackageRid: null,
-      });
-    }, "/tmp/");
+        const bpi =
+          dumpOntologyFullMetadata().ontology.blockPermissionInformation!;
+        const ltPerms = Object.values(bpi.linkTypes);
+        expect(ltPerms).toHaveLength(1);
+        expect(ltPerms[0].restrictionStatus).toEqual({
+          restrictedByDatasources: false,
+          editRestrictedByDatasources: false,
+          publicProject: false,
+          ontologyPackageRid: null,
+        });
+      },
+      "/tmp/"
+    );
   });
 
   describe("Self-referential interface link constraints", () => {
@@ -2361,18 +2361,17 @@ describe("Link Types", () => {
       });
 
       const definition = getOntologyDefinition();
-      const objectEntity = definition[OntologyEntityTypeEnum.OBJECT_TYPE][
-        "com.palantir.treeObject"
-      ];
+      const objectEntity =
+        definition[OntologyEntityTypeEnum.OBJECT_TYPE][
+          "com.palantir.treeObject"
+        ];
       // Link types are stored under their raw apiName (defineLink does not
       // prepend the namespace, unlike objects/interfaces).
       const linkEntity =
         definition[OntologyEntityTypeEnum.LINK_TYPE].objectToObject;
 
-      expect(() => JSON.stringify(sanitizeTypes(objectEntity)))
-        .not.toThrow();
-      expect(() => JSON.stringify(sanitizeTypes(linkEntity)))
-        .not.toThrow();
+      expect(() => JSON.stringify(sanitizeTypes(objectEntity))).not.toThrow();
+      expect(() => JSON.stringify(sanitizeTypes(linkEntity))).not.toThrow();
     });
   });
 });

@@ -15,6 +15,7 @@
  */
 
 import type { CacheSnapshot } from "@osdk/client/observable";
+
 import type { MetricsStore } from "../store/MetricsStore.js";
 import { CacheEfficiencyAnalyzer } from "./CacheEfficiencyAnalyzer.js";
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
@@ -46,7 +47,25 @@ export interface Recommendation {
   suggestion: string;
   code?: string;
   dismissible: boolean;
+  filePath?: string;
+  lineNumber?: number;
+  currentCode?: string;
+  osdkGuidance?: string;
 }
+
+export const OSDK_GUIDANCE_BY_CATEGORY: Record<RecommendationCategory, string> =
+  {
+    Performance:
+      "Avoid sequential data dependencies. Prefer a single query (using $select, links, or an object set) over chained hooks that wait on one another, so the toolkit can resolve data in parallel.",
+    Bandwidth:
+      "Use $select to fetch only the properties a component reads. The toolkit caches and revalidates per-property, so narrower selections reduce payload size and unnecessary refetches.",
+    "Code Quality":
+      "Keep query definitions colocated with the component that consumes them and request only the data you render. Lean queries are easier for the toolkit to cache and dedupe.",
+    Cache:
+      "Reuse shared object sets and query keys so the toolkit can serve cached results instead of refetching. Avoid recreating query inputs on every render.",
+    Queries:
+      "Consolidate overlapping queries. The toolkit deduplicates identical query signatures, so aligning inputs lets multiple components share one subscription.",
+  };
 
 export interface PerformanceScore {
   overall: number; // 0-100
@@ -74,7 +93,7 @@ export class PerformanceRecommendationEngine {
   constructor(
     private metricsStore: MetricsStore,
     private registry: ComponentQueryRegistry,
-    private timeline: EventTimeline,
+    private timeline: EventTimeline
   ) {
     this.cacheAnalyzer = new CacheEfficiencyAnalyzer(metricsStore);
     this.fieldAnalyzer = new UnusedFieldAnalyzer(registry, undefined);
@@ -107,6 +126,7 @@ export class PerformanceRecommendationEngine {
         suggestion: wf.suggestion,
         code: wf.code,
         dismissible: true,
+        osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Performance,
       });
     }
 
@@ -118,20 +138,27 @@ export class PerformanceRecommendationEngine {
         continue;
       }
 
+      const subscribers = this.registry.getQuerySubscribers(
+        offender.querySignature
+      );
+      const locatedBinding = subscribers.find((b) => b.filePath);
+
       recommendations.push({
         id: `field-${offender.querySignature}`,
         level: offender.wastedBytes > 50000 ? "high" : "medium",
         category: "Bandwidth",
         title: `${offender.componentName} fetches unused data`,
-        description:
-          `This component fetches ${offender.fetched.length} properties but only uses ${offender.accessed.length}`,
-        impact: `Save ${
-          (offender.wastedBytes / 1024).toFixed(1)
-        }KB bandwidth per load`,
+        description: `This component fetches ${offender.fetched.length} properties but only uses ${offender.accessed.length}`,
+        impact: `Save ${(offender.wastedBytes / 1024).toFixed(
+          1
+        )}KB bandwidth per load`,
         effort: "Low",
         suggestion: "Use $select to only fetch used properties",
         code: offender.suggestion,
         dismissible: true,
+        filePath: locatedBinding?.filePath,
+        lineNumber: locatedBinding?.lineNumber,
+        osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Bandwidth,
       });
     }
 
@@ -152,6 +179,7 @@ export class PerformanceRecommendationEngine {
           effort: "Medium",
           suggestion: rec.suggestion,
           dismissible: true,
+          osdkGuidance: OSDK_GUIDANCE_BY_CATEGORY.Cache,
         });
       }
     }
@@ -175,21 +203,19 @@ export class PerformanceRecommendationEngine {
     const cacheMetrics = this.cacheAnalyzer.analyze(cacheSnapshot);
 
     const cacheScore = Math.round(cacheMetrics.score);
-    const queryScore = Math.round(
-      100 - Math.min(waterfalls.length * 5, 50),
-    );
+    const queryScore = Math.round(100 - Math.min(waterfalls.length * 5, 50));
     const bandwidthScore = Math.round(
-      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40),
+      100 - Math.min((fieldReport.totalWastedBytes / 1024 / 100) * 10, 40)
     );
     const codeQualityScore = Math.round(
-      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50),
+      100 - Math.min((1 - fieldReport.averageEfficiency) * 30, 50)
     );
 
     const overall = Math.round(
-      cacheScore * 0.3
-        + queryScore * 0.3
-        + bandwidthScore * 0.2
-        + codeQualityScore * 0.2,
+      cacheScore * 0.3 +
+        queryScore * 0.3 +
+        bandwidthScore * 0.2 +
+        codeQualityScore * 0.2
     );
 
     const breakdown = {
@@ -255,42 +281,46 @@ export class PerformanceRecommendationEngine {
     estimatedImprovement: string;
   } {
     const recommendations = this.generateRecommendations(cacheSnapshot);
-    const criticalCount =
-      recommendations.filter(r => r.level === "critical").length;
+    const criticalCount = recommendations.filter(
+      (r) => r.level === "critical"
+    ).length;
 
-    const lowEffortCount =
-      recommendations.filter(r => r.effort === "Low").length;
-    const mediumEffortCount =
-      recommendations.filter(r => r.effort === "Medium").length;
-    const highEffortCount =
-      recommendations.filter(r => r.effort === "High").length;
+    const lowEffortCount = recommendations.filter(
+      (r) => r.effort === "Low"
+    ).length;
+    const mediumEffortCount = recommendations.filter(
+      (r) => r.effort === "Medium"
+    ).length;
+    const highEffortCount = recommendations.filter(
+      (r) => r.effort === "High"
+    ).length;
 
-    const minutesToFix = lowEffortCount * 5 + mediumEffortCount * 20
-      + highEffortCount * 60;
-    const timeToFix = minutesToFix < 60
-      ? `${minutesToFix} minutes`
-      : `${Math.round(minutesToFix / 60)} hours`;
+    const minutesToFix =
+      lowEffortCount * 5 + mediumEffortCount * 20 + highEffortCount * 60;
+    const timeToFix =
+      minutesToFix < 60
+        ? `${minutesToFix} minutes`
+        : `${Math.round(minutesToFix / 60)} hours`;
 
     const totalImpact = recommendations.reduce((sum, r) => {
       if (r.impact.includes("Save")) {
-        const match = r.impact.match(/(\d+)(ms|KB|s)/);
+        const match = r.impact.match(/(\d+)(ms|KB|s)/u);
         if (match) {
-          const value = parseInt(match[1]);
+          const value = Number.parseInt(match[1]);
           const unit = match[2];
-          return sum
-            + (unit === "ms"
-              ? value
-              : unit === "KB"
-              ? value / 100
-              : value * 1000);
+          return (
+            sum +
+            (unit === "ms" ? value : unit === "KB" ? value / 100 : value * 1000)
+          );
         }
       }
       return sum;
     }, 0);
 
-    const estimatedImprovement = totalImpact > 1000
-      ? `~${(totalImpact / 1000).toFixed(1)}s improvement`
-      : `~${Math.round(totalImpact)}ms improvement`;
+    const estimatedImprovement =
+      totalImpact > 1000
+        ? `~${(totalImpact / 1000).toFixed(1)}s improvement`
+        : `~${Math.round(totalImpact)}ms improvement`;
 
     return {
       issueCount: recommendations.length,

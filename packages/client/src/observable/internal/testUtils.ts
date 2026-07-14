@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { inspect } from "node:util";
+
 import type {
   ActionDefinition,
   ActionEditResponse,
@@ -28,13 +30,13 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { Chalk } from "chalk";
-import { inspect } from "node:util";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { Observer } from "rxjs";
 import invariant from "tiny-invariant";
 import type { Mock, MockedObject } from "vitest";
 import { afterEach, beforeEach, expect, vi, vitest } from "vitest";
+
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
@@ -58,38 +60,24 @@ export interface MockClientHelper {
   mockApplyActionOnce: () => DeferredPromise<Partial<ActionEditResponse>>;
 
   mockFetchOneOnce: <Q extends ObjectTypeDefinition>(
-    expectedId?: string | number | boolean,
-  ) => DeferredPromise<
-    Partial<
-      Osdk.Instance<Q>
-    >
-  >;
+    expectedId?: string | number | boolean
+  ) => DeferredPromise<Partial<Osdk.Instance<Q>>>;
 
   mockObjectFactoryOnce: () => DeferredPromise<
     Array<
-      | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
-      | ObjectHolder
+      Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}> | ObjectHolder
     >
   >;
 
-  mockFetchPageOnce: <
-    Q extends ObjectTypeDefinition,
-  >(
-    expected?: {
-      where: WhereClause<any>;
-      orderBy: Record<string, "asc" | "desc" | undefined>;
-    },
-  ) => DeferredPromise<
-    PageResult<Partial<Osdk.Instance<Q>>>
-  >;
+  mockFetchPageOnce: <Q extends ObjectTypeDefinition>(expected?: {
+    where: WhereClause<any>;
+    orderBy: Record<string, "asc" | "desc" | undefined>;
+  }) => DeferredPromise<PageResult<Partial<Osdk.Instance<Q>>>>;
 }
 
 function mockLog(...args: any[]) {
   // eslint-disable-next-line no-console
-  console.log(
-    chalk.yellow("mockClient"),
-    ...args,
-  );
+  console.log(chalk.yellow("mockClient"), ...args);
 }
 
 /**
@@ -101,7 +89,7 @@ function mockLog(...args: any[]) {
  */
 export function createTestLogger(
   bindings: Record<string, any>,
-  options?: { level?: string; msgPrefix?: string },
+  options?: { level?: string; msgPrefix?: string }
 ): Logger {
   const colors = {
     debug: [chalk.cyan, chalk.bgCyan],
@@ -112,19 +100,12 @@ export function createTestLogger(
     fatal: [chalk.redBright, chalk.bgRedBright],
   } as const;
   function createLogMethod(
-    name: "debug" | "error" | "info" | "warn" | "fatal" | "trace",
+    name: "debug" | "error" | "info" | "warn" | "fatal" | "trace"
   ) {
     return vi.fn<Logger.LogFn>(
-      (
-        ...args: [
-          obj: unknown,
-          ...args1: any[],
-        ] | [
-          ...args2: any[],
-        ]
-      ) => {
+      (...args: [obj: unknown, ...args1: any[]] | [...args2: any[]]) => {
         const hasData = args.length > 0 && typeof args[0] !== "string";
-        const obj: Record<string, unknown> = hasData ? args[0] as any : {};
+        const obj: Record<string, unknown> = hasData ? (args[0] as any) : {};
         const more: any[] = hasData ? args.slice(1) : args.slice(0);
 
         // eslint-disable-next-line no-console
@@ -132,13 +113,13 @@ export function createTestLogger(
           `${colors[name][1](name)}${
             options?.msgPrefix ? " " + colors[name][0](options.msgPrefix) : ""
           }${obj?.methodName ? ` .${chalk.magenta(obj.methodName)}()` : ""}`,
-          ...more,
+          ...more
         );
         if (bindings && Object.keys(bindings).length > 0) {
           // eslint-disable-next-line no-console
           console.log(bindings);
         }
-      },
+      }
     ) as Logger.LogFn;
   }
   return {
@@ -148,17 +129,21 @@ export function createTestLogger(
     warn: createLogMethod("warn"),
     fatal: createLogMethod("fatal"),
     child: vi.fn<Logger["child"]>((theseBindings, theseOptions) =>
-      createTestLogger({
-        ...bindings,
-        ...theseBindings,
-      }, {
-        level: (theseOptions ?? options)?.level,
-        msgPrefix: options?.msgPrefix || theseOptions?.msgPrefix
-          ? `${options?.msgPrefix ? `${options.msgPrefix} ` : ""}${
-            theseOptions?.msgPrefix || ""
-          }`
-          : undefined,
-      })
+      createTestLogger(
+        {
+          ...bindings,
+          ...theseBindings,
+        },
+        {
+          level: (theseOptions ?? options)?.level,
+          msgPrefix:
+            options?.msgPrefix || theseOptions?.msgPrefix
+              ? `${options?.msgPrefix ? `${options.msgPrefix} ` : ""}${
+                  theseOptions?.msgPrefix || ""
+                }`
+              : undefined,
+        }
+      )
     ),
     trace: createLogMethod("trace"),
     isLevelEnabled: vi.fn((args) => true),
@@ -223,22 +208,21 @@ export function createClientMockHelper(): MockClientHelper {
   client.fetchMetadata = vitest.fn();
 
   function mockObjectFactoryOnce() {
-    const d = pDefer<
-      (
-        | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
-        | ObjectHolder
-      )[]
-    >();
+    const d =
+      pDefer<
+        (
+          | Osdk.Instance<ObjectOrInterfaceDefinition, never, any, {}>
+          | ObjectHolder
+        )[]
+      >();
     vi.mocked(client[additionalContext].objectFactory).mockReturnValueOnce(
-      d.promise as Promise<ObjectHolder[]>,
+      d.promise as Promise<ObjectHolder[]>
     );
     return d;
   }
 
   function mockFetchPageOnce<
-    X extends PageResult<
-      Osdk.Instance<ObjectTypeDefinition>
-    >,
+    X extends PageResult<Osdk.Instance<ObjectTypeDefinition>>,
   >(): DeferredPromise<X> {
     const d = pDefer<X>();
 
@@ -261,59 +245,50 @@ export function createClientMockHelper(): MockClientHelper {
     return d;
   }
 
-  function mockFetchOneOnce<
-    X extends Partial<OsdkBase<any>>,
-  >(expectedId?: string | number | boolean): DeferredPromise<X> {
+  function mockFetchOneOnce<X extends Partial<OsdkBase<any>>>(
+    expectedId?: string | number | boolean
+  ): DeferredPromise<X> {
     const d = pDefer<X>();
 
-    client.mockReturnValueOnce(
-      {
-        fetchOne: async (a: FetchPageArgs<any>) => {
-          mockLog("fetchOne", a);
-          invariant(
-            expectedId === undefined || a === expectedId,
-            "expected id to match",
-          );
-          const r = await d.promise;
-          invariant(
-            r.$primaryKey === a,
-            `expected id to match. Got ${
-              JSON.stringify(a)
-            } but object to return was ${r.$primaryKey}`,
-          );
-          return r as Osdk.Instance<any>;
-        },
-      } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">,
-    );
+    client.mockReturnValueOnce({
+      fetchOne: async (a: FetchPageArgs<any>) => {
+        mockLog("fetchOne", a);
+        invariant(
+          expectedId === undefined || a === expectedId,
+          "expected id to match"
+        );
+        const r = await d.promise;
+        invariant(
+          r.$primaryKey === a,
+          `expected id to match. Got ${JSON.stringify(
+            a
+          )} but object to return was ${r.$primaryKey}`
+        );
+        return r as Osdk.Instance<any>;
+      },
+    } as Pick<ObjectSet<ObjectTypeDefinition>, "fetchOne">);
     return d;
   }
 
-  function mockApplyActionOnce(): DeferredPromise<
-    Partial<ActionEditResponse>
-  > {
+  function mockApplyActionOnce(): DeferredPromise<Partial<ActionEditResponse>> {
     const d = pDefer<Partial<ActionEditResponse>>();
 
-    client.mockReturnValueOnce(
-      {
-        applyAction: async (_args): Promise<ActionEditResponse> => {
-          const x = await d.promise;
-          return {
-            type: "edits",
-            addedLinks: x.addedLinks ?? [],
-            addedObjects: x.addedObjects ?? [],
-            deletedObjects: x.deletedObjects ?? [],
-            deletedLinks: x.deletedLinks ?? [],
-            deletedLinksCount: x.deletedLinksCount ?? 0,
-            deletedObjectsCount: x.deletedObjectsCount ?? 0,
-            editedObjectTypes: x.editedObjectTypes ?? [],
-            modifiedObjects: x.modifiedObjects ?? [],
-          };
-        },
-      } as Pick<
-        ActionSignatureFromDef<ActionDefinition>,
-        "applyAction"
-      >,
-    );
+    client.mockReturnValueOnce({
+      applyAction: async (_args): Promise<ActionEditResponse> => {
+        const x = await d.promise;
+        return {
+          type: "edits",
+          addedLinks: x.addedLinks ?? [],
+          addedObjects: x.addedObjects ?? [],
+          deletedObjects: x.deletedObjects ?? [],
+          deletedLinks: x.deletedLinks ?? [],
+          deletedLinksCount: x.deletedLinksCount ?? 0,
+          deletedObjectsCount: x.deletedObjectsCount ?? 0,
+          editedObjectTypes: x.editedObjectTypes ?? [],
+          modifiedObjects: x.modifiedObjects ?? [],
+        };
+      },
+    } as Pick<ActionSignatureFromDef<ActionDefinition>, "applyAction">);
     return d;
   }
 
@@ -352,7 +327,7 @@ export function createDefer() {
 export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<SpecificLinkPayload | undefined>>,
   resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
-  payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {},
+  payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {}
 ): SpecificLinkPayload | undefined {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
@@ -361,11 +336,9 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
     expect.objectContaining(
       linkPayloadContaining({
         ...payloadOptions,
-        resolvedList: resolvedList as unknown as Array<
-          ObjectHolder
-        >,
-      }),
-    ),
+        resolvedList: resolvedList as unknown as Array<ObjectHolder>,
+      })
+    )
   );
 
   const ret = subFn.next.mock.calls[0][0];
@@ -376,7 +349,7 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
   resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
-  payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
+  payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {}
 ): ListPayload | undefined {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
@@ -385,11 +358,9 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
     expect.objectContaining(
       listPayloadContaining({
         ...payloadOptions,
-        resolvedList: resolvedList as unknown as Array<
-          ObjectHolder
-        >,
-      }),
-    ),
+        resolvedList: resolvedList as unknown as Array<ObjectHolder>,
+      })
+    )
   );
   const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
@@ -402,13 +373,13 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T> | undefined,
-  status?: Status,
+  status?: Status
 ): ObjectPayload | undefined {
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({
       object,
       status: status ?? expect.any(String),
-    }),
+    })
   );
 
   const ret = subFn.next.mock.calls[0][0];
@@ -418,17 +389,20 @@ export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
 
 export async function waitForCall(
   subFn: Mock<(e: any) => void> | MockedObject<Observer<any>>,
-  times: number = 1,
+  times: number = 1
 ): Promise<void> {
   if ("next" in subFn && "error" in subFn && "complete" in subFn) {
     subFn = subFn.next;
   }
   try {
-    await vi.waitFor(() => {
-      expect(subFn).toHaveBeenCalledTimes(times);
-    }, {
-      interval: 0,
-    });
+    await vi.waitFor(
+      () => {
+        expect(subFn).toHaveBeenCalledTimes(times);
+      },
+      {
+        interval: 0,
+      }
+    );
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(
@@ -437,7 +411,7 @@ export async function waitForCall(
         depth: 9,
         colors: true,
         compact: 2,
-      }),
+      })
     );
     // we don't need the error, it will retrigger on the next line
     // and that provides better behavior in the vitest vscode
@@ -449,39 +423,37 @@ export async function waitForCall(
 
 export async function waitForPayload<T>(
   observer: MockedObject<Observer<T>>,
-  predicate: (payload: T) => boolean,
+  predicate: (payload: T) => boolean
 ): Promise<T> {
-  await vi.waitFor(() => {
-    const calls = observer.next.mock.calls;
-    expect(calls.length).toBeGreaterThan(0);
-    const last = calls[calls.length - 1][0];
-    expect(predicate(last)).toBe(true);
-  }, { interval: 0 });
+  await vi.waitFor(
+    () => {
+      const calls = observer.next.mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      const last = calls[calls.length - 1][0];
+      expect(predicate(last)).toBe(true);
+    },
+    { interval: 0 }
+  );
   return observer.next.mock.calls[observer.next.mock.calls.length - 1][0];
 }
 
-export function expectNoMoreCalls(
-  observer: MockedObject<
-    Observer<any>
-  >,
-): void {
+export function expectNoMoreCalls(observer: MockedObject<Observer<any>>): void {
   expect(observer.next).not.toHaveBeenCalled();
   expect(observer.error).not.toHaveBeenCalled();
 }
 
-function createSubscriptionHelper() {
-}
+function createSubscriptionHelper() {}
 
-export type MockedSingleSubCallback =
-  & MockedObject<Observer<ObjectPayload | undefined>>
-  & {
-    // expectLoaded: (value: unknown) => Promise<void>;
-    // expectLoading: (value: unknown) => Promise<void>;
-    expectLoadingAndLoaded: (q: {
-      loading?: unknown;
-      loaded: unknown;
-    }) => Promise<void>;
-  };
+export type MockedSingleSubCallback = MockedObject<
+  Observer<ObjectPayload | undefined>
+> & {
+  // expectLoaded: (value: unknown) => Promise<void>;
+  // expectLoading: (value: unknown) => Promise<void>;
+  expectLoadingAndLoaded: (q: {
+    loading?: unknown;
+    loaded: unknown;
+  }) => Promise<void>;
+};
 
 export function mockSingleSubCallback(): MockedSingleSubCallback {
   const ret = mockObserver<ObjectPayload | undefined>();
@@ -513,20 +485,15 @@ export function mockSingleSubCallback(): MockedSingleSubCallback {
   return Object.assign(ret, {
     // expectLoaded,
     // expectLoading,
-    expectLoadingAndLoaded: async (
-      q: { loading?: unknown; loaded: unknown },
-    ) => {
+    expectLoadingAndLoaded: async (q: {
+      loading?: unknown;
+      loaded: unknown;
+    }) => {
       await waitForCall(ret.next, 2);
 
       // as long as we get the loaded call we are happy
-      expect(ret.next).toHaveBeenNthCalledWith(
-        1,
-        q.loading,
-      );
-      expect(ret.next).toHaveBeenNthCalledWith(
-        2,
-        q.loaded,
-      );
+      expect(ret.next).toHaveBeenNthCalledWith(1, q.loading);
+      expect(ret.next).toHaveBeenNthCalledWith(2, q.loaded);
       expect(ret.next).toHaveBeenCalledTimes(2);
       ret.next.mockClear();
     },
@@ -560,9 +527,8 @@ export function mockLinkSubCallback(): MockedObject<
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
   return {
     cacheKey: x.cacheKey ?? expect.any(Object),
-    value: "value" in x
-      ? x.value
-      : expect.toBeOneOf([expect.anything(), undefined]),
+    value:
+      "value" in x ? x.value : expect.toBeOneOf([expect.anything(), undefined]),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
   };
@@ -570,7 +536,7 @@ export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
 
 function nonOptionalValue<T extends object, K extends keyof T>(
   src: T,
-  key: K,
+  key: K
 ): NonNullable<T[K]> {
   return key in src
     ? src[key]
@@ -578,7 +544,7 @@ function nonOptionalValue<T extends object, K extends keyof T>(
 }
 
 export function objectPayloadContaining(
-  x: Partial<ObjectPayload>,
+  x: Partial<ObjectPayload>
 ): ObjectPayload {
   return {
     object: nonOptionalValue(x, "object"),
@@ -588,15 +554,11 @@ export function objectPayloadContaining(
   };
 }
 
-export function listPayloadContaining(
-  x: Partial<ListPayload>,
-): ListPayload {
+export function listPayloadContaining(x: Partial<ListPayload>): ListPayload {
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: "resolvedList" in x
-      ? x.resolvedList
-      : expect.anything(),
+    resolvedList: "resolvedList" in x ? x.resolvedList : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
@@ -605,22 +567,18 @@ export function listPayloadContaining(
 }
 
 export function linkPayloadContaining(
-  x: Partial<SpecificLinkPayload>,
+  x: Partial<SpecificLinkPayload>
 ): SpecificLinkPayload {
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: "resolvedList" in x
-      ? x.resolvedList
-      : expect.anything(),
+    resolvedList: "resolvedList" in x ? x.resolvedList : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-    ...("totalCount" in x
-      ? { totalCount: x.totalCount }
-      : {}),
-    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
-      ?? expect.anything(),
+    ...("totalCount" in x ? { totalCount: x.totalCount } : {}),
+    linkedObjectsBySourcePrimaryKey:
+      x.linkedObjectsBySourcePrimaryKey ?? expect.anything(),
   };
 }
 
@@ -673,13 +631,12 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
   },
   objects: ObjectHolder[] | Osdk.Instance<T>[],
   { optimisticId }: { optimisticId?: OptimisticId } = {},
-  opts: ListQueryOptions<T> = { dedupeInterval: 0 },
+  opts: ListQueryOptions<T> = { dedupeInterval: 0 }
 ): void {
   if (process.env.NODE_ENV !== "production") {
-    store.logger?.child({ methodName: "updateList" }).info(
-      "",
-      { optimisticId },
-    );
+    store.logger
+      ?.child({ methodName: "updateList" })
+      .info("", { optimisticId });
   }
 
   const query = store.lists.getQuery({
@@ -694,7 +651,7 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
     const objectCacheKeys = store.objects.storeOsdkInstances(
       objects,
       batch,
-      rdpConfig,
+      rdpConfig
     );
     query._updateList(objectCacheKeys, "loaded", batch, {
       type: "clientOrdered",
@@ -705,28 +662,30 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
 export function getObject(
   store: Store,
   type: string,
-  pk: number,
+  pk: number
 ): ObjectHolder | undefined {
-  return store.getValue(
-    store.cacheKeys.get<ObjectCacheKey>("object", type, pk),
-  )?.value;
+  return store.getValue(store.cacheKeys.get<ObjectCacheKey>("object", type, pk))
+    ?.value;
 }
 
 export function updateObject<T extends ObjectOrInterfaceDefinition>(
   store: Store,
   value: Osdk.Instance<T>,
-  { optimisticId }: { optimisticId?: OptimisticId } = {},
+  { optimisticId }: { optimisticId?: OptimisticId } = {}
 ): Osdk.Instance<T> {
-  const query = store.objects.getQuery({
-    apiName: value.$apiName,
-    pk: value.$primaryKey,
-  }, undefined);
+  const query = store.objects.getQuery(
+    {
+      apiName: value.$apiName,
+      pk: value.$primaryKey,
+    },
+    undefined
+  );
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(
       value as unknown as ObjectHolder<typeof value>,
       "loaded",
-      batch,
+      batch
     );
   });
 

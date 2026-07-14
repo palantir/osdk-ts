@@ -1,5 +1,106 @@
 # @osdk/widget.client-react
 
+## 3.41.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+  - @osdk/client@2.44.0
+  - @osdk/widget.client@3.41.0
+
+## 3.40.0
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+  - @osdk/widget.client@3.40.0
+
+## 3.39.0
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client@2.42.0
+  - @osdk/widget.client@3.39.0
+
+## 3.38.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [2f91c0e]
+- Updated dependencies [15a35f2]
+  - @osdk/client@2.41.0
+  - @osdk/widget.client@3.38.0
+
+## 3.37.0
+
+### Minor Changes
+
+- 010b126: Migrate @osdk/widget.client-react to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (third increment of the repo-wide oxc migration; first React package, validating the Ultracite React preset)
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+- Updated dependencies [742fe69]
+- Updated dependencies [ac0303b]
+  - @osdk/client@2.40.0
+  - @osdk/widget.client@3.37.0
+
+## 3.36.0
+
+### Patch Changes
+
+- @osdk/client@2.39.0
+- @osdk/widget.client@3.36.0
+
+## 3.35.0
+
+### Patch Changes
+
+- Updated dependencies [11c7eb8]
+- Updated dependencies [bbb89ce]
+  - @osdk/client@2.38.0
+  - @osdk/widget.client@3.35.0
+
+## 3.34.0
+
+### Patch Changes
+
+- Updated dependencies [b174a28]
+- Updated dependencies [75a5c26]
+- Updated dependencies [915d245]
+- Updated dependencies [01bea93]
+  - @osdk/client@2.37.0
+  - @osdk/widget.client@3.34.0
+
+## 3.33.0
+
+### Patch Changes
+
+- Updated dependencies [83d2603]
+  - @osdk/client@2.36.0
+  - @osdk/widget.client@3.33.0
+
+## 3.32.0
+
+### Patch Changes
+
+- @osdk/client@2.35.0
+- @osdk/widget.client@3.32.0
+
+## 3.31.0
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/client@2.34.0
+  - @osdk/widget.client@3.31.0
+
 ## 3.30.0
 
 ### Patch Changes

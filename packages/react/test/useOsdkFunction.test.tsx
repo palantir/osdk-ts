@@ -19,6 +19,7 @@ import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkFunction } from "../src/new/useOsdkFunction.js";
 
@@ -28,8 +29,9 @@ vi.mock("@osdk/client", async (importOriginal) => {
   return {
     ...actual,
     isObjectSet: (o: unknown): boolean =>
-      o != null && typeof o === "object"
-      && (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+      o != null &&
+      typeof o === "object" &&
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
     getWireObjectSet: (o: unknown): unknown =>
       (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
   };
@@ -85,10 +87,9 @@ describe("useOsdkFunction", () => {
   it("should NOT call observeFunction when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkFunction(MockQueryDef, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkFunction(MockQueryDef, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveFunction).not.toHaveBeenCalled();
   });
@@ -101,7 +102,7 @@ describe("useOsdkFunction", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      },
+      }
     );
 
     expect(mockObserveFunction).not.toHaveBeenCalled();
@@ -129,7 +130,7 @@ describe("useOsdkFunction", () => {
           dependsOnObjects: [mockObject],
           dedupeIntervalMs: 5000,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveFunction).toHaveBeenCalledTimes(1);
@@ -141,7 +142,7 @@ describe("useOsdkFunction", () => {
         dependsOnObjects: [mockObject],
         dedupeInterval: 5000,
       }),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
@@ -150,7 +151,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper },
+      { wrapper }
     );
 
     act(() => {
@@ -158,10 +159,9 @@ describe("useOsdkFunction", () => {
     });
 
     expect(mockInvalidateFunction).toHaveBeenCalledTimes(1);
-    expect(mockInvalidateFunction).toHaveBeenCalledWith(
-      MockQueryDef,
-      { id: "123" },
-    );
+    expect(mockInvalidateFunction).toHaveBeenCalledWith(MockQueryDef, {
+      id: "123",
+    });
   });
 
   it("should return isLoading true when status is loading", () => {
@@ -169,7 +169,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper },
+      { wrapper }
     );
 
     const observer = mockObserveFunction.mock.calls[0][3];
@@ -187,7 +187,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper },
+      { wrapper }
     );
 
     const observer = mockObserveFunction.mock.calls[0][3];
@@ -222,8 +222,8 @@ describe("useOsdkFunction", () => {
     }
 
     it(
-      "should re-subscribe when params contains ObjectSets with different "
-        + "filter chains",
+      "should re-subscribe when params contains ObjectSets with different " +
+        "filter chains",
       () => {
         const wrapper = createWrapper();
 
@@ -243,7 +243,7 @@ describe("useOsdkFunction", () => {
             useOsdkFunction(MockQueryDef, {
               params: { someInput: os } as unknown as Record<string, unknown>,
             }),
-          { wrapper, initialProps: { os: osA } },
+          { wrapper, initialProps: { os: osA } }
         );
 
         expect(mockObserveFunction).toHaveBeenCalledTimes(1);
@@ -251,7 +251,7 @@ describe("useOsdkFunction", () => {
         rerender({ os: osB });
 
         expect(mockObserveFunction).toHaveBeenCalledTimes(2);
-      },
+      }
     );
   });
 });

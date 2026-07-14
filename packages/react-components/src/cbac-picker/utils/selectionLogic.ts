@@ -24,7 +24,7 @@ import type {
 export function toggleMarking(
   markingId: string,
   currentSelection: string[],
-  categories: CategoryMarkingGroup[],
+  categories: CategoryMarkingGroup[]
 ): string[] {
   const isSelected = currentSelection.includes(markingId);
 
@@ -53,10 +53,10 @@ export function toggleMarking(
   // Conjunctive categories allow multiple markings (checkbox-style).
   if (ownerGroup.category.categoryType === "DISJUNCTIVE") {
     const sameCategoryMarkingIds = new Set(
-      ownerGroup.markings.map((m) => m.id),
+      ownerGroup.markings.map((m) => m.id)
     );
     const withoutSameCategory = currentSelection.filter(
-      (id) => !sameCategoryMarkingIds.has(id),
+      (id) => !sameCategoryMarkingIds.has(id)
     );
     return [...withoutSameCategory, markingId];
   }
@@ -67,7 +67,7 @@ export function toggleMarking(
 export function computeMarkingStates(
   selectedIds: string[],
   impliedIds: string[],
-  disallowedIds: string[],
+  disallowedIds: string[]
 ): Map<string, MarkingSelectionState> {
   const states = new Map<string, MarkingSelectionState>();
 
@@ -98,7 +98,7 @@ export function computeMarkingStates(
 
 export function groupMarkingsByCategory(
   markings: PickerMarking[],
-  categories: PickerMarkingCategory[],
+  categories: PickerMarkingCategory[]
 ): CategoryMarkingGroup[] {
   const markingsByCategoryId = new Map<string, PickerMarking[]>();
 

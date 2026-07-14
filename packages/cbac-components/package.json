@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cbac-components",
-  "version": "0.6.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -40,8 +40,8 @@
     "check-attw": "attw --pack . --exclude-entrypoints ./styles.css",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
@@ -67,7 +67,6 @@
     "@osdk/react-components": "workspace:*",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "postcss-modules": "^6.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkLinkTypePermissionsForUsersRequest
-    as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
-  GetBulkLinkTypePermissionsForUsersResponse
-    as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
+  GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
+  GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
 } from "../__components.js";
 
 /**
@@ -36,7 +35,7 @@ import type {
  */
 export async function getBulkLinkTypePermissionsForUsers(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
+  request: _api_permissions_GetBulkLinkTypePermissionsForUsersRequest
 ): Promise<_api_permissions_GetBulkLinkTypePermissionsForUsersResponse> {
   return conjureFetch(ctx, `/permissions/linkTypes/users`, "PUT", request);
 }

@@ -1,5 +1,52 @@
 # @osdk/aip-core
 
+## 0.9.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+  - @osdk/client@2.44.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/client@2.43.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 6010d45: Migrate @osdk/aip-core, @osdk/foundry-config-json, @osdk/seed-compiler, @osdk/seed-helpers, @osdk/oauth, @osdk/faux, and @osdk/osdk-docs-context to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the standard libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client@2.42.0
+
+## 0.6.0
+
+### Minor Changes
+
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/client@2.41.0
+
 ## 0.5.0
 
 ### Minor Changes

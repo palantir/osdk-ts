@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,3 +15,7 @@
  */
 
 export * as api from "./api/index.js";
+export * as apolloagent from "./apolloagent/index.js";
+export * as installmanager from "./installmanager/index.js";
+export * as release from "./release/index.js";
+export * as search from "./search/index.js";

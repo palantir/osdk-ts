@@ -23,14 +23,14 @@ import type {
 
 export interface OptimisticBuilder {
   updateObject: <T extends ObjectTypeDefinition>(
-    value: Osdk.Instance<T>,
+    value: Osdk.Instance<T>
   ) => this;
   createObject: <T extends ObjectTypeDefinition>(
     type: T,
     primaryKey: PrimaryKeyType<T>,
-    properties: CompileTimeMetadata<T>["props"],
+    properties: CompileTimeMetadata<T>["props"]
   ) => this;
   deleteObject: <T extends ObjectTypeDefinition>(
-    value: Osdk.Instance<T>,
+    value: Osdk.Instance<T>
   ) => this;
 }

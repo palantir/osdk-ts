@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
 import type {
-  MergeOntologyBranchDryRunRequest
-    as _branch_api_MergeOntologyBranchDryRunRequest,
-  MergeOntologyBranchDryRunResponse
-    as _branch_api_MergeOntologyBranchDryRunResponse,
+  MergeOntologyBranchDryRunRequest as _branch_api_MergeOntologyBranchDryRunRequest,
+  MergeOntologyBranchDryRunResponse as _branch_api_MergeOntologyBranchDryRunResponse,
 } from "../__components.js";
 
 /**
@@ -32,12 +31,12 @@ import type {
 export async function dryRunMergeOntologyBranch(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_MergeOntologyBranchDryRunRequest,
+  request: _branch_api_MergeOntologyBranchDryRunRequest
 ): Promise<_branch_api_MergeOntologyBranchDryRunResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/merge/dry-run`,
     "POST",
-    request,
+    request
   );
 }

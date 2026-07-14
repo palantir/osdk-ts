@@ -12,7 +12,7 @@ checkEnv(redirectUrl, "VITE_FOUNDRY_REDIRECT_URL");
 
 function checkEnv(
   value: string | undefined,
-  name: string,
+  name: string
 ): asserts value is string {
   if (value == null) {
     throw new Error(`Missing environment variable: ${name}`);
@@ -37,12 +37,12 @@ export const publicOauthClient: PublicOauthClient = createPublicOauthClient(
   /* post login page */ undefined,
   //
   // Scopes to use, defaults to: ["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"],
-  /* scopes */ undefined,
+  /* scopes */ undefined
 );
 
 // Normally you would also export a client from here
 export default createClient(
   url,
   "yourOntologyRid",
-  publicOauthClient,
+  publicOauthClient
 ) satisfies Client as Client;

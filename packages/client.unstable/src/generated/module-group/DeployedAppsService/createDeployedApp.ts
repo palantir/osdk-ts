@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CreateDeployedAppRequest as _CreateDeployedAppRequest,
   CreateDeployedAppResponse as _CreateDeployedAppResponse,
@@ -26,7 +27,7 @@ import type {
  */
 export async function createDeployedApp(
   ctx: ConjureContext,
-  request: _CreateDeployedAppRequest,
+  request: _CreateDeployedAppRequest
 ): Promise<_CreateDeployedAppResponse> {
   return conjureFetch(ctx, `/deployed-apps`, "POST", request);
 }

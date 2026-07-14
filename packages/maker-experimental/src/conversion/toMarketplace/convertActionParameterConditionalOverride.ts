@@ -23,6 +23,7 @@ import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
 } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { extractAllowedValues } from "./convertActionHelpers.js";
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
@@ -31,7 +32,7 @@ export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
   ridGenerator: OntologyRidGenerator,
-  actionParameters?: ActionParameter[],
+  actionParameters?: ActionParameter[]
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
   switch (override.type) {
@@ -41,61 +42,63 @@ export function convertActionParameterConditionalOverride(
         parameterRequired: {
           required: validation.required
             ? {
-              type: "notRequired",
-              notRequired: {},
-            }
+                type: "notRequired",
+                notRequired: {},
+              }
             : {
-              type: "required",
-              required: {},
-            },
+                type: "required",
+                required: {},
+              },
         },
       };
       break;
     case "visibility":
-      let overrideType = override.then ?? (
-        validation.defaultVisibility === "editable" ? "hidden" : "editable"
-      );
+      let overrideType =
+        override.then ??
+        (validation.defaultVisibility === "editable" ? "hidden" : "editable");
       parameterBlockOverride = {
         type: "visibility",
         visibility: {
-          visibility: overrideType === "editable"
-            ? {
-              type: "editable",
-              editable: {},
-            }
-            : overrideType === "hidden"
-            ? {
-              type: "hidden",
-              hidden: {},
-            }
-            : {
-              type: "disabled",
-              disabled: {},
-            },
+          visibility:
+            overrideType === "editable"
+              ? {
+                  type: "editable",
+                  editable: {},
+                }
+              : overrideType === "hidden"
+                ? {
+                    type: "hidden",
+                    hidden: {},
+                  }
+                : {
+                    type: "disabled",
+                    disabled: {},
+                  },
         },
       };
       break;
     case "disabled":
-      overrideType = override.then ?? (
-        validation.defaultVisibility === "editable" ? "disabled" : "editable"
-      );
+      overrideType =
+        override.then ??
+        (validation.defaultVisibility === "editable" ? "disabled" : "editable");
       parameterBlockOverride = {
         type: "visibility",
         visibility: {
-          visibility: overrideType === "editable"
-            ? {
-              type: "editable",
-              editable: {},
-            }
-            : overrideType === "hidden"
-            ? {
-              type: "hidden",
-              hidden: {},
-            }
-            : {
-              type: "disabled",
-              disabled: {},
-            },
+          visibility:
+            overrideType === "editable"
+              ? {
+                  type: "editable",
+                  editable: {},
+                }
+              : overrideType === "hidden"
+                ? {
+                    type: "hidden",
+                    hidden: {},
+                  }
+                : {
+                    type: "disabled",
+                    disabled: {},
+                  },
         },
       };
       break;
@@ -113,7 +116,7 @@ export function convertActionParameterConditionalOverride(
         allowedValues: {
           allowedValues: extractAllowedValues(
             override.constraint,
-            ridGenerator,
+            ridGenerator
           ),
         },
       };

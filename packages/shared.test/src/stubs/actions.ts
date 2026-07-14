@@ -20,6 +20,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import { createLazyDoNothingActionImpl } from "../createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
 import {
@@ -128,6 +129,22 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStructAcceptNull: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: null },
+  },
+};
+
+export const actionRequestWithStructAcceptUndefined: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY" },
+  },
+};
+
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -138,26 +155,11 @@ export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
     geoshapeParam: {
       coordinates: [
         [
-          [
-            -97.86567863752134,
-            38.418052586871624,
-          ],
-          [
-            -97.86567863752134,
-            35.410223767370525,
-          ],
-          [
-            -91.98573135442845,
-            35.410223767370525,
-          ],
-          [
-            -91.98573135442845,
-            38.418052586871624,
-          ],
-          [
-            -97.86567863752134,
-            38.418052586871624,
-          ],
+          [-97.86567863752134, 38.418052586871624],
+          [-97.86567863752134, 35.410223767370525],
+          [-91.98573135442845, 35.410223767370525],
+          [-91.98573135442845, 38.418052586871624],
+          [-97.86567863752134, 38.418052586871624],
         ],
       ],
       type: "Polygon",
@@ -201,11 +203,13 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
   },
   edits: {
     type: "edits",
-    edits: [{
-      type: "addObject",
-      primaryKey: "NYC",
-      objectType: officeObjectType.apiName,
-    }],
+    edits: [
+      {
+        type: "addObject",
+        primaryKey: "NYC",
+        objectType: officeObjectType.apiName,
+      },
+    ],
     addedObjectCount: 1,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
@@ -235,7 +239,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     createLazyDoNothingActionImpl([
       [actionRequestCreateOffice, actionResponseCreateOffice],
       [actionRequestCreateOfficeNoReturnEdits, actionResponse],
-    ]),
+    ])
   );
 
   fauxOntology.registerActionType(MoveOffice, moveOfficeImpl);
@@ -247,59 +251,56 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
         actionRequestCreateOfficeAndEmployee,
         actionResponseCreateOfficeAndEmployee,
       ],
-    ]),
+    ])
   );
 
   fauxOntology.registerActionType(
     ActionTakesGeoshape,
-    createLazyDoNothingActionImpl([[
-      actionRequestWithGeoshape,
-      actionResponse,
-    ]]),
+    createLazyDoNothingActionImpl([[actionRequestWithGeoshape, actionResponse]])
   );
 
   fauxOntology.registerActionType(
     ActionTakesObjectSet,
     createLazyDoNothingActionImpl([
       [actionRequestWithObjectSet, actionResponse],
-    ]),
+    ])
   );
 
   fauxOntology.registerActionType(
     ActionTakesAttachment,
     (_batch, payload, { attachments }) => {
       const attachment = attachments.getAttachmentMetadataByRid(
-        payload.parameters.attachment as string,
+        payload.parameters.attachment as string
       );
       invariant(attachment, "expected attachment to be real");
-    },
+    }
   );
 
   fauxOntology.registerActionType(
     ActionTakesMedia,
-    createLazyDoNothingActionImpl([
-      [actionRequestMediaUpload, actionResponse],
-    ]),
+    createLazyDoNothingActionImpl([[actionRequestMediaUpload, actionResponse]])
   );
 
   fauxOntology.registerActionType(
     ActionTakesInterface,
     createLazyDoNothingActionImpl([
       [actionRequestWithInterface, actionResponse],
-    ]),
+    ])
   );
 
   fauxOntology.registerActionType(
     ActionTakesStruct,
     createLazyDoNothingActionImpl([
       [actionRequestWithStruct, actionResponse],
-    ]),
+      [actionRequestWithStructAcceptNull, actionResponse],
+      [actionRequestWithStructAcceptUndefined, actionResponse],
+    ])
   );
 
   fauxOntology.registerActionType(
     ActionCreatesInterface,
     createLazyDoNothingActionImpl([
       [actionRequestWithObjectTypeReference, actionResponse],
-    ]),
+    ])
   );
 }

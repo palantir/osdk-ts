@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
@@ -25,15 +26,15 @@ import { ObjectDefRef } from "./InternalSymbols.js";
 describe(createOsdkInterface, () => {
   it("works in the normal case", () => {
     const underlying = {
-      "foo": "hi mom",
+      foo: "hi mom",
 
       [ObjectDefRef]: {
         [InterfaceDefinitions]: {},
         apiName: "Obj",
         displayName: "",
         interfaceMap: {
-          "IFoo": {
-            "asdf": "foo",
+          IFoo: {
+            asdf: "foo",
           },
         },
         inverseInterfaceMap: {},
@@ -42,7 +43,7 @@ describe(createOsdkInterface, () => {
         primaryKeyApiName: "",
         primaryKeyType: "string",
         properties: {
-          "foo": {
+          foo: {
             type: "string",
           },
         },
@@ -57,11 +58,11 @@ describe(createOsdkInterface, () => {
     };
 
     const iface = createOsdkInterface(underlying as any, {
-      "apiName": "IFoo",
+      apiName: "IFoo",
       displayName: "",
       links: {},
       properties: {
-        "asdf": {
+        asdf: {
           type: "string",
         },
       },
@@ -90,7 +91,7 @@ describe(createOsdkInterface, () => {
 
   it("properly maps apiNamespace", () => {
     const underlying = {
-      "foo": "hi mom",
+      foo: "hi mom",
 
       [ObjectDefRef]: {
         [InterfaceDefinitions]: {},
@@ -107,7 +108,7 @@ describe(createOsdkInterface, () => {
         primaryKeyApiName: "",
         primaryKeyType: "string",
         properties: {
-          "foo": {
+          foo: {
             type: "string",
           },
         },
@@ -122,7 +123,7 @@ describe(createOsdkInterface, () => {
     };
 
     const iface = createOsdkInterface(underlying as any, {
-      "apiName": "a.IFoo",
+      apiName: "a.IFoo",
       displayName: "",
       links: {},
       properties: {
@@ -155,7 +156,7 @@ describe(createOsdkInterface, () => {
 
   it("works with mixed namespaces", () => {
     const underlying = {
-      "foo": "hi mom",
+      foo: "hi mom",
 
       [ObjectDefRef]: {
         [InterfaceDefinitions]: {},
@@ -172,7 +173,7 @@ describe(createOsdkInterface, () => {
         primaryKeyApiName: "",
         primaryKeyType: "string",
         properties: {
-          "foo": {
+          foo: {
             type: "string",
           },
         },
@@ -187,7 +188,7 @@ describe(createOsdkInterface, () => {
     };
 
     const iface = createOsdkInterface(underlying as any, {
-      "apiName": "a.IFoo",
+      apiName: "a.IFoo",
       displayName: "",
       links: {},
       properties: {

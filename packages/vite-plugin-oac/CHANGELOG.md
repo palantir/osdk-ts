@@ -1,5 +1,151 @@
 # @osdk/vite-plugin-oac
 
+## 0.42.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/cli@0.68.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters.ontologyir@2.44.0
+
+## 0.41.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/faux@0.34.0
+  - @osdk/maker@0.46.0
+  - @osdk/cli@0.67.0
+  - @osdk/api@2.43.0
+  - @osdk/client.unstable@2.43.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [0021ee4]
+- Updated dependencies [cbcdce1]
+- Updated dependencies [f49b4af]
+- Updated dependencies [6010d45]
+- Updated dependencies [255154c]
+  - @osdk/api@2.42.0
+  - @osdk/client.unstable@2.42.0
+  - @osdk/cli@0.66.0
+  - @osdk/maker@0.45.0
+  - @osdk/faux@0.33.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
+## 0.39.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/faux@0.32.0
+  - @osdk/maker@0.44.0
+  - @osdk/cli@0.65.0
+  - @osdk/client.unstable@2.41.0
+  - @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.38.0
+
+### Patch Changes
+
+- Updated dependencies [fcde4c0]
+- Updated dependencies [3e915ee]
+  - @osdk/maker@0.43.0
+  - @osdk/faux@0.31.0
+  - @osdk/api@2.40.0
+  - @osdk/cli@0.64.0
+  - @osdk/client.unstable@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.37.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+- Updated dependencies [1796140]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/maker@0.42.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters.ontologyir@2.39.0
+  - @osdk/cli@0.63.0
+
+## 0.36.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters.ontologyir@2.38.0
+- @osdk/faux@0.30.0
+- @osdk/maker@0.41.0
+- @osdk/cli@0.62.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/cli@0.61.0
+- @osdk/api@2.37.0
+- @osdk/client.unstable@2.37.0
+- @osdk/generator-converters.ontologyir@2.37.0
+- @osdk/faux@0.29.0
+- @osdk/maker@0.40.0
+
+## 0.34.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters.ontologyir@2.36.0
+- @osdk/cli@0.60.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [59115b1]
+  - @osdk/maker@0.39.0
+  - @osdk/api@2.35.0
+  - @osdk/client.unstable@2.35.0
+  - @osdk/generator-converters.ontologyir@2.35.0
+  - @osdk/cli@0.59.0
+  - @osdk/faux@0.28.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/maker@0.37.0
+  - @osdk/api@2.34.0
+  - @osdk/faux@0.27.0
+  - @osdk/cli@0.58.0
+  - @osdk/client.unstable@2.34.0
+
 ## 0.31.0
 
 ### Patch Changes

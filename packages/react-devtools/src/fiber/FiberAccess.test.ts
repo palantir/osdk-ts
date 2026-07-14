@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { getCapabilitiesManager } from "./capabilities.js";
 import { getFiberFromElement } from "./FiberAccess.js";
 import type { Fiber } from "./types.js";

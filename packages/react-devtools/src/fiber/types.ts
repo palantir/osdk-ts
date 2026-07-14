@@ -58,47 +58,45 @@ export interface UpdateQueue {
   lastEffect: Effect | null;
 }
 
-export type Fiber<TStateNode = unknown> =
-  & Omit<
-    ReactFiber,
-    | "alternate"
-    | "child"
-    | "dependencies"
-    | "memoizedProps"
-    | "memoizedState"
-    | "pendingProps"
-    | "return"
-    | "sibling"
-    | "stateNode"
-    | "updateQueue"
-  >
-  & {
-    _debugInfo?: Array<{
-      debugLocation?: unknown;
-      env?: string;
-      name?: string;
-    }>;
+export type Fiber<TStateNode = unknown> = Omit<
+  ReactFiber,
+  | "alternate"
+  | "child"
+  | "dependencies"
+  | "memoizedProps"
+  | "memoizedState"
+  | "pendingProps"
+  | "return"
+  | "sibling"
+  | "stateNode"
+  | "updateQueue"
+> & {
+  _debugInfo?: Array<{
+    debugLocation?: unknown;
+    env?: string;
+    name?: string;
+  }>;
 
-    _debugOwner?: Fiber;
-    _debugSource?: {
-      columnNumber?: number;
-      fileName: string;
-      lineNumber: number;
-    };
-
-    _debugStack?: Error & { stack: string };
-    alternate: Fiber | null;
-    child: Fiber | null;
-    return: Fiber | null;
-    sibling: Fiber | null;
-
-    dependencies: Dependencies | null;
-    memoizedProps: FiberProps;
-    memoizedState: MemoizedState | null;
-    pendingProps: FiberProps;
-    stateNode: TStateNode;
-    updateQueue: UpdateQueue | null;
+  _debugOwner?: Fiber;
+  _debugSource?: {
+    columnNumber?: number;
+    fileName: string;
+    lineNumber: number;
   };
+
+  _debugStack?: Error & { stack: string };
+  alternate: Fiber | null;
+  child: Fiber | null;
+  return: Fiber | null;
+  sibling: Fiber | null;
+
+  dependencies: Dependencies | null;
+  memoizedProps: FiberProps;
+  memoizedState: MemoizedState | null;
+  pendingProps: FiberProps;
+  stateNode: TStateNode;
+  updateQueue: UpdateQueue | null;
+};
 
 export interface ReactRenderer {
   bundleType: 0 | 1;
@@ -108,7 +106,7 @@ export interface ReactRenderer {
     fiber: Fiber,
     id: string,
     path: string[],
-    value: unknown,
+    value: unknown
   ) => void;
   overrideProps?: (fiber: Fiber, path: string[], value: unknown) => void;
   reconcilerVersion: string;
@@ -126,7 +124,7 @@ export interface ReactDevToolsGlobalHook {
   onCommitFiberRoot: (
     rendererID: number,
     root: FiberRoot,
-    priority: number | void,
+    priority: number | void
   ) => void;
   onCommitFiberUnmount: (rendererID: number, fiber: Fiber) => void;
   onPostCommitFiberRoot: (rendererID: number, root: FiberRoot) => void;

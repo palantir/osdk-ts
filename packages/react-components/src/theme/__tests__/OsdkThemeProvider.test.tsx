@@ -17,6 +17,7 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { DATA_THEME_ATTR, OsdkThemeProvider } from "../OsdkThemeProvider.js";
 import type { OsdkThemeMode } from "../types.js";
 import { useOsdkTheme } from "../useOsdkTheme.js";
@@ -115,7 +116,7 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider>
         <ThemeProbe />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(screen.getByTestId("theme").textContent).toBe("system");
@@ -129,12 +130,12 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider defaultTheme="light">
         <ThemeProbe />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
   });
 
@@ -143,11 +144,11 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider>
         <ThemeProbe />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
 
     act(() => {
@@ -164,7 +165,7 @@ describe("OsdkThemeProvider", () => {
       <OsdkThemeProvider>
         <ThemeProbe />
         <ThemeToggle />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
@@ -177,7 +178,7 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("theme").textContent).toBe("light");
     expect(screen.getByTestId("resolved").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
   });
 
@@ -187,7 +188,7 @@ describe("OsdkThemeProvider", () => {
       <OsdkThemeProvider theme="light" onThemeChanged={onThemeChanged}>
         <ThemeProbe />
         <ThemeToggle />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("light");
@@ -201,7 +202,7 @@ describe("OsdkThemeProvider", () => {
     // controlled mode: still light because parent didn't re-render
     expect(screen.getByTestId("theme").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
   });
 
@@ -218,7 +219,7 @@ describe("OsdkThemeProvider", () => {
     render(<Harness />);
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
 
     act(() => {
@@ -235,7 +236,7 @@ describe("OsdkThemeProvider", () => {
     const { unmount } = render(
       <OsdkThemeProvider defaultTheme="dark">
         <ThemeProbe />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
@@ -243,7 +244,7 @@ describe("OsdkThemeProvider", () => {
     unmount();
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light",
+      "light"
     );
   });
 
@@ -252,7 +253,7 @@ describe("OsdkThemeProvider", () => {
     const { unmount } = render(
       <OsdkThemeProvider defaultTheme="dark">
         <ThemeProbe />
-      </OsdkThemeProvider>,
+      </OsdkThemeProvider>
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
@@ -269,7 +270,7 @@ describe("OsdkThemeProvider", () => {
       render(
         <OsdkThemeProvider defaultTheme="dark" target={custom}>
           <ThemeProbe />
-        </OsdkThemeProvider>,
+        </OsdkThemeProvider>
       );
 
       expect(custom.getAttribute(DATA_THEME_ATTR)).toBe("dark");
@@ -286,11 +287,11 @@ describe("useOsdkTheme", () => {
   });
 
   it("throws when used outside of an OsdkThemeProvider", () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(
-      () => {},
-    );
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     try {
-      expect(() => render(<ThemeProbe />)).toThrow(/OsdkThemeProvider/);
+      expect(() => render(<ThemeProbe />)).toThrow(/OsdkThemeProvider/u);
     } finally {
       consoleError.mockRestore();
     }

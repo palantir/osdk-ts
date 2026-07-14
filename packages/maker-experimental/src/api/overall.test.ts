@@ -17,6 +17,8 @@
 import type { ActionType, InterfaceType } from "@osdk/maker";
 import {
   defineCreateObjectAction,
+  defineInterface,
+  defineInterfaceActionTypeConstraint,
   defineLink,
   defineObject,
   defineOntology,
@@ -27,6 +29,7 @@ import {
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
@@ -51,16 +54,16 @@ describe("Experimental Test Suite", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string" },
-          "date": { type: "date" },
-          "team": { type: "string" },
+          id: { type: "string" },
+          date: { type: "date" },
+          team: { type: "string" },
         },
       });
       defineCreateObjectAction({
         objectType: foo,
         parameterOrdering: ["ref", "team", "id", "date"],
         parameterConfiguration: {
-          "ref": {
+          ref: {
             customParameterType: {
               type: "objectReference",
               objectReference: {
@@ -68,7 +71,7 @@ describe("Experimental Test Suite", () => {
               },
             },
           },
-          "team": {
+          team: {
             defaultValue: {
               type: "objectParameterPropertyValue",
               objectParameterPropertyValue: {
@@ -718,7 +721,7 @@ describe("Experimental Test Suite", () => {
           },
           "sharedPropertyTypes": {},
         }
-      `,
+      `
       );
     });
   });
@@ -740,14 +743,14 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "id",
           primaryKeyPropertyApiName: "id",
           properties: {
-            "id": { type: "string" },
+            id: { type: "string" },
           },
         });
       });
 
       // Imported object should have an input shape
       const objectInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectInputShapes).toHaveLength(1);
       expect(objectInputShapes[0][1]).toMatchObject({
@@ -761,17 +764,16 @@ describe("Experimental Test Suite", () => {
 
       // Imported object properties should have input shapes
       const propertyInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(
         ([key, shape]) =>
-          shape.type === "property"
-          && key.includes("importedFoo"),
+          shape.type === "property" && key.includes("importedFoo")
       );
       expect(propertyInputShapes).toHaveLength(2);
 
       // Local object should have an output shape, not input
       const objectOutputShapes = Array.from(
-        result.shapes.outputShapes.entries(),
+        result.shapes.outputShapes.entries()
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
     });
@@ -792,8 +794,8 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "teamId",
           primaryKeyPropertyApiName: "teamId",
           properties: {
-            "teamId": { type: "string" },
-            "empId": { type: "string" },
+            teamId: { type: "string" },
+            empId: { type: "string" },
           },
         });
         defineLink({
@@ -818,13 +820,13 @@ describe("Experimental Test Suite", () => {
 
       // The link should have an output shape
       const linkOutputShapes = Array.from(
-        result.shapes.outputShapes.entries(),
+        result.shapes.outputShapes.entries()
       ).filter(([_, shape]) => shape.type === "linkType");
       expect(linkOutputShapes).toHaveLength(1);
 
       // The imported object should have an input shape
       const objectInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectInputShapes).toHaveLength(1);
       expect(objectInputShapes[0][1]).toMatchObject({
@@ -850,14 +852,14 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "id",
           primaryKeyPropertyApiName: "id",
           properties: {
-            "id": { type: "string" },
+            id: { type: "string" },
           },
         });
         defineCreateObjectAction({
           objectType: localObj,
           parameterOrdering: ["ref", "id"],
           parameterConfiguration: {
-            "ref": {
+            ref: {
               customParameterType: {
                 type: "objectReference",
                 objectReference: {
@@ -873,13 +875,13 @@ describe("Experimental Test Suite", () => {
       // object type in objectTypeIds
       const knownIds = result.ontologyIr.ontology.knownIdentifiers;
       const importedObjId = Object.keys(knownIds.objectTypeIds ?? {}).find(
-        id => id === "imported",
+        (id) => id === "imported"
       );
       expect(importedObjId).toBeDefined();
 
       // The action output shape should exist
       const actionShapes = Array.from(
-        result.shapes.outputShapes.entries(),
+        result.shapes.outputShapes.entries()
       ).filter(([_, shape]) => shape.type === "action");
       expect(actionShapes).toHaveLength(1);
     });
@@ -898,14 +900,14 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "id",
           primaryKeyPropertyApiName: "id",
           properties: {
-            "id": { type: "string" },
+            id: { type: "string" },
           },
         });
       });
 
       // The imported SPT should have an input shape
       const sptInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "sharedPropertyType");
       expect(sptInputShapes).toHaveLength(1);
       expect(sptInputShapes[0][1]).toMatchObject({
@@ -934,14 +936,14 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "id",
           primaryKeyPropertyApiName: "id",
           properties: {
-            "id": { type: "string" },
+            id: { type: "string" },
           },
         });
       });
 
       // The imported action should have an input shape
       const actionInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "action");
       expect(actionInputShapes).toHaveLength(1);
       expect(actionInputShapes[0][1]).toMatchObject({
@@ -953,7 +955,7 @@ describe("Experimental Test Suite", () => {
 
       // No parameters on this action, so no parameter input shapes
       const paramInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "actionParameter");
       expect(paramInputShapes).toHaveLength(0);
     });
@@ -998,20 +1000,142 @@ describe("Experimental Test Suite", () => {
           titlePropertyApiName: "id",
           primaryKeyPropertyApiName: "id",
           properties: {
-            "id": { type: "string" },
+            id: { type: "string" },
           },
         });
       });
 
       // The imported interface should have an input shape
       const interfaceInputShapes = Array.from(
-        result.shapes.inputShapes.entries(),
+        result.shapes.inputShapes.entries()
       ).filter(([_, shape]) => shape.type === "interfaceType");
       expect(interfaceInputShapes).toHaveLength(1);
       expect(interfaceInputShapes[0][1]).toMatchObject({
         type: "interfaceType",
         interfaceType: {
           about: { fallbackTitle: "Imported Interface" },
+        },
+      });
+    });
+  });
+
+  describe("Action Type Constraints", () => {
+    it("produces output shapes for interface with action type constraints", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const iface = defineInterface({ apiName: "MyInterface" });
+
+        defineInterfaceActionTypeConstraint({
+          interfaceType: iface,
+          apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A constraint",
+          requireImplementation: false,
+          parameters: [
+            {
+              apiName: "boolParam",
+              displayName: "Bool Param",
+              type: { type: "boolean", boolean: {} },
+              requireImplementation: false,
+            },
+          ],
+        });
+      });
+
+      const constraintOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
+      expect(constraintOutputShapes).toHaveLength(1);
+      expect(constraintOutputShapes[0][1]).toMatchObject({
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: {
+          about: { fallbackTitle: "My Constraint" },
+          requireImplementation: false,
+        },
+      });
+
+      const paramOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+      expect(paramOutputShapes).toHaveLength(1);
+      expect(paramOutputShapes[0][1]).toMatchObject({
+        type: "interfaceParameterConstraint",
+        interfaceParameterConstraint: {
+          about: { fallbackTitle: "Bool Param" },
+          requireImplementation: false,
+        },
+      });
+    });
+
+    it("produces input shapes for imported interface with action type constraints", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedInterface: InterfaceType = {
+          apiName: "importedInterface",
+          displayMetadata: {
+            displayName: "Imported Interface",
+            description: "An imported interface",
+          },
+          propertiesV2: {},
+          propertiesV3: {},
+          extendsInterfaces: [],
+          actionTypeConstraints: [
+            {
+              metadata: {
+                apiName: "importedConstraint",
+                displayName: "Imported Constraint",
+                description: "An imported constraint",
+              },
+              parameters: {
+                boolParam: {
+                  displayMetadata: {
+                    displayName: "Bool Param",
+                    apiName: "boolParam",
+                  },
+                  type: { type: "boolean", boolean: {} },
+                  requireImplementation: false,
+                },
+              },
+              requireImplementation: false,
+            },
+          ],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      const constraintInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
+      expect(constraintInputShapes).toHaveLength(1);
+      expect(constraintInputShapes[0][1]).toMatchObject({
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: {
+          about: { fallbackTitle: "Imported Constraint" },
+          requireImplementation: false,
+        },
+      });
+
+      const paramInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+      expect(paramInputShapes).toHaveLength(1);
+      expect(paramInputShapes[0][1]).toMatchObject({
+        type: "interfaceParameterConstraint",
+        interfaceParameterConstraint: {
+          about: { fallbackTitle: "Bool Param" },
+          requireImplementation: false,
         },
       });
     });
@@ -1074,9 +1198,9 @@ describe("Experimental Test Suite", () => {
             },
           },
         });
-      }),
+      })
     ).rejects.toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/,
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
     );
   });
 });

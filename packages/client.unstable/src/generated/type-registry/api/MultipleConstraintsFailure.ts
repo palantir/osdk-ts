@@ -17,5 +17,4 @@
 /**
  * Multiple data constraints are disallowed for now.
  */
-export interface MultipleConstraintsFailure {
-}
+export interface MultipleConstraintsFailure {}

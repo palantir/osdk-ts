@@ -22,10 +22,9 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import React, { createContext, useContext, useMemo } from "react";
 import type { RefObject } from "react";
+
 import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
-import type {
-  AnnotationPortalTarget,
-} from "./hooks/usePdfAnnotationPortals.js";
+import type { AnnotationPortalTarget } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
 import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
@@ -101,9 +100,10 @@ export interface PdfViewerProviderProps {
 }
 
 /** Provides {@link PdfViewerContextValue} to descendant components. */
-export function PdfViewerProvider(
-  { value, children }: PdfViewerProviderProps,
-): React.ReactElement {
+export function PdfViewerProvider({
+  value,
+  children,
+}: PdfViewerProviderProps): React.ReactElement {
   return (
     <PdfViewerContext.Provider value={value}>
       {children}
@@ -119,7 +119,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
   const ctx = useContext(PdfViewerContext);
   if (ctx == null) {
     throw new Error(
-      "usePdfViewerContext must be used within a PdfViewerProvider",
+      "usePdfViewerContext must be used within a PdfViewerProvider"
     );
   }
   return ctx;
@@ -131,7 +131,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
  * for passing to {@link PdfViewerProvider}.
  */
 export function usePdfViewerInstance(
-  options: PdfViewerInstanceOptions,
+  options: PdfViewerInstanceOptions
 ): PdfViewerContextValue {
   const viewer = usePdfViewerState({
     src: options.src,
@@ -196,6 +196,6 @@ export function usePdfViewerInstance(
       enableDownload,
       enableFormSave,
       outlineIcons,
-    ],
+    ]
   );
 }

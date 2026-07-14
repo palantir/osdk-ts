@@ -17,6 +17,7 @@
 import type { Client, PlatformClient } from "@osdk/client";
 import { createClient, createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
+
 import { logger } from "./logger.js";
 import { loggingFetch } from "./loggingFetch.js";
 
@@ -28,49 +29,64 @@ invariant(process.env.SECONDARY_FOUNDRY_USER_TOKEN !== undefined);
 export const client: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch,
+  loggingFetch
 );
 
 export const dsClient: Client = createClient(
   process.env.SECONDARY_FOUNDRY_STACK,
   "ri.ontology.main.ontology.6ae2b235-997d-4b5e-9611-85fa88742697",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch,
+  loggingFetch
 );
 
 export const dsmtClient: Client = createClient(
   process.env.SECONDARY_FOUNDRY_STACK,
   "ri.ontology.main.ontology.7ab4d20d-b742-4f58-b795-55695e862bc7",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch,
+  loggingFetch
 );
 
 export const z2vClient: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.8fca0141-468f-4910-9949-8d9b6d9939b2",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch,
+  loggingFetch
 );
 
 export const ontologyClient: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.273dd4a1-84fa-4401-88df-d08bb2f3f397",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch,
+  loggingFetch
 );
 
 export const mjClient: Client = createClient(
   process.env.TERTIARY_FOUNDRY_STACK ?? "",
   "ri.ontology.main.ontology.2050a743-3d09-4fdc-b0ba-6377bebe3709",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.TERTIARY_FOUNDRY_USER_TOKEN ?? "",
   { logger },
-  loggingFetch,
+  loggingFetch
+);
+
+export const cipherTextOntologyClient: Client = createClient(
+  process.env.FOUNDRY_STACK,
+  "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  async () => process.env.FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch
 );
 
 /**
@@ -79,5 +95,6 @@ export const mjClient: Client = createClient(
  */
 export const platformClient: PlatformClient = createPlatformClient(
   process.env.FOUNDRY_STACK,
-  async () => process.env.FOUNDRY_USER_TOKEN!,
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  async () => process.env.FOUNDRY_USER_TOKEN!
 );

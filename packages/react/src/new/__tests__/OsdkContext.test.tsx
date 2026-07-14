@@ -17,6 +17,7 @@
 import { renderHook } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it } from "vitest";
+
 import { MISSING_PROVIDER_MESSAGE, OsdkContext } from "../OsdkContext.js";
 
 describe("OsdkContext", () => {
@@ -26,8 +27,9 @@ describe("OsdkContext", () => {
       return observableClient;
     });
 
-    expect(() => result.current.canonicalizeWhereClause({} as never))
-      .toThrowError(MISSING_PROVIDER_MESSAGE);
+    expect(() =>
+      result.current.canonicalizeWhereClause({} as never)
+    ).toThrowError(MISSING_PROVIDER_MESSAGE);
   });
 
   it("throws a helpful error when client is used without OsdkProvider", () => {
@@ -37,7 +39,7 @@ describe("OsdkContext", () => {
     });
 
     expect(() => result.current({} as never)).toThrowError(
-      MISSING_PROVIDER_MESSAGE,
+      MISSING_PROVIDER_MESSAGE
     );
   });
 });

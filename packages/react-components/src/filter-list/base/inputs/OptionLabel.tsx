@@ -15,6 +15,7 @@
  */
 
 import React, { memo } from "react";
+
 import { isNoValue } from "../../utils/filterValues.js";
 import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import { NoValueLabel } from "./NoValueLabel.js";

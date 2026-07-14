@@ -1,5 +1,97 @@
 # @osdk/cli
 
+## 0.68.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/foundry-config-json@1.12.0
+  - @osdk/widget.api@3.41.0
+
+## 0.67.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/foundry-config-json@1.11.0
+  - @osdk/widget.api@3.40.0
+
+## 0.66.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- Updated dependencies [6010d45]
+  - @osdk/foundry-config-json@1.10.0
+  - @osdk/widget.api@3.39.0
+
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [2f91c0e]
+  - @osdk/widget.api@3.38.0
+
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.37.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.36.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.35.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/widget.api@3.34.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.33.0
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.32.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.31.0
+
 ## 0.57.0
 
 ### Patch Changes

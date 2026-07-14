@@ -17,12 +17,14 @@
 import { Icon, Tag, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useState } from "react";
+
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
-import styles from "./ComponentCard.module.scss";
 import { HookRow } from "./HookRow.js";
 import type { Issue } from "./issueTypes.js";
 import { resolveComponentName } from "./resolveComponentName.js";
+
+import styles from "./ComponentCard.module.scss";
 
 export interface ComponentCardProps {
   componentId: string;
@@ -50,27 +52,19 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
   const componentName = resolveComponentName(bindings);
 
   const totalRenders = bindings.reduce((sum, b) => sum + b.renderCount, 0);
-  const avgRenderDuration = bindings.reduce(
-    (sum, b) => sum + b.avgRenderDuration,
-    0,
-  ) / bindings.length;
+  const avgRenderDuration =
+    bindings.reduce((sum, b) => sum + b.avgRenderDuration, 0) / bindings.length;
 
   const hasWarnings = bindings.length > 10;
 
-  const errorCount = issues.filter(i => i.severity === "error").length;
-  const warningCount = issues.filter(i => i.severity === "warning").length;
-  const healthStatus: "healthy" | "warning" | "error" = errorCount > 0
-    ? "error"
-    : warningCount > 0
-    ? "warning"
-    : "healthy";
+  const errorCount = issues.filter((i) => i.severity === "error").length;
+  const warningCount = issues.filter((i) => i.severity === "warning").length;
+  const healthStatus: "healthy" | "warning" | "error" =
+    errorCount > 0 ? "error" : warningCount > 0 ? "warning" : "healthy";
 
   return (
     <div className={styles.componentCard} style={style}>
-      <div
-        className={styles.header}
-        onClick={() => setExpanded(!expanded)}
-      >
+      <div className={styles.header} onClick={() => setExpanded(!expanded)}>
         <div className={styles.headerLeft}>
           <Icon
             icon={expanded ? "chevron-down" : "chevron-right"}
@@ -80,7 +74,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           <span
             className={classNames(
               styles.healthDot,
-              styles[`health_${healthStatus}`],
+              styles[`health_${healthStatus}`]
             )}
           />
           <span className={styles.componentName}>{componentName}</span>
@@ -150,26 +144,30 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           </div>
           {issues.length > 0 && (
             <div className={styles.inlineIssues}>
-              {issues.map(issue => (
+              {issues.map((issue) => (
                 <div
                   key={issue.id}
                   className={classNames(
                     styles.inlineIssue,
-                    styles[`inlineIssue_${issue.severity}`],
+                    styles[`inlineIssue_${issue.severity}`]
                   )}
                 >
                   <Icon
-                    icon={issue.severity === "error"
-                      ? "error"
-                      : issue.severity === "warning"
-                      ? "warning-sign"
-                      : "info-sign"}
+                    icon={
+                      issue.severity === "error"
+                        ? "error"
+                        : issue.severity === "warning"
+                          ? "warning-sign"
+                          : "info-sign"
+                    }
                     size={12}
-                    intent={issue.severity === "error"
-                      ? "danger"
-                      : issue.severity === "warning"
-                      ? "warning"
-                      : "primary"}
+                    intent={
+                      issue.severity === "error"
+                        ? "danger"
+                        : issue.severity === "warning"
+                          ? "warning"
+                          : "primary"
+                    }
                   />
                   <span className={styles.inlineIssueText}>
                     {issue.title}

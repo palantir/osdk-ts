@@ -4,7 +4,11 @@
     "codegen": {
       "inputs": ["generateMockOntology.js"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/generator#transpileEsm", "@osdk/shared.test#transpileEsm", "@osdk/faux#transpileEsm"]
+      "dependsOn": [
+        "@osdk/generator#transpileEsm",
+        "@osdk/shared.test#transpileEsm",
+        "@osdk/faux#transpileEsm"
+      ]
     }
   }
 }

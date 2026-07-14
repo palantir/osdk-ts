@@ -19,6 +19,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+
 import { getNoRecordValue } from "../constants/statusTypes.js";
 import type { Assignment } from "../generatedNoCheck2/index.js";
 
@@ -56,7 +57,7 @@ export interface LatestStatusQuery {
 // derived-property names, so identical queries can share/coalesce in the observable cache. Each
 // (type, value) is unique within one call, so the sanitized join is unique too.
 function uidFor(type: string, value: string): string {
-  return `${type}_${value}`.replace(/[^a-zA-Z0-9]/g, "_");
+  return `${type}_${value}`.replace(/[^a-zA-Z0-9]/gu, "_");
 }
 
 /**
@@ -66,7 +67,7 @@ function uidFor(type: string, value: string): string {
  */
 function buildLatestValueRdps(
   sel: LatestStatusSelection,
-  uid: string,
+  uid: string
 ): { creators: StatusRdpCreators; targetMaxKey: string; diffKey: string } {
   const targetMaxKey = `_su_${uid}_targetMax`;
   const diffKey = `_su_${uid}_diff`;
@@ -83,7 +84,7 @@ function buildLatestValueRdps(
   // creator return type would drop.
   const latestTimestamp = (
     base: Parameters<StatusRdpCreators[string]>[0],
-    where: typeof targetWhere | typeof negatedWhere,
+    where: typeof targetWhere | typeof negatedWhere
   ) => base.pivotTo(STATUS_LINK).where(where).aggregate("timestampEpochMs:max");
 
   const targetMax: StatusRdpCreators[string] = (base) =>
@@ -91,7 +92,7 @@ function buildLatestValueRdps(
 
   const diff: StatusRdpCreators[string] = (base) =>
     latestTimestamp(base, targetWhere).subtract(
-      latestTimestamp(base, negatedWhere),
+      latestTimestamp(base, negatedWhere)
     );
 
   return {
@@ -107,13 +108,14 @@ function buildLatestValueRdps(
  */
 function buildCountOfTypeRdp(
   type: string,
-  uid: string,
+  uid: string
 ): { creators: StatusRdpCreators; countKey: string } {
   const countKey = `_su_${uid}_count`;
   const count: StatusRdpCreators[string] = (base) =>
-    base.pivotTo(STATUS_LINK).where({ type: { $eq: type } }).aggregate(
-      "$count",
-    );
+    base
+      .pivotTo(STATUS_LINK)
+      .where({ type: { $eq: type } })
+      .aggregate("$count");
   return { creators: { [countKey]: count }, countKey };
 }
 
@@ -123,7 +125,7 @@ function buildCountOfTypeRdp(
  */
 function latestValueCondition(
   targetMaxKey: string,
-  diffKey: string,
+  diffKey: string
 ): StatusRdpWhereClause {
   return {
     $or: [
@@ -148,7 +150,7 @@ function latestValueCondition(
  */
 export function buildLatestStatusQuery(
   selections: readonly LatestStatusSelection[],
-  opts?: { composeAcrossTypes?: "$and" | "$or" },
+  opts?: { composeAcrossTypes?: "$and" | "$or" }
 ): LatestStatusQuery | undefined {
   if (selections.length === 0) {
     return undefined;
@@ -183,7 +185,7 @@ export function buildLatestStatusQuery(
       } else {
         const { creators, targetMaxKey, diffKey } = buildLatestValueRdps(
           { type, value },
-          uid,
+          uid
         );
         withProperties = { ...withProperties, ...creators };
         withinTypeConditions.push(latestValueCondition(targetMaxKey, diffKey));
@@ -193,7 +195,7 @@ export function buildLatestStatusQuery(
     perTypeConditions.push(
       withinTypeConditions.length === 1
         ? withinTypeConditions[0]
-        : { $or: withinTypeConditions },
+        : { $or: withinTypeConditions }
     );
   }
 

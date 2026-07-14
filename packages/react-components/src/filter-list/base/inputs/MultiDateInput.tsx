@@ -17,11 +17,13 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+
 import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
+
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -55,25 +57,23 @@ function MultiDateInputInner({
       if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
-        (d) => formatDateForInput(d) === dateStr,
+        (d) => formatDateForInput(d) === dateStr
       );
       if (!exists) {
         onChange(
-          [...selectedDates, date].sort((a, b) => a.getTime() - b.getTime()),
+          [...selectedDates, date].sort((a, b) => a.getTime() - b.getTime())
         );
       }
     },
-    [selectedDates, onChange],
+    [selectedDates, onChange]
   );
 
   const removeDate = useCallback(
     (date: Date) => {
       const dateStr = formatDateForInput(date);
-      onChange(
-        selectedDates.filter((d) => formatDateForInput(d) !== dateStr),
-      );
+      onChange(selectedDates.filter((d) => formatDateForInput(d) !== dateStr));
     },
-    [selectedDates, onChange],
+    [selectedDates, onChange]
   );
 
   const clearAll = useCallback(() => {
@@ -128,15 +128,16 @@ interface DateTagProps {
   onRemove: (date: Date) => void;
 }
 
-function DateTag(
-  { date, formatDate, onRemove }: DateTagProps,
-): React.ReactElement {
+function DateTag({
+  date,
+  formatDate,
+  onRemove,
+}: DateTagProps): React.ReactElement {
   const handleRemove = useCallback(() => {
     onRemove(date);
   }, [onRemove, date]);
-  const label = formatDate != null
-    ? formatDate(date)
-    : formatDateForDisplay(date);
+  const label =
+    formatDate != null ? formatDate(date) : formatDateForDisplay(date);
   return (
     <span className={sharedStyles.tag}>
       {label}

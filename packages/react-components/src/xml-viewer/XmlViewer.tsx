@@ -17,11 +17,15 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseXmlViewer } from "./BaseXmlViewer.js";
-import styles from "./BaseXmlViewer.module.css";
 import type { XmlViewerMediaProps } from "./XmlViewerApi.js";
 
+import styles from "./BaseXmlViewer.module.css";
+
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 const transformToText = async (response: Response): Promise<string> => {
   return response.text();
 };
@@ -31,10 +35,11 @@ export function XmlViewer({
   className,
   ...xmlViewerProps
 }: XmlViewerMediaProps): React.ReactElement {
-  const { data: content, loading, error } = useMediaContents(
-    media,
-    transformToText,
-  );
+  const {
+    data: content,
+    loading,
+    error,
+  } = useMediaContents(media, transformToText);
 
   const rootClassName = classnames(styles.container, className);
 

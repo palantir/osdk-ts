@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { createClient, type PlatformClient } from "@osdk/client";
+import { createClient } from "@osdk/client";
+import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
+
 import {
   createFetch,
   getAnthropicBaseUrl,
@@ -24,13 +26,12 @@ import {
   getOpenAiBaseUrl,
 } from "./utils.js";
 
-function createMockClient(
-  overrides?: Partial<PlatformClient>,
-): PlatformClient {
+function createMockClient(overrides?: Partial<PlatformClient>): PlatformClient {
   return {
     baseUrl: "https://example.palantirfoundry.com",
-    tokenProvider: async () => "test-token-abc",
     fetch: vi.fn(),
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
+    tokenProvider: async () => "test-token-abc",
     ...overrides,
   } as PlatformClient;
 }
@@ -47,6 +48,7 @@ describe("createFetch", () => {
 describe("getFoundryToken", () => {
   it("returns the token from the client's token provider", async () => {
     const client = createMockClient({
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       tokenProvider: async () => "my-foundry-token",
     });
 
@@ -60,7 +62,7 @@ describe("getAnthropicBaseUrl", () => {
     const client = createMockClient();
 
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
     );
   });
 
@@ -70,7 +72,7 @@ describe("getAnthropicBaseUrl", () => {
     });
 
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
     );
   });
 });
@@ -80,7 +82,7 @@ describe("getOpenAiBaseUrl", () => {
     const client = createMockClient();
 
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
     );
   });
 
@@ -90,7 +92,7 @@ describe("getOpenAiBaseUrl", () => {
     });
 
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
     );
   });
 });
@@ -100,7 +102,7 @@ describe("getGoogleBaseUrl", () => {
     const client = createMockClient();
 
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
     );
   });
 
@@ -110,7 +112,7 @@ describe("getGoogleBaseUrl", () => {
     });
 
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
     );
   });
 });
@@ -121,21 +123,22 @@ describe("accepts an OSDK Client (context nested under symbolClientContext)", ()
     const client = createClient(
       "https://example.palantirfoundry.com/",
       "ri.a.b.ontology",
+      // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       async () => "nested-token",
       {},
-      mockFetch,
+      mockFetch
     );
 
     expect(await getFoundryToken(client)).toBe("nested-token");
     expect(typeof createFetch(client)).toBe("function");
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
     );
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
     );
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
     );
   });
 });

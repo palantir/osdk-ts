@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { generateNpmRc } from "./generateNpmRc.js";
 
 const expected = `
@@ -29,7 +30,7 @@ test("it generates .npmrc for package and registry", () => {
       osdkPackage: "@myapp/sdk",
       osdkRegistryUrl:
         "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm",
-    }),
+    })
   ).toEqual(expected);
 });
 
@@ -40,6 +41,6 @@ test("it generates .npmrc for package and registry with malformed foundry url", 
       osdkPackage: "@myapp/sdk",
       osdkRegistryUrl:
         "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm/",
-    }),
+    })
   ).toEqual(expected);
 });

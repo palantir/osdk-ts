@@ -16,6 +16,7 @@
 
 import type {
   ActionTypeBlockDataV2,
+  LinkedObjectReference,
   LogicRule,
   OntologyBlockDataV2,
   OntologyIrActionTypeBlockDataV2,
@@ -25,6 +26,7 @@ import type {
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import {
   type BlockDataApiNameLookup,
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   resolveBlockDataApiName,
@@ -72,6 +74,19 @@ function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
     return id;
   }
   return lookup.byId.get(id) ?? lookup.byHyphenated.get(id) ?? id;
+}
+
+function firstExistingObjectParameterId(
+  refs: LinkedObjectReference[],
+  field: string,
+): string {
+  const first = refs[0];
+  if (!first || first.type !== "existingObject") {
+    throw new Error(
+      `Interface-link rule ${field} must reference exactly one existing object`,
+    );
+  }
+  return first.existingObject;
 }
 
 function getObjectReferenceType(
@@ -124,9 +139,16 @@ export function convertBlockDataLogicRulesToActionLogicRules(
 ): Ontologies.ActionLogicRule[] {
   const objectLookup = buildBlockDataObjectTypeLookup(blockdata);
   const interfaceLookup = buildBlockDataInterfaceTypeLookup(blockdata);
+  const interfaceLinkLookup = buildBlockDataInterfaceLinkTypeLookup(blockdata);
 
   return rules.map(rule =>
-    convertBlockDataSingleRule(rule, action, objectLookup, interfaceLookup)
+    convertBlockDataSingleRule(
+      rule,
+      action,
+      objectLookup,
+      interfaceLookup,
+      interfaceLinkLookup,
+    )
   );
 }
 
@@ -268,6 +290,46 @@ function convertSingleRule(
       return result;
     }
 
+    case "addInterfaceLinkRuleV2": {
+      const r = irRule.addInterfaceLinkRuleV2;
+      const result: Ontologies.CreateInterfaceLinkLogicRule & {
+        type: "createInterfaceLink";
+      } = {
+        type: "createInterfaceLink",
+        interfaceTypeApiName: resolveApiName(
+          r.interfaceTypeRid,
+          interfaceLookup,
+        ),
+        interfaceLinkTypeApiName: r.interfaceLinkTypeRid,
+        sourceObject: firstExistingObjectParameterId(
+          r.sourceObjects,
+          "sourceObjects",
+        ),
+        targetObject: firstExistingObjectParameterId(
+          r.targetObjects,
+          "targetObjects",
+        ),
+      };
+      return result;
+    }
+
+    case "deleteInterfaceLinkRule": {
+      const r = irRule.deleteInterfaceLinkRule;
+      const result: Ontologies.DeleteInterfaceLinkLogicRule & {
+        type: "deleteInterfaceLink";
+      } = {
+        type: "deleteInterfaceLink",
+        interfaceTypeApiName: resolveApiName(
+          r.interfaceTypeRid,
+          interfaceLookup,
+        ),
+        interfaceLinkTypeApiName: r.interfaceLinkTypeRid,
+        sourceObject: r.sourceObject,
+        targetObject: r.targetObject,
+      };
+      return result;
+    }
+
     case "addLinkRule":
       throw new Error("addLinkRule is not supported for ActionLogicRule");
 
@@ -286,6 +348,7 @@ function convertBlockDataSingleRule(
   action: ActionTypeBlockDataV2,
   objectLookup: BlockDataApiNameLookup | undefined,
   interfaceLookup: BlockDataApiNameLookup | undefined,
+  interfaceLinkLookup: BlockDataApiNameLookup | undefined,
 ): Ontologies.ActionLogicRule {
   switch (rule.type) {
     case "addObjectRule": {
@@ -410,6 +473,52 @@ function convertBlockDataSingleRule(
             "functionInputValues"
           ],
         functionVersion: r.functionVersion,
+      };
+      return result;
+    }
+
+    case "addInterfaceLinkRuleV2": {
+      const r = rule.addInterfaceLinkRuleV2;
+      const result: Ontologies.CreateInterfaceLinkLogicRule & {
+        type: "createInterfaceLink";
+      } = {
+        type: "createInterfaceLink",
+        interfaceTypeApiName: resolveBlockDataApiName(
+          r.interfaceTypeRid,
+          interfaceLookup,
+        ),
+        interfaceLinkTypeApiName: resolveBlockDataApiName(
+          r.interfaceLinkTypeRid,
+          interfaceLinkLookup,
+        ),
+        sourceObject: firstExistingObjectParameterId(
+          r.sourceObjects,
+          "sourceObjects",
+        ),
+        targetObject: firstExistingObjectParameterId(
+          r.targetObjects,
+          "targetObjects",
+        ),
+      };
+      return result;
+    }
+
+    case "deleteInterfaceLinkRule": {
+      const r = rule.deleteInterfaceLinkRule;
+      const result: Ontologies.DeleteInterfaceLinkLogicRule & {
+        type: "deleteInterfaceLink";
+      } = {
+        type: "deleteInterfaceLink",
+        interfaceTypeApiName: resolveBlockDataApiName(
+          r.interfaceTypeRid,
+          interfaceLookup,
+        ),
+        interfaceLinkTypeApiName: resolveBlockDataApiName(
+          r.interfaceLinkTypeRid,
+          interfaceLinkLookup,
+        ),
+        sourceObject: r.sourceObject,
+        targetObject: r.targetObject,
       };
       return result;
     }

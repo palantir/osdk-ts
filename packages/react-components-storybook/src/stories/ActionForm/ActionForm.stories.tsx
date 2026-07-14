@@ -24,6 +24,7 @@ import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+
 import {
   generatedFieldsStoryAction,
   unsupportedFieldsStoryAction,
@@ -74,12 +75,10 @@ type StoryApplyAction<Q extends ActionDefinition<unknown>> = Parameters<
   StoryOnSubmit<Q>
 >[1];
 
-interface UseActionFormSubmissionOptions<
-  Q extends ActionDefinition<unknown>,
-> {
+interface UseActionFormSubmissionOptions<Q extends ActionDefinition<unknown>> {
   applyStoryAction: (
     formState: FormState<Q>,
-    applyAction: StoryApplyAction<Q>,
+    applyAction: StoryApplyAction<Q>
   ) => Promise<ActionEditResponse | undefined>;
   onSubmit?: StoryOnSubmit<Q>;
 }
@@ -128,7 +127,8 @@ const actionFormDefaultValueFields: ReadonlyArray<
     defaultValue: true,
     fieldComponentProps: {
       items: [true, false],
-      itemToStringLabel: (value) => value === true ? "Full-time" : "Contractor",
+      itemToStringLabel: (value) =>
+        value === true ? "Full-time" : "Contractor",
       placeholder: "Select employment type",
     },
   },
@@ -171,7 +171,8 @@ const actionFormOverrideFields: ReadonlyArray<
     helperText: "Choose whether this employee is full-time or a contractor.",
     fieldComponentProps: {
       items: [true, false],
-      itemToStringLabel: (value) => value === true ? "Full-time" : "Contractor",
+      itemToStringLabel: (value) =>
+        value === true ? "Full-time" : "Contractor",
       placeholder: "Select employment type",
     },
   },
@@ -189,36 +190,36 @@ function handleSuccess(result: ActionEditResponse | undefined): void {
 
 function applyUpdateEmployeeStoryAction(
   formState: FormState<typeof actionDefinition>,
-  applyAction: UpdateEmployeeApplyAction,
+  applyAction: UpdateEmployeeApplyAction
 ): ReturnType<UpdateEmployeeApplyAction> {
   // ActionForm passes coerced form values to custom submit handlers at runtime.
   // The callback type currently exposes metadata-shaped ActionParameters, so the
   // story uses the callback's parameter type to keep the example wired to the
   // real apply path while preserving type safety.
   return applyAction(
-    formState as unknown as Parameters<UpdateEmployeeApplyAction>[0],
+    formState as unknown as Parameters<UpdateEmployeeApplyAction>[0]
   );
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState<typeof generatedFieldsActionDefinition>,
-  applyAction: GeneratedFieldsApplyAction,
+  applyAction: GeneratedFieldsApplyAction
 ): ReturnType<GeneratedFieldsApplyAction> {
   // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
   // using the same applyAction path even though the callback type is metadata-shaped.
   return applyAction(
-    formState as unknown as Parameters<GeneratedFieldsApplyAction>[0],
+    formState as unknown as Parameters<GeneratedFieldsApplyAction>[0]
   );
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState<typeof unsupportedFieldsActionDefinition>,
-  applyAction: UnsupportedFieldsApplyAction,
+  applyAction: UnsupportedFieldsApplyAction
 ): ReturnType<UnsupportedFieldsApplyAction> {
   // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
   // through the real applyAction path so the response panel shows true results.
   return applyAction(
-    formState as unknown as Parameters<UnsupportedFieldsApplyAction>[0],
+    formState as unknown as Parameters<UnsupportedFieldsApplyAction>[0]
   );
 }
 
@@ -253,9 +254,9 @@ function useActionFormSubmission<Q extends ActionDefinition<unknown>>({
   applyStoryAction,
   onSubmit,
 }: UseActionFormSubmissionOptions<Q>): ActionFormSubmissionHandlers<Q> {
-  const [submission, setSubmission] = useState<
-    StorySubmissionSnapshot
-  >({ status: "idle" });
+  const [submission, setSubmission] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
 
   const handleStorySubmit: StoryOnSubmit<Q> = useCallback(
     async (formState, applyAction) => {
@@ -263,10 +264,7 @@ function useActionFormSubmission<Q extends ActionDefinition<unknown>>({
       try {
         let response: unknown;
         if (onSubmit == null) {
-          const actionResponse = await applyStoryAction(
-            formState,
-            applyAction,
-          );
+          const actionResponse = await applyStoryAction(formState, applyAction);
           handleSuccess(actionResponse);
           response = actionResponse;
         } else {
@@ -283,7 +281,7 @@ function useActionFormSubmission<Q extends ActionDefinition<unknown>>({
         throw error;
       }
     },
-    [applyStoryAction, onSubmit],
+    [applyStoryAction, onSubmit]
   );
 
   const handleStoryError: StoryOnError<Q> = useCallback((error) => {
@@ -505,22 +503,20 @@ export const SubmitSuccess: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
-    await userEvent.type(
-      fullNameInput,
-      "Ada Lovelace",
-    );
+    await userEvent.type(fullNameInput, "Ada Lovelace");
     await userEvent.click(submitButton);
 
     await waitFor(() => expect(successSpy).toHaveBeenCalled());
-    await expect(await canvas.findByText("Submit succeeded."))
-      .toBeInTheDocument();
-    await expect(await canvas.findByText(/Ada Lovelace/)).toBeInTheDocument();
+    await expect(
+      await canvas.findByText("Submit succeeded.")
+    ).toBeInTheDocument();
+    await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
 };
 
@@ -534,24 +530,21 @@ export const SubmitFailure: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
-    await userEvent.type(
-      fullNameInput,
-      "Margaret Hamilton",
-    );
+    await userEvent.type(fullNameInput, "Margaret Hamilton");
     await userEvent.click(submitButton);
 
     await waitFor(() => expect(failingSubmitSpy).toHaveBeenCalled());
     await waitFor(() => expect(errorSpy).toHaveBeenCalled());
-    await expect(await canvas.findByText("Submit failed."))
-      .toBeInTheDocument();
-    await expect(await canvas.findByText(/Demo submission failed/))
-      .toBeInTheDocument();
+    await expect(await canvas.findByText("Submit failed.")).toBeInTheDocument();
+    await expect(
+      await canvas.findByText(/Demo submission failed/u)
+    ).toBeInTheDocument();
   },
   parameters: {
     docs: {
@@ -576,9 +569,9 @@ export const ValidationErrors: Story = {
     successSpy.mockClear();
 
     const canvas = within(canvasElement);
-    await canvas.findByRole("textbox", { name: /^fullName/ });
+    await canvas.findByRole("textbox", { name: /^fullName/u });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
     await userEvent.click(submitButton);
 
@@ -601,8 +594,9 @@ export const SubmitDisabled: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(await canvas.findByRole("button", { name: /submit/i }))
-      .toBeDisabled();
+    await expect(
+      await canvas.findByRole("button", { name: /submit/iu })
+    ).toBeDisabled();
   },
 };
 
@@ -615,21 +609,18 @@ export const SlowCustomSubmit: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
-    await userEvent.type(
-      fullNameInput,
-      "Katherine Johnson",
-    );
+    await userEvent.type(fullNameInput, "Katherine Johnson");
     await userEvent.click(submitButton);
 
     await waitFor(() => expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole("button", { name: /submitting/i }),
+      await canvas.findByRole("button", { name: /submitting/iu })
     ).toBeDisabled();
   },
   parameters: {
@@ -661,21 +652,18 @@ export const CustomSubmitHandler: Story = {
 
     const canvas = within(canvasElement);
     const fullNameInput = await canvas.findByRole("textbox", {
-      name: /^fullName/,
+      name: /^fullName/u,
     });
     const submitButton = await canvas.findByRole("button", {
-      name: /submit/i,
+      name: /submit/iu,
     });
 
-    await userEvent.type(
-      fullNameInput,
-      "Grace Hopper",
-    );
+    await userEvent.type(fullNameInput, "Grace Hopper");
     await userEvent.click(submitButton);
 
     await waitFor(() =>
       expect(customSubmitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ fullName: "Grace Hopper" }),
+        expect.objectContaining({ fullName: "Grace Hopper" })
       )
     );
   },
@@ -841,8 +829,7 @@ export const WithUnsupportedFields: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `// This story uses an action with parameter types that ActionForm does
+        code: `// This story uses an action with parameter types that ActionForm does
 // not currently generate default field components for.
 //
 // {
@@ -935,7 +922,7 @@ function ControlledActionFormStory(): React.ReactElement {
         <div className="osdkFormStorySpacing">
           <strong>Current form state (JSON):</strong>
           <pre className="osdkCodeOutput">
-              {JSON.stringify(formState, null, 2)}
+            {JSON.stringify(formState, null, 2)}
           </pre>
         </div>
         <ActionForm

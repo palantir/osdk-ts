@@ -27,7 +27,13 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
+      "dependsOn": [
+        "//#global-eslint-config",
+        "//#global-oxc-config",
+        "//#dprint",
+        "codegen",
+        "^transpileTypes"
+      ]
     },
 
     /* Psuedo task to let us depend on dprint config */
@@ -54,6 +60,13 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
+    /* Fails when a doc's AUTOGEN:props table has drifted from its source type. */
+    "check-gen-props": {
+      "outputLogs": "new-only",
+      "dependsOn": ["//#global-oxc-config"],
+      "inputs": ["src/**/*.{ts,tsx}", "docs/**/*.md", "scripts/gen-props.mjs"]
+    },
+
     /* Psuedo task to depend on the script contents */
     "//#babel-config": {
       "inputs": ["babel.config.mjs"]
@@ -61,6 +74,11 @@
 
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
+    },
+
+    /* Psuedo task to let oxc-migrated packages depend on the global oxlint + oxfmt config */
+    "//#global-oxc-config": {
+      "inputs": ["oxlint.config.ts", "oxfmt.config.ts", "plugins/oxlint-plugin-header.js"]
     },
 
     "clean": {
@@ -267,7 +285,8 @@
         "check-attw",
         "check-bundle",
         "check-api",
-        "check-spelling"
+        "check-spelling",
+        "check-gen-props"
       ]
     }
   },

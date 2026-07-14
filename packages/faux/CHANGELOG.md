@@ -1,5 +1,89 @@
 # @osdk/shared.test
 
+## 0.34.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/api@2.43.0
+  - @osdk/generator-converters@2.43.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 6010d45: Migrate @osdk/aip-core, @osdk/foundry-config-json, @osdk/seed-compiler, @osdk/seed-helpers, @osdk/oauth, @osdk/faux, and @osdk/osdk-docs-context to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the standard libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+  - @osdk/api@2.42.0
+  - @osdk/generator-converters@2.42.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+
+## 0.31.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/generator-converters@2.38.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+- @osdk/generator-converters@2.37.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
+## 0.27.0
+
+### Minor Changes
+
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
 ## 0.26.0
 
 ### Minor Changes

@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -27,6 +28,13 @@ import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfM
 
 type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType;
+
+export interface InterfaceLinkConstraint {
+  apiName: string;
+  from: InterfaceType;
+  to: ApiNameOrInterfaceType;
+  cardinality: "SINGLE" | "MANY";
+}
 
 type Many = {
   apiName: string;
@@ -48,31 +56,43 @@ type One = {
 };
 
 export function defineInterfaceLinkConstraint(
-  linkDefInput: One | Many,
-): void {
+  linkDefInput: One | Many
+): InterfaceLinkConstraint {
   const linkDef = cloneDefinition(linkDefInput);
 
   invariant(
-    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][linkDef.from.apiName]
-      == null,
-    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`,
+    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
+      linkDef.from.apiName
+    ] == null,
+    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`
   );
 
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
-    linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
-      == null,
-    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
+    linkDef.from.links.find(
+      (a) => a.metadata.apiName === fromLinkMeta.apiName
+    ) == null,
+    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`
   );
 
+  const cardinality = linkDef.toMany ? "MANY" : "SINGLE";
+  const to = linkDef.toMany ?? linkDef.toOne;
+
   linkDef.from.links.push({
-    cardinality: linkDef.toMany ? "MANY" : "SINGLE",
-    linkedEntityTypeId: getLinkedType(linkDef.toMany ?? linkDef.toOne),
+    cardinality,
+    linkedEntityTypeId: getLinkedType(to),
     metadata: fromLinkMeta,
     required: linkDef.required ?? true,
   });
-  linkDef.from.linkedInterfaces?.push(linkDef.toMany ?? linkDef.toOne);
+  linkDef.from.linkedInterfaces?.push(to);
+
+  return {
+    apiName: fromLinkMeta.apiName,
+    from: linkDef.from,
+    to,
+    cardinality,
+  };
 }
 
 function getLinkedType(t: string | InterfaceType) {

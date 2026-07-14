@@ -24,6 +24,7 @@ import type {
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React, { useCallback, useImperativeHandle, useMemo } from "react";
+
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
@@ -44,21 +45,9 @@ import type { EditableConfig } from "./utils/types.js";
 
 const EMPTY_ARRAY: [] = [];
 
-/**
- * ObjectTable - A headless table component for displaying OSDK object sets
- *
- * @example
- * ```tsx
- * <ObjectTable objectType={MyObjectType} />
- * ```
- */
-
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -106,13 +95,11 @@ export function ObjectTable<
     Q,
     RDPs,
     FunctionColumns
-  >(
-    {
-      orderBy,
-      defaultOrderBy,
-      onOrderByChanged,
-    },
-  );
+  >({
+    orderBy,
+    defaultOrderBy,
+    onOrderByChanged,
+  });
 
   const {
     data,
@@ -121,12 +108,8 @@ export function ObjectTable<
     error,
     totalCount,
     objectSet: resultingObjectSet,
-  } = useObjectTableData<
-    Q,
-    RDPs,
-    FunctionColumns
-  >(
-    objectType,
+  } = useObjectTableData<Q, RDPs, FunctionColumns>({
+    objectOrInterfaceType: objectType,
     columnDefinitions,
     filter,
     sorting,
@@ -135,16 +118,13 @@ export function ObjectTable<
     dedupeIntervalMs,
     pageSize,
     streamUpdates,
-  );
+  });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
     Q,
     RDPs,
     FunctionColumns
-  >(
-    objectType,
-    columnDefinitions,
-  );
+  >(objectType, columnDefinitions);
 
   const handleRowSelectionChanged = useCallback(
     (change: UseRowSelectionChange<Q, RDPs>) => {
@@ -156,10 +136,7 @@ export function ObjectTable<
         objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
-    [
-      onRowSelectionChanged,
-      resultingObjectSet,
-    ],
+    [onRowSelectionChanged, resultingObjectSet]
   );
 
   const {
@@ -178,15 +155,13 @@ export function ObjectTable<
     data,
   });
 
-  const selectionColumn = useSelectionColumn<Q, RDPs>(
-    {
-      selectionMode,
-      isAllSelected,
-      hasSelection,
-      onToggleAll,
-      onToggleRow,
-    },
-  );
+  const selectionColumn = useSelectionColumn<Q, RDPs>({
+    selectionMode,
+    isAllSelected,
+    hasSelection,
+    onToggleAll,
+    onToggleRow,
+  });
 
   const {
     columnVisibility,
@@ -265,11 +240,7 @@ export function ObjectTable<
     orderBy: orderByState,
   });
 
-  useImperativeHandle(
-    tableRef,
-    () => ({ getSnapshot }),
-    [getSnapshot],
-  );
+  useImperativeHandle(tableRef, () => ({ getSnapshot }), [getSnapshot]);
 
   const onRenderCellContextMenu = useCallback(
     (
@@ -277,40 +248,40 @@ export function ObjectTable<
       cell: Cell<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >,
+      >
     ) => {
       return renderCellContextMenu?.(row, cell.getValue());
     },
-    [renderCellContextMenu],
+    [renderCellContextMenu]
   );
 
   const handleColumnHeaderClick = useMemo(
     () =>
       onColumnHeaderClick
         ? (columnId: string) =>
-          onColumnHeaderClick(
-            columnId as
-              | PropertyKeys<Q>
-              | keyof RDPs
-              | keyof FunctionColumns,
-          )
+            onColumnHeaderClick(
+              columnId as PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+            )
         : undefined,
-    [onColumnHeaderClick],
+    [onColumnHeaderClick]
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
 
-  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
-    showSortingItems: enableOrdering,
-    showPinningItems: enableColumnPinning,
-    showResizeItem: enableColumnResizing,
-    showConfigItem: enableColumnConfig,
-  }), [
-    enableOrdering,
-    enableColumnPinning,
-    enableColumnResizing,
-    enableColumnConfig,
-  ]);
+  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(
+    () => ({
+      showSortingItems: enableOrdering,
+      showPinningItems: enableColumnPinning,
+      showResizeItem: enableColumnResizing,
+      showConfigItem: enableColumnConfig,
+    }),
+    [
+      enableOrdering,
+      enableColumnPinning,
+      enableColumnResizing,
+      enableColumnConfig,
+    ]
+  );
 
   return (
     <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
@@ -328,9 +299,9 @@ export function ObjectTable<
       editableConfig={editableConfig}
       getRowAttributes={props.getRowAttributes}
       showEditFooter={props.showEditFooter}
-      focusedRowId={focusedRow == null
-        ? focusedRow
-        : getRowIdFromPrimaryKey<Q>(focusedRow)}
+      focusedRowId={
+        focusedRow == null ? focusedRow : getRowIdFromPrimaryKey<Q>(focusedRow)
+      }
       onFocusedRowChanged={onFocusedRowChanged}
     />
   );

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+
 import type { AccessType, Config } from "@changesets/types";
 import type { Package } from "@manypkg/get-packages";
 import { getPackages } from "@manypkg/get-packages";
 import chalk from "chalk";
 import { consola } from "consola";
 import { execa } from "execa";
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import type { Octokit } from "octokit";
 import pFilter from "p-filter";
 import pMap from "p-map";
@@ -40,7 +41,7 @@ export async function publishPackages(
   cwd: string,
   { tag, gitTag = true }: { tag?: string; gitTag?: boolean },
   config: Config,
-  octokit: Octokit,
+  octokit: Octokit
 ): Promise<PublishedResult[]> {
   const releaseTag = tag && tag.length > 0 ? tag : "latest";
   const { packages, tool } = await getPackages(cwd);
@@ -51,7 +52,7 @@ export async function publishPackages(
   const r = await pMap(
     unpublishedPackagesInfo,
     async (pkg) => await publishSinglePackage(pkg, config.access, releaseTag),
-    { concurrency: 4 },
+    { concurrency: 4 }
   );
 
   // need to produce the output to save for future run of create tag/release
@@ -59,34 +60,39 @@ export async function publishPackages(
     path.join(cwd, "pnpm-publish-summary.json"),
     JSON.stringify(
       {
-        publishedPackages: r.filter((x) => x.published).map(x => ({
-          name: x.name,
-          version: x.newVersion,
-        })),
+        publishedPackages: r
+          .filter((x) => x.published)
+          .map((x) => ({
+            name: x.name,
+            version: x.newVersion,
+          })),
       },
       null,
-      2,
-    ),
+      2
+    )
   );
 
   return r;
 }
 
-async function execPnpmPublish(
-  { cwd, tag, access }: { cwd: string; tag: string; access: AccessType },
-) {
-  const result = await execa("pnpm", [
-    "publish",
-    "--json",
-    "--tag",
-    "--dry-run",
-    tag,
-    "--no-git-checks",
-  ], { cwd });
+async function execPnpmPublish({
+  cwd,
+  tag,
+  access,
+}: {
+  cwd: string;
+  tag: string;
+  access: AccessType;
+}) {
+  const result = await execa(
+    "pnpm",
+    ["publish", "--json", "--tag", "--dry-run", tag, "--no-git-checks"],
+    { cwd }
+  );
 
   if (result.exitCode !== 0) {
     consola.error(
-      `Failed to publish ${chalk.cyan(cwd)} with error: ${result.stderr}`,
+      `Failed to publish ${chalk.cyan(cwd)} with error: ${result.stderr}`
     );
     return false;
   }
@@ -99,11 +105,11 @@ async function execPnpmPublish(
 async function publishSinglePackage(
   pkg: Package,
   access: AccessType,
-  tag: string,
+  tag: string
 ): Promise<PublishedResult> {
   const { name, version, publishConfig } = pkg.packageJson;
   consola.info(
-    `Publishing ${chalk.cyan(`"${name}"`)} at ${chalk.green(`"${version}"`)}`,
+    `Publishing ${chalk.cyan(`"${name}"`)} at ${chalk.green(`"${version}"`)}`
   );
 
   return {
@@ -114,7 +120,7 @@ async function publishSinglePackage(
 }
 
 export async function packageVersionsOrEmptySet(
-  name: string,
+  name: string
 ): Promise<Set<string>> {
   try {
     return await packageVersionsOrThrow(name);
@@ -126,18 +132,20 @@ export async function packageVersionsOrEmptySet(
   }
 }
 
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 async function getUnpublishedPackages(packages: Array<Package>) {
   return pFilter(packages, async (pkg) => {
     const { name, version } = pkg.packageJson;
     const versions = await packageVersionsOrEmptySet(name);
     if (versions.has(version)) {
       consola.info(
-        `${name} is being published because our local version (${version}) has not been published on npm`,
+        `${name} is being published because our local version (${version}) has not been published on npm`
       );
       return true;
     } else {
       consola.warn(
-        `${name} is not being published because version ${version} is already published on npm`,
+        `${name} is not being published because version ${version} is already published on npm`
       );
       return false;
     }

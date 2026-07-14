@@ -18,7 +18,14 @@ Momentjs
 monorepolint
 ngeohash
 npmjs
+oxc
+oxfmt
+oxfmtrc
+oxlint
+oxlintrc
 trivago
+tsgolint
 tsup
 timecode
+ultracite
 utif

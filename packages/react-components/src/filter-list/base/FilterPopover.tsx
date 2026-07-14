@@ -17,7 +17,9 @@
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { memo, useCallback, useState } from "react";
+
 import { RemoveIcon } from "./FilterIcons.js";
+
 import styles from "./FilterPopover.module.css";
 
 export interface FilterPopoverProps {
@@ -39,18 +41,16 @@ export interface FilterPopoverProps {
 }
 
 /** Labeled, popover-backed filter trigger. Pair with `FilterInput` for the popup body. */
-function FilterPopoverInner(
-  {
-    label,
-    summary,
-    isActive,
-    onRemove,
-    children,
-    className,
-    placeholder = "Any",
-    labelPlacement = "inline",
-  }: FilterPopoverProps,
-): React.ReactElement {
+function FilterPopoverInner({
+  label,
+  summary,
+  isActive,
+  onRemove,
+  children,
+  className,
+  placeholder = "Any",
+  labelPlacement = "inline",
+}: FilterPopoverProps): React.ReactElement {
   const [open, setOpen] = useState(false);
   const summaryHasValue = summary !== "";
   const handleRemoveClick = useCallback(
@@ -58,7 +58,7 @@ function FilterPopoverInner(
       e.stopPropagation();
       onRemove?.();
     },
-    [onRemove],
+    [onRemove]
   );
 
   return (
@@ -67,7 +67,7 @@ function FilterPopoverInner(
         className={classnames(
           styles.fieldGroup,
           labelPlacement === "top" && styles.fieldGroupTop,
-          className,
+          className
         )}
       >
         <span className={styles.label}>{label}</span>
@@ -78,7 +78,7 @@ function FilterPopoverInner(
           <span
             className={classnames(
               styles.summary,
-              !summaryHasValue && styles.placeholder,
+              !summaryHasValue && styles.placeholder
             )}
           >
             {summaryHasValue ? summary : placeholder}
@@ -97,9 +97,7 @@ function FilterPopoverInner(
       </span>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4} align="start">
-          <Popover.Popup className={styles.popup}>
-            {children}
-          </Popover.Popup>
+          <Popover.Popup className={styles.popup}>{children}</Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
     </Popover.Root>

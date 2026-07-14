@@ -16,36 +16,34 @@
 
 import { readFile } from "fs/promises";
 import path from "path";
+
 import resolvePackagePath from "resolve-package-path";
+
 import type { PackageJson } from "./PackageJson.js";
 
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function visitNpmPackages(
   rootPackageJsonPath: string,
-  onVisit: (packageJsonPath: string, packageJson: PackageJson) => void,
+  onVisit: (packageJsonPath: string, packageJson: PackageJson) => void
 ): Promise<void> {
   const visited = new Set<string>();
 
-  const visitNpmPackagesInternal = async function(
-    packageJsonPath: string,
+  const visitNpmPackagesInternal = async function (
+    packageJsonPath: string
   ): Promise<void> {
     if (visited.has(packageJsonPath)) {
       return;
     }
 
     const packageJson = await parsePackageJson(packageJsonPath);
-    onVisit(
-      packageJsonPath,
-      packageJson,
-    );
+    onVisit(packageJsonPath, packageJson);
     visited.add(packageJsonPath);
 
     const context = path.dirname(packageJsonPath);
     const npmDependencies = Object.keys(packageJson.dependencies ?? {});
     for (const childName of npmDependencies) {
-      const childPackageJsonPath = findPackageJsonPath(
-        childName,
-        context,
-      );
+      const childPackageJsonPath = findPackageJsonPath(childName, context);
       await visitNpmPackagesInternal(childPackageJsonPath);
     }
   };
@@ -55,7 +53,7 @@ export async function visitNpmPackages(
 
 export function findPackageJsonPath(
   dependency: string,
-  baseDir: string,
+  baseDir: string
 ): string {
   const packagePath = resolvePackagePath(dependency, baseDir);
   if (packagePath == null) {
@@ -65,7 +63,7 @@ export function findPackageJsonPath(
 }
 
 export async function parsePackageJson(
-  packageJsonPath: string,
+  packageJsonPath: string
 ): Promise<PackageJson> {
   let packageJsonContent;
   try {
@@ -73,7 +71,7 @@ export async function parsePackageJson(
   } catch (err) {
     throw new Error(
       `Failed to read file at path. Does it exist?: "${packageJsonPath}"`,
-      { cause: err },
+      { cause: err }
     );
   }
   try {
@@ -81,7 +79,7 @@ export async function parsePackageJson(
   } catch (err) {
     throw new Error(
       `Failed to parse package.json content from file "${packageJsonPath}"`,
-      { cause: err },
+      { cause: err }
     );
   }
 }

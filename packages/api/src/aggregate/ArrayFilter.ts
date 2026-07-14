@@ -17,16 +17,15 @@
 import type { Just } from "./Just.js";
 
 interface ArrayFilterOptions<T> {
-  "$contains": T;
-  "$isNull": boolean;
+  $contains: T;
+  $isNull: boolean;
 }
 namespace ArrayFilter {
-  export interface $contains<T>
-    extends Just<"$contains", ArrayFilterOptions<T>>
-  {}
+  export interface $contains<T> extends Just<
+    "$contains",
+    ArrayFilterOptions<T>
+  > {}
   export interface $isNull<T> extends Just<"$isNull", ArrayFilterOptions<T>> {}
 }
 
-export type ArrayFilter<T> =
-  | ArrayFilter.$contains<T>
-  | ArrayFilter.$isNull<T>;
+export type ArrayFilter<T> = ArrayFilter.$contains<T> | ArrayFilter.$isNull<T>;

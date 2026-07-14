@@ -17,9 +17,11 @@
 import type { Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import React from "react";
+
 import { ToggleExclusionButton } from "../../components/actions/ToggleExclusionButton.js";
 import type { StatusUpdate } from "../../generatedNoCheck2/index.js";
 import { formatTimestamp } from "../../utils/formatDate.js";
+
 import styles from "./StatusUpdatesTable.module.css";
 
 /** Display-only derived property: the employee name two hops away (assignment -> employee). */
@@ -47,9 +49,10 @@ export function createStatusUpdateColumnDefinitions(): Array<
         type: "rdp",
         id: "employeeName",
         creator: (base) =>
-          base.pivotTo("assignment").pivotTo("employee").selectProperty(
-            "fullName",
-          ),
+          base
+            .pivotTo("assignment")
+            .pivotTo("employee")
+            .selectProperty("fullName"),
       },
       columnName: "Employee",
       renderHeader: () => "Employee",
@@ -75,9 +78,11 @@ export function createStatusUpdateColumnDefinitions(): Array<
       renderHeader: () => "Value",
       isVisible: true,
       renderCell: (row: StatusUpdateInstance) =>
-        row.isExcluded === true
-          ? <s className={styles.excludedValue}>{row.value}</s>
-          : <span>{row.value}</span>,
+        row.isExcluded === true ? (
+          <s className={styles.excludedValue}>{row.value}</s>
+        ) : (
+          <span>{row.value}</span>
+        ),
     },
     {
       locator: { type: "property", id: "timestamp" },

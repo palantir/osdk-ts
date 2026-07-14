@@ -26,9 +26,7 @@ import { defineConfig } from "vitest/config";
 // MSW handlers, FauxFoundry client, and decorators that power the stories are
 // applied here exactly as they are in `storybook dev`.
 export default defineConfig({
-  plugins: [
-    storybookTest({ configDir: ".storybook" }),
-  ],
+  plugins: [storybookTest({ configDir: ".storybook" })],
   test: {
     name: "storybook",
     setupFiles: [".storybook/vitest.setup.ts"],

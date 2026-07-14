@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { osdkDevTools } from "./index.js";
 
 describe("osdkDevTools vite plugin", () => {
@@ -46,7 +47,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string },
+      env: { command: string }
     ) => boolean;
 
     const result = applyFn({ mode: "production" }, { command: "serve" });
@@ -58,7 +59,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string },
+      env: { command: string }
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -69,7 +70,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string },
+      env: { command: string }
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "build" });
@@ -80,7 +81,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string },
+      env: { command: string }
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -102,7 +103,7 @@ describe("osdkDevTools vite plugin", () => {
     expect(result).toContain("@osdk/react-devtools");
   });
 
-  it("transformIndexHtml injects CSS by default", () => {
+  it("transformIndexHtml does not inject a global stylesheet", () => {
     const plugin = osdkDevTools();
     const transformConfig = plugin.transformIndexHtml as {
       order: string;
@@ -112,27 +113,17 @@ describe("osdkDevTools vite plugin", () => {
     const html = "<html><head></head><body></body></html>";
     const result = transformConfig.handler(html);
 
-    expect(result).toContain("stylesheet");
-  });
-
-  it("transformIndexHtml skips CSS when injectCSS is false", () => {
-    const plugin = osdkDevTools({ injectCSS: false });
-    const transformConfig = plugin.transformIndexHtml as {
-      order: string;
-      handler: (html: string) => string;
-    };
-
-    const html = "<html><head></head><body></body></html>";
-    const result = transformConfig.handler(html);
-
+    // Devtools styles are injected into an isolated shadow root at runtime,
+    // never as a page-level stylesheet.
     expect(result).not.toContain("stylesheet");
+    expect(result).not.toContain("styles.css");
   });
 
   it("apply returns false when explicitly disabled", () => {
     const plugin = osdkDevTools({ enabled: false });
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string },
+      env: { command: string }
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -179,7 +170,7 @@ describe("osdkDevTools vite plugin", () => {
     transformConfig.handler(html);
 
     expect(spy).toHaveBeenCalledWith(
-      "[osdk-devtools] Injected devtools into HTML",
+      "[osdk-devtools] Injected devtools into HTML"
     );
     spy.mockRestore();
   });

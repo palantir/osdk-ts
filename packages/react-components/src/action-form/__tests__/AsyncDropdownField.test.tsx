@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { AsyncDropdownField } from "../fields/AsyncDropdownField.js";
 
 // useInfiniteScroll uses IntersectionObserver which HappyDOM doesn't implement.
@@ -27,19 +28,19 @@ beforeEach(() => {
     "IntersectionObserver",
     vi.fn(function MockIntersectionObserver(
       this: IntersectionObserver,
-      callback: IntersectionObserverCallback,
+      callback: IntersectionObserverCallback
     ) {
       return {
         observe: vi.fn((target: Element) => {
           callback(
             [{ isIntersecting: true, target } as IntersectionObserverEntry],
-            this,
+            this
           );
         }),
         disconnect: vi.fn(),
         unobserve: vi.fn(),
       };
-    }),
+    })
   );
 });
 
@@ -51,14 +52,16 @@ afterEach(() => {
 const ITEMS = ["Alpha", "Beta", "Gamma"];
 const NOOP = (): void => {};
 
-function renderAsyncDropdown(overrides: {
-  items?: string[];
-  isLoading?: boolean;
-  isSearching?: boolean;
-  hasMore?: boolean;
-  onFetchMore?: () => void;
-  fetchError?: Error;
-} = {}) {
+function renderAsyncDropdown(
+  overrides: {
+    items?: string[];
+    isLoading?: boolean;
+    isSearching?: boolean;
+    hasMore?: boolean;
+    onFetchMore?: () => void;
+    fetchError?: Error;
+  } = {}
+) {
   return render(
     <AsyncDropdownField
       items={ITEMS}
@@ -69,7 +72,7 @@ function renderAsyncDropdown(overrides: {
       hasMore={false}
       onFetchMore={NOOP}
       {...overrides}
-    />,
+    />
   );
 }
 
@@ -113,7 +116,7 @@ describe("AsyncDropdownField", () => {
           isSearching={false}
           hasMore={true}
           onFetchMore={onFetchMore}
-        />,
+        />
       );
 
       const input = screen.getByRole("combobox");
@@ -136,7 +139,7 @@ describe("AsyncDropdownField", () => {
           isSearching={false}
           hasMore={false}
           onFetchMore={onFetchMore}
-        />,
+        />
       );
 
       // Record calls at this point — no new calls should happen after settling

@@ -23,6 +23,7 @@ import {
 } from "@osdk/shared.test";
 import type { Mock } from "vitest";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Edits } from "../edits/types.js";
 import { createWriteableClient } from "./createWriteableClient.js";
 import { EditRequestManager } from "./EditRequestManager.js";
@@ -39,19 +40,19 @@ describe("createWriteableClient", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(),
-      createWriteableClient.bind(null, "transaction"),
+      createWriteableClient.bind(null, "transaction")
     );
     ({ client, apiServer } = testSetup);
     baseUrl = testSetup.fauxFoundry.baseUrl;
 
     mockedRequestHandler = vi.fn<
       Parameters<typeof MockOntologiesV2.OntologyTransactions.postEdits>[1]
-    >(async () => ({ status: 200, body: {} }));
+    >(() => ({ status: 200, body: {} }));
     apiServer.use(
       MockOntologiesV2.OntologyTransactions.postEdits(
         baseUrl,
-        mockedRequestHandler,
-      ),
+        mockedRequestHandler
+      )
     );
 
     return () => {
@@ -66,7 +67,7 @@ describe("createWriteableClient", () => {
   it("flushes pending edits when a read is awaited", async () => {
     const flushSpy = vi.spyOn(
       EditRequestManager.prototype,
-      "flushPendingEdits",
+      "flushPendingEdits"
     );
 
     void client.create(Employee, { employeeId: 1, fullName: "John Doe" });

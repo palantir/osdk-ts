@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { DeprecatedActionTypeSetOrganizationsRequest as _api_DeprecatedActionTypeSetOrganizationsRequest } from "../../__components.js";
 
 /**
@@ -26,7 +27,7 @@ import type { DeprecatedActionTypeSetOrganizationsRequest as _api_DeprecatedActi
  */
 export async function deprecatedSetOrganizations(
   ctx: ConjureContext,
-  request: _api_DeprecatedActionTypeSetOrganizationsRequest,
+  request: _api_DeprecatedActionTypeSetOrganizationsRequest
 ): Promise<void> {
   return conjureFetch(ctx, `/actions/orgs`, "PUT", request);
 }

@@ -31,7 +31,7 @@ import { OsdkProvider } from "@osdk/react";
 const client = createClient(
   "https://your-stack.palantirfoundry.com",
   "your-ontology-rid",
-  async () => "your-auth-token",
+  async () => "your-auth-token"
 );
 
 function App() {

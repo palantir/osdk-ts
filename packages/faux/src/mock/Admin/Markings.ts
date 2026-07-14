@@ -15,10 +15,9 @@
  */
 
 import { Markings } from "@osdk/foundry.admin";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const applyListMarkings: CallFactory<
-  never,
-  typeof Markings.list
-> = handleOpenApiCall(Markings.list, []);
+export const applyListMarkings: CallFactory<never, typeof Markings.list> =
+  handleOpenApiCall(Markings.list, []);

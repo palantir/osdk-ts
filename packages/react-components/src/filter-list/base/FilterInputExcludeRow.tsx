@@ -17,6 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+
 import type { FilterState } from "../FilterListItemApi.js";
 import {
   filterHasActiveState,
@@ -26,6 +27,7 @@ import {
   toggleIsExcluding,
 } from "../utils/filterValues.js";
 import { ExcludeDropdown } from "./ExcludeDropdown.js";
+
 import styles from "./FilterListItem.module.css";
 
 interface FilterInputExcludeRowProps {
@@ -88,10 +90,7 @@ function FilterInputExcludeRowInner({
           )}
         </div>
         {onClearAll && filterHasActiveState(effectiveState) && (
-          <Button
-            className={styles.clearAllButton}
-            onClick={onClearAll}
-          >
+          <Button className={styles.clearAllButton} onClick={onClearAll}>
             Clear all
           </Button>
         )}

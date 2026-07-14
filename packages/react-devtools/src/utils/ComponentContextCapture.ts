@@ -77,8 +77,8 @@ export class ComponentContextCapture {
 
         if (sourceLocation) {
           const shortPath =
-            sourceLocation.fileName?.split("/").slice(-2).join("/")
-            || "unknown";
+            sourceLocation.fileName?.split("/").slice(-2).join("/") ||
+            "unknown";
           id = `fiber-${name}-${shortPath}-${sourceLocation.lineNumber || 0}`;
         } else {
           id = `fiber-${name}-${this.idCounter++}`;
@@ -92,9 +92,9 @@ export class ComponentContextCapture {
 
   private getFiberDisplayName(fiber: Fiber): string | undefined {
     if (
-      typeof fiber.type === "function"
-      && "displayName" in fiber.type
-      && typeof fiber.type.displayName === "string"
+      typeof fiber.type === "function" &&
+      "displayName" in fiber.type &&
+      typeof fiber.type.displayName === "string"
     ) {
       return fiber.type.displayName;
     }
@@ -107,8 +107,8 @@ export class ComponentContextCapture {
 
     const parsed = this.parseStackTrace(stack);
 
-    const shortPath = parsed.filePath?.split("/").slice(-2).join("/")
-      || "unknown";
+    const shortPath =
+      parsed.filePath?.split("/").slice(-2).join("/") || "unknown";
     const id = `stack-${parsed.componentName || "Unknown"}-${shortPath}-${
       parsed.lineNumber || 0
     }`;
@@ -132,16 +132,16 @@ export class ComponentContextCapture {
     const lines = stack.split("\n");
 
     const internalPatterns = [
-      /node_modules/,
-      /@osdk\/react/,
-      /react-devtools/,
-      /ComponentContextCapture/,
-      /ObservableClientMonitor/,
-      /ComponentQueryRegistry/,
-      /packages\/react\/build/,
-      /packages\/react\/esm/,
-      /packages\/react\/src/,
-      /Proxy/,
+      /node_modules/u,
+      /@osdk\/react/u,
+      /react-devtools/u,
+      /ComponentContextCapture/u,
+      /ObservableClientMonitor/u,
+      /ComponentQueryRegistry/u,
+      /packages\/react\/build/u,
+      /packages\/react\/esm/u,
+      /packages\/react\/src/u,
+      /Proxy/u,
     ];
 
     const internalFuncNames = new Set([
@@ -174,18 +174,18 @@ export class ComponentContextCapture {
           return false;
         }
       }
-      return /\.(tsx?|jsx?)(\?|:|$)/.test(filePath)
-        && !/node_modules/.test(filePath);
+      return (
+        /\.(tsx?|jsx?)(\?|:|$)/u.test(filePath) &&
+        !/node_modules/u.test(filePath)
+      );
     };
 
-    const extractComponentNameFromPath = (
-      filePath: string,
-    ): string | null => {
-      const match = filePath.match(/\/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[\?:]/);
+    const extractComponentNameFromPath = (filePath: string): string | null => {
+      const match = filePath.match(/\/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[?:]/u);
       if (match) {
         return match[1];
       }
-      const match2 = filePath.match(/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[\?:]?$/);
+      const match2 = filePath.match(/([A-Z][a-zA-Z0-9]*)\.(tsx?|jsx?)[?:]?$/u);
       if (match2) {
         return match2[1];
       }
@@ -197,29 +197,31 @@ export class ComponentContextCapture {
     for (let i = 3; i < maxLines; i++) {
       const line = lines[i];
 
-      const chromeMatch = line.match(/at\s+([A-Z]\w+)\s+\((.*?):(\d+):(\d+)\)/);
+      const chromeMatch = line.match(
+        /at\s+([A-Z]\w+)\s+\((.*?):(\d+):(\d+)\)/u
+      );
       if (chromeMatch) {
         const [, funcName, filePath, lineNum, colNum] = chromeMatch;
         if (!isInternalFrame(filePath, funcName)) {
           return {
             componentName: funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
         continue;
       }
 
-      const firefoxMatch = line.match(/([A-Z]\w+)@(.*?):(\d+):(\d+)/);
+      const firefoxMatch = line.match(/([A-Z]\w+)@(.*?):(\d+):(\d+)/u);
       if (firefoxMatch) {
         const [, funcName, filePath, lineNum, colNum] = firefoxMatch;
         if (!isInternalFrame(filePath, funcName)) {
           return {
             componentName: funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
         continue;
@@ -230,22 +232,22 @@ export class ComponentContextCapture {
       const line = lines[i];
 
       const fileMatch = line.match(
-        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/,
+        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/u
       );
       if (fileMatch) {
         const filePath = fileMatch[1] || fileMatch[2];
         if (isAppFilePath(filePath)) {
           const componentName = extractComponentNameFromPath(filePath);
           if (componentName) {
-            const locationMatch = filePath.match(/:(\d+):(\d+)$/);
+            const locationMatch = filePath.match(/:(\d+):(\d+)$/u);
             return {
               componentName,
               filePath,
               lineNumber: locationMatch
-                ? parseInt(locationMatch[1], 10)
+                ? Number.parseInt(locationMatch[1], 10)
                 : undefined,
               columnNumber: locationMatch
-                ? parseInt(locationMatch[2], 10)
+                ? Number.parseInt(locationMatch[2], 10)
                 : undefined,
             };
           }
@@ -256,20 +258,20 @@ export class ComponentContextCapture {
     for (let i = 3; i < maxLines; i++) {
       const line = lines[i];
 
-      const anyFuncMatch = line.match(/at\s+(\w+)\s+\((.*?):(\d+):(\d+)\)/);
+      const anyFuncMatch = line.match(/at\s+(\w+)\s+\((.*?):(\d+):(\d+)\)/u);
       if (anyFuncMatch) {
         const [, funcName, filePath, lineNum, colNum] = anyFuncMatch;
         if (
-          funcName.length >= 3
-          && !internalFuncNames.has(funcName)
-          && isAppFilePath(filePath)
+          funcName.length >= 3 &&
+          !internalFuncNames.has(funcName) &&
+          isAppFilePath(filePath)
         ) {
           const pathName = extractComponentNameFromPath(filePath);
           return {
             componentName: pathName || funcName,
             filePath,
-            lineNumber: parseInt(lineNum, 10),
-            columnNumber: parseInt(colNum, 10),
+            lineNumber: Number.parseInt(lineNum, 10),
+            columnNumber: Number.parseInt(colNum, 10),
           };
         }
       }
@@ -277,7 +279,7 @@ export class ComponentContextCapture {
 
     for (let i = 3; i < maxLines; i++) {
       const line = lines[i];
-      const nameMatch = line.match(/at\s+([A-Z]\w+)/);
+      const nameMatch = line.match(/at\s+([A-Z]\w+)/u);
       if (nameMatch) {
         const funcName = nameMatch[1];
         if (!internalFuncNames.has(funcName)) {

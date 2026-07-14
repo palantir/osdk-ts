@@ -16,6 +16,7 @@
 
 import type { CliCommonArgs, CommonAuthArgs } from "@osdk/cli.common";
 import type * as yargs from "yargs";
+
 import login from "./login/index.js";
 
 const auth: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
@@ -34,8 +35,7 @@ const auth: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
       .command(login)
       .demandCommand();
   },
-  handler: async (args) => {
-  },
+  handler: async (args) => {},
 };
 
 export default auth;

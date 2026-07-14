@@ -46,6 +46,7 @@ import {
   vi,
 } from "vitest";
 import { z } from "zod";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -70,17 +71,19 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return Promise.resolve(pino(
-    { level: "info" },
-    (pinoPretty.build)({
-      sync: true,
-      timestampKey: undefined,
-      errorLikeObjectKeys: ["error", "err", "exception"],
-      errorProps: "stack,cause,properties",
-      ignore: "time,hostname,pid",
-      destination: new PinoConsoleLogDestination(),
-    }),
-  ));
+  return Promise.resolve(
+    pino(
+      { level: "info" },
+      pinoPretty.build({
+        sync: true,
+        timestampKey: undefined,
+        errorLikeObjectKeys: ["error", "err", "exception"],
+        errorProps: "stack,cause,properties",
+        ignore: "time,hostname,pid",
+        destination: new PinoConsoleLogDestination(),
+      })
+    )
+  );
 });
 
 // make local uses of WebSocket typed right
@@ -89,25 +92,23 @@ const MockedWebSocket = ImportedWebSocket as unknown as MockedWebSocket;
 const STACK = "https://stack.palantirCustom.com/foo/first/someStuff/";
 
 vi.mock("isomorphic-ws", async (importOriginal) => {
-  const original = await importOriginal<
-    { default: WebSocket }
-  >();
+  const original = await importOriginal<{ default: WebSocket }>();
 
   const WebSocket = createMockWebSocketConstructor(
     original.default,
-    rootLogger,
+    rootLogger
   );
   return { default: WebSocket, WebSocket };
 });
 
 let currentSubscriptionId = 0;
 
-describe("ObjectSetListenerWebsocket", async () => {
+describe("ObjectSetListenerWebsocket", () => {
   let apiServer: SetupServer;
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(STACK),
-      createClient,
+      createClient
     );
     ({ apiServer } = testSetup);
     addLoggerToApiServer(testSetup.apiServer, rootLogger);
@@ -124,16 +125,16 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     let client: ObjectSetListenerWebsocket;
     let listener: MockedObject<
-      Required<
-        ObjectSetSubscription.Listener<Employee, any>
-      >
+      Required<ObjectSetSubscription.Listener<Employee, any>>
     >;
     let oslwInst = 0;
 
-    let updateReceived: {
-      object: Osdk.Instance<Employee>;
-      state: "ADDED_OR_UPDATED" | "REMOVED";
-    } | undefined;
+    let updateReceived:
+      | {
+          object: Osdk.Instance<Employee>;
+          state: "ADDED_OR_UPDATED" | "REMOVED";
+        }
+      | undefined;
 
     let listenerPromise: DeferredPromise<void>;
 
@@ -141,15 +142,18 @@ describe("ObjectSetListenerWebsocket", async () => {
       minimalClient = createMinimalClient(
         { ontologyRid: $ontologyRid },
         STACK,
-        async () => "myAccessToken",
-        { logger: rootLogger },
+        () => "myAccessToken",
+        { logger: rootLogger }
       );
-      client = new ObjectSetListenerWebsocket({
-        ...minimalClient,
-        logger: rootLogger.child({ oslwInst: oslwInst++ }),
-      }, {
-        minimumReconnectDelayMs: MINIMUM_RECONNECT_DELAY,
-      });
+      client = new ObjectSetListenerWebsocket(
+        {
+          ...minimalClient,
+          logger: rootLogger.child({ oslwInst: oslwInst++ }),
+        },
+        {
+          minimumReconnectDelayMs: MINIMUM_RECONNECT_DELAY,
+        }
+      );
 
       listenerPromise = pDefer();
 
@@ -170,8 +174,8 @@ describe("ObjectSetListenerWebsocket", async () => {
           () =>
             msw.HttpResponse.json({
               objectSetRid: `rid.hi.${objectSetRidCounter++}`,
-            }),
-        ),
+            })
+        )
       );
 
       vi.useFakeTimers();
@@ -195,10 +199,7 @@ describe("ObjectSetListenerWebsocket", async () => {
       let subReq1: ObjectSetStreamSubscribeRequests;
 
       beforeEach(async () => {
-        [ws, unsubscribe] = await subscribeAndExpectWebSocket(
-          client,
-          listener,
-        );
+        [ws, unsubscribe] = await subscribeAndExpectWebSocket(client, listener);
 
         subReq1 = await expectSubscribeMessages(ws, 2);
       });
@@ -219,7 +220,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         expectEqualRemoveAndAddListeners(ws);
       });
 
-      it("only sends a single request", async () => {
+      it("only sends a single request", () => {
         respondSuccessToSubscribe(ws, subReq1);
         // actually this is broken FIXME
         unsubscribe();
@@ -253,7 +254,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           expectEqualRemoveAndAddListeners(ws);
         });
 
-        describe("reconnect", async () => {
+        describe("reconnect", () => {
           beforeEach(async () => {
             [ws] = await Promise.all([
               expectWebSocketConstructed(),
@@ -288,10 +289,10 @@ describe("ObjectSetListenerWebsocket", async () => {
           listener.onSuccessfulSubscription.mockReset();
         });
 
-        it("should call onError", async () => {
+        it("should call onError", () => {
           expect(listener.onError).toHaveBeenCalled();
           expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
-            false,
+            false
           );
         });
       });
@@ -361,7 +362,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           `);
         });
 
-        describe("additional subscription", async () => {
+        describe("additional subscription", () => {
           let unsubscribe2: () => void;
           let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
@@ -375,7 +376,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 objectType: Employee.apiName,
               },
               listener,
-              ["employeeId"],
+              ["employeeId"]
             );
 
             subReq2 = await expectSubscribeMessages(ws);
@@ -403,14 +404,14 @@ describe("ObjectSetListenerWebsocket", async () => {
             expectEqualRemoveAndAddListeners(ws);
           });
 
-          describe("reconnect, resubscribe successfully", async () => {
+          describe("reconnect, resubscribe successfully", () => {
             beforeEach(async () => {
               [ws] = await Promise.all([
                 expectWebSocketConstructed(),
                 // delay for connection reconnect with exponential backoff
                 // First attempt: MINIMUM_RECONNECT_DELAY * 2^0 = 2000ms +/- jitter
                 vi.advanceTimersByTimeAsync(
-                  MINIMUM_RECONNECT_DELAY * (1 + 0.3),
+                  MINIMUM_RECONNECT_DELAY * (1 + 0.3)
                 ),
               ]);
               setWebSocketState(ws, "open");
@@ -433,10 +434,11 @@ describe("ObjectSetListenerWebsocket", async () => {
         });
 
         it("should create url correctly", () => {
-          expect(constructWebsocketUrl(STACK, "ontologyRid1").toString())
-            .toEqual(
-              "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
-            );
+          expect(
+            constructWebsocketUrl(STACK, "ontologyRid1").toString()
+          ).toEqual(
+            "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions"
+          );
         });
       });
     });
@@ -450,15 +452,18 @@ describe("ObjectSetListenerWebsocket", async () => {
         minimalClient = createMinimalClient(
           { ontologyRid: $ontologyRid },
           STACK,
-          async () => "myAccessToken",
-          { logger: rootLogger },
+          () => "myAccessToken",
+          { logger: rootLogger }
         );
-        client = new ObjectSetListenerWebsocket({
-          ...minimalClient,
-          logger: rootLogger.child({ oslwInst: "backoff-test" }),
-        }, {
-          minimumReconnectDelayMs: 1000,
-        });
+        client = new ObjectSetListenerWebsocket(
+          {
+            ...minimalClient,
+            logger: rootLogger.child({ oslwInst: "backoff-test" }),
+          },
+          {
+            minimumReconnectDelayMs: 1000,
+          }
+        );
 
         listener = {
           onChange: vi.fn(),
@@ -478,7 +483,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         // First connection attempt
         const [ws1, unsubscribe] = await subscribeAndExpectWebSocket(
           client,
-          listener,
+          listener
         );
         setWebSocketState(ws1, "close");
 
@@ -515,23 +520,28 @@ describe("ObjectSetListenerWebsocket", async () => {
   });
 
   describe("types", () => {
-    it("does not return rid on object type if requested and object has a GTSR", async () => {
-      const client: Client =
-        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+    it("does not return rid on object type if requested and object has a GTSR", () => {
+      const client: Client = ((a: any) => ({
+        subscribe: (a: any, b: any) => {},
+      })) as Client;
 
-      client(Employee).subscribe({
-        onChange: (change) => {
-          change.object.$rid; // This doesn't error because we're forcing the type through, this is expected
+      client(Employee).subscribe(
+        {
+          onChange: (change) => {
+            change.object.$rid; // This doesn't error because we're forcing the type through, this is expected
+          },
         },
-      }, {
-        // @ts-expect-error
-        includeRid: true,
-      });
+        {
+          // @ts-expect-error
+          includeRid: true,
+        }
+      );
     });
 
-    it("does not return rid on object type if not requested", async () => {
-      const client: Client =
-        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+    it("does not return rid on object type if not requested", () => {
+      const client: Client = ((a: any) => ({
+        subscribe: (a: any, b: any) => {},
+      })) as Client;
 
       client(Office).subscribe({
         onChange: (change) => {
@@ -541,28 +551,36 @@ describe("ObjectSetListenerWebsocket", async () => {
       });
     });
 
-    it("does return rid on object type if requested and object does not have a GTSR", async () => {
-      const client: Client =
-        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+    it("does return rid on object type if requested and object does not have a GTSR", () => {
+      const client: Client = ((a: any) => ({
+        subscribe: (a: any, b: any) => {},
+      })) as Client;
 
-      client(Employee).subscribe({
-        onChange: (change) => {
-          expectTypeOf(change.object.$rid).toBeString();
+      client(Employee).subscribe(
+        {
+          onChange: (change) => {
+            expectTypeOf(change.object.$rid).toBeString();
+          },
         },
-      }, { includeRid: true, properties: ["employeeId"] });
+        { includeRid: true, properties: ["employeeId"] }
+      );
 
-      client(Office).subscribe({
-        onChange: (change) => {
-          expectTypeOf(change.object.$rid).toBeString();
+      client(Office).subscribe(
+        {
+          onChange: (change) => {
+            expectTypeOf(change.object.$rid).toBeString();
+          },
         },
-      }, { includeRid: true });
+        { includeRid: true }
+      );
     });
   });
 });
 
-interface RawWebSocketPlus
-  extends Pick<ImportedWebSocket, "addEventListener" | "removeEventListener">
-{
+interface RawWebSocketPlus extends Pick<
+  ImportedWebSocket,
+  "addEventListener" | "removeEventListener"
+> {
   _eventEmitter: EventTarget;
   readyState: 0 | 1 | 2 | 3;
   send: MockedFunction<ImportedWebSocket["send"]>;
@@ -570,91 +588,80 @@ interface RawWebSocketPlus
 }
 
 interface MockedWebSocket
-  extends MockedClass<typeof ImportedWebSocket>, MockedObject<RawWebSocketPlus>
-{
-}
+  extends
+    MockedClass<typeof ImportedWebSocket>,
+    MockedObject<RawWebSocketPlus> {}
 
 type MockedListener = MockedObject<
-  Required<
-    ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>
-  >
+  Required<ObjectSetSubscription.Listener<Employee, PropertyKeys<Employee>>>
 >;
 
 function respondSuccessToSubscribe(
   ws: MockedWebSocket,
-  subReq2: ObjectSetStreamSubscribeRequests,
+  subReq2: ObjectSetStreamSubscribeRequests
 ) {
-  sendToClient<StreamMessage>(
-    ws,
-    {
-      id: subReq2.id,
-      type: "subscribeResponses",
-      responses: [{
+  sendToClient<StreamMessage>(ws, {
+    id: subReq2.id,
+    type: "subscribeResponses",
+    responses: [
+      {
         type: "success",
         id: `${++currentSubscriptionId}`,
-      }],
-    },
-  );
+      },
+    ],
+  });
 }
 
-function sendObjectUpdateResponse(
-  ws: MockedWebSocket,
-  subId: string,
-) {
+function sendObjectUpdateResponse(ws: MockedWebSocket, subId: string) {
   const updateMessage: StreamMessage = {
     type: "objectSetChanged",
     id: subId,
-    updates: [{
-      type: "object",
-      state: "ADDED_OR_UPDATED",
-      object: {
-        __apiName: "Employee",
-        employeeId: 1,
+    updates: [
+      {
+        type: "object",
+        state: "ADDED_OR_UPDATED",
+        object: {
+          __apiName: "Employee",
+          employeeId: 1,
+        },
       },
-    }],
+    ],
   };
 
-  sendToClient<StreamMessage>(
-    ws,
-    updateMessage,
-  );
+  sendToClient<StreamMessage>(ws, updateMessage);
 }
 
-function sendReferenceUpdatesResponse(
-  ws: MockedWebSocket,
-  subId: string,
-) {
+function sendReferenceUpdatesResponse(ws: MockedWebSocket, subId: string) {
   const referenceUpdateMessage: StreamMessage = {
     type: "objectSetChanged",
     id: subId,
-    updates: [{
-      "type": "reference",
-      "objectType": "Employee",
-      "primaryKey": { "employeeId": "12345" },
-      "property": "employeeLocation",
-      "value": {
-        "timestamp": "111",
-        "type": "geotimeSeriesValue",
-        "position": [100, 200],
+    updates: [
+      {
+        type: "reference",
+        objectType: "Employee",
+        primaryKey: { employeeId: "12345" },
+        property: "employeeLocation",
+        value: {
+          timestamp: "111",
+          type: "geotimeSeriesValue",
+          position: [100, 200],
+        },
       },
-    }],
+    ],
   };
 
-  sendToClient<StreamMessage>(
-    ws,
-    referenceUpdateMessage,
-  );
+  sendToClient<StreamMessage>(ws, referenceUpdateMessage);
 }
 
 function expectEqualRemoveAndAddListeners(ws: MockedWebSocket) {
   expect(ws.removeEventListener).toHaveBeenCalledTimes(
-    ws.addEventListener.mock.calls.length,
+    ws.addEventListener.mock.calls.length
   );
 }
 
 async function expectSubscribeMessages(
   ws: MockedWebSocket,
-  times: number = 1,
+  times: number = 1
 ): Promise<ObjectSetStreamSubscribeRequests> {
   return await vi.waitFor(() => {
     expect(ws.send).toBeCalledTimes(times);
@@ -666,7 +673,7 @@ async function expectSubscribeMessages(
 
 async function subscribeAndExpectWebSocket(
   client: ObjectSetListenerWebsocket,
-  listener: MockedListener,
+  listener: MockedListener
 ): Promise<readonly [MockedWebSocket, () => void]> {
   const [ws, unsubscribe] = await Promise.all([
     expectWebSocketConstructed(),
@@ -679,7 +686,7 @@ async function subscribeAndExpectWebSocket(
         type: "base",
         objectType: Employee.apiName,
       },
-      listener,
+      listener
     ),
   ]);
 
@@ -707,7 +714,7 @@ async function expectWebSocketConstructed(): Promise<MockedWebSocket> {
 
 function createMockWebSocketConstructor(
   OriginalWebSocket: WebSocket,
-  logger: Logger,
+  logger: Logger
 ): MockedWebSocket {
   let i = 0;
   const ret = vi.fn((..._args: any[]): MockedWebSocket => {
@@ -717,16 +724,16 @@ function createMockWebSocketConstructor(
 
     return {
       addEventListener: vi.fn(
-        eventEmitter.addEventListener.bind(eventEmitter),
+        eventEmitter.addEventListener.bind(eventEmitter)
       ) as any,
       removeEventListener: vi.fn(
-        eventEmitter.removeEventListener.bind(eventEmitter),
+        eventEmitter.removeEventListener.bind(eventEmitter)
       ) as any,
 
       send: vi.fn((a, _b: any) => {
         logger.debug(
           { message: JSON.parse(a.toString()), webSocketInst },
-          "send() called",
+          "send() called"
         );
       }),
       close: vi.fn(),
@@ -748,9 +755,8 @@ function createMockWebSocketConstructor(
 }
 
 function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
-  const newState = readyState === "open"
-    ? ImportedWebSocket.OPEN
-    : ImportedWebSocket.CLOSED;
+  const newState =
+    readyState === "open" ? ImportedWebSocket.OPEN : ImportedWebSocket.CLOSED;
 
   if (newState === ws.readyState) return;
 
@@ -761,7 +767,7 @@ function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
 function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
   const z = (
     name: string,
-    { requestId, request }: { requestId: string; request: Request },
+    { requestId, request }: { requestId: string; request: Request }
   ) => logger.trace({ requestId, url: request.url }, name);
 
   const eventNames = [
@@ -774,17 +780,19 @@ function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
   ] as const;
 
   for (const c of eventNames) {
-    apiServer.events.on(c as typeof eventNames[number], z.bind(undefined, c));
+    apiServer.events.on(c as (typeof eventNames)[number], z.bind(undefined, c));
   }
 }
 
 const SubscribeMessage = z.object({
   id: z.string(),
-  requests: z.array(z.object({
-    objectSet: z.object({ id: z.string() }),
-    propertySet: z.array(z.string()),
-    referenceSet: z.array(z.string()),
-  })),
+  requests: z.array(
+    z.object({
+      objectSet: z.object({ id: z.string() }),
+      propertySet: z.array(z.string()),
+      referenceSet: z.array(z.string()),
+    })
+  ),
 });
 
 class MessageEvent extends Event {

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { GetRequestDurationMetricsDelayResponse } from "../GetRequestDurationMetricsDelayResponse.js";
 
@@ -23,11 +24,11 @@ import type { GetRequestDurationMetricsDelayResponse } from "../GetRequestDurati
  */
 export async function getRequestDurationMetricsDelay(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid,
+  applicationRid: ApplicationRid
 ): Promise<GetRequestDurationMetricsDelayResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/delays/${applicationRid}/getRequestDurationMetrics`,
-    "GET",
+    "GET"
   );
 }

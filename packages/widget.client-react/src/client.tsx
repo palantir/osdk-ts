@@ -24,6 +24,7 @@ import {
   type WidgetConfig,
 } from "@osdk/widget.client";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
+
 import type {
   AugmentedEmitEvent,
   ExtendedAsyncParameterValueMap,
@@ -39,39 +40,38 @@ import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js"
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
     ? Param extends { type: "objectSet"; allowedType: infer AT }
-      ? AT extends AllowedObjectSetParameterType ? AT
+      ? AT extends AllowedObjectSetParameterType
+        ? AT
+        : never
       : never
-    : never
     : never;
 
 type HasObjectSetParameters<C extends WidgetConfig<C["parameters"]>> =
   ExtractObjectTypes<C> extends never ? false : true;
 
-type ObjectSetProps<C extends WidgetConfig<C["parameters"]>> = {
+type ObjectSetProps<_C extends WidgetConfig<_C["parameters"]>> = {
   /**
    * Used to hydrate object sets from their RIDs for object set parameters
    */
   client: Client;
 };
 
-type FoundryWidgetProps<C extends WidgetConfig<C["parameters"]>> =
-  & {
-    children: React.ReactNode;
+type FoundryWidgetProps<C extends WidgetConfig<C["parameters"]>> = {
+  children: React.ReactNode;
 
-    /**
-     * Parameter configuration for the widget
-     */
-    config: C;
+  /**
+   * Parameter configuration for the widget
+   */
+  config: C;
 
-    /**
-     * Customize what the initial value of each parameter should be
-     *
-     * @default Sets all parameters to the "not-started" loading state
-     */
-    initialValues?: ExtendedAsyncParameterValueMap<C>;
-  }
-  & Partial<ObjectSetProps<C>>
-  & (HasObjectSetParameters<C> extends true ? ObjectSetProps<C> : {});
+  /**
+   * Customize what the initial value of each parameter should be
+   *
+   * @default Sets all parameters to the "not-started" loading state
+   */
+  initialValues?: ExtendedAsyncParameterValueMap<C>;
+} & Partial<ObjectSetProps<C>> &
+  (HasObjectSetParameters<C> extends true ? ObjectSetProps<C> : {});
 
 /**
  * Handles subscribing to messages from the host Foundry UI and updating the widget's parameter values accordingly via React context
@@ -104,14 +104,14 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         config,
         eventId,
         payload,
-        osdkClient,
+        osdkClient
       );
       if (transformResult.type === "passThrough") {
         client.emitEvent(
           eventId,
           transformResult.payload as Parameters<
             FoundryWidgetClient<C>["emitEvent"]
-          >[1],
+          >[1]
         );
         return;
       }
@@ -131,13 +131,13 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           eventId,
           transformedPayload as Parameters<
             FoundryWidgetClient<C>["emitEvent"]
-          >[1],
+          >[1]
         );
       }
 
       void handleAsyncEmitEvent();
     },
-    [osdkClient, config, client],
+    [osdkClient, config, client]
   );
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           osdkClient,
           config,
           payload.detail.parameters,
-          objectSetCache.current,
+          objectSetCache.current
         );
         setAsyncParameterValues((currentParameters) => ({
           ...currentParameters,
@@ -172,27 +172,27 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             }
             // If any is loading, consider all of it loading unless we have failed somewhere
             if (
-              value.type === "loading"
-              && aggregatedLoadedState !== "failed"
+              value.type === "loading" &&
+              aggregatedLoadedState !== "failed"
             ) {
               aggregatedLoadedState = "loading";
               continue;
             }
             // If any is reloading, consider it loading unless something is failed or loading for the first time
             if (
-              value.type === "reloading"
-              && aggregatedLoadedState !== "failed"
-              && aggregatedLoadedState !== "loading"
+              value.type === "reloading" &&
+              aggregatedLoadedState !== "failed" &&
+              aggregatedLoadedState !== "loading"
             ) {
               aggregatedLoadedState = "reloading";
               newParameterValues[key as any] = value.value as any;
               continue;
             }
             if (
-              value.type === "not-started"
-              && aggregatedLoadedState !== "failed"
-              && aggregatedLoadedState !== "loading"
-              && aggregatedLoadedState !== "reloading"
+              value.type === "not-started" &&
+              aggregatedLoadedState !== "failed" &&
+              aggregatedLoadedState !== "loading" &&
+              aggregatedLoadedState !== "reloading"
             ) {
               aggregatedLoadedState = "not-started";
             }
@@ -201,13 +201,14 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
               newParameterValues[key as any] = value.value as any;
             }
           }
-          const currentParameterValue = currentParameters.type !== "not-started"
-              && currentParameters.type !== "loading"
-            ? currentParameters.value
-            : {};
+          const currentParameterValue =
+            currentParameters.type !== "not-started" &&
+            currentParameters.type !== "loading"
+              ? currentParameters.value
+              : {};
           if (
-            aggregatedLoadedState !== "not-started"
-            && aggregatedLoadedState !== "loading"
+            aggregatedLoadedState !== "not-started" &&
+            aggregatedLoadedState !== "loading"
           ) {
             const updatedValue = {
               ...currentParameterValue,
@@ -215,19 +216,19 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             } as ExtendedParameterValueMap<C>;
             return aggregatedLoadedState === "failed"
               ? {
-                type: aggregatedLoadedState,
-                value: updatedValue,
-                error: firstError ?? new Error("Failed to load parameters"),
-              }
+                  type: aggregatedLoadedState,
+                  value: updatedValue,
+                  error: firstError ?? new Error("Failed to load parameters"),
+                }
               : {
-                type: aggregatedLoadedState,
-                value: updatedValue,
-              };
+                  type: aggregatedLoadedState,
+                  value: updatedValue,
+                };
           } else {
             return { type: aggregatedLoadedState };
           }
         });
-      },
+      }
     );
     client.ready();
 
@@ -236,7 +237,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // eslint-disable-next-line no-console
         console.error(
           "Expected exactly one resize observer entry but received:",
-          entries,
+          entries
         );
         return;
       }
@@ -245,7 +246,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // eslint-disable-next-line no-console
         console.error(
           "Expected exactly one border box size but received:",
-          entry.borderBoxSize,
+          entry.borderBoxSize
         );
         return;
       }
@@ -270,20 +271,20 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
   return (
     <FoundryWidgetContext.Provider
-      value={{
-        emitEvent,
-        hostEventTarget: client.hostEventTarget,
-        asyncParameterValues,
-        parameters: {
-          values: allParameterValues.value ?? {},
-          state: allParameterValues.type,
-        },
-        // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
-      } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>}
+      value={
+        {
+          emitEvent,
+          hostEventTarget: client.hostEventTarget,
+          asyncParameterValues,
+          parameters: {
+            values: allParameterValues.value ?? {},
+            state: allParameterValues.type,
+          },
+          // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
+        } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
+      }
     >
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
+      <ErrorBoundary>{children}</ErrorBoundary>
     </FoundryWidgetContext.Provider>
   );
 };

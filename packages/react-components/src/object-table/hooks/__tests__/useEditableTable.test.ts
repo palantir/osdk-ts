@@ -17,6 +17,7 @@
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { getCellId } from "../../utils/getCellId.js";
 import { useEditableTable } from "../useEditableTable.js";
 
@@ -25,7 +26,7 @@ type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
 
 function createMockObjectInstance(
   id: string,
-  additionalProps = {},
+  additionalProps = {}
 ): MockInstance {
   return {
     $apiName: "mock-object" as const,
@@ -137,7 +138,7 @@ describe("useEditableTable", () => {
       });
 
       expect(result.current.cellEdits).toEqual({});
-    },
+    }
   );
 
   it("handles multiple cell edits", () => {
@@ -268,7 +269,7 @@ describe("useEditableTable", () => {
     expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
-  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
+  it("when submit edits is undefined, onSubmitEdits is undefined", () => {
     const { result } = renderHook(() =>
       useEditableTable({
         editMode: "always",
@@ -290,23 +291,23 @@ describe("useEditableTable", () => {
       expect(result.current.editModeState.setActive).toBeDefined();
 
       act(() => {
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.setActive(true);
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.setActive(true);
       });
 
       expect(
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.isActive,
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.isActive
       ).toBe(true);
 
       act(() => {
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.setActive(false);
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.setActive(false);
       });
 
       expect(
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.isActive,
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.isActive
       ).toBe(false);
     }
   });

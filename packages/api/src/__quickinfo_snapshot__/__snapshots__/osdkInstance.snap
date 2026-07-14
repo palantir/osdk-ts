@@ -16,7 +16,46 @@ type osdkInstance_$as_to_interface_result =
   & {
     readonly $link: never;
     readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
-      type: string | NEW_Q,
+      type: NEW_Q extends ObjectTypeDefinition
+        ? (("FooInterface" extends
+          keyof NonNullable<
+            CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+          >
+          ? NonNullable<
+            CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+          >["FooInterface"]
+          : undefined) extends undefined ? false
+          : {
+            [
+              K
+                in keyof ("FooInterface" extends
+                  keyof NonNullable<
+                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+                  >
+                  ? NonNullable<
+                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+                  >["FooInterface"]
+                  : undefined)
+            ]: ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)[K] extends { type: "localProperty" } ? never : K;
+          }[
+            keyof ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)
+          ] extends never ? false
+          : true) extends true ? never : string | NEW_Q
+        : string | NEW_Q,
     ) => Osdk.Instance<
       NEW_Q,
       never,
@@ -49,7 +88,29 @@ type osdkInstance_all_base_props =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & Pick<
+    EmployeeApiTest.Props,
+    | "employeeId"
+    | "fullName"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory"
+    | "class"
+    | "mediaReference"
+    | "attachment"
+    | "geopoint"
+    | "geotimeSeriesReference"
+    | "timeseries"
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding"
+  >
   & {}
   & {
     readonly $link: {
@@ -99,7 +160,29 @@ type osdkInstance_default =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & Pick<
+    EmployeeApiTest.Props,
+    | "employeeId"
+    | "fullName"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory"
+    | "class"
+    | "mediaReference"
+    | "attachment"
+    | "geopoint"
+    | "geotimeSeriesReference"
+    | "timeseries"
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding"
+  >
   & {}
   & {
     readonly $link: {
@@ -149,12 +232,51 @@ type osdkInstance_interface_default =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<FooInterfaceApiTest.Props, PropertyKeys<FooInterfaceApiTest>>
+  & Pick<FooInterfaceApiTest.Props, "fooSpt" | "name" | "description">
   & {}
   & {
     readonly $link: never;
     readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
-      type: string | NEW_Q,
+      type: NEW_Q extends ObjectTypeDefinition
+        ? (("FooInterface" extends
+          keyof NonNullable<
+            CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+          >
+          ? NonNullable<
+            CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+          >["FooInterface"]
+          : undefined) extends undefined ? false
+          : {
+            [
+              K
+                in keyof ("FooInterface" extends
+                  keyof NonNullable<
+                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+                  >
+                  ? NonNullable<
+                    CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+                  >["FooInterface"]
+                  : undefined)
+            ]: ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)[K] extends { type: "localProperty" } ? never : K;
+          }[
+            keyof ("FooInterface" extends
+              keyof NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >
+              ? NonNullable<
+                CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
+              >["FooInterface"]
+              : undefined)
+          ] extends never ? false
+          : true) extends true ? never : string | NEW_Q
+        : string | NEW_Q,
     ) => Osdk.Instance<
       NEW_Q,
       never,
@@ -197,7 +319,29 @@ type osdkInstance_property_securities =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & Pick<
+    EmployeeApiTest.Props,
+    | "employeeId"
+    | "fullName"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory"
+    | "class"
+    | "mediaReference"
+    | "attachment"
+    | "geopoint"
+    | "geotimeSeriesReference"
+    | "timeseries"
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding"
+  >
   & {}
   & {
     readonly $link: {
@@ -242,6 +386,9 @@ type osdkInstance_property_securities =
     readonly $propertySecurities: {
       employeeId: Array<PropertySecurity>;
       fullName: Array<PropertySecurity>;
+      addressStruct: Array<PropertySecurity>;
+      salaryHistory: Array<Array<PropertySecurity>>;
+      bonusHistory: Array<Array<PropertySecurity>>;
       class: Array<PropertySecurity>;
       mediaReference: Array<PropertySecurity>;
       attachment: Array<PropertySecurity>;
@@ -257,9 +404,6 @@ type osdkInstance_property_securities =
       lastUpdated: Array<PropertySecurity>;
       skillSet: Array<PropertySecurity>;
       skillSetEmbedding: Array<PropertySecurity>;
-      addressStruct: Array<PropertySecurity>;
-      salaryHistory: Array<Array<PropertySecurity>>;
-      bonusHistory: Array<Array<PropertySecurity>>;
       $primaryKey: Array<PropertySecurity>;
       $title: Array<PropertySecurity>;
     };
@@ -358,7 +502,29 @@ type osdkInstance_with_rid =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & Pick<
+    EmployeeApiTest.Props,
+    | "employeeId"
+    | "fullName"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory"
+    | "class"
+    | "mediaReference"
+    | "attachment"
+    | "geopoint"
+    | "geotimeSeriesReference"
+    | "timeseries"
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding"
+  >
   & {}
   & {
     readonly $link: {

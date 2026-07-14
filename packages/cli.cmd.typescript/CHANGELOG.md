@@ -1,5 +1,87 @@
 # @osdk/cli.cmd.typescript
 
+## 0.68.0
+
+### Patch Changes
+
+- Updated dependencies [f29a4df]
+  - @osdk/generator@2.44.0
+  - @osdk/cli.common@0.68.0
+
+## 0.67.0
+
+### Patch Changes
+
+- @osdk/generator@2.43.0
+- @osdk/cli.common@0.67.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/generator@2.42.0
+- @osdk/cli.common@0.66.0
+
+## 0.65.0
+
+### Patch Changes
+
+- @osdk/generator@2.41.0
+- @osdk/cli.common@0.65.0
+
+## 0.64.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator@2.40.0
+  - @osdk/cli.common@0.64.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/generator@2.39.0
+- @osdk/cli.common@0.63.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/generator@2.38.0
+- @osdk/cli.common@0.62.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/generator@2.37.0
+  - @osdk/cli.common@0.61.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/generator@2.36.0
+- @osdk/cli.common@0.60.0
+
+## 0.59.0
+
+### Patch Changes
+
+- Updated dependencies [54dc175]
+  - @osdk/generator@2.35.0
+  - @osdk/cli.common@0.59.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/generator@2.34.0
+- @osdk/cli.common@0.58.0
+
 ## 0.57.0
 
 ### Patch Changes

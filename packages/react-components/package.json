@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.30.0",
+  "version": "0.38.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,6 +42,15 @@
       },
       "require": "./build/cjs/public/experimental/action-form.cjs",
       "default": "./build/browser/public/experimental/action-form.js"
+    },
+    "./experimental/aip-agent-chat": {
+      "browser": "./build/browser/public/experimental/aip-agent-chat.js",
+      "import": {
+        "types": "./build/types/public/experimental/aip-agent-chat.d.ts",
+        "default": "./build/esm/public/experimental/aip-agent-chat.js"
+      },
+      "require": "./build/cjs/public/experimental/aip-agent-chat.cjs",
+      "default": "./build/browser/public/experimental/aip-agent-chat.js"
     },
     "./experimental/cbac-picker": {
       "browser": "./build/browser/public/experimental/cbac-picker.js",
@@ -173,11 +182,13 @@
   },
   "scripts": {
     "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
+    "check-gen-props": "node scripts/gen-props.mjs --check",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt",
+    "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
     "gen-examples": "node scripts/gen-object-table-examples.mjs",
-    "lint": "eslint . && dprint check",
+    "gen-props": "node scripts/gen-props.mjs",
+    "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "LANG=en_US.UTF-8 vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
@@ -208,6 +219,7 @@
     "xlsx-republish": "0.20.3"
   },
   "peerDependencies": {
+    "@osdk/aip-core": ">=0.5.0 <1.0.0",
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
     "@osdk/react": "^2.8.0",
@@ -216,7 +228,13 @@
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
+  "peerDependenciesMeta": {
+    "@osdk/aip-core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -226,7 +244,6 @@
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
     "postcss-import": "^16.0.0",
     "postcss-modules": "^6.0.1",

@@ -28,6 +28,7 @@ import {
 } from "@osdk/shared.test";
 import invariant from "tiny-invariant";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { Store } from "./Store.js";
@@ -39,9 +40,12 @@ import { expectStandardObserveObject } from "./testUtils/observeObject/expectSta
 const defer = createDefer();
 
 // Logger setup
-const logger = new TestLogger({}, {
-  // level: "debug",
-});
+const logger = new TestLogger(
+  {},
+  {
+    // level: "debug",
+  }
+);
 
 // Constants for test objects
 const EMPLOYEE_1_ID = 1;
@@ -60,17 +64,16 @@ describe("Store Invalidation Type Isolation", () => {
     const fauxOntology = fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
 
-    fauxFoundry.getDefaultOntology().registerObjectType(
-      stubData.todoWithLinkTypes,
-    );
+    fauxFoundry
+      .getDefaultOntology()
+      .registerObjectType(stubData.todoWithLinkTypes);
 
-    fauxFoundry.getDefaultOntology().registerActionType(
-      stubData.editTodo.actionTypeV2,
-      (b, payload) => {
+    fauxFoundry
+      .getDefaultOntology()
+      .registerActionType(stubData.editTodo.actionTypeV2, (b, payload) => {
         const { id, ...other } = payload.parameters;
         b.modifyObject<Todo>(Todo.apiName, id, { ...other });
-      },
-    );
+      });
   }
 
   function setupTestObjects(fauxFoundry: FauxFoundry) {
@@ -119,12 +122,12 @@ describe("Store Invalidation Type Isolation", () => {
     // Note: There are no direct Todo-Employee links in the test ontology
   }
 
-  beforeAll(async () => {
+  beforeAll(() => {
     // Set up the mock environment and client
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
       createClient,
-      { logger },
+      { logger }
     );
     ({ client, fauxFoundry } = testSetup);
 
@@ -174,7 +177,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Employee, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Employee should be updated
       expect(empSubFn.next).toHaveBeenCalled();
@@ -211,7 +214,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Office, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Office should be updated
       expect(officeSubFn.next).toHaveBeenCalled();
@@ -258,7 +261,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Todo, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Todo should be updated
       expect(todoSubFn.next).toHaveBeenCalled();
@@ -288,23 +291,33 @@ describe("Store Invalidation Type Isolation", () => {
 
       // Set up list observations
       const empListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Employee,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-      }, empListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "offline",
+          },
+          empListSubFn
+        )
+      );
 
       const officeListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Office,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-      }, officeListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Office,
+            where: {},
+            orderBy: {},
+            mode: "offline",
+          },
+          officeListSubFn
+        )
+      );
 
       // Wait for the initial calls and clear them
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       empListSubFn.next.mockClear();
       officeListSubFn.next.mockClear();
 
@@ -312,7 +325,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Employee, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Employee list should be updated
       expect(empListSubFn.next).toHaveBeenCalled();
@@ -362,7 +375,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Employee, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Employee object should be invalidated
       expect(empSubFn.next).toHaveBeenCalled();
@@ -405,28 +418,43 @@ describe("Store Invalidation Type Isolation", () => {
 
       // Set up list observations
       const empListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Employee,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-      }, empListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "offline",
+          },
+          empListSubFn
+        )
+      );
 
       const officeListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Office,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-      }, officeListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Office,
+            where: {},
+            orderBy: {},
+            mode: "offline",
+          },
+          officeListSubFn
+        )
+      );
 
       const todoListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Todo,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-      }, todoListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Todo,
+            where: {},
+            orderBy: {},
+            mode: "offline",
+          },
+          todoListSubFn
+        )
+      );
 
       // Set up link observations
       const { linkSubFn: employeeOfficeLinkSubFn } =
@@ -462,7 +490,7 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObjectType(Todo, undefined);
 
       // Allow time for any potential updates
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Todo object and list should be invalidated
       expect(todoSubFn.next).toHaveBeenCalled();
@@ -502,7 +530,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateAll();
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empSubFn.next).toHaveBeenCalled();
       expect(officeSubFn.next).toHaveBeenCalled();
@@ -511,28 +539,38 @@ describe("Store Invalidation Type Isolation", () => {
 
     it("should invalidate all list queries", async () => {
       const empListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Employee,
-        where: {},
-        orderBy: {},
-        pageSize: 10,
-      }, empListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            pageSize: 10,
+          },
+          empListSubFn
+        )
+      );
 
       const officeListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Office,
-        where: {},
-        orderBy: {},
-        pageSize: 10,
-      }, officeListSubFn));
+      defer(
+        cache.lists.observe(
+          {
+            type: Office,
+            where: {},
+            orderBy: {},
+            pageSize: 10,
+          },
+          officeListSubFn
+        )
+      );
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       empListSubFn.next.mockClear();
       officeListSubFn.next.mockClear();
 
       await cache.invalidateAll();
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empListSubFn.next).toHaveBeenCalled();
       expect(officeListSubFn.next).toHaveBeenCalled();
@@ -560,7 +598,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObjects(emp1);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empSubFn.next).toHaveBeenCalled();
       expect(emp2SubFn.next).not.toHaveBeenCalled();
@@ -594,7 +632,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObjects([emp1, emp2]);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empSubFn.next).toHaveBeenCalled();
       expect(emp2SubFn.next).toHaveBeenCalled();
@@ -629,7 +667,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObjects([emp1, office1]);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empSubFn.next).toHaveBeenCalled();
       expect(officeSubFn.next).toHaveBeenCalled();
@@ -647,7 +685,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObjects([]);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       expect(empSubFn.next).not.toHaveBeenCalled();
     });
@@ -670,9 +708,10 @@ describe("Store Invalidation Type Isolation", () => {
       // An interface-origin instance is one concrete object viewed through the
       // interface lens; it carries the backing object's $objectType/$primaryKey.
       const { data: foos } = await client(FooInterface).fetchPage();
-      const emp1AsFoo = foos.find(foo =>
-        foo.$objectType === Employee.apiName
-        && foo.$primaryKey === EMPLOYEE_1_ID
+      const emp1AsFoo = foos.find(
+        (foo) =>
+          foo.$objectType === Employee.apiName &&
+          foo.$primaryKey === EMPLOYEE_1_ID
       );
       invariant(emp1AsFoo);
       expect(emp1AsFoo.$apiName).toBe(FooInterface.apiName);
@@ -761,7 +800,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.invalidateObject(Todo, TODO_1_ID);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       expect(officeLinkSubFn.next).not.toHaveBeenCalled();
     });
   });

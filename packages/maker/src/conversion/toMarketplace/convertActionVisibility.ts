@@ -17,7 +17,7 @@
 import type { ParameterVisibility } from "@osdk/client.unstable";
 
 export function convertActionVisibility(
-  visibility: "editable" | "disabled" | "hidden" | undefined,
+  visibility: "editable" | "disabled" | "hidden" | undefined
 ): ParameterVisibility {
   switch (visibility) {
     case "editable":

@@ -30,6 +30,7 @@ import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 import { useObjectTableData } from "../useObjectTableData.js";
@@ -119,14 +120,20 @@ describe(useObjectTableData, () => {
     const filterClause = {
       name: "John",
     } as unknown as WhereClause<TestObject>;
-    const orderBy: SortingState = [{
-      id: "name",
-      desc: false,
-    }];
+    const orderBy: SortingState = [
+      {
+        id: "name",
+        desc: false,
+      },
+    ];
     renderHook(
       () =>
-        useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
-      { wrapper },
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          filter: filterClause,
+          sorting: orderBy,
+        }),
+      { wrapper }
     );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
@@ -134,14 +141,16 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         where: filterClause,
         orderBy: { name: "asc" },
-      }),
+      })
     );
   });
 
   it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
     renderHook(
-      () => useObjectTableData(TestObjectType, undefined),
-      { wrapper },
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      {
+        wrapper,
+      }
     );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
@@ -149,7 +158,7 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         withProperties: undefined,
         pageSize: 50,
-      }),
+      })
     );
   });
 
@@ -164,8 +173,14 @@ describe(useObjectTableData, () => {
     ];
 
     renderHook(
-      () => useObjectTableData(TestObjectType, columnDefinitions),
-      { wrapper },
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
+      {
+        wrapper,
+      }
     );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
@@ -173,7 +188,7 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         withProperties: undefined,
         pageSize: 50,
-      }),
+      })
     );
   });
 
@@ -215,15 +230,21 @@ describe(useObjectTableData, () => {
     ];
 
     renderHook(
-      () => useObjectTableData(TestObjectType, columnDefinitions),
-      { wrapper },
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
+      {
+        wrapper,
+      }
     );
 
     expect(useOsdkObjects).toHaveBeenLastCalledWith(
       TestObjectType,
       expect.objectContaining({
         withProperties: { rdp1: mockRdpCreator1, rdp2: mockRdpCreator2 },
-      }),
+      })
     );
   });
 
@@ -242,11 +263,15 @@ describe(useObjectTableData, () => {
     ];
 
     const { rerender } = renderHook(
-      ({ colDefs }) => useObjectTableData(TestObjectType, colDefs),
+      ({ colDefs }) =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions: colDefs,
+        }),
       {
         initialProps: { colDefs: columnDefinitions },
         wrapper,
-      },
+      }
     );
 
     const firstWithProperties = lastOsdkObjectsOptions()?.withProperties;
@@ -276,17 +301,20 @@ describe(useObjectTableData, () => {
 
     type ColDefs =
       | Array<
-        ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
-      >
+          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+        >
       | undefined;
 
     const { rerender } = renderHook(
       ({ colDefs }: { colDefs: ColDefs }) =>
-        useObjectTableData(TestObjectType, colDefs),
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions: colDefs,
+        }),
       {
         initialProps: { colDefs: initialColumnDefinitions as ColDefs },
         wrapper,
-      },
+      }
     );
 
     expect(lastOsdkObjectsOptions()?.withProperties).toEqual({
@@ -310,8 +338,10 @@ describe(useObjectTableData, () => {
 
   it("returns useOsdkObjects result structure", () => {
     const { result } = renderHook(
-      () => useObjectTableData(TestObjectType),
-      { wrapper },
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      {
+        wrapper,
+      }
     );
 
     expect(result.current).toHaveProperty("data");
@@ -322,8 +352,8 @@ describe(useObjectTableData, () => {
 
   it("when no objectSet provided, only enables useOsdkObjects", () => {
     renderHook(
-      () => useObjectTableData(TestObjectType),
-      { wrapper },
+      () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+      { wrapper }
     );
 
     expect(useOsdkObjects).toHaveBeenCalledWith(
@@ -331,7 +361,7 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
-      }),
+      })
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
@@ -339,21 +369,18 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
-      }),
+      })
     );
   });
 
   it(" when objectSet is provided, only enables useObjectSet", () => {
     renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
-          undefined,
-          undefined,
-          undefined,
-          mockObjectSet,
-        ),
-      { wrapper },
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          objectSet: mockObjectSet,
+        }),
+      { wrapper }
     );
 
     expect(useOsdkObjects).toHaveBeenCalledWith(
@@ -361,7 +388,7 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
-      }),
+      })
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
@@ -369,37 +396,34 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
-      }),
+      })
     );
   });
 
-  it("when objectSet is provided but type is interface, only enables useOsdkObjects ", () => {
+  it("when objectSet is provided for an interface, enables useObjectSet (not useOsdkObjects)", () => {
     renderHook(
       () =>
-        useObjectTableData(
-          TestInterfaceType,
-          undefined,
-          undefined,
-          undefined,
-          mockObjectSet as any,
-        ),
-      { wrapper },
+        useObjectTableData({
+          objectOrInterfaceType: TestInterfaceType,
+          objectSet: mockObjectSet as any,
+        }),
+      { wrapper }
+    );
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      mockObjectSet,
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      })
     );
 
     expect(useOsdkObjects).toHaveBeenCalledWith(
       TestInterfaceType,
       expect.objectContaining({
-        enabled: true,
-        pageSize: 50,
-      }),
-    );
-
-    expect(useObjectSet).toHaveBeenCalledWith(
-      undefined,
-      expect.objectContaining({
         enabled: false,
         pageSize: 50,
-      }),
+      })
     );
   });
 
@@ -421,15 +445,14 @@ describe(useObjectTableData, () => {
 
     renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
-          undefined,
-          filterClause,
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          filter: filterClause,
           sorting,
-          mockObjectSet,
+          objectSet: mockObjectSet,
           objectSetOptions,
-        ),
-      { wrapper },
+        }),
+      { wrapper }
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
@@ -442,7 +465,7 @@ describe(useObjectTableData, () => {
         union: objectSetOptions.union,
         intersect: objectSetOptions.intersect,
         subtract: objectSetOptions.subtract,
-      }),
+      })
     );
   });
 
@@ -487,8 +510,12 @@ describe(useObjectTableData, () => {
     ];
 
     const { result } = renderHook(
-      () => useObjectTableData(TestObjectType, columnDefinitions),
-      { wrapper },
+      () =>
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
+          columnDefinitions,
+        }),
+      { wrapper }
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith({
@@ -575,14 +602,12 @@ describe(useObjectTableData, () => {
 
     const { result } = renderHook(
       () =>
-        useObjectTableData(
-          TestObjectType,
+        useObjectTableData({
+          objectOrInterfaceType: TestObjectType,
           columnDefinitions,
-          undefined,
-          undefined,
-          mockObjectSet,
-        ),
-      { wrapper },
+          objectSet: mockObjectSet,
+        }),
+      { wrapper }
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith({
@@ -622,62 +647,49 @@ describe(useObjectTableData, () => {
     it("forwards streamUpdates to useOsdkObjects when no objectSet is provided", () => {
       renderHook(
         () =>
-          useObjectTableData(
-            TestObjectType,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            true,
-          ),
-        { wrapper },
+          useObjectTableData({
+            objectOrInterfaceType: TestObjectType,
+            streamUpdates: true,
+          }),
+        { wrapper }
       );
 
       expect(useOsdkObjects).toHaveBeenCalledWith(
         TestObjectType,
-        expect.objectContaining({ streamUpdates: true }),
+        expect.objectContaining({ streamUpdates: true })
       );
     });
 
     it("forwards streamUpdates to useObjectSet when an objectSet is provided", () => {
       renderHook(
         () =>
-          useObjectTableData(
-            TestObjectType,
-            undefined,
-            undefined,
-            undefined,
-            mockObjectSet,
-            undefined,
-            undefined,
-            undefined,
-            true,
-          ),
-        { wrapper },
+          useObjectTableData({
+            objectOrInterfaceType: TestObjectType,
+            objectSet: mockObjectSet,
+            streamUpdates: true,
+          }),
+        { wrapper }
       );
 
       expect(useObjectSet).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ streamUpdates: true }),
+        expect.objectContaining({ streamUpdates: true })
       );
     });
 
     it("passes streamUpdates=undefined to both hooks when not provided", () => {
       renderHook(
-        () => useObjectTableData(TestObjectType),
-        { wrapper },
+        () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
+        { wrapper }
       );
 
       expect(useOsdkObjects).toHaveBeenCalledWith(
         TestObjectType,
-        expect.objectContaining({ streamUpdates: undefined }),
+        expect.objectContaining({ streamUpdates: undefined })
       );
       expect(useObjectSet).toHaveBeenCalledWith(
         undefined,
-        expect.objectContaining({ streamUpdates: undefined }),
+        expect.objectContaining({ streamUpdates: undefined })
       );
     });
   });

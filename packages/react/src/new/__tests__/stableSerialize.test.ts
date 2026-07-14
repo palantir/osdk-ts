@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
 import {
   stableSerialize,
   stableSerializeReplacer,
@@ -26,8 +27,9 @@ vi.mock("@osdk/client", async (importOriginal) => {
   return {
     ...actual,
     isObjectSet: (o: unknown): boolean =>
-      o != null && typeof o === "object"
-      && (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
+      o != null &&
+      typeof o === "object" &&
+      (o as Record<symbol, unknown>)[MOCK_WIRE_FORM] !== undefined,
     getWireObjectSet: (o: unknown): unknown =>
       (o as Record<symbol, unknown>)[MOCK_WIRE_FORM],
   };
@@ -60,7 +62,7 @@ describe("stableSerialize", () => {
       expect(stableSerialize({ a: 1, b: "x" })).toBe(`{"a":1,"b":"x"}`);
       expect(stableSerialize([1, 2, 3])).toBe("[1,2,3]");
       expect(stableSerialize({ nested: { x: [1, null] } })).toBe(
-        `{"nested":{"x":[1,null]}}`,
+        `{"nested":{"x":[1,null]}}`
       );
     });
   });
@@ -72,7 +74,7 @@ describe("stableSerialize", () => {
         objectType: "Employee",
       });
       expect(stableSerialize(os)).toBe(
-        `{"__objectSet":{"type":"base","objectType":"Employee"}}`,
+        `{"__objectSet":{"type":"base","objectType":"Employee"}}`
       );
     });
 
@@ -113,7 +115,7 @@ describe("stableSerialize", () => {
         params: { someInput: os, threshold: 5 },
       });
       expect(result).toBe(
-        `{"params":{"someInput":{"__objectSet":{"type":"base","objectType":"Employee"}},"threshold":5}}`,
+        `{"params":{"someInput":{"__objectSet":{"type":"base","objectType":"Employee"}},"threshold":5}}`
       );
     });
 
@@ -122,7 +124,7 @@ describe("stableSerialize", () => {
       const plainLookalike = { type: "base", objectType: "Employee" };
 
       expect(stableSerialize(plainLookalike)).toEqual(
-        `{"type":"base","objectType":"Employee"}`,
+        `{"type":"base","objectType":"Employee"}`
       );
       // Without the __objectSet wrapper these would collide.
       expect(stableSerialize(os)).not.toBe(stableSerialize(plainLookalike));
@@ -134,7 +136,7 @@ describe("stableSerializeReplacer", () => {
   it("can be used directly with JSON.stringify", () => {
     const os = makeMockObjectSet({ type: "base", objectType: "Employee" });
     expect(JSON.stringify({ os }, stableSerializeReplacer)).toBe(
-      `{"os":{"__objectSet":{"type":"base","objectType":"Employee"}}}`,
+      `{"os":{"__objectSet":{"type":"base","objectType":"Employee"}}}`
     );
   });
 

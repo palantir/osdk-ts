@@ -16,11 +16,13 @@
 
 import classNames from "classnames";
 import React from "react";
+
 import { DropdownField } from "../../action-form/fields/DropdownField.js";
-import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DropdownEditConfig } from "../utils/types.js";
 import { ReadonlyDisplayCell } from "./ReadonlyDisplayCell.js";
+
+import styles from "../EditableCell.module.css";
 
 interface DropdownCellFieldProps {
   fieldComponentProps: DropdownEditConfig;
@@ -53,9 +55,7 @@ function DropdownCellFieldInner({
   if (!isRowFocused) {
     return (
       <ReadonlyDisplayCell
-        inputValue={itemToStringLabel
-          ? itemToStringLabel(value)
-          : inputValue}
+        inputValue={itemToStringLabel ? itemToStringLabel(value) : inputValue}
         hasValidationError={hasValidationError}
         isEdited={isEdited}
       />
@@ -63,13 +63,10 @@ function DropdownCellFieldInner({
   }
   return (
     <div
-      className={classNames(
-        styles.osdkEditableCellDropdown,
-        {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        },
-      )}
+      className={classNames(styles.osdkEditableCellDropdown, {
+        [styles.error]: hasValidationError,
+        [styles.osdkEditedInput]: isEdited,
+      })}
     >
       <DropdownField
         {...fieldComponentProps}

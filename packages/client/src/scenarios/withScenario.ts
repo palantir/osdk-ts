@@ -25,7 +25,8 @@ import {
  * subsequent operations (`fetchPage`, `applyAction`, `executeFunction`, etc.) to the given `scenarioRid`.
  *
  * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
- *   from. Throws at runtime if the client is already scoped to a scenario or transaction.
+ *   from. Throws at runtime if the client is already scoped to a scenario. If the client has an active transaction,
+ *   the transaction is ignored (a warning is logged) and the client is scoped to the scenario.
  * @param scenarioRid - The RID of the scenario to attach to.
  * @returns a {@link EXPERIMENTAL_ScenarioClient} bound to `scenarioRid`.
  *
@@ -42,7 +43,7 @@ import {
  */
 export function withScenario(
   client: Client,
-  scenarioRid: string,
+  scenarioRid: string
 ): EXPERIMENTAL_ScenarioClient {
   return buildScenarioClient(client, scenarioRid);
 }

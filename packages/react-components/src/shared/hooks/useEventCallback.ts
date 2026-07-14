@@ -30,16 +30,14 @@ import * as React from "react";
  */
 /* eslint-disable-next-line @typescript-eslint/no-unsafe-function-type */
 export function useEventCallback<T extends Function>(callback: T): T {
-  const latestCallbackValueWrapper = React.useRef<T>(
-    ((...args: unknown[]) => {
-      if (typeof globalThis.console !== "undefined") {
-        globalThis.console.error(
-          "A callback created with `useEventCallback` was called during the initial render of a component. This will throw an error in the future.",
-        );
-      }
-      return (callback as unknown as (...a: unknown[]) => unknown)(...args);
-    }) as unknown as T,
-  );
+  const latestCallbackValueWrapper = React.useRef<T>(((...args: unknown[]) => {
+    if (typeof globalThis.console !== "undefined") {
+      globalThis.console.error(
+        "A callback created with `useEventCallback` was called during the initial render of a component. This will throw an error in the future."
+      );
+    }
+    return (callback as unknown as (...a: unknown[]) => unknown)(...args);
+  }) as unknown as T);
 
   React.useEffect(() => {
     latestCallbackValueWrapper.current = callback;
@@ -52,6 +50,6 @@ export function useEventCallback<T extends Function>(callback: T): T {
           ...a: unknown[]
         ) => unknown
       )(...args),
-    [],
+    []
   ) as unknown as T;
 }

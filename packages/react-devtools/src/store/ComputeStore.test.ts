@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ComputeStore } from "./ComputeStore.js";
 
 function createPendingRequestInput() {
@@ -22,7 +23,7 @@ function createPendingRequestInput() {
     requestTimestamp: new Date(),
     requestUrl:
       "https://example.com/api/v2/ontologies/ri.test/objectSets/loadObjects",
-    requestPayload: "{\"objectSet\":{\"type\":\"base\"}}",
+    requestPayload: '{"objectSet":{"type":"base"}}',
     requestPayloadHash: 12345,
   };
 }
@@ -48,7 +49,7 @@ describe("ComputeStore", () => {
     expect(requests[0].type).toBe("pending");
     expect(requests[0].id).toBe(id);
     expect(requests[0].requestUrl).toBe(
-      "https://example.com/api/v2/ontologies/ri.test/objectSets/loadObjects",
+      "https://example.com/api/v2/ontologies/ri.test/objectSets/loadObjects"
     );
   });
 
@@ -59,7 +60,7 @@ describe("ComputeStore", () => {
       computeUsage: 42,
       responsePayloadBytes: 1024,
       responsePayloadHash: 67890,
-      responsePayload: "{\"data\":[]}",
+      responsePayload: '{"data":[]}',
     });
 
     const requests = store.getRequests();
@@ -173,12 +174,14 @@ describe("ComputeStore", () => {
     const ids: string[] = [];
 
     for (let i = 0; i < 5; i++) {
-      ids.push(smallStore.createPendingRequest({
-        requestTimestamp: new Date(),
-        requestUrl: `https://example.com/api/${i}`,
-        requestPayload: `{"i":${i}}`,
-        requestPayloadHash: i,
-      }));
+      ids.push(
+        smallStore.createPendingRequest({
+          requestTimestamp: new Date(),
+          requestUrl: `https://example.com/api/${i}`,
+          requestPayload: `{"i":${i}}`,
+          requestPayloadHash: i,
+        })
+      );
     }
 
     const requests = smallStore.getRequests();
@@ -192,17 +195,19 @@ describe("ComputeStore", () => {
     const ids: string[] = [];
 
     for (let i = 0; i < 10; i++) {
-      ids.push(smallStore.createPendingRequest({
-        requestTimestamp: new Date(),
-        requestUrl: `https://example.com/api/${i}`,
-        requestPayload: `{"i":${i}}`,
-        requestPayloadHash: i,
-      }));
+      ids.push(
+        smallStore.createPendingRequest({
+          requestTimestamp: new Date(),
+          requestUrl: `https://example.com/api/${i}`,
+          requestPayload: `{"i":${i}}`,
+          requestPayloadHash: i,
+        })
+      );
     }
 
     const requests = smallStore.getRequests();
     expect(requests).toHaveLength(3);
-    expect(requests.every(r => r.type === "pending")).toBe(true);
+    expect(requests.every((r) => r.type === "pending")).toBe(true);
 
     smallStore.fulfillRequest(ids[0], {
       computeUsage: 1,
@@ -213,7 +218,7 @@ describe("ComputeStore", () => {
 
     const afterFulfill = smallStore.getRequests();
     expect(afterFulfill).toHaveLength(3);
-    expect(afterFulfill.every(r => r.type === "pending")).toBe(true);
+    expect(afterFulfill.every((r) => r.type === "pending")).toBe(true);
 
     smallStore.dispose();
   });
@@ -336,7 +341,7 @@ describe("ComputeStore", () => {
       expect(endEvent.endTimestamp).toBeInstanceOf(Date);
       if (endEvent.endTimestamp) {
         expect(endEvent.endTimestamp.getTime()).toBeGreaterThan(
-          endEvent.timestamp.getTime(),
+          endEvent.timestamp.getTime()
         );
       }
     }

@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
+
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { isInterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -37,41 +38,48 @@ import {
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
+function isSuperset(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  for (const field of b) {
+    if (!a.has(field)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
   ObserveObjectOptions<any>
 > {
   observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    subFn: Observer<ObjectPayload>,
+    subFn: Observer<ObjectPayload>
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    rdpConfig?: Canonical<Rdp> | null,
+    rdpConfig?: Canonical<Rdp> | null
   ): ObjectQuery {
-    const apiName = typeof options.apiName === "string"
-      ? options.apiName
-      : options.apiName.apiName;
-    const {
-      pk,
-      select,
-      $loadPropertySecurityMetadata,
-    } = options;
+    const apiName =
+      typeof options.apiName === "string"
+        ? options.apiName
+        : options.apiName.apiName;
+    const { pk, select, $loadPropertySecurityMetadata } = options;
 
     const defType = getDefType(options.apiName);
     // The flag is interface-only on the server. Drop it for object queries so
     // they don't fragment the cache.
-    const $includeAllBaseObjectProperties = defType === "interface"
-        && options.$includeAllBaseObjectProperties
-      ? true
-      : undefined;
+    const $includeAllBaseObjectProperties =
+      defType === "interface" && options.$includeAllBaseObjectProperties
+        ? true
+        : undefined;
 
-    const canonSelect = select && select.length > 0
-      ? this.store.selectCanonicalizer.canonicalize(select)
-      : undefined;
+    const canonSelect =
+      select && select.length > 0
+        ? this.store.selectCanonicalizer.canonicalize(select)
+        : undefined;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
@@ -80,22 +88,25 @@ export class ObjectsHelper extends AbstractHelper<
       rdpConfig ?? undefined,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
-      $includeAllBaseObjectProperties,
+      $includeAllBaseObjectProperties
     );
 
-    return this.store.queries.get(objectCacheKey, () =>
-      new ObjectQuery(
-        this.store,
-        this.store.subjects.get(objectCacheKey),
-        apiName,
-        pk,
-        objectCacheKey,
-        { dedupeInterval: 0 },
-        defType,
-        select,
-        $loadPropertySecurityMetadata,
-        $includeAllBaseObjectProperties,
-      ));
+    return this.store.queries.get(
+      objectCacheKey,
+      () =>
+        new ObjectQuery(
+          this.store,
+          this.store.subjects.get(objectCacheKey),
+          apiName,
+          pk,
+          objectCacheKey,
+          { dedupeInterval: 0 },
+          defType,
+          select,
+          $loadPropertySecurityMetadata,
+          $includeAllBaseObjectProperties
+        )
+    );
   }
 
   /**
@@ -113,18 +124,27 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
+    computedRdpFields?: ReadonlySet<string>
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
-    return holders.map(v => {
+    return holders.map((v) => {
       const concreteHolder = isInterfaceHolder(v) ? v[UnderlyingOsdkObject] : v;
 
-      return this.getQuery({
-        apiName: v.$objectType ?? v.$apiName,
-        pk: v.$primaryKey,
-        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
-      }, rdpConfig).writeToStore(concreteHolder, "loaded", batch, selectFields)
-        .cacheKey;
+      return this.getQuery(
+        {
+          apiName: v.$objectType ?? v.$apiName,
+          pk: v.$primaryKey,
+          $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
+        },
+        rdpConfig
+      ).writeToStore(
+        concreteHolder,
+        "loaded",
+        batch,
+        selectFields,
+        computedRdpFields
+      ).cacheKey;
     });
   }
 
@@ -138,12 +158,14 @@ export class ObjectsHelper extends AbstractHelper<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
+    computedRdpFields?: ReadonlySet<string>
   ): void {
     const existing = batch.read(sourceCacheKey);
-    const dataChanged = !existing
-      || existing.value === undefined
-      || value === tombstone
-      || !deepEqual(existing.value, value);
+    const dataChanged =
+      !existing ||
+      existing.value === undefined ||
+      value === tombstone ||
+      !deepEqual(existing.value, value);
     const statusChanged = !existing || existing.status !== status;
 
     if (!dataChanged && !statusChanged) {
@@ -152,51 +174,36 @@ export class ObjectsHelper extends AbstractHelper<
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
 
-    // When a $select-filtered fetch returns partial objects, merge with
-    // existing cached data to preserve fields not in the select set.
+    // derived fields the key tracks vs derived fields this write computed.
+    const trackedRdpFields =
+      this.store.objectCacheKeyRegistry.getRdpFieldSet(sourceCacheKey);
+    const sourceRdpFields = computedRdpFields ?? trackedRdpFields;
+
+    // a $select carries only some base props, and a write that computed only
+    // some derived fields leaves the rest out; either way merge to keep the
+    // cached values. a write that computed every tracked field is stored as-is,
+    // so an omitted field clears.
     const existingHolder = existing?.value;
-    const canMergeSelectFields = dataChanged
-      && selectFields
-      && selectFields.size > 0
-      && existingHolder
-      && this.isObjectHolder(existingHolder);
-
-    if (canMergeSelectFields && valueToWrite !== tombstone) {
-      valueToWrite = mergeSelectFields(
-        valueToWrite,
-        selectFields,
-        existingHolder,
-      );
-    }
-
-    // When an object (e.g. from a subscription update) is written to a cache
-    // key that has RDP configuration, the incoming value may lack derived
-    // property values. Merge with the existing cached value so that RDP fields
-    // not present in the incoming object are preserved.
     if (
-      valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
+      dataChanged &&
+      valueToWrite !== tombstone &&
+      existingHolder &&
+      this.isObjectHolder(existingHolder)
     ) {
-      const expectedRdpFields = this.store.objectCacheKeyRegistry
-        .getRdpFieldSet(sourceCacheKey);
-      if (expectedRdpFields.size > 0) {
-        const underlying = valueToWrite[UnderlyingOsdkObject];
-        const actualRdpFields = new Set<string>();
-        for (const field of expectedRdpFields) {
-          if (underlying && field in underlying) {
-            actualRdpFields.add(field);
-          }
-        }
-
-        if (actualRdpFields.size !== expectedRdpFields.size) {
-          valueToWrite = mergeObjectFields(
-            valueToWrite,
-            actualRdpFields,
-            expectedRdpFields,
-            existing.value,
-          );
-        }
+      if (selectFields && selectFields.size > 0) {
+        valueToWrite = mergeSelectFields(
+          valueToWrite,
+          selectFields,
+          existingHolder,
+          sourceRdpFields
+        );
+      } else if (!isSuperset(sourceRdpFields, trackedRdpFields)) {
+        valueToWrite = mergeObjectFields(
+          valueToWrite,
+          sourceRdpFields,
+          trackedRdpFields,
+          existingHolder
+        );
       }
     }
 
@@ -208,15 +215,14 @@ export class ObjectsHelper extends AbstractHelper<
       batch.changes.registerObject(sourceCacheKey, value, !existing);
     }
 
-    const metadata = this.store.objectCacheKeyRegistry.getMetadata(
-      sourceCacheKey,
-    );
+    const metadata =
+      this.store.objectCacheKeyRegistry.getMetadata(sourceCacheKey);
 
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
-        metadata.apiName,
-        metadata.primaryKey,
-      )
+          metadata.apiName,
+          metadata.primaryKey
+        )
       : new Set([sourceCacheKey]);
 
     for (const targetKey of relatedKeys) {
@@ -241,13 +247,18 @@ export class ObjectsHelper extends AbstractHelper<
       // union rather than clobbering each other.
       let merged = value;
       if (selectFields?.size && targetHolder) {
-        merged = mergeSelectFields(merged, selectFields, targetHolder);
+        merged = mergeSelectFields(
+          merged,
+          selectFields,
+          targetHolder,
+          sourceRdpFields
+        );
       }
       merged = this.mergeForTarget(
         merged,
         targetHolder,
-        sourceCacheKey,
-        targetKey,
+        sourceRdpFields,
+        targetKey
       );
 
       batch.write(targetKey, merged, status);
@@ -273,12 +284,14 @@ export class ObjectsHelper extends AbstractHelper<
    * Type guard to check if a value is an ObjectHolder
    */
   private isObjectHolder(
-    value: ObjectHolder | undefined,
+    value: ObjectHolder | undefined
   ): value is ObjectHolder {
-    return value != null
-      && typeof value === "object"
-      && "$apiName" in value
-      && "$primaryKey" in value;
+    return (
+      value != null &&
+      typeof value === "object" &&
+      "$apiName" in value &&
+      "$primaryKey" in value
+    );
   }
 
   /**
@@ -287,21 +300,17 @@ export class ObjectsHelper extends AbstractHelper<
   private mergeForTarget(
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
-    sourceCacheKey: ObjectCacheKey,
-    targetCacheKey: ObjectCacheKey,
+    sourceRdpFields: ReadonlySet<string>,
+    targetCacheKey: ObjectCacheKey
   ): ObjectHolder {
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      sourceCacheKey,
-    );
-    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      targetCacheKey,
-    );
+    const targetRdpFields =
+      this.store.objectCacheKeyRegistry.getRdpFieldSet(targetCacheKey);
 
     return mergeObjectFields(
       sourceValue,
       sourceRdpFields,
       targetRdpFields,
-      targetCurrentValue,
+      targetCurrentValue
     );
   }
 }

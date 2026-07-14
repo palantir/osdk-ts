@@ -15,11 +15,12 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
 export function getFilterKey<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
+  definition: FilterDefinitionUnion<Q>
 ): string {
   switch (definition.type) {
     case "PROPERTY":
@@ -27,15 +28,19 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
     case "HAS_LINK":
       return definition.id ?? `hasLink:${definition.linkName}`;
     case "LINKED_PROPERTY":
-      return definition.id
-        ?? `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
+      return (
+        definition.id ??
+        `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`
+      );
     case "KEYWORD_SEARCH":
-      return definition.id
-        ?? `keywordSearch-${
+      return (
+        definition.id ??
+        `keywordSearch-${
           Array.isArray(definition.properties)
             ? definition.properties.join("-")
             : "all"
-        }`;
+        }`
+      );
     case "CUSTOM":
       return definition.id ?? definition.key;
     case "STATIC_VALUES":

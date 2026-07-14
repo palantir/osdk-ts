@@ -17,6 +17,7 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import type { IFD } from "utif";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { TiffRenderer } from "../TiffRenderer.js";
 
 vi.mock("utif", () => ({
@@ -48,7 +49,7 @@ describe("TiffRenderer", () => {
 
     const content = new Uint8Array(100);
     let container: HTMLElement;
-    await act(async () => {
+    await act(() => {
       ({ container } = render(<TiffRenderer content={content} />));
     });
 
@@ -61,11 +62,11 @@ describe("TiffRenderer", () => {
   it("should show error when TIFF exceeds max size", async () => {
     const largeContent = new Uint8Array(26_000_000);
 
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={largeContent} />);
     });
 
-    expect(screen.getByText(/exceeds maximum size/)).toBeTruthy();
+    expect(screen.getByText(/exceeds maximum size/u)).toBeTruthy();
   });
 
   it("should call onError when decoding fails", async () => {
@@ -75,7 +76,7 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
@@ -87,12 +88,12 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
-    expect(screen.getByText(/Could not render TIFF/)).toBeTruthy();
+    expect(screen.getByText(/Could not render TIFF/u)).toBeTruthy();
   });
 
   it("should call onError when image has missing dimensions", async () => {
@@ -106,7 +107,7 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
@@ -117,7 +118,7 @@ describe("TiffRenderer", () => {
     const largeContent = new Uint8Array(26_000_000);
     const onError = vi.fn();
 
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={largeContent} onError={onError} />);
     });
 

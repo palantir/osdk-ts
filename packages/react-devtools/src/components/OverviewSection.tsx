@@ -1,0 +1,58 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Section, SectionCard } from "@blueprintjs/core";
+import classNames from "classnames";
+import React from "react";
+
+import styles from "./OverviewSection.module.scss";
+
+export interface OverviewSectionProps {
+  /** The section header title, e.g. "Ontology". */
+  title: string;
+  /** The section body — typically a grid of tiles. */
+  children: React.ReactNode;
+  /**
+   * Adds interior padding around the section body. Enabled by default; disable
+   * it for sections whose content owns its own spacing (e.g. the cache lists)
+   * so they render flush.
+   */
+  padded?: boolean;
+}
+
+export function OverviewSection({
+  title,
+  children,
+  padded = true,
+}: OverviewSectionProps): React.JSX.Element {
+  return (
+    <Section
+      collapsible={true}
+      compact={true}
+      title={title}
+      className={styles.overviewSection}
+    >
+      <SectionCard
+        padded={false}
+        className={classNames(styles.overviewSectionCard, {
+          [styles.padded]: padded,
+        })}
+      >
+        {children}
+      </SectionCard>
+    </Section>
+  );
+}

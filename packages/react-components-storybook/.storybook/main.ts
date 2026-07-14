@@ -19,10 +19,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
 
 const config: StorybookConfig = {
-  stories: [
-    "../src/**/*.stories.@(js|jsx|ts|tsx|mdx)",
-    "../src/**/*.mdx",
-  ],
+  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)", "../src/**/*.mdx"],
   addons: [
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
@@ -52,6 +49,7 @@ const config: StorybookConfig = {
   // it does not override an explicit empty tags array.
   // MDX files are skipped because wrapping their index entries breaks
   // attached-docs sidebar placement in Storybook 10.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   experimental_indexers: async (existingIndexers) =>
     (existingIndexers ?? []).map((indexer) => ({
       ...indexer,
@@ -65,6 +63,7 @@ const config: StorybookConfig = {
         );
       },
     })),
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async viteFinal(config) {
     // Set base path for GitHub Pages deployment. PR previews are published
     // under /storybook/pr-<number>/, so CI can override the default path.
@@ -83,16 +82,14 @@ const config: StorybookConfig = {
         // wrappers can import .md files without fragile relative paths.
         "@docs": new URL("../../react-components/docs", import.meta.url)
           .pathname,
-        "@rc-root": new URL("../../react-components", import.meta.url)
-          .pathname,
+        "@rc-root": new URL("../../react-components", import.meta.url).pathname,
         // Polyfill Node.js modules for browser
         // This is necessary because MSW (Mock Service Worker) and other dependencies
         // use Node.js built-in modules like crypto.randomUUID() which aren't available
         // in browser environments. These polyfills provide browser-compatible implementations
         // to ensure Storybook stories work correctly across all browsers.
-        "node:crypto": new URL("./crypto-polyfill.ts", import.meta.url)
-          .pathname,
-        "node:util": new URL("./util-polyfill.ts", import.meta.url).pathname,
+        "node:crypto": new URL("crypto-polyfill.ts", import.meta.url).pathname,
+        "node:util": new URL("util-polyfill.ts", import.meta.url).pathname,
       },
     };
 

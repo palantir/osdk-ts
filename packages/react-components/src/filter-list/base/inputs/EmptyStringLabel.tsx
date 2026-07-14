@@ -16,6 +16,7 @@
 
 import classnames from "classnames";
 import React, { memo } from "react";
+
 // Shares the muted/italic styling used by NoValueLabel so the two special
 // option rows ("No value" and "(empty string)") read as visually consistent.
 import styles from "./NoValueLabel.module.css";
@@ -29,9 +30,9 @@ interface EmptyStringLabelProps {
  * "(empty string)". Distinct from {@link NoValueLabel}, which renders null/undefined
  * ("No value").
  */
-function EmptyStringLabelInner(
-  { className }: EmptyStringLabelProps,
-): React.ReactElement {
+function EmptyStringLabelInner({
+  className,
+}: EmptyStringLabelProps): React.ReactElement {
   return (
     <span className={classnames(styles.noValue, className)}>
       (empty string)
@@ -40,5 +41,5 @@ function EmptyStringLabelInner(
 }
 
 export const EmptyStringLabel = memo(
-  EmptyStringLabelInner,
+  EmptyStringLabelInner
 ) as typeof EmptyStringLabelInner;

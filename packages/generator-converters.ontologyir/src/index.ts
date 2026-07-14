@@ -16,6 +16,7 @@
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
 export type {
+  IAnonymousCustomDataType,
   IFunctionCustomDataType,
   IInterfaceDataType,
   IInterfaceObjectSetDataType,
@@ -25,8 +26,10 @@ export type {
   IOptionalDataType,
   ISetDataType,
 } from "./convertDataType.js";
+export { isInjectedRuntimeInput } from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,

@@ -16,6 +16,7 @@
 
 import { Button, Callout, Intent, Tag } from "@blueprintjs/core";
 import React from "react";
+
 import {
   type FiberCapabilities,
   type FiberFeature,
@@ -45,6 +46,7 @@ const FEATURE_DESCRIPTIONS: Record<FiberFeature, string> = {
 export interface DegradationNoticeProps {
   onRetry?: () => void;
   showWhenHealthy?: boolean;
+  className?: string;
 }
 
 function subscribeToCapabilities(onStoreChange: () => void): () => void {
@@ -73,16 +75,17 @@ function getCapabilitiesSnapshot(): FiberCapabilities {
 export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   onRetry,
   showWhenHealthy = false,
+  className,
 }) => {
   const capabilities = React.useSyncExternalStore(
     subscribeToCapabilities,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot
   );
 
-  const disabledFeatures = Array.from(capabilities.disabledFeatures);
-  const hasIssues = !capabilities.fiberAccessWorking
-    || disabledFeatures.length > 0;
+  const disabledFeatures = [...capabilities.disabledFeatures];
+  const hasIssues =
+    !capabilities.fiberAccessWorking || disabledFeatures.length > 0;
 
   if (!hasIssues && !showWhenHealthy) {
     return null;
@@ -91,6 +94,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!hasIssues && showWhenHealthy) {
     return (
       <Callout
+        className={className}
         intent={Intent.SUCCESS}
         icon="tick-circle"
         title="Fiber Access Healthy"
@@ -109,6 +113,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.hookInstalled) {
     return (
       <Callout
+        className={className}
         intent={Intent.WARNING}
         icon="warning-sign"
         title="DevTools Hook Not Installed"
@@ -128,6 +133,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.rendererDetected) {
     return (
       <Callout
+        className={className}
         intent={Intent.PRIMARY}
         icon="time"
         title="Waiting for React"
@@ -154,6 +160,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   if (!capabilities.fiberAccessWorking) {
     return (
       <Callout
+        className={className}
         intent={Intent.DANGER}
         icon="error"
         title="Fiber Access Unavailable"
@@ -171,11 +178,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
           </p>
         )}
         {onRetry && (
-          <Button
-            size="small"
-            intent={Intent.PRIMARY}
-            onClick={onRetry}
-          >
+          <Button size="small" intent={Intent.PRIMARY} onClick={onRetry}>
             Retry
           </Button>
         )}
@@ -185,6 +188,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
 
   return (
     <Callout
+      className={className}
       intent={Intent.WARNING}
       icon="warning-sign"
       title="Some Features Disabled"
@@ -205,7 +209,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
           <Tag
             key={feature}
             intent={Intent.WARNING}
-            minimal
+            minimal={true}
             title={FEATURE_DESCRIPTIONS[feature]}
           >
             {FEATURE_LABELS[feature]}
@@ -214,10 +218,9 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
       </div>
       {capabilities.errorCount > 0 && (
         <p style={{ margin: "0 0 8px 0", fontSize: "12px", color: "#5c7080" }}>
-          {capabilities.errorCount}{" "}
-          error{capabilities.errorCount > 1 ? "s" : ""}{" "}
-          recorded. Features will auto-recover after 30 seconds of successful
-          operation.
+          {capabilities.errorCount} error
+          {capabilities.errorCount > 1 ? "s" : ""} recorded. Features will
+          auto-recover after 30 seconds of successful operation.
         </p>
       )}
       {onRetry && (
@@ -248,6 +251,6 @@ export function useFiberCapabilities(): FiberCapabilities {
   return React.useSyncExternalStore(
     subscribeToCapabilitiesSimple,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot
   );
 }

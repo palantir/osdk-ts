@@ -17,25 +17,24 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { describe, expect, it, vi } from "vitest";
+
 import { usePdfOutline } from "../usePdfOutline.js";
 
 function createMockDocument(
   options: {
-    outline?:
-      | Array<{
+    outline?: Array<{
+      title: string;
+      bold: boolean;
+      italic: boolean;
+      dest: string | unknown[] | null;
+      items: Array<{
         title: string;
         bold: boolean;
         italic: boolean;
         dest: string | unknown[] | null;
-        items: Array<{
-          title: string;
-          bold: boolean;
-          italic: boolean;
-          dest: string | unknown[] | null;
-          items: never[];
-        }>;
-      }>
-      | null;
+        items: never[];
+      }>;
+    }> | null;
     pages?: Array<{
       items: Array<{
         str: string;
@@ -46,7 +45,7 @@ function createMockDocument(
       }>;
     }>;
     numPages?: number;
-  } = {},
+  } = {}
 ): PDFDocumentProxy {
   const { outline = null, pages = [], numPages = pages.length } = options;
 
@@ -314,7 +313,7 @@ describe("usePdfOutline", () => {
         initialProps: { document: doc } as {
           document: PDFDocumentProxy | undefined;
         },
-      },
+      }
     );
 
     await waitFor(() => {

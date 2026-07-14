@@ -11,16 +11,23 @@ import {
   useOsdkTheme,
 } from "@osdk/react-components/experimental/theme";
 import React, { useCallback, useRef } from "react";
+
+import { Button } from "../../components/Button.js";
+
+import "./EmployeesTable.css";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
-import "./EmployeesTable.css";
-import { Button } from "../../components/Button.js";
 import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
   managerName: "string";
+  // Derived `long` via a `get` selection -- the reported scenario.
+  leadStockOptions: "long";
+  // Derived `long` via a `max` aggregation -- min/max preserve the source type,
+  // so this also arrives as a string and must sort numerically.
+  maxPeepStockOptions: "long";
 };
 
 type FunctionColumns = {
@@ -28,11 +35,7 @@ type FunctionColumns = {
 };
 
 const columnDefinitions: Array<
-  ColumnDefinition<
-    Employee,
-    RDPs,
-    FunctionColumns
-  >
+  ColumnDefinition<Employee, RDPs, FunctionColumns>
 > = [
   {
     locator: {
@@ -40,6 +43,7 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validateEdit: async (value: unknown) => {
       if (typeof value !== "string" || !value.trim()) {
         return "Name cannot be empty";
@@ -70,6 +74,34 @@ const columnDefinitions: Array<
   },
   {
     locator: { type: "property", id: "jobTitle" },
+  },
+  // Base long property -- longs arrive as strings; sorting must be numeric.
+  {
+    locator: { type: "property", id: "stockOptions" },
+    columnName: "Stock Options",
+  },
+  // Derived long via `get` selection (the reported scenario): the lead's stock
+  // options.
+  {
+    locator: {
+      type: "rdp",
+      id: "leadStockOptions",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("stockOptions"),
+    },
+    columnName: "Lead Stock Options (derived get)",
+  },
+  // Derived long via `max` aggregation: the highest stock options among the
+  // employee's reports. min/max preserve the aggregated property's type, so
+  // this is captured as `long` and sorts numerically.
+  {
+    locator: {
+      type: "rdp",
+      id: "maxPeepStockOptions",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("peeps").aggregate("stockOptions:max"),
+    },
+    columnName: "Max Report Stock Options (derived max)",
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -146,13 +178,11 @@ function ThemeToggle(): React.ReactElement {
 }
 
 export function EmployeesTable(): React.ReactElement {
-  const handleSubmitEdits = useCallback(
-    async () => {
-      alert(`Submitting edits...`);
-      return true;
-    },
-    [],
-  );
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  const handleSubmitEdits = useCallback(async () => {
+    alert(`Submitting edits...`);
+    return true;
+  }, []);
 
   const client = useOsdkClient();
 
@@ -184,10 +214,12 @@ export function EmployeesTable(): React.ReactElement {
             objectType={Employee}
             columnDefinitions={columnDefinitions}
             selectionMode={"multiple"}
-            defaultOrderBy={[{
-              property: "firstFullTimeStartDate",
-              direction: "desc",
-            }]}
+            defaultOrderBy={[
+              {
+                property: "leadStockOptions",
+                direction: "asc",
+              },
+            ]}
             onSubmitEdits={handleSubmitEdits}
             tableRef={tableRef}
           />

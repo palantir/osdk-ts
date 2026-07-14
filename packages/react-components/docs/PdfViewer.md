@@ -12,7 +12,7 @@ import {
 ```
 
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
-- **`BasePdfViewer`** — Lower-level component that accepts a URL string or `ArrayBuffer` directly. Use this when you already have the PDF source.
+- **`BasePdfViewer`** — Lower-level component that accepts the PDF source directly as a URL string, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use this when you already have the PDF source.
 
 ## Usage
 
@@ -24,7 +24,7 @@ import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 <PdfViewer media={employee.employeeDocuments} />;
 ```
 
-### With a URL or ArrayBuffer
+### With a URL, ArrayBuffer, Uint8Array, or Blob
 
 ```tsx
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
@@ -32,8 +32,11 @@ import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 // From a URL
 <BasePdfViewer src="https://example.com/document.pdf" />
 
-// From an ArrayBuffer (e.g. file input or fetch)
+// From an ArrayBuffer or Uint8Array (e.g. file input or fetch)
 <BasePdfViewer src={arrayBuffer} />
+
+// From a Blob (e.g. a fetched response or a File from an <input type="file">)
+<BasePdfViewer src={blob} />
 ```
 
 ### With annotations and sidebar
@@ -59,7 +62,7 @@ import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
     ],
   }}
   onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
-/>;
+/>
 ```
 
 ## Props
@@ -76,7 +79,7 @@ Plus all props from `PdfViewerProps` except `src`.
 
 | Prop                 | Type                                           | Default        | Description                                                     |
 | -------------------- | ---------------------------------------------- | -------------- | --------------------------------------------------------------- |
-| `src`                | `string \| ArrayBuffer`                        | —              | PDF source URL or binary data (required)                        |
+| `src`                | `string \| ArrayBuffer \| Uint8Array \| Blob`  | —              | PDF source: URL string or in-memory bytes (required)            |
 | `annotations`        | `Record<number, PdfAnnotation[]>`              | `{}`           | Annotations keyed by page number (1-indexed)                    |
 | `onAnnotationClick`  | `(annotation: PdfAnnotation) => void`          | —              | Callback when an annotation is clicked                          |
 | `initialPage`        | `number`                                       | `1`            | Page to display on first render                                 |
@@ -200,14 +203,14 @@ These compose the primitive hooks and manage all UI state for you.
 
 For maximum control, use the primitive hooks directly.
 
-| Hook                      | Description                                                                                                           |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `usePdfDocument`          | Loads a `PDFDocumentProxy` from a URL or `ArrayBuffer` using pdf.js. Manages the web worker lifecycle.                |
-| `usePdfViewer`            | Initializes the pdfjs `PDFViewer`, `EventBus`, `PDFLinkService`, and `PDFFindController`.                             |
-| `usePdfViewerSync`        | Bidirectional sync between React state and the pdfjs viewer (scale + page). Returns `scrollToPage`.                   |
-| `usePdfViewerSearch`      | Full-text search across the PDF. Manages query, match count, navigation, and the search open/close state.             |
-| `usePdfAnnotationPortals` | Listens for page render events and provides portal targets for overlaying React annotation components on each page.   |
-| `usePdfOutline`           | Extracts outline items from a PDF document. Uses embedded bookmarks when available, falls back to heading extraction. |
+| Hook                      | Description                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `usePdfDocument`          | Loads a `PDFDocumentProxy` from a URL, `ArrayBuffer`, `Uint8Array`, or `Blob` using pdf.js. Manages the web worker lifecycle. |
+| `usePdfViewer`            | Initializes the pdfjs `PDFViewer`, `EventBus`, `PDFLinkService`, and `PDFFindController`.                                     |
+| `usePdfViewerSync`        | Bidirectional sync between React state and the pdfjs viewer (scale + page). Returns `scrollToPage`.                           |
+| `usePdfViewerSearch`      | Full-text search across the PDF. Manages query, match count, navigation, and the search open/close state.                     |
+| `usePdfAnnotationPortals` | Listens for page render events and provides portal targets for overlaying React annotation components on each page.           |
+| `usePdfOutline`           | Extracts outline items from a PDF document. Uses embedded bookmarks when available, falls back to heading extraction.         |
 
 ### Example: custom viewer with `usePdfViewerState`
 
@@ -272,7 +275,9 @@ function MinimalViewer({ src }: { src: string }) {
 
   return (
     <div>
-      <span>Page {currentPage} of {numPages}</span>
+      <span>
+        Page {currentPage} of {numPages}
+      </span>
       <div ref={containerRef} style={{ height: "80vh", overflow: "auto" }}>
         <div ref={viewerRef} className="pdfViewer" />
       </div>

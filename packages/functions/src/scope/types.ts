@@ -18,23 +18,28 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   QueryDefinition,
+  ActionDefinition,
 } from "@osdk/client";
 
 /**
  * Declare which resources a function needs access to.
  *
- * For `objects`, `interfaces` and `queries`, you may provide either:
+ * For `objects`, `interfaces`, `actions` and `queries`, you may provide either:
  * - A string alias from resources.json (e.g. `"myObject"`)
  * - An OSDK type reference imported from your generated ontology SDK (e.g. `Employee`)
  *
- * For `links`, and `models`, only string aliases are supported.
+ * For `links`, `datasets`, `streams`, `mediasets` and `models`, only string aliases are supported.
  */
 export interface ScopeResources {
   queries?: Array<string | QueryDefinition>;
+  actions?: Array<string | ActionDefinition>;
   objects?: Array<string | ObjectTypeDefinition>;
   interfaces?: Array<string | InterfaceDefinition>;
   links?: string[];
   models?: string[];
+  datasets?: string[];
+  mediasets?: string[];
+  streams?: string[];
 }
 
 /**
@@ -48,7 +53,7 @@ export namespace ScopeResources {
    * Sentinel value: discovery populates scope from `defaultResources` declared in functions.json.
    */
   export const defaultResources: unique symbol = Symbol(
-    "ScopeResources.defaultResources",
+    "ScopeResources.defaultResources"
   );
 }
 
@@ -77,7 +82,7 @@ export namespace ScopeAuthorization {
    * Sentinel value: discovery uses `defaultAuthorization.read` declared in functions.json.
    */
   export const defaultRead: unique symbol = Symbol(
-    "ScopeAuthorization.defaultRead",
+    "ScopeAuthorization.defaultRead"
   );
 }
 

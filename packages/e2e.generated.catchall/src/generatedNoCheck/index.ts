@@ -34,12 +34,14 @@ export {
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
   OsdkTestInterface,
+  ReducerTestInterface,
 } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
   BoundariesUsState,
   BuilderDeploymentState,
+  CipherTextTest,
   Country_1,
   DherlihyComplexObject,
   Employee,
@@ -92,4 +94,4 @@ export {
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';
-export { $ontologyRid } from './OntologyMetadata.js';
+export { $branch, $ontologyRid } from './OntologyMetadata.js';

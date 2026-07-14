@@ -1,6 +1,7 @@
 ACMR
 aggregatable
 aimpoints
+AUTOGEN
 BACKCOMPAT
 backlink
 blockquote
@@ -31,6 +32,7 @@ onwarn
 peopleapp
 pypi
 retryable
+revals
 rsort
 semver
 streamutils
@@ -38,6 +40,7 @@ struct
 structs
 subdependencies
 subdeps
+trackpad
 tsdoc
 typecheck
 typemapping

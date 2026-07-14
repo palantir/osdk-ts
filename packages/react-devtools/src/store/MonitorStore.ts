@@ -91,7 +91,7 @@ export class MonitorStore {
     this.logger = config.logger ?? createMonitorLogger();
     this.metricsStore = new MetricsStore(
       this.config.maxOperations,
-      this.config.timeSeriesSize,
+      this.config.timeSeriesSize
     );
     this.computeStore = new ComputeStore();
     this.componentRegistry = new ComponentQueryRegistry();
@@ -102,10 +102,10 @@ export class MonitorStore {
       this.computeStore,
       this.logger,
       undefined,
-      this.eventTimeline,
+      this.eventTimeline
     );
     this.primitiveDiscovery = new ComponentPrimitiveDiscovery(
-      this.componentRegistry,
+      this.componentRegistry
     );
     this.clickToInspect = createClickToInspect({
       onSelect: (component) => {
@@ -120,7 +120,7 @@ export class MonitorStore {
               componentId: primitives.componentId,
               primitives,
             },
-          }),
+          })
         );
       },
       onDeactivate: () => {
@@ -136,7 +136,7 @@ export class MonitorStore {
     this.recommendationEngine = new PerformanceRecommendationEngine(
       this.metricsStore,
       this.componentRegistry,
-      this.eventTimeline,
+      this.eventTimeline
     );
 
     this.propertyAccessTracker.setEventTimeline(this.eventTimeline);
@@ -173,12 +173,10 @@ export class MonitorStore {
         logger: config.logger,
         UNSTABLE_DO_NOT_USE_BRANCH: config.branch,
       },
-      interceptedFetch,
+      interceptedFetch
     );
 
-    const observableClient: ObservableClient = createObservableClient(
-      client,
-    );
+    const observableClient: ObservableClient = createObservableClient(client);
 
     const fullyWrappedClient = this.wrapWithMonitoring(observableClient);
 
@@ -368,8 +366,7 @@ export class MonitorStore {
       } else {
         await this.monitor.invalidateObjectType(entry.objectType);
       }
-    } catch {
-    }
+    } catch {}
   }
 
   async clearCache(): Promise<void> {
@@ -379,7 +376,6 @@ export class MonitorStore {
 
     try {
       await this.monitor.invalidateAll();
-    } catch {
-    }
+    } catch {}
   }
 }

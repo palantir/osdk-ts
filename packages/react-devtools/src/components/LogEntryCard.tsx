@@ -17,19 +17,27 @@
 import { Icon } from "@blueprintjs/core";
 import classNames from "classnames";
 import React, { useState } from "react";
+
 import type { ConsoleLogEntry } from "../store/ConsoleLogStore.js";
 import { formatRelativeTime } from "../utils/format.js";
+
 import styles from "./LogEntryCard.module.scss";
 
 export interface LogEntryCardProps {
   entry: ConsoleLogEntry;
   style?: React.CSSProperties;
+  /**
+   * Console styling: tint the whole row by severity and show a leading expand
+   * chevron on expandable rows. Off by default so other feeds (e.g. Debugging)
+   * keep the plain border-only look.
+   */
+  tinted?: boolean;
 }
 
 const levelConfig: Record<
   ConsoleLogEntry["level"],
   {
-    icon: "error" | "warning-sign" | "info-sign" | "code" | "console";
+    icon: "error" | "warning-sign" | "info-sign" | "cog" | "console";
     color: string;
     className: string;
   }
@@ -50,7 +58,7 @@ const levelConfig: Record<
     className: styles.levelInfo,
   },
   debug: {
-    icon: "code",
+    icon: "cog",
     color: "var(--dt-gray)",
     className: styles.levelDebug,
   },
@@ -61,7 +69,11 @@ const levelConfig: Record<
   },
 };
 
-export const LogEntryCard: React.FC<LogEntryCardProps> = ({ entry, style }) => {
+export const LogEntryCard: React.FC<LogEntryCardProps> = ({
+  entry,
+  style,
+  tinted = false,
+}) => {
   const [expanded, setExpanded] = useState(false);
   const config = levelConfig[entry.level];
 
@@ -70,7 +82,12 @@ export const LogEntryCard: React.FC<LogEntryCardProps> = ({ entry, style }) => {
 
   return (
     <div
-      className={classNames(styles.logEntry, config.className)}
+      className={classNames(
+        styles.logEntry,
+        config.className,
+        isMultiline && styles.interactive,
+        tinted && styles.tinted
+      )}
       onClick={() => {
         if (isMultiline) {
           setExpanded(!expanded);
@@ -87,6 +104,16 @@ export const LogEntryCard: React.FC<LogEntryCardProps> = ({ entry, style }) => {
       aria-expanded={isMultiline ? expanded : undefined}
       style={style}
     >
+      {tinted && (
+        <span className={styles.chevron}>
+          {isMultiline ? (
+            <Icon
+              icon={expanded ? "chevron-down" : "chevron-right"}
+              size={12}
+            />
+          ) : null}
+        </span>
+      )}
       <Icon
         icon={config.icon}
         size={12}

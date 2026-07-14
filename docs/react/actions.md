@@ -321,6 +321,26 @@ const updatedTodo = todo.$clone({
 
 :::
 
+### Dev-Mode Action Delay
+
+In development builds, the observable client adds a short artificial delay (1000ms by default) to an action's result when an `$optimisticUpdate` is provided. This makes the optimistic state visible before the server response lands, so you can confirm your optimistic updates render correctly. The delay never runs in production builds, and it is skipped entirely for actions without an optimistic update (such as function-backed actions), so those stay fast.
+
+Tune or disable it on the provider:
+
+```tsx
+// Disable the delay
+<OsdkProvider client={client} devMode={{ actionDelayMs: 0 }}>
+  {children}
+</OsdkProvider>
+
+// Use a shorter delay
+<OsdkProvider client={client} devMode={{ actionDelayMs: 200 }}>
+  {children}
+</OsdkProvider>
+```
+
+The first time the delay is applied, a one-time message is logged to the console explaining what happened and how to turn it off. If you are configuring the observable client directly, the same option is available as `createObservableClient(client, extraUserAgents, { devMode: { actionDelayMs: 0 } })`.
+
 ---
 
 ## useDebouncedCallback

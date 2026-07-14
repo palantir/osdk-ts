@@ -61,11 +61,11 @@ export class Changes {
   registerObject = (
     cacheKey: ObjectCacheKey,
     data: ObjectHolder,
-    isNew: boolean,
+    isNew: boolean
   ): void => {
     this[isNew ? "addedObjects" : "modifiedObjects"].set(
       data.$objectType ?? data.$apiName,
-      data,
+      data
     );
     this[isNew ? "added" : "modified"].add(cacheKey);
   };
@@ -96,11 +96,11 @@ export class Changes {
 
   isEmpty(): boolean {
     return (
-      this.modifiedObjects.size === 0
-      && this.addedObjects.size === 0
-      && this.added.size === 0
-      && this.modified.size === 0
-      && this.deleted.size === 0
+      this.modifiedObjects.size === 0 &&
+      this.addedObjects.size === 0 &&
+      this.added.size === 0 &&
+      this.modified.size === 0 &&
+      this.deleted.size === 0
     );
   }
 }
@@ -119,7 +119,7 @@ export function DEBUG_ONLY__changesToString(changes: Changes): string {
         modified: listHelper(changes.modified),
       },
       null,
-      2,
+      2
     );
   } else {
     throw new Error("not implemented");
@@ -130,14 +130,10 @@ function listHelper(set: Set<CacheKey>) {
   return Array.from(set).map(DEBUG_ONLY__cacheKeyToString);
 }
 
-function multimapHelper(
-  multimap: MultiMap<string, ObjectHolder>,
-) {
+function multimapHelper(multimap: MultiMap<string, ObjectHolder>) {
   return Object.fromEntries(
-    Array.from(multimap.associations()).map(
-      ([type, objects]) => {
-        return [type, objects.map(o => o.$primaryKey)];
-      },
-    ),
+    Array.from(multimap.associations()).map(([type, objects]) => {
+      return [type, objects.map((o) => o.$primaryKey)];
+    })
   );
 }

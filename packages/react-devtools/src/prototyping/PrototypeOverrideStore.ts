@@ -53,7 +53,7 @@ export class PrototypeOverrideStore extends SubscribableStore {
   }
 
   getOverrideBySignature(
-    querySignature: string,
+    querySignature: string
   ): PrototypeOverride | undefined {
     const bindingId = this.signatureToBindingId.get(querySignature);
     if (bindingId) {
@@ -64,7 +64,7 @@ export class PrototypeOverrideStore extends SubscribableStore {
 
   updateOverride(
     bindingId: string,
-    updates: Partial<Pick<PrototypeOverride, "overrideParams" | "enabled">>,
+    updates: Partial<Pick<PrototypeOverride, "overrideParams" | "enabled">>
   ): void {
     const existing = this.overrides.get(bindingId);
     if (existing) {
@@ -89,7 +89,7 @@ export class PrototypeOverrideStore extends SubscribableStore {
   }
 
   getAll(): PrototypeOverride[] {
-    return Array.from(this.overrides.values());
+    return [...this.overrides.values()];
   }
 
   hasOverride(querySignature: string): boolean {

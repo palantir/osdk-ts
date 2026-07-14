@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  CheckExistingUniqueIdentifiersRequest
-    as _api_modification_CheckExistingUniqueIdentifiersRequest,
-  CheckExistingUniqueIdentifiersResponse
-    as _api_modification_CheckExistingUniqueIdentifiersResponse,
+  CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest,
+  CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse,
 } from "../../modification/__components.js";
 
 /**
@@ -32,12 +31,12 @@ import type {
 export async function checkExistingUniqueIdentifiers(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_CheckExistingUniqueIdentifiersRequest,
+  request: _api_modification_CheckExistingUniqueIdentifiersRequest
 ): Promise<_api_modification_CheckExistingUniqueIdentifiersResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/check-uniqueness`,
     "POST",
-    request,
+    request
   );
 }

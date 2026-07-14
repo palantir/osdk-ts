@@ -18,6 +18,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Custom Colors](#custom-colors)
 - [OSDK Component Tokens](#osdk-component-tokens)
   - [Shared Styling](#shared-styling)
+  - [AIP Agent Chat](#aip-agent-chat)
   - [Drag Handle](#drag-handle)
   - [Button](#button)
   - [Checkbox](#checkbox)
@@ -30,6 +31,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Filter List](#filter-list)
   - [Form](#form)
   - [Input](#input)
+  - [Number Input](#number-input)
   - [Markdown Renderer](#markdown-renderer)
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
@@ -231,6 +233,58 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 | `--osdk-surface-border`               | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Reusable border shorthand      |
 | `--osdk-disabled-opacity`             | `0.5`                                                                             | Disabled state opacity         |
 
+### AIP Agent Chat
+
+Tokens for the `AipAgentChat` chat surface (container, message bubbles, composer, empty state, loader, error banner).
+
+| Variable                                             | Default Value                                                                                             | Description                                         |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `--osdk-aip-agent-chat-background`                   | `var(--osdk-background-primary)`                                                                          | Chat container background                           |
+| `--osdk-aip-agent-chat-border-color`                 | `var(--osdk-surface-border-color-default)`                                                                | Container and composer separator color              |
+| `--osdk-aip-agent-chat-border-radius`                | `var(--osdk-surface-border-radius)`                                                                       | Container corner radius                             |
+| `--osdk-aip-agent-chat-padding`                      | `calc(var(--osdk-surface-spacing) * 5)`                                                                   | Outer padding for message list and composer         |
+| `--osdk-aip-agent-chat-message-gap`                  | `calc(var(--osdk-surface-spacing) * 5)`                                                                   | Vertical gap between messages                       |
+| `--osdk-aip-agent-chat-section-gap`                  | `calc(var(--osdk-surface-spacing) * 2.5)`                                                                 | Gap between composer rows / footer items            |
+| `--osdk-aip-agent-chat-content-max-width`            | `780px`                                                                                                   | Maximum width of the chat content area              |
+| `--osdk-aip-agent-chat-bubble-padding`               | `calc(var(--osdk-surface-spacing) * 3)`                                                                   | Padding inside each message bubble                  |
+| `--osdk-aip-agent-chat-bubble-border-radius`         | `var(--osdk-surface-border-radius)`                                                                       | Bubble corner radius                                |
+| `--osdk-aip-agent-chat-bubble-max-width`             | `80%`                                                                                                     | Maximum bubble width                                |
+| `--osdk-aip-agent-chat-user-bubble-background`       | `var(--osdk-background-secondary)`                                                                        | User-message bubble background                      |
+| `--osdk-aip-agent-chat-user-bubble-color`            | `var(--osdk-typography-color-default-rest)`                                                               | User-message text color                             |
+| `--osdk-aip-agent-chat-user-bubble-border-radius`    | `var(--osdk-surface-border-radius) var(--osdk-surface-border-radius) 0 var(--osdk-surface-border-radius)` | User-message bubble corner radius (chat-tail shape) |
+| `--osdk-aip-agent-chat-assistant-bubble-color`       | `var(--osdk-typography-color-default-rest)`                                                               | Assistant-message text color                        |
+| `--osdk-aip-agent-chat-composer-border-radius`       | `calc(var(--osdk-surface-spacing) * 2.5)`                                                                 | Composer input border radius                        |
+| `--osdk-aip-agent-chat-composer-background`          | `var(--osdk-surface-background-color-default-rest)`                                                       | Composer background                                 |
+| `--osdk-aip-agent-chat-composer-textarea-min-height` | `calc(var(--osdk-surface-spacing) * 14)`                                                                  | Textarea minimum height                             |
+| `--osdk-aip-agent-chat-composer-textarea-max-height` | `200px`                                                                                                   | Textarea maximum height                             |
+| `--osdk-aip-agent-chat-empty-color`                  | `var(--osdk-typography-color-muted)`                                                                      | Empty-state subtext color                           |
+| `--osdk-aip-agent-chat-empty-icon-color`             | `var(--osdk-intent-primary-rest)`                                                                         | Empty-state icon color                              |
+| `--osdk-aip-agent-chat-empty-icon-size`              | `calc(var(--osdk-surface-spacing) * 12)`                                                                  | Empty-state icon size                               |
+| `--osdk-aip-agent-chat-loader-color`                 | `var(--osdk-typography-color-muted)`                                                                      | 3-dot streaming loader color                        |
+| `--osdk-aip-agent-chat-loader-dot-size`              | `calc(var(--osdk-surface-spacing) * 1.5)`                                                                 | Loader dot diameter                                 |
+| `--osdk-aip-agent-chat-loader-dot-gap`               | `calc(var(--osdk-surface-spacing) * 0.5)`                                                                 | Loader dot gap                                      |
+
+### Callout
+
+Tokens for the `Callout` component used for error, warning, success, and info banners. In dark mode, the intent text colors switch to brighter `--rest` shades for readability.
+
+| Variable                            | Default Value                                                                | Description               |
+| ----------------------------------- | ---------------------------------------------------------------------------- | ------------------------- |
+| `--osdk-callout-padding`            | `calc(var(--osdk-surface-spacing) * 4)`                                      | Inner padding             |
+| `--osdk-callout-gap`                | `calc(var(--osdk-surface-spacing) * 2)`                                      | Gap between icon and text |
+| `--osdk-callout-border-radius`      | `var(--osdk-surface-border-radius)`                                          | Corner radius             |
+| `--osdk-callout-title-font-size`    | `var(--osdk-typography-size-body-medium)`                                    | Title font size           |
+| `--osdk-callout-title-font-weight`  | `var(--osdk-typography-weight-bold)`                                         | Title font weight         |
+| `--osdk-callout-message-font-size`  | `var(--osdk-typography-size-body-small)`                                     | Message body font size    |
+| `--osdk-callout-error-background`   | `color-mix(in srgb, var(--osdk-intent-danger-rest) 10%, transparent)`        | Error intent background   |
+| `--osdk-callout-error-color`        | `var(--osdk-intent-danger-hover)` (dark: `var(--osdk-intent-danger-rest)`)   | Error intent text color   |
+| `--osdk-callout-warning-background` | `color-mix(in srgb, var(--osdk-intent-warning-rest) 10%, transparent)`       | Warning intent background |
+| `--osdk-callout-warning-color`      | `var(--osdk-intent-warning-hover)` (dark: `var(--osdk-intent-warning-rest)`) | Warning intent text color |
+| `--osdk-callout-success-background` | `color-mix(in srgb, var(--osdk-intent-success-rest) 10%, transparent)`       | Success intent background |
+| `--osdk-callout-success-color`      | `var(--osdk-intent-success-hover)` (dark: `var(--osdk-intent-success-rest)`) | Success intent text color |
+| `--osdk-callout-info-background`    | `color-mix(in srgb, var(--osdk-intent-primary-rest) 10%, transparent)`       | Info intent background    |
+| `--osdk-callout-info-color`         | `var(--osdk-intent-primary-hover)` (dark: `var(--osdk-intent-primary-rest)`) | Info intent text color    |
+
 ### Drag Handle
 
 Shared tokens for drag handle styling across components.
@@ -244,7 +298,18 @@ Shared tokens for drag handle styling across components.
 
 ### Button
 
-Styling for button components.
+Styling for button components. Buttons use `border: none` with `box-shadow` for visual borders, matching Blueprint's `.bp6-button` convention.
+
+#### Shared
+
+| Variable                          | Default Value                                                                                     | Description                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `--osdk-button-min-height`        | `calc(var(--osdk-surface-spacing) * 7.5)`                                                         | Button minimum height                                                                              |
+| `--osdk-button-border-color`      | `color-mix(in oklch, var(--bp-palette-black) 20%, transparent)`                                   | Button border color                                                                                |
+| `--osdk-button-border`            | `none`                                                                                            | Button border                                                                                      |
+| `--osdk-button-drop-shadow-color` | `color-mix(in oklch, var(--bp-palette-black) 10%, transparent)`                                   | Button drop shadow color                                                                           |
+| `--osdk-button-shadow`            | `inset 0 0 0 1px var(--osdk-button-border-color), 0 1px 1px var(--osdk-button-drop-shadow-color)` | Button box-shadow                                                                                  |
+| `--osdk-button-border-radius`     | `var(--osdk-surface-border-radius)`                                                               | Button corner radius. Override to give buttons a different (e.g. rounder) radius than inputs/cards |
 
 #### Primary Button
 
@@ -1066,31 +1131,42 @@ Styling for form components.
 
 ### Input
 
-Shared styling for input components.
+Shared styling for input components. Inputs use `box-shadow` for visual borders (matching Blueprint's `.bp6-input` convention). The border is transparent by default; custom themes can set `--osdk-input-border-color` to add a real CSS border.
 
-| Variable                           | Default Value                                                                                                                                                                                                                                                                                    | Description             |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
-| `--osdk-input-min-height`          | `30px`                                                                                                                                                                                                                                                                                           | Input minimum height    |
-| `--osdk-input-padding`             | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`                                                                                                                                                                                                                | Input padding           |
-| `--osdk-input-border-radius`       | `var(--osdk-surface-border-radius)`                                                                                                                                                                                                                                                              | Input border radius     |
-| `--osdk-input-border-width`        | `var(--osdk-surface-border-width)`                                                                                                                                                                                                                                                               | Input border width      |
-| `--osdk-input-border-color`        | `var(--osdk-surface-border-color-default)`                                                                                                                                                                                                                                                       | Input border color      |
-| `--osdk-input-border-color-focus`  | `var(--osdk-intent-primary-rest)`                                                                                                                                                                                                                                                                | Input focused border    |
-| `--osdk-input-border-color-error`  | `var(--osdk-intent-danger-rest)`                                                                                                                                                                                                                                                                 | Input error border      |
-| `--osdk-input-shadow`              | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                                                                       | Input inset shadow      |
-| `--osdk-input-bg`                  | `var(--osdk-surface-background-color-default-rest)`                                                                                                                                                                                                                                              | Input background        |
-| `--osdk-input-bg-hover`            | `var(--osdk-input-bg)`                                                                                                                                                                                                                                                                           | Input hover background  |
-| `--osdk-input-color`               | `var(--osdk-typography-color-default-rest)`                                                                                                                                                                                                                                                      | Input text color        |
-| `--osdk-input-placeholder-color`   | `var(--osdk-typography-color-muted)`                                                                                                                                                                                                                                                             | Input placeholder color |
-| `--osdk-input-font-size`           | `var(--osdk-typography-size-body-medium)`                                                                                                                                                                                                                                                        | Input font size         |
-| `--osdk-input-font-family`         | `var(--osdk-typography-family-default)`                                                                                                                                                                                                                                                          | Input font family       |
-| `--osdk-input-transition-duration` | `var(--osdk-emphasis-transition-duration)`                                                                                                                                                                                                                                                       | Transition duration     |
-| `--osdk-input-transition-ease`     | `var(--osdk-emphasis-ease-default)`                                                                                                                                                                                                                                                              | Transition easing       |
-| `--osdk-input-focus-outline`       | `none`                                                                                                                                                                                                                                                                                           | Focus outline           |
-| `--osdk-input-focus-shadow`        | `inset 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent), 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-focus) 75%, transparent), inset 0 1px 1px var(--osdk-surface-border-color-default)` | Focus shadow            |
-| `--osdk-input-focus-shadow-error`  | `inset 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent), 0 0 0 var(--osdk-input-border-width) color-mix(in srgb, var(--osdk-input-border-color-error) 75%, transparent), inset 0 1px 1px var(--osdk-surface-border-color-default)` | Danger focus shadow     |
-| `--osdk-input-shadow-error`        | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color-error), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)`                                                                                                                                 | Input error shadow      |
-| `--osdk-input-disabled-opacity`    | `var(--osdk-disabled-opacity)`                                                                                                                                                                                                                                                                   | Input disabled opacity  |
+| Variable                            | Default Value                                                                                                                                                    | Description             |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `--osdk-input-min-height`           | `30px`                                                                                                                                                           | Input minimum height    |
+| `--osdk-input-padding`              | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2.5)`                                                                                | Input padding           |
+| `--osdk-input-border-radius`        | `var(--osdk-surface-border-radius)`                                                                                                                              | Input border radius     |
+| `--osdk-input-border-width`         | `1px`                                                                                                                                                            | Input border width      |
+| `--osdk-input-border-color`         | `transparent`                                                                                                                                                    | Input border color      |
+| `--osdk-input-border-color-focus`   | `transparent`                                                                                                                                                    | Input focused border    |
+| `--osdk-input-border-color-error`   | `var(--osdk-intent-danger-rest)`                                                                                                                                 | Input error border      |
+| `--osdk-input-shadow`               | `inset 0 0 0 var(--osdk-input-border-width) color-mix(…, --bp-palette-black 20%), 0 0 0 0 transparent, inset 0 1px 1px color-mix(…, --bp-palette-black 30%)`     | Input box-shadow        |
+| `--osdk-input-bg`                   | `var(--osdk-surface-background-color-default-rest)`                                                                                                              | Input background        |
+| `--osdk-input-bg-hover`             | `var(--osdk-input-bg)`                                                                                                                                           | Input hover background  |
+| `--osdk-input-color`                | `var(--osdk-typography-color-default-rest)`                                                                                                                      | Input text color        |
+| `--osdk-input-placeholder-color`    | `var(--osdk-typography-color-muted)`                                                                                                                             | Input placeholder color |
+| `--osdk-input-font-size`            | `var(--osdk-typography-size-body-medium)`                                                                                                                        | Input font size         |
+| `--osdk-input-font-family`          | `var(--osdk-typography-family-default)`                                                                                                                          | Input font family       |
+| `--osdk-input-transition-duration`  | `var(--osdk-emphasis-transition-duration)`                                                                                                                       | Transition duration     |
+| `--osdk-input-transition-ease`      | `var(--osdk-emphasis-ease-default)`                                                                                                                              | Transition easing       |
+| `--osdk-input-focus-outline`        | `1px solid var(--osdk-intent-primary-rest)`                                                                                                                      | Focus outline           |
+| `--osdk-input-focus-outline-offset` | `-1px`                                                                                                                                                           | Focus outline offset    |
+| `--osdk-input-focus-shadow`         | `var(--osdk-input-shadow)`                                                                                                                                       | Focus shadow            |
+| `--osdk-input-focus-shadow-error`   | `var(--osdk-input-shadow-error)`                                                                                                                                 | Danger focus shadow     |
+| `--osdk-input-shadow-error`         | `inset 0 0 0 var(--osdk-input-border-width) var(--osdk-input-border-color-error), 0 0 0 0 transparent, inset 0 1px 1px var(--osdk-surface-border-color-default)` | Input error shadow      |
+| `--osdk-input-disabled-opacity`     | `var(--osdk-disabled-opacity)`                                                                                                                                   | Input disabled opacity  |
+
+### Number Input
+
+Styling for the stepper (increment / decrement button group) beside the number input field.
+
+| Variable                                   | Default Value                                                                                                                        | Description          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| `--osdk-number-input-stepper-border-width` | `1px`                                                                                                                                | Stepper border width |
+| `--osdk-number-input-stepper-border-color` | `var(--osdk-button-border-color)`                                                                                                    | Stepper border color |
+| `--osdk-number-input-stepper-shadow`       | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow  |
 
 ### Markdown Renderer
 
@@ -1204,10 +1280,11 @@ Styling for radio button components.
 
 ### Select
 
-Styling for select components.
+Styling for select components. The select trigger uses `box-shadow` (via `--osdk-button-shadow`) for its visual border, matching Blueprint's convention.
 
 | Variable                         | Default Value | Description          |
 | -------------------------------- | ------------- | -------------------- |
+| `--osdk-select-border-width`     | `none`        | Trigger border       |
 | `--osdk-select-popup-max-height` | `320px`       | Popup maximum height |
 
 ### Switch

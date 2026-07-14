@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
@@ -60,10 +61,7 @@ describe("useOsdkObject enabled option", () => {
   it("should NOT call observeObject when enabled is false (instance signature)", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(mockInstance, false),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(mockInstance, false), { wrapper });
 
     expect(mockObserveObject).not.toHaveBeenCalled();
   });
@@ -71,10 +69,9 @@ describe("useOsdkObject enabled option", () => {
   it("should NOT call observeObject when enabled is false (type signature)", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(MockObjectType, "pk-000", false),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(MockObjectType, "pk-000", false), {
+      wrapper,
+    });
 
     expect(mockObserveObject).not.toHaveBeenCalled();
   });
@@ -82,32 +79,26 @@ describe("useOsdkObject enabled option", () => {
   it("should use offline mode for instance signature", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(mockInstance),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(mockInstance), { wrapper });
 
     expect(mockObserveObject).toHaveBeenCalledWith(
       "MockObject",
       "instance-123",
       { mode: "offline" },
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
   it("should NOT use offline mode for type signature and pass full definition", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(MockObjectType, "pk-222"),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(MockObjectType, "pk-222"), { wrapper });
 
     expect(mockObserveObject).toHaveBeenCalledWith(
       MockObjectType,
       "pk-222",
       { mode: undefined },
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
@@ -119,7 +110,7 @@ describe("useOsdkObject enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      },
+      }
     );
 
     expect(mockObserveObject).not.toHaveBeenCalled();
@@ -137,7 +128,7 @@ describe("useOsdkObject enabled option", () => {
         useOsdkObject(MockObjectType, "pk-777", {
           $includeAllBaseObjectProperties: true,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);

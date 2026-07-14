@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-devtools",
-  "version": "0.10.0",
+  "version": "0.14.0",
   "description": "Developer tools and debugging utilities for OSDK React Toolkit",
   "license": "Apache-2.0",
   "repository": {
@@ -36,8 +36,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
-    "fix-lint": "eslint . --fix && dprint fmt",
-    "lint": "eslint . && dprint check",
+    "fix-lint": "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "lint": "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "preview": "vite preview",
     "test": "vitest run",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node && node scripts/build-css.mjs",
@@ -107,8 +107,7 @@
   "types": "./build/types/index.d.ts",
   "sideEffects": [
     "**/*.css",
-    "**/*.scss",
-    "**/styles.js"
+    "**/*.scss"
   ],
   "type": "module"
 }

@@ -33,10 +33,7 @@ export function TextInput({
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium mb-1"
-      >
+      <label htmlFor={id} className="block text-sm font-medium mb-1">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>

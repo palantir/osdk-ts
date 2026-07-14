@@ -25,11 +25,12 @@ import type {
 import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
-interface UseColumnDefsResult<
+export interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -47,17 +48,14 @@ interface UseColumnDefsResult<
  */
 export function useColumnDefs<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
   objectType: Q,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
@@ -69,7 +67,7 @@ export function useColumnDefs<
     if (columnDefinitions) {
       return getColumnsFromColumnDefinitions<Q, RDPs, FunctionColumns>(
         columnDefinitions,
-        objectProperties,
+        objectProperties
       );
     }
 
@@ -82,17 +80,14 @@ export function useColumnDefs<
 
 function getColumnsFromColumnDefinitions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  objectProperties?: Record<any, ObjectMetadata.Property>,
+  objectProperties?: Record<any, ObjectMetadata.Property>
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -116,9 +111,8 @@ function getColumnsFromColumnDefinitions<
     const editFieldConfig = col.editable ? col.editFieldConfig : undefined;
     const validateEdit = col.editable ? col.validateEdit : undefined;
 
-    const propertyMetadata = locator.type === "property"
-      ? objectProperties?.[locator.id]
-      : undefined;
+    const propertyMetadata =
+      locator.type === "property" ? objectProperties?.[locator.id] : undefined;
 
     const colKey = locator.id as string;
 
@@ -127,9 +121,10 @@ function getColumnsFromColumnDefinitions<
         ? propertyMetadata.type
         : undefined;
 
-    const markingType = propertyMetadata?.typeMetadata?.type === "marking"
-      ? propertyMetadata.typeMetadata.markingType
-      : undefined;
+    const markingType =
+      propertyMetadata?.typeMetadata?.type === "marking"
+        ? propertyMetadata.typeMetadata.markingType
+        : undefined;
 
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -165,11 +160,7 @@ function getColumnsFromColumnDefinitions<
         const meta = cellContext.table.options.meta;
         const isEditable = shouldShowEditableCell<
           Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-        >(
-          editable,
-          meta?.onCellEdit,
-          meta?.isInEditMode,
-        );
+        >(editable, meta?.onCellEdit, meta?.isInEditMode);
 
         if (renderCell && !isEditable) {
           return renderCell(object, locator);
@@ -185,12 +176,9 @@ function getColumnsFromColumnDefinitions<
 
 function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  objectProperties?: Record<any, ObjectMetadata.Property>,
+  objectProperties?: Record<any, ObjectMetadata.Property>
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>

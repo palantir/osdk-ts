@@ -31,11 +31,10 @@ import {
   withoutRid,
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+
 import { additionalContext, type Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type {
-  FetchedObjectTypeDefinition,
-} from "../ontology/OntologyProvider.js";
+import type { FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
@@ -58,10 +57,10 @@ describe.each([
   let client: Client;
   let apiServer: SetupServer;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     ({ client, apiServer } = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
-      createClient,
+      createClient
     ));
 
     return () => {
@@ -71,23 +70,25 @@ describe.each([
 
   describe("link", () => {
     it("loads an employee", async () => {
-      const result = await client(Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage();
+      const result = await client(Employee)
+        .where({
+          employeeId: stubData.employee1.employeeId,
+        })
+        .fetchPage();
 
       // we should get the employee we requested
       const employee = result.data[0];
       expect(JSON.stringify(employee)).toBeDefined();
       expect(employee).toMatchObject({
-        "$apiName": "Employee",
-        "$objectType": "Employee",
-        "$primaryKey": 50030,
-        "class": "Red",
-        "employeeId": 50030,
-        "employeeStatus": expect.anything(),
-        "fullName": "John Doe",
-        "office": "NYC",
-        "startDate": "2019-01-01",
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        class: "Red",
+        employeeId: 50030,
+        employeeStatus: expect.anything(),
+        fullName: "John Doe",
+        office: "NYC",
+        startDate: "2019-01-01",
       });
 
       employee.startDate;
@@ -96,23 +97,25 @@ describe.each([
       expect(Object.keys(employee.$link.lead)).toBeDefined();
     });
     it("loads an employee with custom client", async () => {
-      const result = await client(Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage();
+      const result = await client(Employee)
+        .where({
+          employeeId: stubData.employee1.employeeId,
+        })
+        .fetchPage();
 
       // we should get the employee we requested
       const employee = result.data[0];
       expect(JSON.stringify(employee)).toBeDefined();
       expect(employee).toMatchObject({
-        "$apiName": "Employee",
-        "$objectType": "Employee",
-        "$primaryKey": 50030,
-        "class": "Red",
-        "employeeId": 50030,
-        "employeeStatus": expect.anything(),
-        "fullName": "John Doe",
-        "office": "NYC",
-        "startDate": "2019-01-01",
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        class: "Red",
+        employeeId: 50030,
+        employeeStatus: expect.anything(),
+        fullName: "John Doe",
+        office: "NYC",
+        startDate: "2019-01-01",
       });
 
       employee.startDate;
@@ -122,9 +125,11 @@ describe.each([
     });
 
     it("traverses the link from an employee to their lead", async () => {
-      const result = await client(Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage();
+      const result = await client(Employee)
+        .where({
+          employeeId: stubData.employee1.employeeId,
+        })
+        .fetchPage();
       const employee = result.data[0];
 
       const lead = await employee.$link.lead.fetchOne({
@@ -139,12 +144,14 @@ describe.each([
 
     it("traverses the link from an lead to their peeps", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client(Employee).where({
-        $and: [
-          { "employeeId": { "$gt": 50030 } },
-          { "employeeId": { "$lt": 50032 } },
-        ],
-      }).fetchPage();
+      const employees = await client(Employee)
+        .where({
+          $and: [
+            { employeeId: { $gt: 50030 } },
+            { employeeId: { $lt: 50032 } },
+          ],
+        })
+        .fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
@@ -161,12 +168,14 @@ describe.each([
 
     it("traverses the link from an lead to their peep by primaryKey with fetchOne", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client(Employee).where({
-        $and: [
-          { "employeeId": { "$gt": 50030 } },
-          { "employeeId": { "$lt": 50032 } },
-        ],
-      }).fetchPage();
+      const employees = await client(Employee)
+        .where({
+          $and: [
+            { employeeId: { $gt: 50030 } },
+            { employeeId: { $lt: 50032 } },
+          ],
+        })
+        .fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
@@ -174,7 +183,7 @@ describe.each([
         stubData.employee1.employeeId,
         {
           $select: ["employeeId"],
-        },
+        }
       );
       expect(peep).toBeDefined();
 
@@ -183,32 +192,35 @@ describe.each([
       expect((peep as any).employeeStatus).toBeUndefined();
     });
     it("gives $rid access when requested", async () => {
-      const result = await client(Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage(
-        {
+      const result = await client(Employee)
+        .where({
+          employeeId: stubData.employee1.employeeId,
+        })
+        .fetchPage({
           $includeRid: true,
-        },
-      );
+        });
       const leadRid = result.data[0].$rid;
       expect(leadRid).toBeDefined();
       expect(leadRid).toBe(
-        "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+        "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61"
       );
     });
-    it("objects are enumerable in an sdk", async () => {
+    it("objects are enumerable in an sdk", () => {
       const objects = Object.keys($Objects);
-      expect(objects.sort()).toStrictEqual([
-        "BgaoNflPlayer",
-        "Employee",
-        "ObjectWithTimestampPrimaryKey",
-        "Office",
-        "Person",
-        "Task",
-        "Todo",
-        "equipment",
-        "objectTypeWithAllPropertyTypes",
-      ].sort());
+      expect(objects.sort()).toStrictEqual(
+        [
+          "BgaoNflPlayer",
+          "ComplexImplementationObject",
+          "Employee",
+          "ObjectWithTimestampPrimaryKey",
+          "Office",
+          "Person",
+          "Task",
+          "Todo",
+          "equipment",
+          "objectTypeWithAllPropertyTypes",
+        ].sort()
+      );
     });
   });
   describe("clone", () => {
@@ -218,47 +230,51 @@ describe.each([
       PropertyKeys<$Objects.Employee>
     >;
     beforeAll(async () => {
-      employee = (await client(Employee).where({
-        employeeId: stubData.employee2.employeeId,
-      }).fetchPage()).data[0];
+      employee = (
+        await client(Employee)
+          .where({
+            employeeId: stubData.employee2.employeeId,
+          })
+          .fetchPage()
+      ).data[0];
 
       expect(employee).toMatchObject({
-        "$apiName": "Employee",
-        "$objectType": "Employee",
-        "$primaryKey": 50031,
-        "$title": "Jane Doe",
-        "class": "Blue",
-        "employeeId": 50031,
-        "fullName": "Jane Doe",
-        "office": "SEA",
-        "startDate": "2012-02-12",
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "Jane Doe",
+        class: "Blue",
+        employeeId: 50031,
+        fullName: "Jane Doe",
+        office: "SEA",
+        startDate: "2012-02-12",
       });
     });
 
-    it("clones and updates an object with another osdk object", async () => {
+    it("clones and updates an object with another osdk object", () => {
       const updatedEmployee = createOsdkObject(
         client[additionalContext],
         {
-          "apiName": "Employee",
-          "primaryKeyType": "integer",
-          "primaryKeyApiName": "employeeId",
-          "properties": {
-            "class": { "type": "string" },
-            "employeeId": { "type": "integer" },
-            "fullName": { "type": "string" },
-            "office": { "type": "string" },
+          apiName: "Employee",
+          primaryKeyType: "integer",
+          primaryKeyApiName: "employeeId",
+          properties: {
+            class: { type: "string" },
+            employeeId: { type: "integer" },
+            fullName: { type: "string" },
+            office: { type: "string" },
           },
         } as any,
         {
-          "$apiName": "Employee",
-          "$objectType": "Employee",
-          "$primaryKey": 50031,
-          "$title": "Jane Doe",
-          "class": "Red",
-          "employeeId": 50031,
-          "fullName": "Jane Doe",
-          "office": "NYC",
-        },
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $title: "Jane Doe",
+          class: "Red",
+          employeeId: 50031,
+          fullName: "Jane Doe",
+          office: "NYC",
+        }
       ) as unknown as Osdk.Instance<
         Employee,
         never,
@@ -269,102 +285,90 @@ describe.each([
 
       expectTypeOf(mergedEmployee).toEqualTypeOf(employee);
 
-      expect(mergedEmployee).toMatchObject(
-        {
-          "$apiName": "Employee",
-          "$objectSpecifier": "Employee:50031",
-          "$objectType": "Employee",
-          "$primaryKey": 50031,
-          "$title": "Jane Doe",
-          "class": "Red",
-          "employeeId": 50031,
-          "employeeLocation": {
-            "lastFetchedValue": undefined,
-          },
-          "employeeSensor": {},
-          "employeeStatus": {},
-          "fullName": "Jane Doe",
-          "office": "NYC",
-          "startDate": "2012-02-12",
+      expect(mergedEmployee).toMatchObject({
+        $apiName: "Employee",
+        $objectSpecifier: "Employee:50031",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "Jane Doe",
+        class: "Red",
+        employeeId: 50031,
+        employeeLocation: {
+          lastFetchedValue: undefined,
         },
-      );
+        employeeSensor: {},
+        employeeStatus: {},
+        fullName: "Jane Doe",
+        office: "NYC",
+        startDate: "2012-02-12",
+      });
     });
 
-    it("correctly scopes up with another OSDK object", async () => {
+    it("correctly scopes up with another OSDK object", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
         "class"
       >;
       expectTypeOf(firstEmployee.$clone(employee)).toMatchTypeOf<
-        Osdk.Instance<
-          Employee,
-          never,
-          PropertyKeys<Employee>
-        >
+        Osdk.Instance<Employee, never, PropertyKeys<Employee>>
       >();
     });
 
-    it("Correctly preserves keys from original and new with distinct property key sets", async () => {
+    it("Correctly preserves keys from original and new with distinct property key sets", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
         "class"
       >;
       expectTypeOf(
-        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">),
-      ).toMatchTypeOf<
-        Osdk.Instance<
-          Employee,
-          never,
-          "class" | "office"
-        >
-      >();
+        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">)
+      ).toMatchTypeOf<Osdk.Instance<Employee, never, "class" | "office">>();
     });
 
-    it("clones and updates an object with a record", async () => {
+    it("clones and updates an object with a record", () => {
       const mergedEmployee = employee.$clone({
-        "class": "Green",
-        "employeeId": 50031,
-        "fullName": "John Doe",
-        "office": "SEA",
-        "startDate": "2019-01-01",
+        class: "Green",
+        employeeId: 50031,
+        fullName: "John Doe",
+        office: "SEA",
+        startDate: "2019-01-01",
       });
 
-      expect(mergedEmployee).toMatchObject(
-        {
-          "$apiName": "Employee",
-          "$objectSpecifier": "Employee:50031",
-          "$objectType": "Employee",
-          "$primaryKey": 50031,
-          "$title": "John Doe",
-          "class": "Green",
-          "employeeId": 50031,
-          "employeeLocation": {
-            "lastFetchedValue": undefined,
-          },
-          "employeeSensor": {},
-          "employeeStatus": {},
-          "fullName": "John Doe",
-          "office": "SEA",
-          "startDate": "2019-01-01",
+      expect(mergedEmployee).toMatchObject({
+        $apiName: "Employee",
+        $objectSpecifier: "Employee:50031",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "John Doe",
+        class: "Green",
+        employeeId: 50031,
+        employeeLocation: {
+          lastFetchedValue: undefined,
         },
-      );
+        employeeSensor: {},
+        employeeStatus: {},
+        fullName: "John Doe",
+        office: "SEA",
+        startDate: "2019-01-01",
+      });
     });
 
-    it("correctly scopes up with a record", async () => {
+    it("correctly scopes up with a record", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
         "class"
       >;
-      expectTypeOf(firstEmployee.$clone({
-        "class": "Green",
-        "employeeId": 50031,
-        "fullName": "John Doe",
-        "office": "SEA",
-        "startDate": "2019-01-01",
-      })).toMatchTypeOf<
+      expectTypeOf(
+        firstEmployee.$clone({
+          class: "Green",
+          employeeId: 50031,
+          fullName: "John Doe",
+          office: "SEA",
+          startDate: "2019-01-01",
+        })
+      ).toMatchTypeOf<
         Osdk.Instance<
           Employee,
           never,
@@ -373,51 +377,49 @@ describe.each([
       >();
     });
 
-    it("correctly sets title", async () => {
+    it("correctly sets title", () => {
       const mergedEmployee = employee.$clone({
-        "fullName": "Brad Pitt",
+        fullName: "Brad Pitt",
       });
 
-      expect(mergedEmployee).toMatchObject(
-        {
-          "$apiName": "Employee",
-          "$objectSpecifier": "Employee:50031",
-          "$objectType": "Employee",
-          "$primaryKey": 50031,
-          "$title": "Brad Pitt",
-          "class": "Blue",
-          "employeeId": 50031,
-          "employeeLocation": {
-            "lastFetchedValue": undefined,
-          },
-          "employeeSensor": {},
-          "employeeStatus": {},
-          "fullName": "Brad Pitt",
-          "office": "SEA",
-          "startDate": "2012-02-12",
+      expect(mergedEmployee).toMatchObject({
+        $apiName: "Employee",
+        $objectSpecifier: "Employee:50031",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "Brad Pitt",
+        class: "Blue",
+        employeeId: 50031,
+        employeeLocation: {
+          lastFetchedValue: undefined,
         },
-      );
-    });
-
-    it("is able to clone with nothing passed in", async () => {
-      expect(employee.$clone()).toMatchObject({
-        "$apiName": "Employee",
-        "$objectType": "Employee",
-        "$primaryKey": 50031,
-        "$title": "Jane Doe",
-        "class": "Blue",
-        "employeeId": 50031,
-        "fullName": "Jane Doe",
-        "office": "SEA",
-        "startDate": "2012-02-12",
+        employeeSensor: {},
+        employeeStatus: {},
+        fullName: "Brad Pitt",
+        office: "SEA",
+        startDate: "2012-02-12",
       });
     });
 
-    it("throws when merging objects with different primary keys", async () => {
+    it("is able to clone with nothing passed in", () => {
+      expect(employee.$clone()).toMatchObject({
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "Jane Doe",
+        class: "Blue",
+        employeeId: 50031,
+        fullName: "Jane Doe",
+        office: "SEA",
+        startDate: "2012-02-12",
+      });
+    });
+
+    it("throws when merging objects with different primary keys", () => {
       expect(() =>
         employee.$clone({
-          "class": "Green",
-          "employeeId": 50035,
+          class: "Green",
+          employeeId: 50035,
         })
       ).toThrow();
     });
@@ -427,10 +429,10 @@ describe.each([
         displayName: "",
         links: {},
         properties: {
-          "fooSpt": {
+          fooSpt: {
             type: "string",
           },
-          "notImplementedFooSpt": {
+          notImplementedFooSpt: {
             type: "string",
           },
         },
@@ -443,29 +445,29 @@ describe.each([
       const fooInterfaceOsdkDef = {
         apiName: "FooInterface",
         type: "interface",
-        "__DefinitionMetadata": interfaceDef,
+        __DefinitionMetadata: interfaceDef,
       } satisfies InterfaceDefinition;
 
       const EmployeeFetchedMetadata = {
-        "apiName": "Employee",
-        "primaryKeyType": "integer",
-        "primaryKeyApiName": "employeeId",
-        "properties": {
-          "employeeId": { "type": "integer" },
-          "fullName": { "type": "string" },
+        apiName: "Employee",
+        primaryKeyType: "integer",
+        primaryKeyApiName: "employeeId",
+        properties: {
+          employeeId: { type: "integer" },
+          fullName: { type: "string" },
         },
         interfaceMap: {
-          "FooInterface": {
-            "fooSpt": "fullName",
+          FooInterface: {
+            fooSpt: "fullName",
           },
         },
         inverseInterfaceMap: {
-          "FooInterface": {
-            "fullName": "fooSpt",
+          FooInterface: {
+            fullName: "fooSpt",
           },
         },
         [InterfaceDefinitions]: {
-          "FooInterface": { def: interfaceDef },
+          FooInterface: { def: interfaceDef },
         },
         type: "object",
         titleProperty: "fullName",
@@ -484,62 +486,57 @@ describe.each([
           client[additionalContext],
           EmployeeFetchedMetadata,
           {
-            "$apiName": "Employee",
-            "$objectType": "Employee",
-            "$primaryKey": 50031,
-            "$title": "Jane Doe",
-            "employeeId": 50031,
-            "fullName": "Jane Doe",
-          },
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 50031,
+            $title: "Jane Doe",
+            employeeId: 50031,
+            fullName: "Jane Doe",
+          }
         ) as unknown as Osdk.Instance<
           Employee,
           never,
           "employeeId" | "fullName"
         >;
 
-        const personInterfaceObject = employeeOsdkObject.$as(
-          fooInterfaceOsdkDef,
-        );
+        const personInterfaceObject =
+          employeeOsdkObject.$as(fooInterfaceOsdkDef);
 
         const clonedInterface = personInterfaceObject.$clone({
-          "fooSpt": "John Adams",
+          fooSpt: "John Adams",
         });
 
-        expect(clonedInterface).toMatchObject(
-          {
-            "$apiName": "FooInterface",
-            "$objectSpecifier": "Employee:50031",
-            "$objectType": "Employee",
-            "$primaryKey": 50031,
-            "$title": "John Adams",
-            "fooSpt": "John Adams",
-          },
-        );
+        expect(clonedInterface).toMatchObject({
+          $apiName: "FooInterface",
+          $objectSpecifier: "Employee:50031",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $title: "John Adams",
+          fooSpt: "John Adams",
+        });
 
-        expect(clonedInterface.$as("Employee")).toMatchObject(
-          {
-            "$apiName": "Employee",
-            "$objectSpecifier": "Employee:50031",
-            "$objectType": "Employee",
-            "$primaryKey": 50031,
-            "$title": "John Adams",
-            "employeeId": 50031,
-            "fullName": "John Adams",
-          },
-        );
+        expect(clonedInterface.$as("Employee")).toMatchObject({
+          $apiName: "Employee",
+          $objectSpecifier: "Employee:50031",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $title: "John Adams",
+          employeeId: 50031,
+          fullName: "John Adams",
+        });
       });
       it("Throws if updating an interface with a property not implemented by the underlying object type", () => {
         const employeeOsdkObject = createOsdkObject(
           client[additionalContext],
           EmployeeFetchedMetadata,
           {
-            "$apiName": "Employee",
-            "$objectType": "Employee",
-            "$primaryKey": 50031,
-            "$title": "Jane Doe",
-            "employeeId": 50031,
-            "fullName": "Jane Doe",
-          },
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 50031,
+            $title: "Jane Doe",
+            employeeId: 50031,
+            fullName: "Jane Doe",
+          }
         ) as unknown as Osdk.Instance<
           Employee,
           never,
@@ -549,19 +546,21 @@ describe.each([
         const loadedInterfaceObject = employeeOsdkObject.$as(interfaceDef);
         expect(() =>
           loadedInterfaceObject.$clone({
-            "notImplementedFooSpt": "John Adams",
+            notImplementedFooSpt: "John Adams",
           })
         ).toThrowError(
-          `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
+          `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`
         );
       });
     });
   });
   describe("objectSpecifier", () => {
     it("returns the object specifier for a loaded object", async () => {
-      const result = await client(Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage();
+      const result = await client(Employee)
+        .where({
+          employeeId: stubData.employee1.employeeId,
+        })
+        .fetchPage();
 
       const employee = result.data[0];
       expect(employee.$objectSpecifier).toBe("Employee:50030");
@@ -580,28 +579,28 @@ describe.each([
         $loadPropertySecurityMetadata: true,
       });
 
-      expectTypeOf(object.$propertySecurities).toMatchObjectType<
-        {
-          $primaryKey: PropertySecurity[];
-          $title: PropertySecurity[];
-          class: PropertySecurity[];
-          employeeId: PropertySecurity[];
-          fullName: PropertySecurity[];
-          office: PropertySecurity[];
-          startDate: PropertySecurity[];
-          employeeLocation: PropertySecurity[];
-          employeeSensor: PropertySecurity[];
-          employeeStatus: PropertySecurity[];
-          skillSet: PropertySecurity[];
-          skillSetEmbedding: PropertySecurity[];
-        }
+      expectTypeOf(object.$propertySecurities).toMatchObjectType<{
+        $primaryKey: PropertySecurity[];
+        $title: PropertySecurity[];
+        class: PropertySecurity[];
+        employeeId: PropertySecurity[];
+        fullName: PropertySecurity[];
+        office: PropertySecurity[];
+        startDate: PropertySecurity[];
+        employeeLocation: PropertySecurity[];
+        employeeSensor: PropertySecurity[];
+        employeeStatus: PropertySecurity[];
+        skillSet: PropertySecurity[];
+        skillSetEmbedding: PropertySecurity[];
+      }>();
+
+      expectTypeOf(object.$propertySecurities.class).toMatchTypeOf<
+        PropertySecurity[]
       >();
 
-      expectTypeOf(object.$propertySecurities.class)
-        .toMatchTypeOf<PropertySecurity[]>();
-
-      expectTypeOf(object.$propertySecurities.favoriteRestaurants)
-        .toMatchTypeOf<PropertySecurity[][]>();
+      expectTypeOf(
+        object.$propertySecurities.favoriteRestaurants
+      ).toMatchTypeOf<PropertySecurity[][]>();
 
       expect(object).toMatchInlineSnapshot(`
         {
@@ -784,8 +783,8 @@ describe.each([
                 totalCount: "UNKNOWN",
                 propertySecurities: [],
               };
-            },
-          ),
+            }
+          )
         );
 
         const result = await client(Employee).fetchPage({
@@ -814,7 +813,7 @@ describe.each([
           ]),
         });
         expect(result.data[0].employeeProfile).toBe(
-          "Senior engineer with expertise in distributed systems",
+          "Senior engineer with expertise in distributed systems"
         );
 
         type ResultEmployeeProfile = (typeof result.data)[0]["employeeProfile"];
@@ -849,8 +848,8 @@ describe.each([
                 totalCount: "UNKNOWN",
                 propertySecurities: [],
               };
-            },
-          ),
+            }
+          )
         );
 
         const result = await client(Employee).fetchPage({
@@ -887,62 +886,60 @@ describe.each([
   });
 });
 
-export async function shouldError(client: Client): Promise<Osdk<Employee>> {
+export function shouldError(client: Client): Promise<Osdk<Employee>> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldError2(
-  client: Client,
-): Promise<Employee.OsdkObject> {
+export function shouldError2(client: Client): Promise<Employee.OsdkObject> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_client_fetchOne_old_select(
-  client: Client,
+export function shouldCompile_client_fetchOne_old_select(
+  client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_unstableClient_fetchOne_old_select(
-  client: Client,
+export function shouldCompile_unstableClient_fetchOne_old_select(
+  client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_client_fetchOne_new_select(
-  client: Client,
+export function shouldCompile_client_fetchOne_new_select(
+  client: Client
 ): Promise<Employee.OsdkObject<never, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_unstableClient_fetchOne_new_select(
-  client: Client,
+export function shouldCompile_unstableClient_fetchOne_new_select(
+  client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_client_fetchOne_old_noArgs(
-  client: Client,
+export function shouldCompile_client_fetchOne_old_noArgs(
+  client: Client
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }
 
-export async function shouldCompile_unstableClient_fetchOne_noArgs(
-  client: Client,
+export function shouldCompile_unstableClient_fetchOne_noArgs(
+  client: Client
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }

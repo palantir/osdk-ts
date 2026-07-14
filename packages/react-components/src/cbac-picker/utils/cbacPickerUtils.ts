@@ -28,7 +28,7 @@ export const EMPTY_ARRAY: string[] = [];
 export function backgroundFromColors(backgroundColors: string[]): string {
   return backgroundColors.length > 1
     ? `linear-gradient(to right, ${backgroundColors.join(", ")})`
-    : backgroundColors[0] ?? "transparent";
+    : (backgroundColors[0] ?? "transparent");
 }
 
 export interface ResolvedBannerDisplay {
@@ -38,11 +38,11 @@ export interface ResolvedBannerDisplay {
 }
 
 export function resolveBannerDisplay(
-  banner: CbacBannerData | undefined,
+  banner: CbacBannerData | undefined
 ): ResolvedBannerDisplay {
   return {
-    classificationString: banner?.classificationString
-      ?? UNMARKED_CLASSIFICATION_STRING,
+    classificationString:
+      banner?.classificationString ?? UNMARKED_CLASSIFICATION_STRING,
     textColor: banner?.textColor ?? UNMARKED_TEXT_COLOR,
     backgroundColors: banner?.backgroundColors ?? UNMARKED_BACKGROUND_COLORS,
   };
@@ -58,11 +58,12 @@ export function groupMarkingsByCategory(
   categories: ReadonlyArray<{ id: string; name: string }> | undefined,
   markings:
     | ReadonlyArray<{ id: string; name: string; categoryId: string }>
-    | undefined,
+    | undefined
 ): AppliedMarkingGroup[] {
   if (
-    markingIds.length === 0 || categories === undefined
-    || markings === undefined
+    markingIds.length === 0 ||
+    categories === undefined ||
+    markings === undefined
   ) {
     return [];
   }
@@ -73,8 +74,7 @@ export function groupMarkingsByCategory(
 
   for (const marking of markings) {
     if (selected.has(marking.id)) {
-      const name = categoryNames.get(marking.categoryId)
-        ?? marking.categoryId;
+      const name = categoryNames.get(marking.categoryId) ?? marking.categoryId;
       const list = grouped.get(name);
       if (list !== undefined) {
         list.push(marking.name);
@@ -92,12 +92,12 @@ export function groupMarkingsByCategory(
 
 export function resolveRequiredGroups(
   categoryGroups: CategoryMarkingGroup[],
-  requiredMarkingGroups: string[][],
+  requiredMarkingGroups: string[][]
 ): RequiredMarkingGroup[] {
   const markingIdToName = new Map(
-    categoryGroups.flatMap((g) => g.markings).map((m) =>
-      [m.id, m.name] as const
-    ),
+    categoryGroups
+      .flatMap((g) => g.markings)
+      .map((m) => [m.id, m.name] as const)
   );
   return requiredMarkingGroups.map((ids) => ({
     markingNames: ids.map((id) => markingIdToName.get(id) ?? id),

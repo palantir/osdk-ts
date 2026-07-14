@@ -28,6 +28,7 @@ import {
 } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 
@@ -45,9 +46,7 @@ describe("FetchMetadata", () => {
   it("fetches object metadata correctly", async () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectMetadata
-    >();
+    expectTypeOf(objectMetadata).toEqualTypeOf<ObjectMetadata>();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
       {
@@ -64,6 +63,18 @@ describe("FetchMetadata", () => {
         "implements": [
           "FooInterface",
         ],
+        "interfaceImplementations": {
+          "FooInterface": {
+            "fooIdp": {
+              "propertyApiName": "office",
+              "type": "localProperty",
+            },
+            "fooSpt": {
+              "propertyApiName": "fullName",
+              "type": "localProperty",
+            },
+          },
+        },
         "interfaceMap": {
           "FooInterface": {
             "fooIdp": "office",
@@ -238,12 +249,10 @@ describe("FetchMetadata", () => {
 
   it("fetches interface metadata correctly", async () => {
     const interfaceMetadata = await client.fetchMetadata(
-      $Interfaces.FooInterface,
+      $Interfaces.FooInterface
     );
 
-    expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceMetadata
-    >();
+    expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
       {
@@ -289,9 +298,7 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches action metadata correctly", async () => {
-    const actionMetadata = await client.fetchMetadata(
-      $Actions.moveOffice,
-    );
+    const actionMetadata = await client.fetchMetadata($Actions.moveOffice);
 
     expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 
@@ -342,7 +349,7 @@ describe("FetchMetadata", () => {
 
   it("fetches query metadata correctly", async () => {
     const queryMetadata = await client.fetchMetadata(
-      $Queries.queryAcceptsObject,
+      $Queries.queryAcceptsObject
     );
 
     expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();

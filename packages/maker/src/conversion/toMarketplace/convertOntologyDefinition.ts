@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIr } from "@osdk/client.unstable";
+
 import type { OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { importedTypes } from "../../api/defineOntology.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
@@ -22,7 +23,7 @@ import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js"
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
-  randomnessKey?: string,
+  randomnessKey?: string
 ): OntologyIr {
   return {
     ontology: convertOntologyDefinitionToWireBlockData(ontology),

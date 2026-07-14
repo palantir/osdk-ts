@@ -15,16 +15,15 @@
  */
 
 import invariant from "tiny-invariant";
+
 import type { TokenStorageType } from "./common.js";
 import type { PublicOauthClientOptions } from "./createPublicOauthClient.js";
 import type { OauthLogger } from "./Logger.js";
 
-interface ProcessedPublicOauthClientOptions extends
-  Omit<
-    Required<PublicOauthClientOptions>,
-    "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
-  >
-{
+interface ProcessedPublicOauthClientOptions extends Omit<
+  Required<PublicOauthClientOptions>,
+  "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
+> {
   loginPage?: string;
   refreshTokenMarker?: string;
   joinedScopes: string;
@@ -40,14 +39,14 @@ export function processOptionsAndAssignDefaults(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string,
+  ctxPath?: string
 ): ProcessedPublicOauthClientOptions {
   let options: PublicOauthClientOptions = {};
 
   if (typeof useHistory === "object") {
     invariant(
       !loginPage && !postLoginPage && !scopes && !fetchFn && !ctxPath,
-      "If useHistory is an object, other options should not be provided",
+      "If useHistory is an object, other options should not be provided"
     );
     options = useHistory;
   } else {
@@ -70,15 +69,15 @@ export function processOptionsAndAssignDefaults(
     loginPage: options.loginPage,
     postLoginPage: options.postLoginPage || window.location.toString(),
     joinedScopes: [
-      ...options.scopes
-        ?? [
-          "api:read-data",
-          "api:write-data",
-          "api:use-ontologies-read",
-          "api:use-ontologies-write",
-        ],
+      ...(options.scopes ?? [
+        "api:read-data",
+        "api:write-data",
+        "api:use-ontologies-read",
+        "api:use-ontologies-write",
+      ]),
     ]
-      .sort().join(" "),
+      .sort()
+      .join(" "),
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
     refreshTokenMarker: options.refreshTokenMarker,

@@ -18,6 +18,7 @@ import type { ActionMetadata } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   isAttachmentFile,
@@ -44,7 +45,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
+  actionMetadata: ActionMetadata
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -56,8 +57,9 @@ export async function toDataValue(
   if (Array.isArray(value) || value instanceof Set) {
     const values = Array.from(value);
     if (
-      values.some((dataValue) =>
-        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+      values.some(
+        (dataValue) =>
+          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
       )
     ) {
       const converted = [];
@@ -69,43 +71,31 @@ export async function toDataValue(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+        await toDataValue(innerValue, client, actionMetadata)
     );
     return Promise.all(promiseArray);
   }
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    const attachment = await Attachments.upload(
-      client,
-      value.data,
-      {
-        filename: value.name,
-      },
-    );
+    const attachment = await Attachments.upload(client, value.data, {
+      filename: value.name,
+    });
     return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isAttachmentFile(value)) {
-    const attachment = await Attachments.upload(
-      client,
-      value,
-      {
-        filename: value.name as string,
-      },
-    );
+    const attachment = await Attachments.upload(client, value, {
+      filename: value.name as string,
+    });
     return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isMediaUpload(value)) {
-    const mediaRef = await MediaSets.uploadMedia(
-      client,
-      value.data,
-      {
-        filename: value.fileName,
-        preview: true,
-      },
-    );
+    const mediaRef = await MediaSets.uploadMedia(client, value.data, {
+      filename: value.fileName,
+      preview: true,
+    });
     return await toDataValue(mediaRef, client, actionMetadata);
   }
 
@@ -157,7 +147,7 @@ export async function toDataValue(
         acc[key] = await toDataValue(structValue, client, actionMetadata);
         return acc;
       },
-      Promise.resolve({} as { [key: string]: DataValue }),
+      Promise.resolve({} as { [key: string]: DataValue })
     );
   }
 

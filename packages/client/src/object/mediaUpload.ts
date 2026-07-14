@@ -17,32 +17,38 @@
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 
 export function isMedia(o: any): o is Media {
-  return typeof o === "object"
-    && o != null
-    && typeof o.fetchMetadata === "function"
-    && typeof o.fetchContents === "function"
-    && typeof o.getMediaReference === "function";
+  return (
+    typeof o === "object" &&
+    o != null &&
+    typeof o.fetchMetadata === "function" &&
+    typeof o.fetchContents === "function" &&
+    typeof o.getMediaReference === "function"
+  );
 }
 
 export function isMediaReference(o: any): o is MediaReference {
-  return typeof o === `object`
-    && typeof o.mimeType === "string"
-    && "reference" in o
-    && typeof o.reference === "object"
-    && o.reference.type === "mediaSetViewItem"
-    && "mediaSetViewItem" in o.reference
-    && typeof o.reference.mediaSetViewItem === "object"
-    && typeof o.reference.mediaSetViewItem.mediaSetRid === "string"
-    && typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string"
-    && typeof o.reference.mediaSetViewItem.mediaItemRid === "string";
+  return (
+    typeof o === `object` &&
+    typeof o.mimeType === "string" &&
+    "reference" in o &&
+    typeof o.reference === "object" &&
+    o.reference.type === "mediaSetViewItem" &&
+    "mediaSetViewItem" in o.reference &&
+    typeof o.reference.mediaSetViewItem === "object" &&
+    typeof o.reference.mediaSetViewItem.mediaSetRid === "string" &&
+    typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string" &&
+    typeof o.reference.mediaSetViewItem.mediaItemRid === "string"
+  );
 }
 
 export function isMediaUpload(o: any): o is MediaUpload {
-  return typeof o === "object"
-    && o != null
-    && "fileName" in o
-    && typeof o.fileName === "string"
-    && "data" in o
-    && typeof o.data === "object"
-    && o.data instanceof Blob;
+  return (
+    typeof o === "object" &&
+    o != null &&
+    "fileName" in o &&
+    typeof o.fileName === "string" &&
+    "data" in o &&
+    typeof o.data === "object" &&
+    o.data instanceof Blob
+  );
 }

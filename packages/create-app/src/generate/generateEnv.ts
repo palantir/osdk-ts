@@ -29,8 +29,9 @@ export function generateEnvDevelopment({
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
-  const ontologyEnvSection = ontology != null
-    ? `
+  const ontologyEnvSection =
+    ontology != null
+      ? `
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
 # You can check the Ontology on the "Ontology SDK" tab of Developer Console.
@@ -38,7 +39,7 @@ export function generateEnvDevelopment({
 
 ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `
-    : "";
+      : "";
 
   return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
@@ -83,10 +84,12 @@ export function generateEnvProduction({
   clientId: string;
   ontology: string | undefined;
 }): string {
-  const applicationUrlOrDefault = applicationUrl
-    ?? "<Fill in the domain at which you deploy your application>";
-  const ontologyEnvSection = ontology != null
-    ? `
+  const applicationUrlOrDefault =
+    applicationUrl ??
+    "<Fill in the domain at which you deploy your application>";
+  const ontologyEnvSection =
+    ontology != null
+      ? `
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
 # You can check the Ontology on the "Ontology SDK" tab of Developer Console.
@@ -94,7 +97,7 @@ export function generateEnvProduction({
 
 ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `
-    : "";
+      : "";
 
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development.
@@ -111,10 +114,8 @@ ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 # URL here and in Developer Console.
 
 ${
-    applicationUrl == null
-      ? "# "
-      : ""
-  }${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
+  applicationUrl == null ? "# " : ""
+}${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrlOrDefault}/auth/callback
 
 
 # This URL is the Foundry host that your OSDK will use. It typically does not

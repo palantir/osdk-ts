@@ -1,5 +1,23 @@
 # @osdk/oauth
 
+## 1.13.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+## 1.12.0
+
+### Minor Changes
+
+- 6010d45: Migrate @osdk/aip-core, @osdk/foundry-config-json, @osdk/seed-compiler, @osdk/seed-helpers, @osdk/oauth, @osdk/faux, and @osdk/osdk-docs-context to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the standard libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+## 1.11.0
+
+### Minor Changes
+
+- e681893: Add Supported Client for Public Apps
+
 ## 1.10.0
 
 ### Minor Changes

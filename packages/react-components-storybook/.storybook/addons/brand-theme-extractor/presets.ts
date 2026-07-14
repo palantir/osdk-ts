@@ -16,24 +16,28 @@
 
 import type { ThemeColorMode, TokenAssignment } from "./types.js";
 
+export type ThemePresetCategory = "built-in" | "custom";
+
 export interface ThemePreset {
   id: string;
   label: string;
   description: string;
   /** The color mode this preset targets. Defaults to "light". */
   colorMode?: ThemeColorMode;
+  /** Grouping in the theme picker dropdown. */
+  category: ThemePresetCategory;
   /** Preview swatch colors: [background, primary, text] */
   swatches: [string, string, string];
-  /** Token assignments for the preset. */
+  /** Token assignments for the preset. Empty = use built-in component tokens. */
   assignments: TokenAssignment[];
 }
 
-function valueAssignment(role: string, value: string): TokenAssignment {
+export function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
 }
 
 /** Shared non-color defaults used across most presets */
-function baseDefaults(overrides?: {
+export function baseDefaults(overrides?: {
   radius?: string;
   spacing?: string;
   shadow?: string;
@@ -41,7 +45,7 @@ function baseDefaults(overrides?: {
   return [
     valueAssignment(
       "font-family",
-      "Inter, system-ui, -apple-system, sans-serif",
+      "Inter, system-ui, -apple-system, sans-serif"
     ),
     valueAssignment("font-size-small", "12"),
     valueAssignment("font-size-medium", "14"),
@@ -50,12 +54,13 @@ function baseDefaults(overrides?: {
     valueAssignment("font-weight-bold", "600"),
     valueAssignment("line-height", "1.5"),
     valueAssignment("border-radius", overrides?.radius ?? "4"),
+    valueAssignment("button-border-radius", overrides?.radius ?? "4"),
     valueAssignment("spacing", overrides?.spacing ?? "4"),
     valueAssignment("border-width", "1"),
     valueAssignment(
       "shadow",
-      overrides?.shadow
-        ?? "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)",
+      overrides?.shadow ??
+        "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)"
     ),
     valueAssignment("focus-width", "2"),
     valueAssignment("focus-offset", "2"),
@@ -63,66 +68,108 @@ function baseDefaults(overrides?: {
   ];
 }
 
+/**
+ * Blueprint default color tokens for the light color mode.
+ * Snapshot of Blueprint 5.x defaults — verify if upgrading Blueprint.
+ */
+function workshopLightColors(): TokenAssignment[] {
+  return [
+    valueAssignment("background", "#ffffff"),
+    valueAssignment("surface", "#f6f7f9"),
+    valueAssignment("surface-hover", "#ebecef"),
+    valueAssignment("surface-active", "#dce0e5"),
+    valueAssignment("text", "#1c2127"),
+    valueAssignment("text-muted", "#5f6b7c"),
+    valueAssignment("text-subtle", "#abb3bf"),
+    valueAssignment("primary", "#2d72d2"),
+    valueAssignment("primary-foreground", "#ffffff"),
+    valueAssignment("secondary", "#edeff2"),
+    valueAssignment("secondary-foreground", "#1c2127"),
+    valueAssignment("icon-color", "#5f6b7c"),
+    valueAssignment("border", "#d3d8de"),
+    valueAssignment("input-bg", "#ffffff"),
+    valueAssignment("overlay", "rgba(16, 22, 26, 0.7)"),
+    valueAssignment("danger", "#cd4246"),
+    valueAssignment("success", "#238551"),
+    valueAssignment("warning", "#c87619"),
+    valueAssignment("primary-hover", "#215db0"),
+    valueAssignment("primary-active", "#184a90"),
+  ];
+}
+
+/**
+ * Blueprint default color tokens for the dark color mode.
+ * Snapshot of Blueprint 5.x defaults — verify if upgrading Blueprint.
+ */
+function workshopDarkColors(): TokenAssignment[] {
+  return [
+    valueAssignment("background", "#111418"),
+    valueAssignment("surface", "#1c2127"),
+    valueAssignment("surface-hover", "#252a31"),
+    valueAssignment("surface-active", "#2f343c"),
+    valueAssignment("text", "#f6f7f9"),
+    valueAssignment("text-muted", "#abb3bf"),
+    valueAssignment("text-subtle", "#5f6b7c"),
+    valueAssignment("primary", "#2d72d2"),
+    valueAssignment("primary-foreground", "#ffffff"),
+    valueAssignment("secondary", "#2f343c"),
+    valueAssignment("secondary-foreground", "#f6f7f9"),
+    valueAssignment("icon-color", "#abb3bf"),
+    valueAssignment("border", "#404854"),
+    valueAssignment("input-bg", "#1c2127"),
+    valueAssignment("overlay", "rgba(16, 22, 26, 0.85)"),
+    valueAssignment("danger", "#e76a6e"),
+    valueAssignment("success", "#32a467"),
+    valueAssignment("warning", "#ec9a3c"),
+    valueAssignment("primary-hover", "#4c90f0"),
+    valueAssignment("primary-active", "#5ea3ff"),
+  ];
+}
+
+/**
+ * Returns the full set of default token assignments for a built-in theme.
+ * Used for export when the user hasn't added custom overrides.
+ */
+export function getBuiltInDefaults(
+  colorMode: ThemeColorMode
+): TokenAssignment[] {
+  const colors =
+    colorMode === "dark" ? workshopDarkColors() : workshopLightColors();
+  return [...colors, ...baseDefaults()];
+}
+
 export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "workshop-light",
     label: "Workshop Light",
-    description: "Default Blueprint light theme used by Workshop-style apps",
+    description:
+      "Built-in Blueprint light theme — no overrides, uses base tokens as-is",
+    category: "built-in",
     swatches: ["#ffffff", "#2d72d2", "#1c2127"],
-    assignments: [
-      valueAssignment("background", "#ffffff"),
-      valueAssignment("surface", "#f6f7f9"),
-      valueAssignment("text", "#1c2127"),
-      valueAssignment("text-muted", "#5f6b7c"),
-      valueAssignment("primary", "#2d72d2"),
-      valueAssignment("primary-foreground", "#ffffff"),
-      valueAssignment("secondary", "#f6f7f9"),
-      valueAssignment("secondary-foreground", "#1c2127"),
-      valueAssignment("icon-color", "#5f6b7c"),
-      valueAssignment("border", "#dce0e5"),
-      valueAssignment("danger", "#cd4246"),
-      valueAssignment("success", "#238551"),
-      valueAssignment("warning", "#c87619"),
-      ...baseDefaults({
-        shadow: "inset 0 1px 1px oklch(0 0 0 / 0.15)",
-      }),
-    ],
+    assignments: [],
   },
   {
     id: "workshop-dark",
     label: "Workshop Dark",
-    description: "Default Blueprint dark theme used by Workshop-style apps",
+    description:
+      "Built-in Blueprint dark theme — no overrides, just enables dark mode",
     colorMode: "dark",
+    category: "built-in",
     swatches: ["#111418", "#2d72d2", "#a5aab3"],
-    assignments: [
-      valueAssignment("background", "#111418"),
-      valueAssignment("surface", "#1c2127"),
-      valueAssignment("text", "#a5aab3"),
-      valueAssignment("text-muted", "#8f99a8"),
-      valueAssignment("primary", "#2d72d2"),
-      valueAssignment("primary-foreground", "#ffffff"),
-      valueAssignment("secondary", "#252a31"),
-      valueAssignment("secondary-foreground", "#f6f7f9"),
-      valueAssignment("icon-color", "#8f99a8"),
-      valueAssignment("border", "#ffffff33"),
-      valueAssignment("danger", "#cd4246"),
-      valueAssignment("success", "#238551"),
-      valueAssignment("warning", "#c87619"),
-      ...baseDefaults({
-        shadow:
-          "inset 0 0 0 1px oklch(1 0 0 / 0.2), 0 4px 6px -4px oklch(0 0 0 / 0.5), 0 10px 30px -5px oklch(0 0 0 / 0.5)",
-      }),
-    ],
+    assignments: [],
   },
   {
     id: "devcon",
     label: "DevCon",
     description: "Dark theme with green accents for DevCon demos",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#0a0a0a", "#16a34a", "#86efac"],
     assignments: [
       valueAssignment("background", "#0a0a0a"),
       valueAssignment("surface", "#111111"),
+      valueAssignment("surface-hover", "#1a1a1a"),
+      valueAssignment("surface-active", "#222222"),
       valueAssignment("text", "#86efac"),
       valueAssignment("text-muted", "#16a34a"),
       valueAssignment("primary", "#16a34a"),
@@ -144,10 +191,13 @@ export const THEME_PRESETS: ThemePreset[] = [
     label: "Midnight Blue",
     description: "Dark theme with blue accents",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#0f172a", "#2563eb", "#e2e8f0"],
     assignments: [
       valueAssignment("background", "#0f172a"),
       valueAssignment("surface", "#1e293b"),
+      valueAssignment("surface-hover", "#283548"),
+      valueAssignment("surface-active", "#334155"),
       valueAssignment("text", "#e2e8f0"),
       valueAssignment("text-muted", "#94a3b8"),
       valueAssignment("primary", "#2563eb"),
@@ -169,10 +219,13 @@ export const THEME_PRESETS: ThemePreset[] = [
     id: "warm-sand",
     label: "Warm Sand",
     description: "Warm neutral light theme",
+    category: "custom",
     swatches: ["#faf8f5", "#c2410c", "#44403c"],
     assignments: [
       valueAssignment("background", "#faf8f5"),
       valueAssignment("surface", "#f5f0eb"),
+      valueAssignment("surface-hover", "#ebe5de"),
+      valueAssignment("surface-active", "#ddd6cd"),
       valueAssignment("text", "#1c1917"),
       valueAssignment("text-muted", "#78716c"),
       valueAssignment("primary", "#c2410c"),
@@ -192,10 +245,13 @@ export const THEME_PRESETS: ThemePreset[] = [
     label: "Royal Purple",
     description: "Dark theme with purple accents",
     colorMode: "dark",
+    category: "custom",
     swatches: ["#1a1025", "#a855f7", "#e9d5ff"],
     assignments: [
       valueAssignment("background", "#1a1025"),
       valueAssignment("surface", "#2d1b4e"),
+      valueAssignment("surface-hover", "#3b2563"),
+      valueAssignment("surface-active", "#4c1d95"),
       valueAssignment("text", "#e9d5ff"),
       valueAssignment("text-muted", "#a78bfa"),
       valueAssignment("primary", "#9333ea"),

@@ -25,6 +25,7 @@ import type {
   ParameterEvaluationResult,
   ValidateActionResponseV2,
 } from "@osdk/foundry.ontologies";
+
 import type { FauxDataStore } from "./FauxDataStore.js";
 
 interface Bounds {
@@ -76,7 +77,7 @@ const NUMERIC_LITERAL_BOUNDS: Record<
 export function validateAction(
   payload: ApplyActionRequestV2 | BatchApplyActionRequestItem,
   def: ActionTypeV2,
-  dataStore: FauxDataStore,
+  dataStore: FauxDataStore
 ): ValidateActionResponseV2 {
   const ret: ValidateActionResponseV2 = {
     parameters: {},
@@ -99,7 +100,7 @@ function validateActionParameterType(
   value: unknown,
   ret: ValidateActionResponseV2,
   paramKey: string,
-  dataStore: FauxDataStore,
+  dataStore: FauxDataStore
 ) {
   if (paramDef.required && value == null) {
     ret.result = "INVALID";
@@ -136,7 +137,7 @@ function validateActionParameterType(
           item,
           ret,
           paramKey,
-          dataStore,
+          dataStore
         );
       }
       return;
@@ -171,9 +172,10 @@ function validateActionParameterType(
       return;
     case "geohash":
       if (
-        !(typeof value === "string"
-          || (typeof value === "object" && value != null
-            && "coordinates" in value))
+        !(
+          typeof value === "string" ||
+          (typeof value === "object" && value != null && "coordinates" in value)
+        )
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
@@ -184,9 +186,12 @@ function validateActionParameterType(
 
     case "geoshape":
       if (
-        !(typeof value === "object"
-          && ("coordinates" in value! || "geometries" in value!
-            || "features" in value!))
+        !(
+          typeof value === "object" &&
+          ("coordinates" in value! ||
+            "geometries" in value! ||
+            "features" in value!)
+        )
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
@@ -201,17 +206,17 @@ function validateActionParameterType(
           ...baseParam,
         };
       } else if (
-        dataStore.getObject(
-          value.objectTypeApiName,
-          value.primaryKeyValue,
-        ) == null
+        dataStore.getObject(value.objectTypeApiName, value.primaryKeyValue) ==
+        null
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
           ...baseParam,
-          evaluatedConstraints: [{
-            type: "objectPropertyValue",
-          }],
+          evaluatedConstraints: [
+            {
+              type: "objectPropertyValue",
+            },
+          ],
         };
       }
       return;
@@ -246,10 +251,19 @@ function validateActionParameterType(
 
       for (const { name, fieldType, required } of dataType.fields) {
         const fieldValue = (value as Record<string, unknown>)[name];
-        if (
-          (required && fieldValue == null)
-          || !matchesOntologyDataType(fieldType, fieldValue)
-        ) {
+        // A non-required field may be omitted or explicitly null; only run the
+        // type check when a value is actually present.
+        if (fieldValue == null) {
+          if (required) {
+            ret.result = "INVALID";
+            ret.parameters[paramKey] = {
+              ...baseParam,
+            };
+            return;
+          }
+          continue;
+        }
+        if (!matchesOntologyDataType(fieldType, fieldValue)) {
           ret.result = "INVALID";
           ret.parameters[paramKey] = {
             ...baseParam,
@@ -264,8 +278,8 @@ function validateActionParameterType(
 
     case "objectType": {
       if (
-        typeof value !== "string"
-        || !dataStore.ontology.getObjectTypeFullMetadata(value)
+        typeof value !== "string" ||
+        !dataStore.ontology.getObjectTypeFullMetadata(value)
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
@@ -279,9 +293,9 @@ function validateActionParameterType(
 
     case "scenarioReference": {
       if (
-        !value
-        || typeof value !== "object"
-        || typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
+        !value ||
+        typeof value !== "object" ||
+        typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
@@ -293,30 +307,32 @@ function validateActionParameterType(
 
     default: {
       const _assertNever: never = dataType;
-      throw new Error(
-        `validateDataType: unknown type`,
-      );
+      throw new Error(`validateDataType: unknown type`);
     }
   }
 }
 
 export function matchesOntologyDataType(
   odt: OntologyDataType,
-  value: unknown,
+  value: unknown
 ): boolean {
   switch (odt.type) {
     case "any":
       return true;
     case "array":
-      return Array.isArray(value)
-        && value.every((v) => matchesOntologyDataType(odt.itemType, v));
+      return (
+        Array.isArray(value) &&
+        value.every((v) => matchesOntologyDataType(odt.itemType, v))
+      );
     case "binary":
       throw new Error(`validateDataType: ${odt.type} not implemented yet.`);
     case "boolean":
       return typeof value === "boolean";
     case "byte":
-      return typeof value === "number"
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.byte);
+      return (
+        typeof value === "number" &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.byte)
+      );
     case "cipherText":
       return isValidCipherText(value);
     case "date":
@@ -324,69 +340,85 @@ export function matchesOntologyDataType(
     case "decimal":
       return isValidDecimalString(value);
     case "double":
-      return typeof value === "number"
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.double);
+      return (
+        typeof value === "number" &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.double)
+      );
     case "float":
-      return typeof value === "number"
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.float);
+      return (
+        typeof value === "number" &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.float)
+      );
     case "integer":
-      return (typeof value === "number" && Number.isInteger(value)
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.integer));
+      return (
+        typeof value === "number" &&
+        Number.isInteger(value) &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.integer)
+      );
     case "long":
-      return (typeof value === "number" && Number.isInteger(value)
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.long));
+      return (
+        typeof value === "number" &&
+        Number.isInteger(value) &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.long)
+      );
     case "map":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`
       );
     case "marking":
       return typeof value === "string";
     case "object":
-      return typeof value === "string"
-        || (value != null && typeof value === "object"
-          && "$primaryKey" in value);
+      return (
+        typeof value === "string" ||
+        (value != null && typeof value === "object" && "$primaryKey" in value)
+      );
     case "objectSet":
-      return typeof value === "string" && value.startsWith("ri.")
-        || (value != null && typeof value === "object"
-          && "objectSet" in value);
+      return (
+        (typeof value === "string" && value.startsWith("ri.")) ||
+        (value != null && typeof value === "object" && "objectSet" in value)
+      );
     case "set":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`
       );
     case "short":
-      return typeof value === "number"
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.short);
+      return (
+        typeof value === "number" &&
+        isInBounds(value, NUMERIC_LITERAL_BOUNDS.short)
+      );
     case "string":
-      return (typeof value === "string");
+      return typeof value === "string";
     case "struct":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`
       );
     case "timestamp":
       return isValidTimestampString(value);
     case "unsupported":
       throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
+        `matchesOntologyDataType: ${odt.type} not implemented yet.`
       );
     default:
       const _assertNever = odt;
       throw new Error(
-        `matchesOntologyDataType: ${(odt as any).type} not implemented yet.`,
+        `matchesOntologyDataType: ${(odt as any).type} not implemented yet.`
       );
   }
 }
 
 export function isMediaReference(o: any): o is MediaReference {
-  return typeof o === `object`
-    && typeof o.mimeType === "string"
-    && "reference" in o
-    && typeof o.reference === "object"
-    && o.reference.type === "mediaSetViewItem"
-    && "mediaSetViewItem" in o.reference
-    && typeof o.reference.mediaSetViewItem === "object"
-    && typeof o.reference.mediaSetViewItem.mediaSetRid === "string"
-    && typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string"
-    && typeof o.reference.mediaSetViewItem.mediaItemRid === "string";
+  return (
+    typeof o === `object` &&
+    typeof o.mimeType === "string" &&
+    "reference" in o &&
+    typeof o.reference === "object" &&
+    o.reference.type === "mediaSetViewItem" &&
+    "mediaSetViewItem" in o.reference &&
+    typeof o.reference.mediaSetViewItem === "object" &&
+    typeof o.reference.mediaSetViewItem.mediaSetRid === "string" &&
+    typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string" &&
+    typeof o.reference.mediaSetViewItem.mediaItemRid === "string"
+  );
 }
 
 export function isInterfaceActionParam(value: any): value is {
@@ -394,27 +426,29 @@ export function isInterfaceActionParam(value: any): value is {
   primaryKeyValue: string | number | boolean;
 } {
   return (
-    typeof value === "object"
-    && "objectTypeApiName" in value
-    && typeof value.objectTypeApiName === "string"
-    && "primaryKeyValue" in value
-    && (typeof value.primaryKeyValue === "string"
-      || typeof value.primaryKeyValue === "number"
-      || typeof value.primaryKeyValue === "boolean")
+    typeof value === "object" &&
+    "objectTypeApiName" in value &&
+    typeof value.objectTypeApiName === "string" &&
+    "primaryKeyValue" in value &&
+    (typeof value.primaryKeyValue === "string" ||
+      typeof value.primaryKeyValue === "number" ||
+      typeof value.primaryKeyValue === "boolean")
   );
 }
 
 function isPoint(obj: any): obj is GeoJSON.Point {
-  return obj.type === "Point"
-    && Array.isArray(obj.coordinates)
-    && obj.coordinates.length === 2
-    && typeof obj.coordinates[0] === "number"
-    && typeof obj.coordinates[1] === "number";
+  return (
+    obj.type === "Point" &&
+    Array.isArray(obj.coordinates) &&
+    obj.coordinates.length === 2 &&
+    typeof obj.coordinates[0] === "number" &&
+    typeof obj.coordinates[1] === "number"
+  );
 }
 
 function isInBounds(
   value: number,
-  bounds: { minimum: number; maximum: number },
+  bounds: { minimum: number; maximum: number }
 ) {
   return bounds.minimum <= value && value <= bounds.maximum;
 }
@@ -424,7 +458,7 @@ function isValidDateString(value: unknown): boolean {
     return false;
   }
 
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/u;
   if (!dateRegex.test(value)) {
     return false;
   }
@@ -444,9 +478,11 @@ function isValidCipherText(value: unknown): boolean {
   const parts = value.split("::");
 
   if (
-    !(isValidCipherAffix(parts, "CIPHER")
-      || isValidCipherAffix(parts, "BELLASO")
-      || isValidCipherAffix(parts, "BELLASO", true))
+    !(
+      isValidCipherAffix(parts, "CIPHER") ||
+      isValidCipherAffix(parts, "BELLASO") ||
+      isValidCipherAffix(parts, "BELLASO", true)
+    )
   ) {
     return false;
   }
@@ -460,12 +496,15 @@ function isValidCipherText(value: unknown): boolean {
 function isValidCipherAffix(
   parts: string[],
   affix: "BELLASO" | "CIPHER",
-  prefixOnly: boolean = false,
+  prefixOnly: boolean = false
 ): boolean {
   const totalParts = prefixOnly ? 3 : 4;
 
-  return parts.length === totalParts && parts[0] === affix
-    && (prefixOnly || parts[3] === affix);
+  return (
+    parts.length === totalParts &&
+    parts[0] === affix &&
+    (prefixOnly || parts[3] === affix)
+  );
 }
 
 function isValidDecimalString(value: unknown): boolean {
@@ -473,6 +512,6 @@ function isValidDecimalString(value: unknown): boolean {
     return false;
   }
 
-  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/;
+  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/u;
   return decimalRegex.test(value) && !isNaN(parseFloat(value));
 }

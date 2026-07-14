@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
 import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
@@ -62,8 +63,8 @@ export function CbacPickerDialog({
     onOpenChange(false);
   }, [reset, onOpenChange]);
 
-  const hasInitialMarkings = initialMarkingIds !== undefined
-    && initialMarkingIds.length > 0;
+  const hasInitialMarkings =
+    initialMarkingIds !== undefined && initialMarkingIds.length > 0;
 
   const submitDisabledReason = React.useMemo(
     () =>
@@ -80,7 +81,7 @@ export function CbacPickerDialog({
       selectedIds,
       disallowedMarkingIds,
       userSatisfiesMarkings,
-    ],
+    ]
   );
 
   const constraintCallout = useConstraintCallout(maxClassificationConstraint);

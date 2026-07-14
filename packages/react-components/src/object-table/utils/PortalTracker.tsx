@@ -23,9 +23,7 @@ interface PortalTrackerContextValue {
 
 const PortalTrackerContext = createContext<
   PortalTrackerContextValue | undefined
->(
-  undefined,
-);
+>(undefined);
 
 export function PortalTrackerProvider({
   children,
@@ -90,6 +88,6 @@ export function useRegisterPortal(): (element: HTMLElement | null) => void {
         cleanupRef.current = tracker.register(element);
       }
     },
-    [tracker],
+    [tracker]
   );
 }

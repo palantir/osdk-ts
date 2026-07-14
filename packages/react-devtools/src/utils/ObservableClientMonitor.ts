@@ -26,6 +26,7 @@ import type {
   ObserveObjectsCallbackArgs,
   Unsubscribable,
 } from "@osdk/client/observable";
+
 import type { MockManager } from "../mocking/MockManager.js";
 import { MetricsStore } from "../store/MetricsStore.js";
 import type {
@@ -56,7 +57,7 @@ interface ObserveLinksObserver {
   next(
     value: ObserveObjectsCallbackArgs<
       ObjectTypeDefinition | InterfaceDefinition
-    >,
+    >
   ): void;
   error(err: unknown): void;
   complete(): void;
@@ -78,7 +79,7 @@ interface ExtendedClientMethods {
     sourceObject: OsdkObject,
     linkName: string,
     options: Record<string, unknown>,
-    observer: ObserveLinksObserver,
+    observer: ObserveLinksObserver
   ): Unsubscribable;
   getCacheSnapshot?(): Promise<CacheSnapshot>;
   invalidateAll?(): Promise<void>;
@@ -97,18 +98,15 @@ interface MockActionEdits {
 }
 
 interface ExperimentalStore {
-  invalidateObject?(
-    objectType: string,
-    primaryKey: string,
-  ): Promise<void>;
+  invalidateObject?(objectType: string, primaryKey: string): Promise<void>;
   invalidateObjectType?(objectType: string): Promise<void>;
 }
 
 function getDebugMetadata(value: unknown): ObservableDebugMetadata | undefined {
   if (
-    typeof value === "object"
-    && value != null
-    && "__debugMetadata" in value
+    typeof value === "object" &&
+    value != null &&
+    "__debugMetadata" in value
   ) {
     return (value as { __debugMetadata: ObservableDebugMetadata })
       .__debugMetadata;
@@ -118,21 +116,21 @@ function getDebugMetadata(value: unknown): ObservableDebugMetadata | undefined {
 
 function isMockActionEdits(value: unknown): value is MockActionEdits {
   return (
-    typeof value === "object"
-    && value != null
-    && "type" in value
-    && (value as Record<string, unknown>).type === "edits"
+    typeof value === "object" &&
+    value != null &&
+    "type" in value &&
+    (value as Record<string, unknown>).type === "edits"
   );
 }
 
 function hasExperimentalStore(
-  client: ObservableClient,
+  client: ObservableClient
 ): client is ObservableClient & { __experimentalStore: ExperimentalStore } {
   return (
-    "__experimentalStore" in client
-    && typeof (client as Record<string, unknown>).__experimentalStore
-      === "object"
-    && (client as Record<string, unknown>).__experimentalStore != null
+    "__experimentalStore" in client &&
+    typeof (client as Record<string, unknown>).__experimentalStore ===
+      "object" &&
+    (client as Record<string, unknown>).__experimentalStore != null
   );
 }
 
@@ -170,20 +168,17 @@ export class ObservableClientMonitor {
   constructor(config: ObservableClientMonitorConfig) {
     this.metricsStore = config.metricsStore ?? new MetricsStore();
     this.subscriptionTracker = new SubscriptionTracker(
-      config.cacheThresholdMs ?? 10,
+      config.cacheThresholdMs ?? 10
     );
     this.actionTracker = new ActionLifecycleTracker(
       this.metricsStore,
-      config.eventTimeline,
+      config.eventTimeline
     );
     this.cleanupIntervalMs = config.cleanupIntervalMs ?? 60000;
-    this.cleanupIntervalId = setInterval(
-      () => {
-        this.subscriptionTracker.cleanup();
-        this.pruneSignatureLastRecorded();
-      },
-      this.cleanupIntervalMs,
-    );
+    this.cleanupIntervalId = setInterval(() => {
+      this.subscriptionTracker.cleanup();
+      this.pruneSignatureLastRecorded();
+    }, this.cleanupIntervalMs);
 
     this.componentRegistry = config.componentRegistry;
     this.linkTraversalTracker = config.linkTraversalTracker;
@@ -224,7 +219,7 @@ export class ObservableClientMonitor {
         } else if (prop === "observeAggregation") {
           wrapped = this.wrapObserveAggregation(
             // eslint-disable-next-line @typescript-eslint/no-deprecated
-            target.observeAggregation.bind(target),
+            target.observeAggregation.bind(target)
           );
         } else if (prop === "observeLinks" && ext.observeLinks) {
           wrapped = this.wrapObserveLinks(ext.observeLinks.bind(ext));
@@ -270,10 +265,7 @@ export class ObservableClientMonitor {
     }
   }
 
-  private recordEmissionEvent(
-    signature: string,
-    objectKey?: string,
-  ): void {
+  private recordEmissionEvent(signature: string, objectKey?: string): void {
     if (this.eventTimeline) {
       this.eventTimeline.record({
         type: "EMISSION",
@@ -288,7 +280,7 @@ export class ObservableClientMonitor {
   private classifyCacheEvent(
     signature: string,
     subscriptionId: string,
-    servedFromCache: boolean,
+    servedFromCache: boolean
   ): "hit" | "miss" | "revalidation" | "skip" {
     const lastRecorded = this.signatureLastRecorded.get(signature) ?? 0;
     const now = Date.now();
@@ -317,7 +309,7 @@ export class ObservableClientMonitor {
     isOptimistic: boolean,
     objectCount: number,
     value: unknown,
-    objectKey?: string,
+    objectKey?: string
   ): void {
     const timestamp = Date.now();
     const debugMetadata = getDebugMetadata(value);
@@ -328,7 +320,7 @@ export class ObservableClientMonitor {
       hasData,
       isOptimistic,
       debugMetadata?.optimisticId,
-      timestamp,
+      timestamp
     );
 
     this.actionTracker.noteEmission({
@@ -347,13 +339,12 @@ export class ObservableClientMonitor {
       const classification = this.classifyCacheEvent(
         signature,
         subscriptionId,
-        debugMetadata?.servedFromCache ?? false,
+        debugMetadata?.servedFromCache ?? false
       );
 
       if (classification !== "skip") {
-        const analysis = this.subscriptionTracker.analyzeEmissions(
-          subscriptionId,
-        );
+        const analysis =
+          this.subscriptionTracker.analyzeEmissions(subscriptionId);
         const responseTime = analysis?.loadTime ?? 0;
         const effectiveClassification = analysis?.wasCached
           ? "hit"
@@ -364,21 +355,21 @@ export class ObservableClientMonitor {
             signature,
             responseTime,
             metadata,
-            objectCount,
+            objectCount
           );
         } else if (effectiveClassification === "revalidation") {
           this.metricsStore.recordRevalidation(
             signature,
             responseTime,
             metadata,
-            objectCount,
+            objectCount
           );
         } else {
           this.metricsStore.recordCacheMiss(
             signature,
             responseTime,
             metadata,
-            objectCount,
+            objectCount
           );
         }
 
@@ -398,7 +389,7 @@ export class ObservableClientMonitor {
 
   private createCleanupUnsubscribable(
     original: Unsubscribable,
-    subscriptionId: string,
+    subscriptionId: string
   ): Unsubscribable {
     return {
       unsubscribe: () => {
@@ -436,14 +427,15 @@ export class ObservableClientMonitor {
       });
     }
 
-    const isDeduplicated = this.subscriptionTracker
-      .isDeduplicatedSubscription(params.signature);
+    const isDeduplicated = this.subscriptionTracker.isDeduplicatedSubscription(
+      params.signature
+    );
     if (isDeduplicated) {
       this.metricsStore.recordDeduplication(params.signature, params.metadata);
     }
 
     const subscriptionId = this.subscriptionTracker.startSubscription(
-      params.signature,
+      params.signature
     );
 
     return { componentContext, subscriptionId };
@@ -452,14 +444,13 @@ export class ObservableClientMonitor {
   private createCleanupObserverCallbacks(
     subscriptionId: string,
     componentContext: { id: string } | null,
-    observer: { error(err: unknown): void; complete(): void },
+    observer: { error(err: unknown): void; complete(): void }
   ): { error(err: unknown): void; complete(): void } {
     return {
       error: (err: unknown) => {
         try {
           this.cleanupSubscription(subscriptionId);
-        } catch (_cleanupError) {
-        }
+        } catch {}
         if (componentContext) {
           this.componentRegistry.unregisterComponent(componentContext.id);
         }
@@ -476,12 +467,11 @@ export class ObservableClientMonitor {
   }
 
   private wrapObserveObject<T extends ObjectTypeDefinition>(
-    original: ObservableClient["observeObject"],
+    original: ObservableClient["observeObject"]
   ): ObservableClient["observeObject"] {
     return (apiName, primaryKey, options, observer): Unsubscribable => {
-      const apiNameStr = typeof apiName === "string"
-        ? apiName
-        : apiName.apiName;
+      const apiNameStr =
+        typeof apiName === "string" ? apiName : apiName.apiName;
       const signature = `object:${apiNameStr}:${String(primaryKey)}`;
 
       const metadata: OperationMetadata = {
@@ -506,7 +496,7 @@ export class ObservableClientMonitor {
       const cleanupCallbacks = this.createCleanupObserverCallbacks(
         subscriptionId,
         componentContext,
-        observer,
+        observer
       );
 
       const wrappedObserver = {
@@ -551,14 +541,14 @@ export class ObservableClientMonitor {
             value.isOptimistic,
             value.object !== undefined ? 1 : 0,
             value,
-            objectKey,
+            objectKey
           );
 
           if (value.object && componentContext) {
             const wrapped = this.propertyAccessTracker.wrapObject(
               value.object,
               objectKey,
-              componentContext.id,
+              componentContext.id
             );
             (value as { object: typeof wrapped }).object = wrapped;
           }
@@ -572,7 +562,7 @@ export class ObservableClientMonitor {
         apiName,
         primaryKey,
         options,
-        wrappedObserver,
+        wrappedObserver
       );
 
       return this.createCleanupUnsubscribable(unsubscribable, subscriptionId);
@@ -580,26 +570,25 @@ export class ObservableClientMonitor {
   }
 
   private wrapObserveList(
-    original: ObservableClient["observeList"],
+    original: ObservableClient["observeList"]
   ): ObservableClient["observeList"] {
     return ((
       options: Parameters<ObservableClient["observeList"]>[0],
-      observer: Parameters<ObservableClient["observeList"]>[1],
+      observer: Parameters<ObservableClient["observeList"]>[1]
     ): Unsubscribable => {
-      const apiNameStr = typeof options.type === "string"
-        ? options.type
-        : options.type.apiName;
+      const apiNameStr =
+        typeof options.type === "string" ? options.type : options.type.apiName;
 
       const canonicalWhere = this.wrappedClient
         ? this.wrappedClient.canonicalizeWhereClause(options.where ?? {})
-        : options.where ?? {};
+        : (options.where ?? {});
       const whereClause = JSON.stringify(canonicalWhere);
 
-      const signature = (options as { __devtoolsSignature?: string })
-        .__devtoolsSignature
-        ?? `useOsdkObjects:${apiNameStr}:${whereClause}:${
-          JSON.stringify(options.orderBy)
-        }`;
+      const signature =
+        (options as { __devtoolsSignature?: string }).__devtoolsSignature ??
+        `useOsdkObjects:${apiNameStr}:${whereClause}:${JSON.stringify(
+          options.orderBy
+        )}`;
 
       const metadata: OperationMetadata = {
         objectType: apiNameStr,
@@ -624,47 +613,41 @@ export class ObservableClientMonitor {
       const cleanupCallbacks = this.createCleanupObserverCallbacks(
         subscriptionId,
         componentContext,
-        observer,
+        observer
       );
 
       const wrappedObserver = {
         next: (
           value: ObserveObjectsCallbackArgs<
             ObjectTypeDefinition | InterfaceDefinition
-          >,
+          >
         ) => {
           if (mockManager) {
             const mock = mockManager.findMock({
               type: "list",
               objectType: apiNameStr,
-              whereClause: options.where as
-                | Record<string, unknown>
-                | undefined,
+              whereClause: options.where as Record<string, unknown> | undefined,
             });
 
             if (mock) {
               if (mock.response.type === "error") {
-                (observer.next as (v: typeof value) => void)(
-                  {
-                    ...value,
-                    status: "error",
-                    resolvedList: [],
-                    isOptimistic: false,
-                    error: new Error(mock.response.error),
-                  } as typeof value,
-                );
+                (observer.next as (v: typeof value) => void)({
+                  ...value,
+                  status: "error",
+                  resolvedList: [],
+                  isOptimistic: false,
+                  error: new Error(mock.response.error),
+                } as typeof value);
                 return;
               }
 
               if (mock.response.type === "list") {
-                (observer.next as (v: typeof value) => void)(
-                  {
-                    ...value,
-                    status: "loaded",
-                    resolvedList: mock.response.list,
-                    isOptimistic: false,
-                  } as typeof value,
-                );
+                (observer.next as (v: typeof value) => void)({
+                  ...value,
+                  status: "loaded",
+                  resolvedList: mock.response.list,
+                  isOptimistic: false,
+                } as typeof value);
                 return;
               }
             }
@@ -678,23 +661,19 @@ export class ObservableClientMonitor {
             value.resolvedList !== undefined,
             value.isOptimistic,
             value.resolvedList ? value.resolvedList.length : 0,
-            value,
+            value
           );
 
           if (value.resolvedList && componentContext) {
-            const wrappedList = value.resolvedList.map(
-              (obj, index: number) => {
-                const osdkObj = obj as OsdkObject;
-                const objectKey = `${apiNameStr}:${
-                  osdkObj.$primaryKey || index
-                }`;
-                return this.propertyAccessTracker.wrapObject(
-                  obj,
-                  objectKey,
-                  componentContext.id,
-                );
-              },
-            );
+            const wrappedList = value.resolvedList.map((obj, index: number) => {
+              const osdkObj = obj as OsdkObject;
+              const objectKey = `${apiNameStr}:${osdkObj.$primaryKey || index}`;
+              return this.propertyAccessTracker.wrapObject(
+                obj,
+                objectKey,
+                componentContext.id
+              );
+            });
             (value as { resolvedList: typeof wrappedList }).resolvedList =
               wrappedList;
           }
@@ -706,7 +685,7 @@ export class ObservableClientMonitor {
 
       const unsubscribable = original(
         options,
-        wrappedObserver as Parameters<typeof original>[1],
+        wrappedObserver as Parameters<typeof original>[1]
       );
 
       return this.createCleanupUnsubscribable(unsubscribable, subscriptionId);
@@ -714,19 +693,18 @@ export class ObservableClientMonitor {
   }
 
   private wrapObserveAggregation(
-    original: ObservableClient["observeAggregation"],
+    original: ObservableClient["observeAggregation"]
   ): ObservableClient["observeAggregation"] {
     return ((
       options: Parameters<ObservableClient["observeAggregation"]>[0],
-      observer: AggregationObserver,
+      observer: AggregationObserver
     ): Unsubscribable | Promise<Unsubscribable> => {
-      const apiNameStr = typeof options.type === "string"
-        ? options.type
-        : options.type.apiName;
+      const apiNameStr =
+        typeof options.type === "string" ? options.type : options.type.apiName;
 
-      const signature = `useOsdkAggregation:${apiNameStr}:${
-        JSON.stringify(options.where)
-      }:${JSON.stringify(options.aggregate)}`;
+      const signature = `useOsdkAggregation:${apiNameStr}:${JSON.stringify(
+        options.where
+      )}:${JSON.stringify(options.aggregate)}`;
 
       const metadata: OperationMetadata = {
         objectType: apiNameStr,
@@ -749,7 +727,7 @@ export class ObservableClientMonitor {
       const cleanupCallbacks = this.createCleanupObserverCallbacks(
         subscriptionId,
         componentContext,
-        observer,
+        observer
       );
 
       const wrappedObserver: AggregationObserver = {
@@ -758,9 +736,7 @@ export class ObservableClientMonitor {
             const mock = mockManager.findMock({
               type: "list",
               objectType: apiNameStr,
-              whereClause: options.where as
-                | Record<string, unknown>
-                | undefined,
+              whereClause: options.where as Record<string, unknown> | undefined,
             });
 
             if (mock) {
@@ -775,12 +751,13 @@ export class ObservableClientMonitor {
               }
 
               if (
-                mock.response.type === "list"
-                || mock.response.type === "object"
+                mock.response.type === "list" ||
+                mock.response.type === "object"
               ) {
-                const mockData = mock.response.type === "list"
-                  ? mock.response.list
-                  : mock.response.object;
+                const mockData =
+                  mock.response.type === "list"
+                    ? mock.response.list
+                    : mock.response.object;
                 observer.next({
                   result: mockData,
                   status: "loaded",
@@ -799,7 +776,7 @@ export class ObservableClientMonitor {
             value.result !== undefined,
             false,
             value.result !== undefined ? 1 : 0,
-            value,
+            value
           );
 
           observer.next(value);
@@ -809,11 +786,11 @@ export class ObservableClientMonitor {
 
       const result = original(
         options,
-        wrappedObserver as Parameters<typeof original>[1],
+        wrappedObserver as Parameters<typeof original>[1]
       );
 
       if (result instanceof Promise) {
-        return result.then(unsub =>
+        return result.then((unsub) =>
           this.createCleanupUnsubscribable(unsub, subscriptionId)
         );
       }
@@ -823,20 +800,19 @@ export class ObservableClientMonitor {
   }
 
   private wrapObserveLinks(
-    original: NonNullable<ExtendedObservableClient["observeLinks"]>,
+    original: NonNullable<ExtendedObservableClient["observeLinks"]>
   ): ExtendedObservableClient["observeLinks"] {
     return ((
       sourceObject: OsdkObject,
       linkName: string,
       options: Record<string, unknown>,
-      observer: ObserveLinksObserver,
+      observer: ObserveLinksObserver
     ): Unsubscribable => {
       const componentContext = this.captureComponentContext
         ? componentContextCapture.captureNow()
         : null;
 
-      const sourceObjectKey =
-        `${sourceObject.$apiName}:${sourceObject.$primaryKey}`;
+      const sourceObjectKey = `${sourceObject.$apiName}:${sourceObject.$primaryKey}`;
       const signature = `links:${sourceObjectKey}:${linkName}`;
 
       if (componentContext && this.captureQueryParams) {
@@ -868,15 +844,16 @@ export class ObservableClientMonitor {
         next: (
           value: ObserveObjectsCallbackArgs<
             ObjectTypeDefinition | InterfaceDefinition
-          >,
+          >
         ) => {
           this.recordMockHitIfNeeded(value, signature);
           this.recordEmissionEvent(signature);
 
           if (value.resolvedList && componentContext) {
-            const linkedObjects: Array<
-              { objectType: string; primaryKey: string }
-            > = [];
+            const linkedObjects: Array<{
+              objectType: string;
+              primaryKey: string;
+            }> = [];
             const wrappedList = value.resolvedList.map((obj) => {
               const osdkObj = obj as OsdkObject;
               linkedObjects.push({
@@ -886,7 +863,7 @@ export class ObservableClientMonitor {
               return this.propertyAccessTracker.wrapObject(
                 obj,
                 `${osdkObj.$apiName}:${osdkObj.$primaryKey}`,
-                componentContext.id,
+                componentContext.id
               );
             });
             this.linkTraversalTracker.recordLinkedObjects({
@@ -909,12 +886,11 @@ export class ObservableClientMonitor {
   }
 
   private wrapApplyAction(
-    original: ObservableClient["applyAction"],
+    original: ObservableClient["applyAction"]
   ): ObservableClient["applyAction"] {
     return async (actionDef, args, options) => {
-      const actionName = typeof actionDef === "string"
-        ? actionDef
-        : actionDef.apiName;
+      const actionName =
+        typeof actionDef === "string" ? actionDef : actionDef.apiName;
       const signature = `action:${actionName}`;
 
       const metadata: OperationMetadata = {
@@ -938,8 +914,7 @@ export class ObservableClientMonitor {
               try {
                 const payloadData = JSON.parse(mock.payload);
                 actualArgs = payloadData.parameters || args;
-              } catch {
-              }
+              } catch {}
             }
 
             try {
@@ -956,10 +931,10 @@ export class ObservableClientMonitor {
 
             this.injectMockedObjectsFromActionResult(mock.id, mockResult);
 
-            const store = this.wrappedClient
-                && hasExperimentalStore(this.wrappedClient)
-              ? this.wrappedClient.__experimentalStore
-              : undefined;
+            const store =
+              this.wrappedClient && hasExperimentalStore(this.wrappedClient)
+                ? this.wrappedClient.__experimentalStore
+                : undefined;
 
             if (store && isMockActionEdits(mockResult)) {
               const promises: Promise<void>[] = [];
@@ -972,12 +947,12 @@ export class ObservableClientMonitor {
               for (const obj of allObjects) {
                 if (store.invalidateObject) {
                   promises.push(
-                    store.invalidateObject(obj.objectType, obj.primaryKey),
+                    store.invalidateObject(obj.objectType, obj.primaryKey)
                   );
                 }
               }
 
-              for (const objectType of (mockResult.editedObjectTypes || [])) {
+              for (const objectType of mockResult.editedObjectTypes || []) {
                 if (store.invalidateObjectType) {
                   promises.push(store.invalidateObjectType(objectType));
                 }
@@ -1001,24 +976,28 @@ export class ObservableClientMonitor {
         componentId: componentContext?.id,
       });
 
-      const existingListeners = (options as {
-        __debugListeners?: {
-          onLayerCreated?(id: unknown): void;
-          onLayerCleared?(id: unknown): void;
-          onObjectModified?(
-            objectType: string,
-            primaryKey: string,
-            operation: "update" | "create" | "delete",
-          ): void;
-          onServerObjectsModified?(
-            objects: Array<{
-              objectType: string;
-              primaryKey: string;
-              operation: "update" | "create" | "delete";
-            }>,
-          ): void;
-        };
-      } | undefined)?.__debugListeners;
+      const existingListeners = (
+        options as
+          | {
+              __debugListeners?: {
+                onLayerCreated?(id: unknown): void;
+                onLayerCleared?(id: unknown): void;
+                onObjectModified?(
+                  objectType: string,
+                  primaryKey: string,
+                  operation: "update" | "create" | "delete"
+                ): void;
+                onServerObjectsModified?(
+                  objects: Array<{
+                    objectType: string;
+                    primaryKey: string;
+                    operation: "update" | "create" | "delete";
+                  }>
+                ): void;
+              };
+            }
+          | undefined
+      )?.__debugListeners;
       const debugListeners = {
         onLayerCreated: (id: unknown) => {
           this.actionTracker.registerOptimisticLayer(actionId, id);
@@ -1031,7 +1010,7 @@ export class ObservableClientMonitor {
         onObjectModified: (
           objectType: string,
           primaryKey: string,
-          operation: "update" | "create" | "delete",
+          operation: "update" | "create" | "delete"
         ) => {
           if (this.eventTimeline) {
             this.eventTimeline.record({
@@ -1046,7 +1025,7 @@ export class ObservableClientMonitor {
           existingListeners?.onObjectModified?.(
             objectType,
             primaryKey,
-            operation,
+            operation
           );
         },
         onServerObjectsModified: (
@@ -1054,7 +1033,7 @@ export class ObservableClientMonitor {
             objectType: string;
             primaryKey: string;
             operation: "update" | "create" | "delete";
-          }>,
+          }>
         ) => {
           if (this.eventTimeline) {
             const timestamp = Date.now();
@@ -1078,7 +1057,7 @@ export class ObservableClientMonitor {
       }
 
       const instrumentedOptions = {
-        ...(options ?? {}),
+        ...options,
         __debugListeners: debugListeners,
       } as Parameters<typeof original>[2];
 
@@ -1103,12 +1082,11 @@ export class ObservableClientMonitor {
   }
 
   private wrapValidateAction(
-    original: ObservableClient["validateAction"],
+    original: ObservableClient["validateAction"]
   ): ObservableClient["validateAction"] {
     return async (actionDef, args) => {
-      const actionName = typeof actionDef === "string"
-        ? actionDef
-        : actionDef.apiName;
+      const actionName =
+        typeof actionDef === "string" ? actionDef : actionDef.apiName;
       const signature = `validate:${actionName}`;
       const metadata: OperationMetadata = { actionName };
       const start = Date.now();
@@ -1117,11 +1095,7 @@ export class ObservableClientMonitor {
         return await original(actionDef, args);
       } finally {
         const duration = Date.now() - start;
-        this.metricsStore.recordActionValidation(
-          signature,
-          duration,
-          metadata,
-        );
+        this.metricsStore.recordActionValidation(signature, duration, metadata);
       }
     };
   }
@@ -1129,7 +1103,7 @@ export class ObservableClientMonitor {
   private captureActionError(
     actionName: string,
     error: unknown,
-    args: unknown,
+    args: unknown
   ): void {
     this.metricsStore.recordActionError({
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -1145,7 +1119,7 @@ export class ObservableClientMonitor {
 
   private injectMockedObjectsFromActionResult(
     mockId: string,
-    mockResult: unknown,
+    mockResult: unknown
   ): void {
     if (!this.mockManager || !mockResult) {
       return;
@@ -1158,21 +1132,21 @@ export class ObservableClientMonitor {
       const primaryKey = obj.$primaryKey ?? obj.id;
 
       if (
-        typeof objectType === "string"
-        && (typeof primaryKey === "string" || typeof primaryKey === "number")
+        typeof objectType === "string" &&
+        (typeof primaryKey === "string" || typeof primaryKey === "number")
       ) {
         this.mockManager.injectMockedObjectToCache(
           mockId,
           objectType,
           primaryKey,
-          obj,
+          obj
         );
       }
     }
   }
 
   private extractObjectsFromMockResult(
-    mockResult: unknown,
+    mockResult: unknown
   ): Array<Record<string, unknown>> {
     const objects: Array<Record<string, unknown>> = [];
 
@@ -1190,8 +1164,9 @@ export class ObservableClientMonitor {
     if (Array.isArray(mockResult)) {
       for (const item of mockResult) {
         if (
-          item && typeof item === "object"
-          && (item.$objectType || item.$apiName)
+          item &&
+          typeof item === "object" &&
+          (item.$objectType || item.$apiName)
         ) {
           objects.push(item);
         }
@@ -1224,7 +1199,7 @@ export class ObservableClientMonitor {
     const ext = this.wrappedClient as ExtendedObservableClient;
     if (!ext.getCacheSnapshot) {
       return Promise.reject(
-        new Error("getCacheSnapshot not available on client"),
+        new Error("getCacheSnapshot not available on client")
       );
     }
     return ext.getCacheSnapshot();
@@ -1237,7 +1212,7 @@ export class ObservableClientMonitor {
     const ext = this.wrappedClient as ExtendedObservableClient;
     if (!ext.invalidateObjects) {
       return Promise.reject(
-        new Error("invalidateObjects not available on client"),
+        new Error("invalidateObjects not available on client")
       );
     }
     return ext.invalidateObjects(objects);
@@ -1250,7 +1225,7 @@ export class ObservableClientMonitor {
     const ext = this.wrappedClient as ExtendedObservableClient;
     if (!ext.invalidateObjectType) {
       return Promise.reject(
-        new Error("invalidateObjectType not available on client"),
+        new Error("invalidateObjectType not available on client")
       );
     }
     return ext.invalidateObjectType(objectType);
@@ -1262,9 +1237,7 @@ export class ObservableClientMonitor {
     }
     const ext = this.wrappedClient as ExtendedObservableClient;
     if (!ext.invalidateAll) {
-      return Promise.reject(
-        new Error("invalidateAll not available on client"),
-      );
+      return Promise.reject(new Error("invalidateAll not available on client"));
     }
     return ext.invalidateAll();
   }
@@ -1283,8 +1256,8 @@ export class ObservableClientMonitor {
       this.signatureLastRecorded.clear();
 
       if (
-        "dispose" in this.metricsStore
-        && typeof this.metricsStore.dispose === "function"
+        "dispose" in this.metricsStore &&
+        typeof this.metricsStore.dispose === "function"
       ) {
         this.metricsStore.dispose();
       }

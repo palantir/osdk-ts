@@ -18,6 +18,7 @@ import type { getCurrent } from "@osdk/foundry.admin/User";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+
 import { createMockClient } from "../../mock/createMockClient.js";
 import { requireAdminUser } from "./platformApiWithMsw.js";
 
@@ -32,21 +33,17 @@ afterAll(() => server.close());
 describe("platformApiWithMsw", () => {
   it("resolves the current user when MSW handles the platform call", async () => {
     server.use(
-      http.get(
-        "https://mock.invalid/api/v2/admin/users/getCurrent",
-        () =>
-          HttpResponse.json(
-            {
-              id: "user-1",
-              username: "alice@admin",
-              givenName: "Alice",
-              familyName: "Admin",
-              realm: "default",
-              status: "ACTIVE",
-              attributes: {},
-            } satisfies User,
-          ),
-      ),
+      http.get("https://mock.invalid/api/v2/admin/users/getCurrent", () =>
+        HttpResponse.json({
+          id: "user-1",
+          username: "alice@admin",
+          givenName: "Alice",
+          familyName: "Admin",
+          realm: "default",
+          status: "ACTIVE",
+          attributes: {},
+        } satisfies User)
+      )
     );
 
     const mockClient = createMockClient();
@@ -57,27 +54,23 @@ describe("platformApiWithMsw", () => {
 
   it("rejects when the user is not an admin", async () => {
     server.use(
-      http.get(
-        "https://mock.invalid/api/v2/admin/users/getCurrent",
-        () =>
-          HttpResponse.json(
-            {
-              id: "user-2",
-              username: "bob@example.com",
-              givenName: "Bob",
-              familyName: "Example",
-              realm: "default",
-              status: "ACTIVE",
-              attributes: {},
-            } satisfies User,
-          ),
-      ),
+      http.get("https://mock.invalid/api/v2/admin/users/getCurrent", () =>
+        HttpResponse.json({
+          id: "user-2",
+          username: "bob@example.com",
+          givenName: "Bob",
+          familyName: "Example",
+          realm: "default",
+          status: "ACTIVE",
+          attributes: {},
+        } satisfies User)
+      )
     );
 
     const mockClient = createMockClient();
 
     await expect(requireAdminUser(mockClient)).rejects.toThrow(
-      "User bob@example.com is not an admin",
+      "User bob@example.com is not an admin"
     );
   });
 });

@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -63,7 +64,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "SELECT"
         ? coerceToString(filterState.selectedValues[0])
         : undefined,
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -83,12 +84,12 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
   const selectedValues = useMemo(
-    () => selectedValue != null ? [selectedValue] : [],
-    [selectedValue],
+    () => (selectedValue != null ? [selectedValue] : []),
+    [selectedValue]
   );
 
   const { data, isLoading, error } = useFilterPropertyAggregation(
@@ -97,7 +98,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     objectSet,
     whereClause,
     linkedFilters,
-    { selectedValues, showFilteredOutValues },
+    { selectedValues, showFilteredOutValues }
   );
 
   return (
@@ -123,6 +124,4 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const SingleSelectFilterInput: typeof SingleSelectFilterInputInner =
-  memo(
-    SingleSelectFilterInputInner,
-  ) as typeof SingleSelectFilterInputInner;
+  memo(SingleSelectFilterInputInner) as typeof SingleSelectFilterInputInner;

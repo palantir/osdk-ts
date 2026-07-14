@@ -18,19 +18,18 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ActionParameter, ActionType } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { consola } from "consola";
+
 import { mapActionParameterType } from "./mapActionParameterType.js";
 import { withoutNamespace } from "./utils.js";
 
-export function convertActionType(
-  action: Ontologies.ActionTypeV2,
-): ActionType {
+export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
   const parameters: Array<ActionParameter> = [];
 
   for (const [paramId, paramV2] of Object.entries(action.parameters)) {
     const mappedType = mapActionParameterType(paramV2.dataType);
     if (!mappedType) {
       consola.warn(
-        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`,
+        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`
       );
       continue;
     }
@@ -58,7 +57,7 @@ export function convertActionType(
 }
 
 function mapActionStatus(
-  status: string,
+  status: string
 ): "active" | "experimental" | "example" {
   switch (status) {
     case "ACTIVE":

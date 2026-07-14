@@ -24,6 +24,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { FilterState } from "../FilterListItemApi.js";
 import { LinkedPropertyInput } from "../inputs/LinkedPropertyInput.js";
 import type {
@@ -86,7 +87,7 @@ function createDefinition(
     | "TIMELINE"
     | "TEXT_TAGS"
     | "SINGLE_DATE"
-    | "MULTI_DATE",
+    | "MULTI_DATE"
 ): LinkedPropertyFilterDefinition<
   ObjectTypeDefinition,
   string,
@@ -129,7 +130,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
-        />,
+        />
       );
 
       const toggle = screen.getByRole("switch");
@@ -165,7 +166,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
-        />,
+        />
       );
 
       const toggle = screen.getByRole("switch");
@@ -183,7 +184,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
-        />,
+        />
       );
 
       const toggle = screen.getByRole("switch");
@@ -206,7 +207,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={wrongState}
           onFilterStateChanged={onFilterStateChanged}
-        />,
+        />
       );
 
       const toggle = screen.getByRole("switch");
@@ -226,7 +227,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={onFilterStateChanged}
-        />,
+        />
       );
 
       expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
@@ -260,15 +261,17 @@ describe("LinkedPropertyInput", () => {
       render(
         <LinkedPropertyInput
           objectSet={mockObjectSet}
-          whereClause={{ department: "Engineering" } as unknown as WhereClause<
-            ObjectTypeDefinition
-          >}
+          whereClause={
+            {
+              department: "Engineering",
+            } as unknown as WhereClause<ObjectTypeDefinition>
+          }
           linkedFilters={[]}
           definition={createDefinition("MULTI_SELECT")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
           showFilteredOutValues={true}
-        />,
+        />
       );
 
       expect(mockObjectSet.where).toHaveBeenCalled();
@@ -279,7 +282,7 @@ describe("LinkedPropertyInput", () => {
 
   describe("filtered-out initialFilterStates values", () => {
     function mockAggregationData(
-      groups: Array<{ name: string; count: number }>,
+      groups: Array<{ name: string; count: number }>
     ): void {
       vi.mocked(useOsdkAggregation).mockReturnValue({
         data: groups.map((g) => ({
@@ -309,7 +312,7 @@ describe("LinkedPropertyInput", () => {
             },
           }}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       // Without the fix, values.length === 0 shows "No options available"
@@ -335,7 +338,7 @@ describe("LinkedPropertyInput", () => {
             },
           }}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       // Without the fix, values.length === 0 renders "No options available"
@@ -379,12 +382,12 @@ describe("LinkedPropertyInput", () => {
             },
           }}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       // Both rows render — "Marketing" from aggregation, "Research" synthesized
-      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
-      const researchRow = screen.getByRole("button", { name: /Research/ });
+      const marketingRow = screen.getByRole("button", { name: /Marketing/u });
+      const researchRow = screen.getByRole("button", { name: /Research/u });
 
       expect(marketingRow.getAttribute("aria-pressed")).toBe("true");
       expect(researchRow.getAttribute("aria-pressed")).toBe("true");
@@ -403,7 +406,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("TOGGLE")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByRole("switch")).toBeTruthy();
@@ -419,7 +422,7 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("CONTAINS_TEXT")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       expect(screen.getByRole("textbox")).toBeTruthy();
@@ -445,7 +448,7 @@ describe("LinkedPropertyInput", () => {
           definition={definition}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       const dateInput = screen.getByLabelText("Select date");
@@ -457,7 +460,7 @@ describe("LinkedPropertyInput", () => {
   describe("showFilteredOutValues (linked filtered-out rows)", () => {
     function mockDualLinkedAggregation(
       scoped: Array<{ name: string; count: number }>,
-      emptySource: Array<{ name: string; count: number }>,
+      emptySource: Array<{ name: string; count: number }>
     ): void {
       mockAggregationByObjectSetKind({
         scoped,
@@ -467,9 +470,7 @@ describe("LinkedPropertyInput", () => {
       });
     }
 
-    function makeChainable(
-      kind: string,
-    ): ObjectSet<ObjectTypeDefinition> {
+    function makeChainable(kind: string): ObjectSet<ObjectTypeDefinition> {
       const set = {
         _kind: kind,
         $objectSetInternals: { def: MockLinkedObjectType },
@@ -500,7 +501,10 @@ describe("LinkedPropertyInput", () => {
     it("merges emptySource linked-facet values into LISTOGRAM as count=0 filtered-out rows when showFilteredOutValues + linkedFilters", () => {
       mockDualLinkedAggregation(
         [{ name: "Alice", count: 2 }],
-        [{ name: "Alice", count: 5 }, { name: "Bob", count: 3 }],
+        [
+          { name: "Alice", count: 5 },
+          { name: "Bob", count: 3 },
+        ]
       );
       const objectSet = createDualScopeMock();
       const linkedFilters: ReadonlyArray<LinkedFilter<ObjectTypeDefinition>> = [
@@ -520,13 +524,13 @@ describe("LinkedPropertyInput", () => {
           definition={createDefinition("LISTOGRAM")}
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
-        />,
+        />
       );
 
       // Both rows render — "Alice" from scoped, "Bob" synthesized from
       // emptySource as a count=0 filtered-out row.
-      expect(screen.getByRole("button", { name: /Alice/ })).toBeTruthy();
-      const bobRow = screen.getByRole("button", { name: /Bob/ });
+      expect(screen.getByRole("button", { name: /Alice/u })).toBeTruthy();
+      const bobRow = screen.getByRole("button", { name: /Bob/u });
       expect(bobRow.hasAttribute("data-filtered-out")).toBe(true);
     });
   });
@@ -557,7 +561,7 @@ describe("LinkedPropertyInput", () => {
           filterState={selectedState}
           onFilterStateChanged={vi.fn()}
           excludeRowOpen={true}
-        />,
+        />
       );
 
       expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();
@@ -581,7 +585,7 @@ describe("LinkedPropertyInput", () => {
           filterState={selectedState}
           onFilterStateChanged={onFilterStateChanged}
           excludeRowOpen={true}
-        />,
+        />
       );
 
       fireEvent.click(screen.getByText("Clear all"));
@@ -615,7 +619,7 @@ describe("LinkedPropertyInput", () => {
           }}
           onFilterStateChanged={vi.fn()}
           excludeRowOpen={true}
-        />,
+        />
       );
 
       expect(screen.queryByRole("button", { name: "Keeping" })).toBeNull();

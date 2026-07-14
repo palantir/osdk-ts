@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetBulkLinksPageRequest as _api_GetBulkLinksPageRequest,
   GetBulkLinksPageResponse as _api_GetBulkLinksPageResponse,
@@ -35,7 +36,7 @@ import type {
  */
 export async function getBulkLinksPage(
   ctx: ConjureContext,
-  request: _api_GetBulkLinksPageRequest,
+  request: _api_GetBulkLinksPageRequest
 ): Promise<_api_GetBulkLinksPageResponse> {
   return conjureFetch(ctx, `/bulk-links`, "PUT", request);
 }

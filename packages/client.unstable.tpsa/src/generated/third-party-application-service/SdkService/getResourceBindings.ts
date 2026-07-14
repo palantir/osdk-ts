@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
 import type { PackageName } from "../PackageName.js";
 import type { ResourceBindings } from "../ResourceBindings.js";
@@ -32,11 +33,11 @@ import type { ResourceBindings } from "../ResourceBindings.js";
 export async function getResourceBindings(
   ctx: ConjureContext,
   repositoryRid: ArtifactsRepositoryRid,
-  packageName: PackageName,
+  packageName: PackageName
 ): Promise<ResourceBindings> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/bindings`,
-    "GET",
+    "GET"
   );
 }

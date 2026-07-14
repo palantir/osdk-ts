@@ -22,17 +22,15 @@ export async function promptOsdkPackage({
 }: {
   osdkPackage?: string;
 }): Promise<string> {
-  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/.test(osdkPackage)) {
+  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/u.test(osdkPackage)) {
     if (osdkPackage != null) {
       consola.fail("Please enter a valid OSDK package name");
     }
     osdkPackage = await consola.prompt(
-      `Enter the OSDK package name for your widget set:\n${
-        italic(
-          "(Example: @my-widget/sdk)",
-        )
-      }`,
-      { type: "text" },
+      `Enter the OSDK package name for your widget set:\n${italic(
+        "(Example: @my-widget/sdk)"
+      )}`,
+      { type: "text" }
     );
   }
   return osdkPackage;

@@ -15,13 +15,11 @@
  */
 
 import type { CommandModule } from "yargs";
+
 import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
-const command: CommandModule<
-  CommonWidgetSetArgs,
-  VersionDeleteArgs
-> = {
+const command: CommandModule<CommonWidgetSetArgs, VersionDeleteArgs> = {
   command: "delete <version>",
   describe: "Delete widget set version",
   builder: (argv) => {

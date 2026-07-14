@@ -18,16 +18,18 @@ import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
-import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
+
+import styles from "./BaseForm.module.css";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -47,12 +49,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 
   const allFieldDefinitions = useMemo(
     () => flattenFieldDefinitions(formContent),
-    [formContent],
+    [formContent]
   );
 
   const defaultValues = useMemo(
     () => buildDefaultValues(allFieldDefinitions),
-    [allFieldDefinitions],
+    [allFieldDefinitions]
   );
 
   const {
@@ -76,12 +78,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     execute: executeSubmit,
     clearError,
   } = useAsyncAction(onSubmit);
-  const submissionErrorMessage = submissionError != null
-    ? submissionError instanceof Error
-      ? submissionError.message
-      // TODO: provide better error message
-      : "Submission failed"
-    : undefined;
+  const submissionErrorMessage =
+    submissionError != null
+      ? submissionError instanceof Error
+        ? submissionError.message
+        : // TODO: provide better error message
+          "Submission failed"
+      : undefined;
 
   const submitForm = useCallback(async () => {
     setHasAttemptedSubmit(true);
@@ -104,12 +107,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       clearError();
       onFieldValueChange?.(fieldKey, value);
     },
-    [clearError, onFieldValueChange],
+    [clearError, onFieldValueChange]
   );
 
   const labelByFieldKey = useMemo(
     () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
-    [allFieldDefinitions],
+    [allFieldDefinitions]
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
@@ -122,8 +125,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     ? "Some fields are invalid"
     : submissionErrorMessage;
   const isFormPending = isPending || isSubmitting;
-  const isSubmitButtonDisabled = isSubmitDisabled
-    || (hasAttemptedSubmit && areErrorsPresent);
+  const isSubmitButtonDisabled =
+    isSubmitDisabled || (hasAttemptedSubmit && areErrorsPresent);
 
   return (
     <form
@@ -159,7 +162,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
           }
           const sectionErrorCount = item.definition.fields.reduce(
             (count, field) => count + (errors[field.fieldKey] != null ? 1 : 0),
-            0,
+            0
           );
           return (
             <FormSection
@@ -204,7 +207,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
  * and the field-key-to-label map for error display.
  */
 function flattenFieldDefinitions(
-  formContent: ReadonlyArray<FormContentItem>,
+  formContent: ReadonlyArray<FormContentItem>
 ): ReadonlyArray<RendererFieldDefinition> {
   const result: RendererFieldDefinition[] = [];
   for (const item of formContent) {
@@ -222,18 +225,15 @@ function flattenFieldDefinitions(
 const SKELETON_FIELD_COUNT = 3;
 
 // Mimics the label + input layout of real form fields.
-const FORM_SKELETON = Array.from(
-  { length: SKELETON_FIELD_COUNT },
-  (_, i) => (
-    <div key={i} className={styles.osdkFormSkeletonField}>
-      <SkeletonBar className={styles.osdkFormSkeletonLabel} />
-      <SkeletonBar className={styles.osdkFormSkeletonInput} />
-    </div>
-  ),
-);
+const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
+  <div key={i} className={styles.osdkFormSkeletonField}>
+    <SkeletonBar className={styles.osdkFormSkeletonLabel} />
+    <SkeletonBar className={styles.osdkFormSkeletonInput} />
+  </div>
+));
 
 function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {

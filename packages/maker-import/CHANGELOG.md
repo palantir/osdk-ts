@@ -1,5 +1,75 @@
 # @osdk/maker-import
 
+## 0.19.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/maker@0.46.0
+  - @osdk/client.unstable@2.43.0
+
+## 0.18.0
+
+### Minor Changes
+
+- f49b4af: Migrate @osdk/maker, @osdk/maker-experimental, and @osdk/maker-import to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+- Updated dependencies [f49b4af]
+  - @osdk/client.unstable@2.42.0
+  - @osdk/maker@0.45.0
+
+## 0.17.0
+
+### Patch Changes
+
+- @osdk/maker@0.44.0
+- @osdk/client.unstable@2.41.0
+
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [fcde4c0]
+  - @osdk/maker@0.43.0
+  - @osdk/client.unstable@2.40.0
+
+## 0.15.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.38.0
+- @osdk/maker@0.41.0
+
+## 0.14.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+- @osdk/maker@0.40.0
+
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [59115b1]
+  - @osdk/maker@0.39.0
+  - @osdk/client.unstable@2.35.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+  - @osdk/maker@0.37.0
+  - @osdk/client.unstable@2.34.0
+
 ## 0.11.0
 
 ### Patch Changes

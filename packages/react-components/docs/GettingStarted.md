@@ -38,15 +38,11 @@ const client = createClient(
   "ri.ontology.main.ontology.{UUID}",
   async () => {
     // return your auth token
-  },
+  }
 );
 
 function App() {
-  return (
-    <OsdkProvider client={client}>
-      {/* your app */}
-    </OsdkProvider>
-  );
+  return <OsdkProvider client={client}>{/* your app */}</OsdkProvider>;
 }
 ```
 

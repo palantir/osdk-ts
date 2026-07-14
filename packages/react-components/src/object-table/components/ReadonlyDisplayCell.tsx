@@ -17,6 +17,7 @@
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React from "react";
+
 import styles from "../EditableCell.module.css";
 
 interface ReadonlyDisplayCellProps {
@@ -32,18 +33,15 @@ function ReadonlyDisplayCellInner({
 }: ReadonlyDisplayCellProps): React.ReactElement {
   return (
     <div
-      className={classNames(
-        styles.osdkEditableCell,
-        {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        },
-      )}
+      className={classNames(styles.osdkEditableCell, {
+        [styles.error]: hasValidationError,
+        [styles.osdkEditedInput]: isEdited,
+      })}
     >
       <div
         className={classNames(
           styles.osdkEditableInput,
-          styles.readonlyDisplayCell,
+          styles.readonlyDisplayCell
         )}
       >
         {inputValue}

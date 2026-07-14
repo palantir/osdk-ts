@@ -26,13 +26,13 @@ export function isImplied(state: MarkingSelectionState): boolean {
 
 export function getDisplayLabel(
   label: string,
-  state: MarkingSelectionState,
+  state: MarkingSelectionState
 ): string {
   return isImplied(state) ? `(${label})` : label;
 }
 
 export function getTooltipText(
-  state: MarkingSelectionState,
+  state: MarkingSelectionState
 ): string | undefined {
   if (state === "DISALLOWED") {
     return "This marking is not allowed with the current selection";

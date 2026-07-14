@@ -15,7 +15,7 @@
  */
 
 export function deepFreeze<T>(obj: T): T {
-  Object.getOwnPropertyNames(obj).forEach(name => {
+  Object.getOwnPropertyNames(obj).forEach((name) => {
     const prop = (obj as any)[name];
     if (typeof prop === "object" && prop != null && !Object.isFrozen(prop)) {
       deepFreeze(prop);

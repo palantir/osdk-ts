@@ -22,6 +22,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useCallback, useState } from "react";
+
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { cellValuesEqual } from "../utils/editableUtils.js";
 import type {
@@ -32,10 +33,7 @@ import type {
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -49,19 +47,12 @@ export interface UseEditableTableProps<
     FunctionColumns
   >["onCellValueChanged"];
 
-  onSubmitEdits?: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["onSubmitEdits"];
+  onSubmitEdits?: ObjectTableProps<Q, RDPs, FunctionColumns>["onSubmitEdits"];
 }
 
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -74,9 +65,7 @@ export function useEditableTable<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   unknown
 > {
-  const [isActive, setActive] = useState<boolean>(
-    editMode === "always",
-  );
+  const [isActive, setActive] = useState<boolean>(editMode === "always");
   const [cellEdits, setCellEdits] = useState<
     Record<
       string,
@@ -85,17 +74,13 @@ export function useEditableTable<
         unknown
       >
     >
-  >(
-    {},
-  );
-  const [validationErrors, setValidationErrors] = useState<
-    Map<string, string>
-  >(
-    new Map(),
+  >({});
+  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
+    new Map()
   );
 
   const clearCellValidationError = useCallback((cellId: string) => {
-    setValidationErrors(prev => {
+    setValidationErrors((prev) => {
       const newErrors = new Map(prev);
       newErrors.delete(cellId);
       return newErrors;
@@ -108,19 +93,19 @@ export function useEditableTable<
       info: CellEditInfo<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >,
+      >
     ) => {
       // If value is changed back to original, remove it from edits. null
       // and undefined are treated as the same empty state so clearing a
       // never-set cell doesn't leave a phantom "edited" indicator. "" stays
       // a distinct value.
       if (cellValuesEqual(info.newValue, info.oldValue)) {
-        setCellEdits(prev => {
+        setCellEdits((prev) => {
           const { [cellId]: _, ...rest } = prev;
           return rest;
         });
       } else {
-        setCellEdits(prev => ({
+        setCellEdits((prev) => ({
           ...prev,
           [cellId]: info,
         }));
@@ -128,7 +113,7 @@ export function useEditableTable<
 
       onCellValueChanged?.(info);
     },
-    [onCellValueChanged],
+    [onCellValueChanged]
   );
 
   const clearEdits = useCallback(() => {
@@ -136,25 +121,25 @@ export function useEditableTable<
     setValidationErrors(new Map());
   }, []);
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
     return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
-  const onCellValidationError = useCallback(
-    (cellId: string, error: string) => {
-      setValidationErrors(prev => {
-        const newErrors = new Map(prev);
-        newErrors.set(cellId, error);
-        return newErrors;
-      });
-    },
-    [],
-  );
+  const onCellValidationError = useCallback((cellId: string, error: string) => {
+    setValidationErrors((prev) => {
+      const newErrors = new Map(prev);
+      newErrors.set(cellId, error);
+      return newErrors;
+    });
+  }, []);
 
-  const editModeState: EditModeState = editMode === "always"
-    ? { type: "always", isActive: true }
-    : { type: "manual", isActive, setActive };
+  const editModeState: EditModeState =
+    editMode === "always"
+      ? { type: "always", isActive: true }
+      : { type: "manual", isActive, setActive };
 
   return {
     cellEdits,

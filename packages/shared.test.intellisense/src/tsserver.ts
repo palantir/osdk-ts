@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { EventEmitter } from "node:events";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+
 import type { Logger } from "@osdk/api";
 import type { Subprocess } from "execa";
 import { execaNode } from "execa";
 import { findUpMultiple } from "find-up";
-import { EventEmitter } from "node:events";
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import pLocate from "p-locate";
 import pMap from "p-map";
 import invariant from "tiny-invariant";
@@ -29,9 +30,7 @@ import { server as s } from "typescript";
 type RequestFn<
   T extends s.protocol.Request,
   X extends s.protocol.Response = never,
-> = (
-  args: T["arguments"],
-) => Promise<{ req: T; resp: X }>;
+> = (args: T["arguments"]) => Promise<{ req: T; resp: X }>;
 
 class TsServerImpl extends EventEmitter<{
   exit: [];
@@ -49,14 +48,14 @@ class TsServerImpl extends EventEmitter<{
 
   get subprocess():
     | Subprocess<{
-      ipc: true;
-      serialization: "json";
-    }>
-    | undefined
-  {
+        ipc: true;
+        serialization: "json";
+      }>
+    | undefined {
     return this.#subprocess;
   }
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async start(): Promise<this> {
     this.#subprocess = execaNode({
       ipc: true,
@@ -83,20 +82,20 @@ class TsServerImpl extends EventEmitter<{
   }
 
   async getOneMessage<X>(filter?: (m: unknown) => m is X): Promise<X> {
-    return await this.subprocess!.getOneMessage({ filter }) as X;
+    return (await this.subprocess!.getOneMessage({ filter })) as X;
   }
 
   #requestFactory =
     <T extends s.protocol.Request, X extends s.protocol.Response = never>(
       command: T["command"],
-      isResponse?: (m: unknown) => m is X,
+      isResponse?: (m: unknown) => m is X
     ): RequestFn<T, X> =>
     async (args: T["arguments"]): Promise<{ req: T; resp: X }> => {
       return await this.#makeRequest<T, X>(command, args, isResponse);
     };
 
   sendOpenRequest: RequestFn<s.protocol.OpenRequest> = this.#requestFactory(
-    s.protocol.CommandTypes.Open,
+    s.protocol.CommandTypes.Open
   );
 
   sendQuickInfoRequest: RequestFn<
@@ -104,7 +103,7 @@ class TsServerImpl extends EventEmitter<{
     s.protocol.QuickInfoResponse
   > = this.#requestFactory(
     s.protocol.CommandTypes.Quickinfo,
-    isQuickInfoResponse,
+    isQuickInfoResponse
   );
 
   sendCompletionsRequest: RequestFn<
@@ -113,8 +112,8 @@ class TsServerImpl extends EventEmitter<{
   > = this.#requestFactory(
     s.protocol.CommandTypes.CompletionInfo,
     (m): m is s.protocol.CompletionInfoResponse =>
-      isResponse(m)
-      && m.command === s.protocol.CommandTypes.CompletionInfo as string,
+      isResponse(m) &&
+      m.command === (s.protocol.CommandTypes.CompletionInfo as string)
   );
 
   async #makeRequest<
@@ -123,7 +122,7 @@ class TsServerImpl extends EventEmitter<{
   >(
     command: T["command"],
     args: T["arguments"],
-    isResponse?: (m: unknown) => m is X,
+    isResponse?: (m: unknown) => m is X
   ): Promise<{ req: T; resp: X }> {
     const seq = this.#nextSeq++;
     const req: T = {
@@ -139,9 +138,9 @@ class TsServerImpl extends EventEmitter<{
     if (isResponse) {
       return {
         req,
-        resp: await this.#subprocess?.getOneMessage({
+        resp: (await this.#subprocess?.getOneMessage({
           filter: isResponse,
-        }) as unknown as X,
+        })) as unknown as X,
       };
     }
     return { req, resp: undefined as unknown as X };
@@ -173,52 +172,49 @@ async function getTsServerPath() {
     cwd: import.meta.url,
     type: "directory",
   });
-  const possibleTsServerPaths = await pMap(
-    nodeModuleDirs,
-    (dir) => path.join(dir, "typescript", "lib", "tsserver.js"),
+  const possibleTsServerPaths = await pMap(nodeModuleDirs, (dir) =>
+    path.join(dir, "typescript", "lib", "tsserver.js")
   );
 
   const tsServerPath = await pLocate(
     ["no", ...possibleTsServerPaths],
     async (dir) => {
       try {
-        const c = await fs.stat(
-          dir,
-        );
+        const c = await fs.stat(dir);
         return c.isFile();
       } catch (e) {
         return false;
       }
-    },
+    }
   );
   return tsServerPath;
 }
 
 export function isEvent(m: unknown): m is s.protocol.Event {
-  return !!(m && typeof m === "object" && "type" in m
-    && m.type === "event");
+  return !!(m && typeof m === "object" && "type" in m && m.type === "event");
 }
 
 export function isResponse(m: unknown): m is s.protocol.Response {
-  return !!(m && typeof m === "object" && "type" in m
-    && m.type === "response");
+  return !!(m && typeof m === "object" && "type" in m && m.type === "response");
 }
 
 export function isProjectLoadingStart(
-  m: unknown,
+  m: unknown
 ): m is s.protocol.ProjectLoadingStartEvent {
   return isEvent(m) && m.event === "projectLoadingStart";
 }
 export function isProjectLoadingEnd(
-  m: unknown,
+  m: unknown
 ): m is s.protocol.ProjectLoadingStartEvent {
   return isEvent(m) && m.event === "projectLoadingFinish";
 }
 export function isQuickInfoResponse(
   m: unknown,
-  requestSeq?: number,
+  requestSeq?: number
 ): m is s.protocol.QuickInfoResponse {
-  return isResponse(m)
-    && m.command === s.protocol.CommandTypes.Quickinfo as string
-    && (requestSeq == null || m.request_seq === requestSeq);
+  return (
+    isResponse(m) &&
+    m.command === (s.protocol.CommandTypes.Quickinfo as string) &&
+    (requestSeq == null || m.request_seq === requestSeq)
+  );
 }

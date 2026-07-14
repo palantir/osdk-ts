@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+
 import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
@@ -53,10 +54,9 @@ describe("useOsdkObjects enabled option", () => {
   it("should NOT call observeList when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObjects(MockObjectType, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObjects(MockObjectType, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveList).not.toHaveBeenCalled();
   });
@@ -69,7 +69,7 @@ describe("useOsdkObjects enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      },
+      }
     );
 
     expect(mockObserveList).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("useOsdkObjects enabled option", () => {
           pageSize: 50,
           enabled: true,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe("useOsdkObjects enabled option", () => {
         where: { id: "123" },
         pageSize: 50,
       }),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 });

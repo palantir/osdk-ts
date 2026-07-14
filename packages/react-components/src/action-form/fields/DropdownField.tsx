@@ -16,13 +16,15 @@
 
 import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
+
 import { Combobox } from "../../base-components/combobox/Combobox.js";
-import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
-import selectStyles from "../../base-components/select/Select.module.css";
 import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
+
+import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
+import selectStyles from "../../base-components/select/Select.module.css";
 import dropdownStyles from "./DropdownField.module.css";
 
 const EMPTY_ARRAY: [] = [];
@@ -33,9 +35,10 @@ const EMPTY_ARRAY: [] = [];
  * the spread from DropdownField type-checks, but SelectDropdown never
  * reads `isMultiple`.
  */
-interface InnerSelectProps<V, Multiple extends boolean>
-  extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
-{
+interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
+  DropdownFieldProps<V, Multiple>,
+  "isSearchable"
+> {
   itemToStringLabel: (item: V) => string;
   renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
@@ -46,9 +49,10 @@ interface InnerSelectProps<V, Multiple extends boolean>
   modal?: boolean;
 }
 
-interface InnerComboboxProps<V, Multiple extends boolean>
-  extends InnerSelectProps<V, Multiple>
-{
+interface InnerComboboxProps<
+  V,
+  Multiple extends boolean,
+> extends InnerSelectProps<V, Multiple> {
   isSearchable: boolean;
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
@@ -56,7 +60,7 @@ interface InnerComboboxProps<V, Multiple extends boolean>
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
-  props: DropdownFieldProps<V, Multiple> & { onBlur?: () => void },
+  props: DropdownFieldProps<V, Multiple> & { onBlur?: () => void }
 ) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
   V,
   Multiple extends boolean = false,
@@ -80,17 +84,17 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   // Ensure always controlled from first render: multi-select needs [],
   // single-select needs null. Passing undefined switches Base UI from
   // uncontrolled to controlled and triggers a warning.
-  const normalizedValue = (value
-    ?? (isMultiple ? EMPTY_ARRAY : null)) as typeof value;
+  const normalizedValue = (value ??
+    (isMultiple ? EMPTY_ARRAY : null)) as typeof value;
 
-  const resolvedItemToStringLabel = itemToStringLabel
-    ?? defaultItemToStringLabel;
+  const resolvedItemToStringLabel =
+    itemToStringLabel ?? defaultItemToStringLabel;
 
   const resolvedRenderItemLabel = renderItemLabel ?? resolvedItemToStringLabel;
 
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
-    [itemToKey, resolvedItemToStringLabel],
+    [itemToKey, resolvedItemToStringLabel]
   );
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
@@ -154,7 +158,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   const renderSingleSelectedItemLabel = useCallback(
     (selectedValue: V | null) =>
       selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel],
+    [renderItemLabel]
   );
 
   const handleOpenChange = useCallback(
@@ -169,7 +173,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onBlur?.();
       }
     },
-    [disabled, onBlur],
+    [disabled, onBlur]
   );
 
   const handleClear = useCallback(() => {
@@ -285,7 +289,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   const renderSingleSelectedItemLabel = useCallback(
     (selectedValue: V | null) =>
       selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel],
+    [renderItemLabel]
   );
 
   const handleOpenChange = useCallback(
@@ -295,7 +299,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         onBlur?.();
       }
     },
-    [onBlur],
+    [onBlur]
   );
 
   // Mark the field as touched on every value change so RHF revalidates
@@ -311,7 +315,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         onBlur?.();
       }
     },
-    [onChange, onBlur, isMultiple],
+    [onChange, onBlur, isMultiple]
   );
 
   const handleClear = useCallback(() => {
@@ -331,13 +335,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         return;
       }
       const next = value.filter((v) =>
-        isItemEqual != null
-          ? !isItemEqual(v, itemToRemove)
-          : v !== itemToRemove
+        isItemEqual != null ? !isItemEqual(v, itemToRemove) : v !== itemToRemove
       );
       (handleValueChange as (v: V[] | V | null) => void)(next);
     },
-    [isMultiple, value, handleValueChange, isItemEqual],
+    [isMultiple, value, handleValueChange, isItemEqual]
   );
 
   const handleDismiss = useCallback(() => {
@@ -358,7 +360,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         </Combobox.Item>
       );
     },
-    [getKey, isMultiple, itemToStringLabel, renderItemLabel],
+    [getKey, isMultiple, itemToStringLabel, renderItemLabel]
   );
 
   return (
@@ -380,48 +382,44 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         <Combobox.Trigger
           id={id}
           disabled={disabled}
-          className={isMultiple
-            ? comboboxStyles.osdkComboboxTriggerMulti
-            : undefined}
+          className={
+            isMultiple ? comboboxStyles.osdkComboboxTriggerMulti : undefined
+          }
         >
           <div className={comboboxStyles.osdkComboboxValueContainer}>
-            {isMultiple && Array.isArray(value) && value.length > 0
-              ? (
-                <div className={comboboxStyles.osdkComboboxTriggerChips}>
-                  {value.map((item: V) => (
+            {isMultiple && Array.isArray(value) && value.length > 0 ? (
+              <div className={comboboxStyles.osdkComboboxTriggerChips}>
+                {value.map((item: V) => (
+                  <span
+                    key={getKey(item)}
+                    className={comboboxStyles.osdkComboboxTriggerChip}
+                  >
+                    {renderItemLabel(item)}
                     <span
-                      key={getKey(item)}
-                      className={comboboxStyles.osdkComboboxTriggerChip}
+                      role="button"
+                      aria-label={`Remove ${itemToStringLabel(item)}`}
+                      className={comboboxStyles.osdkComboboxTriggerChipRemove}
+                      aria-disabled={disabled || undefined}
+                      onMouseDown={disabled ? undefined : preventTriggerOpen}
+                      onClick={
+                        disabled ? undefined : () => handleRemoveItem(item)
+                      }
                     >
-                      {renderItemLabel(item)}
-                      <span
-                        role="button"
-                        aria-label={`Remove ${itemToStringLabel(item)}`}
-                        className={comboboxStyles.osdkComboboxTriggerChipRemove}
-                        aria-disabled={disabled || undefined}
-                        onMouseDown={disabled ? undefined : preventTriggerOpen}
-                        onClick={disabled
-                          ? undefined
-                          : () => handleRemoveItem(item)}
-                      >
-                        <Cross size={12} />
-                      </span>
+                      <Cross size={12} />
                     </span>
-                  ))}
-                </div>
-              )
-              : (
-                <>
-                  <Combobox.Value>
-                    {renderSingleSelectedItemLabel}
-                  </Combobox.Value>
-                  {!hasValue && placeholder != null && (
-                    <span className={comboboxStyles.osdkComboboxPlaceholder}>
-                      {placeholder}
-                    </span>
-                  )}
-                </>
-              )}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <>
+                <Combobox.Value>{renderSingleSelectedItemLabel}</Combobox.Value>
+                {!hasValue && placeholder != null && (
+                  <span className={comboboxStyles.osdkComboboxPlaceholder}>
+                    {placeholder}
+                  </span>
+                )}
+              </>
+            )}
           </div>
           {hasValue && (
             <span

@@ -18,8 +18,10 @@ import { Button } from "@base-ui/react/button";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
+
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 import type { FilePickerProps } from "../FormFieldApi.js";
+
 import styles from "./FilePickerField.module.css";
 
 export const FilePickerField: React.FC<FilePickerProps> = memo(
@@ -56,7 +58,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         event.preventDefault();
         focusFileTrigger();
       },
-      [focusFileTrigger],
+      [focusFileTrigger]
     );
 
     const handleBrowseClick = useCallback(() => {
@@ -78,7 +80,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           onChange?.(files[0] ?? null);
         }
       },
-      [onChange, isMulti],
+      [onChange, isMulti]
     );
 
     const handleClear = useCallback(
@@ -89,7 +91,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           inputRef.current.value = "";
         }
       },
-      [onChange],
+      [onChange]
     );
 
     const handleKeyDown = useCallback(
@@ -99,24 +101,19 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           openFileDialog();
         }
       },
-      [openFileDialog],
+      [openFileDialog]
     );
 
     const displayText = useMemo(() => getDisplayText(value), [value]);
     const hasValue = displayText != null;
-    const acceptString = useMemo(
-      () => normalizeAccept(accept),
-      [accept],
-    );
+    const acceptString = useMemo(() => normalizeAccept(accept), [accept]);
     return (
       <div
         className={styles.osdkFilePickerTrigger}
         aria-invalid={error != null || undefined}
       >
-        {
-          /* display: none removes the input from the a11y tree entirely,
-            avoiding nested-interactive. Programmatic .click() still works. */
-        }
+        {/* display: none removes the input from the a11y tree entirely,
+            avoiding nested-interactive. Programmatic .click() still works. */}
         <input
           ref={inputRef}
           type="file"
@@ -133,7 +130,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           type="button"
           className={classnames(
             styles.osdkFilePickerText,
-            !hasValue && styles.osdkFilePickerPlaceholder,
+            !hasValue && styles.osdkFilePickerPlaceholder
           )}
           onClick={openFileDialog}
           onKeyDown={handleKeyDown}
@@ -166,11 +163,11 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         </ActionButton>
       </div>
     );
-  },
+  }
 );
 
 function normalizeAccept(
-  accept: string | string[] | undefined,
+  accept: string | string[] | undefined
 ): string | undefined {
   if (accept == null) {
     return undefined;

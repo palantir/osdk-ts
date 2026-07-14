@@ -23,7 +23,7 @@ import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
  * follow the inner filter's capabilities).
  */
 export function getEffectiveFilterState(
-  state: FilterState | undefined,
+  state: FilterState | undefined
 ): FilterState | undefined {
   if (state?.type === "linkedProperty") {
     return state.linkedFilterState;
@@ -114,7 +114,7 @@ export function isNoValue(value: string | null | undefined): boolean {
  * their own distinct rows.
  */
 export function dedupeEmptyAggregationRows(
-  values: PropertyAggregationValue[],
+  values: PropertyAggregationValue[]
 ): PropertyAggregationValue[] {
   const out: PropertyAggregationValue[] = [];
   let noValueCount = 0;
@@ -143,7 +143,7 @@ export function dedupeEmptyAggregationRows(
 export function filterValuesBySearch<T>(
   values: T[],
   searchValue: string,
-  getValue: (item: T) => string,
+  getValue: (item: T) => string
 ): T[] {
   const trimmed = searchValue.trim();
   if (!trimmed) {
@@ -160,7 +160,7 @@ export function filterValuesBySearch<T>(
  * cleared form is meaningful for the state shape.
  */
 export function clearFilterState(
-  state: FilterState | undefined,
+  state: FilterState | undefined
 ): FilterState | undefined {
   if (!state) {
     return undefined;
@@ -240,9 +240,7 @@ export function clearFilterState(
  * and unwrapping/re-wrapping any `linkedProperty` wrapper. Returns `undefined`
  * if the wrapped state is one that does not support excluding.
  */
-export function toggleIsExcluding(
-  state: FilterState,
-): FilterState | undefined {
+export function toggleIsExcluding(state: FilterState): FilterState | undefined {
   if (state.type === "linkedProperty") {
     const inner = state.linkedFilterState;
     return {
@@ -289,11 +287,17 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "CONTAINS_TEXT":
       return state.value !== undefined && state.value !== "";
     case "NUMBER_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined
-        || state.includeNull === true;
+      return (
+        state.minValue !== undefined ||
+        state.maxValue !== undefined ||
+        state.includeNull === true
+      );
     case "DATE_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined
-        || state.includeNull === true;
+      return (
+        state.minValue !== undefined ||
+        state.maxValue !== undefined ||
+        state.includeNull === true
+      );
     case "TOGGLE":
       return state.enabled;
     case "hasLink":

@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+
 import type { CategoryMarkingGroup } from "./types.js";
 import type { UseCbacPickerStateResult } from "./useCbacPickerState.js";
 import { useCbacPickerState } from "./useCbacPickerState.js";
@@ -31,10 +32,10 @@ export interface UseCbacSelectionResult extends UseCbacPickerStateResult {
 }
 
 export function useCbacSelection(
-  initialMarkingIds: string[] | undefined,
+  initialMarkingIds: string[] | undefined
 ): UseCbacSelectionResult {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    initialMarkingIds ?? EMPTY_ARRAY,
+    initialMarkingIds ?? EMPTY_ARRAY
   );
 
   const [prevInitialIds, setPrevInitialIds] = React.useState(initialMarkingIds);
@@ -49,18 +50,15 @@ export function useCbacSelection(
   selectedIdsRef.current = selectedIds;
 
   const categoryGroupsRef = React.useRef<CategoryMarkingGroup[]>(
-    pickerState.categoryGroups,
+    pickerState.categoryGroups
   );
   categoryGroupsRef.current = pickerState.categoryGroups;
 
-  const toggle = React.useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) =>
-        toggleMarking(markingId, prev, categoryGroupsRef.current)
-      );
-    },
-    [],
-  );
+  const toggle = React.useCallback((markingId: string) => {
+    setSelectedIds((prev) =>
+      toggleMarking(markingId, prev, categoryGroupsRef.current)
+    );
+  }, []);
 
   const dismiss = React.useCallback(() => {
     setSelectedIds(EMPTY_ARRAY);

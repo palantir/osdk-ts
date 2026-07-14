@@ -22,11 +22,11 @@ import type {
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 
 export function convertValueTypeToWireBlockData(
-  ontology: OntologyDefinition,
+  ontology: OntologyDefinition
 ): ValueTypeBlockData[] {
-  return Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map<
-    ValueTypeBlockData
-  >(definitions => {
+  return Object.values(
+    ontology[OntologyEntityTypeEnum.VALUE_TYPE]
+  ).map<ValueTypeBlockData>((definitions) => {
     const version = getLatestVersion(definitions);
     return {
       metadata: {
@@ -36,9 +36,10 @@ export function convertValueTypeToWireBlockData(
         status: definitions[0].status,
       },
       versions: Array.from(
-        new Map(definitions.map(definition => [definition.version, definition]))
-          .values(),
-      ).map(definition => ({
+        new Map(
+          definitions.map((definition) => [definition.version, definition])
+        ).values()
+      ).map((definition) => ({
         version: definition.version,
         baseType: definition.baseType,
         constraints: definition.constraints,
@@ -49,7 +50,7 @@ export function convertValueTypeToWireBlockData(
 }
 
 function getLatestVersion(
-  versions: ValueTypeDefinitionVersion[],
+  versions: ValueTypeDefinitionVersion[]
 ): ValueTypeDefinitionVersion {
   if (versions.length === 0) {
     throw new Error("Value type must have at least one version");

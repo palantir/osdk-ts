@@ -16,6 +16,7 @@
 
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { SwitchField } from "../fields/SwitchField.js";
 
 afterEach(cleanup);
@@ -29,7 +30,7 @@ describe("SwitchField", () => {
         onChange={onChange}
         label="Enabled"
         disabled={true}
-      />,
+      />
     );
 
     const toggle = screen.getByRole("switch", { name: "Enabled" });

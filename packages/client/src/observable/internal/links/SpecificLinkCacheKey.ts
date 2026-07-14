@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
+
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
@@ -36,8 +37,7 @@ export const RESOLVE_TO_OBJECT_TYPE_IDX = 9;
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
  */
-export interface LinkStorageData extends CollectionStorageData {
-}
+export interface LinkStorageData extends CollectionStorageData {}
 /**
  * Cache key for a specific link query that uniquely identifies:
  * - The source object type
@@ -45,23 +45,20 @@ export interface LinkStorageData extends CollectionStorageData {
  * - The link name
  */
 
-export interface SpecificLinkCacheKey extends
-  CacheKey<
-    "specificLink",
-    LinkStorageData,
-    SpecificLinkQuery,
-    [
-      sourceApiName: string,
-      sourceTypeKind: "object" | "interface",
-      sourceUnderlyingObjectType: string,
-      sourcePk: PrimaryKeyType<ObjectTypeDefinition>,
-      linkName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      select?: Canonical<readonly string[]> | undefined,
-      includeAllBaseObjectProperties?: true | undefined,
-      resolveToObjectType?: true | undefined,
-    ]
-  >
-{
-}
+export interface SpecificLinkCacheKey extends CacheKey<
+  "specificLink",
+  LinkStorageData,
+  SpecificLinkQuery,
+  [
+    sourceApiName: string,
+    sourceTypeKind: "object" | "interface",
+    sourceUnderlyingObjectType: string,
+    sourcePk: PrimaryKeyType<ObjectTypeDefinition>,
+    linkName: string,
+    whereClause: Canonical<SimpleWhereClause>,
+    orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    select?: Canonical<readonly string[]> | undefined,
+    includeAllBaseObjectProperties?: true | undefined,
+    resolveToObjectType?: true | undefined,
+  ]
+> {}

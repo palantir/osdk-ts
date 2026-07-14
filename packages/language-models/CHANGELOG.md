@@ -1,5 +1,29 @@
 # @osdk/language-models
 
+## 0.9.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+  - @osdk/client@2.44.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 58b3367: Migrate @osdk/language-models, @osdk/react-sdk-docs, and @osdk/typescript-sdk-docs to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (second increment of the repo-wide oxc migration)
+
+### Patch Changes
+
+- Updated dependencies [11c7eb8]
+- Updated dependencies [bbb89ce]
+  - @osdk/client@2.38.0
+
 ## 0.7.0
 
 ### Minor Changes
