@@ -334,7 +334,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           })),
           objectType,
           objectSet,
-          links
+          links,
+          $nextPageToken
         );
         $nextPageToken = result.nextPageToken;
 
