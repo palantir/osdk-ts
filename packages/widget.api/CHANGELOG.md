@@ -1,5 +1,12 @@
 # @osdk/widget.api
 
+## 3.42.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+
 ## 3.41.0
 
 ### Patch Changes

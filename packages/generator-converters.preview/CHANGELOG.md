@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.27.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [93958d7]
+  - @osdk/generator-converters.ontologyir@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator@2.45.0
+
 ## 0.26.0
 
 ### Patch Changes
