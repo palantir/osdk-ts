@@ -8,7 +8,7 @@
     },
     "transpileEsm": {
       "dependsOn": [
-        "@osdk/typescript-sdk-docs-examples#transpileTypes"
+        "@osdk/typescript-sdk-docs-examples#transpileEsm"
       ]
     }
   }
