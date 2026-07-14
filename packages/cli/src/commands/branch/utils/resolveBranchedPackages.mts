@@ -175,12 +175,12 @@ function readDeclaredVersion(
 
 function isNotFound(e: unknown): boolean {
   const detail = e instanceof Error ? e.message : String(e);
-  return /E404|404 Not Found/i.test(detail);
+  return /E404|404 Not Found/iu.test(detail);
 }
 
 function mapNpmViewError(e: unknown, pkg: string): ExitProcessError {
   const detail = e instanceof Error ? e.message : String(e);
-  if (/E401|Unauthorized/i.test(detail)) {
+  if (/E401|Unauthorized/iu.test(detail)) {
     return new ExitProcessError(
       1,
       `Not authorized to read ${pkg}.`,

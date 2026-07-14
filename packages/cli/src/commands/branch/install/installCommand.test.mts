@@ -41,10 +41,12 @@ function deps(over: Partial<InstallDeps> = {}): InstallDeps {
       "my-feature-latest": "0.3.0-20260609",
     }),
     npmInstall: vi.fn().mockResolvedValue(undefined),
-    readFile: vi.fn(async (p: string) =>
-      p.endsWith("package.json")
-        ? JSON.stringify({ dependencies: { "@my-app/sdk": "^0.3.0" } })
-        : ""
+    readFile: vi.fn((p: string) =>
+      Promise.resolve(
+        p.endsWith("package.json")
+          ? JSON.stringify({ dependencies: { "@my-app/sdk": "^0.3.0" } })
+          : ""
+      )
     ),
     cwd: "/repo",
     ...over,
@@ -75,7 +77,7 @@ describe("installCommand", () => {
     });
     const d = deps({ npmInstall: vi.fn().mockRejectedValue(failure) });
     await expect(installCommand(args(), d)).rejects.toThrow(
-      /Failed to install 1 branched SDK/i
+      /Failed to install 1 branched SDK/iu
     );
   });
 });

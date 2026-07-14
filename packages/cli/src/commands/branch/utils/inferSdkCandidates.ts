@@ -23,7 +23,7 @@ interface PackageJsonLike {
 
 // Foundry SDK packages follow the `@<scope>/sdk` naming convention (enforced by
 // create-app/create-widget: `^@[a-z0-9-]+/sdk$`).
-const SDK_NAME_RE = /^@[a-z0-9-]+\/sdk$/;
+const SDK_NAME_RE = /^@[a-z0-9-]+\/sdk$/u;
 
 export function inferSdkCandidates(packageJson: PackageJsonLike): string[] {
   const allDeps: Record<string, string> = {
