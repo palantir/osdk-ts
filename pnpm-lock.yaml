@@ -1786,10 +1786,10 @@ importers:
         specifier: 3.4.2
         version: 3.4.2
       execa:
-        specifier: ^9.6.0
+        specifier: 9.6.0
         version: 9.6.0
       find-up:
-        specifier: ^7.0.0
+        specifier: 7.0.0
         version: 7.0.0
       open:
         specifier: 10.1.2
