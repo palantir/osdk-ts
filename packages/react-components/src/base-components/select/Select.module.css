@@ -230,10 +230,7 @@
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: min(
-    var(--osdk-select-popup-max-height),
-    var(--available-height)
-  );
+  max-height: min(var(--osdk-select-popup-max-height), var(--available-height));
   overflow-y: auto;
   padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5);
   border-radius: var(

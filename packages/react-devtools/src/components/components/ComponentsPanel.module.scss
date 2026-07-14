@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-@use '../tokens' as t;
-@use '../mixins' as m;
+@use "../tokens" as t;
+@use "../mixins" as m;
 
 .panel {
   display: flex;
@@ -85,7 +85,9 @@
   border-radius: t.$radius-md;
   font-size: t.$font-size-xs;
   cursor: pointer;
-  transition: background-color t.$transition-fast, color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;
@@ -136,7 +138,9 @@
   color: t.$text-secondary;
   font-size: t.$font-size-sm;
   border-left: 2px solid transparent;
-  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    border-left-color t.$transition-fast;
 }
 
 .treeRowInteractive {
