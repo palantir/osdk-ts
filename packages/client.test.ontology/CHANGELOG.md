@@ -1,5 +1,12 @@
 # @osdk/client.test.ontology
 
+## 2.45.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+
 ## 2.44.0
 
 ### Patch Changes

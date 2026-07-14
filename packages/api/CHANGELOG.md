@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.45.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+
 ## 2.44.0
 
 ### Minor Changes
