@@ -44,43 +44,35 @@ export interface BranchedPackage {
 }
 
 /**
- * The outcome of locating the branched SDK(s) for the current branch.
- *
- * - `no-branch`: on main/master/detached/not-a-repo — no branched SDK applies.
- * - `no-sdk-on-branch`: a branch exists, but no candidate publishes its dist tag
- *   (no branched release yet).
- * - `match`: one or more candidates publish the branch tag (`packages`, non-empty).
- *
- * Hard failures (missing/unreadable package.json, no candidates, npm auth/network
- * error) are thrown as `ExitProcessError`.
+ * Resolve the Foundry branch whose published SDKs to target: the explicit
+ * `--branchName`, else the current git branch. Returns `undefined` on
+ * main/master/detached/not-a-repo — i.e. when no branched SDK applies.
  */
-export type BranchedResolution =
-  | { kind: "no-branch" }
-  | { kind: "no-sdk-on-branch"; branch: string }
-  | { kind: "match"; branch: string; packages: BranchedPackage[] };
+export async function resolveFoundryBranch(
+  args: ResolveArgs,
+  deps: ResolveDeps
+): Promise<string | undefined> {
+  const gitBranch =
+    args.branchName == null ? await deps.getGitBranch() : undefined;
+  return resolveBranch(args.branchName, gitBranch);
+}
 
 /**
- * Identify every branched SDK and its published version for the current branch.
+ * Identify every branched SDK and its published version on `branch`.
  *
  * The branched SDKs are whichever `@<scope>/sdk` candidates (or the explicit
  * `--packageName`) publish the branch's `${branch}-latest` npm dist tag. npm has
  * no tag -> package reverse lookup, so each candidate is probed with `npm view`.
- * All matching candidates are returned.
+ * Returns every matching candidate — empty when the branch has no published SDK
+ * yet.
  */
 export async function resolveBranchedPackages(
+  branch: string,
   args: ResolveArgs,
   deps: ResolveDeps
-): Promise<BranchedResolution> {
-  // 1. Resolve the branch.
-  const gitBranch =
-    args.branchName == null ? await deps.getGitBranch() : undefined;
-  const branch = resolveBranch(args.branchName, gitBranch);
-  if (branch == null) {
-    return { kind: "no-branch" };
-  }
-
-  // 2. Determine candidate SDK packages: an explicit --packageName, else every
-  //    `@<scope>/sdk` dependency declared in package.json.
+): Promise<BranchedPackage[]> {
+  // Determine candidate SDK packages: an explicit --packageName, else every
+  // `@<scope>/sdk` dependency declared in package.json.
   const packageJson = await readPackageJson(deps);
   const candidates =
     args.packageName != null
@@ -94,7 +86,7 @@ export async function resolveBranchedPackages(
     );
   }
 
-  // 3. Each candidate that publishes the branch's dist tag is a branched SDK.
+  // Each candidate that publishes the branch's dist tag is a branched SDK.
   const packages: BranchedPackage[] = [];
   for (const candidate of candidates) {
     const branched = await probeBranchedPackage(
@@ -105,12 +97,7 @@ export async function resolveBranchedPackages(
     );
     if (branched != null) packages.push(branched);
   }
-
-  // 4. Zero matches means no branched release for this branch yet.
-  if (packages.length === 0) {
-    return { kind: "no-sdk-on-branch", branch };
-  }
-  return { kind: "match", branch, packages };
+  return packages;
 }
 
 interface PackageJsonLike {

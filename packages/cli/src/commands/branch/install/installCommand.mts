@@ -22,13 +22,13 @@ import { consola } from "consola";
 import { getGitBranch as defaultGetGitBranch } from "../utils/getGitBranch.js";
 import {
   resolveBranchedPackages,
+  resolveFoundryBranch,
   type ResolveDeps,
 } from "../utils/resolveBranchedPackages.mjs";
 import {
   npmDistTags as defaultNpmDistTags,
   npmInstall as defaultNpmInstall,
 } from "../utils/runNpm.js";
-import { decideAction } from "./decideAction.js";
 import type { InstallArgs } from "./InstallArgs.js";
 
 export interface InstallDeps extends ResolveDeps {
@@ -50,32 +50,27 @@ export default async function installCommand(
     ...overrides,
   };
 
-  const result = await resolveBranchedPackages(args, deps);
-
-  if (result.kind === "no-branch") {
+  const branch = await resolveFoundryBranch(args, deps);
+  if (branch == null) {
     consola.info(
       "On main or no determinable branch — nothing to sync. Use --branchName to force."
     );
     return;
   }
-  if (result.kind === "no-sdk-on-branch") {
-    consola.info(
-      `No branched release for "${result.branch}" yet — nothing to sync.`
-    );
+
+  const packages = await resolveBranchedPackages(branch, args, deps);
+  if (packages.length === 0) {
+    consola.info(`No branched release for "${branch}" yet — nothing to sync.`);
     return;
   }
 
   // Only install packages whose declared version differs from the resolved branched version.
-  const toInstall = result.packages.filter(
-    (p) =>
-      decideAction({ current: p.current, resolved: p.version }).kind ===
-      "install"
-  );
-  const alreadyInSync = result.packages.length - toInstall.length;
+  const toInstall = packages.filter((p) => p.current !== p.version);
+  const alreadyInSync = packages.length - toInstall.length;
 
   if (toInstall.length === 0) {
     consola.info(
-      `All ${result.packages.length} branched SDK(s) already in sync for "${result.branch}".`
+      `All ${packages.length} branched SDK(s) already in sync for "${branch}".`
     );
     return;
   }
