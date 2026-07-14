@@ -10,14 +10,16 @@ Assess whether a component is ready to graduate from `experimental/` to a stable
 
 **Source of truth:** [`packages/react-components/CONTRIBUTING.md`](../../../packages/react-components/CONTRIBUTING.md) and [`packages/react-components/CLAUDE.md`](../../../packages/react-components/CLAUDE.md) define the engineering rules. This skill does **not** restate them — it cites them and adds the GA-specific bar below. If anything here conflicts with those docs, **those win** — flag the conflict.
 
-The GA candidates are the components currently exported under `packages/react-components/src/public/experimental/` (e.g. `object-table`, `filter-list`, `action-form`, …). A component is GA-ready when every category below is either satisfied or has an explicit, user-accepted exception.
+The GA candidates are the components currently exported under `packages/react-components/src/public/experimental/`. A component is GA-ready when every **required** criterion below is satisfied or has an explicit, user-accepted exception. **Optional** criteria (marked `[OPTIONAL]`) are nice-to-haves that do **not** block GA — surface them, but never count them as blockers.
+
+**Required vs optional is load-bearing in this skill.** Each criterion below is tagged `[REQUIRED]` or `[OPTIONAL]`. Only `[REQUIRED]` items gate GA and feed the blocker count in the verdict. Report optional findings under a clearly separated "Nice-to-have (non-blocking)" bucket in each category so the reader never confuses them with blockers.
 
 ## Output contract
 
 Every run ends with two artifacts, in this order:
 
 1. **Feature inventory** — a bulleted list of the component's main features (what it does, its major props/capabilities). This orients the reader and defines the surface each category is judged against.
-2. **Outstanding tasks to GA** — a checklist grouped by the six categories below (Exports, API, Features, Styling, Documentation, plus a short Summary verdict). Each item is specific and actionable (`file:line` where known), ordered most-blocking first. If a category is fully clean, say so explicitly ("✅ Exports — no outstanding tasks") rather than omitting it.
+2. **Outstanding tasks to GA** — a checklist grouped by the six categories below (Exports, API, Features, Styling, Documentation, plus a short Summary verdict). Within each category, list `[REQUIRED]` (blocking) findings first, then a separated **Nice-to-have (non-blocking)** bucket for `[OPTIONAL]` findings. Each item is specific and actionable (`file:line` where known), ordered most-blocking first. If a category has no required findings, say so explicitly ("✅ Exports — no blocking tasks") rather than omitting it — but still list any optional findings under Nice-to-have.
 
 Do **not** interleave fixes into the report. The report is the deliverable.
 
@@ -45,51 +47,53 @@ Each sub-agent audits against these criteria:
 
 ### A. Exports
 
-- Both the **OSDK component** (e.g. `ObjectTable`) **and the base component** (e.g. `BaseTable`) are exported. Note: base naming in this package is often `Base<Thing>` (`BaseTable`, not `BaseObjectTable`) — judge by role (OSDK-agnostic layer), not by an exact name.
-- GA requires the component be exported from a **stable path**, not `experimental/`. Today everything ships under `src/public/experimental/<name>.ts`; the GA task is to add/move the stable export. Flag that the component still lives only under `experimental/`.
-- **Hooks and building blocks are exported** — We want to export the hooks and building blocks (but not if it is something Bluepring already offers, see next point) to enable users to build their own custom component. Add a GA task here and list out any unexported hooks or building blocks under this task.
-- **Do not export base components Blueprint already offers** (e.g. `Listogram`). If such an export exists, flag it for removal (`CONTRIBUTING.md` "Export Rules" — UI primitives in `src/base-components/` must not be exported; sanctioned reuse is `src/public/primitives.ts`).
+- `[REQUIRED]` Both the **OSDK component** (e.g. `ObjectTable`) **and the base component** (e.g. `BaseTable`) are exported. Note: base naming in this package is often `Base<Thing>` (`BaseTable`, not `BaseObjectTable`) — judge by role (OSDK-agnostic layer), not by an exact name.
+- `[REQUIRED]` **Do not export base components Blueprint already offers** (e.g. `Listogram`). If such an export exists, flag it for removal (`CONTRIBUTING.md` "Export Rules" — UI primitives in `src/base-components/` must not be exported; sanctioned reuse is `src/public/primitives.ts`).
+- `[OPTIONAL]` **Hooks and building blocks exported.** Exporting the hooks and building blocks lets users build their own custom component, but this is a nice-to-have. List any unexported hooks or building blocks under this optional task — do not treat their absence as a blocker.
+- `[OPTIONAL]` **Question the higher-level export/composition shape.** A design judgment, not a mechanical check: is the _shape_ of the public surface right, or is it a family of siblings where one entry component would be cleaner? If you flag it, state the pattern, the tension that keeps it that way, and 1–2 candidate resolutions — surface it as an open design question for the user; do **not** pick one. Non-blocking.
 
 ### B. API
 
-- **Remove unsupported API.** If a prop is exposed in **`<Name>Api.ts`** but the feature is not yet implemented, flag it to be removed.
-- **Types resolve in a consumer without casts.** The strongest check is the sandbox apps — verify `<X>` is used in `packages/e2e.sandbox.peopleapp` (or `packages/e2e.sandbox.officenetwork`) and that no `as`/`any` cast is needed to satisfy `<X>`'s props. Flag any prop that is not tested in the sandbox apps. Flag any generic that fails to infer.
-- **No deprecated props.** Grep the Api file and component for `@deprecated`. Each surviving deprecated prop is a GA task (remove it).
-- **Clunky API flagged for improvement** (e.g. FilterList's linked-filter API). Note any prop shape that requires the consumer to construct awkward intermediate objects or duplicate information.
+- `[REQUIRED]` **Types resolve in a consumer without casts.** The strongest check is the sandbox apps — verify `<X>` is used in `packages/e2e.sandbox.peopleapp` (or `packages/e2e.sandbox.officenetwork`) and that no `as`/`any` cast is needed to satisfy `<X>`'s props. Flag any prop that is not tested in the sandbox apps. Flag any generic that fails to infer.
+- `[REQUIRED]` **No deprecated props.** Grep the Api file and component for `@deprecated`. Each surviving deprecated prop is a GA task (remove it).
+- `[REQUIRED]` **Remove unsupported / dead API.** A public prop that is documented to do something but does nothing is a broken API, not a nice-to-have — treat it as blocking. Audit **every** public prop, not just data/enum props — **callback props are the easy miss**: a callback can be declared, destructured, and still never invoked. For each prop, trace it to a real use site:
+  - Grep the prop name across `src/<name>/`. A prop that appears only in the Api file + the component's destructure (and nowhere else) is dead.
+  - Follow the feature through: if a callback documents a behavior, confirm that code path actually exists. If it doesn't, the callback **and** any supporting types/union-variants/imports that exist only to type it are all dead surface to strip together.
+- `[OPTIONAL]` **Improve clunky API** Note any prop shape that requires the consumer to construct awkward intermediate objects or duplicate information. Nice-to-have — a working-but-awkward API does not block GA.
 
 ### C. Features
 
-- **i18n** — user-facing strings go through the translation mechanism, not hardcoded literals. Flag hardcoded strings in the Base/wrapper.
-- **Major bugs** — surface any known open bugs (check for `TODO`/`FIXME`/`HACK` in the component, and any obviously broken states).
-- **Code quality** — run the [`deep-design`](../../..) skill's lens and check against `CLAUDE.md` "Common pitfalls" / anti-patterns. Report the top complexity/anti-pattern findings, not a line-by-line review.
+- `[REQUIRED]` **All user-facing strings must be overridable via props.** We are **not** building an i18n/translation mechanism — the bar is that every hardcoded user-facing literal (button text, placeholders, empty/error states, aria-labels) can be replaced by a caller-supplied string so users can pass in their own translated copy. For each user-facing string in the Base/wrapper/sub-components, confirm there is a prop to override it; flag every string that is hard-coded with **no** override prop. (A hardcoded default is fine — the requirement is an override path, not routing through a translation layer.)
+- `[REQUIRED]` **Dark mode works out of the box** — no color is hardcoded such that it breaks in dark theme; colors come from `--bp`/`--osdk` tokens (`CONTRIBUTING.md` "Styling Guidelines"). (Grep `.module.css` + tsx for hex/`rgb`/`rgba` literals.) _This is the "Dark mode OOTB" checklist item; the styling sub-agent is best placed to verify it since it inspects the CSS._
+- `[OPTIONAL]` **Major bugs** — surface any known open bugs (check for `TODO`/`FIXME`/`HACK` in the component, and any obviously broken states). Nice-to-have to fix before GA.
+- `[OPTIONAL]` **Code quality** — run the [`deep-design`](../../..) skill's lens and check against `CLAUDE.md` "Common pitfalls" / anti-patterns. Report the top complexity/anti-pattern findings, not a line-by-line review. Nice-to-have.
 
 ### D. Styling
 
-- **All CSS token mappings live in `src/tokens/component-tokens/<name>.css`.** Flag any `--osdk`/`--bp` mapping defined elsewhere (inline in a `.module.css`, in the component tsx).
-- **Dark mode works out of the box** — no color is hardcoded such that it breaks in dark theme; colors come from `--bp`/`--osdk` tokens (`CONTRIBUTING.md` "Styling Guidelines").
-- **No unused tokens** — cross-reference tokens declared in `<name>.css` against usages in the component's `.module.css` files; list declared-but-unused ones.
-- **Remove `calc(--token * 1)`** — multiplying by 1 is a no-op; grep for `calc(` inside the component and its token file and flag any `* 1)` (or `1 *`).
-- **Token consistency** — note whether `<X>` uses a coherent, consistent set of tokens versus a grab-bag; recommend consolidation where obvious.
+- `[REQUIRED]` **All CSS token mappings live under `src/tokens/component-tokens/`.** Every `--osdk`/`--bp` mapping must be defined in the component's token file(s) under `component-tokens/`, so we can generate the documented CSS-variables list. Flag any `--osdk`/`--bp` mapping defined elsewhere (inline in a `.module.css`, in the component tsx). _(Note: dark-mode OOTB is verified here but reported under Features C per the checklist — the styling sub-agent should still grep for hardcoded colors and feed that finding to C.)_
+- `[OPTIONAL]` **One consistent token file per component.** A component's tokens ideally live in a single `src/tokens/component-tokens/<name>.css` (as `object-table` does with `table.css`), not scattered. If `<X>`'s tokens are split (e.g. ActionForm's `form.css` + `form-section.css` + `object-set.css`), note consolidation as a nice-to-have — but first confirm each file is genuinely owned by `<X>` (grep the tokens' usages) rather than a co-located file belonging to a different component. Also note whether the token set is coherent versus a grab-bag. Non-blocking.
+- `[OPTIONAL]` **No unused tokens** — cross-reference tokens declared in the token file(s) against usages in the component's `.module.css` files; list declared-but-unused ones. Nice-to-have cleanup.
+- `[OPTIONAL]` **Remove `calc(--token * 1)`** — multiplying by `1` is a no-op wrapper that should be unwrapped to the bare `var(--token)`. Grep the component's token file and `.module.css` for `* 1` and `1 *` (e.g. `grep -rnE '\* 1[^0-9]|[^0-9-]1 \*'` — the `[^0-9]` guards keep `* 10`, `* 15` from matching; note `* 1.5` also slips through, so drop decimals when confirming). **Multiplying by `-1` is legitimate** (negating a token) — do not flag `* -1` or `-1 *`. Nice-to-have cleanup.
 
 ### E. Documentation
 
-Storybook must have:
+All items in this category are `[REQUIRED]`.
 
-- An **OSDK component story**: a `Default` (minimal props) plus **one story per major feature** (cross-check against the Step 1 inventory — every major feature should have a story).
+**Coverage — the component docs in `packages/react-components/docs` must cover:**
+
+- **OSDK component**: all props, all CSS tokens, and all data attributes.
+- **Base component**: all props.
+
+Flag any prop, CSS token, or data attribute that is undocumented.
+
+**Storybook must have:**
+- **Overview page** structure that embeds the `packages/react-components/docs` mdx file.
+- An **OSDK component story**: a `Default` (minimal props) plus **one story per major feature** (cross-check against the Step 1 inventory — every major feature should have a story). Flag features with no story.
 - A **base component story**: at least one example.
-- **Code panel** showing the example snippet (the story is wired so the Docs/Code panel renders source).
-- **Overview page** structure that embeds the `docs` mdx file.
+- **Code panel** showing the example code snippet (the story is wired so the Docs/Code panel renders source).
 
-The component doc (`docs/<Name>.md` today; GA wants a single-page **mdx**) should be:
 
-- Single page, with the **default component demo at the top**.
-- A **props table** listing all props.
-- A **CSS section** with a generated **CSS Variables** table and a **Data Attributes** table.
-- Links at the bottom to (1) the **base component docs page** and (2) the **example usage page**.
-- A **separate mdx for the base component**, linked from the OSDK component doc.
-- A **separate mdx for example usage**, linking to the Storybook examples.
-
-Flag whichever of these are missing or still in the older `.md` shape.
+Flag whichever of these are missing.
 
 ### F. (folded into Summary) — no sub-agent; you write the verdict in Step 3.
 
@@ -98,18 +102,10 @@ Flag whichever of these are missing or still in the older `.md` shape.
 Collect the sub-agent findings and emit the two artifacts from the **Output contract**:
 
 1. Feature inventory (from Step 1).
-2. Outstanding tasks to GA, grouped A–E, each item specific and `file:line`-anchored, ordered most-blocking first. Clean categories get an explicit "✅ … — no outstanding tasks".
+2. Outstanding tasks to GA, grouped A–E, each item specific and `file:line`-anchored, ordered most-blocking first. Within each category, put `[REQUIRED]` findings first, then a separated **Nice-to-have (non-blocking)** bucket for `[OPTIONAL]` findings. Categories with no required findings get an explicit "✅ … — no blocking tasks" (still list any optional findings).
 
-Then add a one-paragraph **Summary verdict**: `GA-ready` / `Close (N blocking items)` / `Not ready (N blocking items)`, with the single biggest blocker named.
+Then add a one-paragraph **Summary verdict**: `GA-ready` / `Close (N blocking items)` / `Not ready (N blocking items)`, with the single biggest blocker named. **The blocker count includes only `[REQUIRED]` findings** — optional/nice-to-have findings never count toward it. A component with only optional findings outstanding is `GA-ready` (note the nice-to-haves separately).
 
 Keep the report skimmable — checklists over prose. Do not restate the criteria; report only what's outstanding for `<X>`.
 
-## Step 4 — Offer to act (only if asked)
-
-The audit is done. Do **not** start fixing. End by offering next steps via `AskUserQuestion`:
-
-- **Fix now** — hand the punch-list to `/contribute` (per outstanding item) or fix directly. Each git/gh write still requires its own approval per that skill's Git policy.
-- **File issues** — turn the punch-list into tracked tasks.
-- **Just the report** — stop here.
-
-If the user picks "Fix now", follow `/contribute` for each change — this skill does not own the edit/verify/ship workflow.
+Write the per-component report to packages/react-components/ga-reports.
