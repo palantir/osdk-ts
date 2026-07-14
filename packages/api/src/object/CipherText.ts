@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { CipherChannelStrategy } from "@osdk/foundry.ontologies";
-
-export type { CipherChannelStrategy } from "@osdk/foundry.ontologies";
+export type CipherChannelStrategy =
+  | "PREFER_EXISTING"
+  | "PREFER_DEFAULT"
+  | "EXISTING_ONLY"
+  | "DEFAULT_ONLY";
 
 /**
  * Representation of a `cipherText` property. The encrypted
