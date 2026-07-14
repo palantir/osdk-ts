@@ -390,16 +390,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
-export enum CipherChannelStrategy {
-    	// (undocumented)
-    DEFAULT_ONLY = "DEFAULT_ONLY",
-    	// (undocumented)
-    EXISTING_ONLY = "EXISTING_ONLY",
-    	// (undocumented)
-    PREFER_DEFAULT = "PREFER_DEFAULT",
-    	// (undocumented)
-    PREFER_EXISTING = "PREFER_EXISTING"
-}
+export type CipherChannelStrategy = "PREFER_EXISTING" | "PREFER_DEFAULT" | "EXISTING_ONLY" | "DEFAULT_ONLY";
 
 // @public
 export interface CipherText {
@@ -1855,7 +1846,7 @@ export type OsdkObject<N extends string> = {
 // Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public (undocumented)
 export type OsdkObjectCreatePropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
@@ -1863,7 +1854,7 @@ export type OsdkObjectCreatePropertyType<
 
 // Warning: (ae-forgotten-export) The symbol "GetCreateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public (undocumented)
 export type OsdkObjectCreateWirePropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
@@ -1885,7 +1876,7 @@ export type OsdkObjectPropertyType<
 
 // Warning: (ae-forgotten-export) The symbol "GetUpdatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public (undocumented)
 export type OsdkObjectUpdatePropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
@@ -1893,7 +1884,7 @@ export type OsdkObjectUpdatePropertyType<
 
 // Warning: (ae-forgotten-export) The symbol "GetUpdateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public (undocumented)
 export type OsdkObjectUpdateWirePropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
@@ -2038,7 +2029,7 @@ export type PropertyTypeReferenceOrStringConstant = StringConstant | PropertyTyp
 // @public
 export type PropertyValueFormattingRule = PropertyNumberFormattingRule | PropertyTimestampFormattingRule | PropertyDateFormattingRule | PropertyBooleanFormattingRule | PropertyKnownTypeFormattingRule;
 
-// @public
+// @public (undocumented)
 export interface PropertyValueWireToClient {
     	// (undocumented)
     attachment: Attachment;
