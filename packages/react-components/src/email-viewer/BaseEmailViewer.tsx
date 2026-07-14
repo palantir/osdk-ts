@@ -17,29 +17,21 @@
 import classnames from "classnames";
 import React, { useMemo } from "react";
 
-import type { BaseEmailViewerProps, EmailAddress } from "./EmailViewerApi.js";
+import type { BaseEmailViewerProps } from "./EmailViewerApi.js";
+import { useEmailViewerState } from "./hooks/useEmailViewerState.js";
 
 import styles from "./BaseEmailViewer.module.css";
-
-function formatAddress(address: EmailAddress): string {
-  if (address.name) {
-    return `${address.name} <${address.address}>`;
-  }
-  return address.address;
-}
-
-function formatAddressList(addresses: readonly EmailAddress[]): string {
-  return addresses.map(formatAddress).join(", ");
-}
 
 export function BaseEmailViewer({
   email,
   className,
 }: BaseEmailViewerProps): React.ReactElement {
+  const { bodyMode, formattedFrom, formattedTo, formattedCc } =
+    useEmailViewerState({ email });
   const rootClassName = classnames(styles.container, className);
 
   const bodyContent = useMemo(() => {
-    if (email.html != null) {
+    if (bodyMode === "html") {
       return (
         <div className={styles.bodyContainer}>
           {/*
@@ -62,11 +54,11 @@ export function BaseEmailViewer({
         </div>
       );
     }
-    if (email.text != null) {
+    if (bodyMode === "text") {
       return <div className={styles.textBody}>{email.text}</div>;
     }
     return <div className={styles.emptyBody}>No content</div>;
-  }, [email.html, email.text]);
+  }, [bodyMode, email.html, email.text]);
 
   return (
     <div className={rootClassName}>
@@ -74,28 +66,22 @@ export function BaseEmailViewer({
         {email.subject != null && (
           <div className={styles.subject}>{email.subject}</div>
         )}
-        {email.from != null && (
+        {formattedFrom != null && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>From:</span>
-            <span className={styles.headerValue}>
-              {formatAddress(email.from)}
-            </span>
+            <span className={styles.headerValue}>{formattedFrom}</span>
           </div>
         )}
         {email.to.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>To:</span>
-            <span className={styles.headerValue}>
-              {formatAddressList(email.to)}
-            </span>
+            <span className={styles.headerValue}>{formattedTo}</span>
           </div>
         )}
         {email.cc.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>Cc:</span>
-            <span className={styles.headerValue}>
-              {formatAddressList(email.cc)}
-            </span>
+            <span className={styles.headerValue}>{formattedCc}</span>
           </div>
         )}
         {email.date != null && (

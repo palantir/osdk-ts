@@ -18,6 +18,15 @@
 export { TiffRenderer } from "../../images/tiff-renderer/TiffRenderer.js";
 export type { TiffRendererProps } from "../../images/tiff-renderer/types.js";
 
+// TiffRenderer hooks
+export {
+  type TiffDecodeResult,
+  type TiffImageData,
+  useTiffRenderer,
+  type UseTiffRendererOptions,
+  type UseTiffRendererResult,
+} from "../../images/tiff-renderer/hooks/useTiffRenderer.js";
+
 // TiffViewerMedia (Media wrapper)
 import { TiffViewerMedia as _TiffViewerMedia } from "../../images/tiff-renderer/TiffViewerMedia.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";

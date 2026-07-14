@@ -15,9 +15,10 @@
  */
 
 import classnames from "classnames";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import type { BaseExcelViewerProps, SheetData } from "./ExcelViewerApi.js";
+import { useExcelViewerState } from "./hooks/useExcelViewerState.js";
 
 import styles from "./BaseExcelViewer.module.css";
 
@@ -82,21 +83,9 @@ export function BaseExcelViewer({
   spreadsheet,
   className,
 }: BaseExcelViewerProps): React.ReactElement {
-  const [activeSheetIndex, setActiveSheetIndex] = useState(0);
+  const { sheets, activeSheetIndex, activeSheet, selectSheet } =
+    useExcelViewerState({ spreadsheet });
   const rootClassName = classnames(styles.container, className);
-
-  const safeIndex = Math.min(
-    activeSheetIndex,
-    Math.max(0, spreadsheet.sheets.length - 1)
-  );
-  const activeSheet = useMemo(
-    () => spreadsheet.sheets[safeIndex],
-    [spreadsheet.sheets, safeIndex]
-  );
-
-  const handleTabClick = useCallback((index: number) => {
-    setActiveSheetIndex(index);
-  }, []);
 
   return (
     <div className={rootClassName}>
@@ -105,15 +94,15 @@ export function BaseExcelViewer({
       ) : (
         <div className={styles.emptySheet}>No sheets</div>
       )}
-      {spreadsheet.sheets.length > 1 && (
+      {sheets.length > 1 && (
         <div className={styles.tabBar}>
-          {spreadsheet.sheets.map((sheet, index) => (
+          {sheets.map((sheet, index) => (
             <button
               key={sheet.name}
               className={classnames(styles.tab, {
-                [styles.tabActive]: index === safeIndex,
+                [styles.tabActive]: index === activeSheetIndex,
               })}
-              onClick={() => handleTabClick(index)}
+              onClick={() => selectSheet(index)}
               type="button"
             >
               {sheet.name}

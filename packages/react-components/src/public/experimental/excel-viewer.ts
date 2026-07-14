@@ -23,6 +23,13 @@ export type {
   SheetData,
 } from "../../excel-viewer/ExcelViewerApi.js";
 
+// ExcelViewer hooks
+export {
+  useExcelViewerState,
+  type UseExcelViewerStateOptions,
+  type UseExcelViewerStateResult,
+} from "../../excel-viewer/hooks/useExcelViewerState.js";
+
 // ExcelViewer (Media wrapper)
 import { ExcelViewer as _ExcelViewer } from "../../excel-viewer/ExcelViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";

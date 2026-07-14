@@ -23,6 +23,14 @@ export type {
   ParsedEmail,
 } from "../../email-viewer/EmailViewerApi.js";
 
+// EmailViewer hooks
+export {
+  type EmailBodyMode,
+  useEmailViewerState,
+  type UseEmailViewerStateOptions,
+  type UseEmailViewerStateResult,
+} from "../../email-viewer/hooks/useEmailViewerState.js";
+
 // EmailViewer (Media wrapper)
 import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
