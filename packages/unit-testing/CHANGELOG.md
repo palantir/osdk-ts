@@ -1,5 +1,18 @@
 # @osdk/unit-testing
 
+## 0.19.0
+
+### Minor Changes
+
+- 765ae4e: Re-registering a mock client stub with the same pattern now overrides the previous stub (latest registered wins) instead of being shadowed by it.
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+- Updated dependencies [cbf692b]
+  - @osdk/client@2.45.0
+  - @osdk/api@2.45.0
+
 ## 0.18.0
 
 ### Minor Changes
