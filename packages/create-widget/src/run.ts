@@ -25,6 +25,13 @@ import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
 
+// Lowercases a substituted token value. Used for `package.json` name fields,
+// since npm rejects package names containing uppercase characters but the
+// project name entered by the user may contain them.
+Handlebars.registerHelper("lowercase", (value: unknown) =>
+  String(value).toLowerCase()
+);
+
 interface RunArgs {
   project: string;
   overwrite: boolean;
