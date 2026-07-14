@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
-export { CipherChannelStrategy, isOk } from "@osdk/api";
+export { isOk } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
