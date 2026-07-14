@@ -15,7 +15,6 @@
  */
 
 import type { Attachment, Client, Osdk } from "@osdk/client";
-import { CipherChannelStrategy } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
 import {
   FooInterface,
@@ -369,7 +368,7 @@ describe(createEditBatch, () => {
       {
         cipherText: {
           plaintext: "secret",
-          strategy: CipherChannelStrategy.PREFER_EXISTING,
+          strategy: "PREFER_EXISTING",
         },
       }
     );
@@ -396,7 +395,7 @@ describe(createEditBatch, () => {
         properties: {
           cipherText: {
             plaintext: "secret",
-            strategy: CipherChannelStrategy.PREFER_EXISTING,
+            strategy: "PREFER_EXISTING",
           },
         },
       },
@@ -415,7 +414,7 @@ describe(createEditBatch, () => {
       cipherText: {
         plaintext: "secret",
         // @ts-expect-error - create does not accept a channel strategy (update-only)
-        strategy: CipherChannelStrategy.PREFER_EXISTING,
+        strategy: "PREFER_EXISTING",
       },
     });
   });

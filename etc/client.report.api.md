@@ -14,7 +14,6 @@ import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
-import { CipherChannelStrategy } from '@osdk/api';
 import { CipherText } from '@osdk/api';
 import { CipherTextValue } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
@@ -100,8 +99,6 @@ export { ApplyActionOptions }
 export { ApplyBatchActionOptions }
 
 export { Attachment }
-
-export { CipherChannelStrategy }
 
 export { CipherText }
 

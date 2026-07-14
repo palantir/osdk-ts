@@ -19,7 +19,6 @@ import type {
   CreateCipherText,
   UpdateCipherText,
 } from "@osdk/api";
-import { CipherChannelStrategy } from "@osdk/api";
 import {
   CipherTextInterface,
   CipherTextTest,
@@ -95,7 +94,7 @@ export async function runCipherTextTest(): Promise<void> {
     {
       encrypted: {
         plaintext: "new-value",
-        strategy: CipherChannelStrategy.PREFER_DEFAULT,
+        strategy: "PREFER_DEFAULT",
       },
     }
   );
@@ -142,7 +141,7 @@ export async function runCipherTextTest(): Promise<void> {
     (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
       .plaintext === "new-value" &&
       (updatePlaintextEntry.properties.encrypted as UpdateCipherText)
-        .strategy === CipherChannelStrategy.PREFER_DEFAULT,
+        .strategy === "PREFER_DEFAULT",
     "Expected updated object to have correct plaintext value and channel strategy"
   );
 
