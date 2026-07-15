@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.70.0
+
+### Minor Changes
+
+- 2d4ad2d: Introduce branched SDKs commands to @osdk/cli
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
 ## 0.69.0
 
 ### Patch Changes
