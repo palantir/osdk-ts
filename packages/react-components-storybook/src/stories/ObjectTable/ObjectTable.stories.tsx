@@ -196,17 +196,9 @@ const meta: Meta<EmployeeTableProps> = {
         "The currently selected rows in the table. If provided, the row selection is controlled.",
       control: false,
     },
-    onRowSelection: {
-      description:
-        "Called when the row selection changes. Required when row selection is controlled.",
-      control: false,
-      table: {
-        category: "Events",
-      },
-    },
     onRowSelectionChanged: {
       description:
-        "Called when the row selection changes, with a RowSelectionChange payload (selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
+        "Called when the row selection changes, with a RowSelectionChange payload (selectedRows, isSelectAll, derived objectSet).",
       control: false,
       table: {
         category: "Events",

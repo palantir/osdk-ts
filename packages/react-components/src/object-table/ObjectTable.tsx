@@ -66,8 +66,6 @@ export function ObjectTable<
   onOrderByChanged,
   onColumnsPinnedChanged,
   onColumnResize,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
-  onRowSelection,
   onRowSelectionChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
@@ -150,7 +148,6 @@ export function ObjectTable<
     selectionMode,
     selectedRows,
     isAllSelected: isAllSelectedProp,
-    onRowSelection,
     onRowSelectionChanged: handleRowSelectionChanged,
     data,
   });

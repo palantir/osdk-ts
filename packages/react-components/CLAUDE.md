@@ -62,7 +62,7 @@ Every feature that holds state the user can change (selection, sort, filter, exp
 ```ts
 /**
  * Controlled mode only. Caller owns selection state; component does not
- * maintain internal selection. Pair with `onRowSelection` to observe changes.
+ * maintain internal selection. Pair with `onRowSelectionChanged` to observe changes.
  */
 selectedRows?: RowSelectionState;
 ```
@@ -76,9 +76,9 @@ selectedRows?: RowSelectionState;
 defaultOrderBy?: OrderBy;
 ```
 
-**Naming**: `<feature>` (controlled), `default<Feature>` (uncontrolled seed), `on<Feature>Changed` (callback). Match `ObjectTableApi.ts` exactly: `selectedRows` / `onRowSelection`, `orderBy` / `defaultOrderBy` / `onOrderByChanged`, `filter` / `onFilterChanged`.
+**Naming**: `<feature>` (controlled), `default<Feature>` (uncontrolled seed), `on<Feature>Changed` (callback). Match `ObjectTableApi.ts` exactly: `selectedRows` / `onRowSelectionChanged`, `orderBy` / `defaultOrderBy` / `onOrderByChanged`.
 
-**Canonical implementation** (both modes): see `src/object-table/hooks/useRowSelection.ts` — `rowSelectionState` is computed from `selectedRows` when controlled, falls back to `internalRowSelection` (a `useState({})`) otherwise; `onRowSelection` fires in both modes. Use this pattern when implementing both modes; for single-mode features, drop the branch you don't support.
+**Canonical implementation** (both modes): see `src/object-table/hooks/useRowSelection.ts` — `rowSelectionState` is computed from `selectedRows` when controlled, falls back to `internalRowSelection` (a `useState({})`) otherwise; `onRowSelectionChanged` fires in both modes. Use this pattern when implementing both modes; for single-mode features, drop the branch you don't support.
 
 ### Render override slots
 

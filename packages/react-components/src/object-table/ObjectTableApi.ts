@@ -73,7 +73,6 @@ interface SharedColumnDefinition<
   maxWidth?: number;
   resizable?: boolean;
   orderable?: boolean;
-  filterable?: boolean;
 
   /**
    * Custom renderer for the cell value.
@@ -349,25 +348,10 @@ export interface ObjectTableProps<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
 
   /**
-   * Whether the table is filterable by the user.
-   *
-   * @default true
-   */
-  enableFiltering?: boolean;
-
-  /**
    * The current where clause to filter the objects in the table.
    * If provided, the filter is controlled.
    */
   filter?: WhereClause<Q, RDPs>;
-
-  /**
-   * Called when the where clause is changed.
-   * Required when filter is controlled.
-   *
-   * @param newWhere The new where clause
-   */
-  onFilterChanged?: (newWhere: WhereClause<Q, RDPs>) => void;
 
   /**
    * Whether the table is sortable by the user.
@@ -583,22 +567,6 @@ export interface ObjectTableProps<
    * When true, the table will show all rows as selected regardless of the selectedRows array.
    */
   isAllSelected?: boolean;
-
-  /**
-   * Called when the row selection changes.
-   *
-   * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
-   * delivers a {@link RowSelectionChange} object with `selectedRows`,
-   * `isSelectAll`, and a derived `objectSet`. This legacy callback
-   * continues to fire alongside the new one for backwards compatibility.
-   *
-   * @param selectedRowIds The primary keys of currently selected rows
-   * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
-   */
-  onRowSelection?: (
-    selectedRowIds: PrimaryKeyType<Q>[],
-    isSelectAll?: boolean
-  ) => void;
 
   /**
    * Called when the row selection changes, with a {@link RowSelectionChange}
