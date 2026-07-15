@@ -19,12 +19,6 @@ export { hydrateOsdkObject } from "../object/hydrateOsdkObject.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
 export {
-  getMetaTagContent,
-  getOsdkConfig,
-} from "../public-utils/osdkConfig.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
-
-export {
   createClientWithSubscriptionConnection,
   createClientWithTransaction,
 } from "../createClient.js";
