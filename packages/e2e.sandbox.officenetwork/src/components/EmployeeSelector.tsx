@@ -61,7 +61,7 @@ export function EmployeeSelector({
           backgroundSize: "1rem",
         }}
       >
-        <option value="" disabled>
+        <option value="" disabled={true}>
           {isLoading ? "Loading..." : `Select Employee (${employees.length})`}
         </option>
         {sortedEmployees.map((employee) => (

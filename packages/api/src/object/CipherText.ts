@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+export type CipherChannelStrategy =
+  | "PREFER_EXISTING"
+  | "PREFER_DEFAULT"
+  | "EXISTING_ONLY"
+  | "DEFAULT_ONLY";
+
 /**
  * Representation of a `cipherText` property. The encrypted
  * value is not stored; call {@link CipherText.decrypt} to retrieve the
@@ -32,4 +38,39 @@ export interface CipherText {
    * @returns the decrypted plaintext
    */
   decrypt(): Promise<string>;
+
+  /**
+   * Returns the raw encrypted value backing this ciphertext. Used internally
+   * to forward an existing ciphertext value into an object edit without
+   * decrypting it.
+   *
+   * @internal
+   * @returns the encrypted value
+   */
+  getValue(): string;
+}
+
+/**
+ * Create a `cipherText` property value from plaintext. The platform encrypts
+ * the value using the property's default cipher channel.
+ */
+export interface CreateCipherText {
+  plaintext: string;
+}
+
+/**
+ * Update a `cipherText` property value from plaintext. `strategy` controls which
+ * cipher channel is used when re-encrypting.
+ */
+export interface UpdateCipherText {
+  plaintext: string;
+  strategy?: CipherChannelStrategy;
+}
+
+/**
+ * The wire representation of a `cipherText` edit that reuses an existing
+ * ciphertext: the raw encrypted value.
+ */
+export interface CipherTextValue {
+  ciphertext: string;
 }

@@ -52,7 +52,7 @@ export function AuthCallbackPage() {
     // After successful callback processing, redirect to the main page
     // Preserve any state that was passed if available
     const redirectPath = location.state?.from || "/";
-    return <Navigate to={redirectPath} replace />;
+    return <Navigate to={redirectPath} replace={true} />;
   }
 
   return (

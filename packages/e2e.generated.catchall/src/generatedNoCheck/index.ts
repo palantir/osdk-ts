@@ -21,6 +21,7 @@ export * as $Actions from './ontology/actions.js';
 export {
   Athlete,
   bus_1,
+  CipherTextInterface,
   CollateralConcernCandidate,
   CollateralConcernList,
   MwaltherTestIdp,

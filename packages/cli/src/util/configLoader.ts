@@ -20,10 +20,10 @@ import { loadFoundryConfig } from "@osdk/foundry-config-json";
 
 let siteConfigPromise:
   | Promise<LoadedFoundryConfig<"site"> | undefined>
-  | undefined = undefined;
+  | undefined;
 let widgetSetConfigPromise:
   | Promise<LoadedFoundryConfig<"widgetSet"> | undefined>
-  | undefined = undefined;
+  | undefined;
 
 function getConfig(
   type: "site"

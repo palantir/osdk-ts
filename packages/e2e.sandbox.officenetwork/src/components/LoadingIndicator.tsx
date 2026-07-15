@@ -48,7 +48,7 @@ export function StatusBadge({
   if (isLoading) {
     return (
       <span className="officenetwork-badge officenetwork-badge-info flex items-center gap-1.5">
-        <LoadingIndicator isLoading size="sm" />
+        <LoadingIndicator isLoading={true} size="sm" />
         Loading
       </span>
     );

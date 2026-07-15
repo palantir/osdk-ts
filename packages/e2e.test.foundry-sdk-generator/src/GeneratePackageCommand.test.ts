@@ -38,7 +38,7 @@ describe("Generate Package Command", () => {
 
       const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
-      const scriptsExport = packageJson["exports"]?.["."]?.["script"];
+      const scriptsExport = packageJson.exports?.["."]?.script;
       expect(scriptsExport).toEqual({
         types: "./dist/bundle/index.d.mts",
         default: "./dist/bundle/index.mjs",

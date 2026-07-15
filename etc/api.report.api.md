@@ -389,9 +389,18 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "cipherText" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
+// @public (undocumented)
+export type CipherChannelStrategy = "PREFER_EXISTING" | "PREFER_DEFAULT" | "EXISTING_ONLY" | "DEFAULT_ONLY";
+
 // @public
 export interface CipherText {
     	decrypt(): Promise<string>;
+}
+
+// @public
+export interface CipherTextValue {
+    	// (undocumented)
+    ciphertext: string;
 }
 
 // @public (undocumented)
@@ -440,6 +449,12 @@ export type ConvertProps<
 export interface CoordinateReferenceSystem {
     	// (undocumented)
     wkt?: string;
+}
+
+// @public
+export interface CreateCipherText {
+    	// (undocumented)
+    plaintext: string;
 }
 
 // @public (undocumented)
@@ -1837,6 +1852,14 @@ export type OsdkObjectCreatePropertyType<
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
 > = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
 
+// Warning: (ae-forgotten-export) The symbol "GetCreateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectCreateWirePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetCreateWirePropertyValueFromWire<T["type"]>>>;
+
 // Warning: (ae-forgotten-export) The symbol "ObjectTypeLinkKeysFrom2" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
@@ -1850,6 +1873,22 @@ export type OsdkObjectPropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
 > = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>>;
+
+// Warning: (ae-forgotten-export) The symbol "GetUpdatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectUpdatePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetUpdatePropertyValueFromWire<T["type"]>>>;
+
+// Warning: (ae-forgotten-export) The symbol "GetUpdateWirePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectUpdateWirePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetUpdateWirePropertyValueFromWire<T["type"]>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -1990,7 +2029,7 @@ export type PropertyTypeReferenceOrStringConstant = StringConstant | PropertyTyp
 // @public
 export type PropertyValueFormattingRule = PropertyNumberFormattingRule | PropertyTimestampFormattingRule | PropertyDateFormattingRule | PropertyBooleanFormattingRule | PropertyKnownTypeFormattingRule;
 
-// @public
+// @public (undocumented)
 export interface PropertyValueWireToClient {
     	// (undocumented)
     attachment: Attachment;
@@ -2414,6 +2453,14 @@ export interface UnknownMediaItemMetadata {
 export interface UntypedMediaItemMetadata {
     	// (undocumented)
     sizeBytes: number;
+}
+
+// @public
+export interface UpdateCipherText {
+    	// (undocumented)
+    plaintext: string;
+    	// (undocumented)
+    strategy?: CipherChannelStrategy;
 }
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts

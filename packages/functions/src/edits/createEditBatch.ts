@@ -30,6 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocatorProperties,
   UpdatableObjectOrInterfaceLocators,
 } from "./EditBatch.js";
+import { toWireEditProperties } from "./toWireEditProperties.js";
 import type { AnyEdit } from "./types.js";
 import { isInterfaceLocator } from "./types.js";
 
@@ -89,11 +90,12 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     objectOrInterfaceType: OI,
     properties: CreatableObjectOrInterfaceTypeProperties<X, OI>
   ): void {
+    const wireProperties = toWireEditProperties(properties);
     if (objectOrInterfaceType.type === "interface") {
       this.edits.push({
         type: "createObjectForInterface",
         int: objectOrInterfaceType,
-        properties,
+        properties: wireProperties,
       } as unknown as X);
       return;
     }
@@ -101,7 +103,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     this.edits.push({
       type: "createObject",
       obj: objectOrInterfaceType,
-      properties,
+      properties: wireProperties,
     } as unknown as X);
   }
 
@@ -127,11 +129,12 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     obj: OL,
     properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>
   ): void {
+    const wireProperties = toWireEditProperties(properties);
     if (isInterfaceLocator(obj)) {
       this.edits.push({
         type: "updateObjectForInterface",
         obj,
-        properties,
+        properties: wireProperties,
       } as unknown as X);
 
       return;
@@ -140,7 +143,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     this.edits.push({
       type: "updateObject",
       obj,
-      properties,
+      properties: wireProperties,
     } as unknown as X);
   }
 

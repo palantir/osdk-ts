@@ -15,16 +15,18 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { CipherText } from "../object/CipherText.js";
+import type {
+  CipherText,
+  CipherTextValue,
+  CreateCipherText,
+  UpdateCipherText,
+} from "../object/CipherText.js";
 import type { Media, MediaReference } from "../object/Media.js";
 import type {
   GeotimeSeriesProperty,
   TimeSeriesProperty,
 } from "../timeseries/timeseries.js";
 
-/**
- * Map from the PropertyDefinition type to the typescript type that we return
- */
 export interface PropertyValueWireToClient {
   attachment: Attachment;
   boolean: boolean;
@@ -60,9 +62,6 @@ export type GetClientPropertyValueFromWire<
     ? { [K in keyof T]: PropertyValueWireToClient[T[K]] }
     : never;
 
-/**
- * Map from the PropertyDefinition type to the typescript type that we accept
- */
 export interface PropertyValueClientToWire {
   attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
@@ -87,6 +86,7 @@ export interface PropertyValueClientToWire {
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
   vector: number[];
 }
+
 export type GetWirePropertyValueFromClient<
   T extends
     | keyof PropertyValueClientToWire
@@ -97,11 +97,10 @@ export type GetWirePropertyValueFromClient<
     ? { [K in keyof T]: PropertyValueClientToWire[T[K]] }
     : never;
 
-export interface PropertyValueWireToCreate {
+interface PropertyValueWireToCreateBase {
   attachment: Attachment | string;
   boolean: boolean;
   byte: number;
-  cipherText: CipherText;
   datetime: string;
   decimal: string;
   double: number;
@@ -122,6 +121,34 @@ export interface PropertyValueWireToCreate {
   vector: number[];
 }
 
+/**
+ * User facing creation types for each properties
+ */
+export interface PropertyValueWireToCreate extends PropertyValueWireToCreateBase {
+  cipherText: CreateCipherText | CipherText;
+}
+
+/**
+ * User facing update types for each properties
+ */
+export interface PropertyValueWireToUpdate extends PropertyValueWireToCreateBase {
+  cipherText: UpdateCipherText | CipherText;
+}
+
+/**
+ * Wire facing creation types for each properties
+ */
+export interface PropertyValueCreateToWire extends PropertyValueWireToCreateBase {
+  cipherText: CreateCipherText | CipherTextValue;
+}
+
+/**
+ * Wire facing update types for each properties
+ */
+export interface PropertyValueUpdateToWire extends PropertyValueWireToCreateBase {
+  cipherText: UpdateCipherText | CipherTextValue;
+}
+
 export type GetCreatePropertyValueFromWire<
   T extends
     | keyof PropertyValueWireToCreate
@@ -130,4 +157,34 @@ export type GetCreatePropertyValueFromWire<
   ? PropertyValueWireToCreate[T]
   : T extends Record<string, keyof PropertyValueWireToCreate>
     ? { [K in keyof T]: PropertyValueWireToCreate[T[K]] | undefined }
+    : never;
+
+export type GetUpdatePropertyValueFromWire<
+  T extends
+    | keyof PropertyValueWireToUpdate
+    | Record<string, keyof PropertyValueWireToUpdate>,
+> = T extends keyof PropertyValueWireToUpdate
+  ? PropertyValueWireToUpdate[T]
+  : T extends Record<string, keyof PropertyValueWireToUpdate>
+    ? { [K in keyof T]: PropertyValueWireToUpdate[T[K]] | undefined }
+    : never;
+
+export type GetCreateWirePropertyValueFromWire<
+  T extends
+    | keyof PropertyValueCreateToWire
+    | Record<string, keyof PropertyValueCreateToWire>,
+> = T extends keyof PropertyValueCreateToWire
+  ? PropertyValueCreateToWire[T]
+  : T extends Record<string, keyof PropertyValueCreateToWire>
+    ? { [K in keyof T]: PropertyValueCreateToWire[T[K]] | undefined }
+    : never;
+
+export type GetUpdateWirePropertyValueFromWire<
+  T extends
+    | keyof PropertyValueUpdateToWire
+    | Record<string, keyof PropertyValueUpdateToWire>,
+> = T extends keyof PropertyValueUpdateToWire
+  ? PropertyValueUpdateToWire[T]
+  : T extends Record<string, keyof PropertyValueUpdateToWire>
+    ? { [K in keyof T]: PropertyValueUpdateToWire[T[K]] | undefined }
     : never;

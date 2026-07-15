@@ -73,7 +73,7 @@ const ontologyWithoutUnsupportedAction = {
 
 // the generator does not correctly handle actions that point to object types outside of the ontology
 // this step is typically handled by code upstream of the actual generator
-delete ontologyWithoutUnsupportedAction.actionTypes["unsupportedAction"];
+delete ontologyWithoutUnsupportedAction.actionTypes.unsupportedAction;
 
 await generateClientSdkVersionTwoPointZero(
   ontologyWithoutUnsupportedAction,

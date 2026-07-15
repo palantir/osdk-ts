@@ -293,6 +293,7 @@ function createSpecialProperty(
       objectApiName: objectDef.apiName,
       primaryKey: rawObject[objectDef.primaryKeyApiName as string],
       propertyName: p as string,
+      value: rawValue as string,
     });
   }
   if (

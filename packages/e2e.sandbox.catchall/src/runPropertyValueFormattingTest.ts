@@ -41,6 +41,7 @@ export async function runPropertyValueFormattingTest(): Promise<void> {
     "date formatting",
     metadata.properties["dateShort"].valueFormatting
   );
+  console.log("date formatting", metadata.properties.dateShort.valueFormatting);
   console.log(
     "Known user formatting",
     metadata.properties["stringUser"].valueFormatting
