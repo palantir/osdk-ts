@@ -31,7 +31,15 @@ import type {
 } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import {
+  expect,
+  fireEvent,
+  fn,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -430,6 +438,122 @@ const columnDefinitions: ColumnDefinition<
   },
 ];
 
+// ===========================================================================
+// Shared interaction-test helpers
+// ===========================================================================
+
+const TARGET_DATA = "Ahmed Williams";
+
+type Canvas = ReturnType<typeof within>;
+
+/** Accessible name of the chevron button that opens a column's header menu. */
+const headerMenuName = (columnId: string): string =>
+  `Open header menu for column with id=${columnId}`;
+
+/** Resolve a column's `<th>` via its header-menu trigger button. */
+async function getColumnHeader(
+  root: Canvas,
+  columnId: string
+): Promise<HTMLElement> {
+  const trigger = await root.findByRole("button", {
+    name: headerMenuName(columnId),
+  });
+  const th = trigger.closest("th");
+  if (th == null) {
+    throw new Error(`Could not find <th> for column "${columnId}"`);
+  }
+  return th;
+}
+
+async function openHeaderMenu(root: Canvas, columnId: string): Promise<void> {
+  await userEvent.click(
+    await root.findByRole("button", { name: headerMenuName(columnId) })
+  );
+}
+
+async function clickHeaderMenuItem(label: string): Promise<void> {
+  await userEvent.click(await screen.findByRole("menuitem", { name: label }));
+}
+
+function getSortDirection(th: HTMLElement): "asc" | "desc" | "none" {
+  if (th.querySelector('[data-icon="sort-alphabetical-desc"]') != null) {
+    return "desc";
+  }
+  if (th.querySelector('[data-icon="sort-alphabetical"]') != null) {
+    return "asc";
+  }
+  return "none";
+}
+
+function sortDirectionOf(
+  root: Canvas,
+  columnId: string
+): "asc" | "desc" | "none" {
+  const trigger = root.queryByRole("button", {
+    name: headerMenuName(columnId),
+  });
+  const th = trigger?.closest("th");
+  return th != null ? getSortDirection(th) : "none";
+}
+
+/** The resize handle is the trailing `<div>` child of each header `<th>`. */
+function getResizeHandle(th: HTMLElement): HTMLElement {
+  const children = th.querySelectorAll(":scope > div");
+  const handle = children[children.length - 1];
+  if (!(handle instanceof HTMLElement)) {
+    throw new Error("Could not find column resize handle");
+  }
+  return handle;
+}
+
+/**
+ * Simulate dragging a column's resize handle horizontally by `deltaX` px.
+ * Uses real pointer events (userEvent) so TanStack's document-level
+ * mousemove/mouseup listeners fire in the browser test runner.
+ */
+async function dragResizeHandle(
+  th: HTMLElement,
+  deltaX: number
+): Promise<void> {
+  const handle = getResizeHandle(th);
+  const rect = handle.getBoundingClientRect();
+  const startX = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  await userEvent.pointer([
+    { keys: "[MouseLeft>]", target: handle, coords: { x: startX, y } },
+    { coords: { x: startX + deltaX, y } },
+    { keys: "[/MouseLeft]", coords: { x: startX + deltaX, y } },
+  ]);
+}
+
+function getHeaderWidth(th: HTMLElement): number {
+  return Number.parseFloat(th.style.width);
+}
+
+function rowContaining(cell: HTMLElement): HTMLElement {
+  const tr = cell.closest("tr");
+  if (tr == null) {
+    throw new Error("Cell is not inside a row");
+  }
+  return tr;
+}
+
+/**
+ * Locate the per-row selection checkboxes. Returned as a thunk because
+ * toggling selection re-renders the rows, and any checkbox refs captured
+ * earlier could go stale.
+ */
+const findRowCheckboxes =
+  (root: Canvas): (() => Promise<HTMLElement[]>) =>
+  () =>
+    root.findAllByRole("checkbox", { name: /Select row/u });
+
+const findSelectAllCheckbox = (root: Canvas): Promise<HTMLElement> =>
+  root.findByRole("checkbox", { name: /Select all rows/u });
+
+const findDeselectAllCheckbox = (root: Canvas): Promise<HTMLElement> =>
+  root.findByRole("checkbox", { name: /Deselect all rows/u });
+
 export const Default: Story = {
   args: {
     objectType: Employee,
@@ -451,6 +575,31 @@ export const Default: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Loads data, then opens a column header menu to confirm the default,
+  // out-of-the-box header features are all present.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Wait for the (MSW-mocked) rows to load.
+    await canvas.findByText(TARGET_DATA);
+
+    await openHeaderMenu(canvas, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Sort ascending" })
+    ).toBeInTheDocument();
+    await expect(
+      screen.getByRole("menuitem", { name: "Sort descending" })
+    ).toBeInTheDocument();
+    await expect(
+      screen.getByRole("menuitem", { name: "Pin column" })
+    ).toBeInTheDocument();
+    await expect(
+      screen.getByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    // Dismiss the menu so the story is left in a clean state.
+    await userEvent.keyboard("{Escape}");
+  },
 };
 
 export const WithObjectSet: Story = {
@@ -486,6 +635,16 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
       </div>
     );
   },
+  // The object set is filtered to `jobProfile: "Marketing Manager"`
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Wait for the (MSW-mocked) rows to load.
+    await canvas.findAllByText("Marketing Manager");
+    await expect(
+      canvas.getAllByText("Marketing Manager").length
+    ).toBeGreaterThan(1);
+    await expect(canvas.queryByText("Content Manager")).not.toBeInTheDocument();
+  },
 };
 
 export const WithInterfaceType: Story = {
@@ -512,6 +671,18 @@ export const WithInterfaceType: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // The interface exposes name/email/employeeNumber; objects implementing it
+  // (Employees) render with those mapped properties (name ← fullName).
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Interface "name" maps to the Employee's fullName.
+    await canvas.findByText(TARGET_DATA);
+
+    // The interface's columns are shown by their display names.
+    await expect(canvas.getByText("Name")).toBeInTheDocument();
+    await expect(canvas.getByText("Email")).toBeInTheDocument();
+  },
 };
 
 export const WithDerivedPropertyOrderingAndFilter: Story = {
@@ -539,7 +710,7 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
     ];
 
     const filter: WhereClause<Employee, RDPs> = {
-      managerName: { $in: ["Ahmed Williams", "Fatima Zhang"] },
+      managerName: { $in: [TARGET_DATA, "Fatima Zhang"] },
     };
 
     return (
@@ -551,6 +722,37 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
           filter={filter}
         />
       </div>
+    );
+  },
+  // The derived "Manager" column is sortable through the header menu, and
+  // `defaultOrderBy` seeds it ascending.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Header for the RDP column renders once the filtered rows load.
+    await canvas.findByText("Manager");
+    await waitFor(() =>
+      expect(canvas.getAllByRole("row").length).toBeGreaterThan(1)
+    );
+
+    // defaultOrderBy seeds an ascending sort on the derived managerName column.
+    await getColumnHeader(canvas, "managerName");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "managerName")).toBe("asc")
+    );
+
+    // Sorting an RDP column flips direction through the same header menu.
+    await openHeaderMenu(canvas, "managerName");
+    await clickHeaderMenuItem("Sort descending");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "managerName")).toBe("desc")
+    );
+
+    // Restore the seeded ascending sort so the story ends as it started.
+    await openHeaderMenu(canvas, "managerName");
+    await clickHeaderMenuItem("Sort ascending");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "managerName")).toBe("asc")
     );
   },
   parameters: {
@@ -584,7 +786,7 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
 ];
 
 const filter: WhereClause<Employee, RDPs> = {
-  managerName: { $in: ["Ahmed Williams", "Fatima Zhang"] },
+  managerName: { $in: [TARGET_DATA, "Fatima Zhang"] },
 };
 
 <ObjectTable
@@ -659,6 +861,20 @@ const columnDefinitions: ColumnDefinition<Employee, {}, SeniorityFunctions>[] = 
       <ObjectTable {...args} />
     </div>
   ),
+  // The "Seniority" function column resolves server-computed values (the mocked
+  // query returns Senior/Mid/Junior/Unknown) and maps them back to each row.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText("Seniority");
+
+    // At least one row should resolve a computed seniority value.
+    await waitFor(() =>
+      expect(
+        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length
+      ).toBeGreaterThan(0)
+    );
+  },
 };
 
 export const SingleSelection: Story = {
@@ -680,6 +896,35 @@ export const SingleSelection: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // In "single" mode each row gets a checkbox but there is no header
+  // "select all", and selecting a new row replaces the previous selection.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Re-query fresh each time: toggling selection re-renders the rows.
+    const rowCheckboxes = findRowCheckboxes(canvas);
+
+    await rowCheckboxes();
+
+    // No top-level "Select all rows" checkbox in single-selection mode.
+    await expect(
+      canvas.queryByRole("checkbox", { name: /Select all rows/u })
+    ).not.toBeInTheDocument();
+
+    // Selecting the first row checks it and notifies the consumer.
+    await userEvent.click((await rowCheckboxes())[0]);
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+    await expect((await rowCheckboxes())[0]).toBeChecked();
+
+    // Selecting a second row moves the selection — the first row clears.
+    await userEvent.click((await rowCheckboxes())[1]);
+    await expect((await rowCheckboxes())[1]).toBeChecked();
+    await expect((await rowCheckboxes())[0]).not.toBeChecked();
+
+    // Clicking the selected row again clears it
+    await userEvent.click((await rowCheckboxes())[1]);
+    await expect((await rowCheckboxes())[1]).not.toBeChecked();
+  },
 };
 
 export const MultipleSelection: Story = {
@@ -701,20 +946,10 @@ export const MultipleSelection: Story = {
       <ObjectTable {...args} />
     </div>
   ),
-  // Storybook "Interactions" test: the play function drives the rendered
-  // component with simulated user input and asserts on the result. It runs
-  // automatically in the Interactions panel and as part of the test runner.
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+    const rowCheckboxes = findRowCheckboxes(canvas);
 
-    // Re-query fresh each time: toggling the header re-renders the rows, so
-    // checkbox refs captured earlier could go stale.
-    const rowCheckboxes = () =>
-      canvas.findAllByRole("checkbox", { name: /select row/iu });
-    const deselectAllCheckbox = () =>
-      canvas.findByRole("checkbox", { name: /deselect all rows/iu });
-
-    // Wait for the (MSW-mocked) rows to load, then grab the per-row checkboxes.
     const [firstRow, secondRow] = await rowCheckboxes();
 
     // Selecting one row checks it and notifies the consumer.
@@ -730,24 +965,21 @@ export const MultipleSelection: Story = {
 
     // The header checkbox toggles every row. Once rows are selected its label
     // flips to "Deselect all rows", so clicking it clears the selection.
-    await userEvent.click(await deselectAllCheckbox());
+    await userEvent.click(await findDeselectAllCheckbox(canvas));
     for (const rowCheckbox of await rowCheckboxes()) {
       await expect(rowCheckbox).not.toBeChecked();
     }
 
-    // With nothing selected the header label flips back to "Select all rows"
-    // (exact-string match so it doesn't also match "Deselect all rows").
+    // With nothing selected the header label flips back to "Select all rows".
     // Clicking it now selects every row.
-    await userEvent.click(
-      await canvas.findByRole("checkbox", { name: "Select all rows" })
-    );
+    await userEvent.click(await findSelectAllCheckbox(canvas));
     for (const rowCheckbox of await rowCheckboxes()) {
       await expect(rowCheckbox).toBeChecked();
     }
 
     // Everything is selected, so the header label is "Deselect all rows" again.
     // Clicking it clears the entire selection.
-    await userEvent.click(await deselectAllCheckbox());
+    await userEvent.click(await findDeselectAllCheckbox(canvas));
     for (const rowCheckbox of await rowCheckboxes()) {
       await expect(rowCheckbox).not.toBeChecked();
     }
@@ -806,6 +1038,23 @@ export const WithContextMenu: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Right-clicking a cell opens the custom context menu (portalled to body),
+  // and clicking elsewhere dismisses it.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    // Right-click a cell to open the custom context menu.
+    void fireEvent.contextMenu(canvas.getByText(TARGET_DATA));
+    await expect(await screen.findByText("Cell Value:")).toBeInTheDocument();
+
+    // Clicking outside the menu closes it.
+    await userEvent.click(canvas.getByText("Right click on any cell"));
+    await waitFor(() =>
+      expect(screen.queryByText("Cell Value:")).not.toBeInTheDocument()
+    );
+  },
 };
 
 export const CustomColumnWidths: Story = {
@@ -815,6 +1064,7 @@ export const CustomColumnWidths: Story = {
       ...col,
       width: index === 0 ? 250 : index === 1 ? 300 : 150,
     })) as any,
+    onColumnResize: fn(),
   },
   parameters: {
     docs: {
@@ -837,6 +1087,32 @@ export const CustomColumnWidths: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Columns render at their configured widths; dragging the resize handle
+  // changes a column's width (firing onColumnResize), and a double-click on the
+  // handle resets it back to the configured width (firing onColumnResize null).
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // `getColumnHeader` resolves once the real (non-loading) header renders.
+    const fullNameHeader = await getColumnHeader(canvas, "fullName");
+    await expect(getHeaderWidth(fullNameHeader)).toBe(250);
+
+    // Drag the resize handle to widen the column.
+    await dragResizeHandle(fullNameHeader, 120);
+    await waitFor(() =>
+      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250)
+    );
+    await expect(args.onColumnResize).toHaveBeenCalledWith(
+      "fullName",
+      expect.any(Number)
+    );
+
+    // Double-clicking the handle resets the column to its configured width.
+    (args.onColumnResize as ReturnType<typeof fn>).mockClear();
+    await userEvent.dblClick(getResizeHandle(fullNameHeader));
+    await waitFor(() => expect(getHeaderWidth(fullNameHeader)).toBe(250));
+    await expect(args.onColumnResize).toHaveBeenCalledWith("fullName", null);
+  },
 };
 
 export const WithDefaultSorting: Story = {
@@ -868,6 +1144,30 @@ export const WithDefaultSorting: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // `defaultOrderBy` seeds a descending sort on fullName. The header menu can
+  // flip it to ascending and back to the default descending state.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await getColumnHeader(canvas, "fullName");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "fullName")).toBe("desc")
+    );
+
+    // Switch to ascending.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Sort ascending");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "fullName")).toBe("asc")
+    );
+
+    // Sorting descending again returns to the default sort state.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Sort descending");
+    await waitFor(() =>
+      expect(sortDirectionOf(canvas, "fullName")).toBe("desc")
+    );
+  },
 };
 
 export const WithDefaultColumnPinning: Story = {
@@ -892,6 +1192,7 @@ export const WithDefaultColumnPinning: Story = {
         locator: { type: "property", id: "firstFullTimeStartDate" },
       },
     ],
+    onColumnsPinnedChanged: fn(),
   },
   parameters: {
     docs: {
@@ -928,6 +1229,32 @@ export const WithDefaultColumnPinning: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // fullName is pinned left and department pinned right by default. Unpinning a
+  // column and re-pinning it through the header menu returns it to its pinned
+  // state, firing onColumnsPinnedChanged each time.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    const fullNameHeader = await getColumnHeader(canvas, "fullName");
+    const departmentHeader = await getColumnHeader(canvas, "department");
+    await expect(fullNameHeader).toHaveAttribute("data-pinned", "left");
+    await expect(departmentHeader).toHaveAttribute("data-pinned", "right");
+
+    // Unpin fullName via its header menu.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Unpin Column");
+    await waitFor(() =>
+      expect(fullNameHeader).toHaveAttribute("data-pinned", "false")
+    );
+    await expect(args.onColumnsPinnedChanged).toHaveBeenCalled();
+
+    // Re-pin it to restore the default left-pinned state.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Pin column");
+    await waitFor(() =>
+      expect(fullNameHeader).toHaveAttribute("data-pinned", "left")
+    );
+  },
 };
 
 export const WithCustomColumn: Story = {
@@ -1020,6 +1347,19 @@ export const WithCustomColumn: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // The custom "Actions" column renders View/Edit buttons in every row.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Wait for rows (and their action buttons) to render.
+    await expect(
+      (await canvas.findAllByRole("button", { name: "View" })).length
+    ).toBeGreaterThan(0);
+    await expect(canvas.getByText("Actions")).toBeInTheDocument();
+    await expect(
+      canvas.getAllByRole("button", { name: "Edit" }).length
+    ).toBeGreaterThan(0);
+  },
 };
 
 export const EventListeners: Story = {
@@ -1201,6 +1541,64 @@ export const EventListeners: Story = {
       </div>
     );
   },
+  // Exercises every event listener exposed by ObjectTable and asserts each spy fires
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const rowCheckboxes = findRowCheckboxes(canvas);
+
+    await canvas.findByText(TARGET_DATA);
+
+    // onRowClick + onFocusedRowChanged: clicking a row body fires both.
+    await userEvent.click(canvas.getByText(TARGET_DATA));
+    await waitFor(() => expect(args.onRowClick).toHaveBeenCalled());
+    await expect(args.onFocusedRowChanged).toHaveBeenCalled();
+
+    // onColumnHeaderClick: clicking the header label (not the menu chevron).
+    const fullNameHeader = await getColumnHeader(canvas, "fullName");
+    await userEvent.click(within(fullNameHeader).getByText("Name"));
+    await waitFor(() =>
+      expect(args.onColumnHeaderClick).toHaveBeenCalledWith("fullName")
+    );
+
+    // onRowSelectionChanged: toggling a row checkbox (selectionMode "multiple").
+    await userEvent.click((await rowCheckboxes())[0]);
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+
+    // onOrderByChanged: sorting through the header menu.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Sort descending");
+    await waitFor(() => expect(args.onOrderByChanged).toHaveBeenCalled());
+
+    // onColumnsPinnedChanged: pinning through the header menu.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Pin column");
+    await waitFor(() => expect(args.onColumnsPinnedChanged).toHaveBeenCalled());
+
+    // onColumnResize: dragging the resize handle (re-resolve the header, since
+    // the earlier sort/pin re-renders may have replaced the node).
+    await dragResizeHandle(await getColumnHeader(canvas, "fullName"), 100);
+    await waitFor(() => expect(args.onColumnResize).toHaveBeenCalled());
+
+    // onColumnVisibilityChanged: removing a column via the config dialog.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Configure Columns");
+    const removeButtons = await screen.findAllByRole("button", {
+      name: /^Remove /u,
+    });
+    await userEvent.click(removeButtons[0]);
+    await userEvent.click(await screen.findByRole("button", { name: "Apply" }));
+    await waitFor(() =>
+      expect(args.onColumnVisibilityChanged).toHaveBeenCalled()
+    );
+
+    // Reset the row selection so the story does not end with a checked row.
+    await userEvent.click(await findDeselectAllCheckbox(canvas));
+    await waitFor(async () => {
+      for (const checkbox of await rowCheckboxes()) {
+        expect(checkbox).not.toBeChecked();
+      }
+    });
+  },
 };
 
 export const ControlledSorting: Story = {
@@ -1257,6 +1655,31 @@ return (
           />
         </div>
       </div>
+    );
+  },
+  // Sorting is controlled: the header menu drives `onOrderByChanged`, and the
+  // caller's banner reflects the new order.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Seeded controlled state shows fullName ascending.
+    await getColumnHeader(canvas, "fullName");
+    await expect(canvas.getByText("fullName (asc)")).toBeInTheDocument();
+
+    // Sort descending through the header menu.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Sort descending");
+
+    await waitFor(() => expect(args.onOrderByChanged).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(canvas.getByText("fullName (desc)")).toBeInTheDocument()
+    );
+
+    // Restore the seeded ascending sort so the story ends as it started.
+    await openHeaderMenu(canvas, "fullName");
+    await clickHeaderMenuItem("Sort ascending");
+    await waitFor(() =>
+      expect(canvas.getByText("fullName (asc)")).toBeInTheDocument()
     );
   },
 };
@@ -1342,6 +1765,38 @@ return (
         </div>
       </div>
     );
+  },
+  // Selection is controlled: the caller's banner tracks the selected count and a
+  // "Clear Selection" button resets it.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    const rowCheckboxes = findRowCheckboxes(canvas);
+
+    await rowCheckboxes();
+
+    // Select two rows; the controlled banner counts them.
+    await userEvent.click((await rowCheckboxes())[0]);
+    await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(canvas.getByText("1 employees")).toBeInTheDocument()
+    );
+
+    await userEvent.click((await rowCheckboxes())[1]);
+    await waitFor(() =>
+      expect(canvas.getByText("2 employees")).toBeInTheDocument()
+    );
+
+    // Clearing resets the controlled selection back to zero.
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Clear Selection" })
+    );
+    await waitFor(() =>
+      expect(canvas.getByText("0 employees")).toBeInTheDocument()
+    );
+    await expect(
+      canvas.queryByRole("button", { name: "Clear Selection" })
+    ).not.toBeInTheDocument();
   },
 };
 
@@ -1446,6 +1901,52 @@ return (
       </div>
     );
   },
+  // Focus is controlled: clicking a row focuses it (data-focused + banner),
+  // clicking outside fires onFocusedRowChanged(null) so the caller clears it,
+  // and the explicit "Clear focus" button also resets it.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    // Clicking a row focuses it (state update + re-render is async).
+    await userEvent.click(canvas.getByText(TARGET_DATA));
+    await waitFor(() => expect(args.onFocusedRowChanged).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument()
+    );
+    await waitFor(() =>
+      expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
+        "data-focused",
+        "true"
+      )
+    );
+
+    // Clicking outside the table clears focus via onFocusedRowChanged(null).
+    await userEvent.click(canvas.getByText(/Focused employee:/u));
+    await waitFor(() =>
+      expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
+        "data-focused",
+        "false"
+      )
+    );
+
+    // Re-focus, then the explicit "Clear focus" button also resets it.
+    await userEvent.click(canvas.getByText(TARGET_DATA));
+    await waitFor(() =>
+      expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
+        "data-focused",
+        "true"
+      )
+    );
+    await userEvent.click(canvas.getByRole("button", { name: "Clear focus" }));
+    await waitFor(() =>
+      expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
+        "data-focused",
+        "false"
+      )
+    );
+  },
 };
 
 export const DisableAllHeaderMenuFeatures: Story = {
@@ -1475,6 +1976,17 @@ export const DisableAllHeaderMenuFeatures: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // With ordering, pinning, resizing and column config all disabled, the header
+  // menu has no items, so its chevron trigger is never rendered.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    await expect(
+      canvas.queryByRole("button", { name: /Open header menu/iu })
+    ).not.toBeInTheDocument();
+  },
 };
 
 export const HeaderMenuInsideBlueprintDrawer: Story = {
@@ -1497,6 +2009,18 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
     },
   },
   render: (args) => <ObjectTableInBlueprintDrawer tableProps={args} />,
+  // The drawer opens by default. The header menu must portal *above* the drawer
+  // and stay interactive. The drawer renders to document.body, so query `screen`.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
 };
 
 export const HeaderMenuInsideBlueprintDialog: Story = {
@@ -1519,6 +2043,17 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
     },
   },
   render: (args) => <ObjectTableInBlueprintDialog tableProps={args} />,
+  // The dialog opens by default; the header menu must portal above it.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
 };
 
 export const HeaderMenuInsideBaseUIDialog: Story = {
@@ -1541,6 +2076,17 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
     },
   },
   render: (args) => <ObjectTableInBaseUIDialog tableProps={args} />,
+  // The Base UI dialog opens by default; the header menu must portal above it.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
 };
 
 export const CustomRowHeight: Story = {
@@ -1561,6 +2107,16 @@ export const CustomRowHeight: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // `rowHeight` is applied to each rendered row.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    await expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveStyle({
+      height: "56px",
+    });
+  },
 };
 
 export const WithCustomRenderers: Story = {
@@ -1670,6 +2226,22 @@ export const WithCustomRenderers: Story = {
       <ObjectTable {...args} />
     </div>
   ),
+  // Custom `renderHeader` produces a link header, and a custom `renderCell`
+  // produces Active/Inactive status tags. (The header link calls window.alert
+  // on click, which would block the test runner, so we only assert it renders.)
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    await expect(
+      canvas.getByRole("link", { name: "Employee Name" })
+    ).toBeInTheDocument();
+    await expect(canvas.getByText("Employment Status")).toBeInTheDocument();
+    await expect(
+      canvas.getAllByText(/^(Active|Inactive)$/u).length
+    ).toBeGreaterThan(0);
+  },
 };
 
 export const EditableTable: Story = {
@@ -1821,6 +2393,70 @@ return (
       </div>
     );
   },
+  // Manual edit mode: enter edit mode, then edit a text cell, a dropdown cell
+  // and a date cell (each firing onCellValueChanged), and finally Cancel out.
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    // Display mode first — the fullName cell shows plain text.
+    await canvas.findByText(TARGET_DATA);
+
+    // Enter edit mode; cells become editable inputs.
+    await userEvent.click(canvas.getByRole("button", { name: "Edit Table" }));
+
+    // First data row (header row is index 0). Cells follow column order.
+    const firstRow = canvas.getAllByRole("row")[1];
+    const cellsOf = () => within(firstRow).getAllByRole("cell");
+
+    // Text edit (fullName, column 0). Typing then tabbing away commits the edit.
+    const nameInput = within(cellsOf()[0]).getByRole("textbox");
+    await userEvent.click(nameInput);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "Ahmed Williamson");
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          columnId: "fullName",
+          newValue: "Ahmed Williamson",
+        })
+      )
+    );
+
+    // Dropdown edit (department, column 3) — visible once the row is focused.
+    const departmentCombobox = await within(cellsOf()[3]).findByRole(
+      "combobox"
+    );
+    await userEvent.click(departmentCombobox);
+    await userEvent.click(
+      await screen.findByRole("option", { name: "Engineering" })
+    );
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          columnId: "department",
+          newValue: "Engineering",
+        })
+      )
+    );
+
+    // Date edit (firstFullTimeStartDate, column 5) — focusing opens the
+    // calendar, then "Today" commits a new value.
+    const dateInput = within(cellsOf()[5]).getByRole("combobox");
+    await userEvent.click(dateInput);
+    await userEvent.click(await screen.findByRole("button", { name: "Today" }));
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: "firstFullTimeStartDate" })
+      )
+    );
+
+    // Cancel exits edit mode; the "Edit Table" button returns.
+    await userEvent.click(canvas.getByRole("button", { name: "Cancel" }));
+    await expect(
+      await canvas.findByRole("button", { name: "Edit Table" })
+    ).toBeInTheDocument();
+  },
 };
 
 export const WithSubmitEditsButton: Story = {
@@ -1951,6 +2587,38 @@ return (
       <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
+  // Editing enables "Submit Edits"; submitting calls onSubmitEdits and, on
+  // success, clears edits and exits edit mode (the async mock resolves true).
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+    await userEvent.click(canvas.getByRole("button", { name: "Edit Table" }));
+
+    const firstRow = canvas.getAllByRole("row")[1];
+    const firstCell = within(firstRow).getAllByRole("cell")[0];
+    const nameInput = within(firstCell).getByRole("textbox");
+    await userEvent.click(nameInput);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "Ahmed Williamson");
+    await userEvent.tab();
+
+    // The Submit Edits button enables once there is a pending edit.
+    const submit = canvas.getByRole("button", { name: "Submit Edits" });
+    await waitFor(() => expect(submit).toBeEnabled());
+
+    await userEvent.click(submit);
+    await waitFor(() => expect(args.onSubmitEdits).toHaveBeenCalled());
+
+    // After the async submit resolves successfully, edit mode exits.
+    await waitFor(
+      () =>
+        expect(
+          canvas.getByRole("button", { name: "Edit Table" })
+        ).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
+  },
 };
 
 export const EditableWithValidation: Story = {
@@ -2166,6 +2834,49 @@ return (
       <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
+  // editMode "always": entering an invalid value surfaces a validation error and
+  // disables Submit Edits; correcting the value clears the error and re-enables.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Cells are editable immediately; fullName is pre-filled with the value.
+    const nameInput = await canvas.findByDisplayValue(TARGET_DATA);
+
+    // Too-short name fails validation (min 2 chars).
+    await userEvent.click(nameInput);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "a");
+    await userEvent.tab();
+
+    await waitFor(() =>
+      expect(canvas.getByText("Validation error")).toBeInTheDocument()
+    );
+    await expect(
+      canvas.getByRole("button", { name: "Submit Edits" })
+    ).toBeDisabled();
+
+    // Correcting the value clears the error and re-enables Submit Edits.
+    await userEvent.click(nameInput);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "Valid Name");
+    await userEvent.tab();
+
+    await waitFor(() =>
+      expect(canvas.queryByText("Validation error")).not.toBeInTheDocument()
+    );
+    await expect(
+      canvas.getByRole("button", { name: "Submit Edits" })
+    ).toBeEnabled();
+
+    // Restore the original value
+    await userEvent.click(nameInput);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, TARGET_DATA);
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument()
+    );
+  },
 };
 
 export const PerRowEditableAndFieldConfig: Story = {
@@ -2256,6 +2967,51 @@ return (
       <ObjectTable {...args} />
     </div>
   ),
+  // Per-row config: jobTitle is only editable for "Senior Product Manager" rows,
+  // and the department dropdown offers a restricted item list for Operations
+  // rows (2 options) versus other rows (4, including "Finance").
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    // jobTitle (column 1) is editable only for the Senior Product Manager.
+    const editableCell = within(
+      rowContaining(canvas.getByText("Margaret Jackson"))
+    ).getAllByRole("cell");
+    await expect(editableCell[1]).toHaveAttribute("data-editable", "true");
+
+    const nonEditableCell = within(
+      rowContaining(canvas.getByText(TARGET_DATA))
+    ).getAllByRole("cell");
+    await expect(nonEditableCell[1]).not.toHaveAttribute("data-editable");
+
+    // Operations row department dropdown shows only 2 options.
+    const opRow = rowContaining(canvas.getByText("William Liu"));
+    await userEvent.click(canvas.getByText("William Liu"));
+    void fireEvent.click(await within(opRow).findByRole("combobox"));
+    await expect(await screen.findAllByRole("option")).toHaveLength(2);
+    await expect(
+      screen.queryByRole("option", { name: "Finance" })
+    ).not.toBeInTheDocument();
+    await userEvent.keyboard("{Escape}");
+
+    // Non-Operations row: the list includes "Finance".
+    const ahmedRow = rowContaining(canvas.getByText(TARGET_DATA));
+    await userEvent.click(canvas.getByText(TARGET_DATA));
+    void fireEvent.click(await within(ahmedRow).findByRole("combobox"));
+    await expect(
+      await screen.findByRole("option", { name: "Finance" })
+    ).toBeInTheDocument();
+
+    // Close the dropdown so the story ends with no popup open.
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("option", { name: "Finance" })
+      ).not.toBeInTheDocument()
+    );
+  },
 };
 
 export const RowAttributesForStyling: Story = {
@@ -2333,6 +3089,23 @@ return (
       </div>
     );
   },
+  // `getRowAttributes` sets data-highlight-row="true" only on New York rows.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByText(TARGET_DATA);
+
+    // New York employees carry the highlight attribute...
+    await expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
+      "data-highlight-row",
+      "true"
+    );
+
+    // ...while non–New York employees do not.
+    await expect(
+      rowContaining(canvas.getByText("Charlotte Weber"))
+    ).not.toHaveAttribute("data-highlight-row");
+  },
 };
 
 export const CustomEmptyState: Story = {
@@ -2384,5 +3157,14 @@ return (
         <ObjectTable {...args} objectSet={emptyObjectSet} />
       </div>
     );
+  },
+  // The object set matches no objects, so the custom empty state renders.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(
+      await canvas.findByText("No saved views found.")
+    ).toBeInTheDocument();
+    await expect(canvas.queryByText(TARGET_DATA)).not.toBeInTheDocument();
   },
 };
