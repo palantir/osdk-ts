@@ -49,6 +49,30 @@ import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer"
 | `className` | `string`     | `undefined` | CSS class applied to the root element    |
 | `onError`   | `() => void` | `undefined` | Callback fired when rendering fails      |
 
+## Headless usage
+
+`useTiffRenderer` exposes the decode logic (size guard, UTIF decode, result state) so you can build a fully custom TIFF UI on top of it, the same way `usePdfViewerState` works. Fetch the bytes yourself (e.g. `media.fetchContents()`) and hand them to the hook.
+
+`useTiffRenderer({ content })` returns `result` — a `TiffDecodeResult`, which is either `{ status: "ok", data }` (with `width`, `height`, and RGBA `content`) or `{ status: "error", message }`.
+
+```tsx
+import { useTiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+
+function CustomTiff({ content }: { content: Uint8Array }) {
+  const { result } = useTiffRenderer({ content });
+  if (result == null) return <div>Decoding…</div>;
+  if (result.status === "error") return <div>{result.message}</div>;
+  // …draw `result.data` (width/height/RGBA content) onto your own <canvas>.
+}
+
+// Fetch the bytes in your component, then pass them in:
+const content = new Uint8Array(
+  await media.fetchContents().then((r) => r.arrayBuffer()),
+);
+```
+
+A complete, runnable version lives in the `e2e.sandbox.peopleapp` app under the "Media Viewers" tab (`src/app/media-viewers/`).
+
 ## Features
 
 - Decodes and renders TIFF images onto a `<canvas>` element using the `utif` library

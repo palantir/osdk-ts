@@ -14,102 +14,133 @@
  * limitations under the License.
  */
 
-import { renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ParsedEmail } from "../../EmailViewerApi.js";
 import { useEmailViewerState } from "../useEmailViewerState.js";
 
-const EMPTY_EMAIL: ParsedEmail = {
-  subject: undefined,
-  from: undefined,
-  to: [],
-  cc: [],
-  date: undefined,
-  html: undefined,
-  text: undefined,
-};
+vi.mock("../../parseEmail.js", () => ({
+  parseEmail: vi.fn(),
+}));
+
+const { parseEmail } = await import("../../parseEmail.js");
+const mockedParse = vi.mocked(parseEmail);
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
+const CONTENT = new ArrayBuffer(8);
+
+function makeEmail(overrides: Partial<ParsedEmail> = {}): ParsedEmail {
+  return {
+    subject: undefined,
+    from: undefined,
+    to: [],
+    cc: [],
+    date: undefined,
+    html: undefined,
+    text: undefined,
+    ...overrides,
+  };
+}
 
 describe("useEmailViewerState", () => {
+  it("should start loading and resolve to the parsed email", async () => {
+    mockedParse.mockResolvedValue(makeEmail({ html: "<p>Hi</p>" }));
+    const { result } = renderHook(() =>
+      useEmailViewerState({ content: CONTENT })
+    );
+
+    expect(result.current.loading).toBe(true);
+    expect(result.current.email).toBeUndefined();
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockedParse).toHaveBeenCalledWith(CONTENT);
+    expect(result.current.email?.html).toBe("<p>Hi</p>");
+    expect(result.current.error).toBeUndefined();
+  });
+
   describe("bodyMode", () => {
-    it("should prefer html when present", () => {
-      const { result } = renderHook(() =>
-        useEmailViewerState({
-          email: { ...EMPTY_EMAIL, html: "<p>Hi</p>", text: "Hi" },
-        })
+    it("should prefer html when present", async () => {
+      mockedParse.mockResolvedValue(
+        makeEmail({ html: "<p>Hi</p>", text: "Hi" })
       );
+      const { result } = renderHook(() =>
+        useEmailViewerState({ content: CONTENT })
+      );
+      await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.bodyMode).toBe("html");
     });
 
-    it("should fall back to text when html is absent", () => {
+    it("should fall back to text when html is absent", async () => {
+      mockedParse.mockResolvedValue(makeEmail({ text: "Hi" }));
       const { result } = renderHook(() =>
-        useEmailViewerState({ email: { ...EMPTY_EMAIL, text: "Hi" } })
+        useEmailViewerState({ content: CONTENT })
       );
+      await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.bodyMode).toBe("text");
     });
 
-    it("should be empty when neither html nor text is present", () => {
+    it("should be empty when neither html nor text is present", async () => {
+      mockedParse.mockResolvedValue(makeEmail());
       const { result } = renderHook(() =>
-        useEmailViewerState({ email: EMPTY_EMAIL })
+        useEmailViewerState({ content: CONTENT })
       );
+      await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.bodyMode).toBe("empty");
     });
   });
 
   describe("address formatting", () => {
-    it("should format an address with a name as 'Name <addr>'", () => {
-      const { result } = renderHook(() =>
-        useEmailViewerState({
-          email: {
-            ...EMPTY_EMAIL,
-            from: { name: "Ada Lovelace", address: "ada@example.com" },
-          },
+    it("should format addresses and join multiple recipients", async () => {
+      mockedParse.mockResolvedValue(
+        makeEmail({
+          from: { name: "Ada Lovelace", address: "ada@example.com" },
+          to: [
+            { name: "A", address: "a@x.com" },
+            { name: "", address: "b@x.com" },
+          ],
+          cc: [{ name: "C", address: "c@x.com" }],
         })
       );
+      const { result } = renderHook(() =>
+        useEmailViewerState({ content: CONTENT })
+      );
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
       expect(result.current.formattedFrom).toBe(
         "Ada Lovelace <ada@example.com>"
-      );
-    });
-
-    it("should format an address without a name as the bare address", () => {
-      const { result } = renderHook(() =>
-        useEmailViewerState({
-          email: { ...EMPTY_EMAIL, from: { name: "", address: "x@y.com" } },
-        })
-      );
-      expect(result.current.formattedFrom).toBe("x@y.com");
-    });
-
-    it("should leave formattedFrom undefined when there is no sender", () => {
-      const { result } = renderHook(() =>
-        useEmailViewerState({ email: EMPTY_EMAIL })
-      );
-      expect(result.current.formattedFrom).toBeUndefined();
-    });
-
-    it("should join multiple recipients with commas", () => {
-      const { result } = renderHook(() =>
-        useEmailViewerState({
-          email: {
-            ...EMPTY_EMAIL,
-            to: [
-              { name: "A", address: "a@x.com" },
-              { name: "", address: "b@x.com" },
-            ],
-            cc: [{ name: "C", address: "c@x.com" }],
-          },
-        })
       );
       expect(result.current.formattedTo).toBe("A <a@x.com>, b@x.com");
       expect(result.current.formattedCc).toBe("C <c@x.com>");
     });
 
-    it("should return empty strings for empty recipient lists", () => {
+    it("should leave from undefined and lists empty when absent", async () => {
+      mockedParse.mockResolvedValue(makeEmail());
       const { result } = renderHook(() =>
-        useEmailViewerState({ email: EMPTY_EMAIL })
+        useEmailViewerState({ content: CONTENT })
       );
+      await waitFor(() => expect(result.current.loading).toBe(false));
+
+      expect(result.current.formattedFrom).toBeUndefined();
       expect(result.current.formattedTo).toBe("");
       expect(result.current.formattedCc).toBe("");
     });
+  });
+
+  it("should surface a parse error", async () => {
+    mockedParse.mockRejectedValue(new Error("corrupt eml"));
+    const { result } = renderHook(() =>
+      useEmailViewerState({ content: CONTENT })
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.error?.message).toBe("corrupt eml");
+    expect(result.current.email).toBeUndefined();
+    expect(result.current.bodyMode).toBe("empty");
   });
 });

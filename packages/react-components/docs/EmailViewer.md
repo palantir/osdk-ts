@@ -14,7 +14,7 @@ import {
 ```
 
 - **`EmailViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, parses the .eml contents, and renders the email.
-- **`BaseEmailViewer`** — Lower-level component that accepts a pre-parsed `ParsedEmail` object.
+- **`BaseEmailViewer`** — Lower-level component that accepts raw .eml bytes and parses them.
 
 ## Usage
 
@@ -26,23 +26,48 @@ import { EmailViewer } from "@osdk/react-components/experimental/email-viewer";
 <EmailViewer media={ticket.emailAttachment} />;
 ```
 
-### With parsed email data
+### With raw bytes
 
 ```tsx
 import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewer";
 
-<BaseEmailViewer
-  email={{
-    subject: "Hello",
-    from: { name: "Alice", address: "alice@example.com" },
-    to: [{ name: "Bob", address: "bob@example.com" }],
-    cc: [],
-    date: "2026-01-15T10:30:00Z",
-    html: "<p>Hello Bob!</p>",
-    text: "Hello Bob!",
-  }}
-/>;
+// content is raw .eml bytes (e.g. from media.fetchContents())
+<BaseEmailViewer content={emlBytes} />;
 ```
+
+## Headless usage
+
+`useEmailViewerState` takes the raw .eml bytes, parses them (asynchronously), and derives the body mode and formatted addresses — so you can build a fully custom email UI on top of it, the same way `usePdfViewerState` works. Fetch the bytes yourself (e.g. `media.fetchContents()`) and hand them to the hook.
+
+`useEmailViewerState({ content })` returns:
+
+| Field           | Description                                                             |
+| --------------- | ----------------------------------------------------------------------- |
+| `loading`       | Whether the email is still being parsed                                 |
+| `error`         | Error thrown while parsing the bytes, if any                            |
+| `email`         | The parsed email, or `undefined` while loading / on error               |
+| `bodyMode`      | Which body to render: `"html" \| "text" \| "empty"`                     |
+| `formattedFrom` | Formatted sender address, or `undefined` when absent                    |
+| `formattedTo`   | Comma-separated formatted recipient addresses                           |
+| `formattedCc`   | Comma-separated formatted CC addresses                                  |
+
+```tsx
+import { useEmailViewerState } from "@osdk/react-components/experimental/email-viewer";
+
+function CustomEmail({ content }: { content: ArrayBuffer }) {
+  const { loading, error, email, bodyMode, formattedFrom } =
+    useEmailViewerState({ content });
+  if (loading) return <div>Loading…</div>;
+  if (error != null) return <div>Failed: {error.message}</div>;
+  // …render your own header from `formattedFrom` (and `formattedTo`/`formattedCc`)
+  // and switch the body on `bodyMode` (reading `email.html` / `email.text`).
+}
+
+// Fetch the bytes in your component, then pass them in:
+const content = await media.fetchContents().then((r) => r.arrayBuffer());
+```
+
+A complete, runnable version lives in the `e2e.sandbox.peopleapp` app under the "Media Viewers" tab (`src/app/media-viewers/`).
 
 ## Props
 
@@ -50,7 +75,7 @@ import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewe
 
 | Prop        | Type          | Required | Description                           |
 | ----------- | ------------- | -------- | ------------------------------------- |
-| `email`     | `ParsedEmail` | Yes      | Parsed email data                     |
+| `content`   | `ArrayBuffer` | Yes      | Raw .eml bytes to parse and display   |
 | `className` | `string`      | No       | CSS class applied to the root element |
 
 ### EmailViewerMediaProps

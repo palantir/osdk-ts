@@ -16,17 +16,16 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseExcelViewer } from "./BaseExcelViewer.js";
-import type {
-  ExcelViewerMediaProps,
-  ParsedSpreadsheet,
-} from "./ExcelViewerApi.js";
-import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
+import type { ExcelViewerMediaProps } from "./ExcelViewerApi.js";
 
 import styles from "./BaseExcelViewer.module.css";
+
+const fetchArrayBuffer = (response: Response): Promise<ArrayBuffer> =>
+  response.arrayBuffer();
 
 export function ExcelViewer({
   media,
@@ -34,13 +33,10 @@ export function ExcelViewer({
   ...excelViewerProps
 }: ExcelViewerMediaProps): React.ReactElement {
   const {
-    data: spreadsheet,
+    data: content,
     loading,
     error,
-  } = useMediaContents<ParsedSpreadsheet>(
-    media,
-    useCallback(parseSpreadsheetFromResponse, [])
-  );
+  } = useMediaContents(media, fetchArrayBuffer);
 
   const rootClassName = classnames(styles.container, className);
 
@@ -58,8 +54,8 @@ export function ExcelViewer({
           Failed to load spreadsheet: {error.message}
         </div>
       )}
-      {spreadsheet != null && (
-        <BaseExcelViewer spreadsheet={spreadsheet} {...excelViewerProps} />
+      {content != null && (
+        <BaseExcelViewer content={content} {...excelViewerProps} />
       )}
     </div>
   );

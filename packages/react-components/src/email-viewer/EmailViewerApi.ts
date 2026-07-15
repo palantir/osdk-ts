@@ -32,8 +32,8 @@ export interface ParsedEmail {
 }
 
 export interface BaseEmailViewerProps {
-  /** Parsed email data */
-  email: ParsedEmail;
+  /** Raw .eml bytes to parse and display */
+  content: ArrayBuffer;
   /** Additional CSS class name for the root element
    * @default undefined */
   className?: string;
@@ -41,7 +41,7 @@ export interface BaseEmailViewerProps {
 
 export interface EmailViewerMediaProps extends Omit<
   BaseEmailViewerProps,
-  "email"
+  "content"
 > {
   /** The Media object to fetch EML contents from */
   media: Media;

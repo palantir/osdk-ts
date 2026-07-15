@@ -20,10 +20,12 @@ import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseEmailViewer } from "./BaseEmailViewer.js";
-import type { EmailViewerMediaProps, ParsedEmail } from "./EmailViewerApi.js";
-import { parseEmailFromResponse } from "./parseEmail.js";
+import type { EmailViewerMediaProps } from "./EmailViewerApi.js";
 
 import styles from "./BaseEmailViewer.module.css";
+
+const fetchArrayBuffer = (response: Response): Promise<ArrayBuffer> =>
+  response.arrayBuffer();
 
 export function EmailViewer({
   media,
@@ -31,10 +33,10 @@ export function EmailViewer({
   ...emailViewerProps
 }: EmailViewerMediaProps): React.ReactElement {
   const {
-    data: email,
+    data: content,
     loading,
     error,
-  } = useMediaContents<ParsedEmail>(media, parseEmailFromResponse);
+  } = useMediaContents(media, fetchArrayBuffer);
 
   const rootClassName = classnames(styles.container, className);
 
@@ -52,7 +54,9 @@ export function EmailViewer({
           Failed to load email: {error.message}
         </div>
       )}
-      {email != null && <BaseEmailViewer email={email} {...emailViewerProps} />}
+      {content != null && (
+        <BaseEmailViewer content={content} {...emailViewerProps} />
+      )}
     </div>
   );
 }

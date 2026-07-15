@@ -19,7 +19,9 @@ function PeopleApp() {
             ? "form"
             : path === "/aip-agent-chat"
               ? "aip-agent-chat"
-              : "offices";
+              : path === "/media-viewers"
+                ? "media-viewers"
+                : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -67,6 +69,13 @@ function PeopleApp() {
           onClick={() => navigate("/aip-agent-chat")}
         >
           AipAgentChat
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "media-viewers"}
+          onClick={() => navigate("/media-viewers")}
+        >
+          Media Viewers
         </Button>
       </div>
 

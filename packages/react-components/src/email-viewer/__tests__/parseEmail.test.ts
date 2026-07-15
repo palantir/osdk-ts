@@ -18,19 +18,13 @@ import PostalMime from "postal-mime";
 import type { Email } from "postal-mime";
 import { describe, expect, it, vi } from "vitest";
 
-import { parseEmailFromResponse } from "../parseEmail.js";
+import { parseEmail } from "../parseEmail.js";
 
 vi.mock("postal-mime", () => ({
   default: { parse: vi.fn() },
 }));
 
 const mockedParse = vi.mocked(PostalMime.parse);
-
-function mockResponse(): Response {
-  return {
-    arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
-  } as Response;
-}
 
 function baseEmail(overrides: Partial<Email> = {}): Email {
   return {
@@ -41,7 +35,7 @@ function baseEmail(overrides: Partial<Email> = {}): Email {
   };
 }
 
-describe("parseEmailFromResponse", () => {
+describe("parseEmail", () => {
   it("parses a complete email with all fields", async () => {
     mockedParse.mockResolvedValue(
       baseEmail({
@@ -55,7 +49,7 @@ describe("parseEmailFromResponse", () => {
       })
     );
 
-    const result = await parseEmailFromResponse(mockResponse());
+    const result = await parseEmail(new ArrayBuffer(0));
 
     expect(result).toEqual({
       subject: "Hello",
@@ -75,7 +69,7 @@ describe("parseEmailFromResponse", () => {
       })
     );
 
-    const result = await parseEmailFromResponse(mockResponse());
+    const result = await parseEmail(new ArrayBuffer(0));
 
     expect(result).toEqual({
       subject: "",
@@ -106,7 +100,7 @@ describe("parseEmailFromResponse", () => {
       })
     );
 
-    const result = await parseEmailFromResponse(mockResponse());
+    const result = await parseEmail(new ArrayBuffer(0));
 
     expect(result.to).toEqual([
       { name: "Alice", address: "alice@example.com" },
@@ -127,7 +121,7 @@ describe("parseEmailFromResponse", () => {
       })
     );
 
-    const result = await parseEmailFromResponse(mockResponse());
+    const result = await parseEmail(new ArrayBuffer(0));
 
     expect(result.to).toHaveLength(2);
     expect(result.cc).toHaveLength(1);
@@ -144,7 +138,7 @@ describe("parseEmailFromResponse", () => {
       })
     );
 
-    const result = await parseEmailFromResponse(mockResponse());
+    const result = await parseEmail(new ArrayBuffer(0));
 
     expect(result.from).toBeUndefined();
   });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
 
@@ -80,12 +81,23 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
 SheetTable.displayName = "SheetTable";
 
 export function BaseExcelViewer({
-  spreadsheet,
+  content,
   className,
 }: BaseExcelViewerProps): React.ReactElement {
-  const { sheets, activeSheetIndex, activeSheet, selectSheet } =
-    useExcelViewerState({ spreadsheet });
+  const { error, sheets, activeSheetIndex, activeSheet, selectSheet } =
+    useExcelViewerState({ content });
   const rootClassName = classnames(styles.container, className);
+
+  if (error != null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.errorContainer}>
+          <ErrorIcon className={styles.errorIcon} />
+          Failed to parse spreadsheet: {error.message}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={rootClassName}>

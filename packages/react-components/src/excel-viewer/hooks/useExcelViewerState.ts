@@ -17,13 +17,18 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type { ParsedSpreadsheet, SheetData } from "../ExcelViewerApi.js";
+import { parseSpreadsheet } from "../parseSpreadsheet.js";
+
+const EMPTY_SPREADSHEET: ParsedSpreadsheet = { sheets: [] };
 
 export interface UseExcelViewerStateOptions {
-  /** Parsed spreadsheet whose sheets are displayed */
-  spreadsheet: ParsedSpreadsheet;
+  /** Raw .xlsx bytes to parse and display (e.g. from `media.fetchContents()`). */
+  content: ArrayBuffer;
 }
 
 export interface UseExcelViewerStateResult {
+  /** Error thrown while parsing the spreadsheet bytes, if any */
+  error: Error | undefined;
   /** All sheets in the workbook */
   sheets: readonly SheetData[];
   /** Index of the active sheet, clamped to the range of available sheets */
@@ -35,13 +40,28 @@ export interface UseExcelViewerStateResult {
 }
 
 /**
- * Headless state for a spreadsheet viewer: tracks the active sheet and exposes
- * a setter, clamping the active index to the range of available sheets so it
- * stays valid when the workbook changes.
+ * Headless state for a spreadsheet viewer: parses raw .xlsx bytes into sheets
+ * (synchronously) and tracks the active-sheet selection, clamping the active
+ * index to the range of available sheets so it stays valid when the workbook
+ * changes.
  */
 export function useExcelViewerState({
-  spreadsheet,
+  content,
 }: UseExcelViewerStateOptions): UseExcelViewerStateResult {
+  const { spreadsheet, error } = useMemo((): {
+    spreadsheet: ParsedSpreadsheet;
+    error: Error | undefined;
+  } => {
+    try {
+      return { spreadsheet: parseSpreadsheet(content), error: undefined };
+    } catch (err: unknown) {
+      return {
+        spreadsheet: EMPTY_SPREADSHEET,
+        error: err instanceof Error ? err : new Error(String(err)),
+      };
+    }
+  }, [content]);
+
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
 
   const safeIndex = Math.min(
@@ -60,11 +80,12 @@ export function useExcelViewerState({
 
   return useMemo(
     (): UseExcelViewerStateResult => ({
+      error,
       sheets: spreadsheet.sheets,
       activeSheetIndex: safeIndex,
       activeSheet,
       selectSheet,
     }),
-    [spreadsheet.sheets, safeIndex, activeSheet, selectSheet]
+    [error, spreadsheet.sheets, safeIndex, activeSheet, selectSheet]
   );
 }

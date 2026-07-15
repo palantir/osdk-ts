@@ -159,12 +159,31 @@ function createMockExcelMedia(): Media {
   };
 }
 
+/** Serializes a parsed spreadsheet back to .xlsx bytes for the byte-based Base component. */
+function toXlsxArrayBuffer(spreadsheet: ParsedSpreadsheet): ArrayBuffer {
+  const workbook = utils.book_new();
+  for (const sheet of spreadsheet.sheets) {
+    const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
+    utils.book_append_sheet(workbook, ws, sheet.name);
+  }
+  // `write` with type "array" returns an ArrayBuffer here; normalize to a
+  // standalone ArrayBuffer regardless of whether it hands back a view.
+  const out = write(workbook, { type: "array", bookType: "xlsx" }) as
+    | ArrayBuffer
+    | Uint8Array;
+  const bytes = out instanceof Uint8Array ? out : new Uint8Array(out);
+  return bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength
+  ) as ArrayBuffer;
+}
+
 const meta: Meta<BaseExcelViewerProps> = {
   title: "Components/DocumentViewer/Renderers/ExcelViewer",
   component: BaseExcelViewer,
   tags: ["beta"],
   args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
+    content: toXlsxArrayBuffer(SAMPLE_SPREADSHEET),
   },
   render: (args: BaseExcelViewerProps) => (
     <div style={{ height: "500px" }}>
@@ -175,8 +194,8 @@ const meta: Meta<BaseExcelViewerProps> = {
     controls: { expanded: true },
   },
   argTypes: {
-    spreadsheet: {
-      description: "Parsed spreadsheet data",
+    content: {
+      description: "Raw .xlsx bytes to parse and display",
       control: false,
     },
     className: {
@@ -209,13 +228,14 @@ export const Default: StoryObj<ExcelViewerMediaProps> = {
   },
 };
 
-export const WithSpreadsheet: Story = {
+export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
         code: `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
 
-<BaseExcelViewer spreadsheet={parsedSpreadsheet} />`,
+// content is raw .xlsx bytes (e.g. from media.fetchContents())
+<BaseExcelViewer content={xlsxBytes} />`,
       },
     },
   },
@@ -223,9 +243,9 @@ export const WithSpreadsheet: Story = {
 
 export const SingleSheet: Story = {
   args: {
-    spreadsheet: {
+    content: toXlsxArrayBuffer({
       sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-    },
+    }),
   },
 };
 

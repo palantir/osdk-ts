@@ -15,10 +15,21 @@
  */
 
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ParsedSpreadsheet } from "../../ExcelViewerApi.js";
 import { useExcelViewerState } from "../useExcelViewerState.js";
+
+vi.mock("../../parseSpreadsheet.js", () => ({
+  parseSpreadsheet: vi.fn(),
+}));
+
+const { parseSpreadsheet } = await import("../../parseSpreadsheet.js");
+const mockedParse = vi.mocked(parseSpreadsheet);
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 function makeSpreadsheet(sheetNames: readonly string[]): ParsedSpreadsheet {
   return {
@@ -26,19 +37,29 @@ function makeSpreadsheet(sheetNames: readonly string[]): ParsedSpreadsheet {
   };
 }
 
-describe("useExcelViewerState", () => {
-  it("should default to the first sheet", () => {
-    const spreadsheet = makeSpreadsheet(["Alpha", "Beta"]);
-    const { result } = renderHook(() => useExcelViewerState({ spreadsheet }));
+// Distinct buffer lengths let the parse mock return different workbooks per
+// content, so we can exercise re-parsing on content change.
+const CONTENT = new ArrayBuffer(8);
 
+describe("useExcelViewerState", () => {
+  it("should parse the content and default to the first sheet", () => {
+    mockedParse.mockReturnValue(makeSpreadsheet(["Alpha", "Beta"]));
+    const { result } = renderHook(() =>
+      useExcelViewerState({ content: CONTENT })
+    );
+
+    expect(mockedParse).toHaveBeenCalledWith(CONTENT);
+    expect(result.current.error).toBeUndefined();
     expect(result.current.activeSheetIndex).toBe(0);
     expect(result.current.activeSheet?.name).toBe("Alpha");
     expect(result.current.sheets).toHaveLength(2);
   });
 
   it("should select a sheet by index", () => {
-    const spreadsheet = makeSpreadsheet(["Alpha", "Beta", "Gamma"]);
-    const { result } = renderHook(() => useExcelViewerState({ spreadsheet }));
+    mockedParse.mockReturnValue(makeSpreadsheet(["Alpha", "Beta", "Gamma"]));
+    const { result } = renderHook(() =>
+      useExcelViewerState({ content: CONTENT })
+    );
 
     act(() => {
       result.current.selectSheet(2);
@@ -48,11 +69,17 @@ describe("useExcelViewerState", () => {
     expect(result.current.activeSheet?.name).toBe("Gamma");
   });
 
-  it("should clamp the active index when the workbook shrinks", () => {
+  it("should re-parse and clamp the active index when content changes", () => {
+    mockedParse.mockImplementation((content: ArrayBuffer) =>
+      content.byteLength === 3
+        ? makeSpreadsheet(["A"])
+        : makeSpreadsheet(["A", "B", "C"])
+    );
+
     const { result, rerender } = renderHook(
-      ({ spreadsheet }: { spreadsheet: ParsedSpreadsheet }) =>
-        useExcelViewerState({ spreadsheet }),
-      { initialProps: { spreadsheet: makeSpreadsheet(["A", "B", "C"]) } }
+      ({ content }: { content: ArrayBuffer }) =>
+        useExcelViewerState({ content }),
+      { initialProps: { content: new ArrayBuffer(9) } }
     );
 
     act(() => {
@@ -60,19 +87,33 @@ describe("useExcelViewerState", () => {
     });
     expect(result.current.activeSheetIndex).toBe(2);
 
-    rerender({ spreadsheet: makeSpreadsheet(["A"]) });
+    rerender({ content: new ArrayBuffer(3) });
 
     expect(result.current.activeSheetIndex).toBe(0);
     expect(result.current.activeSheet?.name).toBe("A");
   });
 
   it("should return undefined activeSheet for an empty workbook", () => {
+    mockedParse.mockReturnValue({ sheets: [] });
     const { result } = renderHook(() =>
-      useExcelViewerState({ spreadsheet: { sheets: [] } })
+      useExcelViewerState({ content: CONTENT })
     );
 
     expect(result.current.activeSheetIndex).toBe(0);
     expect(result.current.activeSheet).toBeUndefined();
     expect(result.current.sheets).toHaveLength(0);
+  });
+
+  it("should surface a parse error and fall back to no sheets", () => {
+    mockedParse.mockImplementation(() => {
+      throw new Error("corrupt workbook");
+    });
+    const { result } = renderHook(() =>
+      useExcelViewerState({ content: CONTENT })
+    );
+
+    expect(result.current.error?.message).toBe("corrupt workbook");
+    expect(result.current.sheets).toHaveLength(0);
+    expect(result.current.activeSheet).toBeUndefined();
   });
 });

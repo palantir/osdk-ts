@@ -29,8 +29,8 @@ export interface ParsedSpreadsheet {
 }
 
 export interface BaseExcelViewerProps {
-  /** Parsed spreadsheet data */
-  spreadsheet: ParsedSpreadsheet;
+  /** Raw .xlsx bytes to parse and display */
+  content: ArrayBuffer;
   /** Additional CSS class name for the root element
    * @default undefined */
   className?: string;
@@ -38,7 +38,7 @@ export interface BaseExcelViewerProps {
 
 export interface ExcelViewerMediaProps extends Omit<
   BaseExcelViewerProps,
-  "spreadsheet"
+  "content"
 > {
   /** The Media object to fetch Excel contents from */
   media: Media;

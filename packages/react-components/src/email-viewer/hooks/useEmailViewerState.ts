@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { EmailAddress, ParsedEmail } from "../EmailViewerApi.js";
+import { parseEmail } from "../parseEmail.js";
 
 /** Which representation of the email body should be rendered. */
 export type EmailBodyMode = "html" | "text" | "empty";
 
 export interface UseEmailViewerStateOptions {
-  /** Parsed email to display */
-  email: ParsedEmail;
+  /** Raw .eml bytes to parse and display (e.g. from `media.fetchContents()`). */
+  content: ArrayBuffer;
 }
 
 export interface UseEmailViewerStateResult {
+  /** Whether the email is still being parsed */
+  loading: boolean;
+  /** Error thrown while parsing the email bytes, if any */
+  error: Error | undefined;
+  /** The parsed email, or undefined while loading or on error */
+  email: ParsedEmail | undefined;
   /**
    * Which representation of the body should be rendered: the sanitized HTML
    * body when present, otherwise the plain-text body, otherwise nothing.
@@ -52,21 +59,58 @@ function formatAddressList(addresses: readonly EmailAddress[]): string {
 }
 
 /**
- * Headless state for an email viewer: derives which body representation to
- * render and formats the sender / recipient addresses into display strings.
+ * Headless state for an email viewer: parses raw .eml bytes (asynchronously),
+ * then derives which body representation to render and formats the sender /
+ * recipient addresses into display strings.
  */
 export function useEmailViewerState({
-  email,
+  content,
 }: UseEmailViewerStateOptions): UseEmailViewerStateResult {
+  const [email, setEmail] = useState<ParsedEmail | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | undefined>(undefined);
+
+  useEffect(
+    function parseEmailContent() {
+      let cancelled = false;
+      setLoading(true);
+      setError(undefined);
+      setEmail(undefined);
+
+      parseEmail(content)
+        .then((parsed) => {
+          if (!cancelled) {
+            setEmail(parsed);
+            setLoading(false);
+          }
+        })
+        .catch((err: unknown) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+            setLoading(false);
+          }
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    },
+    [content]
+  );
+
   return useMemo((): UseEmailViewerStateResult => {
     const bodyMode: EmailBodyMode =
-      email.html != null ? "html" : email.text != null ? "text" : "empty";
+      email?.html != null ? "html" : email?.text != null ? "text" : "empty";
 
     return {
+      loading,
+      error,
+      email,
       bodyMode,
-      formattedFrom: email.from != null ? formatAddress(email.from) : undefined,
-      formattedTo: formatAddressList(email.to),
-      formattedCc: formatAddressList(email.cc),
+      formattedFrom:
+        email?.from != null ? formatAddress(email.from) : undefined,
+      formattedTo: email != null ? formatAddressList(email.to) : "",
+      formattedCc: email != null ? formatAddressList(email.cc) : "",
     };
-  }, [email.html, email.text, email.from, email.to, email.cc]);
+  }, [loading, error, email]);
 }

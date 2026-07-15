@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
 
@@ -23,11 +24,18 @@ import { useEmailViewerState } from "./hooks/useEmailViewerState.js";
 import styles from "./BaseEmailViewer.module.css";
 
 export function BaseEmailViewer({
-  email,
+  content,
   className,
 }: BaseEmailViewerProps): React.ReactElement {
-  const { bodyMode, formattedFrom, formattedTo, formattedCc } =
-    useEmailViewerState({ email });
+  const {
+    loading,
+    error,
+    email,
+    bodyMode,
+    formattedFrom,
+    formattedTo,
+    formattedCc,
+  } = useEmailViewerState({ content });
   const rootClassName = classnames(styles.container, className);
 
   const bodyContent = useMemo(() => {
@@ -48,22 +56,44 @@ export function BaseEmailViewer({
           <iframe
             className={styles.bodyIframe}
             sandbox="allow-same-origin"
-            srcDoc={email.html}
+            srcDoc={email?.html}
             title="Email body"
           />
         </div>
       );
     }
     if (bodyMode === "text") {
-      return <div className={styles.textBody}>{email.text}</div>;
+      return <div className={styles.textBody}>{email?.text}</div>;
     }
     return <div className={styles.emptyBody}>No content</div>;
-  }, [bodyMode, email.html, email.text]);
+  }, [bodyMode, email?.html, email?.text]);
+
+  if (loading) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.loadingContainer}>
+          <Spin className={styles.spinnerIcon} />
+          Loading…
+        </div>
+      </div>
+    );
+  }
+
+  if (error != null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.errorContainer}>
+          <ErrorIcon className={styles.errorIcon} />
+          Failed to parse email: {error.message}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={rootClassName}>
       <div className={styles.header}>
-        {email.subject != null && (
+        {email?.subject != null && (
           <div className={styles.subject}>{email.subject}</div>
         )}
         {formattedFrom != null && (
@@ -72,19 +102,19 @@ export function BaseEmailViewer({
             <span className={styles.headerValue}>{formattedFrom}</span>
           </div>
         )}
-        {email.to.length > 0 && (
+        {email != null && email.to.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>To:</span>
             <span className={styles.headerValue}>{formattedTo}</span>
           </div>
         )}
-        {email.cc.length > 0 && (
+        {email != null && email.cc.length > 0 && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>Cc:</span>
             <span className={styles.headerValue}>{formattedCc}</span>
           </div>
         )}
-        {email.date != null && (
+        {email?.date != null && (
           <div className={styles.headerRow}>
             <span className={styles.headerLabel}>Date:</span>
             <span className={styles.headerValue}>{email.date}</span>

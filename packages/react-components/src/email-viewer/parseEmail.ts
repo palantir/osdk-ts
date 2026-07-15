@@ -50,11 +50,12 @@ function extractSingleAddress(
   return undefined;
 }
 
-export async function parseEmailFromResponse(
-  response: Response
-): Promise<ParsedEmail> {
-  const buffer = await response.arrayBuffer();
-  const email = await PostalMime.parse(buffer);
+/**
+ * Parses raw .eml bytes into a {@link ParsedEmail}. The caller is responsible
+ * for fetching the bytes (e.g. via `media.fetchContents`).
+ */
+export async function parseEmail(content: ArrayBuffer): Promise<ParsedEmail> {
+  const email = await PostalMime.parse(content);
 
   return {
     subject: email.subject,

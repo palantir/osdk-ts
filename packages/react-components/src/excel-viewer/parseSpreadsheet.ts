@@ -20,11 +20,12 @@ import { read, utils } from "xlsx-republish";
 
 import type { ParsedSpreadsheet, SheetData } from "./ExcelViewerApi.js";
 
-export async function parseSpreadsheetFromResponse(
-  response: Response
-): Promise<ParsedSpreadsheet> {
-  const buffer = await response.arrayBuffer();
-  const workbook = read(buffer, { type: "array" });
+/**
+ * Parses raw .xlsx bytes into a {@link ParsedSpreadsheet}. Synchronous — the
+ * caller is responsible for fetching the bytes (e.g. via `media.fetchContents`).
+ */
+export function parseSpreadsheet(content: ArrayBuffer): ParsedSpreadsheet {
+  const workbook = read(content, { type: "array" });
 
   const sheets: SheetData[] = workbook.SheetNames.map((name) => {
     const sheet = workbook.Sheets[name];
