@@ -20,6 +20,8 @@ import type { CallerLocation } from "./callerLocation.js";
 import {
   captureCallerLocation,
   formatCallerLocation,
+  locateCallerLine,
+  parseLineLocation,
 } from "./callerLocation.js";
 
 describe("callerLocation", () => {
@@ -73,6 +75,70 @@ describe("callerLocation", () => {
         expect(() => boundary()).not.toThrow();
         expect(boundary()).toBeUndefined();
       });
+    });
+  });
+
+  describe("parseLineLocation", () => {
+    it("parses a Firefox/Safari-style frame", () => {
+      const location = parseLineLocation(
+        "MyComponent@http://localhost:5173/src/MyComponent.tsx:42:15"
+      );
+
+      expect(location).toEqual({
+        fileName: "http://localhost:5173/src/MyComponent.tsx",
+        line: 42,
+        column: 15,
+      });
+    });
+
+    it("parses correctly even when the function name itself contains a space", () => {
+      // A leading space in the name (e.g. Firefox's top-level "global code")
+      // must not be mistaken for a frame-separator by the regex.
+      const location = parseLineLocation(
+        "global code@http://localhost:5173/src/MyComponent.tsx:1:1"
+      );
+
+      expect(location).toEqual({
+        fileName: "http://localhost:5173/src/MyComponent.tsx",
+        line: 1,
+        column: 1,
+      });
+    });
+
+    it("returns undefined for a line with no location to parse", () => {
+      expect(parseLineLocation("Error")).toBeUndefined();
+    });
+  });
+
+  describe("locateCallerLine", () => {
+    it("skips the header line on a V8-shaped stack", () => {
+      const stack = [
+        "Error",
+        "    at captureCallerLocation (callerLocation.ts:134:20)",
+        "    at boundary (callerLocation.test.ts:10:5)",
+        "    at realCaller (callerLocation.test.ts:20:3)",
+      ].join("\n");
+
+      expect(locateCallerLine(stack, 2)).toBe(
+        "    at realCaller (callerLocation.test.ts:20:3)"
+      );
+    });
+
+    it("has no header line to skip on a Firefox/Safari-shaped stack", () => {
+      const stack = [
+        "captureCallerLocation@callerLocation.ts:134:20",
+        "boundary@callerLocation.test.ts:10:5",
+        "realCaller@callerLocation.test.ts:20:3",
+      ].join("\n");
+
+      expect(locateCallerLine(stack, 2)).toBe(
+        "realCaller@callerLocation.test.ts:20:3"
+      );
+    });
+
+    it("fails closed (undefined) when the stack is too short for the frame", () => {
+      const stack = ["realCaller@callerLocation.test.ts:3:3"].join("\n");
+      expect(locateCallerLine(stack, 2)).toBeUndefined();
     });
   });
 });

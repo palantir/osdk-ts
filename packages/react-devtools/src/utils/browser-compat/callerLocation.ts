@@ -22,7 +22,7 @@
 export interface CallerLocation {
   readonly fileName: string;
   readonly line: number;
-  readonly column: number;
+  readonly column?: number;
 }
 
 // Non-V8 engines (Firefox/Safari) format frames as `name@file:line:column`.
@@ -81,11 +81,14 @@ function captureViaCallSites(
   }
   const fileName = site.getFileName() ?? site.getEvalOrigin();
   const line = site.getLineNumber();
-  const column = site.getColumnNumber();
-  if (fileName == null || line == null || column == null) {
+  if (fileName == null || line == null) {
     return undefined;
   }
-  return { fileName, line, column };
+  // column is captured when present but never rendered (formatCallerLocation
+  // emits file:line), so a null column must not throw away a good file:line —
+  // some native/eval call sites report one.
+  const column = site.getColumnNumber();
+  return column == null ? { fileName, line } : { fileName, line, column };
 }
 
 /**
