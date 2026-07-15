@@ -136,6 +136,37 @@ export const AllColumnsVisible: Story = {
       "location",
     ],
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "Every column is toggled on.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: true,
+    jobTitle: true,
+    department: true,
+    startDate: true,
+    location: true,
+  }}
+  currentColumnOrder={[
+    "fullName",
+    "email",
+    "jobTitle",
+    "department",
+    "startDate",
+    "location",
+  ]}
+  onApply={handleApply}
+/>`,
+      },
+    },
+  },
 };
 
 export const SingleColumnVisible: Story = {
@@ -149,6 +180,30 @@ export const SingleColumnVisible: Story = {
       location: false,
     },
     currentColumnOrder: ["fullName"],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Only a single column is visible; the rest are toggled off.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: false,
+    jobTitle: false,
+    department: false,
+    startDate: false,
+    location: false,
+  }}
+  currentColumnOrder={["fullName"]}
+  onApply={handleApply}
+/>`,
+      },
+    },
   },
 };
 
