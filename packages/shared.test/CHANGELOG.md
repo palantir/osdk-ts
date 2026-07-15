@@ -1,5 +1,12 @@
 # @osdk/shared.test
 
+## 2.32.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters@2.46.0
+
 ## 2.31.0
 
 ### Minor Changes

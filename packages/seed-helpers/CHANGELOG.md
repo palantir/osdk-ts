@@ -1,5 +1,11 @@
 # @osdk/seed-helpers
 
+## 0.20.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+
 ## 0.19.0
 
 ### Minor Changes
