@@ -15,6 +15,7 @@
  */
 
 export { augment } from "../object/fetchPage.js";
+export { hydrateOsdkObject } from "../object/hydrateOsdkObject.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
 export {
