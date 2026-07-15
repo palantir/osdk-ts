@@ -146,7 +146,7 @@ async function readPackageJson(deps: ResolveDeps): Promise<PackageJsonLike> {
     throw new ExitProcessError(
       1,
       "Could not find a package.json in the current directory or any parent.",
-      "Run osdk unstable branch from within your project."
+      "Run `osdk unstable branch` from within your project."
     );
   }
   try {
