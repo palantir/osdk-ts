@@ -41,15 +41,15 @@ import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewe
 
 `useEmailViewerState({ content })` returns:
 
-| Field           | Description                                                             |
-| --------------- | ----------------------------------------------------------------------- |
-| `loading`       | Whether the email is still being parsed                                 |
-| `error`         | Error thrown while parsing the bytes, if any                            |
-| `email`         | The parsed email, or `undefined` while loading / on error               |
-| `bodyMode`      | Which body to render: `"html" \| "text" \| "empty"`                     |
-| `formattedFrom` | Formatted sender address, or `undefined` when absent                    |
-| `formattedTo`   | Comma-separated formatted recipient addresses                           |
-| `formattedCc`   | Comma-separated formatted CC addresses                                  |
+| Field           | Description                                               |
+| --------------- | --------------------------------------------------------- |
+| `loading`       | Whether the email is still being parsed                   |
+| `error`         | Error thrown while parsing the bytes, if any              |
+| `email`         | The parsed email, or `undefined` while loading / on error |
+| `bodyMode`      | Which body to render: `"html" \| "text" \| "empty"`       |
+| `formattedFrom` | Formatted sender address, or `undefined` when absent      |
+| `formattedTo`   | Comma-separated formatted recipient addresses             |
+| `formattedCc`   | Comma-separated formatted CC addresses                    |
 
 ```tsx
 import { useEmailViewerState } from "@osdk/react-components/experimental/email-viewer";

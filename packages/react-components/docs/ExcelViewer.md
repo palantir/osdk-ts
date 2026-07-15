@@ -39,13 +39,13 @@ import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewe
 
 `useExcelViewerState({ content })` returns:
 
-| Field              | Description                                                     |
-| ------------------ | --------------------------------------------------------------- |
-| `error`            | Error thrown while parsing the bytes, if any                    |
-| `sheets`           | All sheets in the workbook                                      |
-| `activeSheetIndex` | Index of the active sheet, clamped to the available range       |
+| Field              | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `error`            | Error thrown while parsing the bytes, if any                     |
+| `sheets`           | All sheets in the workbook                                       |
+| `activeSheetIndex` | Index of the active sheet, clamped to the available range        |
 | `activeSheet`      | The active sheet, or `undefined` when the workbook has no sheets |
-| `selectSheet`      | `(index: number) => void` — select a sheet                      |
+| `selectSheet`      | `(index: number) => void` — select a sheet                       |
 
 ```tsx
 import { useExcelViewerState } from "@osdk/react-components/experimental/excel-viewer";
@@ -68,10 +68,10 @@ A complete, runnable version lives in the `e2e.sandbox.peopleapp` app under the 
 
 ### BaseExcelViewerProps
 
-| Prop        | Type          | Required | Description                                     |
-| ----------- | ------------- | -------- | ----------------------------------------------- |
-| `content`   | `ArrayBuffer` | Yes      | Raw .xlsx bytes to parse and display            |
-| `className` | `string`      | No       | CSS class applied to the root element           |
+| Prop        | Type          | Required | Description                           |
+| ----------- | ------------- | -------- | ------------------------------------- |
+| `content`   | `ArrayBuffer` | Yes      | Raw .xlsx bytes to parse and display  |
+| `className` | `string`      | No       | CSS class applied to the root element |
 
 ### ExcelViewerMediaProps
 

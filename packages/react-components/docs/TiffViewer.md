@@ -67,7 +67,7 @@ function CustomTiff({ content }: { content: Uint8Array }) {
 
 // Fetch the bytes in your component, then pass them in:
 const content = new Uint8Array(
-  await media.fetchContents().then((r) => r.arrayBuffer()),
+  await media.fetchContents().then((r) => r.arrayBuffer())
 );
 ```
 
