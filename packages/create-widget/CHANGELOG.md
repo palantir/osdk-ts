@@ -1,5 +1,7 @@
 # @osdk/create-widget
 
+## 3.43.0
+
 ## 3.42.0
 
 ### Patch Changes

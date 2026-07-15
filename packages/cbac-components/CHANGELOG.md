@@ -1,5 +1,11 @@
 # @osdk/cbac-components
 
+## 0.10.0
+
+### Minor Changes
+
+- 7e1aade: Extend oxfmt formatting to css, scss, and html in oxc-migrated packages. These file types were previously left unformatted (dprint had no css/html plugin); they are now covered by oxfmt and reformatted accordingly. yaml stays excluded because the only yaml in migrated packages is mustache-template documentation that oxfmt would corrupt.
+
 ## 0.9.0
 
 ### Minor Changes
