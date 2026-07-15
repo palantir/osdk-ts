@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.46.0
+
+### Minor Changes
+
+- c26e051: Add unstable `hydrateOsdkObject` helper to hydrate raw wire objects into OSDK object instances using a caller-supplied map of object definitions.
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters@2.46.0
+- @osdk/shared.test@2.32.0
+
 ## 2.45.0
 
 ### Minor Changes
