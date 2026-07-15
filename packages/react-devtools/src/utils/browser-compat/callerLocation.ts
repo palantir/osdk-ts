@@ -89,17 +89,15 @@ function captureViaCallSites(
 }
 
 /**
- * Returns the location of whoever called `boundaryFn`, skipping `boundaryFn`
- * itself. On V8 this elides by function identity via `Error.captureStackTrace`
- * + the CallSite API (minification-proof). Elsewhere it skips a fixed 2 frames,
- * which requires `boundaryFn` to call this directly.
+ * Returns the location of whoever called `boundaryFn`. On V8 it elides
+ * `boundaryFn` by function identity (minification-proof); elsewhere it skips a
+ * fixed 2 frames, so `boundaryFn` must call this directly.
  */
 export function captureCallerLocation(
   boundaryFn: (...args: unknown[]) => unknown
 ): CallerLocation | undefined {
   // Best-effort: this pokes host/engine internals and mutates a shared global.
-  // If it throws, callers (a live console.* wrapper) must still get `undefined`
-  // back rather than an exception.
+  // If it throws, the caller gets `undefined` instead of a thrown error.
   try {
     const captureStackTrace = Error.captureStackTrace;
     if (typeof captureStackTrace === "function") {
