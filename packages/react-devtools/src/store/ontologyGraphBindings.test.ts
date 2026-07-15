@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 import { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
 import {
-  collectUsedObjectTypes,
+  collectUsedEntities,
   toOntologyNodeUsages,
   usagesForType,
 } from "./ontologyGraphBindings.js";
@@ -68,8 +68,8 @@ function registerBinding(
   });
 }
 
-describe("collectUsedObjectTypes", () => {
-  it("collects apiNames from object/list/aggregation queries and link sourceObjects", () => {
+describe("collectUsedEntities", () => {
+  it("collects object refs from object/list/aggregation/link bindings", () => {
     const registry = new ComponentQueryRegistry();
     registerBinding(registry, "c1", "useOsdkObject", {
       type: "object",
@@ -86,27 +86,19 @@ describe("collectUsedObjectTypes", () => {
     });
     registerBinding(registry, "c4", "useLinks", {
       type: "links",
-      sourceObject: "Employee",
+      sourceObject: "Team",
       linkName: "lead",
     });
 
-    expect(collectUsedObjectTypes(registry)).toEqual(
-      new Set(["Employee", "Office", "Department"])
-    );
+    expect(collectUsedEntities(registry)).toEqual([
+      { kind: "object", apiName: "Employee" },
+      { kind: "object", apiName: "Office" },
+      { kind: "object", apiName: "Department" },
+      { kind: "object", apiName: "Team" },
+    ]);
   });
 
-  it("filters out the 'Unknown' sentinel apiName", () => {
-    const registry = new ComponentQueryRegistry();
-    registerBinding(registry, "c1", "useOsdkObject", {
-      type: "object",
-      objectType: "Unknown",
-      primaryKey: "1",
-    });
-
-    expect(collectUsedObjectTypes(registry)).toEqual(new Set());
-  });
-
-  it("ignores action bindings, which carry no object type", () => {
+  it("collects action refs from action bindings", () => {
     const registry = new ComponentQueryRegistry();
     registry.registerBinding({
       componentId: "c1",
@@ -117,7 +109,31 @@ describe("collectUsedObjectTypes", () => {
       queryParams: { type: "action", actionName: "doThing" },
     });
 
-    expect(collectUsedObjectTypes(registry)).toEqual(new Set());
+    expect(collectUsedEntities(registry)).toEqual([
+      { kind: "action", apiName: "doThing" },
+    ]);
+  });
+
+  it("dedupes repeated refs and filters the 'Unknown' sentinel", () => {
+    const registry = new ComponentQueryRegistry();
+    registerBinding(registry, "c1", "useOsdkObjects", {
+      type: "list",
+      objectType: "Employee",
+    });
+    registerBinding(registry, "c2", "useOsdkObject", {
+      type: "object",
+      objectType: "Employee",
+      primaryKey: "1",
+    });
+    registerBinding(registry, "c3", "useOsdkObject", {
+      type: "object",
+      objectType: "Unknown",
+      primaryKey: "1",
+    });
+
+    expect(collectUsedEntities(registry)).toEqual([
+      { kind: "object", apiName: "Employee" },
+    ]);
   });
 });
 
@@ -146,6 +162,21 @@ describe("usagesForType", () => {
     });
 
     const matches = usagesForType(registry.getAllBindings(), "Employee");
+    expect(matches.map((b) => b.componentId)).toEqual(["c1"]);
+  });
+
+  it("matches action bindings by actionName", () => {
+    const registry = new ComponentQueryRegistry();
+    registry.registerBinding({
+      componentId: "c1",
+      componentName: "c1Component",
+      hookType: "useOsdkAction",
+      hookIndex: 0,
+      querySignature: "action:doThing",
+      queryParams: { type: "action", actionName: "doThing" },
+    });
+
+    const matches = usagesForType(registry.getAllBindings(), "doThing");
     expect(matches.map((b) => b.componentId)).toEqual(["c1"]);
   });
 

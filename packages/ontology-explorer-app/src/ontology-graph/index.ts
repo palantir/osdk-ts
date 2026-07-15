@@ -16,29 +16,54 @@
 
 import "../styles.js";
 
-export { OBJECT_TYPE_NODE, toFlowElements } from "./graphElements.js";
+export {
+  ACTION_TYPE_NODE,
+  OBJECT_TYPE_NODE,
+  QUERY_TYPE_NODE,
+  toFlowElements,
+} from "./graphElements.js";
 export type {
+  ActionTypeNode as ActionTypeNodeType,
+  ActionTypeNodeData,
+  GraphNode,
   ObjectTypeNode as ObjectTypeNodeType,
   ObjectTypeNodeData,
+  QueryTypeNode as QueryTypeNodeType,
+  QueryTypeNodeData,
 } from "./graphElements.js";
 
 export { getLayoutedElements } from "./getLayoutedElements.js";
 
+export { ActionTypeNode } from "./ActionTypeNode.js";
 export { ObjectTypeNode } from "./ObjectTypeNode.js";
+export { QueryTypeNode } from "./QueryTypeNode.js";
 
 export { OntologyGraphFlow } from "./OntologyGraphFlow.js";
 export type { OntologyGraphFlowProps } from "./OntologyGraphFlow.js";
 
-export { OntologyGraphModel } from "./OntologyGraphModel.js";
+export { entityNodeId, OntologyGraphModel } from "./OntologyGraphModel.js";
 export type {
+  OntologyActionInfo,
+  OntologyActionOperation,
+  OntologyEntity,
+  OntologyEntityKind,
+  OntologyEntityRef,
   OntologyGraphModelDeps,
   OntologyLinkInfo,
+  OntologyParameterInfo,
   OntologyPropertyInfo,
+  OntologyQueryInfo,
   OntologyTypeInfo,
 } from "./OntologyGraphModel.js";
+
+export { OntologyGraphView } from "./OntologyGraphView.js";
+export type { OntologyGraphViewProps } from "./OntologyGraphView.js";
 
 export { OntologyNodeDetail } from "./OntologyNodeDetail.js";
 export type {
   OntologyNodeDetailProps,
   OntologyNodeUsage,
 } from "./OntologyNodeDetail.js";
+
+export { DumpOntologySource } from "./DumpOntologySource.js";
+export type { OntologySource } from "./OntologySource.js";

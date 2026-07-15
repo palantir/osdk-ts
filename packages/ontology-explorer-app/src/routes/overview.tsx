@@ -14,19 +14,58 @@
  * limitations under the License.
  */
 
-import { H1, NonIdealState } from "@blueprintjs/core";
+import { Icon, NonIdealState, Spinner } from "@blueprintjs/core";
+import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
+
+import { fetchLocalOntologyMetadata } from "../loaders/fetchLocalOntologyMetadata.js";
+import {
+  DumpOntologySource,
+  OntologyGraphView,
+} from "../ontology-graph/index.js";
 import styles from "./overview.module.scss";
 
 export function OverviewPage(): React.ReactElement {
+  const { data: source, error, isLoading } = useQuery({
+    queryKey: ["local-ontology"],
+    queryFn: async () =>
+      DumpOntologySource.parse(await fetchLocalOntologyMetadata()),
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  let statusDescription: string;
+  if (error != null) {
+    statusDescription = error instanceof Error ? error.message : String(error);
+  } else if (isLoading) {
+    statusDescription = "Reading the local ontology from /api/ontology.";
+  } else {
+    statusDescription = "No ontology data found in the local ontology.";
+  }
+
   return (
     <div className={styles.page}>
-      <H1>Ontology Explorer</H1>
-      <NonIdealState
-        icon="search"
-        title="Coming Soon"
-        description="Ontology explorer is under construction."
-      />
+      <header className={styles.header}>
+        <span className={styles.brandIcon}>
+          <Icon icon="graph" size={18} />
+        </span>
+        <div className={styles.brandText}>
+          <span className={styles.title}>Ontology Explorer</span>
+        </div>
+      </header>
+      <main className={styles.body}>
+        {source != null
+          ? <OntologyGraphView source={source} theme="light" />
+          : (
+            <NonIdealState
+              icon={error != null ? "error" : <Spinner size={28} />}
+              title={error != null
+                ? "Couldn't load ontology"
+                : "Loading ontology"}
+              description={statusDescription}
+            />
+          )}
+      </main>
     </div>
   );
 }

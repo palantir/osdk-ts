@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { Logger, ObjectMetadata } from "@osdk/api";
+import type {
+  ActionMetadata,
+  Logger,
+  ObjectMetadata,
+  QueryMetadata,
+} from "@osdk/api";
 import { type Client, createClient } from "@osdk/client";
 import {
   type CacheEntry,
@@ -324,6 +329,68 @@ export class MonitorStore {
       return Promise.reject(new Error("No monitored client available"));
     }
     return this.monitor.fetchObjectMetadata(apiName);
+  }
+
+  /** Fetches an action type's metadata by apiName, used by the Ontology Graph tab. */
+  fetchActionMetadata(apiName: string): Promise<ActionMetadata> {
+    if (!this.monitor) {
+      return Promise.reject(new Error("No monitored client available"));
+    }
+    return this.monitor.fetchActionMetadata(apiName);
+  }
+
+  /** Fetches a query type's metadata by apiName, used by the Ontology Graph tab. */
+  fetchQueryMetadata(apiName: string): Promise<QueryMetadata> {
+    if (!this.monitor) {
+      return Promise.reject(new Error("No monitored client available"));
+    }
+    return this.monitor.fetchQueryMetadata(apiName);
+  }
+
+  /**
+   * Lists the apiNames of every object type in the client's ontology, used by
+   * the Ontology Graph tab's "Local" mode. Returns an empty list if no
+   * monitored client is available or the lookup fails.
+   */
+  async listObjectTypeApiNames(): Promise<string[]> {
+    if (!this.monitor) {
+      return [];
+    }
+    try {
+      return await this.monitor.listObjectTypeApiNames();
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Lists the apiNames of every action type in the client's ontology, used by
+   * the Ontology Graph tab's "Local" mode. Empty list on failure.
+   */
+  async listActionApiNames(): Promise<string[]> {
+    if (!this.monitor) {
+      return [];
+    }
+    try {
+      return await this.monitor.listActionApiNames();
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Lists the apiNames of every query type in the client's ontology, used by
+   * the Ontology Graph tab's "Local" mode. Empty list on failure.
+   */
+  async listQueryApiNames(): Promise<string[]> {
+    if (!this.monitor) {
+      return [];
+    }
+    try {
+      return await this.monitor.listQueryApiNames();
+    } catch {
+      return [];
+    }
   }
 
   async loadCacheEntries(): Promise<CacheEntry[]> {

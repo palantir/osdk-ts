@@ -48,6 +48,7 @@
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
     "@dagrejs/dagre": "^1.1.1",
+    "@osdk/generator-converters": "workspace:*",
     "@xyflow/react": "^12.4.3",
     "classnames": "2.3.2"
   },
@@ -59,6 +60,7 @@
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tanstack/react-query": "^5.66.0",

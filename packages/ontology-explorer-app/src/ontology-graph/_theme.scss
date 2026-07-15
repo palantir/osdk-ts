@@ -1,0 +1,70 @@
+// Owned theme tokens for the ontology graph rendering layer. These used to be
+// the `--dt-*` tokens defined by @osdk/react-devtools, which meant the graph
+// only rendered correctly inside the devtools panel. They now live here so the
+// graph is fully styled anywhere it mounts (the standalone app, the devtools
+// tab, a Storybook story). Values are copied 1:1 from react-devtools so the
+// devtools tab looks unchanged.
+//
+// A consuming component includes these on its root element and sets
+// `data-og-theme` to switch light/dark; the custom properties cascade to all
+// descendants (flow canvas, nodes, detail panel).
+
+@mixin og-dark-theme {
+  --og-bg-surface: #1c2127;
+  --og-bg-raised: #1a1f25;
+  --og-bg-elevated: #252a31;
+  --og-bg-hover: #2a3038;
+
+  --og-text-primary: #e1e8ed;
+  --og-text-secondary: #8a9ba8;
+  --og-text-tertiary: #5c6b77;
+
+  --og-border-subtle: #252b33;
+  --og-border-default: #2d343c;
+  --og-border-hover: rgba(255, 255, 255, 0.14);
+
+  --og-blue: #2d8cf0;
+  --og-blue-muted: #1a5fa8;
+  --og-red: #e05252;
+  --og-action: #a98cd9;
+  --og-query: #4db6a4;
+
+  --og-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@mixin og-light-theme {
+  --og-bg-surface: #ffffff;
+  --og-bg-raised: #f0f2f5;
+  --og-bg-elevated: #ffffff;
+  --og-bg-hover: #e8ecf0;
+
+  --og-text-primary: #1c2127;
+  --og-text-secondary: #5f6b7c;
+  --og-text-tertiary: #8f99a8;
+
+  --og-border-subtle: #dce1e6;
+  --og-border-default: #c5cdd4;
+  --og-border-hover: rgba(0, 0, 0, 0.2);
+
+  --og-blue: #2d72d2;
+  --og-blue-muted: #4580e6;
+  --og-red: #cd4246;
+  --og-action: #7157b8;
+  --og-query: #238551;
+
+  --og-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+// Sizing tokens. `full` suits a standalone page; `compact` is the tighter
+// form factor for the devtools panel (matches the graph's pre-refactor size).
+@mixin og-size-full {
+  --og-node-width: 220px;
+  --og-node-padding: 10px 12px;
+  --og-detail-width: 300px;
+}
+
+@mixin og-size-compact {
+  --og-node-width: 190px;
+  --og-node-padding: 8px 10px;
+  --og-detail-width: 260px;
+}

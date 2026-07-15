@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { OntologyNodeUsage } from "@osdk/ontology-explorer-app/ontology-graph";
+import type {
+  OntologyEntityRef,
+  OntologyNodeUsage,
+} from "@osdk/ontology-explorer-app/ontology-graph";
+import { entityNodeId } from "@osdk/ontology-explorer-app/ontology-graph";
 
 import type {
   ComponentHookBinding,
@@ -48,21 +52,41 @@ function objectTypeOf(
   }
 }
 
+/** The action-type apiName an action query references, if any. */
+function actionNameOf(
+  params: ComponentHookBinding["queryParams"]
+): string | undefined {
+  return params.type === "action" ? params.actionName : undefined;
+}
+
 /**
- * Collects the set of object-type apiNames the app has referenced, from the
- * component/query registry.
+ * Collects the distinct entities (object + action types) the app has referenced,
+ * from the component/query registry, as refs the ontology graph model consumes.
+ * Query types aren't tracked as hook usages, so they never appear in "Used".
  */
-export function collectUsedObjectTypes(
+export function collectUsedEntities(
   registry: ComponentQueryRegistry
-): Set<string> {
-  const result = new Set<string>();
+): OntologyEntityRef[] {
+  const seen = new Set<string>();
+  const refs: OntologyEntityRef[] = [];
+  const add = (ref: OntologyEntityRef) => {
+    const id = entityNodeId(ref);
+    if (!seen.has(id)) {
+      seen.add(id);
+      refs.push(ref);
+    }
+  };
   for (const binding of registry.getAllBindings()) {
-    const apiName = objectTypeOf(binding.queryParams);
-    if (apiName && apiName !== "Unknown") {
-      result.add(apiName);
+    const objectType = objectTypeOf(binding.queryParams);
+    if (objectType && objectType !== "Unknown") {
+      add({ kind: "object", apiName: objectType });
+    }
+    const actionName = actionNameOf(binding.queryParams);
+    if (actionName && actionName !== "Unknown") {
+      add({ kind: "action", apiName: actionName });
     }
   }
-  return result;
+  return refs;
 }
 
 export function usagesForType(
@@ -71,7 +95,9 @@ export function usagesForType(
 ): ComponentHookBinding[] {
   return bindings.filter(
     (binding) =>
-      !binding.unmountedAt && objectTypeOf(binding.queryParams) === apiName
+      !binding.unmountedAt &&
+      (objectTypeOf(binding.queryParams) === apiName ||
+        actionNameOf(binding.queryParams) === apiName)
   );
 }
 

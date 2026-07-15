@@ -250,6 +250,9 @@ export const updateProjectStatusStoryAction = TypeHelpers.actionTypeBuilder(
     apiName: "updateProjectStatusStoryAction",
     displayName: "Update project status",
     parameters: {},
+    // Declares the action edits a Project, so the graph draws a
+    // "Modifies → Project" edge from the action node.
+    operations: [{ type: "modifyObject", objectTypeApiName: "Project" }],
   })
 )
   .addParameter("status", "string", true)

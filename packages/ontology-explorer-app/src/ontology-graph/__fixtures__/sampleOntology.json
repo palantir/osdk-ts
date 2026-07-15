@@ -1,0 +1,126 @@
+{
+  "ontology": {
+    "apiName": "ontology",
+    "rid": "ri.ontology.main.ontology.0000",
+    "displayName": "Sample",
+    "description": "Sample ontology dump for tests and local development."
+  },
+  "objectTypes": {
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "primaryKey": "id",
+        "displayName": "Employee",
+        "pluralDisplayName": "Employees",
+        "status": "ACTIVE",
+        "rid": "ri.ontology.main.object-type.employee",
+        "titleProperty": "name",
+        "visibility": "NORMAL",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "person" },
+        "properties": {
+          "id": { "dataType": { "type": "integer" }, "displayName": "Id", "nullable": false },
+          "name": { "dataType": { "type": "string" }, "displayName": "Name", "nullable": true },
+          "title": { "dataType": { "type": "string" }, "displayName": "Title", "nullable": true }
+        }
+      },
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "linkTypes": [
+        { "apiName": "office", "cardinality": "ONE", "objectTypeApiName": "Office" },
+        { "apiName": "reports", "cardinality": "MANY", "objectTypeApiName": "Employee" }
+      ],
+      "sharedPropertyTypeMapping": {}
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "primaryKey": "officeId",
+        "displayName": "Office",
+        "pluralDisplayName": "Offices",
+        "status": "ACTIVE",
+        "rid": "ri.ontology.main.object-type.office",
+        "titleProperty": "officeId",
+        "visibility": "NORMAL",
+        "icon": { "type": "blueprint", "color": "#238551", "name": "office" },
+        "properties": {
+          "officeId": { "dataType": { "type": "string" }, "displayName": "Office Id", "nullable": false },
+          "city": { "dataType": { "type": "string" }, "displayName": "City", "nullable": true }
+        }
+      },
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "linkTypes": [
+        { "apiName": "department", "cardinality": "ONE", "objectTypeApiName": "Department" }
+      ],
+      "sharedPropertyTypeMapping": {}
+    },
+    "Department": {
+      "objectType": {
+        "apiName": "Department",
+        "primaryKey": "deptId",
+        "displayName": "Department",
+        "pluralDisplayName": "Departments",
+        "status": "ACTIVE",
+        "rid": "ri.ontology.main.object-type.department",
+        "titleProperty": "name",
+        "visibility": "NORMAL",
+        "icon": { "type": "blueprint", "color": "#C87619", "name": "diagram-tree" },
+        "properties": {
+          "deptId": { "dataType": { "type": "string" }, "displayName": "Department Id", "nullable": false },
+          "name": { "dataType": { "type": "string" }, "displayName": "Name", "nullable": true }
+        }
+      },
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "linkTypes": [],
+      "sharedPropertyTypeMapping": {}
+    }
+  },
+  "interfaceTypes": {},
+  "sharedPropertyTypes": {},
+  "actionTypes": {
+    "updateDepartment": {
+      "apiName": "updateDepartment",
+      "displayName": "Update Department",
+      "description": "Updates a department.",
+      "status": "ACTIVE",
+      "rid": "ri.ontology.main.action-type.update-department",
+      "parameters": {
+        "department": {
+          "dataType": { "type": "object", "objectTypeApiName": "Department" },
+          "required": true
+        },
+        "name": { "dataType": { "type": "string" }, "required": true }
+      },
+      "operations": [
+        { "type": "modifyObject", "objectTypeApiName": "Department" }
+      ]
+    },
+    "createOffice": {
+      "apiName": "createOffice",
+      "displayName": "Create Office",
+      "description": "Creates an office.",
+      "status": "ACTIVE",
+      "rid": "ri.ontology.main.action-type.create-office",
+      "parameters": {
+        "city": { "dataType": { "type": "string" }, "required": true }
+      },
+      "operations": [
+        { "type": "createObject", "objectTypeApiName": "Office" }
+      ]
+    }
+  },
+  "queryTypes": {
+    "getHeadcount": {
+      "apiName": "getHeadcount",
+      "displayName": "Get Headcount",
+      "version": "1.0.0",
+      "rid": "ri.ontology.main.query-type.get-headcount",
+      "parameters": {
+        "office": { "dataType": { "type": "string" } }
+      },
+      "output": { "type": "integer" }
+    }
+  },
+  "valueTypes": {}
+}

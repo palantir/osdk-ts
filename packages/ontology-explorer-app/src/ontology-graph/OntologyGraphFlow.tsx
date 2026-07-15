@@ -20,6 +20,7 @@ import {
   Background,
   Controls,
   type Edge,
+  type EdgeTypes,
   type NodeChange,
   type NodeTypes,
   type OnEdgesChange,
@@ -30,50 +31,66 @@ import {
 } from "@xyflow/react";
 import React, { useCallback, useMemo, useState } from "react";
 
+import { ActionTypeNode } from "./ActionTypeNode.js";
+import { BidirectionalEdge } from "./BidirectionalEdge.js";
 import { getLayoutedElements } from "./getLayoutedElements.js";
 import {
+  ACTION_TYPE_NODE,
+  BIDIRECTIONAL_EDGE,
+  type GraphNode,
   OBJECT_TYPE_NODE,
-  type ObjectTypeNode as ObjectTypeNodeType,
+  QUERY_TYPE_NODE,
+  SELF_LOOP_EDGE,
   toFlowElements,
 } from "./graphElements.js";
 import { ObjectTypeNode } from "./ObjectTypeNode.js";
-import type { OntologyTypeInfo } from "./OntologyGraphModel.js";
+import type { OntologyEntity } from "./OntologyGraphModel.js";
+import { QueryTypeNode } from "./QueryTypeNode.js";
+import { SelfLoopEdge } from "./SelfLoopEdge.js";
 
 import styles from "./OntologyGraphFlow.module.scss";
 
-const nodeTypes: NodeTypes = { [OBJECT_TYPE_NODE]: ObjectTypeNode };
+const nodeTypes: NodeTypes = {
+  [OBJECT_TYPE_NODE]: ObjectTypeNode,
+  [ACTION_TYPE_NODE]: ActionTypeNode,
+  [QUERY_TYPE_NODE]: QueryTypeNode,
+};
+const edgeTypes: EdgeTypes = {
+  [SELF_LOOP_EDGE]: SelfLoopEdge,
+  [BIDIRECTIONAL_EDGE]: BidirectionalEdge,
+};
 
 export interface OntologyGraphFlowProps {
-  types: OntologyTypeInfo[];
+  entities: OntologyEntity[];
   theme: "light" | "dark";
-  selectedApiName: string | null;
-  onSelect: (apiName: string | null) => void;
+  selectedNodeId: string | null;
+  onSelect: (nodeId: string | null) => void;
 }
 
 function changesIncludeUserInteractions(
-  changes: NodeChange<ObjectTypeNodeType>[],
+  changes: NodeChange<GraphNode>[],
 ): boolean {
   return changes.some(({ type }) => type === "position" || type === "select");
 }
 
 function OntologyGraphFlowInner({
-  types,
+  entities,
   theme,
-  selectedApiName,
+  selectedNodeId,
   onSelect,
 }: OntologyGraphFlowProps): React.ReactElement {
   const layouted = useMemo(() => {
-    const { nodes, edges } = toFlowElements(types);
+    const { nodes, edges } = toFlowElements(entities);
     return getLayoutedElements(nodes, edges);
-  }, [types]);
+  }, [entities]);
 
-  const [nodes, setNodes] = useState<ObjectTypeNodeType[]>(layouted.nodes);
+  const [nodes, setNodes] = useState<GraphNode[]>(layouted.nodes);
   const [edges, setEdges] = useState<Edge[]>(layouted.edges);
   const [renderedLayout, setRenderedLayout] = useState(layouted);
 
-  // Re-seed local node/edge state whenever a new layout is computed (new types
-  // loaded). Adjusting state during render is React's supported alternative to
-  // an effect for "reset state when a prop changes".
+  // Re-seed local node/edge state whenever a new layout is computed (new
+  // entities loaded). Adjusting state during render is React's supported
+  // alternative to an effect for "reset state when a prop changes".
   if (renderedLayout !== layouted) {
     setRenderedLayout(layouted);
     setNodes(layouted.nodes);
@@ -82,7 +99,7 @@ function OntologyGraphFlowInner({
 
   const reactFlow = useReactFlow();
 
-  const onNodesChange: OnNodesChange<ObjectTypeNodeType> = useCallback(
+  const onNodesChange: OnNodesChange<GraphNode> = useCallback(
     (changes) => {
       setNodes((prev) => applyNodeChanges(changes, prev));
       if (!changesIncludeUserInteractions(changes)) {
@@ -102,9 +119,9 @@ function OntologyGraphFlowInner({
     () =>
       nodes.map((node) => ({
         ...node,
-        selected: node.id === selectedApiName,
+        selected: node.id === selectedNodeId,
       })),
-    [nodes, selectedApiName],
+    [nodes, selectedNodeId],
   );
 
   return (
@@ -116,6 +133,7 @@ function OntologyGraphFlowInner({
       onNodeClick={(_event, node) => onSelect(node.id)}
       onPaneClick={() => onSelect(null)}
       nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       fitView={true}
       colorMode={theme}
       proOptions={{ hideAttribution: true }}

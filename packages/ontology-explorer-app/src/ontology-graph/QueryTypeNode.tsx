@@ -19,19 +19,19 @@ import { Handle, type NodeProps, Position } from "@xyflow/react";
 import classNames from "classnames";
 import React from "react";
 
-import type { ObjectTypeNode as ObjectTypeNodeType } from "./graphElements.js";
+import type { QueryTypeNode as QueryTypeNodeType } from "./graphElements.js";
 
 import styles from "./entityNode.module.scss";
 
-export function ObjectTypeNode(
-  props: NodeProps<ObjectTypeNodeType>,
+export function QueryTypeNode(
+  props: NodeProps<QueryTypeNodeType>,
 ): React.ReactElement {
   const { info } = props.data;
   const isStub = info.loadState === "stub" || info.loadState === "loading";
 
   return (
     <div
-      className={classNames(styles.node, {
+      className={classNames(styles.node, styles.query, {
         [styles.selected]: props.selected,
         [styles.used]: info.used,
         [styles.stub]: isStub,
@@ -43,9 +43,9 @@ export function ObjectTypeNode(
         position={Position.Left}
         className={styles.handle}
       />
-      <div className={styles.kind}>Object type</div>
+      <div className={styles.kind}>Query type</div>
       <div className={styles.header}>
-        <Icon icon="cube" size={14} className={styles.icon} />
+        <Icon icon="function" size={14} className={styles.icon} />
         <span className={styles.displayName} title={info.displayName}>
           {info.displayName}
         </span>
@@ -56,8 +56,10 @@ export function ObjectTypeNode(
       <div className={styles.apiName}>{info.apiName}</div>
       {info.loadState === "loaded" && (
         <div className={styles.footer}>
-          <span className={styles.stat}>{info.properties.length} props</span>
-          <span className={styles.stat}>{info.links.length} links</span>
+          <span className={styles.stat}>{info.parameters.length} params</span>
+          {info.output && (
+            <span className={styles.output}>→ {info.output}</span>
+          )}
         </div>
       )}
       {info.loadState === "error" && (

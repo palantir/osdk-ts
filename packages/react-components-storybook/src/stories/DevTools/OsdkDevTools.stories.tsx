@@ -100,8 +100,11 @@ function OsdkDevToolsDemo() {
         plus a <code>lead</code> link traversal and an{" "}
         <code>updateProjectStatusStoryAction</code> action, so the graph loads
         real metadata from the mock backend: Employee's self-referencing{" "}
-        <code>lead</code>/<code>peeps</code> links, and the Office → Department
-        → Project → Team chain.
+        <code>lead</code>/<code>peeps</code> links, the Office → Department →
+        Project → Team chain, and the action's <code>Modifies → Project</code>{" "}
+        edge. Switch <strong>Show</strong> to{" "}
+        <strong>Generated Ontology</strong> to also see every action and query
+        type in the ontology.
       </p>
       <MonitoringPanel monitorStore={monitorStore} />
     </div>
@@ -136,7 +139,7 @@ export const OntologyGraph: Story = {
     docs: {
       description: {
         story:
-          "Click the panel's Ontology tab to see the graph. Click the Employee node to open the detail drawer with its properties and links.",
+          "Click the panel's Ontology tab to see the graph of object, action and query types. Use the Show: Used / Generated Ontology toggle to switch between the entities this app has queried (object and action types) and every object, action and query type in the mock ontology. Click a node to open the detail drawer with its properties, links, parameters, edits or output.",
       },
     },
   },

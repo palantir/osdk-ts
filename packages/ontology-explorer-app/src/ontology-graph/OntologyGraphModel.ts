@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
+import type { ActionMetadata, ObjectMetadata, QueryMetadata } from "@osdk/api";
 
 /**
- * What {@link OntologyGraphModel} needs to load full metadata for a type. Kept
- * to a single method so any metadata source (a live OSDK client, a static
+ * What {@link OntologyGraphModel} needs to load full metadata for each entity
+ * kind. Kept to per-kind methods so any source (a live OSDK client, a static
  * ontology dump, a test double) can satisfy it.
  */
 export interface OntologyGraphModelDeps {
   fetchObjectMetadata(apiName: string): Promise<ObjectMetadata>;
+  fetchActionMetadata(apiName: string): Promise<ActionMetadata>;
+  fetchQueryMetadata(apiName: string): Promise<QueryMetadata>;
+}
+
+/** The kinds of ontology entity the graph renders. */
+export type OntologyEntityKind = "object" | "action" | "query";
+
+/** Identifies one entity across kinds (an action and object can share a name). */
+export interface OntologyEntityRef {
+  kind: OntologyEntityKind;
+  apiName: string;
+}
+
+/** Node id for an entity — unique across kinds. */
+export function entityNodeId(ref: OntologyEntityRef): string {
+  return `${ref.kind}:${ref.apiName}`;
 }
 
 export interface OntologyPropertyInfo {
@@ -40,54 +56,108 @@ export interface OntologyLinkInfo {
   multiplicity: boolean;
 }
 
-/** One node in the ontology graph. */
-export interface OntologyTypeInfo {
+export interface OntologyParameterInfo {
+  name: string;
+  type: string;
+}
+
+/** An object type an action creates or modifies (an action -> object edge). */
+export interface OntologyActionOperation {
+  targetType: string;
+  operation: "create" | "modify";
+}
+
+interface OntologyEntityBase {
+  kind: OntologyEntityKind;
   apiName: string;
   displayName: string;
-  pluralDisplayName?: string;
-  primaryKeyApiName?: string;
-  icon?: { color: string; name: string };
-  status?: string;
-  properties: OntologyPropertyInfo[];
-  links: OntologyLinkInfo[];
   /**
-   * `used` — explicitly marked as in-use by the caller (e.g. a live app query,
-   * or a top-level type in a static ontology dump). A node that only appears
-   * as a link target starts as `used: false`.
+   * `used` — explicitly marked in-use by the caller (a live app query/action,
+   * or any entity in a static ontology dump). An entity that only appears as a
+   * link/operation target starts as `used: false`.
    */
   used: boolean;
   loadState: "stub" | "loading" | "loaded" | "error";
   error?: string;
 }
 
-function makeStub(apiName: string, used: boolean): OntologyTypeInfo {
-  return {
-    apiName,
-    displayName: apiName,
-    properties: [],
-    links: [],
+/** One object-type node in the graph. */
+export interface OntologyTypeInfo extends OntologyEntityBase {
+  kind: "object";
+  pluralDisplayName?: string;
+  primaryKeyApiName?: string;
+  icon?: { color: string; name: string };
+  status?: string;
+  properties: OntologyPropertyInfo[];
+  links: OntologyLinkInfo[];
+}
+
+/** One action-type node in the graph. */
+export interface OntologyActionInfo extends OntologyEntityBase {
+  kind: "action";
+  parameters: OntologyParameterInfo[];
+  operations: OntologyActionOperation[];
+}
+
+/** One query-type node in the graph. */
+export interface OntologyQueryInfo extends OntologyEntityBase {
+  kind: "query";
+  parameters: OntologyParameterInfo[];
+  output: string;
+}
+
+export type OntologyEntity =
+  | OntologyTypeInfo
+  | OntologyActionInfo
+  | OntologyQueryInfo;
+
+function describeDataType(type: unknown): string {
+  if (typeof type === "string") {
+    return type;
+  }
+  if (type != null && typeof type === "object" && "type" in type) {
+    const inner = type.type;
+    if (typeof inner === "string") {
+      return inner;
+    }
+  }
+  return "value";
+}
+
+function makeStub(ref: OntologyEntityRef, used: boolean): OntologyEntity {
+  const base = {
+    apiName: ref.apiName,
+    displayName: ref.apiName,
     used,
-    loadState: "stub",
+    loadState: "stub" as const,
   };
+  switch (ref.kind) {
+    case "action":
+      return { ...base, kind: "action", parameters: [], operations: [] };
+    case "query":
+      return { ...base, kind: "query", parameters: [], output: "" };
+    case "object":
+      return { ...base, kind: "object", properties: [], links: [] };
+  }
 }
 
 /**
- * Builds and maintains a graph of ontology object types for rendering. Nodes
- * are whichever apiNames the caller marks as {@link markUsed}; full metadata
- * (properties + links) is fetched lazily per type via {@link
- * OntologyGraphModelDeps.fetchObjectMetadata}. Link targets are added as stub
- * nodes so edges render, and can be expanded on demand with {@link loadType}.
+ * Builds and maintains a graph of ontology entities (object, action and query
+ * types) for rendering. Entities are whichever the caller marks {@link
+ * markUsed}; full metadata is fetched lazily per entity via {@link
+ * OntologyGraphModelDeps}. An object referenced by a link or an action
+ * operation is added as a stub node so its edge renders, and can be expanded on
+ * demand with {@link loadEntity}.
  *
- * This model has no knowledge of where "used" types come from — that's the
- * caller's job. A React DevTools-style caller might mark a type used the
- * moment a component queries it; a static-ontology-explorer caller might mark
- * every top-level type used immediately after fetching the ontology dump.
+ * This model has no knowledge of where "used" entities come from — that's the
+ * caller's job. A React DevTools-style caller marks entities used as components
+ * query them; a static-ontology-explorer caller marks every entity in the dump.
  *
  * A small subscribable store, consumed via `useSyncExternalStore`.
  */
 export class OntologyGraphModel {
   readonly #store: OntologyGraphModelDeps;
-  readonly #types = new Map<string, OntologyTypeInfo>();
+  readonly #entities = new Map<string, OntologyEntity>();
   readonly #inFlight = new Set<string>();
   readonly #listeners = new Set<() => void>();
   #version = 0;
@@ -105,36 +175,45 @@ export class OntologyGraphModel {
     return this.#version;
   }
 
-  getTypes(): OntologyTypeInfo[] {
-    return [...this.#types.values()];
+  getEntities(): OntologyEntity[] {
+    return [...this.#entities.values()];
   }
 
-  getType(apiName: string): OntologyTypeInfo | undefined {
-    return this.#types.get(apiName);
+  getEntity(ref: OntologyEntityRef): OntologyEntity | undefined {
+    return this.#entities.get(entityNodeId(ref));
   }
 
-  /** Fetches full metadata for a type (e.g. a link-target stub the user clicked). */
-  loadType(apiName: string): void {
-    void this.#loadType(apiName);
+  getEntityByNodeId(nodeId: string): OntologyEntity | undefined {
+    return this.#entities.get(nodeId);
+  }
+
+  /** Fetches full metadata for an entity (e.g. a stub the user clicked). */
+  loadEntity(ref: OntologyEntityRef): void {
+    void this.#loadEntity(ref);
   }
 
   /**
-   * Marks the given apiNames as used. New apiNames are added as stub nodes and
-   * immediately queued for metadata loading; apiNames already known keep their
-   * current state except `used` is flipped to `true` if it wasn't already
-   * (this never demotes a type back to unused).
+   * Marks the given entities as used. New refs are added as stub nodes and
+   * queued for metadata loading; known refs keep their state except `used` is
+   * flipped to `true` if it wasn't (this never demotes an entity to unused).
    */
-  markUsed(apiNames: Iterable<string>): void {
+  markUsed(refs: Iterable<OntologyEntityRef>): void {
     let changed = false;
-    for (const apiName of apiNames) {
-      const existing = this.#types.get(apiName);
+    for (const ref of refs) {
+      const id = entityNodeId(ref);
+      const existing = this.#entities.get(id);
       if (!existing) {
-        this.#types.set(apiName, makeStub(apiName, true));
+        this.#entities.set(id, makeStub(ref, true));
         changed = true;
-        void this.#loadType(apiName);
+        void this.#loadEntity(ref);
       } else if (!existing.used) {
-        this.#types.set(apiName, { ...existing, used: true });
+        this.#entities.set(id, { ...existing, used: true });
         changed = true;
+        // A stub that was only an edge target and is now used should load its
+        // full metadata, matching a freshly-used entity (which loads on add).
+        if (existing.loadState === "stub") {
+          void this.#loadEntity(ref);
+        }
       }
     }
     if (changed) {
@@ -149,46 +228,73 @@ export class OntologyGraphModel {
     }
   }
 
-  async #loadType(apiName: string): Promise<void> {
-    if (this.#inFlight.has(apiName)) {
+  async #loadEntity(ref: OntologyEntityRef): Promise<void> {
+    const id = entityNodeId(ref);
+    if (this.#inFlight.has(id)) {
       return;
     }
-    const current = this.#types.get(apiName);
+    const current = this.#entities.get(id);
     if (current && current.loadState === "loaded") {
       return;
     }
-    this.#inFlight.add(apiName);
-    this.#setLoadState(apiName, "loading");
+    this.#inFlight.add(id);
+    this.#setLoadState(ref, "loading");
     try {
-      const metadata = await this.#store.fetchObjectMetadata(apiName);
-      this.#applyMetadata(apiName, metadata);
+      switch (ref.kind) {
+        case "object":
+          this.#applyObject(
+            ref.apiName,
+            await this.#store.fetchObjectMetadata(ref.apiName),
+          );
+          break;
+        case "action":
+          this.#applyAction(
+            ref.apiName,
+            await this.#store.fetchActionMetadata(ref.apiName),
+          );
+          break;
+        case "query":
+          this.#applyQuery(
+            ref.apiName,
+            await this.#store.fetchQueryMetadata(ref.apiName),
+          );
+          break;
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const existing = this.#types.get(apiName) ?? makeStub(apiName, false);
-      this.#types.set(apiName, {
+      const existing = this.#entities.get(id) ?? makeStub(ref, false);
+      this.#entities.set(id, {
         ...existing,
         loadState: "error",
         error: message,
       });
       this.#notify();
     } finally {
-      this.#inFlight.delete(apiName);
+      this.#inFlight.delete(id);
     }
   }
 
   #setLoadState(
-    apiName: string,
-    loadState: OntologyTypeInfo["loadState"],
+    ref: OntologyEntityRef,
+    loadState: OntologyEntity["loadState"],
   ): void {
-    const existing = this.#types.get(apiName) ?? makeStub(apiName, false);
+    const id = entityNodeId(ref);
+    const existing = this.#entities.get(id) ?? makeStub(ref, false);
     if (existing.loadState === loadState) {
       return;
     }
-    this.#types.set(apiName, { ...existing, loadState });
+    this.#entities.set(id, { ...existing, loadState });
     this.#notify();
   }
 
-  #applyMetadata(apiName: string, metadata: ObjectMetadata): void {
+  #addObjectStub(apiName: string): void {
+    const id = entityNodeId({ kind: "object", apiName });
+    if (!this.#entities.has(id)) {
+      this.#entities.set(id, makeStub({ kind: "object", apiName }, false));
+    }
+  }
+
+  #applyObject(apiName: string, metadata: ObjectMetadata): void {
     const properties: OntologyPropertyInfo[] = Object.entries(
       metadata.properties ?? {},
     ).map(([propApiName, prop]) => ({
@@ -207,9 +313,13 @@ export class OntologyGraphModel {
       }),
     );
 
-    const existing = this.#types.get(apiName) ?? makeStub(apiName, false);
-    this.#types.set(apiName, {
-      ...existing,
+    const existing = this.#entities.get(
+      entityNodeId({ kind: "object", apiName }),
+    );
+    this.#entities.set(entityNodeId({ kind: "object", apiName }), {
+      kind: "object",
+      apiName,
+      used: existing?.used ?? false,
       displayName: metadata.displayName ?? apiName,
       pluralDisplayName: metadata.pluralDisplayName,
       primaryKeyApiName: metadata.primaryKeyApiName != null
@@ -227,10 +337,69 @@ export class OntologyGraphModel {
 
     // Add link targets as stub nodes so their edges render.
     for (const link of links) {
-      if (!this.#types.has(link.targetType)) {
-        this.#types.set(link.targetType, makeStub(link.targetType, false));
-      }
+      this.#addObjectStub(link.targetType);
     }
+
+    this.#notify();
+  }
+
+  #applyAction(apiName: string, metadata: ActionMetadata): void {
+    const parameters: OntologyParameterInfo[] = Object.entries(
+      metadata.parameters ?? {},
+    ).map(([name, param]) => ({ name, type: describeDataType(param.type) }));
+
+    const operations: OntologyActionOperation[] = Object.entries(
+      metadata.modifiedEntities ?? {},
+    ).flatMap(([targetType, mod]) => {
+      const result: OntologyActionOperation[] = [];
+      if (mod?.created) {
+        result.push({ targetType, operation: "create" });
+      }
+      if (mod?.modified) {
+        result.push({ targetType, operation: "modify" });
+      }
+      return result;
+    });
+
+    const existing = this.#entities.get(
+      entityNodeId({ kind: "action", apiName }),
+    );
+    this.#entities.set(entityNodeId({ kind: "action", apiName }), {
+      kind: "action",
+      apiName,
+      used: existing?.used ?? false,
+      displayName: metadata.displayName ?? apiName,
+      parameters,
+      operations,
+      loadState: "loaded",
+      error: undefined,
+    });
+
+    for (const operation of operations) {
+      this.#addObjectStub(operation.targetType);
+    }
+
+    this.#notify();
+  }
+
+  #applyQuery(apiName: string, metadata: QueryMetadata): void {
+    const parameters: OntologyParameterInfo[] = Object.entries(
+      metadata.parameters ?? {},
+    ).map(([name, param]) => ({ name, type: describeDataType(param.type) }));
+
+    const existing = this.#entities.get(
+      entityNodeId({ kind: "query", apiName }),
+    );
+    this.#entities.set(entityNodeId({ kind: "query", apiName }), {
+      kind: "query",
+      apiName,
+      used: existing?.used ?? false,
+      displayName: metadata.displayName ?? apiName,
+      parameters,
+      output: describeDataType(metadata.output),
+      loadState: "loaded",
+      error: undefined,
+    });
 
     this.#notify();
   }

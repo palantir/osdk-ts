@@ -62,6 +62,7 @@
   "peerDependencies": {
     "@osdk/api": "*",
     "@osdk/client": "*",
+    "@osdk/foundry.ontologies": "*",
     "@osdk/react": "*",
     "@types/react": "^17 || ^18 || ^19",
     "react": "^17 || ^18 || ^19",
@@ -76,6 +77,7 @@
   "devDependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",

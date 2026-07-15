@@ -3,19 +3,19 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 260px;
+  width: var(--og-detail-width);
   z-index: 4;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px 12px;
   overflow-y: auto;
-  background: var(--dt-bg-elevated);
-  border-left: 1px solid var(--dt-border-default);
-  box-shadow: var(--dt-shadow-card);
+  background: var(--og-bg-elevated);
+  border-left: 1px solid var(--og-border-default);
+  box-shadow: var(--og-shadow-card);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
-  color: var(--dt-text-primary);
+  color: var(--og-text-primary);
 }
 
 .header {
@@ -41,7 +41,7 @@
   font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
     monospace;
   font-size: 10px;
-  color: var(--dt-text-tertiary);
+  color: var(--og-text-tertiary);
 }
 
 .metaRow {
@@ -54,8 +54,8 @@
   font-size: 10px;
   padding: 1px 6px;
   border-radius: 3px;
-  background: var(--dt-bg-hover);
-  color: var(--dt-text-secondary);
+  background: var(--og-bg-hover);
+  color: var(--og-text-secondary);
 }
 
 .section {
@@ -69,7 +69,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--dt-text-tertiary);
+  color: var(--og-text-tertiary);
   margin-bottom: 2px;
 }
 
@@ -78,18 +78,18 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: var(--dt-text-secondary);
+  color: var(--og-text-secondary);
 }
 
 .empty {
   font-size: 11px;
-  color: var(--dt-text-tertiary);
+  color: var(--og-text-tertiary);
   font-style: italic;
 }
 
 .errorText {
   font-size: 11px;
-  color: var(--dt-red);
+  color: var(--og-red);
 }
 
 .propRow,
@@ -99,14 +99,14 @@
   justify-content: space-between;
   gap: 8px;
   padding: 2px 0;
-  border-bottom: 1px solid var(--dt-border-subtle);
+  border-bottom: 1px solid var(--og-border-subtle);
 }
 
 .propName {
   font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
     monospace;
   font-size: 11px;
-  color: var(--dt-text-primary);
+  color: var(--og-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,7 +117,7 @@
   font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
     monospace;
   font-size: 10px;
-  color: var(--dt-text-secondary);
+  color: var(--og-text-secondary);
   flex: 0 0 auto;
 }
 
@@ -127,16 +127,16 @@
   align-items: baseline;
   gap: 6px;
   padding: 3px 0;
-  border-bottom: 1px solid var(--dt-border-subtle);
+  border-bottom: 1px solid var(--og-border-subtle);
 }
 
 .compName {
   font-size: 11px;
   font-weight: 500;
-  color: var(--dt-text-primary);
+  color: var(--og-text-primary);
 }
 
 .compHook {
   font-size: 10px;
-  color: var(--dt-blue);
+  color: var(--og-blue);
 }

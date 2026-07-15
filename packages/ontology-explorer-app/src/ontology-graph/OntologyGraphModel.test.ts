@@ -20,6 +20,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   OntologyGraphModel,
   type OntologyGraphModelDeps,
+  type OntologyTypeInfo,
 } from "./OntologyGraphModel.js";
 
 function employeeMetadata(): ObjectMetadata {
@@ -86,30 +87,43 @@ function makeDeps(
         ? Promise.resolve(md)
         : Promise.reject(new Error(`no metadata for ${apiName}`));
     },
+    fetchActionMetadata: () => Promise.reject(new Error("no action metadata")),
+    fetchQueryMetadata: () => Promise.reject(new Error("no query metadata")),
   };
 }
 
+function expectObject(
+  model: OntologyGraphModel,
+  apiName: string,
+): OntologyTypeInfo {
+  const entity = model.getEntity({ kind: "object", apiName });
+  if (entity?.kind !== "object") {
+    throw new Error(`expected object ${apiName}, got ${entity?.kind}`);
+  }
+  return entity;
+}
+
 describe("OntologyGraphModel", () => {
-  it("loads metadata for types marked used", async () => {
+  it("loads metadata for entities marked used", async () => {
     const model = new OntologyGraphModel(
       makeDeps({ Employee: employeeMetadata() }),
     );
 
-    model.markUsed(["Employee"]);
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
 
     await vi.waitFor(() => {
-      expect(model.getType("Employee")?.loadState).toBe("loaded");
+      expect(expectObject(model, "Employee").loadState).toBe("loaded");
     });
 
-    const employee = model.getType("Employee");
-    expect(employee?.used).toBe(true);
-    expect(employee?.displayName).toBe("Employee");
-    expect(employee?.primaryKeyApiName).toBe("employeeNumber");
-    expect(employee?.properties.map((p) => p.apiName)).toEqual([
+    const employee = expectObject(model, "Employee");
+    expect(employee.used).toBe(true);
+    expect(employee.displayName).toBe("Employee");
+    expect(employee.primaryKeyApiName).toBe("employeeNumber");
+    expect(employee.properties.map((p) => p.apiName)).toEqual([
       "employeeNumber",
       "fullName",
     ]);
-    expect(employee?.links).toEqual([
+    expect(employee.links).toEqual([
       { apiName: "primaryOffice", targetType: "Office", multiplicity: false },
     ]);
   });
@@ -119,17 +133,18 @@ describe("OntologyGraphModel", () => {
       makeDeps({ Employee: employeeMetadata() }),
     );
 
-    model.markUsed(["Employee"]);
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
     await vi.waitFor(() => {
-      expect(model.getType("Office")).toBeDefined();
+      expect(model.getEntity({ kind: "object", apiName: "Office" }))
+        .toBeDefined();
     });
 
-    const office = model.getType("Office");
-    expect(office?.loadState).toBe("stub");
-    expect(office?.used).toBe(false);
+    const office = expectObject(model, "Office");
+    expect(office.loadState).toBe("stub");
+    expect(office.used).toBe(false);
   });
 
-  it("expands a stub neighbor when loadType is called", async () => {
+  it("expands a stub neighbor when loadEntity is called", async () => {
     const model = new OntologyGraphModel(
       makeDeps({
         Employee: employeeMetadata(),
@@ -137,31 +152,54 @@ describe("OntologyGraphModel", () => {
       }),
     );
 
-    model.markUsed(["Employee"]);
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
     await vi.waitFor(() => {
-      expect(model.getType("Office")?.loadState).toBe("stub");
+      expect(expectObject(model, "Office").loadState).toBe("stub");
     });
 
-    model.loadType("Office");
+    model.loadEntity({ kind: "object", apiName: "Office" });
     await vi.waitFor(() => {
-      expect(model.getType("Office")?.loadState).toBe("loaded");
+      expect(expectObject(model, "Office").loadState).toBe("loaded");
     });
-    expect(model.getType("Office")?.displayName).toBe("Office");
+    expect(expectObject(model, "Office").displayName).toBe("Office");
+  });
+
+  it("loads a stub when it is later marked used", async () => {
+    const model = new OntologyGraphModel(
+      makeDeps({
+        Employee: employeeMetadata(),
+        Office: officeMetadata(),
+      }),
+    );
+
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
+    await vi.waitFor(() => {
+      expect(expectObject(model, "Office").loadState).toBe("stub");
+    });
+    expect(expectObject(model, "Office").used).toBe(false);
+
+    // Marking the stub used should flip `used` AND trigger its load, matching a
+    // freshly-used entity rather than leaving it an empty stub until clicked.
+    model.markUsed([{ kind: "object", apiName: "Office" }]);
+    await vi.waitFor(() => {
+      expect(expectObject(model, "Office").loadState).toBe("loaded");
+    });
+    expect(expectObject(model, "Office").used).toBe(true);
   });
 
   it("records an error when metadata fetch fails", async () => {
     const model = new OntologyGraphModel(makeDeps({}));
 
-    model.markUsed(["Missing"]);
+    model.markUsed([{ kind: "object", apiName: "Missing" }]);
     await vi.waitFor(() => {
-      expect(model.getType("Missing")?.loadState).toBe("error");
+      expect(expectObject(model, "Missing").loadState).toBe("error");
     });
-    expect(model.getType("Missing")?.error).toContain(
+    expect(expectObject(model, "Missing").error).toContain(
       "no metadata for Missing",
     );
   });
 
-  it("notifies subscribers and bumps version as types load", async () => {
+  it("notifies subscribers and bumps version as entities load", async () => {
     const model = new OntologyGraphModel(
       makeDeps({ Employee: employeeMetadata() }),
     );
@@ -170,9 +208,9 @@ describe("OntologyGraphModel", () => {
     const unsubscribe = model.subscribe(listener);
     const startVersion = model.getVersion();
 
-    model.markUsed(["Employee"]);
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
     await vi.waitFor(() => {
-      expect(model.getType("Employee")?.loadState).toBe("loaded");
+      expect(expectObject(model, "Employee").loadState).toBe("loaded");
     });
 
     expect(listener).toHaveBeenCalled();
@@ -180,19 +218,19 @@ describe("OntologyGraphModel", () => {
     unsubscribe();
   });
 
-  it("does not demote a type back to unused", async () => {
+  it("does not demote an entity back to unused", async () => {
     const model = new OntologyGraphModel(
       makeDeps({ Employee: employeeMetadata() }),
     );
 
-    model.markUsed(["Employee"]);
+    model.markUsed([{ kind: "object", apiName: "Employee" }]);
     await vi.waitFor(() => {
-      expect(model.getType("Employee")?.loadState).toBe("loaded");
+      expect(expectObject(model, "Employee").loadState).toBe("loaded");
     });
 
     // Marking used again (e.g. a later registry sync that no longer includes
     // "Employee") must not flip `used` back to false.
     model.markUsed([]);
-    expect(model.getType("Employee")?.used).toBe(true);
+    expect(expectObject(model, "Employee").used).toBe(true);
   });
 });

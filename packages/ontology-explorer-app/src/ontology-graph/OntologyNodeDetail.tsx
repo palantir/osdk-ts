@@ -17,12 +17,17 @@
 import { Button, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React from "react";
 
-import type { OntologyTypeInfo } from "./OntologyGraphModel.js";
+import type {
+  OntologyActionInfo,
+  OntologyEntity,
+  OntologyQueryInfo,
+  OntologyTypeInfo,
+} from "./OntologyGraphModel.js";
 
 import styles from "./OntologyNodeDetail.module.scss";
 
 /**
- * One caller-supplied "this type is used by X" entry. The component does no
+ * One caller-supplied "this entity is used by X" entry. The component does no
  * interpretation of `label`/`detail` — callers format whatever is meaningful
  * for their context (e.g. a devtools caller might format a component name +
  * hook type + file path; a static-ontology caller might have nothing to show
@@ -38,13 +43,136 @@ export interface OntologyNodeUsage {
 }
 
 export interface OntologyNodeDetailProps {
-  info: OntologyTypeInfo;
-  usages: OntologyNodeUsage[];
+  info: OntologyEntity;
+  /** Omit to hide the usages section entirely (e.g. a static-ontology caller). */
+  usages?: OntologyNodeUsage[];
   onClose: () => void;
   /** @defaultValue "Used by" */
   usagesTitle?: string;
   /** @defaultValue "No usages found" */
   usagesEmptyLabel?: string;
+}
+
+function ObjectSections(
+  { info }: { info: OntologyTypeInfo },
+): React.ReactElement {
+  return (
+    <>
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>
+          Properties ({info.properties.length})
+        </div>
+        {info.properties.length === 0 && (
+          <div className={styles.empty}>No properties</div>
+        )}
+        {info.properties.map((prop) => (
+          <div key={prop.apiName} className={styles.propRow}>
+            <span className={styles.propName} title={prop.displayName}>
+              {prop.apiName}
+            </span>
+            <span className={styles.propType}>
+              {prop.type}
+              {prop.multiplicity ? "[]" : ""}
+              {prop.nullable ? "?" : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {info.links.length > 0 && (
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>Links ({info.links.length})</div>
+          {info.links.map((link) => (
+            <div key={link.apiName} className={styles.linkRow}>
+              <span className={styles.propName}>{link.apiName}</span>
+              <span className={styles.linkTarget}>
+                → {link.targetType}
+                {link.multiplicity ? " (many)" : " (one)"}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function ParametersSection(
+  { parameters }: { parameters: OntologyActionInfo["parameters"] },
+): React.ReactElement {
+  return (
+    <div className={styles.section}>
+      <div className={styles.sectionTitle}>
+        Parameters ({parameters.length})
+      </div>
+      {parameters.length === 0 && (
+        <div className={styles.empty}>No parameters</div>
+      )}
+      {parameters.map((param) => (
+        <div key={param.name} className={styles.propRow}>
+          <span className={styles.propName}>{param.name}</span>
+          <span className={styles.propType}>{param.type}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ActionSections(
+  { info }: { info: OntologyActionInfo },
+): React.ReactElement {
+  return (
+    <>
+      <ParametersSection parameters={info.parameters} />
+      {info.operations.length > 0 && (
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>
+            Edits ({info.operations.length})
+          </div>
+          {info.operations.map((op) => (
+            <div
+              key={`${op.operation}:${op.targetType}`}
+              className={styles.linkRow}
+            >
+              <span className={styles.propName}>
+                {op.operation === "create" ? "Creates" : "Modifies"}
+              </span>
+              <span className={styles.linkTarget}>→ {op.targetType}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function QuerySections(
+  { info }: { info: OntologyQueryInfo },
+): React.ReactElement {
+  return (
+    <>
+      <ParametersSection parameters={info.parameters} />
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Output</div>
+        <div className={styles.linkRow}>
+          <span className={styles.linkTarget}>{info.output || "—"}</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function LoadedSections(
+  { info }: { info: OntologyEntity },
+): React.ReactElement {
+  switch (info.kind) {
+    case "action":
+      return <ActionSections info={info} />;
+    case "query":
+      return <QuerySections info={info} />;
+    case "object":
+      return <ObjectSections info={info} />;
+  }
 }
 
 export function OntologyNodeDetail({
@@ -73,78 +201,52 @@ export function OntologyNodeDetail({
       </div>
 
       <div className={styles.metaRow}>
-        {info.primaryKeyApiName && (
+        <span className={styles.metaChip}>{info.kind}</span>
+        {info.kind === "object" && info.primaryKeyApiName && (
           <span className={styles.metaChip}>pk: {info.primaryKeyApiName}</span>
         )}
-        {info.status && <span className={styles.metaChip}>{info.status}</span>}
+        {info.kind === "object" && info.status && (
+          <span className={styles.metaChip}>{info.status}</span>
+        )}
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          Properties
-          {info.loadState === "loaded" ? ` (${info.properties.length})` : ""}
-        </div>
-        {isLoading && (
+      {isLoading && (
+        <div className={styles.section}>
           <div className={styles.loading}>
             <Spinner size={SpinnerSize.SMALL} />
             <span>Loading metadata…</span>
           </div>
-        )}
-        {info.loadState === "error" && (
+        </div>
+      )}
+      {info.loadState === "error" && (
+        <div className={styles.section}>
           <div className={styles.errorText}>
             {info.error ?? "Failed to load metadata"}
           </div>
-        )}
-        {info.loadState === "loaded" && info.properties.length === 0 && (
-          <div className={styles.empty}>No properties</div>
-        )}
-        {info.properties.map((prop) => (
-          <div key={prop.apiName} className={styles.propRow}>
-            <span className={styles.propName} title={prop.displayName}>
-              {prop.apiName}
-            </span>
-            <span className={styles.propType}>
-              {prop.type}
-              {prop.multiplicity ? "[]" : ""}
-              {prop.nullable ? "?" : ""}
-            </span>
-          </div>
-        ))}
-      </div>
+        </div>
+      )}
+      {info.loadState === "loaded" && <LoadedSections info={info} />}
 
-      {info.loadState === "loaded" && info.links.length > 0 && (
+      {usages && (
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>Links ({info.links.length})</div>
-          {info.links.map((link) => (
-            <div key={link.apiName} className={styles.linkRow}>
-              <span className={styles.propName}>{link.apiName}</span>
-              <span className={styles.linkTarget}>
-                → {link.targetType}
-                {link.multiplicity ? " (many)" : " (one)"}
-              </span>
+          <div className={styles.sectionTitle}>
+            {usagesTitle} ({usages.length})
+          </div>
+          {usages.length === 0 && (
+            <div className={styles.empty}>{usagesEmptyLabel}</div>
+          )}
+          {usages.map((usage, index) => (
+            <div key={usage.key ?? index} className={styles.compRow}>
+              <span className={styles.compName}>{usage.label}</span>
+              {usage.detail && (
+                <span className={styles.compHook} title={usage.detailTitle}>
+                  {usage.detail}
+                </span>
+              )}
             </div>
           ))}
         </div>
       )}
-
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>
-          {usagesTitle} ({usages.length})
-        </div>
-        {usages.length === 0 && (
-          <div className={styles.empty}>{usagesEmptyLabel}</div>
-        )}
-        {usages.map((usage, index) => (
-          <div key={usage.key ?? index} className={styles.compRow}>
-            <span className={styles.compName}>{usage.label}</span>
-            {usage.detail && (
-              <span className={styles.compHook} title={usage.detailTitle}>
-                {usage.detail}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

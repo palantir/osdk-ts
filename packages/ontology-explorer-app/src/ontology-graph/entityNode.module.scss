@@ -1,0 +1,126 @@
+// Shared card styling for object / action / query nodes. Each node sets its
+// accent via a kind modifier class (.action / .query); object uses the default.
+
+.node {
+  --og-node-accent: var(--og-blue);
+
+  box-sizing: border-box;
+  width: var(--og-node-width);
+  padding: var(--og-node-padding);
+  background: var(--og-bg-raised);
+  border: 1px solid var(--og-border-default);
+  border-radius: 6px;
+  box-shadow: var(--og-shadow-card);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  color: var(--og-text-primary);
+  cursor: pointer;
+  transition: border-color 0.12s ease-out, box-shadow 0.12s ease-out;
+
+  &:hover {
+    border-color: var(--og-border-hover);
+  }
+}
+
+.action {
+  --og-node-accent: var(--og-action);
+}
+
+.query {
+  --og-node-accent: var(--og-query);
+}
+
+.used {
+  border-left: 3px solid var(--og-node-accent);
+}
+
+.stub {
+  opacity: 0.65;
+  border-style: dashed;
+}
+
+.error {
+  border-color: var(--og-red);
+}
+
+.selected {
+  border-color: var(--og-node-accent);
+  box-shadow: 0 0 0 2px var(--og-node-accent);
+}
+
+.kind {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--og-node-accent);
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  color: var(--og-node-accent);
+  flex: 0 0 auto;
+}
+
+.displayName {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+
+.spinner {
+  flex: 0 0 auto;
+}
+
+.apiName {
+  margin-top: 2px;
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 10px;
+  color: var(--og-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.stat {
+  font-size: 10px;
+  color: var(--og-text-secondary);
+}
+
+.output {
+  font-family: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas",
+    monospace;
+  font-size: 10px;
+  color: var(--og-node-accent);
+}
+
+.errorText {
+  font-size: 10px;
+  color: var(--og-red);
+}
+
+.handle {
+  width: 6px;
+  height: 6px;
+  background: var(--og-border-hover);
+  border: none;
+}

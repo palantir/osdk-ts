@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { NonIdealState } from "@blueprintjs/core";
-import {
-  OntologyGraphFlow,
-  OntologyGraphModel,
-  OntologyNodeDetail,
-} from "@osdk/ontology-explorer-app/ontology-graph";
-import React, { useCallback, useMemo, useState } from "react";
+import { SegmentedControl } from "@blueprintjs/core";
+import { OntologyGraphView } from "@osdk/ontology-explorer-app/ontology-graph";
+import type { OntologySource } from "@osdk/ontology-explorer-app/ontology-graph";
+import React, { useCallback, useMemo } from "react";
 
 import { useComponentRegistry } from "../hooks/useComponentRegistry.js";
+import { usePersistedState } from "../hooks/usePersistedState.js";
+import { ClientLocalOntologySource } from "../store/ClientLocalOntologySource.js";
+import { ClientUsedOntologySource } from "../store/ClientUsedOntologySource.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import {
-  collectUsedObjectTypes,
   toOntologyNodeUsages,
   usagesForType,
 } from "../store/ontologyGraphBindings.js";
@@ -37,97 +36,73 @@ export interface OntologyGraphTabProps {
   theme: "light" | "dark";
 }
 
+type OntologySourceMode = "used" | "local";
+
+/**
+ * Devtools tab for the ontology graph. The rendering lives in the shared
+ * `OntologyGraphView`; this wrapper supplies the devtools-specific pieces: the
+ * Used/Local source toggle and per-type "used by components" usages derived
+ * from the component registry.
+ */
 export const OntologyGraphTab: React.FC<OntologyGraphTabProps> = ({
   monitorStore,
   theme,
 }) => {
-  const model = useMemo(
+  const [mode, setMode] = usePersistedState<OntologySourceMode>(
+    "osdk-devtools-ontology-source",
+    "used"
+  );
+
+  const source = useMemo<OntologySource>(
     () =>
-      new OntologyGraphModel({
-        fetchObjectMetadata: (apiName) =>
-          monitorStore.fetchObjectMetadata(apiName),
-      }),
-    [monitorStore]
+      mode === "local"
+        ? new ClientLocalOntologySource(monitorStore)
+        : new ClientUsedOntologySource(monitorStore),
+    [monitorStore, mode]
   );
-
-  const subscribe = useCallback(
-    (callback: () => void) => {
-      const registry = monitorStore.getComponentRegistry();
-      const syncUsed = () => model.markUsed(collectUsedObjectTypes(registry));
-      syncUsed();
-      const unsubscribeModel = model.subscribe(callback);
-      const unsubscribeRegistry = registry.subscribe(syncUsed);
-      return () => {
-        unsubscribeModel();
-        unsubscribeRegistry();
-      };
-    },
-    [model, monitorStore]
-  );
-  const getSnapshot = useCallback(() => model.getVersion(), [model]);
-  const version = React.useSyncExternalStore(subscribe, getSnapshot);
-
-  const types = useMemo(() => model.getTypes(), [model, version]);
 
   const registry = useComponentRegistry(monitorStore);
   const registryVersion = registry.getVersion();
 
-  const [selectedApiName, setSelectedApiName] = useState<string | null>(null);
-
-  const onSelect = useCallback(
-    (apiName: string | null) => {
-      setSelectedApiName(apiName);
-      if (apiName) {
-        const info = model.getType(apiName);
-        if (info && info.loadState === "stub") {
-          model.loadType(apiName);
-        }
-      }
-    },
-    [model]
-  );
-
-  const selectedInfo = selectedApiName
-    ? model.getType(selectedApiName)
-    : undefined;
-
-  const usages = useMemo(() => {
-    if (!selectedApiName) {
-      return [];
-    }
-    return toOntologyNodeUsages(
-      usagesForType(registry.getAllBindings(), selectedApiName)
-    );
+  const getUsages = useCallback(
+    (apiName: string) =>
+      toOntologyNodeUsages(usagesForType(registry.getAllBindings(), apiName)),
     // registryVersion drives recomputation as components mount/unmount
-  }, [registry, registryVersion, selectedApiName]);
+    [registry, registryVersion]
+  );
 
   return (
     <div className={styles.tab}>
-      {types.length === 0 ? (
-        <NonIdealState
-          icon="graph"
-          title="No ontology data yet"
-          description="Object types appear here as the app loads them through OSDK hooks."
+      <div className={styles.toolbar}>
+        <span className={styles.toolbarLabel}>Show</span>
+        <SegmentedControl
+          size="small"
+          options={[
+            { label: "Used", value: "used" },
+            { label: "Generated Ontology", value: "local" },
+          ]}
+          value={mode}
+          onValueChange={(value) =>
+            setMode(value === "local" ? "local" : "used")
+          }
         />
-      ) : (
-        <div className={styles.graphArea}>
-          <OntologyGraphFlow
-            types={types}
-            theme={theme}
-            selectedApiName={selectedApiName}
-            onSelect={onSelect}
-          />
-          {selectedInfo && (
-            <OntologyNodeDetail
-              info={selectedInfo}
-              usages={usages}
-              usagesTitle="Used by components"
-              usagesEmptyLabel="No mounted components use this type"
-              onClose={() => setSelectedApiName(null)}
-            />
-          )}
-        </div>
-      )}
+      </div>
+      <OntologyGraphView
+        source={source}
+        theme={theme}
+        compact
+        usagesForType={getUsages}
+        usagesTitle="Used by components"
+        usagesEmptyLabel="No mounted components use this type"
+        emptyTitle={
+          mode === "local" ? "No ontology data found" : "No ontology data yet"
+        }
+        emptyDescription={
+          mode === "local"
+            ? "The client's ontology reported no entities."
+            : "Entities appear here as the app loads them through OSDK hooks."
+        }
+      />
     </div>
   );
 };

@@ -1,0 +1,73 @@
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--og-bg-raised);
+  border-bottom: 1px solid var(--og-border-default);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--og-text-secondary);
+  margin-right: 2px;
+}
+
+.chip {
+  --og-chip-accent: var(--og-blue);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  border: 1px solid var(--og-border-default);
+  background: transparent;
+  color: var(--og-text-secondary);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s ease-out, color 0.12s ease-out,
+    opacity 0.12s ease-out;
+}
+
+.chipObject {
+  --og-chip-accent: var(--og-blue);
+}
+
+.chipAction {
+  --og-chip-accent: var(--og-action);
+}
+
+.chipQuery {
+  --og-chip-accent: var(--og-query);
+}
+
+.chipActive {
+  border-color: var(--og-chip-accent);
+  color: var(--og-text-primary);
+}
+
+.chipInactive {
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.chipIcon {
+  color: var(--og-chip-accent);
+  flex: 0 0 auto;
+}
+
+.chipCount {
+  color: var(--og-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}

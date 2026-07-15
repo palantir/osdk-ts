@@ -15,10 +15,14 @@
  */
 
 import type {
+  ActionDefinition,
   ActionEditResponse,
+  ActionMetadata,
   InterfaceDefinition,
   ObjectMetadata,
   ObjectTypeDefinition,
+  QueryDefinition,
+  QueryMetadata,
 } from "@osdk/api";
 import type {
   CacheSnapshot,
@@ -27,6 +31,9 @@ import type {
   ObserveObjectsCallbackArgs,
   Unsubscribable,
 } from "@osdk/client/observable";
+import * as ActionTypeV2 from "@osdk/foundry.ontologies/ActionTypeV2";
+import * as ObjectTypeV2 from "@osdk/foundry.ontologies/ObjectTypeV2";
+import * as QueryType from "@osdk/foundry.ontologies/QueryType";
 
 import type { MockManager } from "../mocking/MockManager.js";
 import { MetricsStore } from "../store/MetricsStore.js";
@@ -104,14 +111,27 @@ interface ExperimentalStore {
 }
 
 /**
- * Minimal structural view of the underlying `@osdk/client` client, reached
- * through `ObservableClient.__experimentalStore.client`. We only need
- * `fetchMetadata` to look up an object type's properties and links for the
- * ontology graph.
+ * The platform-SDK client context accepted by `@osdk/foundry.ontologies`
+ * calls, derived from the function itself so we don't depend on the shared
+ * client packages directly.
  */
-interface RawOntologyClient {
-  fetchMetadata: (definition: ObjectTypeDefinition) => Promise<ObjectMetadata>;
-}
+type OntologyClientContext = Parameters<typeof ObjectTypeV2.list>[0];
+
+/**
+ * Structural view of the underlying `@osdk/client` client, reached through
+ * `ObservableClient.__experimentalStore.client`. It is a full platform-SDK
+ * client context; we use `fetchMetadata` to look up a single entity's metadata
+ * (dispatched on the definition's `type`), and pass it to the `*.list` platform
+ * functions to enumerate every object/action/query type for the "Local"
+ * ontology graph mode.
+ */
+type RawOntologyClient = OntologyClientContext & {
+  fetchMetadata: {
+    (definition: ObjectTypeDefinition): Promise<ObjectMetadata>;
+    (definition: ActionDefinition): Promise<ActionMetadata>;
+    (definition: QueryDefinition): Promise<QueryMetadata>;
+  };
+};
 
 function getRawOntologyClient(
   client: ObservableClient
@@ -125,6 +145,33 @@ function getRawOntologyClient(
       "function"
   ) {
     return rawClient as RawOntologyClient;
+  }
+  return undefined;
+}
+
+/**
+ * Reads the ontology rid from the underlying `@osdk/client` client. The rid
+ * lives on the client's internal context (`Client[additionalContext]`), which
+ * `@osdk/client` does not export publicly, so it is read reflectively by the
+ * symbol's well-known description. Returns undefined if it can't be found, in
+ * which case the "Local" ontology graph mode simply shows nothing.
+ */
+function getOntologyRidFromClient(
+  rawClient: object
+): string | Promise<string> | undefined {
+  for (const sym of Object.getOwnPropertySymbols(rawClient)) {
+    if (sym.description !== "additionalContext") {
+      continue;
+    }
+    const context = (
+      rawClient as Record<
+        symbol,
+        {
+          ontologyRid?: string | Promise<string>;
+        }
+      >
+    )[sym];
+    return context?.ontologyRid;
   }
   return undefined;
 }
@@ -1247,6 +1294,116 @@ export class ObservableClientMonitor {
       return Promise.reject(new Error("fetchMetadata not available on client"));
     }
     return rawClient.fetchMetadata({ type: "object", apiName });
+  }
+
+  /**
+   * Fetches an action type's metadata (parameters + modified entities) by
+   * apiName. Same client `fetchMetadata` path as {@link fetchObjectMetadata}.
+   */
+  fetchActionMetadata(apiName: string): Promise<ActionMetadata> {
+    if (!this.wrappedClient) {
+      return Promise.reject(new Error("No wrapped client available"));
+    }
+    const rawClient = getRawOntologyClient(this.wrappedClient);
+    if (!rawClient) {
+      return Promise.reject(new Error("fetchMetadata not available on client"));
+    }
+    return rawClient.fetchMetadata({ type: "action", apiName });
+  }
+
+  /**
+   * Fetches a query type's metadata (parameters + output) by apiName. Same
+   * client `fetchMetadata` path as {@link fetchObjectMetadata}.
+   */
+  fetchQueryMetadata(apiName: string): Promise<QueryMetadata> {
+    if (!this.wrappedClient) {
+      return Promise.reject(new Error("No wrapped client available"));
+    }
+    const rawClient = getRawOntologyClient(this.wrappedClient);
+    if (!rawClient) {
+      return Promise.reject(new Error("fetchMetadata not available on client"));
+    }
+    return rawClient.fetchMetadata({ type: "query", apiName });
+  }
+
+  /**
+   * Paginates a platform-SDK `*.list` call for the client's ontology and
+   * collects every apiName. Returns an empty list if the client can't be
+   * reached or its ontology rid can't be determined. `fetchPage` runs one page
+   * of the specific entity kind's list endpoint.
+   */
+  private async listApiNames(
+    fetchPage: (
+      client: RawOntologyClient,
+      ontology: string,
+      pageToken: string | undefined
+    ) => Promise<{ apiNames: string[]; nextPageToken?: string }>
+  ): Promise<string[]> {
+    if (!this.wrappedClient) {
+      return [];
+    }
+    const rawClient = getRawOntologyClient(this.wrappedClient);
+    if (!rawClient) {
+      return [];
+    }
+    const ontologyRid = getOntologyRidFromClient(rawClient);
+    if (ontologyRid == null) {
+      return [];
+    }
+    const ontology = await ontologyRid;
+    const apiNames: string[] = [];
+    let pageToken: string | undefined;
+    do {
+      const page = await fetchPage(rawClient, ontology, pageToken);
+      apiNames.push(...page.apiNames);
+      pageToken = page.nextPageToken;
+    } while (pageToken != null);
+    return apiNames;
+  }
+
+  /**
+   * Lists the apiNames of every object type in the client's ontology (the
+   * "Local" ontology graph mode).
+   */
+  listObjectTypeApiNames(): Promise<string[]> {
+    return this.listApiNames(async (client, ontology, pageToken) => {
+      const page = await ObjectTypeV2.list(client, ontology, {
+        pageSize: 200,
+        pageToken,
+      });
+      return {
+        apiNames: page.data.map((objectType) => objectType.apiName),
+        nextPageToken: page.nextPageToken,
+      };
+    });
+  }
+
+  /** Lists the apiNames of every action type in the client's ontology. */
+  listActionApiNames(): Promise<string[]> {
+    return this.listApiNames(async (client, ontology, pageToken) => {
+      const page = await ActionTypeV2.list(client, ontology, {
+        pageSize: 200,
+        pageToken,
+      });
+      return {
+        apiNames: page.data.map((actionType) => actionType.apiName),
+        nextPageToken: page.nextPageToken,
+      };
+    });
+  }
+
+  /** Lists the apiNames of every query type in the client's ontology. */
+  listQueryApiNames(): Promise<string[]> {
+    return this.listApiNames(async (client, ontology, pageToken) => {
+      const page = await QueryType.list(client, ontology, {
+        pageSize: 200,
+        pageToken,
+      });
+      return {
+        apiNames: page.data.map((queryType) => queryType.apiName),
+        nextPageToken: page.nextPageToken,
+      };
+    });
   }
 
   invalidateObjects(objects: unknown): Promise<void> {
