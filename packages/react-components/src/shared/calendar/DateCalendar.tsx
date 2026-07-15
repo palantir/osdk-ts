@@ -60,8 +60,6 @@ export const CLASS_NAMES: Partial<ClassNames> = {
 
 const NAV_ICON_SIZE = 12;
 
-// v9 renders a single Chevron for both the prev/next nav buttons (orientation
-// "left"/"right") and the month/year dropdown carets (orientation "down").
 function CalendarChevron({ orientation }: ChevronProps): React.ReactElement {
   switch (orientation) {
     case "left":
@@ -105,7 +103,6 @@ export default function DateCalendar({
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
   const showTime = onTimeChange != null;
 
-  // v9 replaced fromYear/toYear with startMonth/endMonth Date bounds.
   const startMonth = useMemo(
     () => new Date(min != null ? min.getFullYear() : DEFAULT_FROM_YEAR, 0),
     [min]

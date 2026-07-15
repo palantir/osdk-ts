@@ -62,9 +62,10 @@
   }
 }
 
-/* v9 applies selection/day-flag modifiers (selected, today, outside,
-   disabled, range_*) to the day cell (.calendarDay), not the button, so
-   these style the .calendarDayButton descendant. */
+/* :not([disabled]) bumps specificity to (0,4,0) — matching rdp's default
+   .rdp-button:hover:not([disabled]):not(.rdp-day_selected) rule so our
+   styles win by source order. Without this, rdp overrides the selected
+   background on hover because we remap day_selected and its :not() always matches. */
 .calendarSelected .calendarDayButton {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
