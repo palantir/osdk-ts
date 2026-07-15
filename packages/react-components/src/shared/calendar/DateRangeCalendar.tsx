@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import type {
   ClassNames,
   DateRange as RdpDateRange,
-  SelectRangeEventHandler,
+  PropsRange,
 } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 
@@ -35,22 +35,19 @@ import {
 
 import styles from "./DateCalendar.module.css";
 
-const CLASS_NAMES: ClassNames = {
+const CLASS_NAMES: Partial<ClassNames> = {
   ...BASE_CLASS_NAMES,
-  day_range_start: classnames(
+  range_start: classnames(
     styles.calendarRangeEndpoint,
     styles.calendarRangeStart
   ),
-  day_range_middle: styles.calendarRangeMiddle,
-  day_range_end: classnames(
-    styles.calendarRangeEndpoint,
-    styles.calendarRangeEnd
-  ),
+  range_middle: styles.calendarRangeMiddle,
+  range_end: classnames(styles.calendarRangeEndpoint, styles.calendarRangeEnd),
 };
 
 export interface DateRangeCalendarProps {
   selected: RdpDateRange | undefined;
-  onSelect: SelectRangeEventHandler;
+  onSelect: PropsRange["onSelect"];
   min?: Date;
   max?: Date;
   footer?: React.ReactNode;
@@ -65,8 +62,14 @@ export default function DateRangeCalendar({
 }: DateRangeCalendarProps): React.ReactElement {
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
 
-  const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
-  const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const startMonth = useMemo(
+    () => new Date(min != null ? min.getFullYear() : DEFAULT_FROM_YEAR, 0),
+    [min]
+  );
+  const endMonth = useMemo(
+    () => new Date(max != null ? max.getFullYear() : DEFAULT_TO_YEAR, 11),
+    [max]
+  );
   const calendarFooter =
     footer == null ? undefined : (
       <div className={styles.calendarRangeFooter}>{footer}</div>
@@ -82,9 +85,9 @@ export default function DateRangeCalendar({
         defaultMonth={selected?.from}
         classNames={CLASS_NAMES}
         components={CALENDAR_COMPONENTS}
-        captionLayout="dropdown-buttons"
-        fromYear={fromYear}
-        toYear={toYear}
+        captionLayout="dropdown"
+        startMonth={startMonth}
+        endMonth={endMonth}
         numberOfMonths={2}
         pagedNavigation={true}
       />

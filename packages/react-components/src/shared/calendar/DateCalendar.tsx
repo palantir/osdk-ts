@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { ChevronLeft, ChevronRight } from "@blueprintjs/icons";
+import { ChevronDown, ChevronLeft, ChevronRight } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { ClassNames } from "react-day-picker";
+import type {
+  ChevronProps,
+  ClassNames,
+  CustomComponents,
+} from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
@@ -31,49 +35,47 @@ import { TimePicker } from "./TimePicker.js";
 
 import styles from "./DateCalendar.module.css";
 
-export const CLASS_NAMES: ClassNames = {
+export const CLASS_NAMES: Partial<ClassNames> = {
   root: styles.calendar,
   months: styles.calendarMonths,
-  table: styles.calendarMonthGrid,
-  head_cell: styles.calendarWeekday,
-  cell: styles.calendarDay,
-  day: styles.calendarDayButton,
-  day_selected: styles.calendarSelected,
-  day_today: styles.calendarToday,
-  day_outside: styles.calendarOutside,
-  day_disabled: styles.calendarDisabled,
-  day_hidden: styles.calendarHidden,
+  month_grid: styles.calendarMonthGrid,
+  weekday: styles.calendarWeekday,
+  day: styles.calendarDay,
+  day_button: styles.calendarDayButton,
+  selected: styles.calendarSelected,
+  today: styles.calendarToday,
+  outside: styles.calendarOutside,
+  disabled: styles.calendarDisabled,
+  hidden: styles.calendarHidden,
   nav: styles.calendarNav,
-  nav_button_previous: classnames(
-    styles.calendarNavButton,
-    styles.calendarNavPrev
-  ),
-  nav_button_next: classnames(styles.calendarNavButton, styles.calendarNavNext),
-  caption: styles.calendarMonthCaption,
+  button_previous: classnames(styles.calendarNavButton, styles.calendarNavPrev),
+  button_next: classnames(styles.calendarNavButton, styles.calendarNavNext),
+  month_caption: styles.calendarMonthCaption,
   caption_label: styles.calendarVhidden,
-  caption_dropdowns: styles.calendarCaptionDropdowns,
+  dropdowns: styles.calendarCaptionDropdowns,
   dropdown: styles.calendarDropdown,
-  dropdown_month: styles.calendarDropdown,
-  dropdown_year: styles.calendarDropdown,
-  nav_icon: styles.calendarChevron,
-  vhidden: styles.calendarVhidden,
-  tfoot: styles.calendarFooter,
+  months_dropdown: styles.calendarDropdown,
+  years_dropdown: styles.calendarDropdown,
 };
 
 const NAV_ICON_SIZE = 12;
 
-function IconLeft(): React.ReactElement {
-  return <ChevronLeft size={NAV_ICON_SIZE} />;
+// v9 renders a single Chevron for both the prev/next nav buttons (orientation
+// "left"/"right") and the month/year dropdown carets (orientation "down").
+function CalendarChevron({ orientation }: ChevronProps): React.ReactElement {
+  switch (orientation) {
+    case "left":
+      return <ChevronLeft size={NAV_ICON_SIZE} />;
+    case "right":
+      return <ChevronRight size={NAV_ICON_SIZE} />;
+    default:
+      return <ChevronDown size={NAV_ICON_SIZE} />;
+  }
 }
 
-function IconRight(): React.ReactElement {
-  return <ChevronRight size={NAV_ICON_SIZE} />;
-}
-
-export const CALENDAR_COMPONENTS: {
-  IconLeft: () => React.ReactElement;
-  IconRight: () => React.ReactElement;
-} = { IconLeft, IconRight };
+export const CALENDAR_COMPONENTS: Partial<CustomComponents> = {
+  Chevron: CalendarChevron,
+};
 
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
@@ -103,8 +105,15 @@ export default function DateCalendar({
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
   const showTime = onTimeChange != null;
 
-  const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
-  const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  // v9 replaced fromYear/toYear with startMonth/endMonth Date bounds.
+  const startMonth = useMemo(
+    () => new Date(min != null ? min.getFullYear() : DEFAULT_FROM_YEAR, 0),
+    [min]
+  );
+  const endMonth = useMemo(
+    () => new Date(max != null ? max.getFullYear() : DEFAULT_TO_YEAR, 11),
+    [max]
+  );
   const today = new Date();
   // Compare at midnight so the Today button stays enabled when min/max are
   // set to today's date at midnight (the common case for date-only bounds).
@@ -184,9 +193,9 @@ export default function DateCalendar({
       footer={calendarFooter}
       // Render month/year as dropdown selects + prev/next arrows,
       // so users can jump directly to any month/year without paging.
-      captionLayout="dropdown-buttons"
-      fromYear={fromYear}
-      toYear={toYear}
+      captionLayout="dropdown"
+      startMonth={startMonth}
+      endMonth={endMonth}
       showOutsideDays={true}
       // Always render 6 rows so the calendar height doesn't jump between months.
       fixedWeeks={true}

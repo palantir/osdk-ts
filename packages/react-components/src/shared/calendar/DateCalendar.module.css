@@ -62,11 +62,10 @@
   }
 }
 
-/* :not([disabled]) bumps specificity to (0,4,0) — matching rdp's default
-   .rdp-button:hover:not([disabled]):not(.rdp-day_selected) rule so our
-   styles win by source order. Without this, rdp overrides the selected
-   background on hover because we remap day_selected and its :not() always matches. */
-.calendarDayButton.calendarSelected {
+/* v9 applies selection/day-flag modifiers (selected, today, outside,
+   disabled, range_*) to the day cell (.calendarDay), not the button, so
+   these style the .calendarDayButton descendant. */
+.calendarSelected .calendarDayButton {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
 
@@ -80,16 +79,16 @@
   }
 }
 
-.calendarDayButton.calendarToday {
+.calendarToday .calendarDayButton {
   border: var(--osdk-datetime-calendar-today-border);
 }
 
-.calendarDayButton.calendarOutside {
+.calendarOutside .calendarDayButton {
   color: var(--osdk-datetime-calendar-outside-color);
   opacity: var(--osdk-datetime-calendar-outside-opacity);
 }
 
-.calendarDayButton.calendarDisabled {
+.calendarDisabled .calendarDayButton {
   color: var(--osdk-datetime-calendar-disabled-color);
   cursor: default;
 
@@ -98,8 +97,8 @@
   }
 }
 
-/* Range selection styles — shared base for start/end endpoints */
-.calendarRangeEndpoint {
+/* Range selection styles — shared base for start/end endpoint buttons */
+.calendarRangeEndpoint .calendarDayButton {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
 
@@ -114,10 +113,11 @@
 }
 
 /* Day buttons are inset by cell padding; paint the range on the table cell too
-   so the range spans horizontal gaps while staying the same height as a day. */
-.calendarDay:has(.calendarRangeStart)::before,
-.calendarDay:has(.calendarRangeMiddle)::before,
-.calendarDay:has(.calendarRangeEnd)::before {
+   so the range spans horizontal gaps while staying the same height as a day.
+   The range_* modifiers land directly on the .calendarDay cell in v9. */
+.calendarRangeStart::before,
+.calendarRangeMiddle::before,
+.calendarRangeEnd::before {
   content: "";
   position: absolute;
   inset-block: var(--osdk-datetime-calendar-gap);
@@ -125,27 +125,27 @@
   pointer-events: none;
 }
 
-.calendarDay:has(.calendarRangeStart)::before {
+.calendarRangeStart::before {
   inset-inline-start: 50%;
   inset-inline-end: 0;
 }
 
-.calendarDay:has(.calendarRangeMiddle)::before {
+.calendarRangeMiddle::before {
   inset-inline: 0;
 }
 
-.calendarDay:has(.calendarRangeEnd)::before {
+.calendarRangeEnd::before {
   inset-inline-start: 0;
   inset-inline-end: 50%;
 }
 
-.calendarDay:has(.calendarRangeStart.calendarRangeEnd)::before {
+.calendarRangeStart.calendarRangeEnd::before {
   content: none;
 }
 
 /* The table cell owns the translucent range fill. Keeping the middle button
    transparent avoids alpha-stacking the same token over itself. */
-.calendarDayButton.calendarRangeMiddle {
+.calendarRangeMiddle .calendarDayButton {
   background: transparent;
   color: var(--osdk-datetime-calendar-day-color);
   border-radius: 0;
@@ -211,11 +211,6 @@
     outline: var(--osdk-datetime-calendar-focus-outline);
     outline-offset: -1px;
   }
-}
-
-/* Hide the default SVG chevron icon — Blueprint icons rendered inline instead */
-.calendarChevron {
-  display: none;
 }
 
 .calendarNavPrev {

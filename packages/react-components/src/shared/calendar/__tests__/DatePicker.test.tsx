@@ -919,9 +919,9 @@ describe("DatePicker", () => {
       const monthSelect = document.querySelector("select") as HTMLSelectElement;
       expect(monthSelect.value).toBe("0"); // January = 0
 
-      // Click next month
+      // Click next month (react-day-picker v9 accessible label)
       const nextButton = screen.getByRole("button", {
-        name: "Go to next month",
+        name: "Go to the Next Month",
       });
       fireEvent.click(nextButton);
 
