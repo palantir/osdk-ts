@@ -1,5 +1,11 @@
 # @osdk/react-devtools
 
+## 0.16.0
+
+### Minor Changes
+
+- 273cce9: fix console log source attribution always resolving to ConsoleLogStore instead of the real caller
+
 ## 0.15.0
 
 ### Minor Changes

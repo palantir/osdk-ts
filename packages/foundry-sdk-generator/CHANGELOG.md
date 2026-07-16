@@ -1,5 +1,20 @@
 # @osdk/foundry-sdk-generator
 
+## 2.47.0
+
+### Minor Changes
+
+- cbeaccc: Add branch to package.json
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/client@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/generator-utils@2.47.0
+- @osdk/generator@2.47.0
+
 ## 2.46.0
 
 ### Patch Changes
