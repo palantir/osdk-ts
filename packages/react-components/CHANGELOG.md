@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.41.0
+
+### Minor Changes
+
+- 3b7e3a5: Add a `labels` prop to `ObjectTable`/`BaseTable` (and the standalone `ColumnConfigDialog`/`MultiColumnSortDialog`) so every user-facing string can be overridden for localization or wording. Any subset can be supplied; unset keys fall back to the built-in English defaults.
+- 7e4163b: Restrict base-ui/react version to <1.4.0
+
 ## 0.40.0
 
 ### Minor Changes
