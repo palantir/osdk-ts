@@ -1,7 +1,6 @@
 ---
 title: ObjectTable
 description: An OSDK-aware data table for ontology objects. Renders rows from an object type, ObjectSet, or interface, with built-in column configuration, selection, sorting, pinning, resizing, and inline editing.
-draft: true
 ---
 
 > **Beta** — exported from `@osdk/react-components/experimental/object-table`.
@@ -26,12 +25,6 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 function OfficesPage() {
   return <ObjectTable objectType={Office} />;
 }
-```
-
-Opt into row selection with `selectionMode`:
-
-```tsx
-<ObjectTable objectType={Office} selectionMode="multiple" />
 ```
 
 ## Props
