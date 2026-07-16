@@ -136,14 +136,14 @@ export interface PropertyValueWireToUpdate extends PropertyValueWireToCreateBase
 }
 
 /**
- * Wire facing creation types for each properties
+ * Function-edit facing creation types for each properties
  */
 export interface PropertyValueCreateToWire extends PropertyValueWireToCreateBase {
   cipherText: CreateCipherText | CipherTextValue;
 }
 
 /**
- * Wire facing update types for each properties
+ * Function-edit facing update types for each properties
  */
 export interface PropertyValueUpdateToWire extends PropertyValueWireToCreateBase {
   cipherText: UpdateCipherText | CipherTextValue;
