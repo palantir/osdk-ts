@@ -227,12 +227,10 @@ export function useObjectTableLabels(): ObjectTableLabels {
 
 /**
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
- * {@link ObjectTableLabels} to its subtree. Used by the standalone,
- * externally-rendered sub-components (e.g. the dialogs) so each one doesn't
- * repeat the provider-boundary boilerplate.
+ * {@link ObjectTableLabels} to its subtree.
  *
- * Not usable for generic components (the wrapper is monomorphic); `BaseTable`
- * renders {@link ObjectTableLabelsProvider} directly to preserve its `TData`
+ * For generic components, e.g. `BaseTable use
+ * {@link ObjectTableLabelsProvider} directly to preserve its `TData`
  * type parameter.
  */
 export function withObjectTableLabels<P extends object>(
