@@ -18,8 +18,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   extractCipherTextValue,
-  toWireEditProperties,
-} from "./toWireEditProperties.js";
+  toFunctionEditValue,
+} from "./toFunctionEditValue.js";
 
 const value = "CIPHER::ri.test::abc==::CIPHER";
 
@@ -62,10 +62,10 @@ describe(extractCipherTextValue, () => {
   });
 });
 
-describe(toWireEditProperties, () => {
+describe(toFunctionEditValue, () => {
   it("normalizes cipherText properties and preserves the rest", () => {
     expect(
-      toWireEditProperties({
+      toFunctionEditValue({
         id: 1,
         name: "hi",
         secret: existingCipherText,
