@@ -29,6 +29,7 @@ import type {
 import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
 
+import type { ObjectTableLabels } from "./ObjectTableLabels.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
@@ -614,6 +615,15 @@ export interface ObjectTableProps<
   tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   className?: string;
+
+  /**
+   * Overrides for the table's user-facing strings. Provide any subset; unset keys fall
+   * back to the built-in English defaults. Use this to localize the table or
+   * adjust wording. See {@link ObjectTableLabels}.
+   *
+   * @default undefined (built-in English strings)
+   */
+  labels?: Partial<ObjectTableLabels>;
 }
 
 /**

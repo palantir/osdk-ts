@@ -15,11 +15,18 @@
  */
 
 import type { Header, Table } from "@tanstack/react-table";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React, { createRef } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PortalContainerProvider } from "../../shared/PortalContainerContext.js";
+import { ObjectTableLabelsProvider } from "../ObjectTableLabels.js";
 import { TableHeaderWithPopover } from "../TableHeaderWithPopover.js";
 
 interface TestRow {
@@ -27,6 +34,10 @@ interface TestRow {
 }
 
 describe(TableHeaderWithPopover, () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("renders the header menu inside the provided portal container", async () => {
     const portalContainerRef = createRef<HTMLDivElement>();
 
@@ -60,6 +71,43 @@ describe(TableHeaderWithPopover, () => {
         screen.getByRole("menuitem", { name: "Pin column" })
       )
     ).toBe(true);
+  });
+
+  it("renders overridden labels supplied via the labels provider", async () => {
+    const portalContainerRef = createRef<HTMLDivElement>();
+
+    render(
+      <ObjectTableLabelsProvider
+        labels={{
+          headerMenuPinColumn: "Stick this column",
+          headerMenuAriaLabel: (id) => `Menu for ${id}`,
+        }}
+      >
+        <PortalContainerProvider container={portalContainerRef}>
+          <TableHeaderWithPopover
+            table={createTable()}
+            header={createHeader()}
+            isColumnPinned={false}
+            featureFlags={{
+              showPinningItems: true,
+            }}
+          />
+          <div data-testid="header-menu-portal" ref={portalContainerRef} />
+        </PortalContainerProvider>
+      </ObjectTableLabelsProvider>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Menu for name",
+      })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("menuitem", { name: "Stick this column" })
+      ).toBeTruthy();
+    });
   });
 });
 

@@ -28,6 +28,11 @@ import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
 import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
+import type { ObjectTableLabels } from "./ObjectTableLabels.js";
+import {
+  ObjectTableLabelsProvider,
+  useObjectTableLabels,
+} from "./ObjectTableLabels.js";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
@@ -112,15 +117,23 @@ export interface BaseTableProps<TData extends RowData> {
    * uncontrolled modes.
    */
   onFocusedRowChanged?: (row: TData | null) => void;
+  /**
+   * Overrides for the table's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. See
+   * {@link ObjectTableLabels}.
+   */
+  labels?: Partial<ObjectTableLabels>;
 }
 
 export function BaseTable<TData extends RowData>(
   props: BaseTableProps<TData>
 ): ReactElement {
   return (
-    <PortalTrackerProvider>
-      <BaseTableInner {...props} />
-    </PortalTrackerProvider>
+    <ObjectTableLabelsProvider labels={props.labels}>
+      <PortalTrackerProvider>
+        <BaseTableInner {...props} />
+      </PortalTrackerProvider>
+    </ObjectTableLabelsProvider>
   );
 }
 
@@ -145,6 +158,7 @@ function BaseTableInner<TData extends RowData>({
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const labels = useObjectTableLabels();
 
   const getRowById = useCallback(
     (id: string) => {
@@ -296,10 +310,10 @@ function BaseTableInner<TData extends RowData>({
             (renderEmptyState != null ? (
               renderEmptyState()
             ) : (
-              <NonIdealState message={"No Data"} />
+              <NonIdealState message={labels.noData} />
             ))}
           {error != null && (
-            <NonIdealState message={`Error Loading Data: ${error.message}`} />
+            <NonIdealState message={labels.errorLoadingData(error.message)} />
           )}
         </div>
         {showEditFooter && hasEditableColumns && editableConfig && (
