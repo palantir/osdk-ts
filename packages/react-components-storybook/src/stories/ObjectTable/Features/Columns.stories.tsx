@@ -15,18 +15,24 @@
  */
 
 import {
-  Default as DefaultStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  WithCustomColumn as WithCustomColumnStory,
+  WithCustomRenderers as WithCustomRenderersStory,
+  WithDefaultColumnPinning as WithDefaultColumnPinningStory,
+  WithDerivedPropertyOrderingAndFilter as WithDerivedPropertyOrderingAndFilterStory,
+  WithFunctionColumn as WithFunctionColumnStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Columns",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const WithDefaultColumnPinning = WithDefaultColumnPinningStory;
+export const WithDerivedPropertyOrderingAndFilter =
+  WithDerivedPropertyOrderingAndFilterStory;
+export const WithFunctionColumn = WithFunctionColumnStory;
+export const WithCustomColumn = WithCustomColumnStory;
+export const WithCustomRenderers = WithCustomRenderersStory;

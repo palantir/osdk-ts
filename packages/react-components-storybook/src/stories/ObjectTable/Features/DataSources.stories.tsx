@@ -15,18 +15,17 @@
  */
 
 import {
-  Default as DefaultStory,
   objectTableMeta,
-} from "./objectTableStoryDefs.js";
+  WithInterfaceType as WithInterfaceTypeStory,
+  WithObjectSet as WithObjectSetStory,
+} from "../objectTableStoryDefs.js";
 
-// The primary landing demo, pinned to the top of the ObjectTable tree by the
-// storySort in .storybook/preview.tsx. Lives at the component root so it sits
-// above Docs/Examples/Features in the sidebar.
 const meta = {
   ...objectTableMeta,
-  title: "Components/ObjectTable",
+  title: "Components/ObjectTable/Features/Data Sources",
 };
 
 export default meta;
 
-export const Default = DefaultStory;
+export const WithObjectSet = WithObjectSetStory;
+export const WithInterfaceType = WithInterfaceTypeStory;
