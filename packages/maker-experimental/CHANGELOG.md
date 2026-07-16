@@ -1,5 +1,15 @@
 # @osdk/maker-experimental
 
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+- @osdk/maker@0.48.0
+- @osdk/generator-converters.preview@0.29.0
+
 ## 0.38.0
 
 ### Patch Changes

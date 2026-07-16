@@ -1,5 +1,11 @@
 # @osdk/create-widget
 
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.47.0
+
 ## 3.44.0
 
 ### Patch Changes

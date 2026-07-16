@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.40.0
+
+### Minor Changes
+
+- 647d743: Remove the deprecated `onRowSelection` prop and the dead filtering API (`enableFiltering`, `onFilterChanged`, and the per-column `filterable`) from ObjectTable. Use `onRowSelectionChanged` for selection changes; programmatic filtering via the controlled `filter` prop is unchanged.
+
 ## 0.39.0
 
 ### Minor Changes
