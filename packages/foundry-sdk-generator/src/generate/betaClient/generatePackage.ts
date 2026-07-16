@@ -43,6 +43,7 @@ export async function generatePackage(
     beta: boolean;
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
+    branch: string | undefined;
   },
   logger: SlsLogger,
 ): Promise<void> {
@@ -101,6 +102,7 @@ export async function generatePackage(
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
     packageRid: options.packageRid,
+    branch: options.branch,
   });
 
   const compilerOutput: Record<
