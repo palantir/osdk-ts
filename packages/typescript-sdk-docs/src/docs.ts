@@ -452,8 +452,6 @@ function renderType(
       )}: ${renderType(type.valueType, majorVersion, context)}}`;
     }
 
-    case "string":
-    case "unknown":
     default: {
       return `"${type.value ?? "value"}"`;
     }
