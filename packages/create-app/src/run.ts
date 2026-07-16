@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { changeVersionPrefix } from "@osdk/generator-utils";
+import { changeVersionPrefix, lowercase } from "@osdk/generator-utils";
 import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 
@@ -31,6 +31,10 @@ import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
+
+// Register the shared `lowercase` helper so template `package.json` name
+// fields can enforce npm-safe (lowercase) package names.
+Handlebars.registerHelper("lowercase", lowercase);
 
 interface RunArgs {
   project: string;
