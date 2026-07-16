@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.49.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/typescript-sdk-docs@0.18.0
+  - @osdk/api@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+
 ## 0.48.0
 
 ### Patch Changes

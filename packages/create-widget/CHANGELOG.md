@@ -1,5 +1,16 @@
 # @osdk/create-widget
 
+## 3.46.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/generator-utils@2.48.0
+
 ## 3.45.0
 
 ### Patch Changes
