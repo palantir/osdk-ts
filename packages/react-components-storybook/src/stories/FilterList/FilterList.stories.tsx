@@ -1138,36 +1138,43 @@ export const WithListogramDisplayModes: Story = {
 //   "full" (default): label + colored bar + count number
 //   "count":          label + count number (no bar)
 //   "minimal":        label only (no bar, no count)
+// One FilterList per mode, shown side by side.
 
-<FilterList
-  objectType={Employee}
-  filterDefinitions={[
-    {
+<div style={{ display: "flex", gap: 16 }}>
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
       type: "PROPERTY",
       key: "department",
       label: "full: label + bar + count",
       filterComponent: "LISTOGRAM",
       filterState: { type: "EXACT_MATCH", values: [] },
       listogramConfig: { displayMode: "full" },
-    },
-    {
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
       type: "PROPERTY",
       key: "department",
       label: "count: label + count (no bar)",
       filterComponent: "LISTOGRAM",
       filterState: { type: "EXACT_MATCH", values: [] },
       listogramConfig: { displayMode: "count" },
-    },
-    {
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
       type: "PROPERTY",
       key: "department",
       label: "minimal: label only",
       filterComponent: "LISTOGRAM",
       filterState: { type: "EXACT_MATCH", values: [] },
       listogramConfig: { displayMode: "minimal" },
-    },
-  ]}
-/>`,
+    }]}
+  />
+</div>`,
       },
     },
   },
