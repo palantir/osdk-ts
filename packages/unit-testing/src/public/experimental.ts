@@ -18,8 +18,11 @@ export type {
   AggregateStubBuilder,
   FetchOneStubBuilder,
   FetchPageStubBuilder,
+  MockClient,
+  MockOsdkObjectOptions,
   QueryStubBuilder,
   StubBuilderFor,
+  StubClient,
 } from "../api/index.js";
 export { createMockAttachment } from "../mock/createMockAttachment.js";
 export { createMockClient } from "../mock/createMockClient.js";
