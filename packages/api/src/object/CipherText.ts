@@ -38,16 +38,6 @@ export interface CipherText {
    * @returns the decrypted plaintext
    */
   decrypt(): Promise<string>;
-
-  /**
-   * Returns the raw encrypted value backing this ciphertext. Used internally
-   * to forward an existing ciphertext value into an object edit without
-   * decrypting it.
-   *
-   * @internal
-   * @returns the encrypted value
-   */
-  getValue(): string;
 }
 
 /**

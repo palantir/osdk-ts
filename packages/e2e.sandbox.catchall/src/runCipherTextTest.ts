@@ -148,6 +148,7 @@ export async function runCipherTextTest(): Promise<void> {
   const updateCipherTextEntry = getEntryForPk(
     existingPk2
   ) as UpdateObject<CipherTextTest>;
+
   invariant(
     (updateCipherTextEntry.properties.encrypted as CipherTextValue)
       .ciphertext ===

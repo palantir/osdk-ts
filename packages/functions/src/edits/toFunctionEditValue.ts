@@ -50,7 +50,7 @@ export function extractCipherTextValue(value: unknown): unknown {
  * Applies transformations to every property in an edit's property map,
  * producing the backend wire shape.
  */
-export function toWireEditProperties(
+export function toFunctionEditValue(
   properties: object
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};

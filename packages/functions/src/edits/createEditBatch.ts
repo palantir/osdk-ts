@@ -30,7 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocatorProperties,
   UpdatableObjectOrInterfaceLocators,
 } from "./EditBatch.js";
-import { toWireEditProperties } from "./toWireEditProperties.js";
+import { toFunctionEditValue } from "./toFunctionEditValue.js";
 import type { AnyEdit } from "./types.js";
 import { isInterfaceLocator } from "./types.js";
 
@@ -90,7 +90,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     objectOrInterfaceType: OI,
     properties: CreatableObjectOrInterfaceTypeProperties<X, OI>
   ): void {
-    const wireProperties = toWireEditProperties(properties);
+    const wireProperties = toFunctionEditValue(properties);
     if (objectOrInterfaceType.type === "interface") {
       this.edits.push({
         type: "createObjectForInterface",
@@ -129,7 +129,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     obj: OL,
     properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>
   ): void {
-    const wireProperties = toWireEditProperties(properties);
+    const wireProperties = toFunctionEditValue(properties);
     if (isInterfaceLocator(obj)) {
       this.edits.push({
         type: "updateObjectForInterface",
