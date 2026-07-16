@@ -331,6 +331,21 @@ export const IntegerNumberRangeRounding: Story = {
           "integers (e.g. `657495073`), not fractional values " +
           "(e.g. `657495073.4`).",
       },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "employeeNumber",
+      label: "Employee Number",
+      filterComponent: "NUMBER_RANGE",
+      filterState: { type: "NUMBER_RANGE" },
+      clickToFilter: true,
+    },
+  ]}
+/>`,
+      },
     },
   },
   render: ({ objectType: _ot, objectSet: _os, ...args }) => {
@@ -1119,15 +1134,47 @@ export const WithListogramDisplayModes: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// "full" (default): label + colored bar + count number
-// "count": label + count number (no bar)
-// "minimal": label only (no bar, no count)
+        code: `// listogramConfig.displayMode controls what each bucket row renders:
+//   "full" (default): label + colored bar + count number
+//   "count":          label + count number (no bar)
+//   "minimal":        label only (no bar, no count)
+// One FilterList per mode, shown side by side.
 
-const filterDefinitions = [
-  { ..., listogramConfig: { displayMode: "full" } },
-  { ..., listogramConfig: { displayMode: "count" } },
-  { ..., listogramConfig: { displayMode: "minimal" } },
-];`,
+<div style={{ display: "flex", gap: 16 }}>
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "full: label + bar + count",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "full" },
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "count: label + count (no bar)",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "count" },
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "minimal: label only",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "minimal" },
+    }]}
+  />
+</div>`,
       },
     },
   },
@@ -2168,6 +2215,43 @@ export const NoValueRendering: Story = {
           "listogram buckets, single-select dropdown options, multi-select dropdown " +
           "options, and multi-select chips. The mock dataset includes one Employee " +
           'with `department: ""` so the No value row is visible in the listogram.',
+      },
+      source: {
+        code: `// Empty/null values render via <NoValueLabel /> across every filter type.
+<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department",
+      filterComponent: "MULTI_SELECT",
+      filterState: { type: "SELECT", selectedValues: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department (single)",
+      filterComponent: "SINGLE_SELECT",
+      filterState: { type: "SELECT", selectedValues: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "employeeNumber",
+      label: "Employee Number",
+      filterComponent: "NUMBER_RANGE",
+      filterState: { type: "NUMBER_RANGE" },
+      clickToFilter: true,
+    },
+  ]}
+/>`,
       },
     },
   },

@@ -52,6 +52,22 @@ export const MarkingColumns: StoryObj<EmployeeTableProps> = {
       { locator: { type: "property", id: "clearanceMarking" } },
     ],
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  { locator: { type: "property", id: "fullName" } },
+  { locator: { type: "property", id: "department" } },
+  // MANDATORY marking — rendered as one banner per marking
+  { locator: { type: "property", id: "classificationMarking" } },
+  // CBAC marking — rendered with CbacBanner
+  { locator: { type: "property", id: "clearanceMarking" } },
+];
+
+<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
+      },
+    },
+  },
   render: (args) => (
     <div style={{ height: 480 }}>
       <ObjectTable {...args} />
