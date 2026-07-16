@@ -5325,13 +5325,15 @@ import {
   useReactTable,
 } from &quot;@tanstack/react-table&quot;;
 import type {
-  SortingState,
+  VisibilityState,
 } from &quot;@tanstack/react-table&quot;;
 
 const headerMenuFeatureFlags = {
-  showSortingItems: true,
+  showConfigItem: true,
 };
-const [sorting, setSorting] = useState&lt;SortingState&gt;();
+const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+  columns.reduce((acc, col) =&gt; ({ ...acc, [col.accessorKey]: true }), {})
+);
 
 const table = useReactTable({
   data: mockData,
@@ -5339,10 +5341,9 @@ const table = useReactTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   state: {
-    sorting,
+    columnVisibility,
   },
-  enableSorting: true,
-  onSortingChange: setSorting,
+  onColumnVisibilityChange: setColumnVisibility,
 });
 
 
@@ -6138,6 +6139,37 @@ export const AllColumnsVisible: Story = {
       &quot;location&quot;,
     ],
   },
+  parameters: {
+    docs: {
+      description: {
+        story: &quot;Every column is toggled on.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: true,
+    jobTitle: true,
+    department: true,
+    startDate: true,
+    location: true,
+  }}
+  currentColumnOrder={[
+    &quot;fullName&quot;,
+    &quot;email&quot;,
+    &quot;jobTitle&quot;,
+    &quot;department&quot;,
+    &quot;startDate&quot;,
+    &quot;location&quot;,
+  ]}
+  onApply={handleApply}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const SingleColumnVisible: Story = {
@@ -6151,6 +6183,30 @@ export const SingleColumnVisible: Story = {
       location: false,
     },
     currentColumnOrder: [&quot;fullName&quot;],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: &quot;Only a single column is visible; the rest are toggled off.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: false,
+    jobTitle: false,
+    department: false,
+    startDate: false,
+    location: false,
+  }}
+  currentColumnOrder={[&quot;fullName&quot;]}
+  onApply={handleApply}
+/&gt;`,
+      },
+    },
   },
 };
 
@@ -7941,6 +7997,21 @@ export const IntegerNumberRangeRounding: Story = {
           &quot;integers (e.g. `657495073`), not fractional values &quot; +
           &quot;(e.g. `657495073.4`).&quot;,
       },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;employeeNumber&quot;,
+      label: &quot;Employee Number&quot;,
+      filterComponent: &quot;NUMBER_RANGE&quot;,
+      filterState: { type: &quot;NUMBER_RANGE&quot; },
+      clickToFilter: true,
+    },
+  ]}
+/&gt;`,
+      },
     },
   },
   render: ({ objectType: _ot, objectSet: _os, ...args }) =&gt; {
@@ -8729,15 +8800,47 @@ export const WithListogramDisplayModes: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// &quot;full&quot; (default): label + colored bar + count number
-// &quot;count&quot;: label + count number (no bar)
-// &quot;minimal&quot;: label only (no bar, no count)
+        code: `// listogramConfig.displayMode controls what each bucket row renders:
+//   &quot;full&quot; (default): label + colored bar + count number
+//   &quot;count&quot;:          label + count number (no bar)
+//   &quot;minimal&quot;:        label only (no bar, no count)
+// One FilterList per mode, shown side by side.
 
-const filterDefinitions = [
-  { ..., listogramConfig: { displayMode: &quot;full&quot; } },
-  { ..., listogramConfig: { displayMode: &quot;count&quot; } },
-  { ..., listogramConfig: { displayMode: &quot;minimal&quot; } },
-];`,
+&lt;div style={{ display: &quot;flex&quot;, gap: 16 }}&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;full: label + bar + count&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;full&quot; },
+    }]}
+  /&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;count: label + count (no bar)&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;count&quot; },
+    }]}
+  /&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;minimal: label only&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;minimal&quot; },
+    }]}
+  /&gt;
+&lt;/div&gt;`,
       },
     },
   },
@@ -9778,6 +9881,43 @@ export const NoValueRendering: Story = {
           &quot;listogram buckets, single-select dropdown options, multi-select dropdown &quot; +
           &quot;options, and multi-select chips. The mock dataset includes one Employee &quot; +
           &#39;with `department: &quot;&quot;` so the No value row is visible in the listogram.&#39;,
+      },
+      source: {
+        code: `// Empty/null values render via &lt;NoValueLabel /&gt; across every filter type.
+&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department&quot;,
+      filterComponent: &quot;MULTI_SELECT&quot;,
+      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department (single)&quot;,
+      filterComponent: &quot;SINGLE_SELECT&quot;,
+      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;employeeNumber&quot;,
+      label: &quot;Employee Number&quot;,
+      filterComponent: &quot;NUMBER_RANGE&quot;,
+      filterState: { type: &quot;NUMBER_RANGE&quot; },
+      clickToFilter: true,
+    },
+  ]}
+/&gt;`,
       },
     },
   },
@@ -11154,6 +11294,63 @@ export const HorizontalToolbar: Story = {
           &quot;history, layers) are owned entirely by the consumer — `FilterList`&quot; +
           &quot; never sees them. Replace the SVG icons with your own and swap &quot; +
           &quot;the wrapper styles to match your design system.&quot;,
+      },
+      source: {
+        code: `import {
+  filterHasActiveState,
+  FilterInput,
+  FilterPopover,
+  getFilterKey,
+  getFilterLabel,
+  summarizeFilterValue,
+  useFilterListState,
+} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+
+function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
+  const {
+    filterStates,
+    setFilterState,
+    clearFilterState,
+    perFilterWhereClauses,
+  } = useFilterListState({ objectType, filterDefinitions });
+
+  return (
+    &lt;div className={styles.toolbar}&gt;
+      {filterDefinitions.map((definition) =&gt; {
+        const key = getFilterKey(definition);
+        return (
+          &lt;FilterPopover
+            key={key}
+            label={getFilterLabel(definition)}
+            summary={summarizeFilterValue(definition, filterStates.get(key))}
+            isActive={filterHasActiveState(filterStates.get(key))}
+            onRemove={() =&gt; clearFilterState(key)}
+            labelPlacement=&quot;top&quot;
+          &gt;
+            &lt;FilterInput
+              objectType={objectType}
+              definition={definition}
+              filterState={filterStates.get(key)}
+              onFilterStateChanged={(state) =&gt; setFilterState(key, state)}
+              whereClause={perFilterWhereClauses.get(key) ?? {}}
+              layout=&quot;inline&quot;
+            /&gt;
+          &lt;/FilterPopover&gt;
+        );
+      })}
+      {/* Trailing utility buttons are owned entirely by the consumer. */}
+    &lt;/div&gt;
+  );
+}
+
+&lt;HorizontalFilterToolbar
+  objectType={Employee}
+  filterDefinitions={[
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; } },
+  ]}
+/&gt;`,
       },
     },
   },
@@ -25756,13 +25953,15 @@ import {
   useReactTable,
 } from &quot;@tanstack/react-table&quot;;
 import type {
-  SortingState,
+  VisibilityState,
 } from &quot;@tanstack/react-table&quot;;
 
 const headerMenuFeatureFlags = {
-  showSortingItems: true,
+  showConfigItem: true,
 };
-const [sorting, setSorting] = useState&lt;SortingState&gt;();
+const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+  columns.reduce((acc, col) =&gt; ({ ...acc, [col.accessorKey]: true }), {})
+);
 
 const table = useReactTable({
   data: mockData,
@@ -25770,10 +25969,9 @@ const table = useReactTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   state: {
-    sorting,
+    columnVisibility,
   },
-  enableSorting: true,
-  onSortingChange: setSorting,
+  onColumnVisibilityChange: setColumnVisibility,
 });
 
 
@@ -26569,6 +26767,37 @@ export const AllColumnsVisible: Story = {
       &quot;location&quot;,
     ],
   },
+  parameters: {
+    docs: {
+      description: {
+        story: &quot;Every column is toggled on.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: true,
+    jobTitle: true,
+    department: true,
+    startDate: true,
+    location: true,
+  }}
+  currentColumnOrder={[
+    &quot;fullName&quot;,
+    &quot;email&quot;,
+    &quot;jobTitle&quot;,
+    &quot;department&quot;,
+    &quot;startDate&quot;,
+    &quot;location&quot;,
+  ]}
+  onApply={handleApply}
+/&gt;`,
+      },
+    },
+  },
 };
 
 export const SingleColumnVisible: Story = {
@@ -26582,6 +26811,30 @@ export const SingleColumnVisible: Story = {
       location: false,
     },
     currentColumnOrder: [&quot;fullName&quot;],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: &quot;Only a single column is visible; the rest are toggled off.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: false,
+    jobTitle: false,
+    department: false,
+    startDate: false,
+    location: false,
+  }}
+  currentColumnOrder={[&quot;fullName&quot;]}
+  onApply={handleApply}
+/&gt;`,
+      },
+    },
   },
 };
 
@@ -28372,6 +28625,21 @@ export const IntegerNumberRangeRounding: Story = {
           &quot;integers (e.g. `657495073`), not fractional values &quot; +
           &quot;(e.g. `657495073.4`).&quot;,
       },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;employeeNumber&quot;,
+      label: &quot;Employee Number&quot;,
+      filterComponent: &quot;NUMBER_RANGE&quot;,
+      filterState: { type: &quot;NUMBER_RANGE&quot; },
+      clickToFilter: true,
+    },
+  ]}
+/&gt;`,
+      },
     },
   },
   render: ({ objectType: _ot, objectSet: _os, ...args }) =&gt; {
@@ -29160,15 +29428,47 @@ export const WithListogramDisplayModes: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// &quot;full&quot; (default): label + colored bar + count number
-// &quot;count&quot;: label + count number (no bar)
-// &quot;minimal&quot;: label only (no bar, no count)
+        code: `// listogramConfig.displayMode controls what each bucket row renders:
+//   &quot;full&quot; (default): label + colored bar + count number
+//   &quot;count&quot;:          label + count number (no bar)
+//   &quot;minimal&quot;:        label only (no bar, no count)
+// One FilterList per mode, shown side by side.
 
-const filterDefinitions = [
-  { ..., listogramConfig: { displayMode: &quot;full&quot; } },
-  { ..., listogramConfig: { displayMode: &quot;count&quot; } },
-  { ..., listogramConfig: { displayMode: &quot;minimal&quot; } },
-];`,
+&lt;div style={{ display: &quot;flex&quot;, gap: 16 }}&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;full: label + bar + count&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;full&quot; },
+    }]}
+  /&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;count: label + count (no bar)&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;count&quot; },
+    }]}
+  /&gt;
+  &lt;FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;minimal: label only&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+      listogramConfig: { displayMode: &quot;minimal&quot; },
+    }]}
+  /&gt;
+&lt;/div&gt;`,
       },
     },
   },
@@ -30209,6 +30509,43 @@ export const NoValueRendering: Story = {
           &quot;listogram buckets, single-select dropdown options, multi-select dropdown &quot; +
           &quot;options, and multi-select chips. The mock dataset includes one Employee &quot; +
           &#39;with `department: &quot;&quot;` so the No value row is visible in the listogram.&#39;,
+      },
+      source: {
+        code: `// Empty/null values render via &lt;NoValueLabel /&gt; across every filter type.
+&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department&quot;,
+      filterComponent: &quot;LISTOGRAM&quot;,
+      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department&quot;,
+      filterComponent: &quot;MULTI_SELECT&quot;,
+      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;department&quot;,
+      label: &quot;Department (single)&quot;,
+      filterComponent: &quot;SINGLE_SELECT&quot;,
+      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
+    },
+    {
+      type: &quot;PROPERTY&quot;,
+      key: &quot;employeeNumber&quot;,
+      label: &quot;Employee Number&quot;,
+      filterComponent: &quot;NUMBER_RANGE&quot;,
+      filterState: { type: &quot;NUMBER_RANGE&quot; },
+      clickToFilter: true,
+    },
+  ]}
+/&gt;`,
       },
     },
   },
@@ -31585,6 +31922,63 @@ export const HorizontalToolbar: Story = {
           &quot;history, layers) are owned entirely by the consumer — `FilterList`&quot; +
           &quot; never sees them. Replace the SVG icons with your own and swap &quot; +
           &quot;the wrapper styles to match your design system.&quot;,
+      },
+      source: {
+        code: `import {
+  filterHasActiveState,
+  FilterInput,
+  FilterPopover,
+  getFilterKey,
+  getFilterLabel,
+  summarizeFilterValue,
+  useFilterListState,
+} from &quot;@osdk/react-components/experimental/filter-list&quot;;
+
+function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
+  const {
+    filterStates,
+    setFilterState,
+    clearFilterState,
+    perFilterWhereClauses,
+  } = useFilterListState({ objectType, filterDefinitions });
+
+  return (
+    &lt;div className={styles.toolbar}&gt;
+      {filterDefinitions.map((definition) =&gt; {
+        const key = getFilterKey(definition);
+        return (
+          &lt;FilterPopover
+            key={key}
+            label={getFilterLabel(definition)}
+            summary={summarizeFilterValue(definition, filterStates.get(key))}
+            isActive={filterHasActiveState(filterStates.get(key))}
+            onRemove={() =&gt; clearFilterState(key)}
+            labelPlacement=&quot;top&quot;
+          &gt;
+            &lt;FilterInput
+              objectType={objectType}
+              definition={definition}
+              filterState={filterStates.get(key)}
+              onFilterStateChanged={(state) =&gt; setFilterState(key, state)}
+              whereClause={perFilterWhereClauses.get(key) ?? {}}
+              layout=&quot;inline&quot;
+            /&gt;
+          &lt;/FilterPopover&gt;
+        );
+      })}
+      {/* Trailing utility buttons are owned entirely by the consumer. */}
+    &lt;/div&gt;
+  );
+}
+
+&lt;HorizontalFilterToolbar
+  objectType={Employee}
+  filterDefinitions={[
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; } },
+  ]}
+/&gt;`,
       },
     },
   },
