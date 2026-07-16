@@ -121,13 +121,15 @@ function validateActionParameterType(
     required: paramDef.required,
   };
 
+  const markInvalid = () => {
+    ret.result = "INVALID";
+    ret.parameters[paramKey] = { ...baseParam };
+  };
+
   switch (dataType.type) {
     case "array": {
       if (!Array.isArray(value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
+        markInvalid();
         return;
       }
       for (const item of value) {
@@ -143,68 +145,9 @@ function validateActionParameterType(
       return;
     }
 
-    case "attachment": {
-      if (typeof value !== "string") {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
-    }
-
-    case "boolean":
-    case "date":
-    case "long":
-    case "double":
-    case "integer":
-    case "marking":
-    case "objectSet":
-    case "timestamp":
-    case "object":
-    case "string":
-      if (!matchesOntologyDataType(dataType, value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
-    case "geohash":
-      if (
-        !(
-          typeof value === "string" ||
-          (typeof value === "object" && value != null && "coordinates" in value)
-        )
-      ) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
-
-    case "geoshape":
-      if (
-        !(
-          typeof value === "object" &&
-          ("coordinates" in value! ||
-            "geometries" in value! ||
-            "features" in value!)
-        )
-      ) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
     case "interfaceObject": {
       if (!isInterfaceActionParam(value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
+        markInvalid();
       } else if (
         dataStore.getObject(value.objectTypeApiName, value.primaryKeyValue) ==
         null
@@ -222,89 +165,96 @@ function validateActionParameterType(
       return;
     }
 
-    case "mediaReference": {
-      if (!isMediaReference(value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
-    }
-
-    case "vector": {
-      ret.result = "INVALID";
-      ret.parameters[paramKey] = {
-        ...baseParam,
-      };
-      return;
-    }
-
     case "struct": {
-      if (!value || typeof value !== "object" || Array.isArray(value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-        return;
-      }
-
-      for (const { name, fieldType, required } of dataType.fields) {
-        const fieldValue = (value as Record<string, unknown>)[name];
-        // A non-required field may be omitted or explicitly null; only run the
-        // type check when a value is actually present.
-        if (fieldValue == null) {
-          if (required) {
-            ret.result = "INVALID";
-            ret.parameters[paramKey] = {
-              ...baseParam,
-            };
-            return;
-          }
-          continue;
-        }
-        if (!matchesOntologyDataType(fieldType, fieldValue)) {
-          ret.result = "INVALID";
-          ret.parameters[paramKey] = {
-            ...baseParam,
-          };
-
-          return;
-        }
-      }
-
-      return;
-    }
-
-    case "objectType": {
-      if (
-        typeof value !== "string" ||
-        !dataStore.ontology.getObjectTypeFullMetadata(value)
-      ) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-        return;
-      }
-
-      return;
-    }
-
-    case "scenarioReference": {
-      if (
-        !value ||
-        typeof value !== "object" ||
-        typeof (value as { scenarioRid?: unknown }).scenarioRid !== "string"
-      ) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
+      if (!isValidStructParam(dataType, value)) {
+        markInvalid();
       }
       return;
     }
 
+    default: {
+      if (!isValidScalarParam(dataType, value, dataStore)) {
+        markInvalid();
+      }
+    }
+  }
+}
+
+/** Whether a struct action-parameter value matches its declared field types. */
+function isValidStructParam(
+  dataType: Extract<ActionParameterType, { type: "struct" }>,
+  value: unknown
+): boolean {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  for (const { name, fieldType, required } of dataType.fields) {
+    const fieldValue = (value as Record<string, unknown>)[name];
+    // A non-required field may be omitted or explicitly null; only run the type
+    // check when a value is actually present.
+    if (fieldValue == null) {
+      if (required) {
+        return false;
+      }
+      continue;
+    }
+    if (!matchesOntologyDataType(fieldType, fieldValue)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Validates the non-array/interfaceObject/struct ("scalar") parameter types. */
+function isValidScalarParam(
+  dataType: Exclude<
+    ActionParameterType,
+    { type: "array" | "interfaceObject" | "struct" }
+  >,
+  value: unknown,
+  dataStore: FauxDataStore
+): boolean {
+  switch (dataType.type) {
+    case "attachment":
+      return typeof value === "string";
+    case "boolean":
+    case "date":
+    case "long":
+    case "double":
+    case "integer":
+    case "marking":
+    case "objectSet":
+    case "timestamp":
+    case "object":
+    case "string":
+      return matchesOntologyDataType(dataType, value);
+    case "geohash":
+      return (
+        typeof value === "string" ||
+        (typeof value === "object" && value != null && "coordinates" in value)
+      );
+    case "geoshape":
+      return (
+        typeof value === "object" &&
+        ("coordinates" in value! ||
+          "geometries" in value! ||
+          "features" in value!)
+      );
+    case "mediaReference":
+      return isMediaReference(value);
+    case "vector":
+      return false;
+    case "objectType":
+      return (
+        typeof value === "string" &&
+        !!dataStore.ontology.getObjectTypeFullMetadata(value)
+      );
+    case "scenarioReference":
+      return (
+        !!value &&
+        typeof value === "object" &&
+        typeof (value as { scenarioRid?: unknown }).scenarioRid === "string"
+      );
     default: {
       const _assertNever: never = dataType;
       throw new Error(`validateDataType: unknown type`);
