@@ -38,6 +38,11 @@ export type {
 } from "../../object-table/ObjectTableApi.js";
 export type { CellEditInfo } from "../../object-table/utils/types.js";
 
+// User-facing string overrides (localization / wording). Pass a subset to the
+// `labels` prop of `ObjectTable`/`BaseTable`/the dialogs; the type is exported
+// so consumers can share a typed labels object.
+export type { ObjectTableLabels } from "../../object-table/ObjectTableLabels.js";
+
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../../object-table/Table.js";
 export { BaseTable } from "../../object-table/Table.js";

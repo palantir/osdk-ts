@@ -152,6 +152,48 @@ export const SingleColumnVisible: Story = {
   },
 };
 
+export const LocalizedLabels: Story = {
+  args: {
+    labels: {
+      columnConfigTitle: "Choose columns",
+      columnConfigApply: "Save",
+      columnConfigCancel: "Discard",
+      columnConfigVisibleColumns: "Shown columns",
+      columnConfigDragToReorder: "Drag rows to reorder",
+      columnConfigAddOrRemoveColumns: "Toggle columns",
+      columnConfigAllColumns: "Everything",
+      columnConfigSearchPlaceholder: "Type to filter…",
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Every user-facing string can be overridden through the `labels` " +
+          "prop. Any key left unset falls back to the built-in English " +
+          "default. Pass the same object to `ObjectTable`/`BaseTable` to " +
+          "localize the whole table at once.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  columnOptions={columnOptions}
+  currentVisibility={visibility}
+  currentColumnOrder={order}
+  onApply={handleApply}
+  labels={{
+    columnConfigTitle: "Choose columns",
+    columnConfigApply: "Save",
+    columnConfigCancel: "Discard",
+    columnConfigVisibleColumns: "Shown columns",
+  }}
+/>`,
+      },
+    },
+  },
+};
+
 function WithValidationStory() {
   const [isOpen, setIsOpen] = useState(true);
 
