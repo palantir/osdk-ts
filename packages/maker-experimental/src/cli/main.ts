@@ -63,6 +63,7 @@ export default async function main(
     valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
+    codegenDir: string;
     temporaryBlockDataFile?: string;
     functionsDir?: string;
     nodeModulesDir?: string;
@@ -104,6 +105,13 @@ export default async function main(
         describe: "Directory for build files",
         type: "string",
         default: "build/",
+        coerce: path.resolve,
+      },
+      codegenDir: {
+        alias: "c",
+        describe: "Output directory for generated TypeScript files",
+        type: "string",
+        default: ".",
         coerce: path.resolve,
       },
       temporaryBlockDataFile: {
@@ -201,7 +209,7 @@ export default async function main(
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
-    commandLineOpts.buildDir,
+    commandLineOpts.codegenDir,
     functionsIrFile,
     commandLineOpts.randomnessKey
   );
