@@ -126,6 +126,15 @@ const preview: Preview = {
       source: {
         excludeDecorators: true,
       },
+      // Floating "on this page" table of contents for docs pages. Enabled
+      // globally because unattached MDX docs pages (e.g. ObjectTable's Docs
+      // page) cannot set docs.toc per-file — they fall back to this config.
+      // h2/h3 covers the section headings rendered from the Markdown body.
+      toc: {
+        headingSelector: "h2, h3",
+        contentsSelector: ".sbdocs-content",
+        title: "On this page",
+      },
     },
     // Register FauxFoundry handlers globally
     msw: {
