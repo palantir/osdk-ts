@@ -14,24 +14,127 @@
  * limitations under the License.
  */
 
-import {
-  HeaderMenuInsideBaseUIDialog as HeaderMenuInsideBaseUIDialogStory,
-  HeaderMenuInsideBlueprintDialog as HeaderMenuInsideBlueprintDialogStory,
-  HeaderMenuInsideBlueprintDrawer as HeaderMenuInsideBlueprintDrawerStory,
-  objectTableMeta,
-} from "../objectTableStoryDefs.js";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, screen, userEvent } from "storybook/test";
 
-// QA scenarios verifying the header-menu dropdown renders above overlay
-// containers (Blueprint Drawer/Dialog, Base UI Dialog).
-const meta = {
+import { Employee } from "../../../types/Employee.js";
+import {
+  defaultEmployeeColumns,
+  objectTableMeta,
+  openHeaderMenu,
+  TARGET_DATA,
+} from "../objectTableStoryHelpers.js";
+import type { EmployeeTableProps } from "../objectTableStoryHelpers.js";
+import {
+  ObjectTableInBaseUIDialog,
+  ObjectTableInBlueprintDialog,
+  ObjectTableInBlueprintDrawer,
+} from "../overlays/ObjectTableOverlayStories.js";
+
+const meta: Meta<EmployeeTableProps> = {
   ...objectTableMeta,
   title: "Components/ObjectTable/Features/Overlays",
 };
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-export const HeaderMenuInsideBlueprintDrawer =
-  HeaderMenuInsideBlueprintDrawerStory;
-export const HeaderMenuInsideBlueprintDialog =
-  HeaderMenuInsideBlueprintDialogStory;
-export const HeaderMenuInsideBaseUIDialog = HeaderMenuInsideBaseUIDialogStory;
+export const HeaderMenuInsideBlueprintDrawer: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Drawer. " +
+          "Open the drawer and click any column header chevron; the menu should appear above the drawer.",
+      },
+      source: {
+        code: `<Drawer isOpen={true} title="ObjectTable in Blueprint Drawer">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Drawer>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDrawer tableProps={args} />,
+  // The drawer opens by default. The header menu must portal *above* the drawer
+  // and stay interactive. The drawer renders to document.body, so query `screen`.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
+};
+
+export const HeaderMenuInsideBlueprintDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside a Blueprint Dialog. " +
+          "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code: `<Dialog isOpen={true} title="ObjectTable in Blueprint Dialog">
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBlueprintDialog tableProps={args} />,
+  // The dialog opens by default; the header menu must portal above it.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
+};
+
+export const HeaderMenuInsideBaseUIDialog: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scenario for the header menu dropdown when ObjectTable is rendered inside the OSDK Base UI Dialog primitive. " +
+          "Open the dialog and click any column header chevron; the menu should appear above the dialog.",
+      },
+      source: {
+        code: `<Dialog isOpen={true} title="ObjectTable in Base UI Dialog" onOpenChange={setIsOpen}>
+  <ObjectTable objectType={Employee} columnDefinitions={defaultEmployeeColumns} />
+</Dialog>`,
+      },
+    },
+  },
+  render: (args) => <ObjectTableInBaseUIDialog tableProps={args} />,
+  // The Base UI dialog opens by default; the header menu must portal above it.
+  play: async () => {
+    await screen.findByText(TARGET_DATA);
+
+    await openHeaderMenu(screen, "fullName");
+    await expect(
+      await screen.findByRole("menuitem", { name: "Configure Columns" })
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+  },
+};
