@@ -807,12 +807,9 @@ export function extractAllowedValues(
   }
 }
 
-export function renderHintFromBaseType(
-  parameter: ActionParameter,
-  validation?: ActionParameterValidation
-): ParameterRenderHint {
-  const type =
-    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
+// Fixed render hint per base parameter type. `string`, `marking`, and
+// `markingList` depend on allowed values and are handled separately.
+function simpleRenderHint(type: string): ParameterRenderHint | undefined {
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -826,13 +823,6 @@ export function renderHintFromBaseType(
     case "decimal":
     case "decimalList":
       return { type: "numericInput", numericInput: {} };
-    case "string":
-      if (
-        validation?.allowedValues?.type === "user" ||
-        validation?.allowedValues?.type === "multipassGroup"
-      ) {
-        return { type: "userDropdown", userDropdown: {} };
-      }
     case "stringList":
     case "geohash":
     case "geohashList":
@@ -848,17 +838,6 @@ export function renderHintFromBaseType(
     case "attachment":
     case "attachmentList":
       return { type: "filePicker", filePicker: {} };
-    case "marking":
-    case "markingList":
-      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
-        return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
-        return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
-      } else {
-        throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`
-        );
-      }
     case "timeSeriesReference":
     case "objectReference":
     case "objectReferenceList":
@@ -870,10 +849,47 @@ export function renderHintFromBaseType(
     case "geotimeSeriesReference":
     case "geotimeSeriesReferenceList":
       return { type: "dropdown", dropdown: {} };
-    case "struct":
-    case "structList":
-      throw new Error("Structs are not supported yet");
     default:
-      throw new Error(`Unknown type ${type}`);
+      return undefined;
   }
+}
+
+function renderMarkingHint(parameter: ActionParameter): ParameterRenderHint {
+  const allowedValuesType = parameter.validation.allowedValues?.type;
+  if (allowedValuesType === "mandatoryMarking") {
+    return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
+  }
+  if (allowedValuesType === "cbacMarking") {
+    return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
+  }
+  throw new Error(
+    `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`
+  );
+}
+
+export function renderHintFromBaseType(
+  parameter: ActionParameter,
+  validation?: ActionParameterValidation
+): ParameterRenderHint {
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
+
+  if (type === "string") {
+    return validation?.allowedValues?.type === "user" ||
+      validation?.allowedValues?.type === "multipassGroup"
+      ? { type: "userDropdown", userDropdown: {} }
+      : { type: "textInput", textInput: {} };
+  }
+  if (type === "marking" || type === "markingList") {
+    return renderMarkingHint(parameter);
+  }
+
+  const simple = simpleRenderHint(type);
+  if (simple) {
+    return simple;
+  }
+  if (type === "struct" || type === "structList") {
+    throw new Error("Structs are not supported yet");
+  }
+  throw new Error(`Unknown type ${type}`);
 }

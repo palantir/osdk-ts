@@ -249,6 +249,74 @@ export interface PropertyTypeInfo {
 }
 
 /**
+ * Builds the where clause for a KEYWORD_SEARCH filter, or `undefined` when the
+ * filter is inactive / not applicable.
+ */
+function buildKeywordSearchClause<Q extends ObjectTypeDefinition>(
+  definition: Extract<FilterDefinitionUnion<Q>, { type: "KEYWORD_SEARCH" }>,
+  state: FilterState,
+  propertyTypes?: Map<string, PropertyTypeInfo>
+): Record<string, unknown> | undefined {
+  if (state.type !== "keywordSearch") {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`
+      );
+    }
+    return undefined;
+  }
+  if (!state.searchTerm) {
+    return undefined;
+  }
+  const searchTerm = state.searchTerm.trim();
+  if (!searchTerm) {
+    return undefined;
+  }
+
+  const properties = definition.properties;
+  let propertiesToSearch: string[];
+
+  if (properties === "all") {
+    if (propertyTypes && propertyTypes.size > 0) {
+      propertiesToSearch = [];
+      for (const [key, info] of propertyTypes) {
+        if (info.type === "string" && !info.multiplicity) {
+          propertiesToSearch.push(key);
+        }
+      }
+    } else {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped."
+        );
+      }
+      return undefined;
+    }
+  } else {
+    propertiesToSearch = properties;
+  }
+
+  if (propertiesToSearch.length === 0) {
+    return undefined;
+  }
+
+  const containsOp =
+    state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
+
+  const propertySearches = propertiesToSearch.map((prop) => ({
+    [prop]: { [containsOp]: searchTerm },
+  }));
+
+  const searchClause: Record<string, unknown> =
+    propertySearches.length === 1
+      ? propertySearches[0]
+      : { $or: propertySearches };
+  return state.isExcluding ? { $not: searchClause } : searchClause;
+}
+
+/**
  * Builds a `WhereClause<Q>` from direct (non-link-traversing) filter
  * definitions and current states. LINKED_PROPERTY filters are excluded —
  * use `getActiveLinkedFilters` for those and apply via `narrowObjectSet`.
@@ -317,66 +385,14 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
 
       case "KEYWORD_SEARCH": {
-        if (state.type !== "keywordSearch") {
-          if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`
-            );
-          }
-          break;
+        const clause = buildKeywordSearchClause(
+          definition,
+          state,
+          propertyTypes
+        );
+        if (clause !== undefined) {
+          clauses.push(clause);
         }
-        if (!state.searchTerm) {
-          break;
-        }
-        // TypeScript narrows state to KeywordSearchFilterState
-        const searchTerm = state.searchTerm.trim();
-        if (!searchTerm) {
-          break;
-        }
-
-        const properties = definition.properties;
-        let propertiesToSearch: string[];
-
-        if (properties === "all") {
-          if (propertyTypes && propertyTypes.size > 0) {
-            propertiesToSearch = [];
-            for (const [key, info] of propertyTypes) {
-              if (info.type === "string" && !info.multiplicity) {
-                propertiesToSearch.push(key);
-              }
-            }
-          } else {
-            if (process.env.NODE_ENV !== "production") {
-              // eslint-disable-next-line no-console
-              console.warn(
-                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped."
-              );
-            }
-            break;
-          }
-        } else {
-          propertiesToSearch = properties;
-        }
-
-        if (propertiesToSearch.length === 0) {
-          break;
-        }
-
-        const containsOp =
-          state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
-
-        const propertySearches = propertiesToSearch.map((prop) => ({
-          [prop]: { [containsOp]: searchTerm },
-        }));
-
-        let searchClause: Record<string, unknown>;
-        if (propertySearches.length === 1) {
-          searchClause = propertySearches[0];
-        } else {
-          searchClause = { $or: propertySearches };
-        }
-        clauses.push(state.isExcluding ? { $not: searchClause } : searchClause);
         break;
       }
 

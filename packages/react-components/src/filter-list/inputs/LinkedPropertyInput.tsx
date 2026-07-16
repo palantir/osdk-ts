@@ -275,65 +275,9 @@ function LinkedPropertyInputInner<
     [wrappedOnChange, innerState]
   );
 
-  const content = (() => {
+  // Range / date / histogram inputs; closes over the same props.
+  const renderAdvancedInput = (): React.ReactNode => {
     switch (definition.linkedFilterComponent) {
-      case "MULTI_SELECT": {
-        const values =
-          innerState?.type === "SELECT"
-            ? coerceToStringArray(innerState.selectedValues)
-            : [];
-        return (
-          <LinkedMultiSelectInput
-            objectType={linkedObjectType}
-            objectSet={linkedObjectSet}
-            emptySourceObjectSet={emptySourceLinkedObjectSet}
-            propertyKey={linkedPropertyKey}
-            selectedValues={values}
-            onChange={onSelectChange}
-            showCount={definition.showCount}
-            renderValue={definition.renderValue}
-            layout={layout}
-          />
-        );
-      }
-
-      case "SINGLE_SELECT": {
-        const value =
-          innerState?.type === "SELECT"
-            ? coerceToString(innerState.selectedValues[0])
-            : undefined;
-        return (
-          <LinkedSingleSelectInput
-            objectType={linkedObjectType}
-            objectSet={linkedObjectSet}
-            emptySourceObjectSet={emptySourceLinkedObjectSet}
-            propertyKey={linkedPropertyKey}
-            selectedValue={value}
-            onChange={onSingleSelectChange}
-            showCount={definition.showCount}
-            renderValue={definition.renderValue}
-          />
-        );
-      }
-
-      case "CONTAINS_TEXT": {
-        const value =
-          innerState?.type === "CONTAINS_TEXT" ? innerState.value : undefined;
-        return (
-          <ContainsTextInput
-            value={value}
-            onChange={onContainsTextChange}
-            placeholder={`Search ${String(definition.linkedPropertyKey)}...`}
-          />
-        );
-      }
-
-      case "TOGGLE": {
-        const enabled =
-          innerState?.type === "TOGGLE" ? innerState.enabled : false;
-        return <ToggleInput enabled={enabled} onChange={onToggleChange} />;
-      }
-
       case "NUMBER_RANGE": {
         const nr = innerState?.type === "NUMBER_RANGE" ? innerState : undefined;
         return (
@@ -444,6 +388,79 @@ function LinkedPropertyInputInner<
           />
         );
       }
+
+      default:
+        return null;
+    }
+  };
+
+  const content = (() => {
+    switch (definition.linkedFilterComponent) {
+      case "MULTI_SELECT": {
+        const values =
+          innerState?.type === "SELECT"
+            ? coerceToStringArray(innerState.selectedValues)
+            : [];
+        return (
+          <LinkedMultiSelectInput
+            objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
+            emptySourceObjectSet={emptySourceLinkedObjectSet}
+            propertyKey={linkedPropertyKey}
+            selectedValues={values}
+            onChange={onSelectChange}
+            showCount={definition.showCount}
+            renderValue={definition.renderValue}
+            layout={layout}
+          />
+        );
+      }
+
+      case "SINGLE_SELECT": {
+        const value =
+          innerState?.type === "SELECT"
+            ? coerceToString(innerState.selectedValues[0])
+            : undefined;
+        return (
+          <LinkedSingleSelectInput
+            objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
+            emptySourceObjectSet={emptySourceLinkedObjectSet}
+            propertyKey={linkedPropertyKey}
+            selectedValue={value}
+            onChange={onSingleSelectChange}
+            showCount={definition.showCount}
+            renderValue={definition.renderValue}
+          />
+        );
+      }
+
+      case "CONTAINS_TEXT": {
+        const value =
+          innerState?.type === "CONTAINS_TEXT" ? innerState.value : undefined;
+        return (
+          <ContainsTextInput
+            value={value}
+            onChange={onContainsTextChange}
+            placeholder={`Search ${String(definition.linkedPropertyKey)}...`}
+          />
+        );
+      }
+
+      case "TOGGLE": {
+        const enabled =
+          innerState?.type === "TOGGLE" ? innerState.enabled : false;
+        return <ToggleInput enabled={enabled} onChange={onToggleChange} />;
+      }
+
+      case "NUMBER_RANGE":
+      case "DATE_RANGE":
+      case "LISTOGRAM":
+      case "TEXT_TAGS":
+      case "SINGLE_DATE":
+      case "MULTI_DATE":
+      case "TIMELINE":
+        return renderAdvancedInput();
 
       default:
         return assertUnreachable(definition.linkedFilterComponent);

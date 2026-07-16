@@ -259,6 +259,258 @@ export function EmployeePanel({
 
   const hierarchyLevel = getHierarchyLevel(employee.jobTitle);
 
+  // The skip-level manager (chain/network lenses).
+  const renderSkipLevel = (): React.ReactNode => {
+    if (!((showChain || showFullNetwork) && skipLevelManagerObj)) {
+      return null;
+    }
+    return (
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+        <div className="officenetwork-section-label mb-1">Skip-level</div>
+        <div className="flex items-center gap-2">
+          <div
+            className="size-2 rounded-sm shrink-0"
+            style={{
+              backgroundColor:
+                HIERARCHY_COLORS[
+                  getHierarchyLevel(skipLevelManagerObj.jobTitle)
+                ],
+            }}
+          />
+          <button
+            onClick={() => onSelectEmployee(skipLevelManagerObj)}
+            className="text-sm font-medium text-[var(--officenetwork-status-warning)] hover:underline"
+          >
+            {skipLevelManagerObj.fullName ??
+              `#${skipLevelManagerObj.employeeNumber}`}
+          </button>
+          {skipLevelOfficeObj && (
+            <span className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
+              @ {skipLevelOfficeObj.name ?? "Unknown"}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // The org tree (team-lens only).
+  const renderOrgTree = (): React.ReactNode => {
+    if (!(showTeam && orgTree && orgTree.reports.length > 0)) {
+      return null;
+    }
+    return (
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+        <div className="flex items-center justify-between mb-3">
+          <div
+            className="officenetwork-section-label"
+            style={{ color: "var(--officenetwork-hier-evp)" }}
+          >
+            Organization Tree
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
+            <span>{orgTotalCount} total</span>
+            <span>·</span>
+            <span>
+              {orgMaxDepth} lvl{orgMaxDepth !== 1 ? "s" : ""}
+            </span>
+            {orgLoading && <LoadingIndicator size="sm" />}
+          </div>
+        </div>
+        <div className="space-y-0.5 max-h-48 overflow-auto">
+          <OrgTreeNodeView
+            node={orgTree}
+            depth={0}
+            onSelectEmployee={onSelectEmployee}
+            onToggleExpand={toggleExpand}
+            isRoot={true}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // The full manager chain (chain-lens only).
+  const renderReportingChain = (): React.ReactNode => {
+    if (!(showChain && chain.length > 0)) {
+      return null;
+    }
+    return (
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+        <div className="flex items-center justify-between mb-3">
+          <div
+            className="officenetwork-section-label"
+            style={{ color: "var(--officenetwork-status-warning)" }}
+          >
+            Full Reporting Chain
+          </div>
+          <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
+            <span>
+              {chainDepth} lvl{chainDepth !== 1 ? "s" : ""}
+            </span>
+            {chainLoading && <LoadingIndicator size="sm" />}
+            {chainComplete && (
+              <span className="text-[var(--officenetwork-status-ready)]">
+                ✓
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="space-y-1">
+          {chain.map((node, index) => {
+            const level = getHierarchyLevel(node.employee.jobTitle);
+            const isFirst = index === 0;
+            const isLast = index === chain.length - 1;
+            const isCeo =
+              node.employee.leadEmployeeNumber === node.employee.employeeNumber;
+
+            return (
+              <div
+                key={node.employee.employeeNumber}
+                className="flex items-center gap-2"
+              >
+                <div className="flex flex-col items-center w-4">
+                  {!isFirst && (
+                    <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
+                  )}
+                  <div
+                    className="size-2.5 rounded-sm shrink-0"
+                    style={{ backgroundColor: HIERARCHY_COLORS[level] }}
+                  />
+                  {!isLast && !node.isLoading && (
+                    <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
+                  )}
+                  {node.isLoading && (
+                    <div className="w-0.5 h-2 animate-pulse bg-[var(--officenetwork-status-warning)]" />
+                  )}
+                </div>
+                <button
+                  onClick={() => onSelectEmployee(node.employee)}
+                  className={`text-xs hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors ${
+                    isFirst
+                      ? "font-semibold text-[var(--officenetwork-text-primary)]"
+                      : "text-[var(--officenetwork-text-secondary)]"
+                  }`}
+                >
+                  {isCeo && "👑 "}
+                  {node.employee.fullName ?? `#${node.employee.employeeNumber}`}
+                </button>
+                <span
+                  className="text-[9px] officenetwork-mono shrink-0"
+                  style={{ color: HIERARCHY_COLORS[level] }}
+                >
+                  {HIERARCHY_LABELS[level]}
+                </span>
+              </div>
+            );
+          })}
+          {chainLoading && (
+            <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)]">
+              <div className="w-4" />
+              <LoadingIndicator size="sm" />
+              <span>Loading...</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // The employees lens shows a side-by-side Employee/Worker/Person comparison.
+  const renderInterfaceComparison = (): React.ReactNode => {
+    if (lensMode !== "employees") {
+      return null;
+    }
+    return (
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+        <div
+          className="officenetwork-section-label mb-3"
+          style={{ color: "var(--officenetwork-accent-teal)" }}
+        >
+          Interface Comparison
+        </div>
+        {workerLoading || personLoading ? (
+          <LoadingIndicator size="sm" />
+        ) : (
+          <div className="space-y-2">
+            <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--officenetwork-border-default)] pb-2">
+              <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                Property
+              </span>
+              <span className="text-[var(--officenetwork-hier-evp)]">
+                Employee
+              </span>
+              <span className="text-[var(--officenetwork-accent-teal)]">
+                Worker
+              </span>
+              <span className="text-[var(--officenetwork-status-ready)]">
+                Person
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1 text-[10px]">
+              <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                name
+              </span>
+              <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                {employee.fullName ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                {worker?.name ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-text-muted)]">—</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1 text-[10px]">
+              <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                email
+              </span>
+              <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                {employee.emailPrimaryWork ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                {worker?.email ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-status-ready)] truncate">
+                {person?.email ?? "—"}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1 text-[10px]">
+              <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                empNum
+              </span>
+              <span className="text-[var(--officenetwork-text-secondary)]">
+                {employee.employeeNumber}
+              </span>
+              <span className="text-[var(--officenetwork-accent-teal)]">
+                {worker?.employeeNumber ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-status-ready)]">
+                {person?.employeeNumber ?? "—"}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1 text-[10px]">
+              <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                jobTitle
+              </span>
+              <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                {employee.jobTitle ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                {worker?.$as(Employee).jobTitle ?? "—"}
+              </span>
+              <span className="text-[var(--officenetwork-status-ready)] truncate">
+                {person?.$as(Employee).jobTitle ?? "—"}
+              </span>
+            </div>
+            <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
+              Worker/Person columns use $includeAllBaseObjectProperties to
+              expose concrete fields (jobTitle) via $as(Employee)
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="h-full flex flex-col bg-[var(--officenetwork-bg-surface)]">
       {/* Header */}
@@ -359,117 +611,10 @@ export function EmployeePanel({
         </div>
 
         {/* Skip-level manager */}
-        {(showChain || showFullNetwork) && skipLevelManagerObj && (
-          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
-            <div className="officenetwork-section-label mb-1">Skip-level</div>
-            <div className="flex items-center gap-2">
-              <div
-                className="size-2 rounded-sm shrink-0"
-                style={{
-                  backgroundColor:
-                    HIERARCHY_COLORS[
-                      getHierarchyLevel(skipLevelManagerObj.jobTitle)
-                    ],
-                }}
-              />
-              <button
-                onClick={() => onSelectEmployee(skipLevelManagerObj)}
-                className="text-sm font-medium text-[var(--officenetwork-status-warning)] hover:underline"
-              >
-                {skipLevelManagerObj.fullName ??
-                  `#${skipLevelManagerObj.employeeNumber}`}
-              </button>
-              {skipLevelOfficeObj && (
-                <span className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                  @ {skipLevelOfficeObj.name ?? "Unknown"}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
+        {renderSkipLevel()}
 
         {/* Full Reporting Chain */}
-        {showChain && chain.length > 0 && (
-          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
-            <div className="flex items-center justify-between mb-3">
-              <div
-                className="officenetwork-section-label"
-                style={{ color: "var(--officenetwork-status-warning)" }}
-              >
-                Full Reporting Chain
-              </div>
-              <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                <span>
-                  {chainDepth} lvl{chainDepth !== 1 ? "s" : ""}
-                </span>
-                {chainLoading && <LoadingIndicator size="sm" />}
-                {chainComplete && (
-                  <span className="text-[var(--officenetwork-status-ready)]">
-                    ✓
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="space-y-1">
-              {chain.map((node, index) => {
-                const level = getHierarchyLevel(node.employee.jobTitle);
-                const isFirst = index === 0;
-                const isLast = index === chain.length - 1;
-                const isCeo =
-                  node.employee.leadEmployeeNumber ===
-                  node.employee.employeeNumber;
-
-                return (
-                  <div
-                    key={node.employee.employeeNumber}
-                    className="flex items-center gap-2"
-                  >
-                    <div className="flex flex-col items-center w-4">
-                      {!isFirst && (
-                        <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
-                      )}
-                      <div
-                        className="size-2.5 rounded-sm shrink-0"
-                        style={{ backgroundColor: HIERARCHY_COLORS[level] }}
-                      />
-                      {!isLast && !node.isLoading && (
-                        <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
-                      )}
-                      {node.isLoading && (
-                        <div className="w-0.5 h-2 animate-pulse bg-[var(--officenetwork-status-warning)]" />
-                      )}
-                    </div>
-                    <button
-                      onClick={() => onSelectEmployee(node.employee)}
-                      className={`text-xs hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors ${
-                        isFirst
-                          ? "font-semibold text-[var(--officenetwork-text-primary)]"
-                          : "text-[var(--officenetwork-text-secondary)]"
-                      }`}
-                    >
-                      {isCeo && "👑 "}
-                      {node.employee.fullName ??
-                        `#${node.employee.employeeNumber}`}
-                    </button>
-                    <span
-                      className="text-[9px] officenetwork-mono shrink-0"
-                      style={{ color: HIERARCHY_COLORS[level] }}
-                    >
-                      {HIERARCHY_LABELS[level]}
-                    </span>
-                  </div>
-                );
-              })}
-              {chainLoading && (
-                <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)]">
-                  <div className="w-4" />
-                  <LoadingIndicator size="sm" />
-                  <span>Loading...</span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {renderReportingChain()}
 
         {/* Direct reports */}
         {(showTeam || showFullNetwork) && (
@@ -487,35 +632,7 @@ export function EmployeePanel({
         )}
 
         {/* Organization Tree */}
-        {showTeam && orgTree && orgTree.reports.length > 0 && (
-          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
-            <div className="flex items-center justify-between mb-3">
-              <div
-                className="officenetwork-section-label"
-                style={{ color: "var(--officenetwork-hier-evp)" }}
-              >
-                Organization Tree
-              </div>
-              <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                <span>{orgTotalCount} total</span>
-                <span>·</span>
-                <span>
-                  {orgMaxDepth} lvl{orgMaxDepth !== 1 ? "s" : ""}
-                </span>
-                {orgLoading && <LoadingIndicator size="sm" />}
-              </div>
-            </div>
-            <div className="space-y-0.5 max-h-48 overflow-auto">
-              <OrgTreeNodeView
-                node={orgTree}
-                depth={0}
-                onSelectEmployee={onSelectEmployee}
-                onToggleExpand={toggleExpand}
-                isRoot={true}
-              />
-            </div>
-          </div>
-        )}
+        {renderOrgTree()}
 
         {/* Peers */}
         {showFullNetwork && (
@@ -546,96 +663,7 @@ export function EmployeePanel({
         )}
 
         {/* Interface Comparison */}
-        {lensMode === "employees" && (
-          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
-            <div
-              className="officenetwork-section-label mb-3"
-              style={{ color: "var(--officenetwork-accent-teal)" }}
-            >
-              Interface Comparison
-            </div>
-            {workerLoading || personLoading ? (
-              <LoadingIndicator size="sm" />
-            ) : (
-              <div className="space-y-2">
-                <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--officenetwork-border-default)] pb-2">
-                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                    Property
-                  </span>
-                  <span className="text-[var(--officenetwork-hier-evp)]">
-                    Employee
-                  </span>
-                  <span className="text-[var(--officenetwork-accent-teal)]">
-                    Worker
-                  </span>
-                  <span className="text-[var(--officenetwork-status-ready)]">
-                    Person
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px]">
-                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                    name
-                  </span>
-                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                    {employee.fullName ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                    {worker?.name ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-text-muted)]">
-                    —
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px]">
-                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                    email
-                  </span>
-                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                    {employee.emailPrimaryWork ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                    {worker?.email ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-status-ready)] truncate">
-                    {person?.email ?? "—"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px]">
-                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                    empNum
-                  </span>
-                  <span className="text-[var(--officenetwork-text-secondary)]">
-                    {employee.employeeNumber}
-                  </span>
-                  <span className="text-[var(--officenetwork-accent-teal)]">
-                    {worker?.employeeNumber ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-status-ready)]">
-                    {person?.employeeNumber ?? "—"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-1 text-[10px]">
-                  <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
-                    jobTitle
-                  </span>
-                  <span className="text-[var(--officenetwork-text-secondary)] truncate">
-                    {employee.jobTitle ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-accent-teal)] truncate">
-                    {worker?.$as(Employee).jobTitle ?? "—"}
-                  </span>
-                  <span className="text-[var(--officenetwork-status-ready)] truncate">
-                    {person?.$as(Employee).jobTitle ?? "—"}
-                  </span>
-                </div>
-                <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
-                  Worker/Person columns use $includeAllBaseObjectProperties to
-                  expose concrete fields (jobTitle) via $as(Employee)
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {renderInterfaceComparison()}
       </div>
 
       {/* Footer */}

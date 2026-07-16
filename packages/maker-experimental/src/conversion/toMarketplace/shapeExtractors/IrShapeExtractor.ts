@@ -814,6 +814,106 @@ function getPropertiesForDatasource(datasourceDef: {
  * Extract marking shapes from the ontology block data.
  * Port of Java's MarkingShapeExtractor.getMarkingShapes().
  */
+type MarkingObjectType = OntologyBlockDataV2["objectTypes"][string];
+type MarkingDatasource = MarkingObjectType["datasources"][number];
+
+/** Map each object property's PropertyTypeRid to its readable id, split by
+ * marking type (CBAC vs MANDATORY). */
+function classifyMarkingProperties(
+  objectType: MarkingObjectType,
+  objectApiName: string
+): {
+  cbacReadableIdsByRid: Map<string, ReadableId>;
+  mandatoryReadableIdsByRid: Map<string, ReadableId>;
+} {
+  const cbacReadableIdsByRid = new Map<string, ReadableId>();
+  const mandatoryReadableIdsByRid = new Map<string, ReadableId>();
+
+  for (const [propertyRid, propertyType] of Object.entries(
+    objectType.objectType.propertyTypes
+  )) {
+    if (propertyType.type.type === "marking") {
+      const markingData = (
+        propertyType.type as { marking?: { markingType?: string } }
+      ).marking;
+      const markingType = markingData?.markingType;
+      const propertyApiName =
+        propertyType.apiName ?? propertyType.displayMetadata?.displayName;
+      if (propertyApiName) {
+        const readableId = ReadableIdGenerator.getForObjectProperty(
+          objectApiName,
+          propertyApiName
+        );
+        if (markingType === "CBAC") {
+          cbacReadableIdsByRid.set(propertyRid, readableId);
+        } else if (markingType === "MANDATORY") {
+          mandatoryReadableIdsByRid.set(propertyRid, readableId);
+        }
+      }
+    }
+  }
+
+  return { cbacReadableIdsByRid, mandatoryReadableIdsByRid };
+}
+
+/** Collect CBAC markings declared via `additionalMandatory.markings` in a
+ * datasource's property security groups, accumulating affected readable ids. */
+function collectAdditionalCbacMarkings(
+  objectType: MarkingObjectType,
+  objectApiName: string,
+  ds: MarkingDatasource,
+  additionalCbacMarkingsAndAffectedProps: Map<string, Set<ReadableId>>
+): void {
+  const dsDef = ds.datasource as unknown as {
+    type: string;
+    [key: string]: unknown;
+  };
+  const innerDef = dsDef[dsDef.type] as
+    | {
+        propertySecurityGroups?: {
+          groups?: Array<{
+            properties?: string[];
+            security?: {
+              granular?: {
+                viewPolicy?: {
+                  additionalMandatory?: { markings?: string[] };
+                };
+              };
+            };
+          }>;
+        };
+      }
+    | undefined;
+  const groups = innerDef?.propertySecurityGroups?.groups ?? [];
+  for (const group of groups) {
+    const additionalMarkings =
+      group.security?.granular?.viewPolicy?.additionalMandatory?.markings ?? [];
+    if (additionalMarkings.length === 0) continue;
+    const groupPropertyRids = group.properties ?? [];
+    for (const markingId of additionalMarkings) {
+      const existing =
+        additionalCbacMarkingsAndAffectedProps.get(markingId) ?? new Set();
+      for (const propRid of groupPropertyRids) {
+        // Look up the property apiName from the object type's propertyTypes
+        const propType = objectType.objectType.propertyTypes[propRid];
+        if (propType) {
+          const propApiName =
+            propType.apiName ?? propType.displayMetadata?.displayName;
+          if (propApiName) {
+            existing.add(
+              ReadableIdGenerator.getForObjectProperty(
+                objectApiName,
+                propApiName
+              )
+            );
+          }
+        }
+      }
+      additionalCbacMarkingsAndAffectedProps.set(markingId, existing);
+    }
+  }
+}
+
 function getMarkingShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator
@@ -831,32 +931,8 @@ function getMarkingShapes(
     const objectApiName = objectType.objectType.apiName ?? "";
 
     // Identify CBAC and mandatory marking properties by PropertyTypeRid
-    const cbacReadableIdsByRid = new Map<string, ReadableId>();
-    const mandatoryReadableIdsByRid = new Map<string, ReadableId>();
-
-    for (const [propertyRid, propertyType] of Object.entries(
-      objectType.objectType.propertyTypes
-    )) {
-      if (propertyType.type.type === "marking") {
-        const markingData = (
-          propertyType.type as { marking?: { markingType?: string } }
-        ).marking;
-        const markingType = markingData?.markingType;
-        const propertyApiName =
-          propertyType.apiName ?? propertyType.displayMetadata?.displayName;
-        if (propertyApiName) {
-          const readableId = ReadableIdGenerator.getForObjectProperty(
-            objectApiName,
-            propertyApiName
-          );
-          if (markingType === "CBAC") {
-            cbacReadableIdsByRid.set(propertyRid, readableId);
-          } else if (markingType === "MANDATORY") {
-            mandatoryReadableIdsByRid.set(propertyRid, readableId);
-          }
-        }
-      }
-    }
+    const { cbacReadableIdsByRid, mandatoryReadableIdsByRid } =
+      classifyMarkingProperties(objectType, objectApiName);
 
     // For each datasource, extract marking constraints
     for (const ds of objectType.datasources) {
@@ -915,55 +991,12 @@ function getMarkingShapes(
       }
 
       // Extract CBAC markings from additionalMandatory.markings in property security groups
-      const dsDef = ds.datasource as unknown as {
-        type: string;
-        [key: string]: unknown;
-      };
-      const innerDef = dsDef[dsDef.type] as
-        | {
-            propertySecurityGroups?: {
-              groups?: Array<{
-                properties?: string[];
-                security?: {
-                  granular?: {
-                    viewPolicy?: {
-                      additionalMandatory?: { markings?: string[] };
-                    };
-                  };
-                };
-              }>;
-            };
-          }
-        | undefined;
-      const groups = innerDef?.propertySecurityGroups?.groups ?? [];
-      for (const group of groups) {
-        const additionalMarkings =
-          group.security?.granular?.viewPolicy?.additionalMandatory?.markings ??
-          [];
-        if (additionalMarkings.length === 0) continue;
-        const groupPropertyRids = group.properties ?? [];
-        for (const markingId of additionalMarkings) {
-          const existing =
-            additionalCbacMarkingsAndAffectedProps.get(markingId) ?? new Set();
-          for (const propRid of groupPropertyRids) {
-            // Look up the property apiName from the object type's propertyTypes
-            const propType = objectType.objectType.propertyTypes[propRid];
-            if (propType) {
-              const propApiName =
-                propType.apiName ?? propType.displayMetadata?.displayName;
-              if (propApiName) {
-                existing.add(
-                  ReadableIdGenerator.getForObjectProperty(
-                    objectApiName,
-                    propApiName
-                  )
-                );
-              }
-            }
-          }
-          additionalCbacMarkingsAndAffectedProps.set(markingId, existing);
-        }
-      }
+      collectAdditionalCbacMarkings(
+        objectType,
+        objectApiName,
+        ds,
+        additionalCbacMarkingsAndAffectedProps
+      );
     }
   }
 

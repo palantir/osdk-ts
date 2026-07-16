@@ -21,18 +21,102 @@ import invariant from "tiny-invariant";
 
 import type { BaseServerObject } from "./BaseServerObject.js";
 
+/** Returns the `field` from a where clause, rejecting the unsupported
+ * `propertyIdentifier` form. */
+function requireField(
+  where: Extract<OntologiesV2.SearchJsonQueryV2, { field?: unknown }>
+): string {
+  const { propertyIdentifier, field } = where;
+  if (propertyIdentifier) {
+    console.error("propertyIdentifier not supported", where);
+    throw new Error("propertyIdentifier not supported");
+  }
+  invariant(field);
+  return field;
+}
+
+function matchesTermsInOrderPrefixLastTerm(
+  lowerFieldValue: string,
+  searchTerms: string[]
+): boolean {
+  if (searchTerms.length === 0) return true;
+
+  let lastIndex = -1;
+  for (let i = 0; i < searchTerms.length - 1; i++) {
+    const index = lowerFieldValue.indexOf(searchTerms[i], lastIndex + 1);
+    if (index <= lastIndex) return false;
+    lastIndex = index;
+  }
+
+  const lastTerm = searchTerms[searchTerms.length - 1];
+  const remainingText = lowerFieldValue.substring(lastIndex + 1);
+  return remainingText.includes(lastTerm) || remainingText.startsWith(lastTerm);
+}
+
+/** Handles the free-text search `where` variants. */
+function filterByTermSearch(
+  objects: BaseServerObject[],
+  where: Extract<
+    OntologiesV2.SearchJsonQueryV2,
+    {
+      type:
+        | "containsAnyTerm"
+        | "containsAllTerms"
+        | "containsAllTermsInOrder"
+        | "startsWith"
+        | "containsAllTermsInOrderPrefixLastTerm";
+    }
+  >
+): BaseServerObject[] {
+  const { propertyIdentifier, field } = where;
+  if (propertyIdentifier) {
+    console.error("propertyIdentifier not supported", where);
+    throw new Error("propertyIdentifier not supported");
+  }
+  invariant(field);
+  const searchTerms = where.value.toLowerCase().split(/\s+/u);
+  const matches = (
+    predicate: (lowerFieldValue: string) => boolean
+  ): BaseServerObject[] =>
+    objects.filter((obj) => {
+      const fieldValue = obj[field];
+      return (
+        typeof fieldValue === "string" && predicate(fieldValue.toLowerCase())
+      );
+    });
+
+  switch (where.type) {
+    case "containsAnyTerm":
+      return matches((lfv) => searchTerms.some((term) => lfv.includes(term)));
+    case "containsAllTerms":
+      return matches((lfv) => searchTerms.every((term) => lfv.includes(term)));
+    case "containsAllTermsInOrder":
+      return matches((lfv) => {
+        let lastIndex = -1;
+        return searchTerms.every((term) => {
+          const index = lfv.indexOf(term, lastIndex + 1);
+          if (index > lastIndex) {
+            lastIndex = index;
+            return true;
+          }
+          return false;
+        });
+      });
+    case "startsWith":
+    case "containsAllTermsInOrderPrefixLastTerm":
+      return matches((lfv) =>
+        matchesTermsInOrderPrefixLastTerm(lfv, searchTerms)
+      );
+  }
+}
+
 export function filterObjects(
   objects: BaseServerObject[],
   where: OntologiesV2.SearchJsonQueryV2
 ): BaseServerObject[] {
   switch (where.type) {
     case "eq": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       const ret = objects.filter((obj) => {
         return obj[field] === where.value;
       });
@@ -40,72 +124,42 @@ export function filterObjects(
     }
 
     case "gt": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         return obj[field] > where.value;
       });
     }
 
     case "lt": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         return obj[field] < where.value;
       });
     }
 
     case "gte": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         return obj[field] >= where.value;
       });
     }
 
     case "lte": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         return obj[field] <= where.value;
       });
     }
 
     case "in": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         return where.value.includes(obj[field]);
       });
     }
 
     case "contains": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (Array.isArray(fieldValue)) {
@@ -157,110 +211,15 @@ export function filterObjects(
       });
     }
 
-    case "containsAnyTerm": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/u);
-      return objects.filter((obj) => {
-        const fieldValue = obj[field];
-        if (typeof fieldValue === "string") {
-          const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.some((term) => lowerFieldValue.includes(term));
-        }
-        return false;
-      });
-    }
-
-    case "containsAllTerms": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/u);
-      return objects.filter((obj) => {
-        const fieldValue = obj[field];
-        if (typeof fieldValue === "string") {
-          const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.every((term) => lowerFieldValue.includes(term));
-        }
-        return false;
-      });
-    }
-
-    case "containsAllTermsInOrder": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/u);
-      return objects.filter((obj) => {
-        const fieldValue = obj[field];
-        if (typeof fieldValue === "string") {
-          const lowerFieldValue = fieldValue.toLowerCase();
-          let lastIndex = -1;
-          return searchTerms.every((term) => {
-            const index = lowerFieldValue.indexOf(term, lastIndex + 1);
-            if (index > lastIndex) {
-              lastIndex = index;
-              return true;
-            }
-            return false;
-          });
-        }
-        return false;
-      });
-    }
-
+    case "containsAnyTerm":
+    case "containsAllTerms":
+    case "containsAllTermsInOrder":
     case "startsWith":
-    case "containsAllTermsInOrderPrefixLastTerm": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/u);
-      return objects.filter((obj) => {
-        const fieldValue = obj[field];
-        if (typeof fieldValue === "string") {
-          const lowerFieldValue = fieldValue.toLowerCase();
-          if (searchTerms.length === 0) return true;
+    case "containsAllTermsInOrderPrefixLastTerm":
+      return filterByTermSearch(objects, where);
 
-          let lastIndex = -1;
-          for (let i = 0; i < searchTerms.length - 1; i++) {
-            const index = lowerFieldValue.indexOf(
-              searchTerms[i],
-              lastIndex + 1
-            );
-            if (index <= lastIndex) return false;
-            lastIndex = index;
-          }
-
-          const lastTerm = searchTerms[searchTerms.length - 1];
-          const remainingText = lowerFieldValue.substring(lastIndex + 1);
-          return (
-            remainingText.includes(lastTerm) ||
-            remainingText.startsWith(lastTerm)
-          );
-        }
-        return false;
-      });
-    }
     case "regex": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
+      const field = requireField(where);
       // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
       const pattern = new RegExp(where.value);
       return objects.filter((obj) => {
