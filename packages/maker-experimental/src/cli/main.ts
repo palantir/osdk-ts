@@ -63,6 +63,7 @@ export default async function main(
     valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
+    codegenDir?: string;
     temporaryBlockDataFile?: string;
     functionsDir?: string;
     nodeModulesDir?: string;
@@ -104,6 +105,13 @@ export default async function main(
         describe: "Directory for build files",
         type: "string",
         default: "build/",
+        coerce: path.resolve,
+      },
+      codegenDir: {
+        alias: "c",
+        describe:
+          "Output directory for generated TypeScript files (defaults to the parent of the input file's directory)",
+        type: "string",
         coerce: path.resolve,
       },
       temporaryBlockDataFile: {
@@ -193,6 +201,11 @@ export default async function main(
     );
   }
 
+  // Default the codegen output directory to the parent of the input file's directory.
+  const codegenDir =
+    commandLineOpts.codegenDir ??
+    path.dirname(path.dirname(commandLineOpts.input));
+
   const {
     ontologyIr,
     shapes,
@@ -201,7 +214,7 @@ export default async function main(
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
-    commandLineOpts.buildDir,
+    codegenDir,
     functionsIrFile,
     commandLineOpts.randomnessKey
   );
