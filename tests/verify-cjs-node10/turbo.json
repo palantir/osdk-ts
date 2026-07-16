@@ -5,6 +5,8 @@
       "outputs": ["osdk/@test-app2/**/*"],
       "dependsOn": [
         "@osdk/tool.generate-with-mock-ontology#transpile",
+        "@osdk/foundry-sdk-generator#transpile",
+        "@osdk/shared.test#transpile",
         "^transpile"
       ]
     },
