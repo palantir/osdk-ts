@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/188 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/189 story errors</a></div>
   </div>
 </header>
 <main>
@@ -5970,7 +5970,7 @@ export const WithContent: Story = {
       <div class="badges">
         <label for="c-8-components-objecttable-building-blocks-columnconfigdialog-err" class="badge err as-toggle">prop type error</label>
         <label for="c-8-components-objecttable-building-blocks-columnconfigdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-8-components-objecttable-building-blocks-columnconfigdialog-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-8-components-objecttable-building-blocks-columnconfigdialog-stories" class="badge ok as-toggle">5 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ColumnConfigDialog.stories.tsx">components-objecttable-building-blocks-columnconfigdialog · ./src/stories/ObjectTable/ColumnConfigDialog.stories.tsx</div>
@@ -6210,6 +6210,48 @@ export const SingleColumnVisible: Story = {
   },
 };
 
+export const LocalizedLabels: Story = {
+  args: {
+    labels: {
+      columnConfigTitle: &quot;Choose columns&quot;,
+      columnConfigApply: &quot;Save&quot;,
+      columnConfigCancel: &quot;Discard&quot;,
+      columnConfigVisibleColumns: &quot;Shown columns&quot;,
+      columnConfigDragToReorder: &quot;Drag rows to reorder&quot;,
+      columnConfigAddOrRemoveColumns: &quot;Toggle columns&quot;,
+      columnConfigAllColumns: &quot;Everything&quot;,
+      columnConfigSearchPlaceholder: &quot;Type to filter…&quot;,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Every user-facing string can be overridden through the `labels` &quot; +
+          &quot;prop. Any key left unset falls back to the built-in English &quot; +
+          &quot;default. Pass the same object to `ObjectTable`/`BaseTable` to &quot; +
+          &quot;localize the whole table at once.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={() =&gt; setIsOpen(false)}
+  columnOptions={columnOptions}
+  currentVisibility={visibility}
+  currentColumnOrder={order}
+  onApply={handleApply}
+  labels={{
+    columnConfigTitle: &quot;Choose columns&quot;,
+    columnConfigApply: &quot;Save&quot;,
+    columnConfigCancel: &quot;Discard&quot;,
+    columnConfigVisibleColumns: &quot;Shown columns&quot;,
+  }}
+/&gt;`,
+      },
+    },
+  },
+};
+
 function WithValidationStory() {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -6373,6 +6415,31 @@ export const WithValidation: Story = {
     }}
     currentColumnOrder={[&quot;fullName&quot;]}
     onApply={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Localized Labels</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LocalizedLabels = () =&gt; &lt;ColumnConfigDialog
+    isOpen
+    onClose={fn()}
+    columnOptions={SAMPLE_COLUMNS}
+    currentVisibility={DEFAULT_VISIBILITY}
+    currentColumnOrder={DEFAULT_COLUMN_ORDER}
+    onApply={fn()}
+    labels={{
+      columnConfigTitle: &quot;Choose columns&quot;,
+      columnConfigApply: &quot;Save&quot;,
+      columnConfigCancel: &quot;Discard&quot;,
+      columnConfigVisibleColumns: &quot;Shown columns&quot;,
+      columnConfigDragToReorder: &quot;Drag rows to reorder&quot;,
+      columnConfigAddOrRemoveColumns: &quot;Toggle columns&quot;,
+      columnConfigAllColumns: &quot;Everything&quot;,
+      columnConfigSearchPlaceholder: &quot;Type to filter…&quot;,
+    }} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -26598,7 +26665,7 @@ export const WithContent: Story = {
       <div class="badges">
         <label for="c-error-8-components-objecttable-building-blocks-columnconfigdialog-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-8-components-objecttable-building-blocks-columnconfigdialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-8-components-objecttable-building-blocks-columnconfigdialog-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-error-8-components-objecttable-building-blocks-columnconfigdialog-stories" class="badge ok as-toggle">5 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ObjectTable/ColumnConfigDialog.stories.tsx">components-objecttable-building-blocks-columnconfigdialog · ./src/stories/ObjectTable/ColumnConfigDialog.stories.tsx</div>
@@ -26838,6 +26905,48 @@ export const SingleColumnVisible: Story = {
   },
 };
 
+export const LocalizedLabels: Story = {
+  args: {
+    labels: {
+      columnConfigTitle: &quot;Choose columns&quot;,
+      columnConfigApply: &quot;Save&quot;,
+      columnConfigCancel: &quot;Discard&quot;,
+      columnConfigVisibleColumns: &quot;Shown columns&quot;,
+      columnConfigDragToReorder: &quot;Drag rows to reorder&quot;,
+      columnConfigAddOrRemoveColumns: &quot;Toggle columns&quot;,
+      columnConfigAllColumns: &quot;Everything&quot;,
+      columnConfigSearchPlaceholder: &quot;Type to filter…&quot;,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Every user-facing string can be overridden through the `labels` &quot; +
+          &quot;prop. Any key left unset falls back to the built-in English &quot; +
+          &quot;default. Pass the same object to `ObjectTable`/`BaseTable` to &quot; +
+          &quot;localize the whole table at once.&quot;,
+      },
+      source: {
+        code: `&lt;ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={() =&gt; setIsOpen(false)}
+  columnOptions={columnOptions}
+  currentVisibility={visibility}
+  currentColumnOrder={order}
+  onApply={handleApply}
+  labels={{
+    columnConfigTitle: &quot;Choose columns&quot;,
+    columnConfigApply: &quot;Save&quot;,
+    columnConfigCancel: &quot;Discard&quot;,
+    columnConfigVisibleColumns: &quot;Shown columns&quot;,
+  }}
+/&gt;`,
+      },
+    },
+  },
+};
+
 function WithValidationStory() {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -27001,6 +27110,31 @@ export const WithValidation: Story = {
     }}
     currentColumnOrder={[&quot;fullName&quot;]}
     onApply={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Localized Labels</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LocalizedLabels = () =&gt; &lt;ColumnConfigDialog
+    isOpen
+    onClose={fn()}
+    columnOptions={SAMPLE_COLUMNS}
+    currentVisibility={DEFAULT_VISIBILITY}
+    currentColumnOrder={DEFAULT_COLUMN_ORDER}
+    onApply={fn()}
+    labels={{
+      columnConfigTitle: &quot;Choose columns&quot;,
+      columnConfigApply: &quot;Save&quot;,
+      columnConfigCancel: &quot;Discard&quot;,
+      columnConfigVisibleColumns: &quot;Shown columns&quot;,
+      columnConfigDragToReorder: &quot;Drag rows to reorder&quot;,
+      columnConfigAddOrRemoveColumns: &quot;Toggle columns&quot;,
+      columnConfigAllColumns: &quot;Everything&quot;,
+      columnConfigSearchPlaceholder: &quot;Type to filter…&quot;,
+    }} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
