@@ -166,4 +166,33 @@ describe("ObjectTableLabels", () => {
     const resolved = resolveLabels();
     expect(resolved).toBe(DEFAULT_OBJECT_TABLE_LABELS);
   });
+
+  it("keeps a stable value identity across renders with an equal inline labels object", () => {
+    const seen: ObjectTableLabels[] = [];
+    function Capture(): null {
+      seen.push(useObjectTableLabels());
+      return null;
+    }
+    const { rerender } = render(
+      <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
+        <Capture />
+      </ObjectTableLabelsProvider>
+    );
+    // Re-render with a brand-new inline object of identical content.
+    rerender(
+      <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
+        <Capture />
+      </ObjectTableLabelsProvider>
+    );
+    // Content change gets a fresh identity.
+    rerender(
+      <ObjectTableLabelsProvider labels={{ noData: "Other" }}>
+        <Capture />
+      </ObjectTableLabelsProvider>
+    );
+
+    expect(seen[0]).toBe(seen[1]);
+    expect(seen[2]).not.toBe(seen[1]);
+    expect(seen[2].noData).toBe("Other");
+  });
 });

@@ -621,10 +621,6 @@ export interface ObjectTableProps<
    * back to the built-in English defaults. Use this to localize the table or
    * adjust wording. See {@link ObjectTableLabels}.
    *
-   * Pass a stable reference (a module-level constant or a `useMemo`ed object).
-   * A new object identity on every render re-computes the merged labels and
-   * re-renders the table's sub-components.
-   *
    * @default undefined (built-in English strings)
    */
   labels?: Partial<ObjectTableLabels>;

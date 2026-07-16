@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { isEqual } from "lodash-es";
 import React, {
   createContext,
   type ReactElement,
   type ReactNode,
   useContext,
-  useMemo,
+  useRef,
 } from "react";
 
 /**
@@ -198,19 +199,27 @@ export interface ObjectTableLabelsProviderProps {
  * sub-components via context. Merges `labels` over the labels from the nearest
  * ancestor provider, so a wrapping `ObjectTable`/`BaseTable` and an inner
  * dialog can each override a different subset.
+ *
+ * The provided value keeps a stable identity across renders whenever the
+ * merged labels are equal, so callers can pass an inline `labels` object
+ * without re-rendering every label consumer.
  */
 export function ObjectTableLabelsProvider({
   labels,
   children,
 }: ObjectTableLabelsProviderProps): ReactElement {
   const parent = useContext(ObjectTableLabelsContext);
-  const value = useMemo(
-    () => (labels != null ? { ...parent, ...labels } : parent),
-    [parent, labels]
-  );
+  const merged = labels != null ? { ...parent, ...labels } : parent;
+
+  // Reuse the previous value when the merge is equal so an inline `labels`
+  // object (new identity each render) doesn't churn the context.
+  const stableRef = useRef(merged);
+  if (!isEqual(stableRef.current, merged)) {
+    stableRef.current = merged;
+  }
 
   return (
-    <ObjectTableLabelsContext.Provider value={value}>
+    <ObjectTableLabelsContext.Provider value={stableRef.current}>
       {children}
     </ObjectTableLabelsContext.Provider>
   );

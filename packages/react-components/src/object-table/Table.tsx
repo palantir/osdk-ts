@@ -121,10 +121,6 @@ export interface BaseTableProps<TData extends RowData> {
    * Overrides for the table's user-facing strings. Provide any subset; unset
    * keys fall back to the built-in English defaults. See
    * {@link ObjectTableLabels}.
-   *
-   * Pass a stable reference (a module-level constant or a `useMemo`ed object) —
-   * a new identity each render re-computes the merged labels and re-renders the
-   * sub-components.
    */
   labels?: Partial<ObjectTableLabels>;
 }
