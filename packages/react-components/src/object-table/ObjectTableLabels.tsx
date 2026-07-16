@@ -238,7 +238,7 @@ export function useObjectTableLabels(): ObjectTableLabels {
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
  * {@link ObjectTableLabels} to its subtree.
  *
- * For generic components, e.g. `BaseTable use
+ * For generic components, e.g. `BaseTable` use
  * {@link ObjectTableLabelsProvider} directly to preserve its `TData`
  * type parameter.
  */
