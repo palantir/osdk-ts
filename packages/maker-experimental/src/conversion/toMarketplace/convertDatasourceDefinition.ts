@@ -126,7 +126,6 @@ export function convertDatasourceDefinition(
         },
       };
 
-    case "dataset":
     default:
       // Use generateLocator for dataset datasources
       const datasetLocator = ridGenerator.generateDatasetLocator(
