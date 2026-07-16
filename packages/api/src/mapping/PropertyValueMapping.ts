@@ -27,6 +27,9 @@ import type {
   TimeSeriesProperty,
 } from "../timeseries/timeseries.js";
 
+/**
+ * Map from the PropertyDefinition type to the typescript type that we return
+ */
 export interface PropertyValueWireToClient {
   attachment: Attachment;
   boolean: boolean;
@@ -62,6 +65,9 @@ export type GetClientPropertyValueFromWire<
     ? { [K in keyof T]: PropertyValueWireToClient[T[K]] }
     : never;
 
+/**
+ * Map from the PropertyDefinition type to the typescript type that we accept
+ */
 export interface PropertyValueClientToWire {
   attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
