@@ -36,8 +36,14 @@
   "[markdown]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
+  "[html]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   // This opens a prompt in the VS Code GUI asking developers if they want to
   // apply the "typescript.tsdk" option below. The "typescript.tsdk" option
@@ -52,5 +58,5 @@
   //  2. It reduces strange TypeScript bugs such as
   //     https://github.com/microsoft/TypeScript/issues/55427
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
-  "js/ts.tsdk.path": ".vscode/../node_modules/typescript/lib",
+  "js/ts.tsdk.path": ".vscode/../node_modules/typescript/lib"
 }
