@@ -31,14 +31,15 @@ export function convertOntologyDefinition(
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
 
-  // Convert imported ontology FIRST so that all imported entity RIDs and IDs
-  // are registered in the ridGenerator before the main ontology's
-  // knownIdentifiers is built.
-  const importedOntology = convertOntologyDefinitionToWireBlockData(
-    importedTypes,
-    ridGenerator
-  );
-
+  // Convert the MAIN ontology first. Imported entities are registered into
+  // `importedTypes` lazily by wrapWithProxy (see importOntologyEntity), and only
+  // when one of their properties is first accessed. That first access happens
+  // while the main ontology is being converted (e.g. reading an `extends`
+  // target's apiName). If we converted the imported ontology first, we would
+  // snapshot an empty/partial `importedTypes` and silently drop directly-imported
+  // entities — and any interface-link targets that point at them — from
+  // `importedOntology`, which later makes resolveBlockDataApiName fall through to
+  // the raw RID.
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
@@ -47,30 +48,51 @@ export function convertOntologyDefinition(
     functionsIr
   );
 
+  const importedOntology = convertOntologyDefinitionToWireBlockData(
+    importedTypes,
+    ridGenerator
+  );
+
   const importedInterfaceApiNames = new Set(
     Object.keys(importedTypes.INTERFACE_TYPE)
   );
   const transitiveInterfaces: OntologyDefinition["INTERFACE_TYPE"] = {};
+  // Imported interface objects embed nested copies of their related interfaces,
+  // and deeper copies are truncated to empty linkedInterfaces/extendsInterfaces
+  // (see filterCyclicReferences in @osdk/maker). We must therefore recurse into
+  // whichever copy actually carries children — not merely the first copy we
+  // happen to encounter — otherwise an interface that is only reachable through
+  // a truncated copy (e.g. an interface-link target like `report`) is dropped
+  // and later resolves to a raw RID. `expanded` breaks cycles while still
+  // allowing a richer copy to be expanded after a truncated one.
+  const expanded = new Set<string>();
+
+  function relatedInterfaces(iface: InterfaceType): InterfaceType[] {
+    return [
+      ...(iface.linkedInterfaces ?? []),
+      ...iface.extendsInterfaces,
+    ].filter(
+      (related): related is InterfaceType => typeof related !== "string"
+    );
+  }
 
   function collectTransitive(iface: InterfaceType): void {
-    for (const linked of iface.linkedInterfaces ?? []) {
-      if (typeof linked === "string") continue;
-      if (
-        !importedInterfaceApiNames.has(linked.apiName) &&
-        !(linked.apiName in transitiveInterfaces)
-      ) {
+    const related = relatedInterfaces(iface);
+    for (const linked of related) {
+      if (importedInterfaceApiNames.has(linked.apiName)) continue;
+      const existing = transitiveInterfaces[linked.apiName];
+      // Keep the richest copy so the transitive interface's own
+      // extendsInterfaces/links survive rather than a truncated placeholder.
+      if (existing === undefined || relatedInterfaces(existing).length === 0) {
         transitiveInterfaces[linked.apiName] = linked;
-        collectTransitive(linked);
       }
     }
-    for (const parent of iface.extendsInterfaces) {
-      if (
-        !importedInterfaceApiNames.has(parent.apiName) &&
-        !(parent.apiName in transitiveInterfaces)
-      ) {
-        transitiveInterfaces[parent.apiName] = parent;
-        collectTransitive(parent);
-      }
+    // A truncated copy carries no children; don't let it mark this interface as
+    // expanded, so a later richer copy can still be walked.
+    if (related.length === 0 || expanded.has(iface.apiName)) return;
+    expanded.add(iface.apiName);
+    for (const linked of related) {
+      collectTransitive(linked);
     }
   }
 
