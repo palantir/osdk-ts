@@ -44,7 +44,7 @@ function TiffCanvas({ content }: { content: ArrayBuffer }): React.ReactElement {
 
   const canvasRef = useCallback(
     (canvas: HTMLCanvasElement | null) => {
-      if (canvas == null || result == null || result.status !== "ok") {
+      if (canvas == null || result.status !== "ok") {
         return;
       }
       const ctx = canvas.getContext("2d");
@@ -58,9 +58,6 @@ function TiffCanvas({ content }: { content: ArrayBuffer }): React.ReactElement {
     [result]
   );
 
-  if (result == null) {
-    return <div className="text-sm italic text-gray-500">Decoding…</div>;
-  }
   if (result.status === "error") {
     return <div className="text-sm text-red-600">{result.message}</div>;
   }

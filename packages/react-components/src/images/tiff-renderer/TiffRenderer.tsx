@@ -67,10 +67,6 @@ export const TiffRenderer: React.FunctionComponent<TiffRendererProps> =
   React.memo(({ content, onError }) => {
     const { result } = useTiffRenderer({ content, onError });
 
-    if (result == null) {
-      return null;
-    }
-
     if (result.status === "error") {
       return <ErrorMessage message={result.message} />;
     }

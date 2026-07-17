@@ -88,39 +88,37 @@ export function BaseExcelViewer({
     useExcelViewerState({ content });
   const rootClassName = classnames(styles.container, className);
 
-  if (error != null) {
-    return (
-      <div className={rootClassName}>
+  return (
+    <div className={rootClassName}>
+      {error != null ? (
         <div className={styles.errorContainer}>
           <ErrorIcon className={styles.errorIcon} />
           Failed to parse spreadsheet: {error.message}
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={rootClassName}>
-      {activeSheet != null ? (
-        <SheetTable sheet={activeSheet} />
       ) : (
-        <div className={styles.emptySheet}>No sheets</div>
-      )}
-      {sheets.length > 1 && (
-        <div className={styles.tabBar}>
-          {sheets.map((sheet, index) => (
-            <button
-              key={sheet.name}
-              className={classnames(styles.tab, {
-                [styles.tabActive]: index === activeSheetIndex,
-              })}
-              onClick={() => selectSheet(index)}
-              type="button"
-            >
-              {sheet.name}
-            </button>
-          ))}
-        </div>
+        <>
+          {activeSheet != null ? (
+            <SheetTable sheet={activeSheet} />
+          ) : (
+            <div className={styles.emptySheet}>No sheets</div>
+          )}
+          {sheets.length > 1 && (
+            <div className={styles.tabBar}>
+              {sheets.map((sheet, index) => (
+                <button
+                  key={sheet.name}
+                  className={classnames(styles.tab, {
+                    [styles.tabActive]: index === activeSheetIndex,
+                  })}
+                  onClick={() => selectSheet(index)}
+                  type="button"
+                >
+                  {sheet.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-/* cspell:words ifds */
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as UTIF from "utif";
 
 // 25 MB limit — TIFF decoding expands compressed data into a full RGBA bitmap
@@ -90,8 +88,8 @@ export interface UseTiffRendererOptions {
 }
 
 export interface UseTiffRendererResult {
-  /** The decode result, or undefined until decoding completes */
-  result: TiffDecodeResult | undefined;
+  /** The decode result for the current content */
+  result: TiffDecodeResult;
 }
 
 /**
@@ -102,17 +100,16 @@ export function useTiffRenderer({
   content,
   onError,
 }: UseTiffRendererOptions): UseTiffRendererResult {
-  const [result, setResult] = useState<TiffDecodeResult | undefined>(undefined);
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
 
+  const result = useMemo(() => decodeTiff(content), [content]);
+
   useEffect(() => {
-    const decodeResult = decodeTiff(content);
-    setResult(decodeResult);
-    if (decodeResult.status === "error") {
+    if (result.status === "error") {
       onErrorRef.current?.();
     }
-  }, [content]);
+  }, [result]);
 
   return { result };
 }
