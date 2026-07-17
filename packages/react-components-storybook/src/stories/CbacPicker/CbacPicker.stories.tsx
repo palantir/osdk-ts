@@ -204,3 +204,24 @@ export const BannerOnly: Story = {
     </div>
   ),
 };
+
+const EMPTY_BACKGROUND_COLORS: string[] = [];
+
+export const BannerLoading: Story = {
+  render: () => (
+    <div style={BANNER_ROW_STYLE}>
+      {/* Loading skeleton next to a resolved banner of the same size. */}
+      <BaseCbacBanner
+        classificationString=""
+        textColor=""
+        backgroundColors={EMPTY_BACKGROUND_COLORS}
+        isLoading={true}
+      />
+      <BaseCbacBanner
+        classificationString={mockBannerSecret.classificationString}
+        textColor={mockBannerSecret.textColor}
+        backgroundColors={mockBannerSecret.backgroundColors}
+      />
+    </div>
+  ),
+};

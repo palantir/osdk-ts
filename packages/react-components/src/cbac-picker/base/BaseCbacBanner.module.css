@@ -36,6 +36,16 @@
   color: inherit;
 }
 
+.skeletonBanner {
+  position: relative;
+}
+
+.skeletonFill {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--osdk-cbac-banner-border-radius);
+}
+
 .clickable {
   cursor: pointer;
 }

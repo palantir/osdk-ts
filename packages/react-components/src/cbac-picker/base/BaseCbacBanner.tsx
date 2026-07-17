@@ -19,6 +19,7 @@ import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 
+import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
 
 import styles from "./BaseCbacBanner.module.css";
@@ -30,6 +31,7 @@ export interface BaseCbacBannerProps {
   onClick?: () => void;
   onDismiss?: () => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function BaseCbacBanner({
@@ -39,6 +41,7 @@ export function BaseCbacBanner({
   onClick,
   onDismiss,
   className,
+  isLoading = false,
 }: BaseCbacBannerProps): React.ReactElement {
   const bannerStyle = React.useMemo(
     (): React.CSSProperties =>
@@ -56,6 +59,10 @@ export function BaseCbacBanner({
     },
     [onDismiss]
   );
+
+  if (isLoading) {
+    return <BannerSkeleton className={className} />;
+  }
 
   const dismissButton =
     onDismiss != null ? (
@@ -93,6 +100,26 @@ export function BaseCbacBanner({
     >
       <span className={styles.banner}>{classificationString}</span>
       {dismissButton}
+    </div>
+  );
+}
+
+function BannerSkeleton({
+  className,
+}: {
+  className?: string;
+}): React.ReactElement {
+  return (
+    <div className={classnames(styles.bannerRow, className)} aria-hidden="true">
+      {/*
+        The `.banner` element establishes the exact box (padding + font metrics)
+        of a real single-line banner via an invisible character, and the
+        SkeletonBar is absolutely positioned to shimmer over the entire box.
+      */}
+      <span className={classnames(styles.banner, styles.skeletonBanner)}>
+        {" "}
+        <SkeletonBar className={styles.skeletonFill} />
+      </span>
     </div>
   );
 }
