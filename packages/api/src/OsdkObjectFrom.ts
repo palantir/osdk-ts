@@ -317,8 +317,8 @@ export namespace Osdk {
           ? ValidToFrom<Q> & ObjectTypeDefinition
           : ValidToFrom<Q>,
       >(
-        type: Q extends InterfaceDefinition
-          ? NEW_Q extends ObjectTypeDefinition
+        type: [Q] extends [InterfaceDefinition]
+          ? [NEW_Q] extends [ObjectTypeDefinition]
             ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true
               ? never
               : NEW_Q | string

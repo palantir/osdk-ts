@@ -16,7 +16,7 @@ type osdkInstance_$as_to_interface_result =
   & {
     readonly $link: never;
     readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
-      type: NEW_Q extends ObjectTypeDefinition
+      type: [NEW_Q] extends [ObjectTypeDefinition]
         ? (("FooInterface" extends
           keyof NonNullable<
             CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
@@ -237,7 +237,7 @@ type osdkInstance_interface_default =
   & {
     readonly $link: never;
     readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
-      type: NEW_Q extends ObjectTypeDefinition
+      type: [NEW_Q] extends [ObjectTypeDefinition]
         ? (("FooInterface" extends
           keyof NonNullable<
             CompileTimeMetadata<NEW_Q>["interfaceImplementations"]
