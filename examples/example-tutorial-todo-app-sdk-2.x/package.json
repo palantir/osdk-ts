@@ -9,8 +9,11 @@
   },
   "scripts": {
     "build": "tsc && vite build",
+    "check": "ultracite check",
     "dev": "vite",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "fix": "ultracite fix",
+    "format": "oxfmt .",
+    "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -25,21 +28,13 @@
     "swr": "^2.3.6"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "eslint": "^9.35.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^15.15.0",
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
     "typescript": "~5.5.4",
-    "typescript-eslint": "^8.43.0",
+    "ultracite": "^7.8.0",
     "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },

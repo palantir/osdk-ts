@@ -1,34 +1,42 @@
 import { useCallback, useEffect, useState } from "react";
+
 import CreateProjectButton from "./CreateProjectButton";
 import DeleteProjectButton from "./DeleteProjectButton";
-import css from "./Home.module.css";
 import Layout from "./Layout";
 import { ProjectDetails } from "./ProjectDetails";
 import ProjectSelect from "./ProjectSelect";
-import useProjects, { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
+import useProjects from "./useProjects";
+
+import css from "./Home.module.css";
 
 function Home() {
-  const [projectId, setProjectId] = useState<string | undefined>(undefined);
+  const [projectId, setProjectId] = useState<string | undefined>();
   const { projects } = useProjects();
 
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
     (p: IProject) => setProjectId(p.id),
-    [],
+    []
   );
 
   useEffect(() => {
-    if (project == null && projects != null && projects.length > 0) {
+    if (
+      (project === undefined || project === null) &&
+      projects !== undefined &&
+      projects !== null &&
+      projects.length > 0
+    ) {
       setProjectId(projects[0].id);
     }
   }, [project, projects]);
 
   const handleOnProjectCreated = useCallback(
-    (projectId: string | undefined) => {
-      setProjectId(projectId);
+    (createdProjectId: string | undefined) => {
+      setProjectId(createdProjectId);
     },
-    [],
+    []
   );
 
   return (
@@ -40,8 +48,8 @@ function Home() {
           </p>
           <p>
             The application is implemented with mock in memory data.
-            <br />Can you solve how to change it to use the Ontology SDK
-            instead?
+            <br />
+            Can you solve how to change it to use the Ontology SDK instead?
           </p>
         </div>
       </div>
@@ -53,9 +61,13 @@ function Home() {
           onSelectProject={handleSelectProject}
         />
         <CreateProjectButton onProjectCreated={handleOnProjectCreated} />
-        {project != null && <DeleteProjectButton project={project} />}
+        {project !== undefined && project !== null && (
+          <DeleteProjectButton project={project} />
+        )}
       </div>
-      {project != null && <ProjectDetails project={project} />}
+      {project !== undefined && project !== null && (
+        <ProjectDetails project={project} />
+      )}
     </Layout>
   );
 }

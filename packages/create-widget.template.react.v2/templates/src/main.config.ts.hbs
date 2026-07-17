@@ -6,21 +6,7 @@ import { defineConfig } from "@osdk/widget.client";
 // preview panel.
 
 export default defineConfig({
-  id: "widgetId",
-  name: "Custom Widget",
   description: "An example custom widget implementation",
-  type: "workshop",
-  parameters: {
-    headerText: {
-      displayName: "Widget title",
-      type: "string",
-    },
-    todoItems: {
-      displayName: "Todo items",
-      type: "array",
-      subType: "string",
-    },
-  },
   events: {
     updateHeader: {
       displayName: "Update header",
@@ -31,4 +17,18 @@ export default defineConfig({
       parameterUpdateIds: ["todoItems"],
     },
   },
+  id: "widgetId",
+  name: "Custom Widget",
+  parameters: {
+    headerText: {
+      displayName: "Widget title",
+      type: "string",
+    },
+    todoItems: {
+      displayName: "Todo items",
+      subType: "string",
+      type: "array",
+    },
+  },
+  type: "workshop",
 });

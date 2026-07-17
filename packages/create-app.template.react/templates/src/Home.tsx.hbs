@@ -1,6 +1,7 @@
 import client from "./client";
-import css from "./Home.module.css";
 import Layout from "./Layout";
+
+import css from "./Home.module.css";
 
 function Home() {
   const objectApiNames = Object.keys(client.ontology.objects);
@@ -34,9 +35,7 @@ function Home() {
         <div>
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
-            <pre key={queryApiName}>
-              client.ontology.queries.{queryApiName}
-            </pre>
+            <pre key={queryApiName}>client.ontology.queries.{queryApiName}</pre>
           ))}
         </div>
       </div>

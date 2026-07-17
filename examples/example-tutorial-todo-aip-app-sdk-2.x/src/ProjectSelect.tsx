@@ -1,5 +1,7 @@
-import { ChangeEvent, useCallback } from "react";
-import { IProject } from "./useProjects";
+import type { ChangeEvent } from "react";
+import { useCallback } from "react";
+
+import type { IProject } from "./useProjects";
 
 interface ProjectSelectProps {
   project: IProject | undefined;
@@ -15,11 +17,11 @@ function ProjectSelect({
   const handleSelect = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       const nextProject = projects.find((p) => `${p.id}` === e.target.value);
-      if (nextProject != null) {
+      if (nextProject !== undefined && nextProject !== null) {
         onSelectProject(nextProject);
       }
     },
-    [projects, onSelectProject],
+    [projects, onSelectProject]
   );
 
   return (
