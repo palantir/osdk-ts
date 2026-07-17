@@ -5120,6 +5120,12 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/foundry.ontologies':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.63.0
+      '@osdk/functions':
+        specifier: workspace:~
+        version: link:../functions
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~

@@ -40,7 +40,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/api": "workspace:~",
+    "@osdk/functions": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
