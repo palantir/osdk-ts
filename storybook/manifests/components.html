@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/189 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/190 story errors</a></div>
   </div>
 </header>
 <main>
@@ -529,7 +529,7 @@
       <div class="badges">
         <label for="c-0-components-cbacpicker-err" class="badge err as-toggle">prop type error</label>
         <label for="c-0-components-cbacpicker-info" class="badge info as-toggle">1 info</label>
-        <label for="c-0-components-cbacpicker-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-0-components-cbacpicker-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/CbacPicker/CbacPicker.stories.tsx">components-cbacpicker · ./src/stories/CbacPicker/CbacPicker.stories.tsx</div>
@@ -766,6 +766,26 @@ export const BannerOnly: Story = {
     &lt;/div&gt;
   ),
 };
+
+const EMPTY_BACKGROUND_COLORS: string[] = [];
+
+export const BannerLoading: Story = {
+  render: () =&gt; (
+    &lt;div style={BANNER_ROW_STYLE}&gt;
+      &lt;BaseCbacBanner
+        classificationString=&quot;&quot;
+        textColor=&quot;&quot;
+        backgroundColors={EMPTY_BACKGROUND_COLORS}
+        isLoading={true}
+      /&gt;
+      &lt;BaseCbacBanner
+        classificationString={mockBannerSecret.classificationString}
+        textColor={mockBannerSecret.textColor}
+        backgroundColors={mockBannerSecret.backgroundColors}
+      /&gt;
+    &lt;/div&gt;
+  ),
+};
 </code></pre></div>
     </div>
         </div>
@@ -877,6 +897,29 @@ export const BannerOnly: Story = {
       classificationString={mockBannerGradient.classificationString}
       textColor={mockBannerGradient.textColor}
       backgroundColors={mockBannerGradient.backgroundColors}
+    /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Banner Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BannerLoading = () =&gt; (
+  &lt;div style={BANNER_ROW_STYLE}&gt;
+    &lt;BaseCbacBanner
+      classificationString=&quot;&quot;
+      textColor=&quot;&quot;
+      backgroundColors={EMPTY_BACKGROUND_COLORS}
+      isLoading={true}
+    /&gt;
+    &lt;BaseCbacBanner
+      classificationString={mockBannerSecret.classificationString}
+      textColor={mockBannerSecret.textColor}
+      backgroundColors={mockBannerSecret.backgroundColors}
     /&gt;
   &lt;/div&gt;
 );</code></pre>
@@ -21224,7 +21267,7 @@ export const WithErrorCallback: Story = {
       <div class="badges">
         <label for="c-error-0-components-cbacpicker-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-0-components-cbacpicker-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-0-components-cbacpicker-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-error-0-components-cbacpicker-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/CbacPicker/CbacPicker.stories.tsx">components-cbacpicker · ./src/stories/CbacPicker/CbacPicker.stories.tsx</div>
@@ -21461,6 +21504,26 @@ export const BannerOnly: Story = {
     &lt;/div&gt;
   ),
 };
+
+const EMPTY_BACKGROUND_COLORS: string[] = [];
+
+export const BannerLoading: Story = {
+  render: () =&gt; (
+    &lt;div style={BANNER_ROW_STYLE}&gt;
+      &lt;BaseCbacBanner
+        classificationString=&quot;&quot;
+        textColor=&quot;&quot;
+        backgroundColors={EMPTY_BACKGROUND_COLORS}
+        isLoading={true}
+      /&gt;
+      &lt;BaseCbacBanner
+        classificationString={mockBannerSecret.classificationString}
+        textColor={mockBannerSecret.textColor}
+        backgroundColors={mockBannerSecret.backgroundColors}
+      /&gt;
+    &lt;/div&gt;
+  ),
+};
 </code></pre></div>
     </div>
         </div>
@@ -21572,6 +21635,29 @@ export const BannerOnly: Story = {
       classificationString={mockBannerGradient.classificationString}
       textColor={mockBannerGradient.textColor}
       backgroundColors={mockBannerGradient.backgroundColors}
+    /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Banner Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BannerLoading = () =&gt; (
+  &lt;div style={BANNER_ROW_STYLE}&gt;
+    &lt;BaseCbacBanner
+      classificationString=&quot;&quot;
+      textColor=&quot;&quot;
+      backgroundColors={EMPTY_BACKGROUND_COLORS}
+      isLoading={true}
+    /&gt;
+    &lt;BaseCbacBanner
+      classificationString={mockBannerSecret.classificationString}
+      textColor={mockBannerSecret.textColor}
+      backgroundColors={mockBannerSecret.backgroundColors}
     /&gt;
   &lt;/div&gt;
 );</code></pre>
