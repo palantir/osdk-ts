@@ -111,15 +111,7 @@ function BannerSkeleton({
 }): React.ReactElement {
   return (
     <div className={classnames(styles.bannerRow, className)} aria-hidden="true">
-      {/*
-        The `.banner` element establishes the exact box (padding + font metrics)
-        of a real single-line banner via an invisible character, and the
-        SkeletonBar is absolutely positioned to shimmer over the entire box.
-      */}
-      <span className={classnames(styles.banner, styles.skeletonBanner)}>
-        {" "}
-        <SkeletonBar className={styles.skeletonFill} />
-      </span>
+      <SkeletonBar className={styles.skeletonBanner} />
     </div>
   );
 }

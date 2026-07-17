@@ -28,6 +28,10 @@
   --osdk-cbac-banner-placeholder-color: var(
     --osdk-typography-color-default-rest
   );
+  /* Line height of the banner text plus its top/bottom padding. */
+  --osdk-cbac-banner-skeleton-height: calc(
+    var(--osdk-cbac-banner-font-size) * 1.5 + var(--osdk-surface-spacing) * 2
+  );
 
   /* Marking Button */
   --osdk-cbac-marking-button-padding: calc(var(--osdk-surface-spacing) * 0.5)

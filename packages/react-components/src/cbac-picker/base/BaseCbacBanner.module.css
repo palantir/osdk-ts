@@ -37,12 +37,8 @@
 }
 
 .skeletonBanner {
-  position: relative;
-}
-
-.skeletonFill {
-  position: absolute;
-  inset: 0;
+  flex: 1;
+  height: var(--osdk-cbac-banner-skeleton-height);
   border-radius: var(--osdk-cbac-banner-border-radius);
 }
 
