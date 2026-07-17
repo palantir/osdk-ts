@@ -60,7 +60,6 @@ import { useTiffRenderer } from "@osdk/react-components/experimental/tiff-render
 
 function CustomTiff({ content }: { content: Uint8Array }) {
   const { result } = useTiffRenderer({ content });
-  if (result == null) return <div>Decoding…</div>;
   if (result.status === "error") return <div>{result.message}</div>;
   // …draw `result.data` (width/height/RGBA content) onto your own <canvas>.
 }
