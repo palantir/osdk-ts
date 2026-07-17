@@ -34,8 +34,8 @@ addons.setConfig({
     base: "light",
     brandTitle: "OSDK React Components",
     brandImage,
-    brandUrl: "https://github.com/palantir/osdk-ts",
-    brandTarget: "_blank",
+    brandUrl: "./?path=/docs/docs-welcome--docs",
+    brandTarget: "_self",
   }),
   tagBadges: [
     {
