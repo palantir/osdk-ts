@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
     steps:
       - name: Check out code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -91,6 +92,30 @@ jobs:
               || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Post (or update in place) a single PR comment with the per-package
+      # coverage snapshot. Uses gh + the built-in GITHUB_TOKEN, no third-party
+      # action. Same-repo PRs only: fork PRs get a read-only token, so we skip
+      # them (matches the bundle-size job).
+      - name: Comment coverage on PR
+        if: >-
+          always()
+          && github.event_name == 'pull_request'
+          && github.event.pull_request.head.repo.fork == false
+          && hashFiles('coverage/coverage-summary.json') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          node scripts/coverage/pr-comment.mjs
+          ID=$(gh api "repos/$REPO/issues/$PR/comments" \
+            --jq '.[] | select(.body | contains("<!-- coverage-report -->")) | .id' | head -1)
+          if [ -n "$ID" ]; then
+            gh api "repos/$REPO/issues/comments/$ID" -X PATCH -f body="$(cat coverage/pr-comment.md)"
+          else
+            gh pr comment "$PR" -F coverage/pr-comment.md
+          fi
 
       - name: Upload coverage report
         if: always()
