@@ -35,6 +35,15 @@ export default defineConfig({
         "**/*.d.ts",
         "**/index.ts",
       ],
+      // Uniform per-package floor. A package's own coverage run fails
+      // if any metric drops below this. Enforced only when coverage is
+      // enabled (the coverage job), dormant in the normal test matrix.
+      thresholds: {
+        lines: 60,
+        statements: 60,
+        functions: 60,
+        branches: 60,
+      },
     },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],

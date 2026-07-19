@@ -1,0 +1,105 @@
+name: Coverage
+
+env:
+  DO_NOT_TRACK: 1
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# The coverage run re-executes the whole test suite with instrumentation, so
+# cancel superseded runs on the same ref rather than letting them pile up.
+concurrency:
+  group: coverage-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Coverage (warn-only)
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      # Reuse the build job's turbo cache when available (restore-keys), so
+      # transpile is a cache hit; otherwise it just builds fresh here.
+      - name: Turbo cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-coverage-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-coverage-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
+            turbo-${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # Coverage collection runs `turbo run test --only` against dependencies'
+      # build output, so materialize it first (cache hits when the build job has
+      # already run for this sha).
+      - name: Build dependencies
+        run: pnpm exec turbo run transpile transpileTypes
+
+      # `pnpm run coverage` = collect (turbo test --force --only --continue with
+      # --coverage) then merge. Per-package vitest enforces the 60% thresholds
+      # baked into each vitest.config and exits non-zero on a breach; --continue
+      # lets every package run so the merged report is complete. We tee the
+      # output for the job summary.
+      #
+      # WARN-ONLY: `continue-on-error` keeps the job green even when a package is
+      # under threshold. To make coverage BLOCK merges, delete that line and add
+      # "Coverage (warn-only)" to the branch-protection required checks.
+      - name: Run coverage
+        id: coverage
+        continue-on-error: true
+        run: set -o pipefail; pnpm run coverage 2>&1 | tee /tmp/coverage.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Coverage"
+            echo ""
+            echo '```'
+            grep -E "Merged coverage from|Statements|Branches|Functions|Lines" /tmp/coverage.log || true
+            echo '```'
+            echo ""
+            echo "### Packages under threshold (warn-only)"
+            echo ""
+            echo '```'
+            grep -E "does not meet" /tmp/coverage.log \
+              | sed -E 's#^@osdk/([^:]+):test: ERROR: #@osdk/\1: #' \
+              | sort -u \
+              || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Note threshold breaches (warn-only)
+        if: always() && steps.coverage.outcome == 'failure'
+        run: echo "::warning::One or more packages are under the coverage threshold. This is warn-only and does not block the merge yet."
