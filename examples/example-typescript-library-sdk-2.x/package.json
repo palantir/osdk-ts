@@ -15,11 +15,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "check": "ultracite check",
     "clean": "rm -rf dist",
     "fix": "ultracite fix",
     "format": "oxfmt .",
-    "lint": "oxlint",
+    "lint": "ultracite check",
     "test": "vitest run",
     "test:watch": "vitest"
   },
