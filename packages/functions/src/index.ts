@@ -56,6 +56,8 @@ export type { FunctionConfig } from "./FunctionConfig.js";
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
 
+export type { Annotated } from "./Annotated.js";
+
 export type {
   Geometry,
   GeometryCollection,
