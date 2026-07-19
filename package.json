@@ -8,7 +8,7 @@
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "coverage": "pnpm run coverage:collect; ec=$?; pnpm run coverage:merge; exit $ec",
-    "coverage:collect": "turbo run test --force --only --continue --filter='./packages/*' --filter='!@osdk/example-generator' -- --coverage.enabled --coverage.provider=v8 --coverage.reporter=json --coverage.reportsDirectory=coverage",
+    "coverage:collect": "./scripts/coverage/collect.sh",
     "coverage:merge": "node scripts/coverage/merge-coverage.mjs",
     "cspell:all": "cspell . --quiet",
     "e2e": "./scripts/run-e2e.sh",
