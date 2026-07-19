@@ -340,6 +340,125 @@ jobs:
       - name: Test react-components (isolated)
         run: pnpm exec turbo run test --filter="@osdk/react-components"
 
+  # Collect coverage and post it to the PR. `needs: build` so this restores the
+  # build job's turbo cache (transpile is a cache hit) and just runs the
+  # instrumented test suite. WARN-ONLY: not in the ci-build gate, and the
+  # coverage step is continue-on-error, so a package under its 60% threshold does
+  # not block merges. To make it blocking: remove continue-on-error on the "Run
+  # coverage" step and add "Coverage (warn-only)" to branch-protection checks.
+  coverage:
+    name: Coverage (warn-only)
+    needs: build
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    # The coverage run re-executes the suite with instrumentation; cancel
+    # superseded runs on the same ref rather than letting them pile up.
+    concurrency:
+      group: coverage-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Check out code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      # restore-keys fall back to this run's build cache (so transpile is a cache
+      # hit), then any prior build cache.
+      - name: Turbo cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-coverage-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-coverage-
+            turbo-${{ runner.os }}-build-${{ github.sha }}
+            turbo-${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # Materialize build/{esm,cjs,browser,types} from the build job's cache
+      # (cache hits) so the coverage run (turbo test --only) finds dependencies'
+      # build output.
+      - name: Restore build artifacts from cache
+        run: pnpm exec turbo run transpile transpileTypes
+
+      # `pnpm run coverage` = collect (turbo test --force --only --continue with
+      # --coverage; react-components isolated) then merge. Native per-package 60%
+      # thresholds in each vitest.config make a package's run exit non-zero when
+      # under; --continue keeps every package running so the merged report is
+      # complete. continue-on-error keeps this warn-only.
+      - name: Run coverage
+        id: coverage
+        continue-on-error: true
+        run: set -o pipefail; pnpm run coverage 2>&1 | tee /tmp/coverage.log
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## Coverage"
+            echo ""
+            echo '```'
+            grep -E "Merged coverage from|Statements|Branches|Functions|Lines" /tmp/coverage.log || true
+            echo '```'
+            echo ""
+            echo "### Packages under threshold (warn-only)"
+            echo ""
+            echo '```'
+            grep -E "does not meet" /tmp/coverage.log \
+              | sed -E 's#^@osdk/([^:]+):test: ERROR: #@osdk/\1: #' \
+              | sort -u \
+              || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Post (or update in place) a single PR comment with the per-package
+      # coverage snapshot. gh + built-in GITHUB_TOKEN, no third-party action.
+      # Same-repo PRs only: fork PRs get a read-only token (matches bundle-size).
+      - name: Comment coverage on PR
+        if: >-
+          always()
+          && github.event_name == 'pull_request'
+          && github.event.pull_request.head.repo.fork == false
+          && hashFiles('coverage/coverage-summary.json') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          node scripts/coverage/pr-comment.mjs
+          ID=$(gh api "repos/$REPO/issues/$PR/comments" \
+            --jq '.[] | select(.body | contains("<!-- coverage-report -->")) | .id' | head -1)
+          if [ -n "$ID" ]; then
+            gh api "repos/$REPO/issues/comments/$ID" -X PATCH -f body="$(cat coverage/pr-comment.md)"
+          else
+            gh pr comment "$PR" -F coverage/pr-comment.md
+          fi
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Note threshold breaches (warn-only)
+        if: always() && steps.coverage.outcome == 'failure'
+        run: echo "::warning::One or more packages are under the coverage threshold. This is warn-only and does not block the merge yet."
+
   # Build the app/site packages (Storybook, examples, sandboxes, docs) that have
   # no transpile/typecheck task — `turbo run build` is what proves they still
   # compile. Runs in parallel with the test matrix (the matrix does NOT depend on
