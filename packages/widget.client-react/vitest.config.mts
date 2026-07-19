@@ -23,10 +23,7 @@ export default defineConfig({
     environment: "happy-dom",
     coverage: {
       include: ["src/**"],
-      // Barrel/re-export entry files (index.ts) carry no testable
-      // logic and are structurally 0% in per-package coverage (a
-      // package's own tests import concrete modules, not its public
-      // barrel), so we exclude them along with tests and generated code.
+      // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [
         "**/*.test.*",
         "**/__tests__/**",
@@ -35,9 +32,6 @@ export default defineConfig({
         "**/*.d.ts",
         "**/index.ts",
       ],
-      // Uniform per-package floor. A package's own coverage run fails
-      // if any metric drops below this. Enforced only when coverage is
-      // enabled (the coverage job), dormant in the normal test matrix.
       thresholds: {
         lines: 60,
         statements: 60,
