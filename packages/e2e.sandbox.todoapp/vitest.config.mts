@@ -21,6 +21,21 @@ export default defineConfig({
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",
+    coverage: {
+      include: ["src/**"],
+      // Barrel/re-export entry files (index.ts) carry no testable
+      // logic and are structurally 0% in per-package coverage (a
+      // package's own tests import concrete modules, not its public
+      // barrel), so we exclude them along with tests and generated code.
+      exclude: [
+        "**/*.test.*",
+        "**/__tests__/**",
+        "**/__mocks__/**",
+        "**/generatedNoCheck/**",
+        "**/*.d.ts",
+        "**/index.ts",
+      ],
+    },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
