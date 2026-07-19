@@ -22,7 +22,7 @@
 // Outputs:
 //   coverage/coverage-final.json    merged raw per-file coverage
 //   coverage/coverage-summary.json  totals + per-file summary (badge/PR source)
-//   coverage/index.html             browsable HTML report
+//   coverage/index.html             HTML report (open in a browser)
 //   coverage/lcov.info              lcov (handy for editors / external tools)
 // ...and prints the aggregate totals to stdout.
 
