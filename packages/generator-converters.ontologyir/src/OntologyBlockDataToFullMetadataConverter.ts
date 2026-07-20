@@ -87,7 +87,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         : actionTypes,
       ontology: {
         apiName: "ontology",
-        rid: `ri.00000`,
+        rid: `ri.ontology.main.ontology.00000`,
         displayName: "ontology",
         description: "",
       },
@@ -163,7 +163,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           properties[propApiName] = {
             displayName: prop.displayMetadata.displayName,
-            rid: `ri.${object.apiName}.${propApiName}`,
+            rid: `ri.ontology-metadata.temp.${object.apiName}.${propApiName}`,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
@@ -261,7 +261,7 @@ export class OntologyBlockDataToFullMetadataConverter {
               objectTypeLookup,
             ),
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
+              `ri.ontology-metadata.temp.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
             status: linkStatus,
           };
 
@@ -295,7 +295,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           const common = {
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
+              `ri.ontology-metadata.temp.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
@@ -908,7 +908,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
       const interfaceLinkType: Ontologies.InterfaceLinkType = {
         rid:
-          `ri.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
+          `ri.ontology-metadata.temp.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
         apiName: ilt.metadata.apiName,
         displayName: ilt.metadata.displayName,
         description: ilt.metadata.description,
@@ -1009,7 +1009,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         return { type: "timestamp" };
       case "struct": {
         const value = type.struct;
-        const ridBase = `ri.struct.${
+        const ridBase = `ri.ontology-metadata.temp.struct.${
           hash("sha256", JSON.stringify(type)).slice(0, 10)
         }`;
         return {
