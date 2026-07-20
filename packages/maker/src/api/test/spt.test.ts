@@ -594,6 +594,52 @@ describe("SPTs", () => {
       }
     `);
   });
+  it("Vector shared property type properly set", () => {
+    defineSharedPropertyType({
+      apiName: "embedding",
+      type: {
+        type: "vector",
+        dimension: 768,
+        supportsSearchWith: ["COSINE_SIMILARITY"],
+      },
+    });
+
+    const spt =
+      dumpOntologyFullMetadata().ontology.sharedPropertyTypes[
+        "com.palantir.embedding"
+      ].sharedPropertyType;
+    expect(spt.type).toMatchInlineSnapshot(`
+      {
+        "type": "vector",
+        "vector": {
+          "dimension": 768,
+          "embeddingModel": undefined,
+          "quantization": undefined,
+          "supportsSearchWith": [
+            "COSINE_SIMILARITY",
+          ],
+        },
+      }
+    `);
+    expect(spt.indexedForSearch).toBe(true);
+  });
+
+  it("doesn't let you make a vector SPT an array", () => {
+    expect(() => {
+      defineSharedPropertyType({
+        apiName: "embedding",
+        array: true,
+        type: {
+          type: "vector",
+          dimension: 768,
+          supportsSearchWith: ["COSINE_SIMILARITY"],
+        },
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Invalid vector property 'com.palantir.embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`
+    );
+  });
+
   it("Object decimal property with precision/scale works in actions", () => {
     const obj = defineObject({
       apiName: "decimalTest",
