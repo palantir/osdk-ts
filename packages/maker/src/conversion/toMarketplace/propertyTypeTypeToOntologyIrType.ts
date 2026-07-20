@@ -110,6 +110,17 @@ export function propertyTypeTypeToOntologyIrType(
         },
       };
 
+    case typeof type === "object" && type.type === "vector":
+      return {
+        type: "vector",
+        vector: {
+          dimension: type.dimension,
+          supportsSearchWith: type.supportsSearchWith,
+          embeddingModel: type.embeddingModel,
+          quantization: type.quantization,
+        },
+      };
+
     case type === "geopoint":
       return { type: "geohash", geohash: {} };
 

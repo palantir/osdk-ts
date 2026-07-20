@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Analyzer, StructFieldType } from "@osdk/client.unstable";
+import type {
+  Analyzer,
+  EmbeddingModel,
+  Quantization,
+  StructFieldType,
+  VectorSimilarityFunction,
+} from "@osdk/client.unstable";
 
 export type PropertyTypeType =
   | PropertyTypeTypePrimitive
@@ -42,7 +48,8 @@ export type PropertyTypeTypeExotic =
   | PropertyTypeTypeMarking
   | PropertyTypeTypeStruct
   | PropertyTypeTypeString
-  | PropertyTypeTypeDecimal;
+  | PropertyTypeTypeDecimal
+  | PropertyTypeTypeVector;
 
 type PropertyTypeTypeMarking = {
   type: "marking";
@@ -55,7 +62,10 @@ export type PropertyTypeTypeStruct = {
   structDefinition: {
     [api_name: string]:
       | StructPropertyType
-      | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
+      | Exclude<
+          PropertyTypeTypesWithoutStruct,
+          PropertyTypeTypeMarking | PropertyTypeTypeVector
+        >;
   };
   mainValue?: {
     fields: string | Array<string>;
@@ -78,6 +88,16 @@ type PropertyTypeTypeDecimal = {
   type: "decimal";
   precision?: number;
   scale?: number;
+};
+
+export type PropertyTypeTypeVector = {
+  type: "vector";
+  /** The dimensionality of the vector (must be at least 1). */
+  dimension: number;
+  /** The similarity function(s) supported for vector search. Must specify exactly one. */
+  supportsSearchWith: VectorSimilarityFunction[];
+  embeddingModel?: EmbeddingModel;
+  quantization?: Quantization;
 };
 
 export type PropertyTypeTypesWithoutStruct = Exclude<
@@ -117,7 +137,8 @@ export function isExotic(
       type.type === "marking" ||
       type.type === "struct" ||
       type.type === "string" ||
-      type.type === "decimal"
+      type.type === "decimal" ||
+      type.type === "vector"
     );
   }
   return false;
@@ -126,6 +147,23 @@ export function isStruct(
   type: PropertyTypeType
 ): type is PropertyTypeTypeStruct {
   return typeof type === "object" && type.type === "struct";
+}
+export function isVector(
+  type: PropertyTypeType
+): type is PropertyTypeTypeVector {
+  return typeof type === "object" && type.type === "vector";
+}
+export function isValidVector(
+  type: PropertyTypeType,
+  array: boolean | undefined
+): boolean {
+  return (
+    !isVector(type) ||
+    (!array &&
+      Number.isInteger(type.dimension) &&
+      type.dimension >= 1 &&
+      type.supportsSearchWith.length === 1)
+  );
 }
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
