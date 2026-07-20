@@ -19,7 +19,6 @@ export interface OsdkPackageJson {
   name: string;
   version: string;
   osdk?: {
-    packageRid?: string;
     /** A branch RID; present only on SDKs generated on a Foundry branch. */
     branch?: string;
   };
