@@ -31,7 +31,10 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import type { Nullability } from "./properties/Nullability.js";
-import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
+import {
+  isValidVector,
+  type PropertyTypeType,
+} from "./properties/PropertyTypeType.js";
 import type { ReducerType } from "./properties/ReducerType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
@@ -75,6 +78,11 @@ export function defineSharedPropertyType(
     `Shared property type ${apiName} of type '${getPropertyTypeName(
       sptDef.type
     )}' should not have render hints`
+  );
+
+  invariant(
+    isValidVector(sptDef.type, sptDef.array),
+    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`
   );
 
   const fullSpt: SharedPropertyType = {

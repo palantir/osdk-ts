@@ -33,7 +33,7 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
+import { isStruct, isVector } from "./properties/PropertyTypeType.js";
 
 export function defineCreateOrModifyObjectAction(
   defInput: ActionTypeUserDefinition
@@ -49,6 +49,7 @@ export function defineCreateOrModifyObjectAction(
       !Object.keys(def.nonParameterMappings ?? {}).includes(id) &&
       !def.excludedProperties?.includes(id) &&
       !isStruct(getProperty(def.objectType, id)?.type!) &&
+      !isVector(getProperty(def.objectType, id)?.type!) &&
       id !== def.objectType.primaryKeyPropertyApiName &&
       !propertiesWithDerivedDatasources.includes(id)
   );
