@@ -18,7 +18,10 @@ import { describe, expectTypeOf, it } from "vitest";
 
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
-import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "./ontology/ObjectOrInterface.js";
 import type {
   ApplyModifiersToProps,
   MainValueTypeOf,
@@ -874,6 +877,15 @@ describe("ExtractOptions", () => {
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
+    });
+  });
+
+  describe("$as with base union type", () => {
+    it("can cast base union type", () => {
+      const ifaceObj =
+        undefined as unknown as Osdk.Instance<ObjectOrInterfaceDefinition>;
+
+      const result = ifaceObj.$as({} as ObjectOrInterfaceDefinition);
     });
   });
 });
