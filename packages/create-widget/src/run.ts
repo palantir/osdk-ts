@@ -17,7 +17,6 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { lowercase } from "@osdk/generator-utils";
 import Handlebars from "handlebars";
 
 import { consola } from "./consola.js";
@@ -25,10 +24,6 @@ import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
-
-// Register the shared `lowercase` helper so template `package.json` name
-// fields can enforce npm-safe (lowercase) package names.
-Handlebars.registerHelper("lowercase", lowercase);
 
 interface RunArgs {
   project: string;

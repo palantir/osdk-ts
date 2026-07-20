@@ -59,26 +59,6 @@ for (const template of TEMPLATES) {
   });
 }
 
-test(`CLI lowercases the package.json name field`, async () => {
-  // Project names may contain uppercase characters, but npm rejects package
-  // names that aren't all lowercase. The `name` field is rendered via the
-  // `lowercase` Handlebars helper, so an uppercase project must produce a
-  // lowercase package name.
-  const template = TEMPLATES[0];
-  const project = "My-Uppercase-Widget";
-  await runTest({
-    project,
-    template,
-    sdkVersion: "2.x",
-    requiresOsdk: template.requiresOsdk,
-  });
-
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
-  );
-  expect(packageJson.name).toBe(project.toLowerCase());
-});
-
 async function runTest({
   project,
   template,
