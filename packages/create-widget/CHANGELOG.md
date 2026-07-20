@@ -1,5 +1,16 @@
 # @osdk/create-widget
 
+## 3.48.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+
 ## 3.47.0
 
 ### Patch Changes
