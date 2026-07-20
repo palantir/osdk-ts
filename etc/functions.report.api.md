@@ -43,6 +43,12 @@ declare namespace Aliases {
     }
 }
 
+// @public (undocumented)
+export type Annotated<
+	T,
+	A extends Record<string, string>
+> = T;
+
 export { Attachment }
 
 // @public (undocumented)
