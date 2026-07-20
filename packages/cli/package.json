@@ -50,7 +50,7 @@
     "find-up": "7.0.0",
     "open": "10.1.2",
     "pretty-bytes": "6.1.1",
-    "resolve-package-path": "^4.0.3",
+    "resolve-package-path": "4.0.3",
     "semver": "7.6.3",
     "tslib": "2.6.3",
     "yargs": "17.7.2"
