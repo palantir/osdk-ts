@@ -1,5 +1,16 @@
 # @osdk/unit-testing
 
+## 0.20.0
+
+### Minor Changes
+
+- 27d7469: Export `MockClient`, `StubClient`, and `MockOsdkObjectOptions` types from the `@osdk/unit-testing/experimental` entry point so callers can annotate the value returned by `createMockClient` directly instead of `ReturnType<typeof createMockClient>`.
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client@2.49.0
+
 ## 0.19.0
 
 ### Minor Changes

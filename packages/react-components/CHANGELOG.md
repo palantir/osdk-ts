@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.42.0
+
+### Minor Changes
+
+- 12e6a69: Add an `isLoading` prop to `CbacBanner`/`BaseCbacBanner` that renders an animated skeleton placeholder matching the banner's width and height. On the OSDK `CbacBanner`, it is OR'd with the banner query's own loading state so the skeleton also shows automatically while marking data is being fetched.
+
 ## 0.41.0
 
 ### Minor Changes
