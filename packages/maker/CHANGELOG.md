@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.51.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [9d75f4e]
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+
 ## 0.50.0
 
 ### Minor Changes
