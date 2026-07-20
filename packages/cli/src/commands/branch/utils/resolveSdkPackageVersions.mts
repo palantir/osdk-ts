@@ -19,29 +19,29 @@ import { ExitProcessError } from "@osdk/cli.common";
 import { chooseDistTag } from "./chooseDistTag.js";
 import type { DiscoveredOsdkPackage } from "./discoverOsdkPackages.mjs";
 
-/** A package pinned to a resolved version, with its currently-declared version. */
-export interface ManagedTarget {
+/** An SDK package with its resolved target version and currently-declared version. */
+export interface SdkPackageVersion {
   pkg: string;
   version: string;
   current: string | undefined;
 }
 
-export interface ResolveTargetsDeps {
+export interface ResolveSdkPackageVersionsDeps {
   npmDistTags: (pkg: string) => Promise<Record<string, string>>;
 }
 
 /**
- * For each candidate, read its published dist tags and pick the target tag via
- * `chooseDistTag` (branch release for `branch`, else stable when currently
+ * For each candidate, read its published dist tags and pick the target version
+ * via `chooseDistTag` (branch release for `branch`, else stable when currently
  * branched). Candidates with no matching tag (or not resolvable) are dropped.
  * `current` carries the declared version so the caller can skip in-sync packages.
  */
-export async function resolveTargets(
+export async function resolveSdkPackageVersions(
   candidates: ReadonlyArray<DiscoveredOsdkPackage>,
   branch: string | undefined,
-  deps: ResolveTargetsDeps
-): Promise<ManagedTarget[]> {
-  const targets: ManagedTarget[] = [];
+  deps: ResolveSdkPackageVersionsDeps
+): Promise<SdkPackageVersion[]> {
+  const resolved: SdkPackageVersion[] = [];
   for (const c of candidates) {
     let tags: Record<string, string>;
     try {
@@ -60,9 +60,9 @@ export async function resolveTargets(
     const version = tags[tagName];
     if (version == null) continue;
 
-    targets.push({ pkg: c.name, version, current: c.declaredVersion });
+    resolved.push({ pkg: c.name, version, current: c.declaredVersion });
   }
-  return targets;
+  return resolved;
 }
 
 function isNotFound(e: unknown): boolean {

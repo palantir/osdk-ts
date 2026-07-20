@@ -17,9 +17,9 @@
 import { ExitProcessError } from "@osdk/cli.common";
 import { consola } from "consola";
 
-import type { ManagedTarget } from "./resolveTargets.mjs";
+import type { SdkPackageVersion } from "./resolveSdkPackageVersions.mjs";
 
-export interface ApplyTargetsDeps {
+export interface UpdateSdkPackagesDeps {
   npmInstall: (
     specs: ReadonlyArray<{ pkg: string; version: string }>
   ) => Promise<void>;
@@ -29,10 +29,10 @@ export interface ApplyTargetsDeps {
  * Install `toInstall` pinned to exact versions in one `npm install`, or preview
  * the changes under `--dryRun`.
  */
-export async function applyTargets(
-  toInstall: ReadonlyArray<ManagedTarget>,
+export async function updateSdkPackages(
+  toInstall: ReadonlyArray<SdkPackageVersion>,
   args: { dryRun: boolean },
-  deps: ApplyTargetsDeps,
+  deps: UpdateSdkPackagesDeps,
   alreadyInSync = 0
 ): Promise<void> {
   if (args.dryRun) {

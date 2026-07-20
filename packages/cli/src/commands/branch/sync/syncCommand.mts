@@ -18,15 +18,15 @@ import { promises as fs } from "node:fs";
 
 import { consola } from "consola";
 
-import { applyTargets } from "../utils/applyTargets.mjs";
 import { discoverOsdkPackages } from "../utils/discoverOsdkPackages.mjs";
 import { getGitBranch as defaultGetGitBranch } from "../utils/getGitBranch.js";
 import { resolveBranch } from "../utils/resolveBranch.js";
-import { resolveTargets } from "../utils/resolveTargets.mjs";
+import { resolveSdkPackageVersions } from "../utils/resolveSdkPackageVersions.mjs";
 import {
   npmDistTags as defaultNpmDistTags,
   npmInstall as defaultNpmInstall,
 } from "../utils/runNpm.js";
+import { updateSdkPackages } from "../utils/updateSdkPackages.mjs";
 import type { SyncArgs } from "./SyncArgs.js";
 
 export interface SyncDeps {
@@ -65,18 +65,18 @@ export default async function syncCommand(
     return;
   }
 
-  const targets = await resolveTargets(candidates, branch, deps);
-  if (targets.length === 0) {
+  const resolved = await resolveSdkPackageVersions(candidates, branch, deps);
+  if (resolved.length === 0) {
     consola.info("Nothing to sync.");
     return;
   }
 
-  const toInstall = targets.filter((t) => t.current !== t.version);
-  const alreadyInSync = targets.length - toInstall.length;
+  const toInstall = resolved.filter((t) => t.current !== t.version);
+  const alreadyInSync = resolved.length - toInstall.length;
   if (toInstall.length === 0) {
-    consola.info(`All ${targets.length} SDK(s) already in sync.`);
+    consola.info(`All ${resolved.length} SDK(s) already in sync.`);
     return;
   }
 
-  await applyTargets(toInstall, args, deps, alreadyInSync);
+  await updateSdkPackages(toInstall, args, deps, alreadyInSync);
 }
