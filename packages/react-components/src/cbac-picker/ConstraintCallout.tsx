@@ -27,9 +27,7 @@ export interface ConstraintCalloutProps {
 
 /**
  * Fetches banner display data for a max-classification constraint and renders
- * the "Maximum allowed classification" callout. Render this only when a
- * constraint exists; the caller owns that decision so the hook here always runs
- * against a real constraint.
+ * the "Maximum allowed classification" callout.
  */
 export function ConstraintCallout({
   constraint,
