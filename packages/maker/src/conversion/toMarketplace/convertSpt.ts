@@ -17,6 +17,7 @@
 import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
 
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
+import { shouldBeIndexedForSearch } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -59,7 +60,7 @@ export function convertSpt({
     baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
-    indexedForSearch: true,
+    indexedForSearch: shouldBeIndexedForSearch(type),
     typeClasses: typeClasses ?? [],
     valueType:
       valueType === undefined
