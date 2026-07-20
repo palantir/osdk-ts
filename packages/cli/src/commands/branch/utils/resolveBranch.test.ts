@@ -22,20 +22,25 @@ describe("resolveBranch", () => {
   it("returns the git branch when on a feature branch", () => {
     expect(resolveBranch(undefined, "my-feature")).toBe("my-feature");
   });
+
   it("returns undefined on main/master/detached", () => {
     expect(resolveBranch(undefined, "main")).toBeUndefined();
     expect(resolveBranch(undefined, "master")).toBeUndefined();
     expect(resolveBranch(undefined, "HEAD")).toBeUndefined();
   });
-  it("returns undefined when git branch is missing/empty", () => {
+
+  it("returns undefined when the git branch is missing/empty", () => {
     expect(resolveBranch(undefined, undefined)).toBeUndefined();
     expect(resolveBranch(undefined, "")).toBeUndefined();
   });
-  it("honors --branchName override even over main", () => {
+
+  it("honors the branch-name override even over main", () => {
     expect(resolveBranch("main", "my-feature")).toBe("main");
     expect(resolveBranch("override", "main")).toBe("override");
   });
-  it("trims whitespace", () => {
+
+  it("trims whitespace on both inputs", () => {
+    expect(resolveBranch("  override  ", "x")).toBe("override");
     expect(resolveBranch(undefined, "  feature/x  ")).toBe("feature/x");
   });
 });

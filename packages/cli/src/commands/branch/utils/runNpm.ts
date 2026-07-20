@@ -26,8 +26,8 @@ export async function npmDistTags(
 }
 
 /**
- * Install one or more packages pinned to exact versions in a single `npm install`,
- * A no-op when `specs` is empty.
+ * Install one or more packages pinned to exact versions in a single `npm install`;
+ * a no-op when `specs` is empty.
  */
 export async function npmInstall(
   specs: ReadonlyArray<{ pkg: string; version: string }>

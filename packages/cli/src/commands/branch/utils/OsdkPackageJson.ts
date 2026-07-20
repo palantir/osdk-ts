@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-const NON_BRANCH = new Set(["main", "master", "HEAD"]);
-
-/**
- * Resolve the branch context: `argBranchName` wins; else `gitBranchName`, with
- * main/master/detached `HEAD`/empty normalized to `undefined`.
- */
-export function resolveBranch(
-  argBranchName: string | undefined,
-  gitBranchName: string | undefined
-): string | undefined {
-  const argBranch = argBranchName?.trim();
-  if (argBranch != null && argBranch !== "") {
-    return argBranch;
-  }
-  const gitBranch = gitBranchName?.trim();
-  if (gitBranch == null || gitBranch === "" || NON_BRANCH.has(gitBranch)) {
-    return undefined;
-  }
-  return gitBranch;
+/** The subset of a package's `package.json` this command reads. */
+export interface OsdkPackageJson {
+  name: string;
+  version: string;
+  osdk?: {
+    /** A branch RID; present only on SDKs generated on a Foundry branch. */
+    branch?: string;
+  };
+  dependencies?: Record<string, string>;
 }

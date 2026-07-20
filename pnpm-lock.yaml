@@ -1797,6 +1797,9 @@ importers:
       pretty-bytes:
         specifier: 6.1.1
         version: 6.1.1
+      resolve-package-path:
+        specifier: 4.0.3
+        version: 4.0.3
       semver:
         specifier: 7.6.3
         version: 7.6.3
