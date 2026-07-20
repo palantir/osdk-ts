@@ -23,6 +23,7 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
 
 describe("Object Types", () => {
   beforeEach(async () => {
@@ -675,6 +676,83 @@ describe("Object Types", () => {
         },
       }
     `);
+  });
+
+  it("Vector properties are properly defined", () => {
+    defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string" },
+        embedding: {
+          type: {
+            type: "vector",
+            dimension: 1536,
+            supportsSearchWith: ["COSINE_SIMILARITY"],
+            embeddingModel: {
+              type: "text",
+              text: { type: "lms", lms: "OPENAI_TEXT_EMBEDDING_ADA_002" },
+            },
+            quantization: "BYTE",
+          },
+        },
+      },
+    });
+
+    const embedding =
+      dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"]
+        .objectType.propertyTypes["embedding"];
+    expect(embedding.type).toMatchInlineSnapshot(`
+      {
+        "type": "vector",
+        "vector": {
+          "dimension": 1536,
+          "embeddingModel": {
+            "text": {
+              "lms": "OPENAI_TEXT_EMBEDDING_ADA_002",
+              "type": "lms",
+            },
+            "type": "text",
+          },
+          "quantization": "BYTE",
+          "supportsSearchWith": [
+            "COSINE_SIMILARITY",
+          ],
+        },
+      }
+    `);
+    expect(embedding.indexedForSearch).toBe(true);
+  });
+
+  it("Fails on invalid vector properties", () => {
+    const vector: PropertyTypeTypeVector = {
+      type: "vector",
+      dimension: 768,
+      supportsSearchWith: ["COSINE_SIMILARITY"],
+    };
+    const expectInvalid = (type: PropertyTypeTypeVector, array?: boolean) =>
+      expect(() =>
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeyPropertyApiName: "bar",
+          properties: { bar: { type: "string" }, embedding: { type, array } },
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`
+      );
+
+    expectInvalid(vector, true);
+    expectInvalid({ ...vector, dimension: 0 });
+    expectInvalid({
+      ...vector,
+      supportsSearchWith: ["COSINE_SIMILARITY", "DOT_PRODUCT"],
+    });
   });
 
   it("Explicit datasource definitions are properly defined", () => {
