@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.50.0
+
+### Minor Changes
+
+- 3a1c5a2: Fix inherited optional property being required
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/generator-converters.ontologyir@2.49.0
+
 ## 0.49.0
 
 ### Minor Changes
