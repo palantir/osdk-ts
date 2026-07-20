@@ -934,7 +934,8 @@ export class OntologyBlockDataToFullMetadataConverter {
       );
       if (dataType) {
         const sharedPropertyType: Ontologies.SharedPropertyType = {
-          rid: `ri.spt.${spt.sharedPropertyType.apiName}`,
+          rid:
+            `ri.ontology-metadata.temp.spt.${spt.sharedPropertyType.apiName}`,
           apiName: spt.sharedPropertyType.apiName,
           displayName: spt.sharedPropertyType.displayMetadata.displayName,
           description: spt.sharedPropertyType.displayMetadata.description
