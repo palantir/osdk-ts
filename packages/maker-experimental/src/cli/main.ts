@@ -206,6 +206,14 @@ export default async function main(
     commandLineOpts.codegenDir ??
     path.dirname(path.dirname(commandLineOpts.input));
 
+  const dependencyFile = path.join(
+    commandLineOpts.buildDir,
+    "dependencies.json"
+  );
+  if (!fs.existsSync(dependencyFile)) {
+    await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
+  }
+
   const {
     ontologyIr,
     shapes,
@@ -215,6 +223,7 @@ export default async function main(
     commandLineOpts.input,
     apiNamespace,
     codegenDir,
+    dependencyFile,
     functionsIrFile,
     commandLineOpts.randomnessKey
   );
@@ -447,6 +456,7 @@ async function loadOntology(
   input: string,
   apiNamespace: string,
   outputDir?: string,
+  dependencyFile?: string,
   functionsIrFile?: string,
   randomnessKey?: string
 ) {
@@ -454,6 +464,7 @@ async function loadOntology(
     apiNamespace,
     async () => await import(pathToFileURL(input).href),
     outputDir,
+    dependencyFile,
     functionsIrFile,
     randomnessKey
   );
