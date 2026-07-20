@@ -73,6 +73,7 @@ import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
+  isVector,
   type PropertyTypeType,
   type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
@@ -302,12 +303,14 @@ export function isPropertyParameter(
       ) &&
       !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
       !isStruct(type) &&
+      !isVector(type) &&
       !def.excludedProperties?.includes(name)
     );
   }
   return (
     getPropertyKeys(def.objectType).includes(name) &&
     !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
+    !isVector(type) &&
     !def.excludedProperties?.includes(name)
   );
 }
@@ -939,6 +942,8 @@ function extractAllowedValuesFromPropertyType(
           return { type: "text" };
         case "struct":
           return { type: "struct" };
+        case "vector":
+          throw new Error("Vectors are not supported as action parameters yet");
         default:
           throw new Error("Unknown type");
       }
@@ -963,6 +968,8 @@ function extractActionParameterType(
         return maybeAddList("string", pt);
       case "struct":
         return extractStructActionParameterType(typeType, pt.array ?? false);
+      case "vector":
+        throw new Error("Vectors are not supported as action parameters yet");
       default:
         throw new Error(`Unknown type`);
     }
