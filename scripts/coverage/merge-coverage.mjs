@@ -21,7 +21,7 @@
 //
 // Outputs:
 //   coverage/coverage-final.json    merged raw per-file coverage
-//   coverage/coverage-summary.json  totals + per-file summary (badge/PR source)
+//   coverage/coverage-summary.json  totals + per-file summary (machine readable)
 //   coverage/index.html             HTML report (open in a browser)
 //   coverage/lcov.info              lcov (handy for editors / external tools)
 // ...and prints the aggregate totals to stdout.
@@ -82,20 +82,46 @@ for (const reporter of ["json", "json-summary", "lcovonly", "html"]) {
 }
 
 // istanbul's json-summary reporter emits `coverage-summary.json`; read it back
-// so we report the exact same totals the downstream badge/PR comment will use.
+// to print a per-package summary in the terminal.
 const summary = JSON.parse(
   readFileSync(join(outDir, "coverage-summary.json"), "utf8"),
 );
-const t = summary.total;
 
+// Aggregate the per-file summary into per-package line coverage for the table.
+const byPkg = new Map();
+for (const [file, m] of Object.entries(summary)) {
+  if (file === "total") continue;
+  const match = file.match(/packages\/([^/]+)\//);
+  if (!match) continue;
+  const pkg = `@osdk/${match[1]}`;
+  const a = byPkg.get(pkg) ?? { covered: 0, total: 0 };
+  a.covered += m.lines.covered;
+  a.total += m.lines.total;
+  byPkg.set(pkg, a);
+}
+
+const pkgRows = [...byPkg.entries()]
+  .map(([pkg, a]) => ({
+    pkg,
+    pct: a.total === 0 ? 100 : (100 * a.covered) / a.total,
+  }))
+  .sort((a, b) => a.pct - b.pct); // worst first
+
+console.log("");
+console.log("Coverage by package (lines):");
+for (const r of pkgRows) {
+  console.log(`  ${`${r.pct.toFixed(1)}%`.padStart(6)}  ${r.pkg}`);
+}
+
+const t = summary.total;
 const pct = (m) => `${m.pct}% (${m.covered}/${m.total})`;
 console.log("");
 console.log(
-  `Merged coverage from ${mergedPackages} package(s), ${coverageMap.files().length} files:`,
+  `Total across ${mergedPackages} package(s), ${coverageMap.files().length} files:`,
 );
 console.log(`  Statements : ${pct(t.statements)}`);
 console.log(`  Branches   : ${pct(t.branches)}`);
 console.log(`  Functions  : ${pct(t.functions)}`);
 console.log(`  Lines      : ${pct(t.lines)}`);
 console.log("");
-console.log(`Report written to ${join("coverage", "index.html")}`);
+console.log(`Full HTML report: ${join("coverage", "index.html")}`);

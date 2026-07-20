@@ -23,6 +23,10 @@ COVERAGE_ARGS=(
   --coverage.reportsDirectory=coverage
 )
 
+# Ensure dependencies' build output exists (a cache hit if already built) so the
+# `--only` test runs below can resolve them on a fresh checkout.
+turbo run transpile transpileTypes || exit 1
+
 # Everything except react-components (and example-generator, whose sole test is a
 # codegen-drift check that calls process.exit).
 turbo run test --force --only --continue \

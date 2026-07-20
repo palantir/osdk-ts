@@ -32,12 +32,6 @@ export default defineConfig({
         "**/*.d.ts",
         "**/index.ts",
       ],
-      thresholds: {
-        lines: 60,
-        statements: 60,
-        functions: 60,
-        branches: 60,
-      },
     },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],

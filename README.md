@@ -114,6 +114,33 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
    > Full docs on the `changesets` tool can be found at the [changesets/changesets github repo](https://github.com/changesets/changesets).
 7. If you're curious what the final build output might look like you can run `pnpm build` from root.
 
+## Test coverage
+
+To check test coverage locally, run the following from the root:
+
+```sh
+pnpm run coverage
+```
+
+This runs every package's test suite with coverage collection and then prints a
+per-package line-coverage summary and the repo-wide totals to your terminal:
+
+```
+Coverage by package (lines):
+   19.7%  @osdk/cli
+   59.3%  @osdk/react
+   76.0%  @osdk/client
+   ...
+Total across 38 package(s), 1407 files:
+  Lines      : 61.08% (61682/100984)
+
+Full HTML report: coverage/index.html
+```
+
+It also writes a full HTML report to `coverage/index.html`; open it in a browser
+for line-by-line detail. Coverage measures each package's `src/**` and excludes
+tests, generated code, and `index.ts` barrel files.
+
 ## Publishing
 
 1. Install the [GitHub CLI](https://cli.github.com/)
