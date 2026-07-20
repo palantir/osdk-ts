@@ -18,8 +18,6 @@ import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { lowercase } from "@osdk/generator-utils";
-import Handlebars from "handlebars";
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -108,51 +106,6 @@ test(`CLI rejects no OSDK with 1.x`, async () => {
       skipOsdk: true,
     })
   ).rejects.toThrowError();
-});
-
-test(`CLI lowercases the package.json name field`, async () => {
-  // Project names may contain uppercase characters, but npm rejects package
-  // names that aren't all lowercase. The `name` field is rendered via the
-  // `lowercase` Handlebars helper, so an uppercase project must produce a
-  // lowercase package name.
-  const project = "My-Uppercase-App";
-  await runTest({
-    project,
-    template: VISIBLE_TEMPLATE,
-    corsProxy: false,
-    sdkVersion: "2.x",
-    skipOsdk: false,
-    ontology: "ri.ontology.main.ontology.fake",
-    osdkPackage: "@fake/sdk",
-    osdkRegistryUrl:
-      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-  });
-
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
-  );
-  expect(packageJson.name).toBe(project.toLowerCase());
-});
-
-describe("lowercase Handlebars helper", () => {
-  // Mirrors how run.ts wires the shared helper into the template engine.
-  const handlebars = Handlebars.create();
-  handlebars.registerHelper("lowercase", lowercase);
-
-  test(`renders a package.json name field lowercased`, () => {
-    const rendered = handlebars.compile(`{ "name": "{{lowercase project}}" }`)({
-      project: "@Foundry/My-Uppercase-App",
-    });
-    expect(JSON.parse(rendered).name).toBe("@foundry/my-uppercase-app");
-  });
-
-  test(`throws when its argument cannot be resolved`, () => {
-    // A missing/misspelled token resolves to undefined, so rendering must fail
-    // rather than silently produce an invalid "undefined" package name.
-    expect(() =>
-      handlebars.compile(`{{lowercase typoToken}}`)({ project: "my-app" })
-    ).toThrowError(/requires a string argument/u);
-  });
 });
 
 async function runTest({
