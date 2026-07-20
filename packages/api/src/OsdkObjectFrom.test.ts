@@ -881,9 +881,10 @@ describe("ExtractOptions", () => {
   });
 
   describe("$as with base union type", () => {
-    it("can cast base union type", () => {
-      const ifaceObj =
-        undefined as unknown as Osdk.Instance<ObjectOrInterfaceDefinition>;
+    it("can cast base union type without failing type check", async () => {
+      const ifaceObj = (
+        await createMockObjectSet<ObjectOrInterfaceDefinition>().fetchPage()
+      ).data[0];
 
       const result = ifaceObj.$as({} as ObjectOrInterfaceDefinition);
     });
