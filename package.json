@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "check": "turbo check --filter='!@osdk/examples.*' --filter='!@psdk/examples.*'",
+    "check": "turbo check",
     "check-mrl": "mrl check --verbose",
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
