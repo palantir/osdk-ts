@@ -17,19 +17,19 @@
 import type { CommandModule } from "yargs";
 
 import type { BranchCommonArgs } from "../BranchCommonArgs.js";
-import type { InstallArgs } from "./InstallArgs.js";
+import type { SyncArgs } from "./SyncArgs.js";
 
-const command: CommandModule<BranchCommonArgs, InstallArgs> = {
-  command: "install",
+const command: CommandModule<BranchCommonArgs, SyncArgs> = {
+  command: "sync",
   describe:
-    "Discovers and installs the latest versions of branched Foundry SDKs published on a global branch",
+    "Sync SDKs to the latest published pre-release versions on a global branch (or stable on main)",
   builder: (argv) => {
     return argv
       .options({
         packageName: {
           type: "string",
           description:
-            "Name of the branched SDK to operate on. Source of truth when set and skips @<scope>/sdk discovery.",
+            "Sync only this single SDK package instead of all discovered SDKs.",
         },
         dryRun: {
           type: "boolean",
@@ -37,10 +37,10 @@ const command: CommandModule<BranchCommonArgs, InstallArgs> = {
           description: "Print the intended change without modifying files.",
         },
       })
-      .group(["packageName", "dryRun"], "Install Options");
+      .group(["packageName", "dryRun"], "Sync Options");
   },
   handler: async (args) => {
-    const cmd = await import("./installCommand.mjs");
+    const cmd = await import("./syncCommand.mjs");
     await cmd.default(args);
   },
 };

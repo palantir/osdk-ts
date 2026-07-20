@@ -15,20 +15,27 @@
  */
 
 /**
- * Pick the npm dist tag for `branch` from a package's published tags, or
- * `undefined` when the branch has no published tag on this package.
+ * Pick the npm dist tag to pin an OSDK to:
+ * - on a branch → that branch's latest release (`${branch}-latest`) if published, else leave it as-is;
+ * - off a branch → stable `latest` if the SDK is currently branched, else leave it as-is.
  *
- * A branched SDK is published under the exact tag `${branch}-latest`.
- * Anything else yields `undefined` (no branched release for this branch). To
- * target a specific branch, pass `--branchName`.
+ * So a branched SDK is reset to stable only off a branch, never while on one.
  */
-export function selectDistTag({
+export function chooseDistTag({
   branch,
+  isBranchedSdk,
   availableTags,
 }: {
-  branch: string;
+  branch: string | undefined;
+  isBranchedSdk: boolean;
   availableTags: string[];
 }): string | undefined {
-  const exact = `${branch}-latest`;
-  return availableTags.includes(exact) ? exact : undefined;
+  if (branch != null) {
+    const branchTag = `${branch}-latest`;
+    return availableTags.includes(branchTag) ? branchTag : undefined;
+  }
+  if (isBranchedSdk && availableTags.includes("latest")) {
+    return "latest";
+  }
+  return undefined;
 }

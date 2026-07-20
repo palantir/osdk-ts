@@ -16,7 +16,7 @@
 
 import type { BranchCommonArgs } from "../BranchCommonArgs.js";
 
-export interface InstallArgs extends BranchCommonArgs {
+export interface SyncArgs extends BranchCommonArgs {
   packageName?: string;
   dryRun: boolean;
 }
