@@ -1,5 +1,20 @@
 # @osdk/maker-experimental
 
+## 0.41.0
+
+### Minor Changes
+
+- f4f70fb: Make codegen and build dir different arguments
+- ecfcf3d: Fix transitive interface link imports
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+  - @osdk/maker@0.50.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
 ## 0.40.0
 
 ### Minor Changes

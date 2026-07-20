@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.74.0
+
+### Minor Changes
+
+- a7ff4d3: Improve branch command OSDK discovery and global branch<->main dependency syncing.
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
 ## 0.73.0
 
 ### Patch Changes

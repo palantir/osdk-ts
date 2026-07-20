@@ -1,5 +1,11 @@
 # @osdk/create-app.template.typescript-library.beta
 
+## 2.49.0
+
+### Minor Changes
+
+- 98c7343: Fix the TypeScript Library template so a freshly scaffolded project passes `ultracite check`: exclude package.json/tsconfig.json from oxfmt (their key order is owned by the package manager and tsc) and remove the stray blank line between imports in oxlint.config.ts
+
 ## 2.48.0
 
 ### Minor Changes
