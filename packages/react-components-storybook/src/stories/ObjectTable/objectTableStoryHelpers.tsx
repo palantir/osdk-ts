@@ -34,7 +34,9 @@ import type { Employee } from "../../types/Employee.js";
 // Create a concrete type for Storybook to parse more easily
 export type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
-const meta: Meta<EmployeeTableProps> = {
+// Shared by the per-group Features/*.stories.tsx files. It lives here rather
+// than in a story file so Storybook doesn't index it (no `*.stories` filename).
+export const objectTableMeta: Meta<EmployeeTableProps> = {
   title: "Components/ObjectTable/Features",
   component: ObjectTable,
   tags: ["beta"],
@@ -228,10 +230,6 @@ const meta: Meta<EmployeeTableProps> = {
     },
   } as Meta<EmployeeTableProps>["argTypes"],
 };
-
-// Re-exported by the per-group Features/*.stories.tsx files; this module is
-// not itself indexed as a story file (no `*.stories` filename).
-export const objectTableMeta = meta;
 
 // Used by stories that don't define their own columnDefinitions.
 export const defaultEmployeeColumns: ColumnDefinition<Employee>[] = [
