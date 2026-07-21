@@ -113,25 +113,25 @@ const preview: Preview = {
           /**
            * The ordering within each component folder:
            * Docs
-           * Default
+           * Default (part of __root__ and pinned later)
            * Features
-           * Building Blocks
+           * Building blocks
+           * Everything else
            */
-          const sectionOrder = ["Docs", "__root__", "Features"];
-          const aSub = aParts.length > 2 ? aParts[2] : "__root__";
-          const bSub = bParts.length > 2 ? bParts[2] : "__root__";
-          const aRank =
-            aSub === "Building Blocks"
-              ? 99
-              : sectionOrder.indexOf(aSub) === -1
-                ? 50
-                : sectionOrder.indexOf(aSub);
-          const bRank =
-            bSub === "Building Blocks"
-              ? 99
-              : sectionOrder.indexOf(bSub) === -1
-                ? 50
-                : sectionOrder.indexOf(bSub);
+          const sectionOrder = [
+            "Docs",
+            "__root__",
+            "Features",
+            "Building Blocks",
+          ];
+          const aSection = aParts.length > 2 ? aParts[2] : "__root__";
+          const bSection = bParts.length > 2 ? bParts[2] : "__root__";
+          // indexOf is -1 for unlisted sections; rank those after every listed
+          // one so they sort to the bottom ("everything else").
+          const aIdx = sectionOrder.indexOf(aSection);
+          const bIdx = sectionOrder.indexOf(bSection);
+          const aRank = aIdx === -1 ? sectionOrder.length : aIdx;
+          const bRank = bIdx === -1 ? sectionOrder.length : bIdx;
           if (aRank !== bRank) return aRank - bRank;
 
           // Pin the "Default" story to the top of its leaf.
