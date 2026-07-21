@@ -5,7 +5,6 @@ description: An OSDK-aware data table for ontology objects. Renders rows from an
 
 > **Beta** — exported from `@osdk/react-components/experimental/object-table`.
 
-
 ## Usage
 
 ObjectTable fetches its own data. Wrap your app in `OsdkProvider` and import the package styles once (see [Prerequisites](./Prerequisites.md) for the `@layer` order), then pass an object type — columns, sorting, filtering, and selection are wired up out of the box.
@@ -95,37 +94,37 @@ The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM an
 
 The base component contains all interactions and styling but does no data fetching — feed it primitive props from your own data source.
 
-| Export      | Description                                                                                                                                                                                                       |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Export      | Description                                                                                                                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BaseTable` | OSDK-agnostic table that renders rows, columns, selection, sorting, pinning, resizing, and inline editing from primitive props. Does no fetching — wire it up with your own data source (or the hooks below). |
 
 ### Building blocks
 
 Standalone sub-components used internally by `ObjectTable`, exported so you can compose them into a custom table.
 
-| Export                  | Description                                                                                    |
-| ----------------------- | --------------------------------------------------------------------------------------------- |
-| `ColumnConfigDialog`    | Dialog for toggling column visibility and reordering columns.                                  |
-| `MultiColumnSortDialog` | Dialog for building a multi-column sort order.                                                 |
-| `LoadingCell`           | Skeleton loading cell that renders a full `<td>` element — use in a custom row renderer.       |
-| `LoadingCellContent`    | Skeleton loading content only (no `<td>` wrapper) — use inside an existing cell.               |
+| Export                  | Description                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------- |
+| `ColumnConfigDialog`    | Dialog for toggling column visibility and reordering columns.                            |
+| `MultiColumnSortDialog` | Dialog for building a multi-column sort order.                                           |
+| `LoadingCell`           | Skeleton loading cell that renders a full `<td>` element — use in a custom row renderer. |
+| `LoadingCellContent`    | Skeleton loading content only (no `<td>` wrapper) — use inside an existing cell.         |
 
 ### Hooks
 
 Headless hooks holding the table's data and interaction logic. Reach for them when you're building your own TanStack React Table instance and custom table components and want to reuse ObjectTable's data fetching and state logic.
 
-| Export                   | Description                                                                                                                                                                              |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Export                   | Description                                                                                                                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `useObjectTableData`     | Fetches table rows (OSDK-aware). Wraps `useObjectSet`/`useOsdkObjects` depending on whether an `objectSet` is provided, and applies derived-property (RDP) locators via `withProperties`. |
-| `useFunctionColumnsData` | Resolves values for function-backed (query) columns for the loaded rows (OSDK-aware).                                                                                                   |
-| `useColumnDefs`          | Builds the tanstack-table column definitions from the object/interface type and column definitions.                                                                                     |
-| `useSelectionColumn`     | Builds the leading selection (checkbox) column for multi-select tables.                                                                                                                  |
-| `useColumnPinning`       | Manages pinned (left/right) column state, controlled or uncontrolled.                                                                                                                    |
-| `useColumnResize`        | Manages per-column widths and resize interactions.                                                                                                                                       |
-| `useColumnVisibility`    | Manages column visibility and ordering state.                                                                                                                                            |
-| `useFocusedRow`          | Manages the "last interacted" focused row, controlled or uncontrolled.                                                                                                                   |
-| `useRowSelection`        | Manages row selection state (single/multiple), controlled or uncontrolled.                                                                                                               |
-| `useTableSorting`        | Manages sort (`orderBy`) state, controlled or uncontrolled.                                                                                                                              |
-| `useEditableTable`       | Manages inline edit state: tracked edits, validation, and the submit lifecycle.                                                                                                          |
-| `useObjectTableSnapshot` | Builds the `ObjectTableHandle` exposed via `tableRef`, whose `getSnapshot` paginates the object set and resolves column values for export.                                               |
-| `useCellContextMenu`     | Manages the right-click cell context-menu open state and position.                                                                                                                       |
+| `useFunctionColumnsData` | Resolves values for function-backed (query) columns for the loaded rows (OSDK-aware).                                                                                                     |
+| `useColumnDefs`          | Builds the tanstack-table column definitions from the object/interface type and column definitions.                                                                                       |
+| `useSelectionColumn`     | Builds the leading selection (checkbox) column for multi-select tables.                                                                                                                   |
+| `useColumnPinning`       | Manages pinned (left/right) column state, controlled or uncontrolled.                                                                                                                     |
+| `useColumnResize`        | Manages per-column widths and resize interactions.                                                                                                                                        |
+| `useColumnVisibility`    | Manages column visibility and ordering state.                                                                                                                                             |
+| `useFocusedRow`          | Manages the "last interacted" focused row, controlled or uncontrolled.                                                                                                                    |
+| `useRowSelection`        | Manages row selection state (single/multiple), controlled or uncontrolled.                                                                                                                |
+| `useTableSorting`        | Manages sort (`orderBy`) state, controlled or uncontrolled.                                                                                                                               |
+| `useEditableTable`       | Manages inline edit state: tracked edits, validation, and the submit lifecycle.                                                                                                           |
+| `useObjectTableSnapshot` | Builds the `ObjectTableHandle` exposed via `tableRef`, whose `getSnapshot` paginates the object set and resolves column values for export.                                                |
+| `useCellContextMenu`     | Manages the right-click cell context-menu open state and position.                                                                                                                        |
