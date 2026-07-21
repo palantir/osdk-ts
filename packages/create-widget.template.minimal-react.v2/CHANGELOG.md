@@ -1,5 +1,21 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.48.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+## 3.47.0
+
+## 3.46.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+## 3.45.0
+
 ## 3.44.0
 
 ## 3.43.0

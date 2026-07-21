@@ -88,7 +88,6 @@ export function convertDatasourceDefinition(
           ),
         },
       };
-    case "dataset":
     default:
       if (
         objectType.properties?.some(

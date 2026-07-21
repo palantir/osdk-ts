@@ -136,6 +136,37 @@ export const AllColumnsVisible: Story = {
       "location",
     ],
   },
+  parameters: {
+    docs: {
+      description: {
+        story: "Every column is toggled on.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: true,
+    jobTitle: true,
+    department: true,
+    startDate: true,
+    location: true,
+  }}
+  currentColumnOrder={[
+    "fullName",
+    "email",
+    "jobTitle",
+    "department",
+    "startDate",
+    "location",
+  ]}
+  onApply={handleApply}
+/>`,
+      },
+    },
+  },
 };
 
 export const SingleColumnVisible: Story = {
@@ -149,6 +180,72 @@ export const SingleColumnVisible: Story = {
       location: false,
     },
     currentColumnOrder: ["fullName"],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Only a single column is visible; the rest are toggled off.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={handleClose}
+  columnOptions={columnOptions}
+  currentVisibility={{
+    fullName: true,
+    email: false,
+    jobTitle: false,
+    department: false,
+    startDate: false,
+    location: false,
+  }}
+  currentColumnOrder={["fullName"]}
+  onApply={handleApply}
+/>`,
+      },
+    },
+  },
+};
+
+export const LocalizedLabels: Story = {
+  args: {
+    labels: {
+      columnConfigTitle: "Choose columns",
+      columnConfigApply: "Save",
+      columnConfigCancel: "Discard",
+      columnConfigVisibleColumns: "Shown columns",
+      columnConfigDragToReorder: "Drag rows to reorder",
+      columnConfigAddOrRemoveColumns: "Toggle columns",
+      columnConfigAllColumns: "Everything",
+      columnConfigSearchPlaceholder: "Type to filter…",
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Every user-facing string can be overridden through the `labels` " +
+          "prop. Any key left unset falls back to the built-in English " +
+          "default. Pass the same object to `ObjectTable`/`BaseTable` to " +
+          "localize the whole table at once.",
+      },
+      source: {
+        code: `<ColumnConfigDialog
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  columnOptions={columnOptions}
+  currentVisibility={visibility}
+  currentColumnOrder={order}
+  onApply={handleApply}
+  labels={{
+    columnConfigTitle: "Choose columns",
+    columnConfigApply: "Save",
+    columnConfigCancel: "Discard",
+    columnConfigVisibleColumns: "Shown columns",
+  }}
+/>`,
+      },
+    },
   },
 };
 

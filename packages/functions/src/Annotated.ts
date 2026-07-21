@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-import type { BranchCommonArgs } from "../BranchCommonArgs.js";
-
-export interface InstallArgs extends BranchCommonArgs {
-  packageName?: string;
-  dryRun: boolean;
-}
+export type Annotated<T, A extends Record<string, string>> = T;

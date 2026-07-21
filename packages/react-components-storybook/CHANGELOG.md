@@ -1,5 +1,21 @@
 # @osdk/react-components-storybook
 
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/faux@0.38.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 520152e: Add interaction tests for ObjectTable
+
+### Patch Changes
+
+- @osdk/faux@0.37.0
+
 ## 0.39.0
 
 ### Patch Changes

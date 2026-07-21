@@ -53,13 +53,9 @@ export default defineConfig({
     "unicorn/no-lonely-if": "off",
     "jsdoc/require-param-description": "off",
     "jsdoc/require-returns-description": "off",
-    // Cyclomatic-complexity ceiling; the large discriminated-union switch helpers
-    // in the docs packages exceed it. Splitting them up is pure churn here.
+    // Cyclomatic-complexity ceiling. Not a pure autofix (requires extracting
+    // helpers, which adds bundle size), so it's handled in its own PR.
     "complexity": "off",
-    // Several switches list known discriminant values (e.g. "string", "unknown")
-    // that share the `default` body. Keeping the explicit cases documents intent;
-    // removing them would be churn with no behavioral change.
-    "unicorn/no-useless-switch-case": "off",
 
     // Rules whose autofix would change behavior or the public API of these
     // already-published packages. Kept at prior severity / disabled so the

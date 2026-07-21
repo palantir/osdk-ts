@@ -22,7 +22,6 @@ export function generateChanges(
       return generateSwapChanges(employees, offices, config);
     case "consolidate":
       return generateConsolidateChanges(employees, offices, config);
-    case "manual":
     default:
       return generateManualChanges(employees);
   }

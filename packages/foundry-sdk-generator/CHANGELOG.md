@@ -1,5 +1,56 @@
 # @osdk/foundry-sdk-generator
 
+## 2.50.0
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+  - @osdk/client@2.50.0
+  - @osdk/generator-converters@2.50.0
+  - @osdk/generator@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/client@2.49.0
+- @osdk/generator-converters@2.49.0
+- @osdk/generator-utils@2.49.0
+- @osdk/generator@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+- Updated dependencies [b46473d]
+  - @osdk/generator-utils@2.48.0
+  - @osdk/client@2.48.0
+  - @osdk/api@2.48.0
+  - @osdk/client.unstable@2.48.0
+  - @osdk/generator-converters@2.48.0
+  - @osdk/generator@2.48.0
+
+## 2.47.0
+
+### Minor Changes
+
+- cbeaccc: Add branch to package.json
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/client@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/generator-utils@2.47.0
+- @osdk/generator@2.47.0
+
 ## 2.46.0
 
 ### Patch Changes

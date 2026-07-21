@@ -1,5 +1,39 @@
 # @osdk/create-widget
 
+## 3.48.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.49.0
+
+## 3.46.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+  - @osdk/generator-utils@2.48.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.47.0
+
 ## 3.44.0
 
 ### Patch Changes

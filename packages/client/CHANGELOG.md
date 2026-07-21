@@ -1,5 +1,43 @@
 # @osdk/client
 
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+- @osdk/client.unstable@2.50.0
+- @osdk/generator-converters@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/generator-converters@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- b46473d: Remove the unused `getMetaTagContent`, `getOsdkConfig`, and `OsdkConfig` exports from `@osdk/client/unstable-do-not-use`; they referenced browser/Vite-only globals (`document`, `import.meta.env`) that broke non-node environments and had no consumers.
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/client.unstable@2.48.0
+- @osdk/generator-converters@2.48.0
+- @osdk/shared.test@2.34.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/shared.test@2.33.0
+
 ## 2.46.0
 
 ### Minor Changes

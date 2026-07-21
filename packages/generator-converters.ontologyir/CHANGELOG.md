@@ -1,5 +1,33 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.50.0
+
+### Minor Changes
+
+- 9d75f4e: Make full metadata rids parsable
+
+### Patch Changes
+
+- @osdk/client.unstable@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.47.0
+
 ## 2.46.0
 
 ### Patch Changes

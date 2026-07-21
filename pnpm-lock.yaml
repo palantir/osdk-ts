@@ -1797,6 +1797,9 @@ importers:
       pretty-bytes:
         specifier: 6.1.1
         version: 6.1.1
+      resolve-package-path:
+        specifier: 4.0.3
+        version: 4.0.3
       semver:
         specifier: 7.6.3
         version: 7.6.3
@@ -4741,7 +4744,7 @@ importers:
   packages/react-components:
     dependencies:
       '@base-ui/react':
-        specifier: ^1.0.0
+        specifier: '>=1.0.0 <1.4.0'
         version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@blueprintjs/icons':
         specifier: ^6.7.0

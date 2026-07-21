@@ -14,12 +14,12 @@ A TypeScript library for interacting with Palantir's Ontology.
 
 ## Packages
 
-| Package | Version |
-|---------|---------|
-| @osdk/client | [![npm](https://img.shields.io/npm/v/@osdk/client.svg)](https://www.npmjs.com/package/@osdk/client) |
-| @osdk/api | [![npm](https://img.shields.io/npm/v/@osdk/api.svg)](https://www.npmjs.com/package/@osdk/api) |
+| Package                     | Version                                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| @osdk/client                | [![npm](https://img.shields.io/npm/v/@osdk/client.svg)](https://www.npmjs.com/package/@osdk/client)                               |
+| @osdk/api                   | [![npm](https://img.shields.io/npm/v/@osdk/api.svg)](https://www.npmjs.com/package/@osdk/api)                                     |
 | @osdk/foundry-sdk-generator | [![npm](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) |
-| @osdk/oauth | [![npm](https://img.shields.io/npm/v/@osdk/oauth.svg)](https://www.npmjs.com/package/@osdk/oauth) |
+| @osdk/oauth                 | [![npm](https://img.shields.io/npm/v/@osdk/oauth.svg)](https://www.npmjs.com/package/@osdk/oauth)                                 |
 
 ## Getting Started
 
@@ -98,7 +98,17 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 2. Create a branch
 3. `pnpm install`
 4. Add your code
-5. Run all lint rules and tests with `pnpm check` from root. Run `pnpm turbo typecheck` to quickly check any issues with your types.
+5. Run `pnpm check` from root before pushing.
+
+   `pnpm check` runs the **same set of tasks CI runs**: lint (incl. formatting), typecheck, unit tests, the API report (`api-extractor`), package-typing checks (`attw`), bundle checks, spelling, and monorepolint. A green `pnpm check` locally means CI will be green too, so there is no separate CI-only check to get surprised by.
+
+   To iterate faster, run a single task, optionally scoped to one package with turbo's `--filter`:
+   - Types: `pnpm turbo typecheck --filter=@osdk/<package>`
+   - Lint + formatting: `pnpm turbo lint --filter=@osdk/<package>`
+   - Tests: `pnpm turbo test --filter=@osdk/<package>`
+
+   > 📘 Note
+   > Target packages with `--filter`; don't pass `pnpm --dir <path> turbo` (the `--dir` flag breaks turbo).
 6. Add a changeset
 
    > 📘 Note

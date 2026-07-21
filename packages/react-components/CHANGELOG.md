@@ -1,5 +1,24 @@
 # @osdk/react-components
 
+## 0.42.0
+
+### Minor Changes
+
+- 12e6a69: Add an `isLoading` prop to `CbacBanner`/`BaseCbacBanner` that renders an animated skeleton placeholder matching the banner's width and height. On the OSDK `CbacBanner`, it is OR'd with the banner query's own loading state so the skeleton also shows automatically while marking data is being fetched.
+
+## 0.41.0
+
+### Minor Changes
+
+- 3b7e3a5: Add a `labels` prop to `ObjectTable`/`BaseTable` (and the standalone `ColumnConfigDialog`/`MultiColumnSortDialog`) so every user-facing string can be overridden for localization or wording. Any subset can be supplied; unset keys fall back to the built-in English defaults.
+- 7e4163b: Restrict base-ui/react version to <1.4.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 647d743: Remove the deprecated `onRowSelection` prop and the dead filtering API (`enableFiltering`, `onFilterChanged`, and the per-column `filterable`) from ObjectTable. Use `onRowSelectionChanged` for selection changes; programmatic filtering via the controlled `filter` prop is unchanged.
+
 ## 0.39.0
 
 ### Minor Changes

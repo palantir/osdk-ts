@@ -1,5 +1,21 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.50.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+## 2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+## 2.47.0
+
 ## 2.46.0
 
 ## 2.45.0
