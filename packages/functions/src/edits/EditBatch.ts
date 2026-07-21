@@ -41,12 +41,6 @@ interface ObjectTypeDefinitionForLocator<
   apiName: OL["$apiName"];
 }
 
-interface InterfaceDefinitionForLocator<
-  IL extends ObjectLocator<any>,
-> extends InterfaceDefinition {
-  apiName: IL["$apiName"];
-}
-
 // AddLink helper types
 export type AddLinkSources<X extends AnyEdit> =
   X extends AddLink<infer OTD, any> ? ObjectLocator<OTD> : never;
@@ -133,12 +127,11 @@ export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> =
 export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
-> =
-  X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>>
+> = X extends UpdateObject<any> | UpdateObjectForInterface<any>
+  ? OL["$apiName"] extends X["obj"]["$apiName"]
     ? X["properties"]
-    : X extends UpdateObjectForInterface<InterfaceDefinitionForLocator<OL>>
-      ? X["properties"]
-      : never;
+    : never
+  : never;
 
 export interface EditBatch<X extends AnyEdit = never> {
   link: <SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(

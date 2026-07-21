@@ -164,6 +164,20 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           },
         },
         "allPropertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -222,6 +236,21 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           },
         },
         "propertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -949,6 +978,20 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           },
         },
         "allPropertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -1007,6 +1050,21 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           },
         },
         "propertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {

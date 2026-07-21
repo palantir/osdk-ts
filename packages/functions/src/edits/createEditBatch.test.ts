@@ -112,7 +112,10 @@ describe(createEditBatch, () => {
       $objectType: "Task",
       fooSpt: "created interface",
     });
-    editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
+    editBatch.update(fooInterfaceInstance, {
+      fooSpt: "fooSpt",
+      fooArray: ["a", "b"],
+    });
     editBatch.update(
       {
         $apiName: "FooInterface",
@@ -239,7 +242,7 @@ describe(createEditBatch, () => {
           $primaryKey: 21,
           $objectType: "FooObjectType",
         },
-        properties: { fooSpt: "fooSpt" },
+        properties: { fooSpt: "fooSpt", fooArray: ["a", "b"] },
       },
       {
         type: "updateObjectForInterface",
