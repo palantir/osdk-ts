@@ -99,8 +99,9 @@ function ListogramInputInner({
   // checkbox must never reorder rows. In the collapsed view we still keep
   // below-fold selected values visible by appending them at the tail (matching
   // Foundry Workshop's listogram), without hoisting them or displacing the
-  // head. Unchecking a below-fold row drops it from the tail; "View all"
-  // reveals it again.
+  // head. Unchecking a below-fold row drops it from the tail; the "View all"
+  // toggle reveals every value, and clicking it again ("View less") collapses
+  // back to the head.
   const displayValues = useMemo(() => {
     if (isExpanded || maxVisibleItems == null) return filteredValues;
     const head = filteredValues.slice(0, maxVisibleItems);
@@ -202,14 +203,15 @@ function ListogramInputInner({
             );
           })}
 
-          {hasMore && !isExpanded && (
+          {hasMore && (
             <Button
               type="button"
               className={styles.viewAllButton}
+              aria-expanded={isExpanded}
               // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => setIsExpanded(true)}
+              onClick={() => setIsExpanded((v) => !v)}
             >
-              View all ({filteredValues.length})
+              {isExpanded ? "View less" : `View all (${filteredValues.length})`}
             </Button>
           )}
         </div>
