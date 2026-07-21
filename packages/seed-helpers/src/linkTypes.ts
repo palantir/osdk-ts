@@ -20,34 +20,36 @@
 
 import type {
   CompileTimeMetadata,
-  ObjectMetadata,
+  InterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
 
-import type { SeedRef } from "./SeedBuilder.js";
+import type { SeedRef } from "./types.js";
 
-/** The names of the links declared on object type `Q`. */
-export type LinkApiNames<Q extends ObjectTypeDefinition> =
+/** The names of the links declared on object or interface type `Q`. */
+export type LinkApiNames<Q extends ObjectTypeDefinition | InterfaceDefinition> =
   keyof CompileTimeMetadata<Q>["links"] & string;
 
-/** The object type on the far side of `Q`'s `A` link. */
+/**
+ * The object or interface type on the far side of `Q`'s `A` link.
+ *
+ * Both `ObjectMetadata.Link` and `InterfaceMetadata.Link` carry the target
+ * definition under `__OsdkLinkTargetType`, so reading it directly (rather than
+ * pattern-matching against `ObjectMetadata.Link`) resolves the target for both
+ * object- and interface-sourced links — including interface links whose target
+ * is itself an `InterfaceDefinition`.
+ */
 export type LinkTargetType<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
   A extends LinkApiNames<Q>,
-> =
-  CompileTimeMetadata<Q>["links"][A] extends ObjectMetadata.Link<
-    infer T,
-    boolean
-  >
-    ? T
-    : never;
+> = NonNullable<CompileTimeMetadata<Q>["links"][A]["__OsdkLinkTargetType"]>;
 
 /**
  * The target(s) accepted for `Q`'s `A` link: one ref, or an array of refs when
  * the link is many-valued (`multiplicity: true`).
  */
 export type LinkTargets<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
   A extends LinkApiNames<Q>,
 > = CompileTimeMetadata<Q>["links"][A]["multiplicity"] extends true
   ? SeedRef<LinkTargetType<Q, A>> | Array<SeedRef<LinkTargetType<Q, A>>>

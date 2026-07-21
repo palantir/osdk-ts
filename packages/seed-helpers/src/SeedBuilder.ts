@@ -18,15 +18,10 @@ import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import type * as Ontology from "@osdk/foundry.ontologies";
 
 import type { LinkApiNames, LinkTargets } from "./linkTypes.js";
+import { type SchemaMap, schemaFromMetadata } from "./schema.js";
 import { SeedError } from "./SeedError.js";
-import type { SeedOutput, SeedProps } from "./types.js";
-
-export interface SeedRef<Q extends ObjectTypeDefinition> {
-  __locator: {
-    apiName: string;
-    primaryKeyValue: PrimaryKeyType<Q>;
-  };
-}
+import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
+import { validateSeedObjects } from "./validation.js";
 
 interface SeedLinkRecord {
   source: SeedRef<ObjectTypeDefinition>;
@@ -34,59 +29,18 @@ interface SeedLinkRecord {
   target: SeedRef<ObjectTypeDefinition>;
 }
 
-/**
- * Stable identity for a (source, apiName, target) triple so link records can be
- * compared for equality when unlinking. The null-byte separator avoids
- * collisions between concatenated apiName / primary-key segments — a primary key
- * containing the separator character could otherwise alias a different triple.
- */
 function linkIdentity(
   source: SeedRef<ObjectTypeDefinition>,
   apiName: string,
   target: SeedRef<ObjectTypeDefinition>
 ): string {
   return [
-    source.__locator.apiName,
-    String(source.__locator.primaryKeyValue),
+    source.$locator.apiName,
+    String(source.$locator.primaryKeyValue),
     apiName,
-    target.__locator.apiName,
-    String(target.__locator.primaryKeyValue),
-  ].join("\0");
-}
-
-interface ObjectTypeSchema {
-  properties: Map<string, Ontology.ObjectPropertyType["type"]>;
-  primaryKeyApiName: string;
-}
-type SchemaMap = Map<string, ObjectTypeSchema>;
-
-function schemaFromMetadata(
-  metadata: Ontology.OntologyFullMetadata
-): SchemaMap {
-  const map: SchemaMap = new Map();
-
-  for (const [apiName, full] of Object.entries(metadata.objectTypes)) {
-    const ot = full.objectType;
-
-    const properties = new Map<string, Ontology.ObjectPropertyType["type"]>();
-    for (const [propApiName, prop] of Object.entries(ot.properties)) {
-      properties.set(propApiName, prop.dataType.type);
-    }
-
-    const primaryKeyWireType = properties.get(ot.primaryKey);
-    if (primaryKeyWireType === undefined) {
-      throw new SeedError(
-        `[${apiName}] Primary key '${ot.primaryKey}' is not among the object's properties`
-      );
-    }
-
-    map.set(apiName, {
-      properties,
-      primaryKeyApiName: ot.primaryKey,
-    });
-  }
-
-  return map;
+    target.$locator.apiName,
+    String(target.$locator.primaryKeyValue),
+  ].join(":");
 }
 
 export class SeedBuilder {
@@ -102,26 +56,75 @@ export class SeedBuilder {
     this.#warnings = [];
   }
 
+  from(seed: SeedOutput): void {
+    const objectEntries = Object.entries(seed.objects).flatMap(
+      ([apiName, objects]) => objects.map((o) => [apiName, o] as const)
+    );
+    for (const [apiName, object] of objectEntries) {
+      this.create(
+        {
+          type: "object",
+          apiName,
+        },
+        object
+      );
+    }
+    const linkEntries = seed.links;
+    for (const link of linkEntries) {
+      const sourceRef = this.ref(
+        {
+          type: "object",
+          apiName: link.sourceObjectType,
+        },
+        link.sourceKey
+      );
+      const targetRef = this.ref(
+        {
+          type: "object",
+          apiName: link.targetObjectType,
+        },
+        link.targetKey
+      );
+      if (!sourceRef) {
+        this.#warnings.push(
+          `Source reference to ${link.sourceObjectType} of key ${link.sourceKey} was not found. Omitting link.`
+        );
+        continue;
+      }
+      if (!targetRef) {
+        this.#warnings.push(
+          `Target reference to ${link.targetObjectType} of key ${link.targetKey} was not found. Omitting link.`
+        );
+        continue;
+      }
+      this.#recordLink(sourceRef, link.linkType, targetRef);
+    }
+  }
+
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>
   ): SeedRef<Q> | undefined {
-    if (!this.#getObjectTypeMap(o.apiName).get(String(primaryKey))) {
+    const object = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
+      | SeedProps<Q>
+      | undefined;
+    if (!object) {
       return;
     }
     return Object.freeze({
-      __locator: {
+      $locator: {
         apiName: o.apiName,
         primaryKeyValue: primaryKey,
       },
-    });
+      ...object,
+    }) as SeedRef<Q>;
   }
 
   create<Q extends ObjectTypeDefinition>(
     o: Q,
     props: SeedProps<Q>
   ): SeedRef<Q> {
-    const schema = this.#schemaMap.get(o.apiName);
+    const schema = this.#schemaMap.objects.get(o.apiName);
     if (typeof schema === "undefined") {
       throw new SeedError("Object not found in metadata");
     }
@@ -131,31 +134,34 @@ export class SeedBuilder {
     const stringPrimaryKeyValue = String(primaryKeyValue);
     if (this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue)) {
       this.#warnings.push(
-        `Warning: creating ${o.apiName} with primary key ${stringPrimaryKeyValue} which already exists. This will overwrite the existing creation.`
+        `Creating ${o.apiName} with primary key ${stringPrimaryKeyValue} which already exists. This will overwrite the existing creation.`
       );
     }
     this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
     return Object.freeze({
-      __locator: {
+      $locator: {
         apiName: o.apiName,
         primaryKeyValue,
       },
-    });
+      ...props,
+    }) as SeedRef<Q>;
   }
 
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
-    props: Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    props: Q extends ObjectTypeDefinition
+      ? Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+      : SeedProps<Q>
   ): SeedRef<Q> {
-    const { apiName, primaryKeyValue } = ref.__locator;
-    const schema = this.#schemaMap.get(apiName);
+    const { apiName, primaryKeyValue } = ref.$locator;
+    const schema = this.#schemaMap.objects.get(apiName);
     if (typeof schema === "undefined") {
       throw new SeedError("Object not found in metadata");
     }
     const stringPrimaryKeyValue = String(primaryKeyValue);
     if (!this.#getObjectTypeMap(apiName).has(stringPrimaryKeyValue)) {
       this.#warnings.push(
-        `Warning: updating ${apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`
+        `Updating ${apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`
       );
     }
     this.#getObjectTypeMap(apiName).set(stringPrimaryKeyValue, {
@@ -166,15 +172,15 @@ export class SeedBuilder {
   }
 
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
-    const { apiName, primaryKeyValue } = ref.__locator;
-    const schema = this.#schemaMap.get(apiName);
+    const { apiName, primaryKeyValue } = ref.$locator;
+    const schema = this.#schemaMap.objects.get(apiName);
     if (typeof schema === "undefined") {
       throw new SeedError("Object not found in metadata");
     }
     const stringPrimaryKeyValue = String(primaryKeyValue);
     if (!this.#getObjectTypeMap(apiName).delete(stringPrimaryKeyValue)) {
       this.#warnings.push(
-        `Warning: deleting ${apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`
+        `Deleting ${apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`
       );
       return;
     }
@@ -189,12 +195,20 @@ export class SeedBuilder {
       SeedRef<ObjectTypeDefinition>
     >;
     for (const t of targets) {
-      this.#links.set(linkIdentity(source, apiName, t), {
-        source,
-        apiName,
-        target: t,
-      });
+      this.#recordLink(source, apiName, t);
     }
+  }
+
+  #recordLink(
+    source: SeedRef<ObjectTypeDefinition>,
+    apiName: string,
+    target: SeedRef<ObjectTypeDefinition>
+  ): void {
+    this.#links.set(linkIdentity(source, apiName, target), {
+      source,
+      apiName,
+      target,
+    });
   }
 
   unlink<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
@@ -213,15 +227,46 @@ export class SeedBuilder {
     }
     if (removed === 0) {
       this.#warnings.push(
-        `Warning: unlinking ${source.__locator.apiName} with primary key ${String(
-          source.__locator.primaryKeyValue
+        `Unlinking ${source.$locator.apiName} with primary key ${String(
+          source.$locator.primaryKeyValue
         )} via '${apiName}' which matches no existing links. This will be a no-op.`
       );
     }
   }
 
   build(): SeedOutput {
-    return {} as SeedOutput;
+    const objects: SeedOutput["objects"] = {};
+    const entries = this.#objectMap.entries();
+    let nextEntry = entries.next();
+    while (!nextEntry.done) {
+      const objectTypeApiName = nextEntry.value[0];
+      objects[objectTypeApiName] = [];
+      const objectMap = nextEntry.value[1];
+      const objectEntries = objectMap.entries();
+      let nextObjectEntry = objectEntries.next();
+      while (!nextObjectEntry.done) {
+        objects[objectTypeApiName].push(nextObjectEntry.value[1]);
+        nextObjectEntry = objectEntries.next();
+      }
+      nextEntry = entries.next();
+    }
+    const links: SeedOutput["links"] = [];
+    const linkEntries = this.#links.entries();
+    let nextLink = linkEntries.next();
+    while (!nextLink.done) {
+      const [key, value] = nextLink.value;
+      links.push({
+        name: key,
+        sourceObjectType: value.source.$locator.apiName,
+        sourceKey: String(value.source.$locator.primaryKeyValue),
+        linkType: value.apiName,
+        targetObjectType: value.target.$locator.apiName,
+        targetKey: String(value.target.$locator.primaryKeyValue),
+      });
+      nextLink = linkEntries.next();
+    }
+    validateSeedObjects(objects, this.#schemaMap);
+    return { objects, links } as SeedOutput;
   }
 
   #getObjectTypeMap(

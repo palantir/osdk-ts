@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
 
 /**
  * Makes nullable properties optional while keeping non-nullable ones required.
@@ -44,22 +48,18 @@ export type SeedProps<T extends ObjectTypeDefinition> =
  */
 declare const SEED_REF_BRAND: unique symbol;
 
-/**
- * A typed reference returned by SeedBuilder.add(). The branded symbol field
- * carries the object type as a generic, enabling compile-time link validation.
- *
- * Cannot be constructed manually — the unique symbol key is not exported and
- * only `SeedBuilder.add()` can produce a valid `SeedRef` via an `as` cast.
- */
-export interface SeedRef<
-  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
-  readonly __objectTypeApiName: string;
-  readonly __primaryKey: string | number;
-  /** @internal Brand field — never set at runtime. Enforces nominal typing. */
-  readonly [SEED_REF_BRAND]: Q;
-}
-
+export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
+  {
+    /**
+     * @internal
+     */
+    $locator: {
+      apiName: string;
+      primaryKeyValue: PrimaryKeyType<Q>;
+    };
+    readonly [SEED_REF_BRAND]: Q;
+  } & SeedProps<Q>
+>;
 /** A link entry in the seed output. */
 export interface SeedLinkEntry {
   name: string;
