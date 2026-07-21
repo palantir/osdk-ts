@@ -217,6 +217,7 @@ export default async function main(
   const {
     ontologyIr,
     shapes,
+    importedInputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
   } = await loadOntology(
@@ -412,6 +413,7 @@ export default async function main(
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
     inputs: Object.fromEntries(shapes.inputShapes),
+    input_presets: Object.fromEntries(importedInputPresets),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(

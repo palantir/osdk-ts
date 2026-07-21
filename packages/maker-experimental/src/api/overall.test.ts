@@ -36,8 +36,26 @@ import {
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
+
+function apiNamePreset(apiName: string) {
+  return {
+    value: {
+      type: "fromSource",
+      fromSource: {
+        resolver: {
+          type: "apiNameResolver",
+          apiNameResolver: { apiName },
+        },
+      },
+    },
+    exportCompatibility: "COMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: true,
+  };
+}
 
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
@@ -808,6 +826,13 @@ describe("Experimental Test Suite", () => {
           shape.type === "property" && key.includes("importedFoo")
       );
       expect(propertyInputShapes).toHaveLength(2);
+      expect(result.importedInputPresets).toEqual(
+        new Map([
+          ["object-type-importedFoo", apiNamePreset("importedFoo")],
+          ["importedFoo-property-type-id", apiNamePreset("id")],
+          ["importedFoo-property-type-name", apiNamePreset("name")],
+        ])
+      );
 
       // Local object should have an output shape, not input
       const objectOutputShapes = Array.from(
@@ -954,6 +979,9 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "com.external.pkg.externalId" },
         },
       });
+      expect(result.importedInputPresets.get(sptInputShapes[0][0])).toEqual(
+        apiNamePreset("com.external.pkg.externalId")
+      );
     });
 
     it("generates input shapes for imported action types", async () => {
@@ -990,6 +1018,11 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "Imported Action" },
         },
       });
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction")
+        )
+      ).toEqual(apiNamePreset("importedAction"));
 
       // No parameters on this action, so no parameter input shapes
       const paramInputShapes = Array.from(
@@ -1054,6 +1087,11 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "Imported Interface" },
         },
       });
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForInterface("importedInterface")
+        )
+      ).toEqual(apiNamePreset("importedInterface"));
     });
   });
 

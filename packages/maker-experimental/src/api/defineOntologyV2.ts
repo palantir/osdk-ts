@@ -17,6 +17,7 @@
 import * as fs from "fs";
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
@@ -31,12 +32,13 @@ import {
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
-import type { BlockShapes } from "../util/generateRid.js";
+import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
+  importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
 }
@@ -135,6 +137,7 @@ export async function defineOntologyV2(
   return {
     ontologyIr: ontDef,
     shapes,
+    importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
   };
