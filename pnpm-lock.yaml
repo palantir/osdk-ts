@@ -5123,6 +5123,9 @@ importers:
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.63.0
+      consola:
+        specifier: ^3.4.2
+        version: 3.4.2
     devDependencies:
       '@osdk/client.test.ontology':
         specifier: workspace:~

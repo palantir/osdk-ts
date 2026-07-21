@@ -41,7 +41,8 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript"
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "consola": "^3.4.2"
   },
   "devDependencies": {
     "@osdk/client.test.ontology": "workspace:~",

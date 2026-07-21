@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import type * as Ontology from "@osdk/foundry.ontologies";
+import { consola } from "consola";
 
 import type { LinkApiNames, LinkTargets } from "./linkTypes.js";
 import { type SchemaMap, schemaFromMetadata } from "./schema.js";
@@ -269,6 +270,9 @@ export class SeedBuilder {
       });
       nextLink = linkEntries.next();
     }
+    for (const warning of this.#warnings) {
+      consola.warn(warning);
+    }
     validateSeedObjects(objects, this.#schemaMap);
     return { objects, links } as SeedOutput;
   }
@@ -283,11 +287,17 @@ export class SeedBuilder {
   }
 }
 
-export function createSeed(
+/**
+ * Utility handle for building seeds from a metadata
+ * @param ontologyMetadata Ontology metadata to instantiate seed builder from
+ * @param fn handle to create seeds, may return an arbitrary value
+ * @returns Tuple of [SeedOutput, T]: Seed output and arbitrary value returned from fn
+ */
+export function createSeed<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
-  fn: (seed: SeedBuilder) => void
-): SeedOutput {
+  fn: (seed: SeedBuilder) => T
+): [SeedOutput, T] {
   const sb = new SeedBuilder(schemaFromMetadata(ontologyMetadata));
-  fn(sb);
-  return sb.build();
+  const result = fn(sb);
+  return [sb.build(), result];
 }
