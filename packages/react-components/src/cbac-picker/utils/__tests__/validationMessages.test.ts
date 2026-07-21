@@ -16,8 +16,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { ValidationContext } from "./validationMessages.js";
-import { getSubmitDisabledReason } from "./validationMessages.js";
+import type { ValidationContext } from "../validationMessages.js";
+import { getSubmitDisabledReason } from "../validationMessages.js";
 
 const validBase: ValidationContext = {
   isValid: true,
