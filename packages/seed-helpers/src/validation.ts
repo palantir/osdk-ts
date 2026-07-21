@@ -189,11 +189,7 @@ function collectFormatErrors(
         const format = WIRE_TYPE_FORMAT[wireType];
         if (!format) continue;
 
-        // Format regex only applies to string-encoded wire types, all of
-        // which have EXPECTED_JS_TYPE === "string"; the cast is safe here
-        // because the JS-type check above would have thrown otherwise.
         if (format.pattern.test(value as string)) continue;
-
         errors.push({
           objectType: apiName,
           objectIndex: i,

@@ -20,31 +20,18 @@ import type {
   PrimaryKeyType,
 } from "@osdk/api";
 
-/**
- * Makes nullable properties optional while keeping non-nullable ones required.
- * `{ id: string; title: string | undefined }` becomes `{ id: string; title?: string }`.
- * This ensures required fields like primary keys must always be provided.
- */
 type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
 } & {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
-/**
- * Derives the property types for seed data from the generated SDK type.
- * Uses CompileTimeMetadata<T>["props"] which resolves to the Props interface
- * on generated types (e.g., Employee.Props). Non-nullable properties like the
- * primary key are required; nullable properties are optional.
- */
 export type SeedProps<T extends ObjectTypeDefinition> =
   PartialForOptionalProperties<CompileTimeMetadata<T>["props"]>;
 
 /**
  * Unique symbol used to brand {@link SeedRef} instances. A branded type prevents
- * manually constructed objects from satisfying the interface — only `SeedBuilder.add()`
- * can produce a valid `SeedRef`. This ensures `link()` generics always have the
- * correct object type for compile-time link name and target type validation.
+ * manually constructed objects from satisfying the interface.
  */
 declare const SEED_REF_BRAND: unique symbol;
 
@@ -60,6 +47,7 @@ export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
     readonly [SEED_REF_BRAND]: Q;
   } & SeedProps<Q>
 >;
+
 /** A link entry in the seed output. */
 export interface SeedLinkEntry {
   name: string;

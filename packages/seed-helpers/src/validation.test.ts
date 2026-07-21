@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// cspell:words qdeqd
+// cspell:words asdf
 
 import { describe, expect, it } from "vitest";
 

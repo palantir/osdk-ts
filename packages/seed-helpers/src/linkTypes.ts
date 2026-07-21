@@ -32,12 +32,6 @@ export type LinkApiNames<Q extends ObjectTypeDefinition | InterfaceDefinition> =
 
 /**
  * The object or interface type on the far side of `Q`'s `A` link.
- *
- * Both `ObjectMetadata.Link` and `InterfaceMetadata.Link` carry the target
- * definition under `__OsdkLinkTargetType`, so reading it directly (rather than
- * pattern-matching against `ObjectMetadata.Link`) resolves the target for both
- * object- and interface-sourced links — including interface links whose target
- * is itself an `InterfaceDefinition`.
  */
 export type LinkTargetType<
   Q extends ObjectTypeDefinition | InterfaceDefinition,

@@ -21,11 +21,6 @@ import { SeedError } from "./SeedError.js";
 /**
  * Minimal schema for one object type — only what the {@link SeedBuilder} needs
  * to derive primary keys and validate property values.
- *
- * - `properties`: property API name → wire type (e.g. `"timestamp"`, `"long"`),
- *   used by the validator to enforce property existence, JS-type expectations,
- *   and string format regexes.
- * - `primaryKeyApiName`: PK field name, used to key objects by their primary key.
  */
 export interface ObjectTypeSchema {
   properties: Map<string, Ontology.ObjectPropertyType["type"]>;
@@ -48,10 +43,6 @@ export type SchemaMap = {
  * Builds a {@link SchemaMap} from an `OntologyFullMetadata` document — the
  * shape produced by the OSDK SDK generator and serialized to
  * `ontology-metadata.json` alongside the generated `@osdk/*` SDK package.
- *
- * Only `objectTypes` and `interfaceTypes` are read; the other top-level
- * fields (action types, query types, etc.) are not relevant to seed
- * validation.
  *
  * @throws {SeedError} if an object type's primary key is not among its
  *         declared properties.
