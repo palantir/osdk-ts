@@ -45,6 +45,7 @@ const arrayIdp: InterfaceDefinedPropertyType = {
     subType: {
       type: "string",
     },
+    reducers: [],
   },
   requireImplementation: false,
   typeClasses: [],
