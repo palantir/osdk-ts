@@ -1,0 +1,30 @@
+{
+  "name": "@monorepo-app-placeholder/components",
+  "version": "0.0.0",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./example": {
+      "types": "./dist/components/Example.d.ts",
+      "import": "./dist/components/Example.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests\"",
+    "clean": "rm -rf dist .turbo"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "~5.5.4"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}

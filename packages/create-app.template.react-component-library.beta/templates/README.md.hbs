@@ -1,0 +1,65 @@
+# {{project}}
+
+A Turborepo monorepo for an Ontology SDK React component library, scaffolded with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app). Includes:
+
+- **`apps/docs`** — Docusaurus docs site whose sidebar is grouped into _Getting Started_ (introduction, installation, project structure, the component generator, plus Blueprint and OSDK component references) and _Components_ (your own components). Each custom component page renders live with a code snippet and props table.
+- **`packages/components`** — your own React components, consumed by the docs site and publishable to your Foundry npm registry.
+
+## Quick start
+
+```sh
+npm install
+npm run dev
+```
+
+The docs site listens on `http://localhost:3000`. In **Code Workspaces** (remote dev), `npm run dev:remote` binds Docusaurus to the port + base path the preview panel exposes (`DEV_SERVER_PORT` and `DEV_SERVER_BASE_PATH` env vars), so the preview iframe renders the docs directly.
+
+Build everything: `npm run build`. The static docs bundle lands at `apps/docs/build`.
+
+## Layout
+
+```
+apps/
+  docs/        # Docusaurus 3 — the live preview surface
+packages/
+  components/  # your custom components (design-system-free)
+.claude/
+  skills/new-component/SKILL.md  # AI-driven component scaffolding
+```
+
+## Adding a component
+
+In a Claude Code session, run:
+
+```
+/new-component
+```
+
+Claude asks for a name, the props (with TypeScript types), and a one-sentence description. It then writes the component (`packages/components/src/components/<Name>.tsx`), adds a named subpath export to `packages/components/package.json` (e.g. `./user-card` → the new file), generates an MDX docs page with a `<Playground>` whose controls are auto-derived from your prop types (text inputs for strings, sliders for ranges, switches for booleans, etc.), and patches `apps/docs/sidebars.ts`.
+
+The skill prompt itself lives at `.claude/skills/new-component/SKILL.md` — open it to see (or tweak) the exact rules.
+
+## Deploying the docs site
+
+`npm run build` produces the static docs bundle at `apps/docs/build`. `create-app` generated a `foundry.config.json` at the repo root pointing `site.directory` at that folder, so you can deploy it to Foundry website hosting with:
+
+```sh
+export FOUNDRY_TOKEN=your-foundry-token
+npx @osdk/cli site deploy
+```
+
+## Publishing `@monorepo-app-placeholder/components`
+
+`packages/components` is a normal npm package. Once it is published to your Foundry npm registry, another Foundry repo can install it via the **Libraries** panel in the IDE, or manually:
+
+```sh
+npm install @monorepo-app-placeholder/components
+```
+
+Adding a new package is just adding a new workspace under `packages/` (or letting the generator do it). Rename the `@monorepo-app-placeholder` scope to your own before publishing.
+
+## Architecture notes
+
+- Turbo handles task orchestration. `turbo run build` builds `packages/components` first, then the docs site.
+- `tsconfig.base.json` is the shared baseline. Each project extends it with `composite`/`references` for incremental builds.
+- Theming lives in `apps/docs/src/css/custom.css`; it sticks close to Docusaurus's stock Infima defaults and only styles the custom MDX components.

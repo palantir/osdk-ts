@@ -61,6 +61,7 @@
     "packages/e2e.generated.catchall/",
     "packages/create-app.template.expo.v2/",
     "packages/create-app.template.react/",
+    "packages/create-app.template.react-component-library.beta/",
     "packages/create-app.template.react.beta/",
     "packages/create-app.template.tutorial-todo-aip-app/",
     "packages/create-app.template.tutorial-todo-aip-app.beta/",

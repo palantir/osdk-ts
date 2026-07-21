@@ -1,5 +1,16 @@
 {
   "$schema": "./node_modules/syncpack/schema.json",
+  "source": [
+    "package.json",
+    "packages/*/package.json",
+    "examples/*/package.json",
+    "examples-extra/*/package.json",
+    "examples-extra/basic/*/package.json",
+    "tests/*/package.json",
+    "benchmarks/*/*/package.json",
+    "docs/package.json",
+    "!**/templates/**"
+  ],
   "sortFirst": [
     "name",
     "version",
