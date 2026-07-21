@@ -99,7 +99,7 @@ describe("validateSeedObjects", () => {
     );
   });
 
-  it("throws when a string-encoded wire type gets a non-string", () => {
+  it("throws on JS type mismatches in either direction", () => {
     expect(() =>
       validateSeedObjects(
         objects({ Employee: [{ employeeId: "emp-001", createdAt: 12345 }] }),
@@ -108,9 +108,6 @@ describe("validateSeedObjects", () => {
     ).toThrow(
       /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/u
     );
-  });
-
-  it("throws when a number-typed wire type gets a string", () => {
     expect(() =>
       validateSeedObjects(
         objects({ Employee: [{ employeeId: "emp-001", age: "30" }] }),
@@ -121,16 +118,13 @@ describe("validateSeedObjects", () => {
     );
   });
 
-  it("errors on invalid timestamp format", () => {
+  it("validates timestamp format, rejecting malformed and accepting valid", () => {
     expect(() =>
       validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", createdAt: "qdeqd" }] }),
+        objects({ Employee: [{ employeeId: "emp-001", createdAt: "asdf" }] }),
         schema
       )
-    ).toThrow(/property 'createdAt' has invalid timestamp format: 'qdeqd'/u);
-  });
-
-  it("accepts valid timestamp format", () => {
+    ).toThrow(/property 'createdAt' has invalid timestamp format: 'asdf'/u);
     expect(() =>
       validateSeedObjects(
         objects({
@@ -143,7 +137,7 @@ describe("validateSeedObjects", () => {
     ).not.toThrow();
   });
 
-  it("errors on invalid long format", () => {
+  it("validates long format, rejecting malformed and accepting valid", () => {
     expect(() =>
       validateSeedObjects(
         objects({
@@ -152,9 +146,6 @@ describe("validateSeedObjects", () => {
         schema
       )
     ).toThrow(/property 'score' has invalid long format/u);
-  });
-
-  it("accepts valid long format", () => {
     expect(() =>
       validateSeedObjects(
         objects({

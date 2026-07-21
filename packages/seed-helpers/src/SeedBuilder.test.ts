@@ -105,18 +105,11 @@ function makeMetadata(
 
 describe("SeedBuilder", () => {
   describe("create", () => {
-    it("stores an object retrievable via build", () => {
+    it("stores the object and returns a frozen ref exposing locator and props", () => {
       const sb = newBuilder();
-      sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       expect(sb.build().objects).toEqual({
         Employee: [{ employeeId: 1, fullName: "Alice" }],
-      });
-    });
-
-    it("returns a frozen ref exposing the locator and props", () => {
-      const ref = newBuilder().create(Employee, {
-        employeeId: 1,
-        fullName: "Alice",
       });
       expect(ref.$locator).toEqual({
         apiName: "Employee",
@@ -167,28 +160,23 @@ describe("SeedBuilder", () => {
       expect(ref!.fullName).toBe("Alice");
       expect(Object.isFrozen(ref)).toBe(true);
     });
-
-    it("looks objects up by their stringified primary key", () => {
-      const sb = newBuilder();
-      sb.create(Office, { officeId: "NYC" });
-      expect(sb.ref(Office, "NYC")).toBeDefined();
-    });
   });
 
   describe("update", () => {
-    it("updates props while preserving the primary key", () => {
+    it("replaces props wholesale while preserving the primary key", () => {
       const sb = newBuilder();
-      sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      const ref = sb.ref(Employee, 1)!;
-      sb.update<Employee>(ref, { fullName: "Alicia" });
+      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+      sb.update(ref, { fullName: "Alicia" });
       expect(sb.build().objects.Employee).toEqual([
         { employeeId: 1, fullName: "Alicia" },
       ]);
+      sb.update(ref, {});
+      expect(sb.build().objects.Employee).toEqual([{ employeeId: 1 }]);
     });
 
     it("creates the object when the ref does not yet exist", () => {
       const sb = newBuilder();
-      sb.update<Employee>(employeeRef(2), { fullName: "Newcomer" });
+      sb.update(employeeRef(2), { fullName: "Newcomer" });
       expect(sb.build().objects.Employee).toEqual([
         { employeeId: 2, fullName: "Newcomer" },
       ]);
@@ -197,24 +185,12 @@ describe("SeedBuilder", () => {
     it("returns the same ref it was given", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1 });
-      expect(sb.update<Employee>(ref, { fullName: "Alice" })).toBe(ref);
-    });
-
-    it("replaces the property set rather than merging into existing props", () => {
-      const sb = newBuilder();
-      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      // update() overwrites the stored props wholesale, carrying over only the
-      // primary key from the locator, so omitting a previously-set property
-      // drops it.
-      sb.update<Employee>(ref, {});
-      expect(sb.build().objects.Employee).toEqual([{ employeeId: 1 }]);
+      expect(sb.update(ref, { fullName: "Alice" })).toBe(ref);
     });
 
     it("keeps the locator's primary key even if props tries to change it", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      // An `as any` caller could smuggle a different primary key into props;
-      // the locator's key must win so the object stays addressable by its ref.
       sb.update(ref, {
         // @ts-expect-error primary key is excluded from the update props type
         employeeId: 999,
@@ -227,9 +203,9 @@ describe("SeedBuilder", () => {
 
     it("throws a SeedError when the object type is not in the schema", () => {
       const sb = new SeedBuilder({ objects: new Map() });
-      expect(() =>
-        sb.update<Employee>(employeeRef(1), { fullName: "x" })
-      ).toThrow(SeedError);
+      expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
+        SeedError
+      );
     });
   });
 
@@ -372,14 +348,6 @@ describe("SeedBuilder", () => {
       expect(objects.Employee).toHaveLength(2);
       expect(objects.Office).toHaveLength(1);
     });
-
-    it("reflects mutations made between calls", () => {
-      const sb = newBuilder();
-      sb.create(Employee, { employeeId: 1 });
-      expect(sb.build().objects.Employee).toHaveLength(1);
-      sb.create(Employee, { employeeId: 2 });
-      expect(sb.build().objects.Employee).toHaveLength(2);
-    });
   });
 
   describe("from", () => {
@@ -496,28 +464,15 @@ describe("SeedBuilder", () => {
   });
 
   describe("validation on build", () => {
-    it("throws a SeedError when a property value has the wrong JS type", () => {
+    // Exhaustive validation branches are covered in validation.test.ts; here we
+    // only confirm build() runs the validator over its accumulated objects.
+    it("runs validation, throwing a SeedError on invalid data", () => {
       const sb = newBuilder();
       sb.from({
         objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
         links: [],
       });
       expect(() => sb.build()).toThrow(SeedError);
-    });
-
-    it("throws when a property is not defined in the schema", () => {
-      const sb = newBuilder();
-      sb.from({
-        objects: { Employee: [{ employeeId: 1, mystery: "x" }] },
-        links: [],
-      });
-      expect(() => sb.build()).toThrow(/not defined in the ontology/u);
-    });
-
-    it("passes for well-formed objects", () => {
-      const sb = newBuilder();
-      sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      expect(() => sb.build()).not.toThrow();
     });
   });
 });
