@@ -206,6 +206,7 @@ The **Git policy** at the top applies — every git/gh write is a fresh `AskUser
    ```sh
    npm run lint        # ultracite (oxlint + oxfmt)
    npm run typecheck   # turbo typecheck across workspaces
+   npm run test        # vitest across workspaces
    npm run build       # turbo builds packages/components then docs
    ```
    Fix anything red before continuing.

@@ -99,6 +99,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 
 ## Testing
 
+- `packages/components` uses [Vitest](https://vitest.dev) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/). Run all tests with `npm run test` (turbo) or `npm run test:watch` inside the package. See `packages/components/src/components/Example.test.tsx` for the starter pattern.
 - Write assertions inside `it()` or `test()` blocks
 - Avoid done callbacks in async tests - use async/await instead
 - Don't use `.only` or `.skip` in committed code

@@ -15,13 +15,21 @@
     "build": "tsc -b",
     "dev": "tsc -b --watch",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"no tests\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "rm -rf dist .turbo"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "typescript": "~5.5.4"
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "typescript": "~5.5.4",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "react": "^18",
