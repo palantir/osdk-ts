@@ -119,10 +119,6 @@ const preview: Preview = {
           // type syntax (no `: Type` annotations). The logic below is written
           // to type-check without them — array indexOf instead of an untyped
           // helper or dynamic object indexing.
-          //
-          // Sub-section order within a component: Docs, Examples, then
-          // component-root stories (e.g. the Default landing demo), then
-          // Features, then anything else, with internal "Building Blocks" last.
           const sectionOrder = ["Docs", "Examples", "__root__", "Features"];
           const aSub = aParts.length > 2 ? aParts[2] : "__root__";
           const bSub = bParts.length > 2 ? bParts[2] : "__root__";
