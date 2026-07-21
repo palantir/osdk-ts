@@ -532,7 +532,7 @@ describe("createSeed", () => {
   });
 
   it("runs the callback and returns the built output", () => {
-    const out = createSeed(metadata, (sb) => {
+    const [out] = createSeed(metadata, (sb) => {
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
     });
     expect(out).toEqual({
@@ -542,7 +542,7 @@ describe("createSeed", () => {
   });
 
   it("derives the primary key from the metadata", () => {
-    const out = createSeed(metadata, (sb) => {
+    const [out] = createSeed(metadata, (sb) => {
       const office = sb.create(Office, { officeId: "NYC" });
       const emp = sb.create(Employee, { employeeId: 1 });
       sb.link(emp, "officeLink", office);
