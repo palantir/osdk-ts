@@ -14,36 +14,11 @@
  * limitations under the License.
  */}
 
-import { Canvas, Markdown, Meta } from "@storybook/addon-docs/blocks";
+import { Meta } from "@storybook/addon-docs/blocks";
 import objectTableDocs from "@docs/ObjectTableOverview.md?raw";
+import { ComponentDoc } from "../../util/ComponentDoc.js";
 import * as ObjectTableStories from "./ObjectTable.stories";
 
 <Meta title="Components/ObjectTable/Docs" tags={["beta"]} />
 
-export const doc = (() => {
-  // Split YAML frontmatter (--- title / description ---) from the Markdown body
-  // so this MDX owns the single rendered <h1> + description.
-  const match = objectTableDocs.match(/^---\n([\s\S]*?)\n---\n/);
-  const meta = {};
-  let body = objectTableDocs;
-  if (match) {
-    body = objectTableDocs.slice(match[0].length);
-    for (const line of match[1].split("\n")) {
-      const idx = line.indexOf(":");
-      if (idx > 0) meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
-    }
-  }
-  return {
-    title: meta.title ?? "",
-    description: meta.description ?? "",
-    body,
-  };
-})();
-
-<h1>{doc.title}</h1>
-
-<p>{doc.description}</p>
-
-<Canvas of={ObjectTableStories.Default} />
-
-<Markdown>{doc.body}</Markdown>
+<ComponentDoc raw={objectTableDocs} canvasOf={ObjectTableStories.Default} />

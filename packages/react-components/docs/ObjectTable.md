@@ -1643,6 +1643,8 @@ These feed into the per-element border variables above.
 | `--osdk-table-border-width` | `var(--osdk-surface-border-width)`                                    | Base width for all table borders.    |
 | `--osdk-table-border`       | `var(--osdk-table-border-width) solid var(--osdk-table-border-color)` | Base table border (outermost edges). |
 
+See [CSSVariables.md](./CSSVariables.md) for the canonical reference of every `--osdk-table-*` token.
+
 ### Override examples
 
 Each example below scopes overrides under a `className` passed to `<ObjectTable className="my-table" />` so other tables on the page are unaffected. Drop the class selector to apply globally via `:root` in the `user.theme` layer.
