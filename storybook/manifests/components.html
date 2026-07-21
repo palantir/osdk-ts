@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/190 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">32/32 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">32/32 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/191 story errors</a></div>
   </div>
 </header>
 <main>
@@ -7743,7 +7743,7 @@ export const WithPdfViewerProps: Story = {
       <div class="badges">
         <label for="c-11-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-11-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-11-components-filterlist-stories" class="badge ok as-toggle">28 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -7806,7 +7806,7 @@ import { ObjectTable } from &quot;@osdk/react-components/experimental/object-tab
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { useArgs } from &quot;storybook/preview-api&quot;;
-import { fn } from &quot;storybook/test&quot;;
+import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
@@ -9101,6 +9101,103 @@ export const WithCheckbox: Story = {
     },
   },
   render: (args) =&gt; &lt;WithCheckboxStory {...args} /&gt;,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const expectedDepartmentOrder = [
+      &quot;Engineering&quot;,
+      &quot;Marketing&quot;,
+      &quot;Design&quot;,
+      &quot;Data&quot;,
+      &quot;Finance&quot;,
+    ];
+
+    const visibleDepartmentOrder = () =&gt;
+      canvas
+        .getAllByRole(&quot;button&quot;, {
+          name: /^(Engineering|Marketing|Design|Data|Finance)\s+\d+/u,
+        })
+        .map((row) =&gt; {
+          const label = expectedDepartmentOrder.find((name) =&gt;
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from &quot;${row.textContent}&quot;`
+            );
+          }
+          return label;
+        });
+
+    await canvas.findByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; });
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
+    await waitFor(() =&gt;
+      expect(
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;)
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
+    await waitFor(() =&gt;
+      expect(
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;)
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+  },
+};
+
+function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
+      {
+        type: &quot;PROPERTY&quot;,
+        id: &quot;department-below-fold&quot;,
+        key: &quot;department&quot;,
+        label: &quot;Department&quot;,
+        filterComponent: &quot;LISTOGRAM&quot;,
+        // &quot;Sales&quot; sorts below the collapsed fold, so seeding it as selected
+        // exercises the tail-append path: it stays visible, appended after the
+        // head rows, without being hoisted above the fold.
+        filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
+      },
+    ],
+    []
+  );
+
+  return (
+    &lt;div style={SIDEBAR_STYLE}&gt;
+      &lt;FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const WithBelowFoldSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;A selected value that sorts below the collapsed fold stays visible, &quot; +
+          &quot;appended at the tail of the collapsed view rather than hoisted to &quot; +
+          &#39;the top. The &quot;View all&quot; button remains so the rest can be revealed.&#39;,
+      },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
+  ]}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;WithBelowFoldSelectionStory {...args} /&gt;,
 };
 
 function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
@@ -10843,6 +10940,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
               
               
               <pre><code>const WithCheckbox = () =&gt; &lt;WithCheckboxStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount={false}
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Below Fold Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBelowFoldSelection = () =&gt; &lt;WithBelowFoldSelectionStory
     title=&quot;Filters&quot;
     enableSorting={false}
     showResetButton={false}
@@ -28481,7 +28599,7 @@ export const WithPdfViewerProps: Story = {
       <div class="badges">
         <label for="c-error-11-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-11-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-11-components-filterlist-stories" class="badge ok as-toggle">27 stories</label>
+        <label for="c-error-11-components-filterlist-stories" class="badge ok as-toggle">28 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -28544,7 +28662,7 @@ import { ObjectTable } from &quot;@osdk/react-components/experimental/object-tab
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { useArgs } from &quot;storybook/preview-api&quot;;
-import { fn } from &quot;storybook/test&quot;;
+import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
@@ -29839,6 +29957,103 @@ export const WithCheckbox: Story = {
     },
   },
   render: (args) =&gt; &lt;WithCheckboxStory {...args} /&gt;,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const expectedDepartmentOrder = [
+      &quot;Engineering&quot;,
+      &quot;Marketing&quot;,
+      &quot;Design&quot;,
+      &quot;Data&quot;,
+      &quot;Finance&quot;,
+    ];
+
+    const visibleDepartmentOrder = () =&gt;
+      canvas
+        .getAllByRole(&quot;button&quot;, {
+          name: /^(Engineering|Marketing|Design|Data|Finance)\s+\d+/u,
+        })
+        .map((row) =&gt; {
+          const label = expectedDepartmentOrder.find((name) =&gt;
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from &quot;${row.textContent}&quot;`
+            );
+          }
+          return label;
+        });
+
+    await canvas.findByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; });
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
+    await waitFor(() =&gt;
+      expect(
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;)
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
+    await waitFor(() =&gt;
+      expect(
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;)
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+  },
+};
+
+function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
+      {
+        type: &quot;PROPERTY&quot;,
+        id: &quot;department-below-fold&quot;,
+        key: &quot;department&quot;,
+        label: &quot;Department&quot;,
+        filterComponent: &quot;LISTOGRAM&quot;,
+        // &quot;Sales&quot; sorts below the collapsed fold, so seeding it as selected
+        // exercises the tail-append path: it stays visible, appended after the
+        // head rows, without being hoisted above the fold.
+        filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
+      },
+    ],
+    []
+  );
+
+  return (
+    &lt;div style={SIDEBAR_STYLE}&gt;
+      &lt;FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const WithBelowFoldSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;A selected value that sorts below the collapsed fold stays visible, &quot; +
+          &quot;appended at the tail of the collapsed view rather than hoisted to &quot; +
+          &#39;the top. The &quot;View all&quot; button remains so the rest can be revealed.&#39;,
+      },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
+  ]}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;WithBelowFoldSelectionStory {...args} /&gt;,
 };
 
 function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
@@ -31581,6 +31796,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
               
               
               <pre><code>const WithCheckbox = () =&gt; &lt;WithCheckboxStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount={false}
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Below Fold Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithBelowFoldSelection = () =&gt; &lt;WithBelowFoldSelectionStory
     title=&quot;Filters&quot;
     enableSorting={false}
     showResetButton={false}
