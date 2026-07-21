@@ -5,12 +5,6 @@ description: An OSDK-aware data table for ontology objects. Renders rows from an
 
 > **Beta** — exported from `@osdk/react-components/experimental/object-table`.
 
-<!--
-  One-pager overview rendered by the Storybook "Components/ObjectTable/Docs"
-  page. `draft: true` keeps it out of the Docusaurus production build (the full
-  reference lives in ObjectTable.md); gen-props still populates the props table
-  below and Storybook still renders this file via the @docs alias.
--->
 
 ## Usage
 
@@ -92,34 +86,3 @@ The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM an
 | Column config dialog   | —                                                                                                                                                                          | `--osdk-table-column-config-dialog-min-width`<br /> `--osdk-table-column-config-dialog-min-height`<br /> `--osdk-table-column-config-visible-columns-bg`                                                                                                                                                                                                                       |
 | Skeleton loading rows  | —                                                                                                                                                                          | `--osdk-table-skeleton-color-from`<br /> `--osdk-table-skeleton-color-to`                                                                                                                                                                                                                                                                                                      |
 | Shared border tokens   | —                                                                                                                                                                          | `--osdk-table-border`<br /> `--osdk-table-border-color`<br /> `--osdk-table-border-width`                                                                                                                                                                                                                                                                                      |
-
-CSS variables cascade, so overriding one on a parent affects every nested row or cell. Scope overrides under the table's `className` so other tables on the page are unaffected:
-
-```tsx
-<ObjectTable objectType={Employee} className="my-table" />
-```
-
-```css
-/* Brand the header and tint editable cells. */
-.my-table {
-  --osdk-table-header-bg: #1e40af;
-  --osdk-table-header-color: #ffffff;
-}
-
-.my-table td[data-editable="true"] {
-  --osdk-table-cell-bg: #fffbeb;
-}
-```
-
-For conditional row styling, attach custom attributes with `getRowAttributes` and target them with attribute selectors. Override **both** `--osdk-table-row-bg-default` and `--osdk-table-row-bg-alternate` so the rule wins regardless of zebra parity:
-
-```css
-.my-table tr[data-status="Inactive"] {
-  --osdk-table-row-bg-default: #f3f4f6;
-  --osdk-table-row-bg-alternate: #f3f4f6;
-}
-```
-
-The table reserves `data-selected`, `data-focused`, `data-row-parity`, and `data-pinned` on rows and cells — don't return those names from `getRowAttributes`.
-
-See [CSSVariables.md](./CSSVariables.md) for the canonical reference of every `--osdk-table-*` token.

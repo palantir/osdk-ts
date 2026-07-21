@@ -5,12 +5,6 @@ body,
   height: 100%;
 }
 
-/* Contain wide tables inside docs pages. addon-docs renders Markdown tables
- * as plain <table> with no overflow handling, so wide tables (e.g. the props
- * reference, whose Type column carries long generic signatures) push past the
- * content column and overflow to the right — worse once the floating TOC
- * narrows the content. Docusaurus/Infima applies this same rule by default,
- * which is why the same table stays contained there. */
 .sbdocs-content table {
   display: block;
   max-width: 100%;
