@@ -22,6 +22,8 @@ This repo is a Turborepo monorepo for a React component library, scaffolded from
 
 `apps/docs/docs/getting-started/osdk-components.mdx` is a documentation-only page describing `@osdk/react-components` (the ready-made React components that wrap the Ontology SDK: `ObjectTable`, `ActionForm`, `FilterList`, and friends). It ships as prose and links rather than live renders, because those components need a generated `@<package>/sdk` and a real ontology at runtime — neither of which exists until you generate your SDK. Once your ontology SDK is in place, you can render them live alongside your own components.
 
+The docs site itself has no auth wiring: `create-app` generates `.env.*` and `.npmrc`, but nothing in the app reads the OAuth values, and viewer access is handled by Foundry website hosting when deployed. A live client would be wired into `apps/docs/src/theme/Root.tsx` (client-side only).
+
 ## Docusaurus theming
 
 Theming lives in `apps/docs/src/css/custom.css` — it sticks close to Docusaurus's stock Infima defaults and only styles the custom MDX components. The sidebar layout is configured in `apps/docs/sidebars.ts`. Shared MDX components (`ComponentPage`, `Playground`, `Preview`, `PropsTable`, `UsageExample`) live in `apps/docs/src/components/` and are registered via `apps/docs/src/theme/MDXComponents.tsx` so they're available globally in MDX without imports. `apps/docs/src/theme/Root.tsx` imports Blueprint's CSS so Blueprint-based demos render correctly inside MDX.

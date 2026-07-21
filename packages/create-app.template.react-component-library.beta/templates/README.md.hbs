@@ -48,6 +48,12 @@ export FOUNDRY_TOKEN=your-foundry-token
 npx @osdk/cli site deploy
 ```
 
+## Authentication
+
+This docs site ships without any OAuth or OSDK client wiring. It renders your components and documentation as a static site, so it needs no Foundry login to view; when deployed, viewer access is gated by Foundry website hosting. `create-app` still generates `.env.*` and `.npmrc`, but nothing in the docs app reads the OAuth values today.
+
+The OSDK components section (`ObjectTable`, `ActionForm`, and friends) is documentation-only for the same reason: rendering those live needs an authenticated client and a generated ontology SDK, which do not exist until your project has an ontology. To add live OSDK previews later, wire an OAuth client into `apps/docs/src/theme/Root.tsx` (client-side only) and generate your SDK.
+
 ## Publishing `@monorepo-app-placeholder/components`
 
 `packages/components` is a normal npm package. Once it is published to your Foundry npm registry, another Foundry repo can install it via the **Libraries** panel in the IDE, or manually:
