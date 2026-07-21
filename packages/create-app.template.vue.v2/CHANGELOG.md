@@ -1,5 +1,7 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.51.0
+
 ## 2.50.0
 
 ### Minor Changes

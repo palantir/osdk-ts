@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.51.0
+
+### Minor Changes
+
+- b99b0bb: Fix type for casting interfaces to objects using generic types.
+
 ## 2.50.0
 
 ## 2.49.0
