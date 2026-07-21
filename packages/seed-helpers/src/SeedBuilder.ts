@@ -50,6 +50,10 @@ export class SeedBuilder {
   #links: Map<string, SeedLinkRecord>;
   #warnings: string[];
 
+  /**
+   * Creates a seed builder backed by the given schema map.
+   * @param schemaMap Schema map derived from ontology metadata
+   */
   constructor(schemaMap: SchemaMap) {
     this.#schemaMap = schemaMap;
     this.#objectMap = new Map();
@@ -106,6 +110,12 @@ export class SeedBuilder {
     }
   }
 
+  /**
+   * Returns a reference to a previously created object, or `undefined` if none exists.
+   * @param o Object type definition
+   * @param primaryKey Primary key value of the object
+   * @returns Reference to the object, or `undefined` if not found
+   */
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>
@@ -125,6 +135,12 @@ export class SeedBuilder {
     }) as SeedRef<Q>;
   }
 
+  /**
+   * Creates an object of the given type, returning a reference to it.
+   * @param o Object type definition
+   * @param props Object properties, including its primary key
+   * @returns Reference to the created object
+   */
   create<Q extends ObjectTypeDefinition>(
     o: Q,
     props: SeedProps<Q>
@@ -152,6 +168,12 @@ export class SeedBuilder {
     }) as SeedRef<Q>;
   }
 
+  /**
+   * Overwrites the props of the referenced object, keeping its primary key.
+   * @param ref Reference to the object to update
+   * @param props New object properties, excluding the primary key
+   * @returns The same reference passed in
+   */
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
     props: Q extends ObjectTypeDefinition
@@ -176,6 +198,10 @@ export class SeedBuilder {
     return ref;
   }
 
+  /**
+   * Removes the referenced object from the seed.
+   * @param ref Reference to the object to delete
+   */
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
     const { apiName, primaryKeyValue } = ref.$locator;
     const schema = this.#schemaMap.objects.get(apiName);
@@ -191,6 +217,12 @@ export class SeedBuilder {
     }
   }
 
+  /**
+   * Links the source object to one or more targets via the given link type.
+   * @param source Reference to the source object
+   * @param apiName Link type API name
+   * @param target Reference (or references) to the target object(s)
+   */
   link<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
     source: SeedRef<Q>,
     apiName: A,
@@ -216,6 +248,12 @@ export class SeedBuilder {
     });
   }
 
+  /**
+   * Removes links from the source object to the given targets via the link type.
+   * @param source Reference to the source object
+   * @param apiName Link type API name
+   * @param target Reference (or references) to the target object(s)
+   */
   unlink<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
     source: SeedRef<Q>,
     apiName: A,
@@ -239,6 +277,10 @@ export class SeedBuilder {
     }
   }
 
+  /**
+   * Validates the accumulated objects and links and returns the seed output.
+   * @returns The built seed output
+   */
   build(): SeedOutput {
     const objects: SeedOutput["objects"] = {};
     const entries = this.#objectMap.entries();
