@@ -70,6 +70,8 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const toggleExpanded = useCallback(() => setIsExpanded((v) => !v), []);
+
   const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
@@ -208,8 +210,7 @@ function ListogramInputInner({
               type="button"
               className={styles.viewAllButton}
               aria-expanded={isExpanded}
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => setIsExpanded((v) => !v)}
+              onClick={toggleExpanded}
             >
               {isExpanded ? "View less" : `View all (${filteredValues.length})`}
             </Button>
