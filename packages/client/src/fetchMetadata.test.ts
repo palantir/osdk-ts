@@ -272,6 +272,16 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooArray": {
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "hasReducers": false,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooIdp": {
             "description": "A Foo IDP",
             "displayName": "Foo IDP",
