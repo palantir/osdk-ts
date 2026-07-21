@@ -776,9 +776,236 @@ describe("DropdownField", () => {
       expect(onChange).not.toHaveBeenCalled();
     });
   });
+
+  describe("creatable", () => {
+    // Coerces the query to upper case so the test can prove the committed value
+    // is what `createItemFromQuery` returned, not the raw query text.
+    const coerceToUpper = (query: string): string => query.trim().toUpperCase();
+
+    async function openAndType(text: string): Promise<HTMLElement> {
+      fireEvent.click(screen.getByRole("combobox"));
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+      const input = screen.getByPlaceholderText("Search…");
+      fireEvent.change(input, { target: { value: text } });
+      return input;
+    }
+
+    it("renders a searchable combobox when createItemFromQuery is provided without isSearchable", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+    });
+
+    it("shows a synthetic create item when the query matches no option", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      await openAndType("Dana");
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: 'Create "Dana"' })
+        ).toBeDefined();
+      });
+    });
+
+    it("does not show a create item for an empty or whitespace query", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      await openAndType("   ");
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
+    it("does not show a create item when the query matches an existing option", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      await openAndType("Alice");
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
+    it("commits the coerced value when the create item is clicked", async () => {
+      const onChange = vi.fn();
+      const createItemFromQuery = vi.fn(coerceToUpper);
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          onChange={onChange}
+          createItemFromQuery={createItemFromQuery}
+        />
+      );
+
+      await openAndType("dana");
+
+      const createOption = await vi.waitFor(() =>
+        screen.getByRole("option", { name: 'Create "dana"' })
+      );
+      fireEvent.click(createOption);
+
+      await vi.waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith("DANA", expect.anything());
+      });
+      expect(createItemFromQuery).toHaveBeenCalledWith("dana");
+    });
+
+    it("commits the coerced value when Enter is pressed on the create item", async () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          onChange={onChange}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      const input = await openAndType("dana");
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: 'Create "dana"' })
+        ).toBeDefined();
+      });
+
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      await vi.waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith("DANA", expect.anything());
+      });
+    });
+
+    it("does not show a create item when createItemFromQuery rejects the query", async () => {
+      render(
+        <DropdownField<number>
+          value={null}
+          items={NUMBER_ITEMS}
+          isSearchable={true}
+          createItemFromQuery={(query) => {
+            const parsed = Number(query.trim());
+            return Number.isNaN(parsed) ? undefined : parsed;
+          }}
+        />
+      );
+
+      await openAndType("abc");
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("No results")).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
+    it("renders a custom create label via renderCreateLabel", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          createItemFromQuery={coerceToUpper}
+          renderCreateLabel={(query) => <span>Add {query}</span>}
+        />
+      );
+
+      await openAndType("Dana");
+
+      await vi.waitFor(() => {
+        const option = screen.getByRole("option", { name: 'Create "Dana"' });
+        expect(within(option).getByText("Add Dana")).toBeDefined();
+      });
+    });
+
+    it("appends the coerced value to the selection in multi-select", async () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          onChange={onChange}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      await openAndType("dana");
+
+      const createOption = await vi.waitFor(() =>
+        screen.getByRole("option", { name: 'Create "dana"' })
+      );
+      fireEvent.click(createOption);
+
+      await vi.waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith(
+          ["Alice", "DANA"],
+          expect.anything()
+        );
+      });
+    });
+
+    it("does not offer to create a value already selected in multi-select", async () => {
+      render(
+        <DropdownField<string, true>
+          value={["DANA"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          createItemFromQuery={coerceToUpper}
+        />
+      );
+
+      await openAndType("dana");
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("No results")).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+  });
 });
 
 const STRING_ITEMS = ["Alice", "Bob", "Charlie"];
+
+const NUMBER_ITEMS = [1, 2, 3];
 
 interface TestUser {
   id: number;
