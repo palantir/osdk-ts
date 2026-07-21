@@ -30,7 +30,7 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -1325,6 +1325,103 @@ export const WithCheckbox: Story = {
     },
   },
   render: (args) => <WithCheckboxStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expectedDepartmentOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    const visibleDepartmentOrder = () =>
+      canvas
+        .getAllByRole("button", {
+          name: /^(Engineering|Marketing|Design|Data|Finance)\s+\d+/u,
+        })
+        .map((row) => {
+          const label = expectedDepartmentOrder.find((name) =>
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from "${row.textContent}"`
+            );
+          }
+          return label;
+        });
+
+    await canvas.findByRole("button", { name: "Marketing 4" });
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "true")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "false")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+  },
+};
+
+function WithBelowFoldSelectionStory(args: Partial<EmployeeFilterListProps>) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-below-fold",
+        key: "department",
+        label: "Department",
+        filterComponent: "LISTOGRAM",
+        // "Sales" sorts below the collapsed fold, so seeding it as selected
+        // exercises the tail-append path: it stays visible, appended after the
+        // head rows, without being hoisted above the fold.
+        filterState: { type: "EXACT_MATCH", values: ["Sales"] },
+      },
+    ],
+    []
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithBelowFoldSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A selected value that sorts below the collapsed fold stays visible, " +
+          "appended at the tail of the collapsed view rather than hoisted to " +
+          'the top. The "View all" button remains so the rest can be revealed.',
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: ["Sales"] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithBelowFoldSelectionStory {...args} />,
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
