@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.43.0
+
+### Minor Changes
+
+- c2df0ff: Refactor the CBAC picker's max-classification callout from a hook that returned JSX (`useConstraintCallout`) into a `ConstraintCallout` component. Internal cleanup with no change to the public API or behavior.
+- 5e9775e: Stop listogram filter rows reordering when a checkbox is toggled; render values in natural count/value order and append below-fold selections at the tail in the collapsed view.
+
 ## 0.42.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.51.0
+
+### Minor Changes
+
+- d96b5de: Export scenario helpers from experimental
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+
 ## 2.50.0
 
 ### Patch Changes
