@@ -104,34 +104,7 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 };
 
 /**
- * Validates seed objects against the ontology schema. This is the same
- * content validation the standalone seed compiler used to perform, folded
- * into the builder so `createSeed()` output needs no separate compile step.
- *
- * Hard errors (thrown immediately as {@link SeedError}) for any of:
- *
- *   - Object types in the seed output not defined in the ontology.
- *   - Property names on a seed object not defined on that type.
- *   - `null`/`undefined` property values. Typed callers can't reach this
- *     (the builder's `SeedProps<Q>` rejects `null`); any null at runtime is
- *     a sign of `as any` or a hand-rolled output.
- *   - JS type mismatches against the cataloged wire-type-to-JS-type map
- *     (e.g., `age: "30"` when `age` is an integer, or `score: 30` when
- *     `score` is a long).
- *
- * For wire types whose runtime shape this validator doesn't catalog
- * (`attachment`, `mediaReference`, `geopoint`, `geoshape`, `vector`,
- * `array`, `struct`), JS-type checking is skipped — they have non-primitive
- * shapes that would need bespoke validation. They still go through the
- * earlier object-type / property-name / null checks.
- *
- * After JS-type validation, string values are checked against the format
- * regex for their wire type (timestamp, date, datetime, long, decimal).
- * The one thing TypeScript cannot distinguish on its own is whether a
- * `string` value matches its wire format (e.g., `"not-a-date"` vs
- * `"2025-01-01T00:00:00Z"` are both valid `string` to the type system);
- * format validation fills that gap. Format failures are collected across the
- * whole output and reported together.
+ * Validates each seed object entry against format & metadata.
  *
  * @throws {SeedError} on any structural violation listed above, or listing all
  *         format failures grouped by object type.
