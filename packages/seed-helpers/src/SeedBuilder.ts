@@ -56,6 +56,10 @@ export class SeedBuilder {
     this.#warnings = [];
   }
 
+  /**
+   * Creates a derived seed from an existing seed output. Must match the schema map metadata supplied at construction.
+   * @param seed Seed output to derive from
+   */
   from(seed: SeedOutput): void {
     const objectEntries = Object.entries(seed.objects).flatMap(
       ([apiName, objects]) => objects.map((o) => [apiName, o] as const)

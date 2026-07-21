@@ -215,7 +215,7 @@ describe("SeedBuilder", () => {
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       // An `as any` caller could smuggle a different primary key into props;
       // the locator's key must win so the object stays addressable by its ref.
-      sb.update<Employee>(ref, {
+      sb.update(ref, {
         // @ts-expect-error primary key is excluded from the update props type
         employeeId: 999,
         fullName: "Alicia",
@@ -477,8 +477,6 @@ describe("SeedBuilder", () => {
       const sb = newBuilder();
       const office = sb.create(Office, { officeId: "NYC" });
       sb.create(Employee, { employeeId: 1 });
-      // The link's endpoints were created directly, not via `from`, so this
-      // exercises ref resolution against pre-existing builder state.
       void office;
       sb.from({
         objects: {},
@@ -500,8 +498,6 @@ describe("SeedBuilder", () => {
   describe("validation on build", () => {
     it("throws a SeedError when a property value has the wrong JS type", () => {
       const sb = newBuilder();
-      // `from` accepts an untyped SeedOutput, so this mimics an `as any`
-      // caller slipping a number into a string-typed property.
       sb.from({
         objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
         links: [],
