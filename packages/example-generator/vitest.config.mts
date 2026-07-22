@@ -20,6 +20,18 @@ export default defineConfig({
   test: {
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    coverage: {
+      include: ["src/**"],
+      // Exclude tests, generated code, and index.ts barrels (no logic).
+      exclude: [
+        "**/*.test.*",
+        "**/__tests__/**",
+        "**/__mocks__/**",
+        "**/generatedNoCheck/**",
+        "**/*.d.ts",
+        "**/index.ts",
+      ],
+    },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
