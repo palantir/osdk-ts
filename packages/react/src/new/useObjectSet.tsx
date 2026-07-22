@@ -119,6 +119,12 @@ export interface UseObjectSetOptions<
   $select?: readonly PropertyKeys<Q>[];
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -312,6 +318,8 @@ export function useObjectSet<
             autoFetchMore: otherOptions.autoFetchMore,
             streamUpdates,
             select: canonOptions.$select,
+            $includeAllBaseObjectProperties:
+              otherOptions.$includeAllBaseObjectProperties,
           },
           observer
         );
@@ -338,6 +346,7 @@ export function useObjectSet<
     otherOptions.pageSize,
     otherOptions.autoFetchMore,
     otherOptions.dedupeIntervalMs,
+    otherOptions.$includeAllBaseObjectProperties,
     streamUpdates,
     objectTypeKey,
   ]);

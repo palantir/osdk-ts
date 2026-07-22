@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+
+import { additionalContext } from "../../../Client.js";
+import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -101,8 +105,9 @@ export class ObjectSetHelper extends AbstractHelper<
 
   getQuery(options: ObjectSetQueryOptions): ObjectSetQuery {
     const { baseObjectSet } = options;
-    const baseObjectSetWire = JSON.stringify(getWireObjectSet(baseObjectSet));
-    const operations = this.buildCanonicalizedOperations(options);
+    const baseWire = getWireObjectSet(baseObjectSet);
+    const baseObjectSetWire = JSON.stringify(baseWire);
+    const operations = this.buildCanonicalizedOperations(options, baseWire);
 
     const objectSetCacheKey = this.cacheKeys.get<ObjectSetCacheKey>(
       "objectSet",
@@ -123,7 +128,8 @@ export class ObjectSetHelper extends AbstractHelper<
   }
 
   private buildCanonicalizedOperations(
-    options: ObjectSetQueryOptions
+    options: ObjectSetQueryOptions,
+    baseWire: WireObjectSet
   ): Canonical<ObjectSetOperations> {
     const operations: ObjectSetOperations = {};
 
@@ -179,6 +185,98 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.loadPropertySecurity = true;
     }
 
+    // The flag is interface-only on the server. Keep it only when the base set
+    // resolves to an interface, so it never fragments the cache over a no-op flag
+    // for a Base Object Set. This ignores pivotTo, so a pivot onto objects can
+    // still send the flag; gating on the true post-pivot type needs async
+    // metadata resolution on this synchronous path, which isn't worth it. Results
+    // stay correct (the server ignores the flag); the cost is cache fragmentation.
+    if (
+      options.$includeAllBaseObjectProperties &&
+      baseSetMayResolveToInterface(
+        baseWire,
+        this.store.client[additionalContext]
+      )
+    ) {
+      operations.includeAllBaseObjectProperties = true;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
+  }
+}
+
+/**
+ * Whether an Object Set's result type may be an interface, used to gate the
+ * interface-only flag. Recurses through type-preserving wrappers; set operations
+ * return true if any operand may be an interface (reference/static can sit at
+ * index 0, so the first operand alone isn't representative). See groups below:
+ * false for provably-object (base, searchAround) and unreachable-here (reference,
+ * static, methodInput); asType resolved precisely from the recorded narrow-to
+ * kind; interfaceLinkSearchAround returns true (can't resolve synchronously, so
+ * err toward sending rather than dropping a meaningful flag).
+ *
+ * Terminates: each call descends into a strict child of a finite acyclic tree
+ * (callers JSON.stringify it first, throwing on a cycle before we get here).
+ */
+function baseSetMayResolveToInterface(
+  wire: WireObjectSet,
+  clientCtx: MinimalClient
+): boolean {
+  switch (wire.type) {
+    case "interfaceBase":
+      return true;
+    case "filter":
+    case "withProperties":
+    case "nearestNeighbors":
+    case "asBaseObjectTypes":
+      return baseSetMayResolveToInterface(wire.objectSet, clientCtx);
+    case "union":
+    case "intersect":
+    case "subtract":
+      // Operands share a result type, but reference/static operands resolve to
+      // "not an interface" and can sit at any position (e.g. hydrate builds
+      // intersect([interfaceBase, reference])). Scan the whole list — like
+      // extractObjectOrInterfaceType — so an interface operand isn't missed just
+      // because index 0 happens to be a reference/static. (Empty list → false.)
+      return wire.objectSets.some((os) =>
+        baseSetMayResolveToInterface(os, clientCtx)
+      );
+    // Always an "object", searchAround for interfaces uses "interfaceLinkSearchAround"
+    case "base":
+    case "searchAround":
+      return false;
+    // interfaceLinkSearchAround resolves to whatever the interface link targets,
+    // which needs async resolution (see extractObjectOrInterfaceType) and this
+    // path is synchronous. Rather than risk dropping a meaningful flag we send it
+    // (return true), accepting cache fragmentation when the result is actually
+    // objects — the server ignores the flag for non-interface results.
+    case "interfaceLinkSearchAround":
+      return true;
+    case "asType": {
+      // The narrowed-to kind is recorded synchronously when narrowToType() is
+      // called (see extractObjectOrInterfaceType), so resolve it precisely. Drop
+      // the flag only when we know it was narrowed to an object; otherwise
+      // (interface, or unrecorded because the set was built on a different client)
+      // send it rather than risk dropping a meaningful flag.
+      const kind =
+        clientCtx.narrowTypeInterfaceOrObjectMapping[wire.entityType];
+      return kind === "interface";
+    }
+    // Effectively unreachable at this position: methodInput only lives inside RDP
+    // definitions (we recurse through withProperties.objectSet, never into
+    // derivedProperties), and reference/static are always wrapped behind a
+    // base/interfaceBase first operand by the hydrate utils. Returning false is
+    // inconsequential here; kept for exhaustiveness.
+    case "reference":
+    case "static":
+    case "methodInput":
+      return false;
+    default: {
+      ((_: never) => {
+        // eslint-disable-next-line no-console
+        console.warn("Unknown object set type:", wire);
+      })(wire);
+      return false;
+    }
   }
 }
