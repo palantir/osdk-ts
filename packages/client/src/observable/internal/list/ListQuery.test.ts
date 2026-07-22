@@ -392,6 +392,82 @@ describe("ListQuery autoFetchMore tests", () => {
   });
 });
 
+describe("ListQuery $includeAllBaseObjectProperties cache isolation", () => {
+  let client: Client;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient
+    );
+    ({ client, fauxFoundry } = testSetup);
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    fauxFoundry.getDefaultDataStore().clear();
+  });
+
+  it("uses distinct object entries for flag-on and flag-off interface reads", async () => {
+    fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Santa Claus",
+      office: "NYC",
+    });
+
+    const withFlag = mockListSubCallback();
+    const withFlagSubscription = store.lists.observe(
+      {
+        type: FooInterface,
+        $includeAllBaseObjectProperties: true,
+      },
+      withFlag
+    );
+    defer(withFlagSubscription);
+    await waitForPayload(
+      withFlag,
+      (p) => p?.status === "loaded" && (p.resolvedList?.length ?? 0) > 0
+    );
+
+    const withoutFlag = mockListSubCallback();
+    const withoutFlagSubscription = store.lists.observe(
+      { type: FooInterface },
+      withoutFlag
+    );
+    defer(withoutFlagSubscription);
+    await waitForPayload(
+      withoutFlag,
+      (p) => p?.status === "loaded" && (p.resolvedList?.length ?? 0) > 0
+    );
+
+    const getObjectKey = (subscription: typeof withFlagSubscription) => {
+      return store.getValue(subscription.query.cacheKey)?.value?.data[0];
+    };
+
+    const withFlagObjectKey = getObjectKey(withFlagSubscription);
+    const withoutFlagObjectKey = getObjectKey(withoutFlagSubscription);
+    expect(withFlagObjectKey).toBeDefined();
+    expect(withoutFlagObjectKey).toBeDefined();
+    expect(withFlagObjectKey).not.toBe(withoutFlagObjectKey);
+
+    await withFlagSubscription.query.revalidate(true);
+    expect(getObjectKey(withFlagSubscription)).toBe(withFlagObjectKey);
+    expect(getObjectKey(withoutFlagSubscription)).toBe(withoutFlagObjectKey);
+
+    await withoutFlagSubscription.query.revalidate(true);
+    expect(getObjectKey(withFlagSubscription)).toBe(withFlagObjectKey);
+    expect(getObjectKey(withoutFlagSubscription)).toBe(withoutFlagObjectKey);
+  });
+});
+
 describe("ListQuery sort stability across pages", () => {
   let client: Client;
   let apiServer: SetupServer;

@@ -60,7 +60,8 @@ export class ObjectsHelper extends AbstractHelper<
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    rdpConfig?: Canonical<Rdp> | null
+    rdpConfig?: Canonical<Rdp> | null,
+    objectKeyIncludeAllBaseObjectProperties?: true
   ): ObjectQuery {
     const apiName =
       typeof options.apiName === "string"
@@ -88,7 +89,7 @@ export class ObjectsHelper extends AbstractHelper<
       rdpConfig ?? undefined,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
-      $includeAllBaseObjectProperties
+      objectKeyIncludeAllBaseObjectProperties ?? $includeAllBaseObjectProperties
     );
 
     return this.store.queries.get(
@@ -104,7 +105,8 @@ export class ObjectsHelper extends AbstractHelper<
           defType,
           select,
           $loadPropertySecurityMetadata,
-          $includeAllBaseObjectProperties
+          objectKeyIncludeAllBaseObjectProperties ??
+            $includeAllBaseObjectProperties
         )
     );
   }
@@ -137,7 +139,8 @@ export class ObjectsHelper extends AbstractHelper<
           pk: v.$primaryKey,
           $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
         },
-        rdpConfig
+        rdpConfig,
+        includeAllBaseObjectProperties ? true : undefined
       ).writeToStore(
         concreteHolder,
         "loaded",
@@ -219,10 +222,16 @@ export class ObjectsHelper extends AbstractHelper<
       this.store.objectCacheKeyRegistry.getMetadata(sourceCacheKey);
 
     const relatedKeys = metadata
-      ? this.store.objectCacheKeyRegistry.getVariants(
-          metadata.apiName,
-          metadata.primaryKey
-        )
+      ? value === tombstone
+        ? this.store.objectCacheKeyRegistry.getAllVariants(
+            metadata.apiName,
+            metadata.primaryKey
+          )
+        : this.store.objectCacheKeyRegistry.getVariants(
+            metadata.apiName,
+            metadata.primaryKey,
+            metadata.includeAllBaseObjectProperties
+          )
       : new Set([sourceCacheKey]);
 
     for (const targetKey of relatedKeys) {
