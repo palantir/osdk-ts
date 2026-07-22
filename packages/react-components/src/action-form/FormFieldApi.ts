@@ -244,29 +244,21 @@ export interface DropdownFieldProps<
   disableClientSideFiltering?: boolean;
 
   /**
-   * Enables the creatable combobox pattern for single-select searchable
-   * dropdowns. When the trimmed search query is non-empty and matches no
-   * existing item, a synthetic "Create …" item is offered. Selecting it — by
-   * click or by pressing Enter while it is highlighted — commits the value this
-   * callback returns through `onChange`.
+   * If provided, allows new items to be created from the current search query.
+   * When the trimmed query is non-empty and matches no existing item, a
+   * "create" option is offered; selecting it — by click or by pressing Enter
+   * while it is highlighted — commits the value returned here through
+   * `onChange`.
    *
    * Coerce/convert the raw query into an item value here (e.g. via
    * `coerceFieldValue`). Return `undefined` to reject the query, in which case
-   * no create item is shown.
+   * no create option is shown.
    *
    * Providing this callback implies a searchable dropdown. Works for both
    * single-select and multi-select — multi-select behaves like a creatable tag
    * input, appending each created value to the selection.
    */
-  createItemFromQuery?: (query: string) => V | undefined;
-
-  /**
-   * Renders the label shown for the synthetic create item. Receives the trimmed
-   * query.
-   *
-   * @default query => `Create "${query}"`
-   */
-  renderCreateLabel?: (query: string) => React.ReactNode;
+  createNewItemFromQuery?: (query: string) => V | undefined;
 
   /**
    * Status message rendered below the search input and above the item list

@@ -57,8 +57,10 @@ interface InnerComboboxProps<
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
   trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
-  createItemFromQuery?: DropdownFieldProps<V, Multiple>["createItemFromQuery"];
-  renderCreateLabel?: DropdownFieldProps<V, Multiple>["renderCreateLabel"];
+  createNewItemFromQuery?: DropdownFieldProps<
+    V,
+    Multiple
+  >["createNewItemFromQuery"];
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -78,8 +80,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
-  createItemFromQuery,
-  renderCreateLabel,
+  createNewItemFromQuery,
   modal = true,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
@@ -103,7 +104,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
 
   // Creatable implies a searchable combobox: the user needs the search input
   // to type the value they want to create.
-  const isCreatable = createItemFromQuery != null;
+  const isCreatable = createNewItemFromQuery != null;
   const searchable = isSearchable || isCreatable;
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
@@ -122,8 +123,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         disableClientSideFiltering={disableClientSideFiltering}
         popupStatus={popupStatus}
         trailingItem={trailingItem}
-        createItemFromQuery={createItemFromQuery}
-        renderCreateLabel={renderCreateLabel}
+        createNewItemFromQuery={createNewItemFromQuery}
         modal={modal}
       />
     );
@@ -286,8 +286,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
-  createItemFromQuery,
-  renderCreateLabel,
+  createNewItemFromQuery,
   onBlur,
   modal = true,
   disabled,
@@ -298,7 +297,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   // Creatable works for single- and multi-select. `internalQuery` tracks the
   // search text when the query isn't controlled, so we can derive the
   // synthetic item.
-  const isCreatable = createItemFromQuery != null;
+  const isCreatable = createNewItemFromQuery != null;
   const [internalQuery, setInternalQuery] = useState("");
   const currentQuery = query ?? internalQuery;
   const trimmedQuery = isCreatable ? currentQuery.trim() : "";
@@ -316,9 +315,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   // The synthetic "Create …" item is a real (already-coerced) value injected
   // into the item list, so base-ui handles both click and Enter selection.
   const syntheticItem = useMemo<V | undefined>(() => {
-    if (!isCreatable || trimmedQuery === "" || createItemFromQuery == null) {
+    // Not creatable, or the user hasn't typed anything yet.
+    if (createNewItemFromQuery == null || trimmedQuery === "") {
       return undefined;
     }
+    // The query already names an existing option — nothing to create.
     const lowerQuery = trimmedQuery.toLowerCase();
     const matchesExisting = items.some(
       (item) => itemToStringLabel(item).trim().toLowerCase() === lowerQuery
@@ -326,7 +327,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     if (matchesExisting) {
       return undefined;
     }
-    const created = createItemFromQuery(trimmedQuery);
+    const created = createNewItemFromQuery(trimmedQuery);
     if (created === undefined) {
       return undefined;
     }
@@ -337,14 +338,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     const alreadySelected = Array.isArray(value)
       ? value.some((selected) => sameValue(created, selected as V))
       : value != null && sameValue(created, value as V);
-    if (alreadySelected) {
-      return undefined;
-    }
-    return created;
+    return alreadySelected ? undefined : created;
   }, [
-    isCreatable,
     trimmedQuery,
-    createItemFromQuery,
+    createNewItemFromQuery,
     items,
     itemToStringLabel,
     isItemEqual,
@@ -432,9 +429,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             value={item}
             aria-label={createLabel}
           >
-            {renderCreateLabel != null
-              ? renderCreateLabel(trimmedQuery)
-              : createLabel}
+            {createLabel}
           </Combobox.Item>
         );
       }
@@ -457,7 +452,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       renderItemLabel,
       syntheticItem,
       trimmedQuery,
-      renderCreateLabel,
     ]
   );
 

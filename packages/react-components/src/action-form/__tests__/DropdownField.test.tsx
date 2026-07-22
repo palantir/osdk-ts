@@ -779,25 +779,15 @@ describe("DropdownField", () => {
 
   describe("creatable", () => {
     // Coerces the query to upper case so the test can prove the committed value
-    // is what `createItemFromQuery` returned, not the raw query text.
+    // is what `createNewItemFromQuery` returned, not the raw query text.
     const coerceToUpper = (query: string): string => query.trim().toUpperCase();
 
-    async function openAndType(text: string): Promise<HTMLElement> {
-      fireEvent.click(screen.getByRole("combobox"));
-      await vi.waitFor(() => {
-        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
-      });
-      const input = screen.getByPlaceholderText("Search…");
-      fireEvent.change(input, { target: { value: text } });
-      return input;
-    }
-
-    it("renders a searchable combobox when createItemFromQuery is provided without isSearchable", async () => {
+    it("renders a searchable combobox when createNewItemFromQuery is provided without isSearchable", async () => {
       render(
         <DropdownField
           value={null}
           items={STRING_ITEMS}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -814,7 +804,7 @@ describe("DropdownField", () => {
           value={null}
           items={STRING_ITEMS}
           isSearchable={true}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -833,7 +823,7 @@ describe("DropdownField", () => {
           value={null}
           items={STRING_ITEMS}
           isSearchable={true}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -851,7 +841,7 @@ describe("DropdownField", () => {
           value={null}
           items={STRING_ITEMS}
           isSearchable={true}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -865,14 +855,14 @@ describe("DropdownField", () => {
 
     it("commits the coerced value when the create item is clicked", async () => {
       const onChange = vi.fn();
-      const createItemFromQuery = vi.fn(coerceToUpper);
+      const createNewItemFromQuery = vi.fn(coerceToUpper);
       render(
         <DropdownField
           value={null}
           items={STRING_ITEMS}
           isSearchable={true}
           onChange={onChange}
-          createItemFromQuery={createItemFromQuery}
+          createNewItemFromQuery={createNewItemFromQuery}
         />
       );
 
@@ -886,7 +876,7 @@ describe("DropdownField", () => {
       await vi.waitFor(() => {
         expect(onChange).toHaveBeenCalledWith("DANA", expect.anything());
       });
-      expect(createItemFromQuery).toHaveBeenCalledWith("dana");
+      expect(createNewItemFromQuery).toHaveBeenCalledWith("dana");
     });
 
     it("commits the coerced value when Enter is pressed on the create item", async () => {
@@ -897,7 +887,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isSearchable={true}
           onChange={onChange}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -916,13 +906,13 @@ describe("DropdownField", () => {
       });
     });
 
-    it("does not show a create item when createItemFromQuery rejects the query", async () => {
+    it("does not show a create item when createNewItemFromQuery rejects the query", async () => {
       render(
         <DropdownField<number>
           value={null}
           items={NUMBER_ITEMS}
           isSearchable={true}
-          createItemFromQuery={(query) => {
+          createNewItemFromQuery={(query) => {
             const parsed = Number(query.trim());
             return Number.isNaN(parsed) ? undefined : parsed;
           }}
@@ -937,22 +927,23 @@ describe("DropdownField", () => {
       expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
     });
 
-    it("renders a custom create label via renderCreateLabel", async () => {
+    it("renders the create option after the matching items", async () => {
       render(
         <DropdownField
           value={null}
           items={STRING_ITEMS}
           isSearchable={true}
-          createItemFromQuery={coerceToUpper}
-          renderCreateLabel={(query) => <span>Add {query}</span>}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
-      await openAndType("Dana");
+      await openAndType("Al");
 
       await vi.waitFor(() => {
-        const option = screen.getByRole("option", { name: 'Create "Dana"' });
-        expect(within(option).getByText("Add Dana")).toBeDefined();
+        const options = screen.getAllByRole("option");
+        expect(options[options.length - 1].getAttribute("aria-label")).toBe(
+          'Create "Al"'
+        );
       });
     });
 
@@ -964,7 +955,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           isMultiple={true}
           onChange={onChange}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -989,7 +980,7 @@ describe("DropdownField", () => {
           value={["DANA"]}
           items={STRING_ITEMS}
           isMultiple={true}
-          createItemFromQuery={coerceToUpper}
+          createNewItemFromQuery={coerceToUpper}
         />
       );
 
@@ -1069,4 +1060,14 @@ function arrayItemToKey(item: ArrayItem): string {
 
 function isSameArrayItem(a: ArrayItem, b: ArrayItem): boolean {
   return a[0] === b[0] && a[1] === b[1];
+}
+
+async function openAndType(text: string): Promise<HTMLElement> {
+  fireEvent.click(screen.getByRole("combobox"));
+  await vi.waitFor(() => {
+    expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+  });
+  const input = screen.getByPlaceholderText("Search…");
+  fireEvent.change(input, { target: { value: text } });
+  return input;
 }
