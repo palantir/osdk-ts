@@ -24,7 +24,7 @@ import type {
 import { describe, expect, it } from "vitest";
 
 import { codeWorkspacePreviewPlugin } from "./codeWorkspacePreviewPlugin.js";
-import { REPORTER_SCRIPT } from "./reporterScript.js";
+import { installReporter, REPORTER_SCRIPT } from "./reporterScript.js";
 
 function runTransform(
   plugin: Plugin,
@@ -81,20 +81,22 @@ interface Poster {
 }
 interface FakeWindow extends Poster {
   parent: Poster;
-  addEventListener(type: string, listener: Listener): void;
+  addEventListener(type: string, listener: Listener, capture?: boolean): void;
+  setTimeout(handler: () => void): void;
 }
 interface FakeDocument {
-  getElementById(id: string): { childElementCount: number } | null;
+  querySelector(selector: string): { childElementCount: number } | null;
 }
 
 /**
- * Runs REPORTER_SCRIPT in an isolated VM context with fake browser globals so we
- * can assert what it posts to the parent frame without a full DOM. setTimeout is
- * stubbed to run synchronously so the deferred blank-check resolves immediately.
+ * Drives installReporter directly with fake browser globals so we can assert
+ * what it posts to the parent frame without a full DOM. The fake window's
+ * setTimeout runs synchronously so the deferred blank-check resolves at once.
  */
 function runReporter(options: { framed: boolean; hasContent?: boolean }): {
   posted: PostedMessage[];
   listeners: Map<string, Listener>;
+  win: FakeWindow;
 } {
   const posted: PostedMessage[] = [];
   const listeners = new Map<string, Listener>();
@@ -111,27 +113,23 @@ function runReporter(options: { framed: boolean; hasContent?: boolean }): {
     addEventListener: (type, listener) => {
       listeners.set(type, listener);
     },
+    setTimeout: (handler) => {
+      handler();
+    },
   };
-  // Not framed => window.parent === window, which the script uses to bail out.
+  // Not framed => window.parent === window, which the reporter uses to bail out.
   win.parent = options.framed ? parentFrame : win;
   const document: FakeDocument = {
-    getElementById: (id) =>
-      id === "root"
+    querySelector: (selector) =>
+      selector === "#root"
         ? { childElementCount: options.hasContent === true ? 1 : 0 }
         : null,
   };
-  const setTimeoutStub = (fn: () => void): void => {
-    fn();
-  };
-  runInNewContext(REPORTER_SCRIPT, {
-    window: win,
-    document,
-    setTimeout: setTimeoutStub,
-  });
-  return { posted, listeners };
+  installReporter(win as unknown as Window, document as unknown as Document);
+  return { posted, listeners, win };
 }
 
-describe("REPORTER_SCRIPT", () => {
+describe("installReporter", () => {
   it("posts a ready message on load when framed", () => {
     const { posted } = runReporter({ framed: true });
     expect(posted[0]).toMatchObject({ source: "osdk-preview", kind: "ready" });
@@ -144,13 +142,13 @@ describe("REPORTER_SCRIPT", () => {
   });
 
   it("reports an uncaught error when the app rendered nothing", () => {
-    const { posted, listeners } = runReporter({
+    const { posted, listeners, win } = runReporter({
       framed: true,
       hasContent: false,
     });
     const onError = listeners.get("error");
     expect(onError).toBeDefined();
-    onError?.({ message: "boom", error: { stack: "trace" } });
+    onError?.({ target: win, message: "boom", error: { stack: "trace" } });
     expect(posted).toContainEqual(
       expect.objectContaining({
         source: "osdk-preview",
@@ -161,12 +159,29 @@ describe("REPORTER_SCRIPT", () => {
     );
   });
 
-  it("stays quiet when the app rendered content despite an error event", () => {
+  it("reports a resource load failure with the failing element's url", () => {
     const { posted, listeners } = runReporter({
+      framed: true,
+      hasContent: false,
+    });
+    listeners.get("error")?.({
+      target: { tagName: "SCRIPT", src: "/assets/chunk.js" },
+    });
+    expect(posted).toContainEqual(
+      expect.objectContaining({
+        source: "osdk-preview",
+        kind: "error",
+        message: "Failed to load script: /assets/chunk.js",
+      })
+    );
+  });
+
+  it("stays quiet when the app rendered content despite an error event", () => {
+    const { posted, listeners, win } = runReporter({
       framed: true,
       hasContent: true,
     });
-    listeners.get("error")?.({ message: "boom" });
+    listeners.get("error")?.({ target: win, message: "boom" });
     // Only the initial ready message; the blank-check suppressed the error.
     expect(posted).toEqual([
       expect.objectContaining({ source: "osdk-preview", kind: "ready" }),
@@ -189,5 +204,34 @@ describe("REPORTER_SCRIPT", () => {
         stack: "trace",
       })
     );
+  });
+});
+
+describe("REPORTER_SCRIPT", () => {
+  // Guards the installReporter.toString() serialization: the emitted IIFE must
+  // be self-contained and runnable verbatim in the browser (no references to
+  // module-level names, transpiler helpers, etc.).
+  it("runs verbatim as a self-contained IIFE and posts ready when framed", () => {
+    const posted: PostedMessage[] = [];
+    const parentFrame: Poster = {
+      postMessage: (data) => {
+        posted.push(data);
+      },
+    };
+    const win = {
+      postMessage: (data: PostedMessage) => {
+        posted.push(data);
+      },
+      parent: parentFrame,
+      addEventListener: () => {},
+      setTimeout: (fn: () => void) => {
+        fn();
+      },
+    };
+    runInNewContext(REPORTER_SCRIPT, {
+      window: win,
+      document: { querySelector: () => null },
+    });
+    expect(posted[0]).toMatchObject({ source: "osdk-preview", kind: "ready" });
   });
 });
