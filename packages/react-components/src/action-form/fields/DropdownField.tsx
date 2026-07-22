@@ -323,6 +323,24 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         : [currentValue];
   }, [value]);
 
+  // Created items only ever land in `value`, never in `items`. Surface any
+  // selected value that isn't a known item as a row (at the end, in selection
+  // order) so created items stay visible — and, in multi-select, uncheckable —
+  // after selection. Gated on creatable so plain dropdowns are unaffected.
+  const createdSelectedItems = useMemo<readonly V[]>(() => {
+    if (!isCreatable) {
+      return EMPTY_ARRAY;
+    }
+    return selectedItems.filter(
+      (selected) => !items.some((item) => getKey(item) === getKey(selected))
+    );
+  }, [isCreatable, selectedItems, items, getKey]);
+
+  const dropdownItems = useMemo(
+    () => [...items, ...createdSelectedItems],
+    [items, createdSelectedItems]
+  );
+
   // The synthetic "Create …" item is a real (already-coerced) value injected
   // into the item list, so base-ui handles both click and Enter selection.
   const syntheticItem = useMemo<V | undefined>(() => {
@@ -331,7 +349,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       return undefined;
     }
     const lowerQuery = trimmedQuery.toLowerCase();
-    const matchesExisting = items.some(
+    const matchesExisting = dropdownItems.some(
       (item) => itemToStringLabel(item).trim().toLowerCase() === lowerQuery
     );
     // The query already names an existing option — nothing to create.
@@ -352,32 +370,18 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   }, [
     trimmedQuery,
     createNewItemFromQuery,
-    items,
+    dropdownItems,
     itemToStringLabel,
     getKey,
     selectedItems,
   ]);
 
-  // Created items only ever land in `value`, never in `items`. Surface any
-  // selected value that isn't a known item as a row (at the end, in selection
-  // order) so created items stay visible — and, in multi-select, uncheckable —
-  // after selection. Gated on creatable so plain dropdowns are unaffected.
-  const createdSelectedItems = useMemo<readonly V[]>(() => {
-    if (!isCreatable) {
-      return EMPTY_ARRAY;
-    }
-    return selectedItems.filter(
-      (selected) => !items.some((item) => getKey(item) === getKey(selected))
-    );
-  }, [isCreatable, selectedItems, items, getKey]);
-
   const effectiveItems = useMemo(
     () => [
-      ...items,
-      ...createdSelectedItems,
+      ...dropdownItems,
       ...(syntheticItem !== undefined ? [syntheticItem] : []),
     ],
-    [items, createdSelectedItems, syntheticItem]
+    [dropdownItems, syntheticItem]
   );
 
   const hasValue = isMultiple
