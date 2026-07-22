@@ -599,6 +599,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -683,6 +684,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1295,6 +1297,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1379,6 +1382,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -2216,12 +2220,14 @@ describe("generator", () => {
             export type ParamsDefinition = {
               body: {
                 description: undefined;
+                displayName: 'body';
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
                 description: undefined;
+                displayName: 'taskBody';
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
