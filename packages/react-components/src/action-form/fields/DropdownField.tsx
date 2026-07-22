@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Combobox as BaseUICombobox } from "@base-ui/react/combobox";
 import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useMemo, useState } from "react";
 
@@ -315,13 +316,17 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   // Normalize single/multi selection to an array once so downstream key checks
   // (already-selected suppression, surfacing created items) are uniform.
   const selectedItems = useMemo<readonly V[]>(() => {
-    const currentValue: V[] | V | null = value;
-    return currentValue == null
-      ? EMPTY_ARRAY
-      : Array.isArray(currentValue)
-        ? currentValue
-        : [currentValue];
-  }, [value]);
+    if (value == null) {
+      return EMPTY_ARRAY;
+    }
+    // TypeScript cannot narrow the conditional value type from `isMultiple`.
+    return isMultiple ? (value as V[]) : [value as V];
+  }, [isMultiple, value]);
+
+  const areItemsEqual = useCallback(
+    (a: V, b: V) => (isItemEqual != null ? isItemEqual(a, b) : a === b),
+    [isItemEqual]
+  );
 
   // Created items only ever land in `value`, never in `items`. Surface any
   // selected value that isn't a known item as a row (at the end, in selection
@@ -332,9 +337,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       return EMPTY_ARRAY;
     }
     return selectedItems.filter(
-      (selected) => !items.some((item) => getKey(item) === getKey(selected))
+      (selected) => !items.some((item) => areItemsEqual(item, selected))
     );
-  }, [isCreatable, selectedItems, items, getKey]);
+  }, [isCreatable, selectedItems, items, areItemsEqual]);
 
   const dropdownItems = useMemo(
     () => [...items, ...createdSelectedItems],
@@ -360,20 +365,18 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     if (created === undefined) {
       return undefined;
     }
-    // Don't offer to create a value that's already selected — compare by the
-    // canonical item key (itemToKey ?? label).
-    const createdKey = getKey(created);
-    const alreadySelected = selectedItems.some(
-      (selected) => getKey(selected) === createdKey
-    );
-    return alreadySelected ? undefined : created;
+    // `dropdownItems` already includes every selected value (created selections
+    // are surfaced into it), so this also suppresses already-selected values.
+    if (dropdownItems.some((item) => areItemsEqual(item, created))) {
+      return undefined;
+    }
+    return created;
   }, [
     trimmedQuery,
     createNewItemFromQuery,
     dropdownItems,
     itemToStringLabel,
-    getKey,
-    selectedItems,
+    areItemsEqual,
   ]);
 
   const effectiveItems = useMemo(
@@ -382,6 +385,18 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       ...(syntheticItem !== undefined ? [syntheticItem] : []),
     ],
     [dropdownItems, syntheticItem]
+  );
+
+  // The synthetic "Create …" item is injected into the item list, so base-ui's
+  // built-in filter would hide it whenever its (coerced) label doesn't contain
+  // the typed query — e.g. a numeric coercer where "4.9" becomes value 4 with
+  // label "4". Exempt it by identity so it stays visible whenever it exists,
+  // while real items still filter normally via base-ui's locale-aware matcher.
+  const { contains } = BaseUICombobox.useFilter({ multiple: true });
+  const creatableFilter = useCallback(
+    (item: V, nextQuery: string, itemToString?: (item: V) => string) =>
+      item === syntheticItem || contains(item, nextQuery, itemToString),
+    [contains, syntheticItem]
   );
 
   const hasValue = isMultiple
@@ -499,7 +514,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         items={effectiveItems}
         inputValue={isCreatable ? currentQuery : query}
         onInputValueChange={handleInputValueChange}
-        filter={disableClientSideFiltering ? null : undefined}
+        filter={
+          disableClientSideFiltering
+            ? null
+            : isCreatable
+              ? creatableFilter
+              : undefined
+        }
         autoHighlight={isCreatable || undefined}
         disabled={disabled}
       >

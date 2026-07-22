@@ -853,6 +853,23 @@ describe("DropdownField", () => {
       expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
     });
 
+    it("does not create a value that is equal to an existing item", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          createNewItemFromQuery={() => "Alice"}
+        />
+      );
+
+      await openAndType("Ali");
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
     it("commits the coerced value when the create item is clicked", async () => {
       const onChange = vi.fn();
       const createNewItemFromQuery = vi.fn(coerceToUpper);
@@ -927,6 +944,29 @@ describe("DropdownField", () => {
       expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
     });
 
+    it("keeps a create item visible when coercion changes its string label", async () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField<number>
+          value={null}
+          items={[]}
+          onChange={onChange}
+          createNewItemFromQuery={(query) => Math.trunc(Number(query))}
+        />
+      );
+
+      await openAndType("3.14");
+
+      const createOption = await screen.findByRole("option", {
+        name: 'Create "3.14"',
+      });
+      fireEvent.click(createOption);
+
+      await vi.waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith(3, expect.anything());
+      });
+    });
+
     it("renders the create option after the matching items", async () => {
       render(
         <DropdownField
@@ -994,6 +1034,27 @@ describe("DropdownField", () => {
       expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
     });
 
+    it("does not offer a value matched to the selection by isItemEqual", async () => {
+      const selected = { id: 1, label: "Existing label" };
+      render(
+        <DropdownField<typeof selected, true>
+          value={[selected]}
+          items={[]}
+          isMultiple={true}
+          itemToStringLabel={(item) => item.label}
+          isItemEqual={(a, b) => a.id === b.id}
+          createNewItemFromQuery={(query) => ({ id: 1, label: query })}
+        />
+      );
+
+      await openAndType("alias");
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("No results")).toBeDefined();
+      });
+      expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
     it("surfaces a created-and-selected value as a row in multi-select", async () => {
       render(
         <DropdownField<string, true>
@@ -1016,6 +1077,27 @@ describe("DropdownField", () => {
       });
     });
 
+    it("does not duplicate a selected item matched by isItemEqual", async () => {
+      const listed = { id: 1, label: "Alice" };
+      const selected = { id: 1, label: "Alicia" };
+      render(
+        <DropdownField<typeof listed, true>
+          value={[selected]}
+          items={[listed]}
+          isMultiple={true}
+          itemToStringLabel={(item) => item.label}
+          isItemEqual={(a, b) => a.id === b.id}
+          createNewItemFromQuery={(query) => ({ id: 2, label: query })}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getAllByRole("option")).toHaveLength(1);
+      });
+    });
+
     it("surfaces a created-and-selected value as the last row in single-select", async () => {
       render(
         <DropdownField
@@ -1033,6 +1115,29 @@ describe("DropdownField", () => {
           "DANA"
         );
       });
+    });
+
+    it("treats an array-valued single selection as one item", async () => {
+      const selected: ArrayItem = ["Dana", "Reviewer"];
+      render(
+        <DropdownField<ArrayItem>
+          value={selected}
+          items={[]}
+          itemToStringLabel={arrayItemToStringLabel}
+          itemToKey={arrayItemToKey}
+          isItemEqual={isSameArrayItem}
+          createNewItemFromQuery={(query) => [query, "Created"]}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: "Dana Reviewer" })
+        ).toBeDefined();
+      });
+      expect(screen.getAllByRole("option")).toHaveLength(1);
     });
 
     it("does not surface selected-but-absent values when not creatable", async () => {
