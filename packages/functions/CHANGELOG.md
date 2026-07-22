@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.18.0
+
+### Minor Changes
+
+- d3d5895: Add new Annotated type to @osdk/functions
+
+### Patch Changes
+
+- @osdk/client@2.50.0
+
 ## 1.17.0
 
 ### Minor Changes

@@ -69,7 +69,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>
 ): Promise<Array<InterfaceHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -87,7 +88,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>
 ): Promise<Array<ObjectHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -105,7 +107,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  >
+  >,
+  objectDefsByApiName?: Record<string, ObjectMetadata>
 ): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
  * @internal
@@ -126,7 +129,8 @@ export async function convertWireToOsdkObjects(
   interfaceToObjectTypeMappingsV2: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappingsV2
-  > = {}
+  > = {},
+  objectDefsByApiName?: Record<string, ObjectMetadata>
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
@@ -141,9 +145,15 @@ export async function convertWireToOsdkObjects(
   const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
-    const objectDef = await client.ontologyProvider.getObjectDefinition(
-      rawObj.$apiName
-    );
+    // If caller supplied object definitions, use them exclusively instead of
+    // hitting the ontology provider - a missing entry is an error rather than a
+    // fallback. Only when no map is provided do we defer to the provider, so
+    // existing behavior is preserved.
+    const objectDef = (
+      objectDefsByApiName != null
+        ? objectDefsByApiName[rawObj.$apiName]
+        : await client.ontologyProvider.getObjectDefinition(rawObj.$apiName)
+    ) as FetchedObjectTypeDefinition;
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
     const interfaceToObjMapping =

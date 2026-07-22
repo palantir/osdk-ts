@@ -29,6 +29,7 @@ import type {
 import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
 
+import type { ObjectTableLabels } from "./ObjectTableLabels.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { EditFieldConfig } from "./utils/types.js";
@@ -73,7 +74,6 @@ interface SharedColumnDefinition<
   maxWidth?: number;
   resizable?: boolean;
   orderable?: boolean;
-  filterable?: boolean;
 
   /**
    * Custom renderer for the cell value.
@@ -309,6 +309,13 @@ export interface ObjectTableProps<
    */
   objectSet?: ObjectSet<Q>;
 
+  /**
+   * Ordered list of column definitions to show in the table
+   *
+   * If not provided, all of the properties of the object type will be shown in default order.
+   */
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+
   objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
@@ -342,39 +349,17 @@ export interface ObjectTableProps<
   pageSize?: number;
 
   /**
-   * Ordered list of column definitions to show in the table
-   *
-   * If not provided, all of the properties of the object type will be shown in default order.
-   */
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
-
-  /**
-   * Whether the table is filterable by the user.
-   *
-   * @default true
-   */
-  enableFiltering?: boolean;
-
-  /**
    * The current where clause to filter the objects in the table.
    * If provided, the filter is controlled.
    */
   filter?: WhereClause<Q, RDPs>;
 
   /**
-   * Called when the where clause is changed.
-   * Required when filter is controlled.
-   *
-   * @param newWhere The new where clause
-   */
-  onFilterChanged?: (newWhere: WhereClause<Q, RDPs>) => void;
-
-  /**
-   * Whether the table is sortable by the user.
+   * Whether the column configuration dialog for column visibility and ordering is available to the user.
    *
    * @default true
    */
-  enableOrdering?: boolean;
+  enableColumnConfig?: boolean;
 
   /**
    * Whether columns can be pinned by the user.
@@ -389,93 +374,6 @@ export interface ObjectTableProps<
    * @default true
    */
   enableColumnResizing?: boolean;
-
-  /**
-   * Whether the column configuration dialog for column visibility and ordering is available to the user.
-   *
-   * @default true
-   */
-  enableColumnConfig?: boolean;
-
-  /**
-   * Controls the edit mode behavior of the table.
-   * - "always": Editable cells are immediately in edit mode on row clicked.
-   * - "manual": User can toggle edit mode on/off via the Edit Table button.
-   *
-   * @default "manual"
-   */
-  editMode?: "always" | "manual";
-
-  /**
-   * Whether to render the bottom edit footer that hosts the
-   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
-   * indicators (modification count, validation errors).
-   *
-   * @default true whenever the table has at least one column declared
-   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
-   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
-   */
-  showEditFooter?: boolean;
-
-  /**
-   * The default order by clause to sort the objects in the table.
-   * If provided without orderBy prop, the sorting is uncontrolled.
-   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
-   */
-  defaultOrderBy?: Array<{
-    property: PropertyKeys<Q> | keyof RDPs;
-    direction: "asc" | "desc";
-  }>;
-
-  /**
-   * The current order by clause to sort the objects in the table.
-   * If provided, the sorting is controlled.
-   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
-   */
-  orderBy?: Array<{
-    property: PropertyKeys<Q> | keyof RDPs;
-    direction: "asc" | "desc";
-  }>;
-
-  /**
-   * Called when the order by clause is changed.
-   * Required when sorting is controlled.
-   *
-   * @param newOrderBy The new order by clause
-   */
-  onOrderByChanged?: (
-    newOrderBy: Array<{
-      property: PropertyKeys<Q> | keyof RDPs;
-      direction: "asc" | "desc";
-    }>
-  ) => void;
-
-  /**
-   * Called after the value of a cell is edited and committed by the user.
-   *
-   * @param info An object containing details about the cell that was edited,
-   * including the rowId, columnId, new and old values, and the row data before the edit
-   */
-  onCellValueChanged?: (
-    info: CellEditInfo<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >
-  ) => void;
-
-  /**
-   * If provided, the "Submit Edits" button will be shown in the edit footer.
-   *
-   * @param edits an array of edit info containing details about the edited cells
-   * including the rowId, columnId, new and old values, and the row data before the edit
-   * @return a promise that resolves to true if the edits were successfully submitted
-   */
-  onSubmitEdits?: (
-    edits: CellEditInfo<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >[]
-  ) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.
@@ -517,13 +415,87 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when a row is clicked.
+   * Called when a column header is clicked.
    *
-   * @param object The object representing the clicked row
+   * The columnId matches the `locator.id` configured on the column definition.
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
    */
-  onRowClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  onColumnHeaderClick?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
   ) => void;
+
+  /**
+   * Whether the table is sortable by the user.
+   *
+   * @default true
+   */
+  enableOrdering?: boolean;
+
+  /**
+   * The default order by clause to sort the objects in the table.
+   * If provided without orderBy prop, the sorting is uncontrolled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
+   */
+  defaultOrderBy?: Array<{
+    property: PropertyKeys<Q> | keyof RDPs;
+    direction: "asc" | "desc";
+  }>;
+
+  /**
+   * The current order by clause to sort the objects in the table.
+   * If provided, the sorting is controlled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
+   */
+  orderBy?: Array<{
+    property: PropertyKeys<Q> | keyof RDPs;
+    direction: "asc" | "desc";
+  }>;
+
+  /**
+   * Called when the order by clause is changed.
+   * Required when sorting is controlled.
+   *
+   * @param newOrderBy The new order by clause
+   */
+  onOrderByChanged?: (
+    newOrderBy: Array<{
+      property: PropertyKeys<Q> | keyof RDPs;
+      direction: "asc" | "desc";
+    }>
+  ) => void;
+
+  /**
+   * Selection mode for the table rows.
+   *
+   * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
+   * as well as a top-level checkbox in the header to select all rows.
+   *
+   * @default "none"
+   */
+  selectionMode?: "single" | "multiple" | "none";
+
+  /**
+   * The currently selected rows in the table.
+   * If provided, the row selection is controlled.
+   */
+  selectedRows?: PrimaryKeyType<Q>[];
+
+  /**
+   * Indicates whether all rows are selected in controlled mode.
+   * When true, the table will show all rows as selected regardless of the selectedRows array.
+   */
+  isAllSelected?: boolean;
+
+  /**
+   * Called when the row selection changes, with a {@link RowSelectionChange}
+   * payload describing the new state.
+   *
+   * @param change The new selection state. See {@link RowSelectionChange}.
+   */
+  onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
 
   /**
    * The primary key of the row to render as visually focused (the
@@ -550,63 +522,61 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when a column header is clicked.
+   * Controls the edit mode behavior of the table.
+   * - "always": Editable cells are immediately in edit mode on row clicked.
+   * - "manual": User can toggle edit mode on/off via the Edit Table button.
    *
-   * The columnId matches the `locator.id` configured on the column definition.
-   * The dropdown menu trigger is excluded — clicking the chevron opens the
-   * header menu instead of firing this callback.
-   *
-   * @param columnId The id of the clicked column
+   * @default "manual"
    */
-  onColumnHeaderClick?: (
-    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+  editMode?: "always" | "manual";
+
+  /**
+   * Whether to render the bottom edit footer that hosts the
+   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
+   * indicators (modification count, validation errors).
+   *
+   * @default true whenever the table has at least one column declared
+   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
+   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
+   */
+  showEditFooter?: boolean;
+
+  /**
+   * Called after the value of a cell is edited and committed by the user.
+   *
+   * @param info An object containing details about the cell that was edited,
+   * including the rowId, columnId, new and old values, and the row data before the edit
+   */
+  onCellValueChanged?: (
+    info: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >
   ) => void;
 
   /**
-   * Selection mode for the table rows.
+   * If provided, the "Submit Edits" button will be shown in the edit footer.
    *
-   * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
-   * as well as a top-level checkbox in the header to select all rows.
-   *
-   * @default "none"
+   * @param edits an array of edit info containing details about the edited cells
+   * including the rowId, columnId, new and old values, and the row data before the edit
+   * @return a promise that resolves to true if the edits were successfully submitted
    */
-  selectionMode?: "single" | "multiple" | "none";
+  onSubmitEdits?: (
+    edits: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >[]
+  ) => Promise<boolean>;
 
   /**
-   * The currently selected rows in the table.
-   * If provided, the row selection is controlled.
-   */
-  selectedRows?: PrimaryKeyType<Q>[];
-
-  /**
-   * Indicates whether all rows are selected in controlled mode.
-   * When true, the table will show all rows as selected regardless of the selectedRows array.
-   */
-  isAllSelected?: boolean;
-
-  /**
-   * Called when the row selection changes.
+   * Called when a row is clicked.
    *
-   * @deprecated Use {@link onRowSelectionChanged} instead. The new callback
-   * delivers a {@link RowSelectionChange} object with `selectedRows`,
-   * `isSelectAll`, and a derived `objectSet`. This legacy callback
-   * continues to fire alongside the new one for backwards compatibility.
-   *
-   * @param selectedRowIds The primary keys of currently selected rows
-   * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
+   * @param object The object representing the clicked row
    */
-  onRowSelection?: (
-    selectedRowIds: PrimaryKeyType<Q>[],
-    isSelectAll?: boolean
+  onRowClick?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   ) => void;
 
-  /**
-   * Called when the row selection changes, with a {@link RowSelectionChange}
-   * payload describing the new state.
-   *
-   * @param change The new selection state. See {@link RowSelectionChange}.
-   */
-  onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
@@ -616,18 +586,18 @@ export interface ObjectTableProps<
   ) => React.ReactNode;
 
   /**
-   * Render override for the empty state. Called when the table has no
-   * rows and no error. When omitted, a default "No Data" indicator is
-   * rendered.
-   */
-  renderEmptyState?: () => React.ReactNode;
-
-  /**
    * The height of each row in pixels.
    *
    * @default 40
    */
   rowHeight?: number;
+
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 
   /**
    * Returns extra HTML attributes (typically `data-*`) to apply to each
@@ -646,6 +616,15 @@ export interface ObjectTableProps<
   tableRef?: React.Ref<ObjectTableHandle<Q, RDPs>>;
 
   className?: string;
+
+  /**
+   * Overrides for the table's user-facing strings. Provide any subset; unset keys fall
+   * back to the built-in English defaults. Use this to localize the table or
+   * adjust wording. See {@link ObjectTableLabels}.
+   *
+   * @default undefined (built-in English strings)
+   */
+  labels?: Partial<ObjectTableLabels>;
 }
 
 /**

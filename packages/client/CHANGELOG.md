@@ -1,5 +1,84 @@
 # @osdk/client
 
+## 2.51.0
+
+### Minor Changes
+
+- d96b5de: Export scenario helpers from experimental
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+- @osdk/client.unstable@2.50.0
+- @osdk/generator-converters@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/generator-converters@2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- b46473d: Remove the unused `getMetaTagContent`, `getOsdkConfig`, and `OsdkConfig` exports from `@osdk/client/unstable-do-not-use`; they referenced browser/Vite-only globals (`document`, `import.meta.env`) that broke non-node environments and had no consumers.
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/client.unstable@2.48.0
+- @osdk/generator-converters@2.48.0
+- @osdk/shared.test@2.34.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/shared.test@2.33.0
+
+## 2.46.0
+
+### Minor Changes
+
+- c26e051: Add unstable `hydrateOsdkObject` helper to hydrate raw wire objects into OSDK object instances using a caller-supplied map of object definitions.
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters@2.46.0
+- @osdk/shared.test@2.32.0
+
+## 2.45.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+- cbf692b: Pipe next page token through to PSDK loadLinks call in asyncIterLinks
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/shared.test@2.31.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator-converters@2.45.0
+
 ## 2.44.0
 
 ### Minor Changes

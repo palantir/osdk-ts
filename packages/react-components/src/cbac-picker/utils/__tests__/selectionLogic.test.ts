@@ -20,12 +20,12 @@ import type {
   CategoryMarkingGroup,
   PickerMarking,
   PickerMarkingCategory,
-} from "../types.js";
+} from "../../types.js";
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
   toggleMarking,
-} from "./selectionLogic.js";
+} from "../selectionLogic.js";
 
 const conjunctiveCategory: PickerMarkingCategory = {
   id: "cat-conj",

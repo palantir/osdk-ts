@@ -1,44 +1,44 @@
 .body {
-    align-items: center;
-    display: flex;
-    height: 100%;
+  align-items: center;
+  display: flex;
+  height: 100%;
 }
 
 body,
 html {
-    height: 100%;
+  height: 100%;
 }
 
 iframe {
-    display: none;
+  display: none;
 }
 
 .description {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .response-block {
-    text-align: left;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+  text-align: left;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .hint-block {
-    text-align: left;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-wrap: normal;
-    background-color: #fef3cd;
-    border: 1px solid #ffc107;
-    border-radius: 4px;
-    padding: 12px;
-    margin-bottom: 16px;
-    color: #856404;
+  text-align: left;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: normal;
+  background-color: #fef3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #856404;
 }
 
 .bp6-non-ideal-state > * {
-    max-width: min(100%, 800px);
+  max-width: min(100%, 800px);
 }

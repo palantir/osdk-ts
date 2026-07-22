@@ -1,5 +1,23 @@
 # @osdk/react-devtools
 
+## 0.17.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+## 0.16.0
+
+### Minor Changes
+
+- 273cce9: fix console log source attribution always resolving to ConsoleLogStore instead of the real caller
+
+## 0.15.0
+
+### Minor Changes
+
+- 7e1aade: Extend oxfmt formatting to css, scss, and html in oxc-migrated packages. These file types were previously left unformatted (dprint had no css/html plugin); they are now covered by oxfmt and reformatted accordingly. yaml stays excluded because the only yaml in migrated packages is mustache-template documentation that oxfmt would corrupt.
+
 ## 0.14.0
 
 ### Minor Changes

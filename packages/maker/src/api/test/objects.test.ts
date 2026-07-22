@@ -133,6 +133,99 @@ describe("Object Types", () => {
     );
   });
 
+  it("Allows inherited optional interface properties to be omitted", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [],
+          },
+        ],
+      })
+    ).not.toThrow();
+  });
+
+  it("Validates supplied mappings for inherited optional interface properties", () => {
+    const optionalProperty = defineSharedPropertyType({
+      apiName: "optionalProperty",
+      type: "string",
+    });
+    const parentInterface = defineInterface({
+      apiName: "parentInterface",
+      properties: {
+        optionalProperty: {
+          required: false,
+          sharedPropertyType: optionalProperty,
+        },
+        optionalInterfaceProperty: {
+          required: false,
+          type: "string",
+        },
+      },
+    });
+    const childInterface = defineInterface({
+      apiName: "childInterface",
+      extends: parentInterface,
+    });
+
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Sample Object",
+        pluralDisplayName: "Sample Objects",
+        apiName: "sampleObject",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "optionalProperty",
+                mapsTo: "missingSpt",
+              },
+              {
+                interfaceProperty: "com.palantir.optionalInterfaceProperty",
+                mapsTo: "missingIdp",
+              },
+            ],
+          },
+        ],
+      })
+    ).toThrowError(
+      /Object Property Mapped: missingSpt[\s\S]*Object Property Mapped: missingIdp/u
+    );
+  });
+
   it("Objects properly defined", () => {
     const spt = defineSharedPropertyType({
       apiName: "foo",

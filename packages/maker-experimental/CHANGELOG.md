@@ -1,5 +1,85 @@
 # @osdk/maker-experimental
 
+## 0.42.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [bce917e]
+- Updated dependencies [9d75f4e]
+  - @osdk/maker@0.51.0
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+
+## 0.41.0
+
+### Minor Changes
+
+- f4f70fb: Make codegen and build dir different arguments
+- ecfcf3d: Fix transitive interface link imports
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+  - @osdk/maker@0.50.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/maker@0.49.0
+  - @osdk/api@2.48.0
+  - @osdk/client.unstable@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+  - @osdk/generator-converters.preview@0.30.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+- @osdk/maker@0.48.0
+- @osdk/generator-converters.preview@0.29.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+- @osdk/maker@0.47.0
+- @osdk/generator-converters.preview@0.28.0
+
+## 0.37.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [93958d7]
+- Updated dependencies [db2bfa2]
+  - @osdk/generator-converters.ontologyir@2.45.0
+  - @osdk/generator-converters.preview@0.27.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+
 ## 0.36.0
 
 ### Minor Changes

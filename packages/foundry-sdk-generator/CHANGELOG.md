@@ -1,5 +1,94 @@
 # @osdk/foundry-sdk-generator
 
+## 2.51.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+- Updated dependencies [d96b5de]
+  - @osdk/api@2.51.0
+  - @osdk/client@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+  - @osdk/generator-utils@2.51.0
+  - @osdk/generator@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+  - @osdk/client@2.50.0
+  - @osdk/generator-converters@2.50.0
+  - @osdk/generator@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/client@2.49.0
+- @osdk/generator-converters@2.49.0
+- @osdk/generator-utils@2.49.0
+- @osdk/generator@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- Updated dependencies [079b488]
+- Updated dependencies [b46473d]
+  - @osdk/generator-utils@2.48.0
+  - @osdk/client@2.48.0
+  - @osdk/api@2.48.0
+  - @osdk/client.unstable@2.48.0
+  - @osdk/generator-converters@2.48.0
+  - @osdk/generator@2.48.0
+
+## 2.47.0
+
+### Minor Changes
+
+- cbeaccc: Add branch to package.json
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/client@2.47.0
+- @osdk/generator-converters@2.47.0
+- @osdk/generator-utils@2.47.0
+- @osdk/generator@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- Updated dependencies [c26e051]
+  - @osdk/client@2.46.0
+  - @osdk/api@2.46.0
+  - @osdk/client.unstable@2.46.0
+  - @osdk/generator-converters@2.46.0
+  - @osdk/generator-utils@2.46.0
+  - @osdk/generator@2.46.0
+
+## 2.45.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+- Updated dependencies [cbf692b]
+  - @osdk/client@2.45.0
+  - @osdk/api@2.45.0
+  - @osdk/client.unstable@2.45.0
+  - @osdk/generator-converters@2.45.0
+  - @osdk/generator-utils@2.45.0
+  - @osdk/generator@2.45.0
+
 ## 2.44.0
 
 ### Patch Changes

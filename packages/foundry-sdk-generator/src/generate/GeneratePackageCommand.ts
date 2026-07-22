@@ -262,6 +262,7 @@ export class GeneratePackageCommand
                 args.experimentalFeatures?.includes("ontologyJsonOnly")
                   ?? false,
               packageRid: args.packageRid,
+              branch: args.branch,
             }, logger),
         );
       },

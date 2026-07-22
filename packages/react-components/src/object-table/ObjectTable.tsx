@@ -66,8 +66,6 @@ export function ObjectTable<
   onOrderByChanged,
   onColumnsPinnedChanged,
   onColumnResize,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
-  onRowSelection,
   onRowSelectionChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
@@ -85,6 +83,7 @@ export function ObjectTable<
   focusedRow,
   onFocusedRowChanged,
   tableRef,
+  labels,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -150,7 +149,6 @@ export function ObjectTable<
     selectionMode,
     selectedRows,
     isAllSelected: isAllSelectedProp,
-    onRowSelection,
     onRowSelectionChanged: handleRowSelectionChanged,
     data,
   });
@@ -303,6 +301,7 @@ export function ObjectTable<
         focusedRow == null ? focusedRow : getRowIdFromPrimaryKey<Q>(focusedRow)
       }
       onFocusedRowChanged={onFocusedRowChanged}
+      labels={labels}
     />
   );
 }

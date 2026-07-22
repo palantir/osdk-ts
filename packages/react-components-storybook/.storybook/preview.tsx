@@ -126,6 +126,11 @@ const preview: Preview = {
       source: {
         excludeDecorators: true,
       },
+      toc: {
+        headingSelector: "h2, h3",
+        contentsSelector: ".sbdocs-content",
+        title: "On this page",
+      },
     },
     // Register FauxFoundry handlers globally
     msw: {

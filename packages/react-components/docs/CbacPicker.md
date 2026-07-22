@@ -119,6 +119,18 @@ function ClassificationDialog() {
 
 The dialog title automatically adjusts: "Add classification" when no initial markings are provided, "Edit classification" when editing existing markings. The confirm button is disabled with a tooltip when the selection is invalid (e.g., missing required markings).
 
+### CbacBanner
+
+Fetches banner data for the given marking IDs and renders the resolved classification banner.
+
+| Prop         | Type         | Required | Default | Description                                                                                                                                        |
+| ------------ | ------------ | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markingIds` | `string[]`   | Yes      | -       | Marking IDs to resolve into a classification banner                                                                                                |
+| `onClick`    | `() => void` | No       | -       | Makes the banner clickable                                                                                                                         |
+| `onDismiss`  | `() => void` | No       | -       | Shows a dismiss button                                                                                                                             |
+| `isLoading`  | `boolean`    | No       | `false` | Forces the loading skeleton. OR'd with the query's own loading state, so the skeleton also shows automatically while banner data is being fetched. |
+| `className`  | `string`     | No       | -       | CSS class for the banner                                                                                                                           |
+
 ## Base Components
 
 Most users should use `CbacPicker` or `CbacPickerDialog` above — they handle all data fetching automatically.
@@ -151,6 +163,7 @@ The base components below are for advanced use cases where you need to supply yo
 | `backgroundColors`     | `string[]`   | Yes      | -       | Background colors (rendered as gradient if multiple) |
 | `onClick`              | `() => void` | No       | -       | Makes banner clickable                               |
 | `onDismiss`            | `() => void` | No       | -       | Shows a dismiss button                               |
+| `isLoading`            | `boolean`    | No       | `false` | Renders a same-size loading skeleton instead of text |
 | `className`            | `string`     | No       | -       | CSS class for the banner                             |
 
 ### BaseCbacPickerDialog

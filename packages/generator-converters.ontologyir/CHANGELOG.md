@@ -1,5 +1,55 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.51.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 9d75f4e: Make full metadata rids parsable
+
+### Patch Changes
+
+- @osdk/client.unstable@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.46.0
+
+## 2.45.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- @osdk/client.unstable@2.45.0
+
 ## 2.44.0
 
 ### Patch Changes

@@ -239,7 +239,6 @@
   white-space: nowrap;
 }
 
-
 /* Caption dropdowns container */
 .calendarCaptionDropdowns {
   display: flex;
@@ -268,7 +267,6 @@
     outline-offset: 1px;
   }
 }
-
 
 .calendarTimeFooter {
   display: flex;

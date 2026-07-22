@@ -22,8 +22,15 @@
       "inputs": [
         "src/**/*.ts",
         "src/**/*.tsx",
+        "src/**/*.css",
+        "src/**/*.scss",
+        "src/**/*.html",
+        ".storybook/**/*.css",
+        "*.html",
         ".eslintrc.cjs",
         "eslint.config.mjs",
+        "oxlint.config.ts",
+        "oxfmt.config.ts",
         "tsconfig.json"
       ],
       "outputs": [],
@@ -285,7 +292,7 @@
         "check-attw",
         "check-bundle",
         "check-api",
-        "check-spelling",
+        "//#cspell:all",
         "check-gen-props"
       ]
     }

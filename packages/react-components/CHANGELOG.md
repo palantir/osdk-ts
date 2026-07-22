@@ -1,5 +1,37 @@
 # @osdk/react-components
 
+## 0.43.0
+
+### Minor Changes
+
+- c2df0ff: Refactor the CBAC picker's max-classification callout from a hook that returned JSX (`useConstraintCallout`) into a `ConstraintCallout` component. Internal cleanup with no change to the public API or behavior.
+- 5e9775e: Stop listogram filter rows reordering when a checkbox is toggled; render values in natural count/value order and append below-fold selections at the tail in the collapsed view.
+
+## 0.42.0
+
+### Minor Changes
+
+- 12e6a69: Add an `isLoading` prop to `CbacBanner`/`BaseCbacBanner` that renders an animated skeleton placeholder matching the banner's width and height. On the OSDK `CbacBanner`, it is OR'd with the banner query's own loading state so the skeleton also shows automatically while marking data is being fetched.
+
+## 0.41.0
+
+### Minor Changes
+
+- 3b7e3a5: Add a `labels` prop to `ObjectTable`/`BaseTable` (and the standalone `ColumnConfigDialog`/`MultiColumnSortDialog`) so every user-facing string can be overridden for localization or wording. Any subset can be supplied; unset keys fall back to the built-in English defaults.
+- 7e4163b: Restrict base-ui/react version to <1.4.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 647d743: Remove the deprecated `onRowSelection` prop and the dead filtering API (`enableFiltering`, `onFilterChanged`, and the per-column `filterable`) from ObjectTable. Use `onRowSelectionChanged` for selection changes; programmatic filtering via the controlled `filter` prop is unchanged.
+
+## 0.39.0
+
+### Minor Changes
+
+- 7e1aade: Extend oxfmt formatting to css, scss, and html in oxc-migrated packages. These file types were previously left unformatted (dprint had no css/html plugin); they are now covered by oxfmt and reformatted accordingly. yaml stays excluded because the only yaml in migrated packages is mustache-template documentation that oxfmt would corrupt.
+
 ## 0.38.0
 
 ### Minor Changes

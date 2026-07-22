@@ -38,6 +38,8 @@ export type {
 } from "../../object-table/ObjectTableApi.js";
 export type { CellEditInfo } from "../../object-table/utils/types.js";
 
+export type { ObjectTableLabels } from "../../object-table/ObjectTableLabels.js";
+
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../../object-table/Table.js";
 export { BaseTable } from "../../object-table/Table.js";

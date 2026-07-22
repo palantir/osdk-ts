@@ -1,5 +1,57 @@
 # @osdk/widget.vite-plugin
 
+## 3.49.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 3.48.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
+## 3.46.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.46.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.45.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.44.0
+
+## 3.43.0
+
+### Minor Changes
+
+- 7e1aade: Extend oxfmt formatting to css, scss, and html in oxc-migrated packages. These file types were previously left unformatted (dprint had no css/html plugin); they are now covered by oxfmt and reformatted accordingly. yaml stays excluded because the only yaml in migrated packages is mustache-template documentation that oxfmt would corrupt.
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.42.0
+
 ## 3.41.0
 
 ### Minor Changes

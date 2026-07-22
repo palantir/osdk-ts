@@ -47,13 +47,6 @@ export interface UseRowSelectionProps<
   selectionMode?: "single" | "multiple" | "none";
   selectedRows?: PrimaryKeyType<Q>[];
   isAllSelected?: boolean;
-  /**
-   * @deprecated Use {@link onRowSelectionChanged} instead.
-   */
-  onRowSelection?: (
-    selectedRowIds: PrimaryKeyType<Q>[],
-    isSelectAll: boolean
-  ) => void;
   onRowSelectionChanged?: (change: UseRowSelectionChange<Q, RDPs>) => void;
   data:
     | Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
@@ -80,8 +73,6 @@ export function useRowSelection<
   selectionMode = "none",
   selectedRows,
   isAllSelected: isAllSelectedProp,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- intentional pass-through to fire alongside onRowSelectionChanged for backwards compatibility
-  onRowSelection,
   onRowSelectionChanged,
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
@@ -139,7 +130,6 @@ export function useRowSelection<
 
   const fireSelectionCallbacks = useEventCallback(
     (ids: PrimaryKeyType<Q>[], isSelectAll: boolean) => {
-      onRowSelection?.(ids, isSelectAll);
       if (onRowSelectionChanged) {
         const currentData = data ?? [];
         const selectedKeySet = new Set(ids.map((id) => String(id)));

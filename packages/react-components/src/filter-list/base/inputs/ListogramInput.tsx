@@ -95,19 +95,23 @@ function ListogramInputInner({
     return stableValues;
   }, [stableValues, searchQuery, renderValue]);
 
-  const sortedValues = useMemo(() => {
-    const selected = filteredValues.filter((v) => selectedSet.has(v.value));
-    const unselected = filteredValues.filter((v) => !selectedSet.has(v.value));
-    return [...selected, ...unselected];
-  }, [filteredValues, selectedSet]);
-
+  // Render in natural count/value order regardless of selection — toggling a
+  // checkbox must never reorder rows. In the collapsed view we still keep
+  // below-fold selected values visible by appending them at the tail (matching
+  // Foundry Workshop's listogram), without hoisting them or displacing the
+  // head. Unchecking a below-fold row drops it from the tail; "View all"
+  // reveals it again.
   const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return sortedValues;
-    return sortedValues.slice(0, maxVisibleItems);
-  }, [sortedValues, maxVisibleItems, isExpanded]);
+    if (isExpanded || maxVisibleItems == null) return filteredValues;
+    const head = filteredValues.slice(0, maxVisibleItems);
+    const belowFoldSelected = filteredValues
+      .slice(maxVisibleItems)
+      .filter(({ value }) => selectedSet.has(value));
+    return [...head, ...belowFoldSelected];
+  }, [filteredValues, maxVisibleItems, isExpanded, selectedSet]);
 
   const hasMore =
-    maxVisibleItems != null && sortedValues.length > maxVisibleItems;
+    maxVisibleItems != null && filteredValues.length > maxVisibleItems;
 
   return (
     <div
@@ -205,7 +209,7 @@ function ListogramInputInner({
               // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setIsExpanded(true)}
             >
-              View all ({sortedValues.length})
+              View all ({filteredValues.length})
             </Button>
           )}
         </div>

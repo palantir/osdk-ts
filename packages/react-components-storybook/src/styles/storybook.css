@@ -5,6 +5,12 @@ body,
   height: 100%;
 }
 
+.sbdocs-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
