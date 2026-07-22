@@ -206,9 +206,9 @@ describe("ListogramInput ordering", () => {
       "Support",
     ]);
 
-    const collapseToggle = getToggle();
-    expect(collapseToggle).not.toBeNull();
-    fireEvent.click(collapseToggle!);
+    const viewLessToggle = getToggle("viewLess");
+    expect(viewLessToggle).not.toBeNull();
+    fireEvent.click(viewLessToggle!);
 
     expect(getRenderedOrder()).toEqual(["Engineering", "Sales"]);
     expect(queryRow("Marketing")).toBeNull();
@@ -229,15 +229,15 @@ describe("ListogramInput ordering", () => {
 
     fireEvent.click(collapsed);
 
-    const expanded = getToggle();
-    expect(expanded).not.toBeNull();
-    expect(expanded!.getAttribute("aria-expanded")).toBe("true");
+    const viewLessToggle = getToggle("viewLess");
+    expect(viewLessToggle).not.toBeNull();
+    expect(viewLessToggle!.getAttribute("aria-expanded")).toBe("true");
 
-    fireEvent.click(expanded!);
+    fireEvent.click(viewLessToggle!);
 
-    const collapsedAgain = getToggle();
-    expect(collapsedAgain).not.toBeNull();
-    expect(collapsedAgain!.getAttribute("aria-expanded")).toBe("false");
+    const viewAllToggle = getToggle("viewAll");
+    expect(viewAllToggle).not.toBeNull();
+    expect(viewAllToggle!.getAttribute("aria-expanded")).toBe("false");
   });
 });
 
@@ -257,12 +257,13 @@ function queryRow(value: string): HTMLElement | null {
 }
 
 // The expand/collapse toggle is the only button whose label reads "View
-// all…"/"View less"; row buttons never contain that text. Returns null unless
-// exactly one such toggle is mounted so callers can assert its presence.
-function getToggle(): HTMLElement | null {
-  const toggles = screen.queryAllByRole("button", {
-    name: /View (all|less)/u,
-  });
+// all…" (collapsed) or "View less" (expanded); row buttons never contain that
+// text. Pass the expected label so the assertion is explicit about which state
+// the toggle should be in. Returns null unless exactly one such toggle is
+// mounted so callers can assert its presence.
+function getToggle(label: "viewAll" | "viewLess"): HTMLElement | null {
+  const name = label === "viewAll" ? /View all/u : /View less/u;
+  const toggles = screen.queryAllByRole("button", { name });
   return toggles.length === 1 ? toggles[0] : null;
 }
 
