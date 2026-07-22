@@ -217,6 +217,7 @@ const archetypeRules = archetypes(
       // These are the create-app / create-widget template *packages* (their own
       // 1-file src). The shipped scaffolding under each package's templates/ dir is
       // ignored by oxlint + oxfmt and migrates separately.
+      "@osdk/create-app.react.beta.common",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
     ],
