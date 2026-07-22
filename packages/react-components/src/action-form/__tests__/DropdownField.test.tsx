@@ -986,10 +986,73 @@ describe("DropdownField", () => {
 
       await openAndType("dana");
 
+      // The already-selected created value surfaces as its own (checked) row,
+      // but no duplicate "Create" option is offered for it.
       await vi.waitFor(() => {
-        expect(screen.getByText("No results")).toBeDefined();
+        expect(screen.getByRole("option", { name: "DANA" })).toBeDefined();
       });
       expect(screen.queryByRole("option", { name: /^Create/u })).toBeNull();
+    });
+
+    it("surfaces a created-and-selected value as a row in multi-select", async () => {
+      render(
+        <DropdownField<string, true>
+          value={["DANA"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          createNewItemFromQuery={coerceToUpper}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        const options = screen.getAllByRole("option");
+        // Existing items first, created value last.
+        expect(options.map((o) => o.getAttribute("aria-label"))).toEqual([
+          ...STRING_ITEMS,
+          "DANA",
+        ]);
+      });
+    });
+
+    it("surfaces a created-and-selected value as the last row in single-select", async () => {
+      render(
+        <DropdownField
+          value={"DANA"}
+          items={STRING_ITEMS}
+          createNewItemFromQuery={coerceToUpper}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        const options = screen.getAllByRole("option");
+        expect(options[options.length - 1].getAttribute("aria-label")).toBe(
+          "DANA"
+        );
+      });
+    });
+
+    it("does not surface selected-but-absent values when not creatable", async () => {
+      render(
+        <DropdownField<string, true>
+          value={["DANA"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          isSearchable={true}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+      // Without createNewItemFromQuery, a selected value absent from `items`
+      // gets no synthetic row.
+      expect(screen.queryByRole("option", { name: "DANA" })).toBeNull();
     });
   });
 });
