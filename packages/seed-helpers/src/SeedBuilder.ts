@@ -61,11 +61,17 @@ export class SeedBuilder {
     this.#warnings = [];
   }
 
+  #reset() {
+    this.#objectMap = new Map();
+    this.#links = new Map();
+    this.#warnings = [];
+  }
+
   /**
-   * Creates a derived seed from an existing seed output. Must match the schema map metadata supplied at construction.
+   * Merges an existing seed output. Must match the schema map metadata supplied at construction.
    * @param seed Seed output to derive from
    */
-  from(seed: SeedOutput): void {
+  merge(seed: SeedOutput): void {
     const objectEntries = Object.entries(seed.objects).flatMap(
       ([apiName, objects]) => objects.map((o) => [apiName, o] as const)
     );
@@ -107,6 +113,17 @@ export class SeedBuilder {
         continue;
       }
       this.#recordLink(sourceRef, link.linkType, targetRef);
+    }
+  }
+
+  /**
+   * Set the current state to the provided seed.
+   * @param seed Seed output to reset to. Resets the seed builder if undefined.
+   */
+  from(seed?: SeedOutput): void {
+    this.#reset();
+    if (typeof seed !== "undefined") {
+      this.merge(seed);
     }
   }
 
