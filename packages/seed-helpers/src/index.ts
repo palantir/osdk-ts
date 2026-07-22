@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export { createSeed, SeedBuilder } from "./SeedBuilder.js";
+export {
+  createSeed,
+  SeedBuilder,
+  type SeedClient,
+  type SeedFunction,
+} from "./SeedBuilder.js";
 export type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";

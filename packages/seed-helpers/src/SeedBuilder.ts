@@ -329,6 +329,37 @@ export class SeedBuilder {
   }
 }
 
+export type SeedFunction<T> = (seed: SeedBuilder) => T;
+
+export type SeedClient = {
+  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>;
+  ref<Q extends ObjectTypeDefinition>(
+    o: Q,
+    primaryKey: PrimaryKeyType<Q>
+  ): SeedRef<Q> | undefined;
+  create<Q extends ObjectTypeDefinition>(
+    o: Q,
+    props: SeedProps<Q>
+  ): Promise<SeedRef<Q>>;
+  update<Q extends ObjectTypeDefinition>(
+    ref: SeedRef<Q>,
+    props: Q extends ObjectTypeDefinition
+      ? Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+      : SeedProps<Q>
+  ): Promise<SeedRef<Q>>;
+  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
+  link<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>
+  ): Promise<void>;
+  unlink<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>
+  ): Promise<void>;
+};
+
 /**
  * Utility handle for building seeds from a metadata
  * @param ontologyMetadata Ontology metadata to instantiate seed builder from
@@ -337,7 +368,7 @@ export class SeedBuilder {
  */
 export function createSeed<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
-  fn: (seed: SeedBuilder) => T
+  fn: SeedFunction<T>
 ): [SeedOutput, T] {
   const sb = new SeedBuilder(schemaFromMetadata(ontologyMetadata));
   const result = fn(sb);
