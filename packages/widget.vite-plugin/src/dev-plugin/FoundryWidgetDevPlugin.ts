@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { mkdirSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,7 +34,11 @@ import {
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
-import { buildDevModeManifest } from "./buildDevModeManifest.js";
+import type { DevModeManifest } from "./buildDevModeManifest.js";
+import {
+  buildDevModeManifest,
+  DEV_MODE_MANIFEST_FILE_LOCATION,
+} from "./buildDevModeManifest.js";
 import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
@@ -187,6 +193,7 @@ export function FoundryWidgetDevPlugin(
             getBaseHref(server),
             pluginOptions
           );
+          await writeDevModeManifest(manifest);
           await publishDevModeSettings(server, manifest, res);
         }
       );
@@ -304,4 +311,15 @@ function printSetupPageUrl(server: ViteDevServer) {
       )}: ${color.green(setupRoute)}`
     );
   }
+}
+
+async function writeDevModeManifest(
+  widgetSetManifest: DevModeManifest
+): Promise<void> {
+  const manifestPath = path.join(
+    "node_modules",
+    DEV_MODE_MANIFEST_FILE_LOCATION
+  );
+  mkdirSync(path.dirname(manifestPath), { recursive: true });
+  return writeFile(manifestPath, JSON.stringify(widgetSetManifest, null, 2));
 }
