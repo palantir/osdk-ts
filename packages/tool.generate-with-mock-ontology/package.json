@@ -44,7 +44,7 @@
     "@types/node": "^18.19.124",
     "execa": "^9.6.0",
     "msw": "^2.11.1",
-    "typescript": "~5.5.4"
+    "typescript": "~6.0.3"
   },
   "publishConfig": {
     "access": "public"

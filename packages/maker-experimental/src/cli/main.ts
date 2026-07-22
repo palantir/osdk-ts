@@ -48,6 +48,12 @@ import {
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
+// Explicitly typed wrapper so yargs can infer the coerced option type as
+// `string`. Passing `path.resolve` (a `(...string[]) => string` rest-param
+// function) directly causes TypeScript 6 to infer the coerced value as
+// `unknown`.
+const resolvePath = (p: string): string => path.resolve(p);
+
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
@@ -80,20 +86,20 @@ export default async function main(
         describe: "Input file",
         type: "string",
         default: ".ontology/ontology.ts",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       output: {
         alias: "o",
         describe: "Output file for ontology BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       valueTypesOutput: {
         describe: "Output file for value types BlockGeneratorResult JSON",
         type: "string",
         default: "build/value_types_block_generator_result.json",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       apiNamespace: {
         describe: "Api name prefix for namespaced ontology types",
@@ -105,7 +111,7 @@ export default async function main(
         describe: "Directory for build files",
         type: "string",
         default: "build/",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       codegenDir: {
         alias: "c",
@@ -119,19 +125,19 @@ export default async function main(
         describe:
           "Path to a previously generated block data file. Supplying this field indicates that function backed actions should be generated",
         type: "string",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       functionsDir: {
         type: "string",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       nodeModulesDir: {
         type: "string",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       functionsIrOutputFile: {
         type: "string",
-        coerce: path.resolve,
+        coerce: resolvePath,
       },
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",

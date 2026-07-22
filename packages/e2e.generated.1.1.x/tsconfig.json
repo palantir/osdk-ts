@@ -2,7 +2,13 @@
   "extends": "@osdk/monorepo.tsconfig/base-4.9.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build/esm"
+    "outDir": "build/esm",
+    // This fixture vendors generated SDK code under src/generatedNoCheck that
+    // predates isolatedDeclarations (the package was historically pinned to
+    // TypeScript 4.9, where the option was ignored). It is not a published
+    // package, so keep isolatedDeclarations off rather than annotating
+    // generated output.
+    "isolatedDeclarations": false
   },
   "include": [
     "./src/**/*"

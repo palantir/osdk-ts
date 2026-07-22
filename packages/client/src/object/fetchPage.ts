@@ -145,7 +145,7 @@ export function augment<
 export function objectSetToSearchJsonV2(
   objectSet: ObjectSet,
   expectedApiName: string,
-  existingWhere: SearchJsonQueryV2 | undefined = undefined
+  existingWhere?: SearchJsonQueryV2 | undefined
 ): SearchJsonQueryV2 | undefined {
   if (objectSet.type === "base" || objectSet.type === "interfaceBase") {
     if (objectSet.type === "base" && objectSet.objectType !== expectedApiName) {
