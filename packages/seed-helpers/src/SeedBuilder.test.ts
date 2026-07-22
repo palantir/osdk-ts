@@ -370,7 +370,7 @@ describe("SeedBuilder", () => {
       };
 
       const sb = newBuilder();
-      sb.from(input);
+      sb.set(input);
       const out = sb.build();
 
       expect(out.objects.Employee).toEqual([
@@ -405,7 +405,7 @@ describe("SeedBuilder", () => {
       };
 
       const sb = newBuilder();
-      sb.from(input);
+      sb.set(input);
       expect(sb.build().links).toEqual([]);
     });
 
@@ -427,14 +427,14 @@ describe("SeedBuilder", () => {
       };
 
       const sb = newBuilder();
-      sb.from(input);
+      sb.set(input);
       expect(sb.build().links).toEqual([]);
     });
 
     it("adds to objects already present in the builder", () => {
       const sb = newBuilder();
       sb.create(Office, { officeId: "SF" });
-      sb.from({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
+      sb.set({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
 
       const { objects } = sb.build();
       expect(objects.Office).toEqual([{ officeId: "SF" }]);
@@ -446,7 +446,7 @@ describe("SeedBuilder", () => {
       const office = sb.create(Office, { officeId: "NYC" });
       sb.create(Employee, { employeeId: 1 });
       void office;
-      sb.from({
+      sb.set({
         objects: {},
         links: [
           {
@@ -468,7 +468,7 @@ describe("SeedBuilder", () => {
     // only confirm build() runs the validator over its accumulated objects.
     it("runs validation, throwing a SeedError on invalid data", () => {
       const sb = newBuilder();
-      sb.from({
+      sb.set({
         objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
         links: [],
       });

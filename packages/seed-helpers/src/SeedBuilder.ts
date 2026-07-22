@@ -120,7 +120,7 @@ export class SeedBuilder {
    * Set the current state to the provided seed.
    * @param seed Seed output to reset to. Resets the seed builder if undefined.
    */
-  from(seed?: SeedOutput): void {
+  set(seed?: SeedOutput): void {
     this.#reset();
     if (typeof seed !== "undefined") {
       this.merge(seed);
@@ -349,11 +349,12 @@ export class SeedBuilder {
 export type SeedFunction<T> = (seed: SeedBuilder) => T;
 
 export type SeedClient = {
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>;
+  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'set'
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>
   ): SeedRef<Q> | undefined;
+  merge(seed: SeedOutput): Promise<void>;
   create<Q extends ObjectTypeDefinition>(
     o: Q,
     props: SeedProps<Q>
