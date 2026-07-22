@@ -37,6 +37,8 @@ export interface DebouncedCallbackOptions {
  *
  * @param callback The function to debounce
  * @param delay The delay in milliseconds
+ * @param options Optional `{ leading, trailing }` edge configuration. Defaults
+ *   to trailing-only (leading false, trailing true).
  * @returns A debounced function with cancel() and flush() methods
  *
  * @example
