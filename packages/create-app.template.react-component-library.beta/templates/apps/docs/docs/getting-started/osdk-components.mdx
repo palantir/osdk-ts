@@ -1,0 +1,28 @@
+---
+title: OSDK components
+sidebar_position: 6
+---
+
+# OSDK components
+
+`@osdk/react-components` ships ready-made React components that wrap the Ontology SDK.
+
+---
+
+A library of higher-level React components built on top of the OSDK, for rendering Foundry objects, submitting actions, browsing media, and managing access markings without writing the data-loading and state plumbing yourself. Available components include:
+
+- **`ObjectTable`** — paginated, sortable table backed by an OSDK object set
+- **`ActionForm`** — auto-generated form for invoking an OSDK action
+- **`FilterList`** — faceted filter panel driven by object properties
+- **`DocumentViewer`** — preview pane for media-set documents
+- **`CbacPicker`** — picker for CBAC markings and access controls
+
+Pair them with your own components from `packages/components` to build a cohesive product UI.
+
+## Reference
+
+- 📦 [`@osdk/react-components` on npm](https://www.npmjs.com/package/@osdk/react-components)
+- 📦 [`@osdk/react` on npm](https://www.npmjs.com/package/@osdk/react) — hooks like `useOsdkObject`
+- 📦 [`@osdk/client` on npm](https://www.npmjs.com/package/@osdk/client) — the underlying OSDK client
+- 📖 [OSDK documentation](https://www.palantir.com/docs/foundry/ontology-sdk/overview) — guides and API reference for the Ontology SDK
+- 🎨 [OSDK components Storybook](https://storybook.palantir.com/osdk-react-components) — live previews and prop tables for every component

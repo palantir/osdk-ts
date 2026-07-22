@@ -1,0 +1,50 @@
+{
+  "name": "@monorepo-app-placeholder/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "docusaurus build",
+    "dev": "docusaurus start --port 3000 --no-open",
+    "dev:remote": "sh -c 'docusaurus start --port ${DEV_SERVER_PORT:-8080} --host ${DEV_SERVER_HOST:-0.0.0.0} --no-open'",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests\"",
+    "preview": "docusaurus serve",
+    "clean": "rm -rf build .docusaurus .turbo"
+  },
+  "dependencies": {
+    "@monorepo-app-placeholder/components": "*",
+    "@blueprintjs/core": "^6.10.0",
+    "@blueprintjs/icons": "^6.7.0",
+    "@docusaurus/core": "^3.8.0",
+    "@docusaurus/preset-classic": "^3.8.0",
+    "@docusaurus/theme-live-codeblock": "^3.8.0",
+    "@mdx-js/react": "^3.0.0",
+    "clsx": "^2.1.0",
+    "prism-react-renderer": "^2.4.0",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.8.0",
+    "@docusaurus/tsconfig": "^3.8.0",
+    "@docusaurus/types": "^3.8.0",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "~5.5.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 3 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
