@@ -13,12 +13,14 @@ export namespace createMediaObject {
   export type ParamsDefinition = {
     media_reference: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';
     };
     path: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

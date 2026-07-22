@@ -13,12 +13,14 @@ export namespace createScenarioTestOsdk {
   export type ParamsDefinition = {
     scenarioRidCreatedOn: {
       description: undefined;
+      displayName: 'ScenarioRidCreatedOn';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     string: {
       description: undefined;
+      displayName: 'String';
       multiplicity: false;
       nullable: false;
       type: 'string';

@@ -14,12 +14,14 @@ export namespace endAssignment {
   export type ParamsDefinition = {
     assignment: {
       description: 'The assignment to end.';
+      displayName: 'Assignment';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Assignment>;
     };
     endDate: {
       description: 'Date the assignment ended.';
+      displayName: 'End Date';
       multiplicity: false;
       nullable: false;
       type: 'datetime';
