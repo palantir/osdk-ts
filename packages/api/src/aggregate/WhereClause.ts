@@ -78,6 +78,14 @@ export const DistanceUnitMapping: {
   nautical_mile: "NAUTICAL_MILES";
   nauticalMile: "NAUTICAL_MILES";
   "nautical miles": "NAUTICAL_MILES";
+  CENTIMETERS: "CENTIMETERS";
+  METERS: "METERS";
+  KILOMETERS: "KILOMETERS";
+  INCHES: "INCHES";
+  FEET: "FEET";
+  YARDS: "YARDS";
+  MILES: "MILES";
+  NAUTICAL_MILES: "NAUTICAL_MILES";
 } = {
   centimeter: "CENTIMETERS",
   centimeters: "CENTIMETERS",
@@ -99,6 +107,14 @@ export const DistanceUnitMapping: {
   nautical_mile: "NAUTICAL_MILES",
   nauticalMile: "NAUTICAL_MILES",
   "nautical miles": "NAUTICAL_MILES",
+  "CENTIMETERS": "CENTIMETERS",
+  "METERS": "METERS",
+  "KILOMETERS": "KILOMETERS",
+  "INCHES": "INCHES",
+  "FEET": "FEET",
+  "YARDS": "YARDS",
+  "MILES": "MILES",
+  "NAUTICAL_MILES": "NAUTICAL_MILES",
 } satisfies Record<
   string,
   | "CENTIMETERS"
