@@ -21,3 +21,4 @@ export {
   type SeedFunction,
 } from "./SeedBuilder.js";
 export type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";
+export { schemaFromMetadata, type SchemaMap } from "./schema.js";
