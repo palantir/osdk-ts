@@ -179,7 +179,7 @@ export { GeometryCollection }
 
 // @public (undocumented)
 export type GroupId = GroupId_2 & {
-    	__groupIdBrand?: void
+    	__idBrand?: "group"
 };
 
 // @public (undocumented)
@@ -320,7 +320,7 @@ export class UserFacingError extends Error {
 
 // @public (undocumented)
 export type UserId = UserId_2 & {
-    	__userIdBrand?: void
+    	__idBrand?: "user"
 };
 
 // (No @packageDocumentation comment for this package)
