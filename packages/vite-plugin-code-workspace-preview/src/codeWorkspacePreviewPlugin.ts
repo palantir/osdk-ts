@@ -44,7 +44,7 @@ export function codeWorkspacePreviewPlugin(
     name: "osdk-code-workspace-preview",
     apply: "serve",
     transformIndexHtml(_html, ctx) {
-      // apply: "serve" guarantees ctx.server is present.
+      // ctx.server is present during serve; guard defensively regardless.
       if (ctx.server?.config.mode !== activeMode) {
         return;
       }

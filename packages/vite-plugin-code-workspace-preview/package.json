@@ -59,7 +59,6 @@
     "build/types",
     "CHANGELOG.md",
     "package.json",
-    "templates",
     "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",
