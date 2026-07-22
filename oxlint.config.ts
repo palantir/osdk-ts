@@ -53,9 +53,10 @@ export default defineConfig({
     "unicorn/no-lonely-if": "off",
     "jsdoc/require-param-description": "off",
     "jsdoc/require-returns-description": "off",
-    // Cyclomatic-complexity ceiling. Not a pure autofix (requires extracting
-    // helpers, which adds bundle size), so it's handled in its own PR.
-    "complexity": "off",
+    // Ceiling of 40 (not the preset's 20): the default flagged ~100
+    // discriminated-union dispatchers that read fine as one flat switch. 40
+    // targets the real outliers and can be ratcheted down later.
+    "complexity": ["error", 40],
 
     // Rules whose autofix would change behavior or the public API of these
     // already-published packages. Kept at prior severity / disabled so the

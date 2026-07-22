@@ -39,6 +39,36 @@ import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js"
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
+ * Marshall an array value into the wire DataValue type: sequentially when it
+ * holds attachment uploads (which must not race), concurrently otherwise.
+ */
+async function toArrayDataValue(
+  value: unknown[],
+  client: MinimalClient,
+  desiredType: Extract<QueryDataTypeDefinition, { type: "array" }>
+): Promise<DataValue> {
+  const values = Array.from(value);
+  if (
+    values.some(
+      (dataValue) =>
+        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+    )
+  ) {
+    const converted = [];
+    for (const innerValue of values) {
+      converted.push(await toDataValueQueries(innerValue, client, desiredType));
+    }
+    return converted;
+  }
+  const promiseArray = Array.from(
+    value,
+    async (innerValue) =>
+      await toDataValueQueries(innerValue, client, desiredType.array)
+  );
+  return Promise.all(promiseArray);
+}
+
+/**
  * Marshall user-facing data into the wire DataValue type
  *
  * @see DataValue for the expected payloads
@@ -54,25 +84,7 @@ export async function toDataValueQueries(
   }
 
   if (Array.isArray(value) && desiredType.type === "array") {
-    const values = Array.from(value);
-    if (
-      values.some(
-        (dataValue) =>
-          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
-      )
-    ) {
-      const converted = [];
-      for (const value of values) {
-        converted.push(await toDataValueQueries(value, client, desiredType));
-      }
-      return converted;
-    }
-    const promiseArray = Array.from(
-      value,
-      async (innerValue) =>
-        await toDataValueQueries(innerValue, client, desiredType.array)
-    );
-    return Promise.all(promiseArray);
+    return await toArrayDataValue(value, client, desiredType);
   }
 
   switch (desiredType.type) {
