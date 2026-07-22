@@ -906,7 +906,7 @@ describe("DropdownField", () => {
       });
     });
 
-    it("does not show a create item when createNewItemFromQuery rejects the query", async () => {
+    it("does not show a create item when createNewItemFromQuery returns undefined", async () => {
       render(
         <DropdownField<number>
           value={null}

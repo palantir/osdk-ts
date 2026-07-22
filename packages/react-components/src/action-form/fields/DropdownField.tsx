@@ -304,12 +304,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
 
   const handleInputValueChange = useCallback(
     (nextValue: string) => {
-      if (isCreatable && query == null) {
+      if (query == null) {
         setInternalQuery(nextValue);
       }
       onQueryChange?.(nextValue);
     },
-    [isCreatable, query, onQueryChange]
+    [query, onQueryChange]
   );
 
   // The synthetic "Create …" item is a real (already-coerced) value injected
@@ -319,11 +319,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     if (createNewItemFromQuery == null || trimmedQuery === "") {
       return undefined;
     }
-    // The query already names an existing option — nothing to create.
     const lowerQuery = trimmedQuery.toLowerCase();
     const matchesExisting = items.some(
       (item) => itemToStringLabel(item).trim().toLowerCase() === lowerQuery
     );
+    // The query already names an existing option — nothing to create.
     if (matchesExisting) {
       return undefined;
     }
@@ -331,20 +331,27 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     if (created === undefined) {
       return undefined;
     }
-    // Don't offer to create a value that's already selected — array membership
-    // for multi-select, equality for single-select.
-    const sameValue = (a: V, b: V): boolean =>
-      isItemEqual != null ? isItemEqual(a, b) : Object.is(a, b);
-    const alreadySelected = Array.isArray(value)
-      ? value.some((selected) => sameValue(created, selected as V))
-      : value != null && sameValue(created, value as V);
+    // Don't offer to create a value that's already selected — compare by the
+    // canonical item key (itemToKey ?? label). Normalize single/multi selection
+    // to an array first so the key check is uniform.
+    const createdKey = getKey(created);
+    const currentValue: V[] | V | null = value;
+    const selectedItems: readonly V[] =
+      currentValue == null
+        ? EMPTY_ARRAY
+        : Array.isArray(currentValue)
+          ? currentValue
+          : [currentValue];
+    const alreadySelected = selectedItems.some(
+      (selected) => getKey(selected) === createdKey
+    );
     return alreadySelected ? undefined : created;
   }, [
     trimmedQuery,
     createNewItemFromQuery,
     items,
     itemToStringLabel,
-    isItemEqual,
+    getKey,
     value,
   ]);
 
