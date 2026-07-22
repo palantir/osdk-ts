@@ -19,12 +19,14 @@ import { describe, expect, it } from "vitest";
 
 import { getDefaultFieldDefinitions } from "../getDefaultFieldDefinitions.js";
 
-function makeMetadata(parameter: ActionMetadata.Parameter): ActionMetadata {
+function makeMetadata(
+  parameters: ActionMetadata["parameters"]
+): ActionMetadata {
   return {
     type: "action",
     apiName: "TestAction",
     displayName: "Test action",
-    parameters: { tags: parameter },
+    parameters,
     status: "ACTIVE",
     rid: "ri.action.test",
   };
@@ -41,8 +43,10 @@ describe("getDefaultFieldDefinitions", () => {
     (parameterType) => {
       const [fieldDefinition] = getDefaultFieldDefinitions(
         makeMetadata({
-          type: parameterType,
-          nullable: false,
+          tags: {
+            type: parameterType,
+            nullable: false,
+          },
         })
       );
 
@@ -57,8 +61,10 @@ describe("getDefaultFieldDefinitions", () => {
   it("renders interface parameters as unsupported", () => {
     const [fieldDefinition] = getDefaultFieldDefinitions(
       makeMetadata({
-        type: { type: "interface", interface: "Employee" },
-        nullable: false,
+        tags: {
+          type: { type: "interface", interface: "Employee" },
+          nullable: false,
+        },
       })
     );
 
@@ -72,8 +78,10 @@ describe("getDefaultFieldDefinitions", () => {
   it("renders struct parameters as unsupported", () => {
     const [fieldDefinition] = getDefaultFieldDefinitions(
       makeMetadata({
-        type: { type: "struct", struct: { name: "string" } },
-        nullable: false,
+        tags: {
+          type: { type: "struct", struct: { name: "string" } },
+          nullable: false,
+        },
       })
     );
 
@@ -88,9 +96,11 @@ describe("getDefaultFieldDefinitions", () => {
     it("uses the parameter displayName when present", () => {
       const [fieldDefinition] = getDefaultFieldDefinitions(
         makeMetadata({
-          type: "string",
-          nullable: false,
-          displayName: "Tags",
+          tags: {
+            type: "string",
+            nullable: false,
+            displayName: "Tags",
+          },
         })
       );
 
@@ -100,8 +110,10 @@ describe("getDefaultFieldDefinitions", () => {
     it("falls back to the parameter key when displayName is absent", () => {
       const [fieldDefinition] = getDefaultFieldDefinitions(
         makeMetadata({
-          type: "string",
-          nullable: false,
+          tags: {
+            type: "string",
+            nullable: false,
+          },
         })
       );
 
