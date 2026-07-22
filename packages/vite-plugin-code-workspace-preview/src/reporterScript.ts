@@ -18,40 +18,82 @@
  * Browser-side reporter injected into the Code Workspaces preview page. It
  * posts uncaught errors / unhandled rejections to the parent for handling.
  *
- * A plain-string IIFE so it can be injected verbatim as an inline classic
- * `<script>`: it installs its listeners synchronously, before the deferred app
- * module runs, and is not run through Vite's transform pipeline. No-op unless
- * running inside an iframe.
+ * Timing goes through `win.setTimeout` so tests can run the deferred
+ * blank-check synchronously via a fake window.
  */
-export const REPORTER_SCRIPT: string = `(function () {
-  if (window.parent === window) return;
+export function installReporter(win: Window, doc: Document): void {
+  // No-op unless running inside an iframe.
+  if (win.parent === win) return;
 
-  function post(data) {
+  function post(data: Record<string, unknown>): void {
     data.source = "osdk-preview";
-    try { window.parent.postMessage(data, "*"); } catch (_) {}
+    try {
+      win.parent.postMessage(data, "*");
+    } catch {
+      // parent gone or cross-origin refusal; ignore
+    }
   }
 
-  function appHasContent() {
-    var root = document.getElementById("root");
+  function appHasContent(): boolean {
+    const root = doc.querySelector("#root");
     return root != null && root.childElementCount > 0;
   }
 
-  function reportIfBlank(data) {
-    // window.error fires during React's render, before it commits an error
-    // boundary / Router errorElement into #root. Defer the task so the app's
-    // own error UI can render; only report if the app rendered nothing.
-    setTimeout(function () { if (appHasContent()) return; post(data); }, 0);
+  function reportIfBlank(data: Record<string, unknown>): void {
+    // window "error" fires during React's render, before it commits an error
+    // boundary / Router errorElement into #root. Defer to a macro-task so the
+    // app's own error UI can render; only report if the app rendered nothing.
+    win.setTimeout(() => {
+      if (appHasContent()) return;
+      post(data);
+    }, 0);
   }
 
-  window.addEventListener("error", function (e) {
-    reportIfBlank({ kind: "error", message: e.message, filename: e.filename, lineno: e.lineno, colno: e.colno, stack: e.error && e.error.stack });
+  function errorData(e: ErrorEvent): Record<string, unknown> {
+    const target = e.target;
+    // A failed resource (e.g. a 404 on a chunk) fires on the element,
+    // so it carries no message/stack, just its URL.
+    if (target != null && target !== win) {
+      const el = target as Element & { src?: string; href?: string };
+      const url = el.src ?? el.href ?? "";
+      return {
+        kind: "error",
+        message: `Failed to load ${el.tagName.toLowerCase()}${
+          url ? `: ${url}` : ""
+        }`,
+      };
+    }
+
+    // Thrown exception, dispatched at window: a real ErrorEvent.
+    return {
+      kind: "error",
+      message: e.message,
+      filename: e.filename,
+      lineno: e.lineno,
+      colno: e.colno,
+      stack: (e.error as Error | undefined)?.stack,
+    };
+  }
+
+  // capture=true so we also catch resource load failures
+  win.addEventListener("error", (e) => reportIfBlank(errorData(e)), true);
+
+  win.addEventListener("unhandledrejection", (e) => {
+    const r: { message?: unknown; stack?: unknown } | null | undefined =
+      e.reason;
+    reportIfBlank({
+      kind: "unhandledrejection",
+      message: String(r?.message ?? r),
+      stack: r?.stack,
+    });
   });
 
-  window.addEventListener("unhandledrejection", function (e) {
-    var r = e.reason;
-    reportIfBlank({ kind: "unhandledrejection", message: String((r && r.message) || r), stack: r && r.stack });
-  });
-
-  // reset any previous errors
+  // Signal a fresh load so the parent can clear any previously reported error.
   post({ kind: "ready" });
-})();`;
+}
+
+/**
+ * {@link installReporter} serialized as a self-contained IIFE for injection as
+ * an inline classic `<script>`.
+ */
+export const REPORTER_SCRIPT: string = `(${installReporter.toString()})(window, document);`;
