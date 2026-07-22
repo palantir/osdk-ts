@@ -45,7 +45,7 @@ function buildFieldDefinition(
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
-    label: key,
+    label: param.displayName ?? key,
     isRequired: !param.nullable,
     fieldType: param.type,
   };

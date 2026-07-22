@@ -20,6 +20,7 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 import {
@@ -37,11 +38,12 @@ export function wireActionTypeV2ToSdkActionMetadata(
     apiName: input.apiName,
     unsanitizedApiName: unsanitizedApiName ?? input.apiName,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).sort(
-        ([a], [b]) => a.localeCompare(b),
-      ).map((
-        [key, value],
-      ) => [key, wireActionParameterV2ToSdkParameterDefinition(value)]),
+      Object.entries(input.parameters)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => [
+          key,
+          wireActionParameterV2ToSdkParameterDefinition(value),
+        ]),
     ),
     displayName: input.displayName,
     description: input.description,
@@ -67,6 +69,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     ),
     nullable: !value.required,
     description: value.description,
+    displayName: value.displayName,
   };
 }
 

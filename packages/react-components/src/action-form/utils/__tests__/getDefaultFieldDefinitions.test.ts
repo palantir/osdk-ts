@@ -83,4 +83,29 @@ describe("getDefaultFieldDefinitions", () => {
       fieldComponentProps: {},
     });
   });
+
+  describe("label", () => {
+    it("uses the parameter displayName when present", () => {
+      const [fieldDefinition] = getDefaultFieldDefinitions(
+        makeMetadata({
+          type: "string",
+          nullable: false,
+          displayName: "Tags",
+        })
+      );
+
+      expect(fieldDefinition.label).toBe("Tags");
+    });
+
+    it("falls back to the parameter key when displayName is absent", () => {
+      const [fieldDefinition] = getDefaultFieldDefinitions(
+        makeMetadata({
+          type: "string",
+          nullable: false,
+        })
+      );
+
+      expect(fieldDefinition.label).toBe("tags");
+    });
+  });
 });
