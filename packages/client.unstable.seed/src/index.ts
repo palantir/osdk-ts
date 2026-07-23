@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export type * from "./generated/cli/index.js";
-export { getStatus } from "./generated/cli/StatusService/getStatus.js";
-export { publishStatus } from "./generated/cli/StatusService/publishStatus.js";
+export { OntologySeedingService } from "./generated/cli/index.js";
+export type {
+  ObjectSeed,
+  OntologySeed,
+  SeedLinkEntry,
+  SetSeedResponse,
+} from "./generated/cli/index.js";
 export {};
