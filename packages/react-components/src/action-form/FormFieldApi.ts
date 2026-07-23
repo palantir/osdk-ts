@@ -467,6 +467,7 @@ export type ObjectSelectFieldProps<
   | "onQueryChange"
   | "disableClientSideFiltering"
   | "renderItemList"
+  | "createNewItemFromQuery"
 > &
   ObjectSelectDataSource<Q>;
 
