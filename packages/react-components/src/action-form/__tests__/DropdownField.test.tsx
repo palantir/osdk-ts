@@ -508,6 +508,38 @@ describe("DropdownField", () => {
       });
     });
 
+    it("preserves the last controlled query when returning to uncontrolled mode", async () => {
+      const { rerender } = render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      const searchInput = await vi.waitFor(() =>
+        screen.getByPlaceholderText("Search…")
+      );
+      if (!(searchInput instanceof HTMLInputElement)) {
+        throw new Error("Expected search input to be an HTMLInputElement");
+      }
+
+      fireEvent.change(searchInput, { target: { value: "Al" } });
+
+      rerender(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          query="Bo"
+        />
+      );
+      expect(searchInput.value).toBe("Bo");
+
+      rerender(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />
+      );
+      expect(searchInput.value).toBe("Bo");
+    });
+
     it("filters items when portalContainer is set", async () => {
       const portalContainer = document.createElement("div");
       document.body.append(portalContainer);

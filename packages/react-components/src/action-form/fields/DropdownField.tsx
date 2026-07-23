@@ -299,7 +299,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   // search text when the query isn't controlled, so we can derive the
   // synthetic item.
   const isCreatable = createNewItemFromQuery != null;
-  const [internalQuery, setInternalQuery] = useState("");
+  const [internalQuery, setInternalQuery] = useState(query ?? "");
+  React.useEffect(() => {
+    if (query !== undefined) {
+      setInternalQuery(query);
+    }
+  }, [query]);
   const currentQuery = query ?? internalQuery;
   const trimmedQuery = isCreatable ? currentQuery.trim() : "";
 
@@ -324,7 +329,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   }, [isMultiple, value]);
 
   const areItemsEqual = useCallback(
-    (a: V, b: V) => (isItemEqual != null ? isItemEqual(a, b) : a === b),
+    (a: V, b: V) => (isItemEqual != null ? isItemEqual(a, b) : Object.is(a, b)),
     [isItemEqual]
   );
 
@@ -392,10 +397,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   // the typed query — e.g. a numeric coercer where "4.9" becomes value 4 with
   // label "4". Exempt it by identity so it stays visible whenever it exists,
   // while real items still filter normally via base-ui's locale-aware matcher.
-  const { contains } = BaseUICombobox.useFilter({ multiple: true });
+  const { contains } = BaseUICombobox.useFilter({ multiple: isMultiple });
   const creatableFilter = useCallback(
     (item: V, nextQuery: string, itemToString?: (item: V) => string) =>
-      item === syntheticItem || contains(item, nextQuery, itemToString),
+      (syntheticItem !== undefined && Object.is(item, syntheticItem)) ||
+      contains(item, nextQuery, itemToString),
     [contains, syntheticItem]
   );
 
@@ -512,7 +518,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={effectiveItems}
-        inputValue={isCreatable ? currentQuery : query}
+        inputValue={currentQuery}
         onInputValueChange={handleInputValueChange}
         filter={
           disableClientSideFiltering
