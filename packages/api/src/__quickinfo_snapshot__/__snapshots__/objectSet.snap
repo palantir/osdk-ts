@@ -19,7 +19,7 @@ type objectSet_aggregate_req_param = AggregateOpts<EmployeeApiTest> & {
   $groupBy:
     & Pick<GroupByClause<EmployeeApiTest> | undefined, never>
     & Record<never, never>;
-};
+} & Record<never, never>;
 
 /** The result of objectSet.asyncIter(). */
 type objectSet_asyncIter_result = AsyncIterableIterator<

@@ -548,6 +548,20 @@ describe("aggregate", () => {
     });
   });
 
+  it("rejects unknown top-level keys", async () => {
+    await client(Todo).aggregate({
+      $select: { $count: "unordered" },
+      // @ts-expect-error unknown top-level keys must not be silently accepted
+      $orderBy: { group: "string" },
+    });
+
+    await client(Todo).aggregate({
+      // @ts-expect-error misspelled $groupBy must be rejected
+      $groupByy: { text: "exact" },
+      $select: { $count: "unordered" },
+    });
+  });
+
   describe("$exact", () => {
     it("correctly nulls bucket type when $includeNullValue is true", async () => {
       const result = await client(Todo).aggregate({
