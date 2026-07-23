@@ -17,6 +17,7 @@
 import { BarInterface } from "@osdk/client.test.ontology";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import { createMinimalClient } from "../createMinimalClient.js";
 import { createObjectSet, getWireObjectSet } from "./createObjectSet.js";
 
@@ -42,8 +43,11 @@ describe("interface-link pivotTo wire shape", () => {
       ],
     };
 
-    const pivoted = createObjectSet(BarInterface, client, hydratedSource)
-      .pivotTo("toFoo");
+    const pivoted = createObjectSet(
+      BarInterface,
+      client,
+      hydratedSource
+    ).pivotTo("toFoo");
 
     expect(getWireObjectSet(pivoted)).toEqual({
       type: "interfaceLinkSearchAround",
@@ -58,7 +62,7 @@ describe("interface-link pivotTo wire shape", () => {
     // The asType wrapper must be resolvable to an interface later, so the
     // narrow-type mapping should be registered (mirrors narrowToType).
     expect(
-      client.narrowTypeInterfaceOrObjectMapping[BarInterface.apiName],
+      client.narrowTypeInterfaceOrObjectMapping[BarInterface.apiName]
     ).toBe("interface");
   });
 
@@ -79,7 +83,7 @@ describe("interface-link pivotTo wire shape", () => {
 
     // No asType node was emitted, so nothing should have been registered.
     expect(
-      client.narrowTypeInterfaceOrObjectMapping[BarInterface.apiName],
+      client.narrowTypeInterfaceOrObjectMapping[BarInterface.apiName]
     ).toBeUndefined();
   });
 });
