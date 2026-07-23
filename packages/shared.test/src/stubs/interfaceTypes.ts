@@ -35,6 +35,22 @@ const idp: InterfaceDefinedPropertyType = {
   typeClasses: [],
 };
 
+const arrayIdp: InterfaceDefinedPropertyType = {
+  rid: "ri.interfacePropertyType.main.interfacePropertyType.2",
+  apiName: "fooArray",
+  displayName: "Foo Array",
+  description: "An array-valued Foo property",
+  dataType: {
+    type: "array",
+    subType: {
+      type: "string",
+    },
+    reducers: [],
+  },
+  requireImplementation: false,
+  typeClasses: [],
+};
+
 export const BarInterface: InterfaceType = {
   apiName: "BarInterface",
   description: "Interface for Bar",
@@ -97,6 +113,10 @@ export const FooInterface: InterfaceType = {
       ...idp,
       type: "interfaceDefinedPropertyType",
     },
+    fooArray: {
+      ...arrayIdp,
+      type: "interfaceDefinedPropertyType",
+    },
   },
   links: {
     toBar: {
@@ -127,6 +147,9 @@ export const FooInterface: InterfaceType = {
     },
     fooIdp: {
       ...idp,
+    },
+    fooArray: {
+      ...arrayIdp,
     },
   },
   allExtendsInterfaces: [],
