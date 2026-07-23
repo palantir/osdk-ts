@@ -686,6 +686,66 @@ describe("Interfaces", () => {
       `);
     });
 
+    it("Vector IDPs", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: ["COSINE_SIMILARITY"],
+            },
+          },
+        },
+      });
+
+      const prop =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.bar"]
+          .interfaceType.propertiesV3["embedding"];
+      if (prop.type !== "interfaceDefinedPropertyType") {
+        throw new Error("expected interfaceDefinedPropertyType");
+      }
+      expect(prop.interfaceDefinedPropertyType.type).toMatchInlineSnapshot(`
+        {
+          "type": "vector",
+          "vector": {
+            "dimension": 768,
+            "embeddingModel": undefined,
+            "quantization": undefined,
+            "supportsSearchWith": [
+              "COSINE_SIMILARITY",
+            ],
+          },
+        }
+      `);
+      expect(
+        prop.interfaceDefinedPropertyType.constraints.indexedForSearch
+      ).toBe(true);
+    });
+
+    it("doesn't let you make a vector IDP an array", () => {
+      expect(() => {
+        defineInterface({
+          apiName: "bar",
+          displayName: "Bar",
+          properties: {
+            embedding: {
+              type: {
+                type: "vector",
+                dimension: 768,
+                supportsSearchWith: ["COSINE_SIMILARITY"],
+              },
+              array: true,
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Invalid vector property 'embedding': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function]`
+      );
+    });
+
     it("Complex interface properties", () => {
       const spt = defineSharedPropertyType({
         apiName: "spt",

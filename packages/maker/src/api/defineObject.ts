@@ -50,7 +50,11 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
-import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
+import {
+  isExotic,
+  isStruct,
+  isValidVector,
+} from "./properties/PropertyTypeType.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/u;
@@ -337,6 +341,10 @@ function convertUserObjectPropertyType(
   apiName: string,
   property: ObjectPropertyTypeUserDefinition
 ): ObjectPropertyType {
+  invariant(
+    isValidVector(property.type, property.array),
+    `Invalid vector property '${apiName}': a vector must not be an array, must have an integer 'dimension' of at least 1, and must specify exactly one 'supportsSearchWith' function`
+  );
   // fill in missing fields to be used by actions
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
   return {

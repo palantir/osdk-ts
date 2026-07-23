@@ -6693,6 +6693,68 @@ describe("Action Types", () => {
   });
 
   describe("Object Actions", () => {
+    it("Vector properties are excluded from auto-generated action parameters", () => {
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          name: { type: "string" },
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: ["COSINE_SIMILARITY"],
+            },
+          },
+        },
+      });
+
+      const create = defineCreateObjectAction({ objectType });
+      const modify = defineModifyObjectAction({ objectType });
+      const createOrModify = defineCreateOrModifyObjectAction({ objectType });
+
+      for (const action of [create, modify, createOrModify]) {
+        const paramIds = (action.parameters ?? []).map((p) => p.id);
+        expect(paramIds).toContain("name");
+        expect(paramIds).not.toContain("embedding");
+      }
+    });
+
+    it("Vector properties cannot be forced into action parameters", () => {
+      const objectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          embedding: {
+            type: {
+              type: "vector",
+              dimension: 768,
+              supportsSearchWith: ["COSINE_SIMILARITY"],
+            },
+          },
+        },
+      });
+
+      expect(() => {
+        defineModifyObjectAction({
+          objectType,
+          parameterConfiguration: {
+            embedding: { displayName: "Embedding" },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Vectors are not supported as action parameters yet]`
+      );
+    });
+
     it("Simple concrete actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",

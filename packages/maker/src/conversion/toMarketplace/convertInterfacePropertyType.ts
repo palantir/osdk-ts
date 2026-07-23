@@ -20,6 +20,7 @@ import {
   type InterfacePropertyType,
   isInterfaceSharedPropertyType,
 } from "../../api/interface/InterfacePropertyType.js";
+import { shouldBeIndexedForSearch } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertSpt } from "./convertSpt.js";
 import { propertyTypeTypeToOntologyIrInterfaceType } from "./propertyTypeTypeToOntologyIrInterfaceType.js";
@@ -62,7 +63,7 @@ export function convertInterfaceProperty(
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
             requireImplementation: prop.required ?? true,
-            indexedForSearch: true,
+            indexedForSearch: shouldBeIndexedForSearch(prop.type),
             typeClasses: prop.typeClasses ?? [],
             dataConstraints: convertNullabilityToDataConstraint({
               type: prop.type,
