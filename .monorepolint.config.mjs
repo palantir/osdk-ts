@@ -54,9 +54,6 @@ const OUTPUT_BUNDLE_ALL =
 const OUTPUT_ESM_ONLY =
   /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: "normal" });
 
-const OUTPUT_NONE =
-  /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: undefined });
-
 /** @type {OsdkPackageOptions}  */
 const LIBRARY_RULES = {
   tsVersion: LATEST_TYPESCRIPT_DEP,
@@ -658,18 +655,6 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
       private: true,
-    },
-  )
-  .addArchetype(
-    "cssOnlyPackage",
-    [
-      "@osdk/react-components-styles",
-    ],
-    {
-      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
-      private: false,
-      output: OUTPUT_NONE,
-      minimalChangesOnly: true,
     },
   );
 

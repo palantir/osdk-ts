@@ -1,6 +1,6 @@
 /* DateCalendar — DayPicker classNames.
    All values reference --osdk-datetime-calendar-* tokens defined in
-   react-components-styles/tokens/datetime-picker.css. */
+   tokens/component-tokens/datetime-picker.css. */
 
 .calendar {
   position: relative;

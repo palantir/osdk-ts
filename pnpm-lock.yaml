@@ -4962,12 +4962,6 @@ importers:
         specifier: 0.20.3
         version: 0.20.3
 
-  packages/react-components-styles:
-    devDependencies:
-      '@blueprintjs/core':
-        specifier: ^6.10.0
-        version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-
   packages/react-devtools:
     dependencies:
       '@blueprintjs/core':
@@ -23540,39 +23534,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.24
 
-  '@blueprintjs/core@6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@blueprintjs/colors': 5.1.16
-      '@blueprintjs/icons': 6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-      '@floating-ui/react': 0.27.19(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-      '@popperjs/core': 2.11.8
-      classnames: 2.5.1
-      normalize.css: 8.0.1
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
-      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-      react-transition-group: 4.4.5(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-      tslib: 2.6.3
-      use-sync-external-store: 1.6.0(react@19.1.1)
-    optionalDependencies:
-      '@types/react': 18.3.24
-
   '@blueprintjs/icons@6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       change-case: 4.1.2
       classnames: 2.5.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      tslib: 2.6.3
-    optionalDependencies:
-      '@types/react': 18.3.24
-
-  '@blueprintjs/icons@6.8.0(@types/react@18.3.24)(react-dom@18.3.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      change-case: 4.1.2
-      classnames: 2.5.1
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
       tslib: 2.6.3
     optionalDependencies:
       '@types/react': 18.3.24
@@ -25787,26 +25754,12 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@floating-ui/react-dom@2.1.8(react-dom@18.3.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@floating-ui/dom': 1.7.6
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
-
   '@floating-ui/react@0.27.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/react-dom': 2.1.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@floating-ui/utils': 0.2.11
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      tabbable: 6.4.0
-
-  '@floating-ui/react@0.27.19(react-dom@18.3.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.8(react-dom@18.3.1(react@19.1.1))(react@19.1.1)
-      '@floating-ui/utils': 0.2.11
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
       tabbable: 6.4.0
 
   '@floating-ui/utils@0.2.11': {}
@@ -39463,12 +39416,6 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
-  react-dom@18.3.1(react@19.1.1):
-    dependencies:
-      loose-envify: 1.4.0
-      react: 19.1.1
-      scheduler: 0.23.2
-
   react-error-overlay@6.1.0: {}
 
   react-fast-compare@3.2.2: {}
@@ -39742,14 +39689,6 @@ snapshots:
       react-fast-compare: 3.2.2
       warning: 4.0.3
 
-  react-popper@2.3.0(@popperjs/core@2.11.8)(react-dom@18.3.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      '@popperjs/core': 2.11.8
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
-      react-fast-compare: 3.2.2
-      warning: 4.0.3
-
   react-refresh@0.14.2: {}
 
   react-refresh@0.17.0: {}
@@ -39853,15 +39792,6 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-
-  react-transition-group@4.4.5(react-dom@18.3.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      '@babel/runtime': 7.28.4
-      dom-helpers: 5.2.1
-      loose-envify: 1.4.0
-      prop-types: 15.8.1
-      react: 19.1.1
-      react-dom: 18.3.1(react@19.1.1)
 
   react@18.3.1:
     dependencies:
