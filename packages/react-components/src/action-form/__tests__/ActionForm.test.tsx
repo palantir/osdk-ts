@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionMetadata } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  ActionValidationResponse,
+} from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { useState } from "react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
+import { type ReactElement, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
+import type { FormState } from "../ActionFormApi.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
 vi.mock("@osdk/react", () => ({
@@ -51,28 +62,10 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
-interface BooleanActionDef extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      enabled: { type: "boolean" };
-    };
-    type: "action";
-    apiName: "BooleanAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
 } as TestActionDef;
-
-const BooleanAction: BooleanActionDef = {
-  type: "action",
-  apiName: "BooleanAction",
-} as BooleanActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -113,6 +106,69 @@ function defaultMockMetadataResult() {
     loading: false,
     metadata: mockMetadata,
   };
+}
+
+type ValidationParameters = ActionValidationResponse["parameters"];
+
+/**
+ * Overrides the resolved action metadata so the form generates fields for the
+ * supplied parameter set.
+ */
+function mockMetadataParameters(
+  parameters: ActionMetadata["parameters"]
+): void {
+  vi.mocked(useOsdkMetadata).mockReturnValue({
+    loading: false,
+    metadata: { ...mockMetadata, parameters },
+  });
+}
+
+/**
+ * Installs a useOsdkAction mock whose validationResult carries the given
+ * per-parameter evaluated constraints, and returns the validateAction spy.
+ */
+function mockActionWithConstraints(
+  parameters: ValidationParameters
+): ReturnType<typeof vi.fn> {
+  const validateAction = vi.fn(() => Promise.resolve(undefined));
+  const validationResult: ActionValidationResponse = {
+    result: "VALID",
+    submissionCriteria: [],
+    parameters,
+  };
+  vi.mocked(useOsdkAction).mockReturnValue({
+    ...defaultMockActionResult(),
+    validateAction,
+    validationResult,
+  });
+  return validateAction;
+}
+
+/**
+ * Controlled wrapper that seeds the form with an arbitrary value shape so tests
+ * can drive a specific parameter value (including values a dropdown would not
+ * normally allow) through submission.
+ */
+function ValidationHarness<Q extends ActionDefinition<unknown>>(props: {
+  action: Q;
+  initialState: Record<string, unknown>;
+  onSuccess?: () => void;
+}): ReactElement {
+  const [state, setState] = useState<Record<string, unknown>>(
+    props.initialState
+  );
+  return (
+    <ActionForm
+      actionDefinition={props.action}
+      formState={state as FormState<Q>}
+      onFormStateChange={(updater) =>
+        setState(
+          (prev) => updater(prev as FormState<Q>) as Record<string, unknown>
+        )
+      }
+      onSuccess={props.onSuccess}
+    />
+  );
 }
 
 describe("ActionForm", () => {
@@ -381,10 +437,10 @@ describe("ActionForm", () => {
 
   describe("controlled mode", () => {
     it("submits updated controlled state after a field is edited", async () => {
-      type FormState = { name?: string; email?: string };
+      type ControlledFormState = { name?: string; email?: string };
 
       function ControlledWrapper() {
-        const [formState, setFormState] = useState<FormState>({
+        const [formState, setFormState] = useState<ControlledFormState>({
           name: "Initial",
           email: "initial@test.com",
         });
@@ -412,6 +468,377 @@ describe("ActionForm", () => {
             email: "initial@test.com",
           })
         );
+      });
+    });
+  });
+
+  describe("validation lifecycle", () => {
+    it("validates the action with the initial form values as soon as the form is ready", () => {
+      vi.useFakeTimers();
+      try {
+        const validateAction = vi.fn(() => Promise.resolve(undefined));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        render(<ActionForm actionDefinition={TestAction} />);
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+
+        expect(validateAction).toHaveBeenCalledTimes(1);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("validates immediately on the first edit and coalesces a burst of edits into one follow-up validation", () => {
+      vi.useFakeTimers();
+      try {
+        const validateAction = vi.fn(() => Promise.resolve(undefined));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        render(<ActionForm actionDefinition={TestAction} />);
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+        const afterMount = validateAction.mock.calls.length;
+
+        const input = screen.getByRole("textbox", { name: /^name/u });
+
+        // First edit validates on the leading edge, within the change handler.
+        fireEvent.change(input, { target: { value: "a" } });
+        expect(validateAction.mock.calls.length).toBe(afterMount + 1);
+
+        // Rapid edits inside the 500ms window do not each trigger validation.
+        fireEvent.change(input, { target: { value: "ab" } });
+        fireEvent.change(input, { target: { value: "abc" } });
+        fireEvent.change(input, { target: { value: "abcd" } });
+        expect(validateAction.mock.calls.length).toBe(afterMount + 1);
+
+        // A single trailing validation lands once the window elapses.
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+        expect(validateAction.mock.calls.length).toBe(afterMount + 2);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  describe("constraint-driven fields", () => {
+    it("renders a parameter limited to a fixed set of choices as a selectable dropdown and leaves unconstrained parameters as free text", async () => {
+      mockMetadataParameters({
+        status: { type: "string", nullable: false },
+        note: { type: "string", nullable: true },
+      });
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: true,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [
+                { displayName: "Open", value: "OPEN" },
+                { displayName: "Closed", value: "CLOSED" },
+              ],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+        note: { result: "VALID", required: false, evaluatedConstraints: [] },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.queryByRole("combobox")).not.toBeNull();
+      expect(screen.queryByRole("textbox", { name: /note/u })).not.toBeNull();
+
+      fireEvent.click(screen.getByRole("combobox"));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "Open" })).not.toBeNull();
+      });
+      expect(screen.queryByRole("option", { name: "Closed" })).not.toBeNull();
+    });
+
+    it("rejects values outside the allowed set unless other values are permitted", async () => {
+      const closedSet: ValidationParameters = {
+        status: {
+          result: "VALID",
+          required: true,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "OPEN" }, { value: "CLOSED" }],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+      };
+
+      // A value that is not one of the options is rejected and blocks submit.
+      mockMetadataParameters({ status: { type: "string", nullable: false } });
+      mockActionWithConstraints(closedSet);
+      const onRejected = vi.fn();
+      const rejected = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ status: "MAYBE" }}
+          onSuccess={onRejected}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(onRejected).not.toHaveBeenCalled();
+      rejected.unmount();
+
+      // A value that is one of the options passes.
+      mockActionWithConstraints(closedSet);
+      const onAccepted = vi.fn();
+      const accepted = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ status: "OPEN" }}
+          onSuccess={onAccepted}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onAccepted).toHaveBeenCalled();
+      });
+      accepted.unmount();
+
+      // With other values allowed, an out-of-list value does not error.
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: true,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "OPEN" }, { value: "CLOSED" }],
+              otherValuesAllowed: true,
+            },
+          ],
+        },
+      });
+      const onOther = vi.fn();
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ status: "MAYBE" }}
+          onSuccess={onOther}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onOther).toHaveBeenCalled();
+      });
+    });
+
+    it("limits text length to the configured bounds and blocks submission when the text is too short or too long", async () => {
+      const bounded: ValidationParameters = {
+        bio: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "stringLength", gte: 3, lte: 10 }],
+        },
+      };
+
+      // The bounds surface as length hints on the input.
+      mockMetadataParameters({ bio: { type: "string", nullable: true } });
+      mockActionWithConstraints(bounded);
+      const hint = render(<ActionForm actionDefinition={TestAction} />);
+      const bioInput = screen.getByRole("textbox", { name: /bio/u });
+      expect(bioInput.getAttribute("maxlength")).toBe("10");
+      expect(bioInput.getAttribute("minlength")).toBe("3");
+      hint.unmount();
+
+      // A value shorter than the minimum is rejected.
+      mockActionWithConstraints(bounded);
+      const onShort = vi.fn();
+      const short = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ bio: "ab" }}
+          onSuccess={onShort}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(onShort).not.toHaveBeenCalled();
+      short.unmount();
+
+      // A value within the bounds passes.
+      mockActionWithConstraints(bounded);
+      const onOk = vi.fn();
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ bio: "abcd" }}
+          onSuccess={onOk}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onOk).toHaveBeenCalled();
+      });
+    });
+
+    it("constrains a numeric parameter to its allowed range and blocks submission outside it", async () => {
+      const ranged: ValidationParameters = {
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "range", gte: 1, lte: 100 }],
+        },
+      };
+
+      // Inclusive bounds surface as the input's min and max.
+      mockMetadataParameters({ age: { type: "integer", nullable: true } });
+      mockActionWithConstraints(ranged);
+      const hint = render(<ActionForm actionDefinition={TestAction} />);
+      const ageInput = screen.getByRole("textbox", { name: /age/u });
+      expect(ageInput.getAttribute("min")).toBe("1");
+      expect(ageInput.getAttribute("max")).toBe("100");
+      hint.unmount();
+
+      // A value above the range is rejected.
+      mockActionWithConstraints(ranged);
+      const onOver = vi.fn();
+      const over = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ age: 200 }}
+          onSuccess={onOver}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(onOver).not.toHaveBeenCalled();
+      over.unmount();
+
+      // A value inside the range passes.
+      mockActionWithConstraints(ranged);
+      const onInside = vi.fn();
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ age: 50 }}
+          onSuccess={onInside}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onInside).toHaveBeenCalled();
+      });
+    });
+
+    it("blocks submission when the number of array elements falls outside the configured size", async () => {
+      const sized: ValidationParameters = {
+        tags: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "arraySize", gte: 1, lte: 3 }],
+        },
+      };
+
+      // Too many elements is rejected and blocks submit.
+      mockMetadataParameters({
+        tags: { type: "string", multiplicity: true, nullable: true },
+      });
+      mockActionWithConstraints(sized);
+      const onTooMany = vi.fn();
+      const tooMany = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ tags: ["a", "b", "c", "d"] }}
+          onSuccess={onTooMany}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(onTooMany).not.toHaveBeenCalled();
+      tooMany.unmount();
+
+      // A count within the bounds passes.
+      mockActionWithConstraints(sized);
+      const onOk = vi.fn();
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ tags: ["a", "b"] }}
+          onSuccess={onOk}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onOk).toHaveBeenCalled();
+      });
+    });
+
+    it("blocks submission and surfaces the configured message when text does not match the required pattern", async () => {
+      const failureMessage = "Must be exactly three uppercase letters";
+      const patterned: ValidationParameters = {
+        code: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "stringRegexMatch",
+              regex: "^[A-Z]{3}$",
+              configuredFailureMessage: failureMessage,
+            },
+          ],
+        },
+      };
+
+      // A non-matching value is rejected with the configured message.
+      mockMetadataParameters({ code: { type: "string", nullable: true } });
+      mockActionWithConstraints(patterned);
+      const onBad = vi.fn();
+      const bad = render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ code: "ab" }}
+          onSuccess={onBad}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(screen.getByRole("alert").textContent).toContain(failureMessage);
+      expect(onBad).not.toHaveBeenCalled();
+      bad.unmount();
+
+      // A matching value passes.
+      mockActionWithConstraints(patterned);
+      const onGood = vi.fn();
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ code: "ABC" }}
+          onSuccess={onGood}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onGood).toHaveBeenCalled();
       });
     });
   });
