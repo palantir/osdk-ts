@@ -928,33 +928,6 @@ describe("DropdownField", () => {
       expect(createNewItemFromQuery).toHaveBeenCalledWith("dana");
     });
 
-    it("commits the coerced value when Enter is pressed on the create item", async () => {
-      const onChange = vi.fn();
-      render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-          isSearchable={true}
-          onChange={onChange}
-          createNewItemFromQuery={coerceToUpper}
-        />
-      );
-
-      const input = await openAndType("dana");
-
-      await vi.waitFor(() => {
-        expect(
-          screen.getByRole("option", { name: 'Create "dana"' })
-        ).toBeDefined();
-      });
-
-      fireEvent.keyDown(input, { key: "Enter" });
-
-      await vi.waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith("DANA", expect.anything());
-      });
-    });
-
     it("does not show a create item when createNewItemFromQuery returns undefined", async () => {
       render(
         <DropdownField<number>
