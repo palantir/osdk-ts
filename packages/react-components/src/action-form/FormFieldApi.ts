@@ -261,6 +261,16 @@ export interface DropdownFieldProps<
   createNewItemFromQuery?: (query: string) => V | undefined;
 
   /**
+   * Overrides the rendered content of the synthetic "Create …" item shown in
+   * creatable mode (see {@link createNewItemFromQuery}). Receives the trimmed
+   * query the item would create.
+   *
+   * Defaults to text reading `Create "<query>"`. The item's accessible name
+   * stays `Create "<query>"` regardless, so an override only changes visuals.
+   */
+  createNewItemRenderer?: (query: string) => React.ReactNode;
+
+  /**
    * Status message rendered below the search input and above the item list
    * inside the popup. Use for loading/error/empty messages.
    */

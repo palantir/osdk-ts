@@ -1338,6 +1338,13 @@ const creatableDropdownFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponentProps: {
       items: DEPARTMENT_ITEMS,
       createNewItemFromQuery: coerceStringQuery,
+      // createNewItemRenderer overrides only the visible content of the
+      // "Create …" item; the accessible name stays the default.
+      createNewItemRenderer: (query) => (
+        <span>
+          <strong>Add</strong> new department "{query}"
+        </span>
+      ),
       placeholder: "Search or create a department...",
     },
   }),
@@ -1363,7 +1370,7 @@ export const WithCreatableDropdown: Story = {
     docs: {
       description: {
         story:
-          'Passing `createNewItemFromQuery` turns a dropdown into a creatable combobox: typing a value that matches no existing item offers a "Create …" option that commits the typed value (by click or by pressing Enter). Works for single-select and multi-select, where it behaves like a tag input.',
+          'Passing `createNewItemFromQuery` turns a dropdown into a creatable combobox: typing a value that matches no existing item offers a "Create …" option that commits the typed value (by click or by pressing Enter). Works for single-select and multi-select, where it behaves like a tag input. Pass `createNewItemRenderer` to customize the visible content of the "Create …" option (the accessible name stays the default).',
       },
       source: {
         code: `const coerceStringQuery = (query) => query.trim();

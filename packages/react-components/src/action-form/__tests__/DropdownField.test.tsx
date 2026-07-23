@@ -1191,6 +1191,30 @@ describe("DropdownField", () => {
       // gets no synthetic row.
       expect(screen.queryByRole("option", { name: "DANA" })).toBeNull();
     });
+
+    it("renders custom create-item content via createNewItemRenderer while keeping the default accessible name", async () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          createNewItemFromQuery={coerceToUpper}
+          createNewItemRenderer={(query) => (
+            <span data-testid="custom-create">Add {query}</span>
+          )}
+        />
+      );
+
+      await openAndType("Dana");
+
+      await vi.waitFor(() => {
+        // Accessible name stays the default so the action is announced
+        // consistently; only the visible content is overridden.
+        expect(
+          screen.getByRole("option", { name: 'Create "Dana"' })
+        ).toBeDefined();
+      });
+      expect(screen.getByTestId("custom-create").textContent).toBe("Add Dana");
+    });
   });
 });
 

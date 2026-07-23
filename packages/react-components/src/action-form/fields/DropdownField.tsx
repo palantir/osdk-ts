@@ -43,6 +43,7 @@ interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
   itemToStringLabel: (item: V) => string;
   renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
+  isItemEqual: (a: V, b: V) => boolean;
   portalRef?: React.Ref<HTMLDivElement>;
   query?: string;
   onQueryChange?: (query: string) => void;
@@ -62,6 +63,10 @@ interface InnerComboboxProps<
     V,
     Multiple
   >["createNewItemFromQuery"];
+  createNewItemRenderer?: DropdownFieldProps<
+    V,
+    Multiple
+  >["createNewItemRenderer"];
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -82,6 +87,8 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   popupStatus,
   trailingItem,
   createNewItemFromQuery,
+  createNewItemRenderer,
+  isItemEqual,
   modal = true,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
@@ -103,21 +110,29 @@ export const DropdownField: <V, Multiple extends boolean = false>(
     [itemToKey, resolvedItemToStringLabel]
   );
 
+  const resolvedIsItemEqual = isItemEqual ?? defaultIsItemEqual;
+
   // Creatable implies a searchable combobox: the user needs the search input
   // to type the value they want to create.
   const isCreatable = createNewItemFromQuery != null;
   const searchable = isSearchable || isCreatable;
+
+  const commonProps = {
+    modal,
+    getKey,
+    value: normalizedValue,
+    isItemEqual: resolvedIsItemEqual,
+    renderItemLabel: resolvedRenderItemLabel,
+    itemToStringLabel: resolvedItemToStringLabel,
+  };
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
   if (searchable || isMultiple) {
     return (
       <ComboboxDropdown
         {...rest}
+        {...commonProps}
         isMultiple={isMultiple}
-        value={normalizedValue}
-        itemToStringLabel={resolvedItemToStringLabel}
-        renderItemLabel={resolvedRenderItemLabel}
-        getKey={getKey}
         isSearchable={searchable}
         query={query}
         onQueryChange={onQueryChange}
@@ -125,22 +140,13 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         popupStatus={popupStatus}
         trailingItem={trailingItem}
         createNewItemFromQuery={createNewItemFromQuery}
-        modal={modal}
+        createNewItemRenderer={createNewItemRenderer}
       />
     );
   }
 
   // TODO: Support trailingItem
-  return (
-    <SelectDropdown
-      {...rest}
-      value={normalizedValue}
-      itemToStringLabel={resolvedItemToStringLabel}
-      renderItemLabel={resolvedRenderItemLabel}
-      getKey={getKey}
-      modal={modal}
-    />
-  );
+  return <SelectDropdown {...rest} {...commonProps} />;
 });
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
@@ -288,6 +294,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   popupStatus,
   trailingItem,
   createNewItemFromQuery,
+  createNewItemRenderer,
   onBlur,
   modal = true,
   disabled,
@@ -310,12 +317,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
 
   const handleInputValueChange = useCallback(
     (nextValue: string) => {
-      if (query == null) {
-        setInternalQuery(nextValue);
-      }
+      setInternalQuery(nextValue);
       onQueryChange?.(nextValue);
     },
-    [query, onQueryChange]
+    [onQueryChange]
   );
 
   // Normalize single/multi selection to an array once so downstream key checks
@@ -328,11 +333,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     return isMultiple ? (value as V[]) : [value as V];
   }, [isMultiple, value]);
 
-  const areItemsEqual = useCallback(
-    (a: V, b: V) => (isItemEqual != null ? isItemEqual(a, b) : Object.is(a, b)),
-    [isItemEqual]
-  );
-
   // Created items only ever land in `value`, never in `items`. Surface any
   // selected value that isn't a known item as a row (at the end, in selection
   // order) so created items stay visible — and, in multi-select, uncheckable —
@@ -342,9 +342,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       return EMPTY_ARRAY;
     }
     return selectedItems.filter(
-      (selected) => !items.some((item) => areItemsEqual(item, selected))
+      (selected) => !items.some((item) => isItemEqual(item, selected))
     );
-  }, [isCreatable, selectedItems, items, areItemsEqual]);
+  }, [isCreatable, selectedItems, items, isItemEqual]);
 
   const dropdownItems = useMemo(
     () => [...items, ...createdSelectedItems],
@@ -372,7 +372,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     }
     // `dropdownItems` already includes every selected value (created selections
     // are surfaced into it), so this also suppresses already-selected values.
-    if (dropdownItems.some((item) => areItemsEqual(item, created))) {
+    if (dropdownItems.some((item) => isItemEqual(item, created))) {
       return undefined;
     }
     return created;
@@ -381,7 +381,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     createNewItemFromQuery,
     dropdownItems,
     itemToStringLabel,
-    areItemsEqual,
+    isItemEqual,
   ]);
 
   const effectiveItems = useMemo(
@@ -457,9 +457,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       if (!isMultiple || !Array.isArray(value)) {
         return;
       }
-      const next = value.filter((v) =>
-        isItemEqual != null ? !isItemEqual(v, itemToRemove) : v !== itemToRemove
-      );
+      const next = value.filter((v) => !isItemEqual(v, itemToRemove));
       (handleValueChange as (v: V[] | V | null) => void)(next);
     },
     [isMultiple, value, handleValueChange, isItemEqual]
@@ -479,9 +477,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           <Combobox.Item
             key="__osdk_create_item__"
             value={item}
+            // Keep the default string as the accessible name even when a custom
+            // renderer supplies the visible content, so the create action is
+            // announced consistently to screen readers.
             aria-label={createLabel}
           >
-            {createLabel}
+            {createNewItemRenderer?.(trimmedQuery) ?? createLabel}
           </Combobox.Item>
         );
       }
@@ -504,6 +505,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       renderItemLabel,
       syntheticItem,
       trimmedQuery,
+      createNewItemRenderer,
     ]
   );
 
@@ -527,7 +529,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               ? creatableFilter
               : undefined
         }
-        autoHighlight={isCreatable || undefined}
         disabled={disabled}
       >
         <Combobox.Trigger
@@ -634,4 +635,8 @@ function defaultItemToStringLabel<V>(item: V): string {
     return item.label;
   }
   return String(item);
+}
+
+function defaultIsItemEqual<V>(a: V, b: V): boolean {
+  return a === b;
 }
