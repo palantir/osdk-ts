@@ -1330,6 +1330,86 @@ export const WithMultiSelectDropdown: Story = {
   },
 };
 
+const creatableDropdownFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department (creatable)",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      createNewItemFromQuery: coerceStringQuery,
+      // createNewItemRenderer overrides only the visible content of the
+      // "Create …" item; the accessible name stays the default.
+      createNewItemRenderer: (query) => (
+        <span>
+          <strong>Add</strong> new department "{query}"
+        </span>
+      ),
+      placeholder: "Search or create a department...",
+    },
+  }),
+  field({
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags (creatable multi-select)",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      createNewItemFromQuery: coerceStringQuery,
+      placeholder: "Search or create tags...",
+    },
+  }),
+];
+
+export const WithCreatableDropdown: Story = {
+  args: {
+    formContent: creatableDropdownFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Passing `createNewItemFromQuery` turns a dropdown into a creatable combobox: typing a value that matches no existing item offers a "Create …" option that commits the typed value (by click or by pressing Enter). Works for single-select and multi-select, where it behaves like a tag input. Pass `createNewItemRenderer` to customize the visible content of the "Create …" option (the accessible name stays the default).',
+      },
+      source: {
+        code: `const coerceStringQuery = (query) => query.trim();
+
+const formContent = [
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department (creatable)",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
+      createNewItemFromQuery: coerceStringQuery,
+      placeholder: "Search or create a department...",
+    },
+  },
+  {
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags (creatable multi-select)",
+    fieldComponentProps: {
+      items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
+      isMultiple: true,
+      createNewItemFromQuery: coerceStringQuery,
+      placeholder: "Search or create tags...",
+    },
+  },
+];
+
+// createNewItemFromQuery coerces the raw query into an item value.
+// Return undefined to reject a query (no create option shown).
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
 const richDropdownLabelFormContent: ReadonlyArray<FormContentItem> = [
   field({
     fieldKey: "assigneeUserId",
@@ -2310,6 +2390,10 @@ export const WithGridSection: Story = {
     onSubmit: handleSubmit,
   },
 };
+function coerceStringQuery(query: string): string {
+  return query.trim();
+}
+
 function getUserIdLabel(item: unknown): string {
   if (typeof item !== "string") {
     return String(item);

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { Combobox as BaseUICombobox } from "@base-ui/react/combobox";
 import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
@@ -42,6 +43,7 @@ interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
   itemToStringLabel: (item: V) => string;
   renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
+  isItemEqual: (a: V, b: V) => boolean;
   portalRef?: React.Ref<HTMLDivElement>;
   query?: string;
   onQueryChange?: (query: string) => void;
@@ -57,6 +59,14 @@ interface InnerComboboxProps<
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
   trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
+  createNewItemFromQuery?: DropdownFieldProps<
+    V,
+    Multiple
+  >["createNewItemFromQuery"];
+  createNewItemRenderer?: DropdownFieldProps<
+    V,
+    Multiple
+  >["createNewItemRenderer"];
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -76,6 +86,9 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
+  createNewItemFromQuery,
+  createNewItemRenderer,
+  isItemEqual,
   modal = true,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
@@ -97,38 +110,43 @@ export const DropdownField: <V, Multiple extends boolean = false>(
     [itemToKey, resolvedItemToStringLabel]
   );
 
+  const resolvedIsItemEqual = isItemEqual ?? defaultIsItemEqual;
+
+  // Creatable implies a searchable combobox: the user needs the search input
+  // to type the value they want to create.
+  const isCreatable = createNewItemFromQuery != null;
+  const searchable = isSearchable || isCreatable;
+
+  const commonProps = {
+    modal,
+    getKey,
+    value: normalizedValue,
+    isItemEqual: resolvedIsItemEqual,
+    renderItemLabel: resolvedRenderItemLabel,
+    itemToStringLabel: resolvedItemToStringLabel,
+  };
+
   // Multi-select always uses Combobox for the chip-based UI because it looks better
-  if (isSearchable || isMultiple) {
+  if (searchable || isMultiple) {
     return (
       <ComboboxDropdown
         {...rest}
+        {...commonProps}
         isMultiple={isMultiple}
-        value={normalizedValue}
-        itemToStringLabel={resolvedItemToStringLabel}
-        renderItemLabel={resolvedRenderItemLabel}
-        getKey={getKey}
-        isSearchable={isSearchable}
+        isSearchable={searchable}
         query={query}
         onQueryChange={onQueryChange}
         disableClientSideFiltering={disableClientSideFiltering}
         popupStatus={popupStatus}
         trailingItem={trailingItem}
-        modal={modal}
+        createNewItemFromQuery={createNewItemFromQuery}
+        createNewItemRenderer={createNewItemRenderer}
       />
     );
   }
 
   // TODO: Support trailingItem
-  return (
-    <SelectDropdown
-      {...rest}
-      value={normalizedValue}
-      itemToStringLabel={resolvedItemToStringLabel}
-      renderItemLabel={resolvedRenderItemLabel}
-      getKey={getKey}
-      modal={modal}
-    />
-  );
+  return <SelectDropdown {...rest} {...commonProps} />;
 });
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
@@ -275,12 +293,117 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
+  createNewItemFromQuery,
+  createNewItemRenderer,
   onBlur,
   modal = true,
   disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
   const isOpen = !disabled && open;
+
+  // Creatable works for single- and multi-select. `internalQuery` tracks the
+  // search text when the query isn't controlled, so we can derive the
+  // synthetic item.
+  const isCreatable = createNewItemFromQuery != null;
+  const [internalQuery, setInternalQuery] = useState(query ?? "");
+  React.useEffect(() => {
+    if (query !== undefined) {
+      setInternalQuery(query);
+    }
+  }, [query]);
+  const currentQuery = query ?? internalQuery;
+  const trimmedQuery = isCreatable ? currentQuery.trim() : "";
+
+  const handleInputValueChange = useCallback(
+    (nextValue: string) => {
+      setInternalQuery(nextValue);
+      onQueryChange?.(nextValue);
+    },
+    [onQueryChange]
+  );
+
+  // Normalize single/multi selection to an array once so downstream key checks
+  // (already-selected suppression, surfacing created items) are uniform.
+  const selectedItems = useMemo<readonly V[]>(() => {
+    if (value == null) {
+      return EMPTY_ARRAY;
+    }
+    // TypeScript cannot narrow the conditional value type from `isMultiple`.
+    return isMultiple ? (value as V[]) : [value as V];
+  }, [isMultiple, value]);
+
+  // Created items only ever land in `value`, never in `items`. Surface any
+  // selected value that isn't a known item as a row (at the end, in selection
+  // order) so created items stay visible — and, in multi-select, uncheckable —
+  // after selection. Gated on creatable so plain dropdowns are unaffected.
+  const createdSelectedItems = useMemo<readonly V[]>(() => {
+    if (!isCreatable) {
+      return EMPTY_ARRAY;
+    }
+    return selectedItems.filter(
+      (selected) => !items.some((item) => isItemEqual(item, selected))
+    );
+  }, [isCreatable, selectedItems, items, isItemEqual]);
+
+  const dropdownItems = useMemo(
+    () => [...items, ...createdSelectedItems],
+    [items, createdSelectedItems]
+  );
+
+  // The synthetic "Create …" item is a real (already-coerced) value injected
+  // into the item list, so base-ui handles both click and Enter selection.
+  const syntheticItem = useMemo<V | undefined>(() => {
+    // Not creatable, or the user hasn't typed anything yet.
+    if (createNewItemFromQuery == null || trimmedQuery === "") {
+      return undefined;
+    }
+    const lowerQuery = trimmedQuery.toLowerCase();
+    const matchesExisting = dropdownItems.some(
+      (item) => itemToStringLabel(item).trim().toLowerCase() === lowerQuery
+    );
+    // The query already names an existing option — nothing to create.
+    if (matchesExisting) {
+      return undefined;
+    }
+    const created = createNewItemFromQuery(trimmedQuery);
+    if (created === undefined) {
+      return undefined;
+    }
+    // `dropdownItems` already includes every selected value (created selections
+    // are surfaced into it), so this also suppresses already-selected values.
+    if (dropdownItems.some((item) => isItemEqual(item, created))) {
+      return undefined;
+    }
+    return created;
+  }, [
+    trimmedQuery,
+    createNewItemFromQuery,
+    dropdownItems,
+    itemToStringLabel,
+    isItemEqual,
+  ]);
+
+  const effectiveItems = useMemo(
+    () => [
+      ...dropdownItems,
+      ...(syntheticItem !== undefined ? [syntheticItem] : []),
+    ],
+    [dropdownItems, syntheticItem]
+  );
+
+  // The synthetic "Create …" item is injected into the item list, so base-ui's
+  // built-in filter would hide it whenever its (coerced) label doesn't contain
+  // the typed query — e.g. a numeric coercer where "4.9" becomes value 4 with
+  // label "4". Exempt it by identity so it stays visible whenever it exists,
+  // while real items still filter normally via base-ui's locale-aware matcher.
+  const { contains } = BaseUICombobox.useFilter({ multiple: isMultiple });
+  const creatableFilter = useCallback(
+    (item: V, nextQuery: string, itemToString?: (item: V) => string) =>
+      (syntheticItem !== undefined && Object.is(item, syntheticItem)) ||
+      contains(item, nextQuery, itemToString),
+    [contains, syntheticItem]
+  );
 
   const hasValue = isMultiple
     ? Array.isArray(value) && value.length > 0
@@ -334,9 +457,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       if (!isMultiple || !Array.isArray(value)) {
         return;
       }
-      const next = value.filter((v) =>
-        isItemEqual != null ? !isItemEqual(v, itemToRemove) : v !== itemToRemove
-      );
+      const next = value.filter((v) => !isItemEqual(v, itemToRemove));
       (handleValueChange as (v: V[] | V | null) => void)(next);
     },
     [isMultiple, value, handleValueChange, isItemEqual]
@@ -348,6 +469,23 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
 
   const renderItem = useCallback(
     (item: V) => {
+      // The synthetic create item is the exact reference we appended, so an
+      // identity check reliably distinguishes it from real options.
+      if (syntheticItem !== undefined && Object.is(item, syntheticItem)) {
+        const createLabel = `Create "${trimmedQuery}"`;
+        return (
+          <Combobox.Item
+            key="__osdk_create_item__"
+            value={item}
+            // Keep the default string as the accessible name even when a custom
+            // renderer supplies the visible content, so the create action is
+            // announced consistently to screen readers.
+            aria-label={createLabel}
+          >
+            {createNewItemRenderer?.(trimmedQuery) ?? createLabel}
+          </Combobox.Item>
+        );
+      }
       const itemLabel = itemToStringLabel(item);
       return (
         <Combobox.Item key={getKey(item)} value={item} aria-label={itemLabel}>
@@ -360,7 +498,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         </Combobox.Item>
       );
     },
-    [getKey, isMultiple, itemToStringLabel, renderItemLabel]
+    [
+      getKey,
+      isMultiple,
+      itemToStringLabel,
+      renderItemLabel,
+      syntheticItem,
+      trimmedQuery,
+      createNewItemRenderer,
+    ]
   );
 
   return (
@@ -373,10 +519,16 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         multiple={isMultiple}
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
-        items={items}
-        inputValue={query}
-        onInputValueChange={onQueryChange}
-        filter={disableClientSideFiltering ? null : undefined}
+        items={effectiveItems}
+        inputValue={currentQuery}
+        onInputValueChange={handleInputValueChange}
+        filter={
+          disableClientSideFiltering
+            ? null
+            : isCreatable
+              ? creatableFilter
+              : undefined
+        }
         disabled={disabled}
       >
         <Combobox.Trigger
@@ -483,4 +635,8 @@ function defaultItemToStringLabel<V>(item: V): string {
     return item.label;
   }
   return String(item);
+}
+
+function defaultIsItemEqual<V>(a: V, b: V): boolean {
+  return a === b;
 }
