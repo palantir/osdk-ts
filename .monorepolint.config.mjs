@@ -314,6 +314,7 @@ const archetypeRules = archetypes(
       "@osdk/vite-plugin-oac",
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
+      "@osdk/vite-plugin-code-workspace-preview",
     ],
     {
       ...LIBRARY_RULES,

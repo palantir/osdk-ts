@@ -80,6 +80,7 @@
     "packages/tool.release/",
     "packages/tool.generate-with-mock-ontology/",
     "packages/version-updater/",
+    "packages/vite-plugin-code-workspace-preview/",
     "packages/vite-plugin-oac/",
     "packages/vite-plugin-superrepo/",
     "packages/vite-plugin-status-reporter/",
