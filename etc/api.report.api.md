@@ -198,6 +198,7 @@ export interface Affix {
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
     	$groupBy?: GroupByClause<Q>
+    	$accuracy?: AggregationAccuracyRequest
 };
 
 // Warning: (ae-forgotten-export) The symbol "ContainsExactMatchWithNull" needs to be exported by the entry point index.d.ts
@@ -210,10 +211,15 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
+    	$accuracy?: AO["$accuracy"]
 } : SingleKeyObject<AO["$groupBy"]> extends never ? AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
+    	$accuracy?: AO["$accuracy"]
 } : AggregateOptsThatErrors<Q, AO>;
+
+// @public
+export type AggregationAccuracyRequest = "REQUIRE_ACCURATE" | "ALLOW_APPROXIMATE";
 
 // @public (undocumented)
 export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
@@ -2471,8 +2477,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 //
 // src/OsdkObjectFrom.ts:312:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
 // src/OsdkObjectFrom.ts:357:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregateOpts.ts:33:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregateOpts.ts:33:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
