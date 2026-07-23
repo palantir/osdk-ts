@@ -128,13 +128,12 @@ describe("SeedBuilder", () => {
       expect(office.$locator.primaryKeyValue).toBe("NYC");
     });
 
-    it("overwrites when the same primary key is created twice", () => {
+    it("throws a SeedError when the same primary key is created twice", () => {
       const sb = newBuilder();
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      sb.create(Employee, { employeeId: 1, fullName: "Bob" });
-      expect(sb.build().objects.Employee).toEqual([
-        { employeeId: 1, fullName: "Bob" },
-      ]);
+      expect(() =>
+        sb.create(Employee, { employeeId: 1, fullName: "Bob" })
+      ).toThrow(SeedError);
     });
 
     it("throws a SeedError when the object type is not in the schema", () => {
@@ -431,10 +430,22 @@ describe("SeedBuilder", () => {
       expect(sb.build().links).toEqual([]);
     });
 
-    it("adds to objects already present in the builder", () => {
+    it("replaces objects already present in the builder", () => {
       const sb = newBuilder();
       sb.create(Office, { officeId: "SF" });
       sb.set({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
+
+      const { objects } = sb.build();
+      expect(objects.Office).toBeUndefined();
+      expect(objects.Employee).toEqual([{ employeeId: 1 }]);
+    });
+  });
+
+  describe("merge", () => {
+    it("adds to objects already present in the builder", () => {
+      const sb = newBuilder();
+      sb.create(Office, { officeId: "SF" });
+      sb.addAll({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
 
       const { objects } = sb.build();
       expect(objects.Office).toEqual([{ officeId: "SF" }]);
@@ -446,7 +457,7 @@ describe("SeedBuilder", () => {
       const office = sb.create(Office, { officeId: "NYC" });
       sb.create(Employee, { employeeId: 1 });
       void office;
-      sb.set({
+      sb.addAll({
         objects: {},
         links: [
           {

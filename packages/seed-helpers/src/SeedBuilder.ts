@@ -71,7 +71,7 @@ export class SeedBuilder {
    * Merges an existing seed output. Must match the schema map metadata supplied at construction.
    * @param seed Seed output to derive from
    */
-  merge(seed: SeedOutput): void {
+  addAll(seed: SeedOutput): void {
     const objectEntries = Object.entries(seed.objects).flatMap(
       ([apiName, objects]) => objects.map((o) => [apiName, o] as const)
     );
@@ -123,7 +123,7 @@ export class SeedBuilder {
   set(seed?: SeedOutput): void {
     this.#reset();
     if (typeof seed !== "undefined") {
-      this.merge(seed);
+      this.addAll(seed);
     }
   }
 
@@ -171,8 +171,8 @@ export class SeedBuilder {
     ] as PrimaryKeyType<Q>;
     const stringPrimaryKeyValue = String(primaryKeyValue);
     if (this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue)) {
-      this.#warnings.push(
-        `Creating ${o.apiName} with primary key ${stringPrimaryKeyValue} which already exists. This will overwrite the existing creation.`
+      throw new SeedError(
+        `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`
       );
     }
     this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
@@ -352,7 +352,7 @@ export type SeedClient = {
     o: Q,
     primaryKey: PrimaryKeyType<Q>
   ): SeedRef<Q> | undefined;
-  merge(seed: SeedOutput): Promise<void>;
+  addAll(seed: SeedOutput): Promise<void>;
   create<Q extends ObjectTypeDefinition>(
     o: Q,
     props: SeedProps<Q>
