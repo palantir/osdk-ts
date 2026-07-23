@@ -17,9 +17,9 @@
 import React from "react";
 
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
+import { ConstraintCallout } from "./ConstraintCallout.js";
 import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
-import { useConstraintCallout } from "./useConstraintCallout.js";
 import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
@@ -97,7 +97,13 @@ export function CbacPicker({
     onChange(EMPTY_ARRAY);
   }, [onChange]);
 
-  const constraintCallout = useConstraintCallout(maxClassificationConstraint);
+  const constraintCallout = React.useMemo(
+    () =>
+      maxClassificationConstraint != null ? (
+        <ConstraintCallout constraint={maxClassificationConstraint} />
+      ) : undefined,
+    [maxClassificationConstraint]
+  );
 
   return (
     <BaseCbacPicker
