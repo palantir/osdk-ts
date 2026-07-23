@@ -40,11 +40,15 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/api": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "consola": "^3.4.2"
   },
   "devDependencies": {
+    "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@types/node": "^26.1.1",
     "typescript": "~5.5.4",
     "vitest": "^3.2.4"
   },
