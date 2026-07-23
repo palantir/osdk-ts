@@ -87,31 +87,29 @@ export function useDebouncedCallback<TArgs extends readonly unknown[]>(
   const fireTrailing = React.useCallback(() => {
     const pendingArgs = lastArgsRef.current;
     lastArgsRef.current = undefined;
-    if (trailingRef.current && pendingArgs != null) {
+    if (trailingRef.current && pendingArgs) {
       void callbackRef.current(...pendingArgs);
     }
   }, []);
 
   const cancel = React.useCallback(() => {
-    if (timeoutRef.current != null) {
+    if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = undefined;
     }
-    lastArgsRef.current = undefined;
   }, []);
 
   const flush = React.useCallback(() => {
-    if (timeoutRef.current == null) {
-      return;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
+      fireTrailing();
     }
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = undefined;
-    fireTrailing();
   }, [fireTrailing]);
 
   const debouncedCallback = React.useCallback(
     (...args: TArgs) => {
-      const isNewWindow = timeoutRef.current == null;
+      const isNewWindow = !timeoutRef.current;
       lastArgsRef.current = args;
 
       if (isNewWindow && leadingRef.current) {
