@@ -447,6 +447,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/client.unstable",
       "@osdk/client.unstable.tpsa",
+      "@osdk/client.unstable.seed",
     ],
     {
       ...LIBRARY_RULES,
