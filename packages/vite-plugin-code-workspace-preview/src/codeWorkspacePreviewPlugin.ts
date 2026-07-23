@@ -17,6 +17,7 @@
 import type { Plugin } from "vite";
 
 import { REPORTER_SCRIPT } from "./reporterScript.js";
+import { ROUTE_SYNC_SCRIPT } from "./routeSyncScript.js";
 
 export interface CodeWorkspacePreviewOptions {
   /**
@@ -27,11 +28,14 @@ export interface CodeWorkspacePreviewOptions {
 }
 
 /**
- * Vite plugin that surfaces runtime errors from the Foundry Code Workspaces
- * preview. When running in the configured mode it injects a small inline script
- * (see {@link REPORTER_SCRIPT}) that posts uncaught errors and unhandled
- * rejections to the parent frame, so a blank preview shows a reason
- * instead of a silent white screen.
+ * Vite plugin for the Foundry Code Workspaces preview. When running in the
+ * configured mode it injects two small inline scripts:
+ *
+ * - {@link REPORTER_SCRIPT} posts uncaught errors and unhandled rejections to
+ *   the parent frame, so a blank preview shows a reason instead of a silent
+ *   white screen.
+ * - {@link ROUTE_SYNC_SCRIPT} mirrors the iframe's route to the parent and
+ *   accepts navigation commands back, keeping the shell and preview in sync.
  *
  * Dev-only (`apply: "serve"`) and gated on the Vite mode, so it never ships in
  * production builds and adds nothing to a normal local `npm run dev`.
@@ -52,6 +56,11 @@ export function codeWorkspacePreviewPlugin(
         {
           tag: "script",
           children: REPORTER_SCRIPT,
+          injectTo: "head-prepend",
+        },
+        {
+          tag: "script",
+          children: ROUTE_SYNC_SCRIPT,
           injectTo: "head-prepend",
         },
       ];

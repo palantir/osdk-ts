@@ -25,6 +25,7 @@ import { describe, expect, it } from "vitest";
 
 import { codeWorkspacePreviewPlugin } from "./codeWorkspacePreviewPlugin.js";
 import { installReporter, REPORTER_SCRIPT } from "./reporterScript.js";
+import { installRouteSync, ROUTE_SYNC_SCRIPT } from "./routeSyncScript.js";
 
 function runTransform(
   plugin: Plugin,
@@ -50,17 +51,18 @@ describe("codeWorkspacePreviewPlugin", () => {
     expect(runTransform(plugin, undefined)).toBeUndefined();
   });
 
-  it("injects the reporter as a head-prepend script in code-workspaces mode", () => {
+  it("injects the reporter and route-sync as head-prepend scripts in code-workspaces mode", () => {
     const plugin = codeWorkspacePreviewPlugin();
     expect(runTransform(plugin, "code-workspaces")).toEqual([
       { tag: "script", children: REPORTER_SCRIPT, injectTo: "head-prepend" },
+      { tag: "script", children: ROUTE_SYNC_SCRIPT, injectTo: "head-prepend" },
     ]);
   });
 
   it("honors a custom activation mode", () => {
     const plugin = codeWorkspacePreviewPlugin({ mode: "preview" });
     expect(runTransform(plugin, "code-workspaces")).toBeUndefined();
-    expect(runTransform(plugin, "preview")).toHaveLength(1);
+    expect(runTransform(plugin, "preview")).toHaveLength(2);
   });
 
   it("is dev-only", () => {
@@ -233,5 +235,152 @@ describe("REPORTER_SCRIPT", () => {
       document: { querySelector: () => null },
     });
     expect(posted[0]).toMatchObject({ source: "osdk-preview", kind: "ready" });
+  });
+});
+
+class FakePopStateEvent {
+  type: string;
+  constructor(type: string) {
+    this.type = type;
+  }
+}
+
+interface FakeRouteWindow extends Poster {
+  parent: Poster;
+  location: { href: string };
+  history: {
+    pushState: (...args: unknown[]) => void;
+    replaceState: (...args: unknown[]) => void;
+  };
+  addEventListener(type: string, listener: Listener): void;
+  dispatchEvent(event: { type: string }): boolean;
+  PopStateEvent: new (type: string, init?: unknown) => { type: string };
+}
+
+/**
+ * Drives installRouteSync directly with fake browser globals so we can assert
+ * what it posts to the parent, what it navigates to, and what it dispatches,
+ * without a full DOM. Mirrors runReporter's fake-window seam.
+ */
+function runRouteSync(options: { framed: boolean }): {
+  posted: PostedMessage[];
+  listeners: Map<string, Listener>;
+  pushStateCalls: unknown[][];
+  dispatched: string[];
+  win: FakeRouteWindow;
+} {
+  const posted: PostedMessage[] = [];
+  const listeners = new Map<string, Listener>();
+  const pushStateCalls: unknown[][] = [];
+  const dispatched: string[] = [];
+  const parentFrame: Poster = {
+    postMessage: (data) => {
+      posted.push(data);
+    },
+  };
+  const win: FakeRouteWindow = {
+    postMessage: (data) => {
+      posted.push(data);
+    },
+    parent: parentFrame,
+    location: { href: "https://preview.example/app/current" },
+    history: {
+      pushState: (...args) => {
+        pushStateCalls.push(args);
+      },
+      replaceState: () => {},
+    },
+    addEventListener: (type, listener) => {
+      listeners.set(type, listener);
+    },
+    dispatchEvent: (event) => {
+      dispatched.push(event.type);
+      return true;
+    },
+    PopStateEvent: FakePopStateEvent,
+  };
+  // Not framed => window.parent === window, which route-sync uses to bail out.
+  win.parent = options.framed ? parentFrame : win;
+  installRouteSync(win as unknown as Window & typeof globalThis);
+  return { posted, listeners, pushStateCalls, dispatched, win };
+}
+
+describe("installRouteSync", () => {
+  it("does nothing when not running inside an iframe", () => {
+    const { posted, listeners } = runRouteSync({ framed: false });
+    expect(posted).toHaveLength(0);
+    expect(listeners.size).toBe(0);
+  });
+
+  it("announces readiness and the initial route when framed", () => {
+    const { posted } = runRouteSync({ framed: true });
+    expect(posted).toEqual([
+      { source: "osdk-preview", type: "IFRAME_READY" },
+      {
+        source: "osdk-preview",
+        type: "ROUTE_CHANGE",
+        path: "https://preview.example/app/current",
+      },
+    ]);
+  });
+
+  it("reports a ROUTE_CHANGE when the app calls pushState", () => {
+    const { posted, win } = runRouteSync({ framed: true });
+    const before = posted.length;
+    win.history.pushState({}, "", "/next");
+    expect(posted.slice(before)).toEqual([
+      expect.objectContaining({ source: "osdk-preview", type: "ROUTE_CHANGE" }),
+    ]);
+  });
+
+  it("navigates and fires popstate on a SET_RELATIVE_PATH command", () => {
+    const { listeners, pushStateCalls, dispatched } = runRouteSync({
+      framed: true,
+    });
+    listeners.get("message")?.({
+      data: { type: "SET_RELATIVE_PATH", path: "/target" },
+    });
+    expect(pushStateCalls).toContainEqual([{}, "", "/target"]);
+    expect(dispatched).toContain("popstate");
+  });
+
+  it("ignores messages that aren't a string SET_RELATIVE_PATH command", () => {
+    const { listeners, pushStateCalls } = runRouteSync({ framed: true });
+    const onMessage = listeners.get("message");
+    onMessage?.({ data: { type: "SOMETHING_ELSE", path: "/x" } });
+    onMessage?.({ data: { type: "SET_RELATIVE_PATH", path: 42 } });
+    onMessage?.({ data: null });
+    expect(pushStateCalls).toHaveLength(0);
+  });
+});
+
+describe("ROUTE_SYNC_SCRIPT", () => {
+  // Guards the installRouteSync.toString() serialization: the emitted IIFE must
+  // be self-contained and runnable verbatim in the browser.
+  it("runs verbatim as a self-contained IIFE and announces readiness when framed", () => {
+    const posted: PostedMessage[] = [];
+    const parentFrame: Poster = {
+      postMessage: (data) => {
+        posted.push(data);
+      },
+    };
+    const win = {
+      postMessage: (data: PostedMessage) => {
+        posted.push(data);
+      },
+      parent: parentFrame,
+      location: { href: "https://preview.example/start" },
+      history: {
+        pushState: () => {},
+        replaceState: () => {},
+      },
+      addEventListener: () => {},
+      dispatchEvent: () => true,
+      PopStateEvent: FakePopStateEvent,
+    };
+    runInNewContext(ROUTE_SYNC_SCRIPT, { window: win });
+    expect(posted).toContainEqual(
+      expect.objectContaining({ source: "osdk-preview", type: "IFRAME_READY" })
+    );
   });
 });
