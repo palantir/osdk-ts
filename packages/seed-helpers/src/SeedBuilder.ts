@@ -193,9 +193,7 @@ export class SeedBuilder {
    */
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
-    props: Q extends ObjectTypeDefinition
-      ? Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-      : SeedProps<Q>
+    props: Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
   ): SeedRef<Q> {
     const { apiName, primaryKeyValue } = ref.$locator;
     const schema = this.#schemaMap.objects.get(apiName);
@@ -361,9 +359,7 @@ export type SeedClient = {
   ): Promise<SeedRef<Q>>;
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
-    props: Q extends ObjectTypeDefinition
-      ? Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-      : SeedProps<Q>
+    props: Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
   ): Promise<SeedRef<Q>>;
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
   link<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
