@@ -41,6 +41,7 @@
     "packages/react-components/",
     "packages/client.unstable/",
     "packages/client.unstable.tpsa/",
+    "packages/client.unstable.seed/",
     "packages/client/",
     "packages/maker/",
     "packages/maker-experimental/",
