@@ -162,7 +162,9 @@ function renderType(
       }
       return "{}";
     }
-    case "interface":
+    case "interface": {
+      return `{ $objectType: "objectTypeApiName", $primaryKey: "primaryKeyValue" }`;
+    }
     case "marking": {
       return "{}";
     }
