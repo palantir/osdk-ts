@@ -127,7 +127,7 @@ function formatStandardUnit(
   const options: ExtendedNumberFormatOptions = {
     ...convertToIntlOptions(rule.baseFormatOptions),
     style: "unit",
-    unit: unit,
+    unit,
   };
 
   try {

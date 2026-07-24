@@ -197,7 +197,7 @@ export class OntologyMetadataResolver {
       linkTypesApiNamesToLoad?: string[];
     },
     extPackageInfo: PackageInfo = new Map(),
-    branch: string | undefined = undefined,
+    branch?: string | undefined,
   ): Promise<
     Result<OntologyInfo, string[]>
   > {

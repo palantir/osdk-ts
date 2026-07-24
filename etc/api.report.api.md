@@ -671,7 +671,7 @@ export namespace DerivedProperty {
     	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
-    	{};
+    	export {};
 }
 
 // @public (undocumented)

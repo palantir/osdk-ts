@@ -60,8 +60,8 @@
     "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.26.32",
-    "@microsoft/api-extractor": "^7.52.11",
+    "@microsoft/api-documenter": "^7.30.5",
+    "@microsoft/api-extractor": "^7.58.7",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/client.test.ontology": "workspace:~",
@@ -70,7 +70,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "msw": "^2.11.1",
-    "typescript": "~5.5.4",
+    "typescript": "~6.0.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {
