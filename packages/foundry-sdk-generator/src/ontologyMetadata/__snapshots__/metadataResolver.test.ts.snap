@@ -167,6 +167,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "fooArray": {
             "apiName": "fooArray",
             "dataType": {
+              "reducers": [],
               "subType": {
                 "type": "string",
               },
@@ -239,6 +240,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "fooArray": {
             "apiName": "fooArray",
             "dataType": {
+              "reducers": [],
               "subType": {
                 "type": "string",
               },
@@ -981,6 +983,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           "fooArray": {
             "apiName": "fooArray",
             "dataType": {
+              "reducers": [],
               "subType": {
                 "type": "string",
               },
@@ -1053,6 +1056,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           "fooArray": {
             "apiName": "fooArray",
             "dataType": {
+              "reducers": [],
               "subType": {
                 "type": "string",
               },
