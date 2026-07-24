@@ -48,7 +48,7 @@ export type DebounceOptions = {
  * @param options Additional configuration options. See https://lodash.com/docs/4.17.15#debounce for more details
  *
  * @example
- * const handleScroll = useDebouncedCallback((event: React.UIEvent<HtmlDivElement>) => {
+ * const handleScroll = useDebouncedCallback((event: React.UIEvent<HTMLDivElement>) => {
  *   loadMore(event.current.scrollTop);
  * }, 100)
  */

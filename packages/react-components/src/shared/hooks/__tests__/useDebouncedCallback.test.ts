@@ -35,4 +35,29 @@ describe("useDebouncedCallback", () => {
     expect(cb).toHaveBeenCalledTimes(1);
     expect(cb).toHaveBeenCalledWith(3);
   });
+
+  it("cancels a pending invocation when the component unmounts", () => {
+    vi.useFakeTimers();
+    const cb = vi.fn();
+    const { result, unmount } = renderHook(() =>
+      useDebouncedCallback(cb as (n: number) => void, 10)
+    );
+    result.current(1);
+    unmount();
+    vi.runAllTimers();
+
+    expect(cb).not.toHaveBeenCalled();
+  });
+
+  it("returns a stable function reference across re-renders", () => {
+    const { result, rerender } = renderHook(
+      ({ cb }) => useDebouncedCallback(cb, 10),
+      { initialProps: { cb: (_n: number) => {} } }
+    );
+    const first = result.current;
+    rerender({ cb: (_n: number) => {} });
+    rerender({ cb: (_n: number) => {} });
+
+    expect(result.current).toBe(first);
+  });
 });
