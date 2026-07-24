@@ -129,7 +129,11 @@ export type UpdatableObjectOrInterfaceLocatorProperties<
   OL extends ObjectLocator<any>,
 > = X extends UpdateObject<any> | UpdateObjectForInterface<any>
   ? OL["$apiName"] extends X["obj"]["$apiName"]
-    ? X["properties"]
+    ? X["obj"] extends InterfaceLocator<any>
+      ? OL extends { $objectType: unknown }
+        ? X["properties"]
+        : never
+      : X["properties"]
     : never
   : never;
 
