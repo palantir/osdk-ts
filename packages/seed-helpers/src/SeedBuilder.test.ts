@@ -18,7 +18,7 @@ import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
-import { createSeed, SeedBuilder } from "./SeedBuilder.js";
+import { createSeedWithMetadata, SeedBuilder } from "./SeedBuilder.js";
 import type { SeedRef } from "./types.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
@@ -426,7 +426,7 @@ describe("createSeed", () => {
   });
 
   it("runs the callback, returns the built output, and derives primary keys from metadata", () => {
-    const [out] = createSeed(metadata, (sb) => {
+    const [out] = createSeedWithMetadata(metadata, (sb) => {
       const office = sb.create(Office, { officeId: "NYC" });
       const emp = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.link(emp, "officeLink", office);
@@ -442,7 +442,7 @@ describe("createSeed", () => {
     const bad = makeMetadata({
       Bad: makeObjectType("Bad", "missingPk", { someOther: "string" }),
     });
-    expect(() => createSeed(bad, () => {})).toThrow(
+    expect(() => createSeedWithMetadata(bad, () => {})).toThrow(
       /Primary key 'missingPk' is not among the object's properties/u
     );
   });
