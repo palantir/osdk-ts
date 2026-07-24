@@ -842,4 +842,562 @@ describe("ActionForm", () => {
       });
     });
   });
+
+  describe("expanded constraint-validation contract", () => {
+    /**
+     * A second controlled harness that also threads caller-supplied field
+     * definitions through, so a parameter can be forced to render with a
+     * non-default renderer while still driving a value through submission.
+     */
+    function ValidationHarnessWithFields<
+      Q extends ActionDefinition<unknown>,
+    >(props: {
+      action: Q;
+      initialState: Record<string, unknown>;
+      formFieldDefinitions: ReadonlyArray<FormFieldDefinition<Q>>;
+      onSuccess?: () => void;
+    }): ReactElement {
+      const [state, setState] = useState<Record<string, unknown>>(
+        props.initialState
+      );
+      return (
+        <ActionForm
+          actionDefinition={props.action}
+          formFieldDefinitions={props.formFieldDefinitions}
+          formState={state as FormState<Q>}
+          onFormStateChange={(updater) =>
+            setState(
+              (prev) => updater(prev as FormState<Q>) as Record<string, unknown>
+            )
+          }
+          onSuccess={props.onSuccess}
+        />
+      );
+    }
+
+    interface NumericActionDef extends ActionDefinition<unknown> {
+      __DefinitionMetadata: {
+        signatures: unknown;
+        parameters: { age: { type: "integer" } };
+        type: "action";
+        apiName: "NumericAction";
+        status: "ACTIVE";
+        rid: string;
+      };
+    }
+
+    const NumericAction: NumericActionDef = {
+      type: "action",
+      apiName: "NumericAction",
+    } as NumericActionDef;
+
+    // A CUSTOM renderer only displays the value; it has no native input, so it
+    // cannot mask a constraint with an HTML min/max/minlength attribute.
+    const numericCustomField: ReadonlyArray<
+      FormFieldDefinition<NumericActionDef>
+    > = [
+      {
+        fieldKey: "age",
+        label: "Age",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: ({ value }) => <span>{String(value ?? "")}</span>,
+        },
+      },
+    ];
+
+    const textCustomField: ReadonlyArray<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: ({ value }) => <span>{String(value ?? "")}</span>,
+        },
+      },
+    ];
+
+    it("blocks a value sitting on an exclusive range boundary and admits one just past it", async () => {
+      // `gt: 1` excludes 1 itself, so 1 is out of range and 2 is the first
+      // acceptable value.
+      const exclusive: ValidationParameters = {
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "range", gt: 1 }],
+        },
+      };
+
+      mockMetadataParameters({ age: { type: "integer", nullable: true } });
+      mockActionWithConstraints(exclusive);
+      const onBoundary = vi.fn();
+      const boundary = render(
+        <ValidationHarnessWithFields
+          action={NumericAction}
+          initialState={{ age: 1 }}
+          formFieldDefinitions={numericCustomField}
+          onSuccess={onBoundary}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      // Blocked means the underlying apply action was never invoked.
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onBoundary).not.toHaveBeenCalled();
+      boundary.unmount();
+
+      mockActionWithConstraints(exclusive);
+      const onPast = vi.fn();
+      render(
+        <ValidationHarnessWithFields
+          action={NumericAction}
+          initialState={{ age: 2 }}
+          formFieldDefinitions={numericCustomField}
+          onSuccess={onPast}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onPast).toHaveBeenCalled();
+      });
+    });
+
+    it("enforces numeric-range and string-length limits even when the field has no native input to enforce them", async () => {
+      // Numeric range on a CUSTOM renderer: an out-of-range value is still
+      // blocked despite there being no HTML max to catch it.
+      mockMetadataParameters({ age: { type: "integer", nullable: true } });
+      mockActionWithConstraints({
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "range", gte: 1, lte: 100 }],
+        },
+      });
+      const onRange = vi.fn();
+      const ranged = render(
+        <ValidationHarnessWithFields
+          action={NumericAction}
+          initialState={{ age: 200 }}
+          formFieldDefinitions={numericCustomField}
+          onSuccess={onRange}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      // Blocked means the underlying apply action was never invoked.
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onRange).not.toHaveBeenCalled();
+      ranged.unmount();
+
+      // String length on a CUSTOM renderer: a value shorter than the minimum
+      // is blocked.
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        name: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "stringLength", gte: 3, lte: 10 }],
+        },
+      });
+      const onShort = vi.fn();
+      const short = render(
+        <ValidationHarnessWithFields
+          action={TestAction}
+          initialState={{ name: "ab" }}
+          formFieldDefinitions={textCustomField}
+          onSuccess={onShort}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onShort).not.toHaveBeenCalled();
+      short.unmount();
+
+      // And a value longer than the maximum is likewise blocked.
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        name: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "stringLength", gte: 3, lte: 10 }],
+        },
+      });
+      const onLong = vi.fn();
+      render(
+        <ValidationHarnessWithFields
+          action={TestAction}
+          initialState={{ name: "abcdefghijk" }}
+          formFieldDefinitions={textCustomField}
+          onSuccess={onLong}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onLong).not.toHaveBeenCalled();
+    });
+
+    it("renders an open one-of as free text and submits a value that is not among the suggestions", async () => {
+      mockMetadataParameters({ status: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "OPEN" }, { value: "CLOSED" }],
+              otherValuesAllowed: true,
+            },
+          ],
+        },
+      });
+
+      const onSuccess = vi.fn();
+      render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+      );
+
+      // Because other values are allowed, the parameter stays a typeable text
+      // box rather than closing into a fixed-choice dropdown.
+      const field = screen.queryByRole("textbox", { name: /status/u });
+      expect(field).not.toBeNull();
+
+      fireEvent.input(field as HTMLElement, { target: { value: "MAYBE" } });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled();
+      });
+      // The open one-of is the opposite of blocked: the action is applied.
+      expect(mockApplyAction).toHaveBeenCalled();
+    });
+
+    it("reports a rejected validation through onError without leaking an unhandled promise rejection", async () => {
+      vi.useFakeTimers();
+      const rejections: unknown[] = [];
+      const onWindowRejection = (event: Event): void => {
+        rejections.push(event);
+        event.preventDefault();
+      };
+      const onNodeRejection = (reason: unknown): void => {
+        rejections.push(reason);
+      };
+      window.addEventListener("unhandledrejection", onWindowRejection);
+      process.on("unhandledRejection", onNodeRejection);
+      try {
+        const error = new Error("validation exploded");
+        const validateAction = vi.fn(() => Promise.reject(error));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        const onError = vi.fn();
+        render(<ActionForm actionDefinition={TestAction} onError={onError} />);
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500);
+        });
+
+        expect(onError).toHaveBeenCalledTimes(1);
+        expect(onError).toHaveBeenCalledWith({ type: "validation", error });
+        expect(rejections).toHaveLength(0);
+      } finally {
+        window.removeEventListener("unhandledrejection", onWindowRejection);
+        process.off("unhandledRejection", onNodeRejection);
+        vi.useRealTimers();
+      }
+    });
+
+    it("revalidates with the parent's new value when the controlling parent replaces the form state", () => {
+      vi.useFakeTimers();
+      try {
+        const validateAction = vi.fn(() => Promise.resolve(undefined));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        const Controlled = ({ name }: { name: string }): ReactElement => (
+          <ActionForm
+            actionDefinition={TestAction}
+            formState={{ name }}
+            onFormStateChange={() => {}}
+          />
+        );
+
+        const { rerender } = render(<Controlled name="Initial" />);
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+        validateAction.mockClear();
+
+        // Parent swaps in a new authoritative value without going through the
+        // field change handler.
+        rerender(<Controlled name="Changed" />);
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+
+        expect(validateAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Changed" })
+        );
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("validates the value the parent commits, never the raw pre-commit keystroke", () => {
+      vi.useFakeTimers();
+      try {
+        const validateAction = vi.fn(() => Promise.resolve(undefined));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        const UppercaseControlled = (): ReactElement => {
+          const [state, setState] = useState<{ name?: string }>({ name: "" });
+          return (
+            <ActionForm
+              actionDefinition={TestAction}
+              formState={state}
+              onFormStateChange={(updater) =>
+                setState((prev) => {
+                  const next = updater(prev);
+                  return {
+                    ...next,
+                    name: String(next.name ?? "").toUpperCase(),
+                  };
+                })
+              }
+            />
+          );
+        };
+
+        render(<UppercaseControlled />);
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+        validateAction.mockClear();
+
+        const input = screen.getByRole("textbox", { name: /^name/u });
+        act(() => {
+          fireEvent.change(input, { target: { value: "abc" } });
+        });
+        // Let any trailing/debounced validation fire after the parent commits.
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+
+        // Only the parent-committed (uppercased) value should reach validation.
+        expect(validateAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "ABC" })
+        );
+        // The raw pre-commit edit must never reach validation.
+        expect(validateAction).not.toHaveBeenCalledWith(
+          expect.objectContaining({ name: "abc" })
+        );
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("validates the first edit immediately even when it lands inside the debounce window", () => {
+      vi.useFakeTimers();
+      try {
+        const validateAction = vi.fn(() => Promise.resolve(undefined));
+        vi.mocked(useOsdkAction).mockReturnValue({
+          ...defaultMockActionResult(),
+          validateAction,
+        });
+
+        render(<ActionForm actionDefinition={TestAction} />);
+        const afterMount = validateAction.mock.calls.length;
+
+        // Stay well inside the 500ms debounce window opened by the mount
+        // validation.
+        act(() => {
+          vi.advanceTimersByTime(100);
+        });
+
+        const input = screen.getByRole("textbox", { name: /^name/u });
+        act(() => {
+          fireEvent.change(input, { target: { value: "a" } });
+        });
+
+        expect(validateAction.mock.calls.length).toBe(afterMount + 1);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("keeps the caller's field configuration visible when a closed one-of turns the field into a dropdown", () => {
+      // The caller configures a placeholder on the field. When the one-of
+      // closes the field into a dropdown, that placeholder must still be shown.
+      const customDefs: ReadonlyArray<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Name",
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: { placeholder: "Choose an option" },
+        },
+      ];
+
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        name: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "OPEN" }, { value: "CLOSED" }],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+      });
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={customDefs}
+        />
+      );
+
+      expect(screen.queryByRole("combobox")).not.toBeNull();
+      expect(screen.queryByText("Choose an option")).not.toBeNull();
+    });
+
+    it("blocks submission for a parameter the validation response marks required even when the metadata allows null", async () => {
+      mockMetadataParameters({ note: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        note: {
+          result: "VALID",
+          required: true,
+          evaluatedConstraints: [],
+        },
+      });
+
+      const onSuccess = vi.fn();
+      render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("enforces every constraint when a parameter carries more than one of the same type", async () => {
+      // Two ranges apply at once (0..100 and 0..50). A value of 75 satisfies
+      // the first but violates the second, so it must still be blocked.
+      mockMetadataParameters({ age: { type: "integer", nullable: true } });
+      mockActionWithConstraints({
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            { type: "range", gte: 0, lte: 100 },
+            { type: "range", gte: 0, lte: 50 },
+          ],
+        },
+      });
+
+      const onSuccess = vi.fn();
+      render(
+        <ValidationHarnessWithFields
+          action={NumericAction}
+          initialState={{ age: 75 }}
+          formFieldDefinitions={numericCustomField}
+          onSuccess={onSuccess}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("does not surface a validation error on mount before the user interacts", () => {
+      vi.useFakeTimers();
+      try {
+        // A required-but-empty parameter would fail validation, but mount
+        // validation is silent: it computes state without displaying errors.
+        mockMetadataParameters({ name: { type: "string", nullable: false } });
+        mockActionWithConstraints({
+          name: {
+            result: "INVALID",
+            required: true,
+            evaluatedConstraints: [],
+          },
+        });
+
+        render(<ActionForm actionDefinition={TestAction} />);
+
+        // Let the debounced mount validation resolve.
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+
+        // No edit and no submit has happened yet, so no error is shown.
+        expect(screen.queryByRole("alert")).toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("keeps the submit button enabled even when the form has validation errors", async () => {
+      // A required-but-empty parameter fails validation, but an invalid form
+      // does not disable Submit: the button stays enabled and clickable.
+      mockMetadataParameters({ name: { type: "string", nullable: false } });
+      mockActionWithConstraints({
+        name: {
+          result: "INVALID",
+          required: true,
+          evaluatedConstraints: [],
+        },
+      });
+
+      vi.useFakeTimers();
+      try {
+        render(<ActionForm actionDefinition={TestAction} />);
+        // Let the debounced mount validation resolve.
+        act(() => {
+          vi.advanceTimersByTime(500);
+        });
+
+        const button = screen.getByRole("button", { name: /submit/iu });
+        expect((button as HTMLButtonElement).disabled).toBe(false);
+      } finally {
+        vi.useRealTimers();
+      }
+
+      // The enabled button is still clickable, but the action stays blocked:
+      // clicking reveals the validation alert and never applies the action.
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+  });
 });
