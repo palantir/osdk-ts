@@ -17,7 +17,7 @@
 import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
-  PrimaryKeyType,
+  OsdkBase,
 } from "@osdk/api";
 
 type PartialForOptionalProperties<T> = {
@@ -36,14 +36,7 @@ export type SeedProps<T extends ObjectTypeDefinition> =
 declare const SEED_REF_BRAND: unique symbol;
 
 export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
-  {
-    /**
-     * @internal
-     */
-    $locator: {
-      apiName: string;
-      primaryKeyValue: PrimaryKeyType<Q>;
-    };
+  OsdkBase<Q> & {
     readonly [SEED_REF_BRAND]: Q;
   } & SeedProps<Q>
 >;

@@ -41,6 +41,7 @@ function makeSchema(): SchemaMap {
             ["fullName", "string"],
           ]),
           primaryKeyApiName: Employee.primaryKeyApiName,
+          titlePropertyApiName: "fullName",
         },
       ],
       [
@@ -48,6 +49,7 @@ function makeSchema(): SchemaMap {
         {
           properties: new Map<string, WireType>([["officeId", "string"]]),
           primaryKeyApiName: Office.primaryKeyApiName,
+          titlePropertyApiName: "officeId",
         },
       ],
     ]),
@@ -61,9 +63,13 @@ function newBuilder(): SeedBuilder {
 /** A hand-built ref for exercising code paths that don't go through `create`. */
 function employeeRef(employeeId: number): SeedRef<Employee> {
   return {
-    $locator: { apiName: "Employee", primaryKeyValue: employeeId },
+    $apiName: "Employee",
+    $objectType: "Employee",
+    $objectSpecifier: `Employee:${employeeId}`,
+    $primaryKey: employeeId,
+    $title: undefined,
     employeeId,
-  } as SeedRef<Employee>;
+  } as unknown as SeedRef<Employee>;
 }
 
 /** Builds a wire `ObjectTypeFullMetadata` from a compact spec. */
@@ -105,27 +111,28 @@ function makeMetadata(
 
 describe("SeedBuilder", () => {
   describe("create", () => {
-    it("stores the object and returns a frozen ref exposing locator and props", () => {
+    it("stores the object and returns a frozen ref exposing OsdkBase identifiers and props", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       expect(sb.build().objects).toEqual({
         Employee: [{ employeeId: 1, fullName: "Alice" }],
       });
-      expect(ref.$locator).toEqual({
-        apiName: "Employee",
-        primaryKeyValue: 1,
-      });
+      expect(ref.$apiName).toBe("Employee");
+      expect(ref.$objectType).toBe("Employee");
+      expect(ref.$primaryKey).toBe(1);
+      expect(ref.$objectSpecifier).toBe("Employee:1");
+      expect(ref.$title).toBe("Alice");
       expect(ref.employeeId).toBe(1);
       expect(ref.fullName).toBe("Alice");
       expect(Object.isFrozen(ref)).toBe(true);
     });
 
-    it("keeps the primary key's original type in the locator", () => {
+    it("keeps the primary key's original type in $primaryKey", () => {
       const emp = newBuilder().create(Employee, { employeeId: 7 });
-      expect(emp.$locator.primaryKeyValue).toBe(7);
+      expect(emp.$primaryKey).toBe(7);
 
       const office = newBuilder().create(Office, { officeId: "NYC" });
-      expect(office.$locator.primaryKeyValue).toBe("NYC");
+      expect(office.$primaryKey).toBe("NYC");
     });
 
     it("throws a SeedError when the same primary key is created twice", () => {
@@ -152,10 +159,10 @@ describe("SeedBuilder", () => {
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       const ref = sb.ref(Employee, 1);
       expect(ref).toBeDefined();
-      expect(ref!.$locator).toEqual({
-        apiName: "Employee",
-        primaryKeyValue: 1,
-      });
+      expect(ref!.$apiName).toBe("Employee");
+      expect(ref!.$primaryKey).toBe(1);
+      expect(ref!.$objectSpecifier).toBe("Employee:1");
+      expect(ref!.$title).toBe("Alice");
       expect(ref!.fullName).toBe("Alice");
       expect(Object.isFrozen(ref)).toBe(true);
     });
@@ -187,7 +194,7 @@ describe("SeedBuilder", () => {
       expect(sb.update(ref, { fullName: "Alice" })).toBe(ref);
     });
 
-    it("keeps the locator's primary key even if props tries to change it", () => {
+    it("keeps the primary key even if props tries to change it", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.update(ref, {

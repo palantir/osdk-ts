@@ -24,6 +24,8 @@ import { SeedError } from "./SeedError.js";
  */
 export interface ObjectTypeSchema {
   properties: Map<string, Ontology.ObjectPropertyType["type"]>;
+
+  titlePropertyApiName: string;
   primaryKeyApiName: string;
 }
 
@@ -71,6 +73,7 @@ export function schemaFromMetadata(
     map.objects.set(apiName, {
       properties,
       primaryKeyApiName: ot.primaryKey,
+      titlePropertyApiName: ot.titleProperty,
     });
   }
   return map;
