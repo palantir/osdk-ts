@@ -1383,6 +1383,11 @@ const formContent = [
     fieldComponentProps: {
       items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
       createNewItemFromQuery: coerceStringQuery,
+      createNewItemRenderer: (query) => (
+        <span>
+          <strong>Add</strong> new department "{query}"
+        </span>
+      ),
       placeholder: "Search or create a department...",
     },
   },

@@ -312,8 +312,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       setInternalQuery(query);
     }
   }, [query]);
-  const currentQuery = query ?? internalQuery;
-  const trimmedQuery = isCreatable ? currentQuery.trim() : "";
+  const trimmedQuery = isCreatable ? internalQuery.trim() : "";
 
   const handleInputValueChange = useCallback(
     (nextValue: string) => {
@@ -520,7 +519,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={effectiveItems}
-        inputValue={currentQuery}
+        inputValue={internalQuery}
         onInputValueChange={handleInputValueChange}
         filter={
           disableClientSideFiltering
