@@ -19,7 +19,7 @@ import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
 import { createSeed, SeedBuilder } from "./SeedBuilder.js";
-import type { SeedOutput, SeedRef } from "./types.js";
+import type { SeedRef } from "./types.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
 
@@ -100,7 +100,7 @@ function makeMetadata(
 
 describe("SeedBuilder", () => {
   describe("create", () => {
-    it("stores the object and returns a frozen ref exposing OsdkBase identifiers and props", () => {
+    it("stores the object and returns a frozen ref exposing OsdkBase identifiers and props, preserving the primary key's type", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       expect(sb.build().objects).toEqual({
@@ -114,14 +114,11 @@ describe("SeedBuilder", () => {
       expect(ref.employeeId).toBe(1);
       expect(ref.fullName).toBe("Alice");
       expect(Object.isFrozen(ref)).toBe(true);
-    });
 
-    it("keeps the primary key's original type in $primaryKey", () => {
-      const emp = newBuilder().create(Employee, { employeeId: 7 });
-      expect(emp.$primaryKey).toBe(7);
-
-      const office = newBuilder().create(Office, { officeId: "NYC" });
+      // A string primary key stays a string in $primaryKey.
+      const office = sb.create(Office, { officeId: "NYC" });
       expect(office.$primaryKey).toBe("NYC");
+      expect(office.$objectSpecifier).toBe("Office:NYC");
     });
 
     it("throws when the same primary key is created twice", () => {
@@ -131,22 +128,13 @@ describe("SeedBuilder", () => {
         sb.create(Employee, { employeeId: 1, fullName: "Bob" })
       ).toThrow("Employee with primary key 1 already exists.");
     });
-
-    it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder(makeMetadata({}));
-      expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
-        "Object not found in metadata"
-      );
-    });
   });
 
   describe("ref", () => {
-    it("returns undefined for a non-existent object", () => {
-      expect(newBuilder().ref(Employee, 99)).toBeUndefined();
-    });
-
-    it("returns a frozen ref for an existing object", () => {
+    it("returns undefined for a non-existent object and a frozen ref for an existing one", () => {
       const sb = newBuilder();
+      expect(sb.ref(Employee, 99)).toBeUndefined();
+
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       const ref = sb.ref(Employee, 1);
       expect(ref).toBeDefined();
@@ -160,10 +148,10 @@ describe("SeedBuilder", () => {
   });
 
   describe("update", () => {
-    it("merges props into the existing object, preserving the primary key", () => {
+    it("merges props into the existing object, preserving the primary key, and returns the same ref", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      sb.update(ref, { fullName: "Alicia" });
+      expect(sb.update(ref, { fullName: "Alicia" })).toBe(ref);
       expect(sb.build().objects.Employee).toEqual([
         { employeeId: 1, fullName: "Alicia" },
       ]);
@@ -182,12 +170,6 @@ describe("SeedBuilder", () => {
       ]);
     });
 
-    it("returns the same ref it was given", () => {
-      const sb = newBuilder();
-      const ref = sb.create(Employee, { employeeId: 1 });
-      expect(sb.update(ref, { fullName: "Alice" })).toBe(ref);
-    });
-
     it("throws when props tries to change the primary key", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
@@ -199,39 +181,35 @@ describe("SeedBuilder", () => {
         })
       ).toThrow("Cannot modify primary key employeeId");
     });
-
-    it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder(makeMetadata({}));
-      expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
-        "Object not found in metadata"
-      );
-    });
   });
 
   describe("delete", () => {
-    it("removes an existing object", () => {
+    it("removes an existing object, and is a no-op for a non-existent one", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1 });
       sb.delete(ref);
       expect(sb.build().objects.Employee).toEqual([]);
-    });
 
-    it("is a no-op for a non-existent object and does not throw", () => {
-      const sb = newBuilder();
       expect(() => sb.delete(employeeRef(5))).not.toThrow();
       expect(sb.build().objects.Employee).toEqual([]);
     });
+  });
 
-    it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder(makeMetadata({}));
-      expect(() => sb.delete(employeeRef(1))).toThrow(
-        "Object not found in metadata"
-      );
-    });
+  it("throws when the object type is not in the schema, for create/update/delete", () => {
+    const sb = new SeedBuilder(makeMetadata({}));
+    expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
+      "Object not found in metadata"
+    );
+    expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
+      "Object not found in metadata"
+    );
+    expect(() => sb.delete(employeeRef(1))).toThrow(
+      "Object not found in metadata"
+    );
   });
 
   describe("link", () => {
-    it("adds a single link with the correct endpoints", () => {
+    it("adds a single link with the correct endpoints and derived name", () => {
       const sb = newBuilder();
       const emp = sb.create(Employee, { employeeId: 1 });
       const office = sb.create(Office, { officeId: "NYC" });
@@ -251,7 +229,7 @@ describe("SeedBuilder", () => {
       );
     });
 
-    it("adds one link per target for a many-valued link given an array", () => {
+    it("adds one link per target given an array, and none for an empty array", () => {
       const sb = newBuilder();
       const lead = sb.create(Employee, { employeeId: 1 });
       const a = sb.create(Employee, { employeeId: 2 });
@@ -261,30 +239,18 @@ describe("SeedBuilder", () => {
       const { links } = sb.build();
       expect(links).toHaveLength(2);
       expect(links.map((l) => l.targetKey).sort()).toEqual(["2", "3"]);
-    });
 
-    it("dedupes identical links", () => {
-      const sb = newBuilder();
-      const lead = sb.create(Employee, { employeeId: 1 });
-      const peep = sb.create(Employee, { employeeId: 2 });
-      sb.link(lead, "peeps", peep);
-      sb.link(lead, "peeps", peep);
-      expect(sb.build().links).toHaveLength(1);
-    });
-
-    it("adds no links when given an empty target array", () => {
-      const sb = newBuilder();
-      const lead = sb.create(Employee, { employeeId: 1 });
       sb.link(lead, "peeps", []);
-      expect(sb.build().links).toEqual([]);
+      expect(sb.build().links).toHaveLength(2);
     });
 
-    it("keeps links with the same endpoints but different link types", () => {
+    it("dedupes identical links but keeps ones differing only by link type", () => {
       const sb = newBuilder();
       const a = sb.create(Employee, { employeeId: 1 });
       const b = sb.create(Employee, { employeeId: 2 });
-      sb.link(a, "lead", b);
       sb.link(a, "peeps", b);
+      sb.link(a, "peeps", b); // duplicate, deduped
+      sb.link(a, "lead", b); // same endpoints, different type
 
       const { links } = sb.build();
       expect(links).toHaveLength(2);
@@ -293,26 +259,20 @@ describe("SeedBuilder", () => {
   });
 
   describe("unlink", () => {
-    it("removes a previously added link", () => {
-      const sb = newBuilder();
-      const emp = sb.create(Employee, { employeeId: 1 });
-      const office = sb.create(Office, { officeId: "NYC" });
-      sb.link(emp, "officeLink", office);
-      sb.unlink(emp, "officeLink", office);
-      expect(sb.build().links).toEqual([]);
-    });
-
-    it("removes only the matching targets", () => {
+    it("removes matching links given a single target or an array of targets", () => {
       const sb = newBuilder();
       const lead = sb.create(Employee, { employeeId: 1 });
       const a = sb.create(Employee, { employeeId: 2 });
       const b = sb.create(Employee, { employeeId: 3 });
+
       sb.link(lead, "peeps", [a, b]);
       sb.unlink(lead, "peeps", a);
-
       const { links } = sb.build();
       expect(links).toHaveLength(1);
       expect(links[0].targetKey).toBe("3");
+
+      sb.unlink(lead, "peeps", [a, b]);
+      expect(sb.build().links).toEqual([]);
     });
 
     it("is a no-op when no link matches and does not throw", () => {
@@ -322,24 +282,12 @@ describe("SeedBuilder", () => {
       expect(() => sb.unlink(lead, "peeps", peep)).not.toThrow();
       expect(sb.build().links).toEqual([]);
     });
-
-    it("removes every target given an array", () => {
-      const sb = newBuilder();
-      const lead = sb.create(Employee, { employeeId: 1 });
-      const a = sb.create(Employee, { employeeId: 2 });
-      const b = sb.create(Employee, { employeeId: 3 });
-      sb.link(lead, "peeps", [a, b]);
-      sb.unlink(lead, "peeps", [a, b]);
-      expect(sb.build().links).toEqual([]);
-    });
   });
 
   describe("build", () => {
-    it("returns empty objects and links for a fresh builder", () => {
+    it("returns empty output for a fresh builder and groups objects by api name", () => {
       expect(newBuilder().build()).toEqual({ objects: {}, links: [] });
-    });
 
-    it("groups objects by api name", () => {
       const sb = newBuilder();
       sb.create(Employee, { employeeId: 1 });
       sb.create(Employee, { employeeId: 2 });
@@ -351,9 +299,11 @@ describe("SeedBuilder", () => {
     });
   });
 
-  describe("from", () => {
-    it("loads objects and links from a seed output", () => {
-      const input: SeedOutput = {
+  describe("set", () => {
+    it("loads objects and links from a seed output, replacing existing objects", () => {
+      const sb = newBuilder();
+      sb.create(Office, { officeId: "SF" });
+      sb.set({
         objects: {
           Employee: [{ employeeId: 1, fullName: "Alice" }],
           Office: [{ officeId: "NYC" }],
@@ -368,12 +318,10 @@ describe("SeedBuilder", () => {
             targetKey: "NYC",
           },
         ],
-      };
-
-      const sb = newBuilder();
-      sb.set(input);
+      });
       const out = sb.build();
 
+      // The pre-existing SF office is replaced by the set() contents.
       expect(out.objects.Employee).toEqual([
         { employeeId: 1, fullName: "Alice" },
       ]);
@@ -388,43 +336,24 @@ describe("SeedBuilder", () => {
       });
     });
 
-    it("records links even when the target object was not created", () => {
-      const input: SeedOutput = {
+    it("records links even when their source or target object was not created", () => {
+      const sb = newBuilder();
+      sb.set({
         objects: {
           Employee: [{ employeeId: 1 }],
+          Office: [{ officeId: "NYC" }],
         },
         links: [
           {
-            name: "dangling",
+            name: "dangling-target",
             linkType: "officeLink",
             sourceObjectType: "Employee",
             sourceKey: "1",
             targetObjectType: "Office",
             targetKey: "MISSING",
           },
-        ],
-      };
-
-      const sb = newBuilder();
-      sb.set(input);
-      const { links } = sb.build();
-      expect(links).toHaveLength(1);
-      expect(links[0]).toMatchObject({
-        sourceObjectType: "Employee",
-        sourceKey: "1",
-        targetObjectType: "Office",
-        targetKey: "MISSING",
-      });
-    });
-
-    it("records links even when the source object was not created", () => {
-      const input: SeedOutput = {
-        objects: {
-          Office: [{ officeId: "NYC" }],
-        },
-        links: [
           {
-            name: "dangling",
+            name: "dangling-source",
             linkType: "officeLink",
             sourceObjectType: "Employee",
             sourceKey: "MISSING",
@@ -432,49 +361,23 @@ describe("SeedBuilder", () => {
             targetKey: "NYC",
           },
         ],
-      };
-
-      const sb = newBuilder();
-      sb.set(input);
-      const { links } = sb.build();
-      expect(links).toHaveLength(1);
-      expect(links[0]).toMatchObject({
-        sourceObjectType: "Employee",
-        sourceKey: "MISSING",
-        targetObjectType: "Office",
-        targetKey: "NYC",
       });
-    });
-
-    it("replaces objects already present in the builder", () => {
-      const sb = newBuilder();
-      sb.create(Office, { officeId: "SF" });
-      sb.set({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
-
-      const { objects } = sb.build();
-      expect(objects.Office).toBeUndefined();
-      expect(objects.Employee).toEqual([{ employeeId: 1 }]);
+      const { links } = sb.build();
+      expect(links).toHaveLength(2);
+      expect(links.map((l) => [l.sourceKey, l.targetKey]).sort()).toEqual([
+        ["1", "MISSING"],
+        ["MISSING", "NYC"],
+      ]);
     });
   });
 
-  describe("merge", () => {
-    it("adds to objects already present in the builder", () => {
+  describe("addAll", () => {
+    it("adds to existing objects and resolves links against them", () => {
       const sb = newBuilder();
-      sb.create(Office, { officeId: "SF" });
-      sb.addAll({ objects: { Employee: [{ employeeId: 1 }] }, links: [] });
-
-      const { objects } = sb.build();
-      expect(objects.Office).toEqual([{ officeId: "SF" }]);
-      expect(objects.Employee).toEqual([{ employeeId: 1 }]);
-    });
-
-    it("resolves links against objects already in the builder", () => {
-      const sb = newBuilder();
-      const office = sb.create(Office, { officeId: "NYC" });
+      sb.create(Office, { officeId: "NYC" });
       sb.create(Employee, { employeeId: 1 });
-      void office;
       sb.addAll({
-        objects: {},
+        objects: { Office: [{ officeId: "SF" }] },
         links: [
           {
             name: "ignored",
@@ -486,31 +389,30 @@ describe("SeedBuilder", () => {
           },
         ],
       });
-      expect(sb.build().links).toHaveLength(1);
+
+      const { objects, links } = sb.build();
+      expect(objects.Office).toEqual([{ officeId: "NYC" }, { officeId: "SF" }]);
+      expect(objects.Employee).toEqual([{ employeeId: 1 }]);
+      expect(links).toHaveLength(1);
     });
   });
 
-  describe("validation on mutation", () => {
-    // Exhaustive validation branches are covered in validation.test.ts; here we
-    // only confirm objects are validated as they're inserted (create/set/update)
-    // rather than deferred to build().
-    it("throws when set() loads invalid data", () => {
-      const sb = newBuilder();
-      expect(() =>
-        sb.set({
-          objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
-          links: [],
-        })
-      ).toThrow(/expects string \(a string\) but got number/u);
-    });
+  // Exhaustive validation branches are covered in validation.test.ts; here we
+  // only confirm objects are validated as they're inserted (set/update) rather
+  // than deferred to build().
+  it("validates objects on mutation via set() and update()", () => {
+    const sb = newBuilder();
+    expect(() =>
+      sb.set({
+        objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
+        links: [],
+      })
+    ).toThrow(/expects string \(a string\) but got number/u);
 
-    it("throws when update() writes an invalid value", () => {
-      const sb = newBuilder();
-      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      expect(() =>
-        sb.update(ref, { fullName: 123 as unknown as string })
-      ).toThrow(/expects string \(a string\) but got number/u);
-    });
+    const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+    expect(() =>
+      sb.update(ref, { fullName: 123 as unknown as string })
+    ).toThrow(/expects string \(a string\) but got number/u);
   });
 });
 
@@ -523,21 +425,15 @@ describe("createSeed", () => {
     Office: makeObjectType("Office", "officeId", { officeId: "string" }),
   });
 
-  it("runs the callback and returns the built output", () => {
-    const [out] = createSeed(metadata, (sb) => {
-      sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-    });
-    expect(out).toEqual({
-      objects: { Employee: [{ employeeId: 1, fullName: "Alice" }] },
-      links: [],
-    });
-  });
-
-  it("derives the primary key from the metadata", () => {
+  it("runs the callback, returns the built output, and derives primary keys from metadata", () => {
     const [out] = createSeed(metadata, (sb) => {
       const office = sb.create(Office, { officeId: "NYC" });
-      const emp = sb.create(Employee, { employeeId: 1 });
+      const emp = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.link(emp, "officeLink", office);
+    });
+    expect(out.objects).toEqual({
+      Employee: [{ employeeId: 1, fullName: "Alice" }],
+      Office: [{ officeId: "NYC" }],
     });
     expect(out.links[0]).toMatchObject({ sourceKey: "1", targetKey: "NYC" });
   });

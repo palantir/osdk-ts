@@ -51,24 +51,29 @@ describe("validateSeedObject", () => {
     score: "long",
   });
 
-  it("passes for valid seed data", () => {
+  it("passes for valid seed data, including well-formed string encodings", () => {
     expect(() =>
       validateSeedObject(
-        { employeeId: "emp-001", firstName: "Alice", age: 30 },
+        {
+          employeeId: "emp-001",
+          firstName: "Alice",
+          age: 30,
+          createdAt: "2025-01-01T00:00:00Z",
+          score: "9007199254740993",
+        },
         employeeType
       )
     ).not.toThrow();
   });
 
-  it("throws on unknown property names", () => {
+  it("throws immediately on structural violations", () => {
+    // Unknown property name.
     expect(() =>
       validateSeedObject({ employeeId: "emp-001", badProp: "x" }, employeeType)
     ).toThrow(
       /Property 'badProp' on 'Employee' object \(primary key emp-001\) is not defined in the ontology/u
     );
-  });
-
-  it("throws on null property values", () => {
+    // Null value — and the identity falls back to <unknown> without a primary key.
     expect(() =>
       validateSeedObject(
         { employeeId: "emp-001", firstName: null },
@@ -77,15 +82,10 @@ describe("validateSeedObject", () => {
     ).toThrow(
       /Property 'firstName' on 'Employee' object \(primary key emp-001\) is null or undefined/u
     );
-  });
-
-  it("falls back to <unknown> in the identity when the primary key is absent", () => {
     expect(() => validateSeedObject({ firstName: null }, employeeType)).toThrow(
       /Property 'firstName' on 'Employee' object \(primary key <unknown>\) is null or undefined/u
     );
-  });
-
-  it("throws on JS type mismatches in either direction", () => {
+    // JS type mismatch in either direction.
     expect(() =>
       validateSeedObject(
         { employeeId: "emp-001", createdAt: 12345 },
@@ -101,48 +101,20 @@ describe("validateSeedObject", () => {
     );
   });
 
-  it("validates timestamp format, rejecting malformed and accepting valid", () => {
-    expect(() =>
-      validateSeedObject(
-        { employeeId: "emp-001", createdAt: "asdf" },
-        employeeType
-      )
-    ).toThrow(/property 'createdAt' has invalid timestamp format: 'asdf'/u);
-    expect(() =>
-      validateSeedObject(
-        { employeeId: "emp-001", createdAt: "2025-01-01T00:00:00Z" },
-        employeeType
-      )
-    ).not.toThrow();
-  });
-
-  it("validates long format, rejecting malformed and accepting valid", () => {
-    expect(() =>
-      validateSeedObject(
-        { employeeId: "emp-001", score: "not-a-number" },
-        employeeType
-      )
-    ).toThrow(/property 'score' has invalid long format/u);
-    expect(() =>
-      validateSeedObject(
-        { employeeId: "emp-001", score: "9007199254740993" },
-        employeeType
-      )
-    ).not.toThrow();
-  });
-
-  it("reports all format errors at once", () => {
+  it("collects every string-format error and reports them together", () => {
     try {
       validateSeedObject(
-        { employeeId: "emp-001", createdAt: "bad", score: "also-bad" },
+        { employeeId: "emp-001", createdAt: "asdf", score: "not-a-number" },
         employeeType
       );
       expect.unreachable("should have thrown");
     } catch (e: unknown) {
       expect(e).toBeInstanceOf(Error);
       const msg = (e as Error).message;
-      expect(msg).toContain("createdAt");
-      expect(msg).toContain("score");
+      expect(msg).toMatch(
+        /property 'createdAt' has invalid timestamp format: 'asdf'/u
+      );
+      expect(msg).toMatch(/property 'score' has invalid long format/u);
     }
   });
 });
