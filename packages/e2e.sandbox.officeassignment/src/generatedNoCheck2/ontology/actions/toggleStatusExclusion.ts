@@ -14,12 +14,14 @@ export namespace toggleStatusExclusion {
   export type ParamsDefinition = {
     isExcluded: {
       description: 'The new exclusion state. Pre-filled with the current value; flip it to toggle.';
+      displayName: 'Is Excluded';
       multiplicity: false;
       nullable: false;
       type: 'boolean';
     };
     statusUpdate: {
       description: 'The status update row to toggle.';
+      displayName: 'Status Update';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<StatusUpdate>;
