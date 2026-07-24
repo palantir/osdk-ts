@@ -14,36 +14,42 @@ export namespace updateAssignment {
   export type ParamsDefinition = {
     assignment: {
       description: 'The assignment to update.';
+      displayName: 'Assignment';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Assignment>;
     };
     floorId: {
       description: 'Foreign key to the Floor.';
+      displayName: 'Floor ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     function: {
       description: 'Team / function.';
+      displayName: 'Function';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     managerId: {
       description: 'Foreign key to the Manager.';
+      displayName: 'Manager ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     officeId: {
       description: 'Foreign key to the Office.';
+      displayName: 'Office ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     title: {
       description: 'Role title.';
+      displayName: 'Title';
       multiplicity: false;
       nullable: true;
       type: 'string';

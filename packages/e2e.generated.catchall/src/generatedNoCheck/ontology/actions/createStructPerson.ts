@@ -13,6 +13,7 @@ export namespace createStructPerson {
   export type ParamsDefinition = {
     address: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: true;
       type: ActionMetadata.DataType.Struct<{
@@ -22,6 +23,7 @@ export namespace createStructPerson {
     };
     name: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

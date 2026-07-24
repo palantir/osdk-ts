@@ -13,6 +13,7 @@ export namespace createFooInterface {
   export type ParamsDefinition = {
     createdInterface: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'objectType';

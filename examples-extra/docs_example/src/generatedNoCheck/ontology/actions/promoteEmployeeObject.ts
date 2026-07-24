@@ -14,18 +14,21 @@ export namespace promoteEmployeeObject {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     newCompensation: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'double';
     };
     newTitle: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

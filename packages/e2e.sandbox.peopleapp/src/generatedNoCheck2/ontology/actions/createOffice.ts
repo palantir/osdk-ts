@@ -13,12 +13,14 @@ export namespace createOffice {
   export type ParamsDefinition = {
     location: {
       description: undefined;
+      displayName: 'Location';
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';

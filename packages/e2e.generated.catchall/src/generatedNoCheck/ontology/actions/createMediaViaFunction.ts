@@ -13,6 +13,7 @@ export namespace createMediaViaFunction {
   export type ParamsDefinition = {
     mediaItem: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';

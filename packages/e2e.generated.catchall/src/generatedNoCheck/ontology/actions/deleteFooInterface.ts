@@ -14,6 +14,7 @@ export namespace deleteFooInterface {
   export type ParamsDefinition = {
     deletedInterface: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<FooInterface>;

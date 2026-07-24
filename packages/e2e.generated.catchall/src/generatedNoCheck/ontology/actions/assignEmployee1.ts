@@ -15,12 +15,14 @@ export namespace assignEmployee1 {
   export type ParamsDefinition = {
     'employee-1': {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     'venture-1': {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Venture>;

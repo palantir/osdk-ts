@@ -14,12 +14,14 @@ export namespace setTaskBody {
   export type ParamsDefinition = {
     body: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     task: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;

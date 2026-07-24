@@ -14,12 +14,14 @@ export namespace editOsdkTestObject {
   export type ParamsDefinition = {
     OsdkTestObject: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<OsdkTestObject>;
     };
     string_property: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
