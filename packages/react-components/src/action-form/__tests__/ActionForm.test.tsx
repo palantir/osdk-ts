@@ -1399,5 +1399,291 @@ describe("ActionForm", () => {
       });
       expect(mockApplyAction).not.toHaveBeenCalled();
     });
+
+    it("blocks submission until the initial validation response resolves", async () => {
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      const validateAction = vi.fn(() => Promise.resolve(undefined));
+
+      // Before the first response arrives the form has no validation verdict
+      // yet, so submission must be held back.
+      vi.mocked(useOsdkAction).mockReturnValue({
+        ...defaultMockActionResult(),
+        validateAction,
+        validationResult: undefined,
+        isValidating: true,
+      });
+
+      const onSuccess = vi.fn();
+      const { rerender } = render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+
+      // Once the first response resolves and the field passes, submission goes
+      // through.
+      vi.mocked(useOsdkAction).mockReturnValue({
+        ...defaultMockActionResult(),
+        validateAction,
+        validationResult: {
+          result: "VALID",
+          submissionCriteria: [],
+          parameters: {
+            name: {
+              result: "VALID",
+              required: false,
+              evaluatedConstraints: [],
+            },
+          },
+        },
+        isValidating: false,
+      });
+      rerender(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled();
+      });
+    });
+
+    it("blocks submission while a value change awaits re-validation instead of trusting the stale response", async () => {
+      mockMetadataParameters({ status: { type: "string", nullable: true } });
+
+      // The live response was computed for an earlier value set and a fresh
+      // validation is still in flight; the current value has moved on.
+      vi.mocked(useOsdkAction).mockReturnValue({
+        ...defaultMockActionResult(),
+        isValidating: true,
+        validationResult: {
+          result: "VALID",
+          submissionCriteria: [],
+          parameters: {
+            status: {
+              result: "VALID",
+              required: false,
+              evaluatedConstraints: [
+                {
+                  type: "oneOf",
+                  options: [{ value: "OPEN" }, { value: "CLOSED" }],
+                  otherValuesAllowed: false,
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const onSuccess = vi.fn();
+      // "CLOSED" would pass the stale response's constraints, but that response
+      // does not correspond to the current values, so submission is held back.
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ status: "CLOSED" }}
+          onSuccess={onSuccess}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("alert")).not.toBeNull();
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+
+    it("closes the field into a dropdown when any one-of set forbids other values", () => {
+      mockMetadataParameters({ status: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "OPEN" }],
+              otherValuesAllowed: true,
+            },
+            {
+              type: "oneOf",
+              options: [{ value: "A" }, { value: "B" }],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      // A closed set is present, so the field must be a fixed-choice dropdown,
+      // not a free-text box.
+      expect(screen.queryByRole("combobox")).not.toBeNull();
+      expect(screen.queryByRole("textbox", { name: /status/u })).toBeNull();
+    });
+
+    it("offers only the options common to every closed one-of set", async () => {
+      mockMetadataParameters({ status: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [{ value: "A" }, { value: "B" }, { value: "C" }],
+              otherValuesAllowed: false,
+            },
+            {
+              type: "oneOf",
+              options: [{ value: "B" }, { value: "C" }, { value: "D" }],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "B" })).not.toBeNull();
+      });
+      expect(screen.queryByRole("option", { name: "C" })).not.toBeNull();
+      // Options outside the intersection must not be offered.
+      expect(screen.queryByRole("option", { name: "A" })).toBeNull();
+      expect(screen.queryByRole("option", { name: "D" })).toBeNull();
+    });
+
+    it("surfaces the tightest bound when overlapping range or length constraints apply", () => {
+      mockMetadataParameters({
+        age: { type: "integer", nullable: true },
+        bio: { type: "string", nullable: true },
+      });
+      mockActionWithConstraints({
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            { type: "range", gte: 0, lte: 100 },
+            { type: "range", gte: 10, lte: 50 },
+          ],
+        },
+        bio: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            { type: "stringLength", gte: 0, lte: 100 },
+            { type: "stringLength", gte: 10, lte: 50 },
+          ],
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      const ageInput = screen.getByRole("textbox", { name: /age/u });
+      expect(ageInput.getAttribute("min")).toBe("10");
+      expect(ageInput.getAttribute("max")).toBe("50");
+
+      const bioInput = screen.getByRole("textbox", { name: /bio/u });
+      expect(bioInput.getAttribute("minlength")).toBe("10");
+      expect(bioInput.getAttribute("maxlength")).toBe("50");
+    });
+
+    it("keeps the caller's tighter bound by intersecting it with the server constraint", () => {
+      // Numeric: the caller's tighter min/max must survive the looser server
+      // range rather than being overwritten by it.
+      mockMetadataParameters({ age: { type: "integer", nullable: true } });
+      mockActionWithConstraints({
+        age: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "range", gte: 0, lte: 80 }],
+        },
+      });
+      const numberDefs: ReadonlyArray<FormFieldDefinition<NumericActionDef>> = [
+        {
+          fieldKey: "age",
+          label: "age",
+          fieldComponent: "NUMBER_INPUT",
+          fieldComponentProps: { min: 20, max: 40 },
+        },
+      ];
+      const numeric = render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={numberDefs}
+        />
+      );
+      const ageInput = screen.getByRole("textbox", { name: /age/u });
+      expect(ageInput.getAttribute("min")).toBe("20");
+      expect(ageInput.getAttribute("max")).toBe("40");
+      numeric.unmount();
+
+      // String length: the caller's tighter minLength/maxLength must likewise
+      // survive.
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        name: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [{ type: "stringLength", gte: 0, lte: 80 }],
+        },
+      });
+      const textDefs: ReadonlyArray<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "name",
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: { minLength: 20, maxLength: 40 },
+        },
+      ];
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={textDefs}
+        />
+      );
+      const nameInput = screen.getByRole("textbox", { name: /name/u });
+      expect(nameInput.getAttribute("minlength")).toBe("20");
+      expect(nameInput.getAttribute("maxlength")).toBe("40");
+    });
+
+    it("labels a deep-equal object value in a closed one-of by its display name", () => {
+      mockMetadataParameters({ status: { type: "string", nullable: true } });
+      mockActionWithConstraints({
+        status: {
+          result: "VALID",
+          required: false,
+          evaluatedConstraints: [
+            {
+              type: "oneOf",
+              options: [
+                { value: { id: 1, name: "Ada" }, displayName: "Ada Lovelace" },
+                { value: { id: 2, name: "Alan" }, displayName: "Alan Turing" },
+              ],
+              otherValuesAllowed: false,
+            },
+          ],
+        },
+      });
+
+      // A distinct object literal that is deep-equal (not reference-equal) to
+      // the first option's value.
+      render(
+        <ValidationHarness
+          action={TestAction}
+          initialState={{ status: { id: 1, name: "Ada" } }}
+        />
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.textContent).toContain("Ada Lovelace");
+      expect(trigger.textContent).not.toContain("[object Object]");
+    });
   });
 });
