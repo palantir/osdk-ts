@@ -29,6 +29,38 @@ import type { LinkTargets } from "./linkTypes.js";
 import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
 import { validateSeedObject } from "./validation.js";
 
+export type SeedFunction<T> = (seed: SeedBuilder) => T;
+
+export type SeedClient = {
+  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'SeedBuilder.set'
+  ref<Q extends ObjectTypeDefinition>(
+    o: Q,
+    primaryKey: PrimaryKeyType<Q>
+  ): SeedRef<Q> | undefined;
+  addAll(seed: SeedOutput): Promise<void>;
+  create<Q extends ObjectTypeDefinition>(
+    o: Q,
+    props: SeedProps<Q>
+  ): Promise<SeedRef<Q>>;
+  update<Q extends ObjectTypeDefinition>(
+    ref: SeedRef<Q>,
+    props: Partial<
+      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    >
+  ): Promise<SeedRef<Q>>;
+  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
+  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>
+  ): Promise<void>;
+  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>
+  ): Promise<void>;
+};
+
 interface SeedLinkRecord {
   source: SeedRef<ObjectTypeDefinition>;
   apiName: string;
@@ -373,45 +405,13 @@ export class SeedBuilder {
   }
 }
 
-export type SeedFunction<T> = (seed: SeedBuilder) => T;
-
-export type SeedClient = {
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'set'
-  ref<Q extends ObjectTypeDefinition>(
-    o: Q,
-    primaryKey: PrimaryKeyType<Q>
-  ): SeedRef<Q> | undefined;
-  addAll(seed: SeedOutput): Promise<void>;
-  create<Q extends ObjectTypeDefinition>(
-    o: Q,
-    props: SeedProps<Q>
-  ): Promise<SeedRef<Q>>;
-  update<Q extends ObjectTypeDefinition>(
-    ref: SeedRef<Q>,
-    props: Partial<
-      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-    >
-  ): Promise<SeedRef<Q>>;
-  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
-  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>
-  ): Promise<void>;
-  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>
-  ): Promise<void>;
-};
-
 /**
  * Utility handle for building seeds from a metadata
  * @param ontologyMetadata Ontology metadata to instantiate seed builder from
  * @param fn handle to create seeds, may return an arbitrary value
  * @returns Tuple of [SeedOutput, T]: Seed output and arbitrary value returned from fn
  */
-export function createSeed<T>(
+export function createSeedWithMetadata<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
   fn: SeedFunction<T>
 ): [SeedOutput, T] {

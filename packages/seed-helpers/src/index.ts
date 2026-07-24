@@ -15,7 +15,7 @@
  */
 
 export {
-  createSeed,
+  createSeedWithMetadata,
   SeedBuilder,
   type SeedClient,
   type SeedFunction,
