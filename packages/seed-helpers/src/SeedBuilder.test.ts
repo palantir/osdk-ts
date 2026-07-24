@@ -135,17 +135,19 @@ describe("SeedBuilder", () => {
       expect(office.$primaryKey).toBe("NYC");
     });
 
-    it("throws a SeedError when the same primary key is created twice", () => {
+    it("throws when the same primary key is created twice", () => {
       const sb = newBuilder();
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       expect(() =>
         sb.create(Employee, { employeeId: 1, fullName: "Bob" })
-      ).toThrow(SeedError);
+      ).toThrow("Employee with primary key 1 already exists.");
     });
 
-    it("throws a SeedError when the object type is not in the schema", () => {
+    it("throws when the object type is not in the schema", () => {
       const sb = new SeedBuilder({ objects: new Map() });
-      expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(SeedError);
+      expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
+        "Object not found in metadata"
+      );
     });
   });
 
@@ -194,23 +196,22 @@ describe("SeedBuilder", () => {
       expect(sb.update(ref, { fullName: "Alice" })).toBe(ref);
     });
 
-    it("keeps the primary key even if props tries to change it", () => {
+    it("throws when props tries to change the primary key", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
-      sb.update(ref, {
-        // @ts-expect-error primary key is excluded from the update props type
-        employeeId: 999,
-        fullName: "Alicia",
-      });
-      expect(sb.build().objects.Employee).toEqual([
-        { employeeId: 1, fullName: "Alicia" },
-      ]);
+      expect(() =>
+        sb.update(ref, {
+          // @ts-expect-error primary key is excluded from the update props type
+          employeeId: 999,
+          fullName: "Alicia",
+        })
+      ).toThrow("Cannot modify primary key employeeId");
     });
 
-    it("throws a SeedError when the object type is not in the schema", () => {
+    it("throws when the object type is not in the schema", () => {
       const sb = new SeedBuilder({ objects: new Map() });
       expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
-        SeedError
+        "Object not found in metadata"
       );
     });
   });
@@ -229,9 +230,11 @@ describe("SeedBuilder", () => {
       expect(sb.build().objects.Employee).toEqual([]);
     });
 
-    it("throws a SeedError when the object type is not in the schema", () => {
+    it("throws when the object type is not in the schema", () => {
       const sb = new SeedBuilder({ objects: new Map() });
-      expect(() => sb.delete(employeeRef(1))).toThrow(SeedError);
+      expect(() => sb.delete(employeeRef(1))).toThrow(
+        "Object not found in metadata"
+      );
     });
   });
 
@@ -393,7 +396,7 @@ describe("SeedBuilder", () => {
       });
     });
 
-    it("omits links whose target object was not created", () => {
+    it("records links even when the target object was not created", () => {
       const input: SeedOutput = {
         objects: {
           Employee: [{ employeeId: 1 }],
@@ -412,10 +415,17 @@ describe("SeedBuilder", () => {
 
       const sb = newBuilder();
       sb.set(input);
-      expect(sb.build().links).toEqual([]);
+      const { links } = sb.build();
+      expect(links).toHaveLength(1);
+      expect(links[0]).toMatchObject({
+        sourceObjectType: "Employee",
+        sourceKey: "1",
+        targetObjectType: "Office",
+        targetKey: "MISSING",
+      });
     });
 
-    it("omits links whose source object was not created", () => {
+    it("records links even when the source object was not created", () => {
       const input: SeedOutput = {
         objects: {
           Office: [{ officeId: "NYC" }],
@@ -434,7 +444,14 @@ describe("SeedBuilder", () => {
 
       const sb = newBuilder();
       sb.set(input);
-      expect(sb.build().links).toEqual([]);
+      const { links } = sb.build();
+      expect(links).toHaveLength(1);
+      expect(links[0]).toMatchObject({
+        sourceObjectType: "Employee",
+        sourceKey: "MISSING",
+        targetObjectType: "Office",
+        targetKey: "NYC",
+      });
     });
 
     it("replaces objects already present in the builder", () => {

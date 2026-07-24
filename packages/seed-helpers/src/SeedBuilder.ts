@@ -18,10 +18,10 @@ import type { ObjectTypeDefinition, OsdkBase, PrimaryKeyType } from "@osdk/api";
 import { createObjectSpecifierFromPrimaryKey } from "@osdk/client";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { consola } from "consola";
+import invariant from "tiny-invariant";
 
 import type { LinkApiNames, LinkTargets } from "./linkTypes.js";
 import { type SchemaMap, schemaFromMetadata } from "./schema.js";
-import { SeedError } from "./SeedError.js";
 import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
 import { validateSeedObjects } from "./validation.js";
 
@@ -87,32 +87,20 @@ export class SeedBuilder {
     }
     const linkEntries = seed.links;
     for (const link of linkEntries) {
-      const sourceRef = this.ref(
+      const sourceRef = this.#ref(
         {
           type: "object",
           apiName: link.sourceObjectType,
         },
         link.sourceKey
       );
-      const targetRef = this.ref(
+      const targetRef = this.#ref(
         {
           type: "object",
           apiName: link.targetObjectType,
         },
         link.targetKey
       );
-      if (!sourceRef) {
-        this.#warnings.push(
-          `Source reference to ${link.sourceObjectType} of key ${link.sourceKey} was not found. Omitting link.`
-        );
-        continue;
-      }
-      if (!targetRef) {
-        this.#warnings.push(
-          `Target reference to ${link.targetObjectType} of key ${link.targetKey} was not found. Omitting link.`
-        );
-        continue;
-      }
       this.#recordLink(sourceRef, link.linkType, targetRef);
     }
   }
@@ -129,6 +117,34 @@ export class SeedBuilder {
   }
 
   /**
+   * Returns a SeedRef<Q> regardless of the existence of the object.
+   * @param o Object Type
+   * @param primaryKey
+   * @returns SeedRef<Q>
+   */
+  #ref<Q extends ObjectTypeDefinition>(
+    o: Q,
+    primaryKey: PrimaryKeyType<Q>
+  ): SeedRef<Q> {
+    const schema = this.#schemaMap.objects.get(o.apiName);
+    invariant(schema, "Object not found in metadata");
+    const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
+      | SeedProps<Q>
+      | undefined;
+    const base: OsdkBase<Q> = {
+      $apiName: o.apiName,
+      $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKey),
+      $objectType: o.apiName,
+      $primaryKey: primaryKey,
+      $title: props?.[schema.titlePropertyApiName as keyof typeof props],
+    };
+    return Object.freeze({
+      ...base,
+      ...props,
+    }) as SeedRef<Q>;
+  }
+
+  /**
    * Returns a reference to a previously created object, or `undefined` if none exists.
    * @param o Object type definition
    * @param primaryKey Primary key value of the object
@@ -138,30 +154,10 @@ export class SeedBuilder {
     o: Q,
     primaryKey: PrimaryKeyType<Q>
   ): SeedRef<Q> | undefined {
-    const schema = this.#schemaMap.objects.get(o.apiName);
-    if (typeof schema === "undefined") {
-      throw new SeedError("Object not found in metadata");
-    }
-    const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
-      | SeedProps<Q>
-      | undefined;
-    if (!props) {
+    if (!this.#getObjectTypeMap(o.apiName).has(String(primaryKey))) {
       return;
     }
-    const primaryKeyValue = props[
-      schema.primaryKeyApiName as keyof typeof props
-    ] as PrimaryKeyType<Q>;
-    const base: OsdkBase<Q> = {
-      $apiName: o.apiName,
-      $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKeyValue),
-      $objectType: o.apiName,
-      $primaryKey: primaryKeyValue,
-      $title: props[schema.titlePropertyApiName as keyof typeof props],
-    };
-    return Object.freeze({
-      ...base,
-      ...props,
-    }) as SeedRef<Q>;
+    return this.#ref(o, primaryKey);
   }
 
   /**
@@ -175,18 +171,15 @@ export class SeedBuilder {
     props: SeedProps<Q>
   ): SeedRef<Q> {
     const schema = this.#schemaMap.objects.get(o.apiName);
-    if (typeof schema === "undefined") {
-      throw new SeedError("Object not found in metadata");
-    }
+    invariant(schema, "Object not found in metadata");
     const primaryKeyValue = props[
       schema.primaryKeyApiName as keyof typeof props
     ] as PrimaryKeyType<Q>;
     const stringPrimaryKeyValue = String(primaryKeyValue);
-    if (this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue)) {
-      throw new SeedError(
-        `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`
-      );
-    }
+    invariant(
+      !this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue),
+      `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`
+    );
     this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
     const base: OsdkBase<Q> = {
       $apiName: o.apiName,
@@ -213,15 +206,18 @@ export class SeedBuilder {
   ): SeedRef<Q> {
     const { $apiName, $primaryKey } = ref;
     const schema = this.#schemaMap.objects.get($apiName);
-    if (typeof schema === "undefined") {
-      throw new SeedError("Object not found in metadata");
-    }
+    invariant(schema, "Object not found in metadata");
     const stringPrimaryKeyValue = String($primaryKey);
     if (!this.#getObjectTypeMap($apiName).has(stringPrimaryKeyValue)) {
       this.#warnings.push(
         `Updating ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`
       );
     }
+    invariant(
+      typeof props[schema.primaryKeyApiName as keyof typeof props] ===
+        "undefined",
+      `Cannot modify primary key ${schema.primaryKeyApiName}`
+    );
     this.#getObjectTypeMap($apiName).set(stringPrimaryKeyValue, {
       ...props,
       [schema.primaryKeyApiName]: $primaryKey,
@@ -236,9 +232,7 @@ export class SeedBuilder {
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
     const { $apiName, $primaryKey } = ref;
     const schema = this.#schemaMap.objects.get($apiName);
-    if (typeof schema === "undefined") {
-      throw new SeedError("Object not found in metadata");
-    }
+    invariant(schema, "Object not found in metadata");
     const stringPrimaryKeyValue = String($primaryKey);
     if (!this.#getObjectTypeMap($apiName).delete(stringPrimaryKeyValue)) {
       this.#warnings.push(
