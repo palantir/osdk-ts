@@ -18,46 +18,33 @@ import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
-import type { SchemaMap } from "./schema.js";
 import { createSeed, SeedBuilder } from "./SeedBuilder.js";
-import { SeedError } from "./SeedError.js";
 import type { SeedOutput, SeedRef } from "./types.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
 
 /**
- * A schema map matching the `Employee` and `Office` generated types. `build()`
- * validates every object property against these maps, so they must list the
- * properties the tests set (`fullName`) alongside the primary keys.
+ * A builder backed by metadata matching the `Employee` and `Office` generated
+ * types. `create`/`update` validate every object property against this
+ * metadata, so it must list the properties the tests set (`fullName`) alongside
+ * the primary keys.
  */
-function makeSchema(): SchemaMap {
-  return {
-    objects: new Map([
-      [
-        Employee.apiName,
-        {
-          properties: new Map<string, WireType>([
-            ["employeeId", "integer"],
-            ["fullName", "string"],
-          ]),
-          primaryKeyApiName: Employee.primaryKeyApiName,
-          titlePropertyApiName: "fullName",
-        },
-      ],
-      [
-        Office.apiName,
-        {
-          properties: new Map<string, WireType>([["officeId", "string"]]),
-          primaryKeyApiName: Office.primaryKeyApiName,
-          titlePropertyApiName: "officeId",
-        },
-      ],
-    ]),
-  };
-}
-
 function newBuilder(): SeedBuilder {
-  return new SeedBuilder(makeSchema());
+  return new SeedBuilder(
+    makeMetadata({
+      [Employee.apiName]: makeObjectType(
+        Employee.apiName,
+        Employee.primaryKeyApiName,
+        { employeeId: "integer", fullName: "string" },
+        "fullName"
+      ),
+      [Office.apiName]: makeObjectType(
+        Office.apiName,
+        Office.primaryKeyApiName,
+        { officeId: "string" }
+      ),
+    })
+  );
 }
 
 /** A hand-built ref for exercising code paths that don't go through `create`. */
@@ -76,12 +63,14 @@ function employeeRef(employeeId: number): SeedRef<Employee> {
 function makeObjectType(
   apiName: string,
   primaryKey: string,
-  properties: Record<string, WireType>
+  properties: Record<string, WireType>,
+  titleProperty: string = primaryKey
 ): Ontology.ObjectTypeFullMetadata {
   return {
     objectType: {
       apiName,
       primaryKey,
+      titleProperty,
       properties: Object.fromEntries(
         Object.entries(properties).map(([name, type]) => [
           name,
@@ -144,7 +133,7 @@ describe("SeedBuilder", () => {
     });
 
     it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder({ objects: new Map() });
+      const sb = new SeedBuilder(makeMetadata({}));
       expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
         "Object not found in metadata"
       );
@@ -171,15 +160,18 @@ describe("SeedBuilder", () => {
   });
 
   describe("update", () => {
-    it("replaces props wholesale while preserving the primary key", () => {
+    it("merges props into the existing object, preserving the primary key", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.update(ref, { fullName: "Alicia" });
       expect(sb.build().objects.Employee).toEqual([
         { employeeId: 1, fullName: "Alicia" },
       ]);
+      // An empty update leaves the existing props untouched.
       sb.update(ref, {});
-      expect(sb.build().objects.Employee).toEqual([{ employeeId: 1 }]);
+      expect(sb.build().objects.Employee).toEqual([
+        { employeeId: 1, fullName: "Alicia" },
+      ]);
     });
 
     it("creates the object when the ref does not yet exist", () => {
@@ -209,7 +201,7 @@ describe("SeedBuilder", () => {
     });
 
     it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder({ objects: new Map() });
+      const sb = new SeedBuilder(makeMetadata({}));
       expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
         "Object not found in metadata"
       );
@@ -231,7 +223,7 @@ describe("SeedBuilder", () => {
     });
 
     it("throws when the object type is not in the schema", () => {
-      const sb = new SeedBuilder({ objects: new Map() });
+      const sb = new SeedBuilder(makeMetadata({}));
       expect(() => sb.delete(employeeRef(1))).toThrow(
         "Object not found in metadata"
       );
@@ -498,16 +490,26 @@ describe("SeedBuilder", () => {
     });
   });
 
-  describe("validation on build", () => {
+  describe("validation on mutation", () => {
     // Exhaustive validation branches are covered in validation.test.ts; here we
-    // only confirm build() runs the validator over its accumulated objects.
-    it("runs validation, throwing a SeedError on invalid data", () => {
+    // only confirm objects are validated as they're inserted (create/set/update)
+    // rather than deferred to build().
+    it("throws when set() loads invalid data", () => {
       const sb = newBuilder();
-      sb.set({
-        objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
-        links: [],
-      });
-      expect(() => sb.build()).toThrow(SeedError);
+      expect(() =>
+        sb.set({
+          objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
+          links: [],
+        })
+      ).toThrow(/expects string \(a string\) but got number/u);
+    });
+
+    it("throws when update() writes an invalid value", () => {
+      const sb = newBuilder();
+      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+      expect(() =>
+        sb.update(ref, { fullName: 123 as unknown as string })
+      ).toThrow(/expects string \(a string\) but got number/u);
     });
   });
 });
@@ -540,10 +542,12 @@ describe("createSeed", () => {
     expect(out.links[0]).toMatchObject({ sourceKey: "1", targetKey: "NYC" });
   });
 
-  it("throws a SeedError when the primary key is not among the properties", () => {
+  it("throws when the primary key is not among the properties", () => {
     const bad = makeMetadata({
       Bad: makeObjectType("Bad", "missingPk", { someOther: "string" }),
     });
-    expect(() => createSeed(bad, () => {})).toThrow(SeedError);
+    expect(() => createSeed(bad, () => {})).toThrow(
+      /Primary key 'missingPk' is not among the object's properties/u
+    );
   });
 });

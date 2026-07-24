@@ -21,21 +21,18 @@
 import type {
   CompileTimeMetadata,
   InterfaceDefinition,
+  LinkTypeApiNamesFor,
   ObjectTypeDefinition,
 } from "@osdk/api";
 
 import type { SeedRef } from "./types.js";
-
-/** The names of the links declared on object or interface type `Q`. */
-export type LinkApiNames<Q extends ObjectTypeDefinition | InterfaceDefinition> =
-  keyof CompileTimeMetadata<Q>["links"] & string;
 
 /**
  * The object or interface type on the far side of `Q`'s `A` link.
  */
 export type LinkTargetType<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  A extends LinkApiNames<Q>,
+  A extends LinkTypeApiNamesFor<Q>,
 > = NonNullable<CompileTimeMetadata<Q>["links"][A]["__OsdkLinkTargetType"]>;
 
 /**
@@ -44,7 +41,7 @@ export type LinkTargetType<
  */
 export type LinkTargets<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  A extends LinkApiNames<Q>,
+  A extends LinkTypeApiNamesFor<Q>,
 > = CompileTimeMetadata<Q>["links"][A]["multiplicity"] extends true
   ? SeedRef<LinkTargetType<Q, A>> | Array<SeedRef<LinkTargetType<Q, A>>>
   : SeedRef<LinkTargetType<Q, A>>;

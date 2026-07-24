@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, OsdkBase, PrimaryKeyType } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  OsdkBase,
+  PrimaryKeyType,
+  LinkTypeApiNamesFor,
+} from "@osdk/api";
 import { createObjectSpecifierFromPrimaryKey } from "@osdk/client";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import invariant from "tiny-invariant";
 
-import type { LinkApiNames, LinkTargets } from "./linkTypes.js";
-import { type SchemaMap, schemaFromMetadata } from "./schema.js";
+import type { LinkTargets } from "./linkTypes.js";
 import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
-import { validateSeedObjects } from "./validation.js";
+import { validateSeedObject } from "./validation.js";
 
 interface SeedLinkRecord {
   source: SeedRef<ObjectTypeDefinition>;
@@ -46,30 +50,43 @@ function linkIdentity(
 }
 
 export class SeedBuilder {
-  #schemaMap: SchemaMap;
+  #metadata: Ontology.OntologyFullMetadata;
   #objectMap: Map<string, Map<string, SeedProps<ObjectTypeDefinition>>>;
   #links: Map<string, SeedLinkRecord>;
-  #warnings: string[];
 
   /**
-   * Creates a seed builder backed by the given schema map.
-   * @param schemaMap Schema map derived from ontology metadata
+   * Creates a seed builder backed by the given ontology metadata.
+   * @param metadata Ontology full metadata describing the object types
    */
-  constructor(schemaMap: SchemaMap) {
-    this.#schemaMap = schemaMap;
+  constructor(metadata: Ontology.OntologyFullMetadata) {
+    this.#metadata = metadata;
     this.#objectMap = new Map();
     this.#links = new Map();
-    this.#warnings = [];
+    for (const { objectType } of Object.values(metadata.objectTypes)) {
+      invariant(
+        Object.hasOwn(objectType.properties, objectType.primaryKey),
+        `[${objectType.apiName}] Primary key '${objectType.primaryKey}' is not among the object's properties`
+      );
+    }
   }
 
   #reset() {
     this.#objectMap = new Map();
     this.#links = new Map();
-    this.#warnings = [];
   }
 
   /**
-   * Merges an existing seed output. Must match the schema map metadata supplied at construction.
+   * Resolves the object type metadata for `apiName`.
+   * @throws if the object type is not present in the metadata
+   */
+  #objectType(apiName: string): Ontology.ObjectTypeV2 {
+    const full = this.#metadata.objectTypes[apiName];
+    invariant(full, "Object not found in metadata");
+    return full.objectType;
+  }
+
+  /**
+   * Merges an existing seed output. Must match the metadata supplied at construction.
    * @param seed Seed output to derive from
    */
   addAll(seed: SeedOutput): void {
@@ -126,8 +143,7 @@ export class SeedBuilder {
     o: Q,
     primaryKey: PrimaryKeyType<Q>
   ): SeedRef<Q> {
-    const schema = this.#schemaMap.objects.get(o.apiName);
-    invariant(schema, "Object not found in metadata");
+    const objectType = this.#objectType(o.apiName);
     const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
       | SeedProps<Q>
       | undefined;
@@ -136,7 +152,7 @@ export class SeedBuilder {
       $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKey),
       $objectType: o.apiName,
       $primaryKey: primaryKey,
-      $title: props?.[schema.titlePropertyApiName as keyof typeof props],
+      $title: props?.[objectType.titleProperty as keyof typeof props],
     };
     return Object.freeze({
       ...base,
@@ -170,23 +186,23 @@ export class SeedBuilder {
     o: Q,
     props: SeedProps<Q>
   ): SeedRef<Q> {
-    const schema = this.#schemaMap.objects.get(o.apiName);
-    invariant(schema, "Object not found in metadata");
+    const objectType = this.#objectType(o.apiName);
     const primaryKeyValue = props[
-      schema.primaryKeyApiName as keyof typeof props
+      objectType.primaryKey as keyof typeof props
     ] as PrimaryKeyType<Q>;
     const stringPrimaryKeyValue = String(primaryKeyValue);
     invariant(
       !this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue),
       `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`
     );
+    validateSeedObject(props as Record<string, unknown>, objectType);
     this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
     const base: OsdkBase<Q> = {
       $apiName: o.apiName,
       $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKeyValue),
       $objectType: o.apiName,
       $primaryKey: primaryKeyValue,
-      $title: props[schema.titlePropertyApiName as keyof typeof props],
+      $title: props[objectType.titleProperty as keyof typeof props],
     };
     return Object.freeze({
       ...base,
@@ -195,33 +211,41 @@ export class SeedBuilder {
   }
 
   /**
-   * Overwrites the props of the referenced object, keeping its primary key.
+   * Merges the given props into the referenced object, keeping its primary key.
+   * Properties not included in `props` are left unchanged; if the object does
+   * not yet exist it is created from `props`.
    * @param ref Reference to the object to update
-   * @param props New object properties, excluding the primary key
+   * @param props Partial object properties to merge in, excluding the primary key
    * @returns The same reference passed in
    */
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
-    props: Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    props: Partial<
+      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    >
   ): SeedRef<Q> {
     const { $apiName, $primaryKey } = ref;
-    const schema = this.#schemaMap.objects.get($apiName);
-    invariant(schema, "Object not found in metadata");
+    const objectType = this.#objectType($apiName);
     const stringPrimaryKeyValue = String($primaryKey);
-    if (!this.#getObjectTypeMap($apiName).has(stringPrimaryKeyValue)) {
-      this.#warnings.push(
+    const currentValue = this.#getObjectTypeMap($apiName).get(
+      stringPrimaryKeyValue
+    );
+    if (!currentValue) {
+      consola.warn(
         `Updating ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`
       );
     }
     invariant(
-      typeof props[schema.primaryKeyApiName as keyof typeof props] ===
-        "undefined",
-      `Cannot modify primary key ${schema.primaryKeyApiName}`
+      typeof props[objectType.primaryKey as keyof typeof props] === "undefined",
+      `Cannot modify primary key ${objectType.primaryKey}`
     );
-    this.#getObjectTypeMap($apiName).set(stringPrimaryKeyValue, {
+    const merged = {
+      ...currentValue,
       ...props,
-      [schema.primaryKeyApiName]: $primaryKey,
-    });
+      [objectType.primaryKey]: $primaryKey,
+    };
+    validateSeedObject(merged as Record<string, unknown>, objectType);
+    this.#getObjectTypeMap($apiName).set(stringPrimaryKeyValue, merged);
     return ref;
   }
 
@@ -231,11 +255,10 @@ export class SeedBuilder {
    */
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
     const { $apiName, $primaryKey } = ref;
-    const schema = this.#schemaMap.objects.get($apiName);
-    invariant(schema, "Object not found in metadata");
+    this.#objectType($apiName);
     const stringPrimaryKeyValue = String($primaryKey);
     if (!this.#getObjectTypeMap($apiName).delete(stringPrimaryKeyValue)) {
-      this.#warnings.push(
+      consola.warn(
         `Deleting ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`
       );
       return;
@@ -248,7 +271,7 @@ export class SeedBuilder {
    * @param apiName Link type API name
    * @param target Reference (or references) to the target object(s)
    */
-  link<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>
@@ -279,7 +302,7 @@ export class SeedBuilder {
    * @param apiName Link type API name
    * @param target Reference (or references) to the target object(s)
    */
-  unlink<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>
@@ -294,7 +317,7 @@ export class SeedBuilder {
       }
     }
     if (removed === 0) {
-      this.#warnings.push(
+      consola.warn(
         `Unlinking ${source.$apiName} with primary key ${String(
           source.$primaryKey
         )} via '${apiName}' which matches no existing links. This will be a no-op.`
@@ -337,10 +360,6 @@ export class SeedBuilder {
       });
       nextLink = linkEntries.next();
     }
-    for (const warning of this.#warnings) {
-      consola.warn(warning);
-    }
-    validateSeedObjects(objects, this.#schemaMap);
     return { objects, links } as SeedOutput;
   }
 
@@ -369,15 +388,17 @@ export type SeedClient = {
   ): Promise<SeedRef<Q>>;
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
-    props: Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    props: Partial<
+      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    >
   ): Promise<SeedRef<Q>>;
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
-  link<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>
   ): Promise<void>;
-  unlink<Q extends ObjectTypeDefinition, A extends LinkApiNames<Q>>(
+  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>
@@ -394,7 +415,7 @@ export function createSeed<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
   fn: SeedFunction<T>
 ): [SeedOutput, T] {
-  const sb = new SeedBuilder(schemaFromMetadata(ontologyMetadata));
+  const sb = new SeedBuilder(ontologyMetadata);
   const result = fn(sb);
   return [sb.build(), result];
 }

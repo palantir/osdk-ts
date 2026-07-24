@@ -16,159 +16,130 @@
 
 // cspell:words asdf
 
+import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
-import type { SchemaMap } from "./schema.js";
-import { SeedError } from "./SeedError.js";
-import type { SeedOutput } from "./types.js";
-import { validateSeedObjects } from "./validation.js";
+import { validateSeedObject } from "./validation.js";
 
-/** Builds a minimal SchemaMap fixture with Employee and Department. */
-function fixtureSchema(): SchemaMap {
-  const employeeProps = new Map<string, string>([
-    ["employeeId", "string"],
-    ["firstName", "string"],
-    ["age", "integer"],
-    ["createdAt", "timestamp"],
-    ["score", "long"],
-  ]);
-  const departmentProps = new Map<string, string>([
-    ["departmentId", "string"],
-    ["name", "string"],
-  ]);
+type WireType = Ontology.ObjectPropertyType["type"];
+
+/** Builds an `ObjectTypeV2` fixture from a compact property spec. */
+function makeObjectType(
+  apiName: string,
+  primaryKey: string,
+  properties: Record<string, WireType>
+): Ontology.ObjectTypeV2 {
   return {
-    objects: new Map([
-      [
-        "Employee",
-        { properties: employeeProps, primaryKeyApiName: "employeeId" },
-      ],
-      [
-        "Department",
-        { properties: departmentProps, primaryKeyApiName: "departmentId" },
-      ],
-    ]),
-  } as SchemaMap;
+    apiName,
+    primaryKey,
+    titleProperty: primaryKey,
+    properties: Object.fromEntries(
+      Object.entries(properties).map(([name, type]) => [
+        name,
+        { dataType: { type } },
+      ])
+    ),
+  } as unknown as Ontology.ObjectTypeV2;
 }
 
-const objects = (o: SeedOutput["objects"]): SeedOutput["objects"] => o;
-
-describe("validateSeedObjects", () => {
-  const schema = fixtureSchema();
+describe("validateSeedObject", () => {
+  const employeeType = makeObjectType("Employee", "employeeId", {
+    employeeId: "string",
+    firstName: "string",
+    age: "integer",
+    createdAt: "timestamp",
+    score: "long",
+  });
 
   it("passes for valid seed data", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({
-          Employee: [{ employeeId: "emp-001", firstName: "Alice", age: 30 }],
-        }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", firstName: "Alice", age: 30 },
+        employeeType
       )
     ).not.toThrow();
   });
 
-  it("throws a SeedError on unknown object types", () => {
-    expect(() =>
-      validateSeedObjects(objects({ Ghost: [{ id: "1" }] }), schema)
-    ).toThrow(SeedError);
-    expect(() =>
-      validateSeedObjects(objects({ Ghost: [{ id: "1" }] }), schema)
-    ).toThrow(
-      /Object type 'Ghost' in seed data is not defined in the ontology/u
-    );
-  });
-
   it("throws on unknown property names", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", badProp: "x" }] }),
-        schema
-      )
+      validateSeedObject({ employeeId: "emp-001", badProp: "x" }, employeeType)
     ).toThrow(
-      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/u
+      /Property 'badProp' on 'Employee' object \(primary key emp-001\) is not defined in the ontology/u
     );
   });
 
   it("throws on null property values", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", firstName: null }] }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", firstName: null },
+        employeeType
       )
     ).toThrow(
-      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/u
+      /Property 'firstName' on 'Employee' object \(primary key emp-001\) is null or undefined/u
+    );
+  });
+
+  it("falls back to <unknown> in the identity when the primary key is absent", () => {
+    expect(() => validateSeedObject({ firstName: null }, employeeType)).toThrow(
+      /Property 'firstName' on 'Employee' object \(primary key <unknown>\) is null or undefined/u
     );
   });
 
   it("throws on JS type mismatches in either direction", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", createdAt: 12345 }] }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", createdAt: 12345 },
+        employeeType
       )
     ).toThrow(
-      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/u
+      /Property 'createdAt' on 'Employee' object \(primary key emp-001\) expects timestamp \(a string\) but got number/u
     );
     expect(() =>
-      validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", age: "30" }] }),
-        schema
-      )
+      validateSeedObject({ employeeId: "emp-001", age: "30" }, employeeType)
     ).toThrow(
-      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/u
+      /Property 'age' on 'Employee' object \(primary key emp-001\) expects integer \(a number\) but got string/u
     );
   });
 
   it("validates timestamp format, rejecting malformed and accepting valid", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({ Employee: [{ employeeId: "emp-001", createdAt: "asdf" }] }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", createdAt: "asdf" },
+        employeeType
       )
     ).toThrow(/property 'createdAt' has invalid timestamp format: 'asdf'/u);
     expect(() =>
-      validateSeedObjects(
-        objects({
-          Employee: [
-            { employeeId: "emp-001", createdAt: "2025-01-01T00:00:00Z" },
-          ],
-        }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", createdAt: "2025-01-01T00:00:00Z" },
+        employeeType
       )
     ).not.toThrow();
   });
 
   it("validates long format, rejecting malformed and accepting valid", () => {
     expect(() =>
-      validateSeedObjects(
-        objects({
-          Employee: [{ employeeId: "emp-001", score: "not-a-number" }],
-        }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", score: "not-a-number" },
+        employeeType
       )
     ).toThrow(/property 'score' has invalid long format/u);
     expect(() =>
-      validateSeedObjects(
-        objects({
-          Employee: [{ employeeId: "emp-001", score: "9007199254740993" }],
-        }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", score: "9007199254740993" },
+        employeeType
       )
     ).not.toThrow();
   });
 
   it("reports all format errors at once", () => {
     try {
-      validateSeedObjects(
-        objects({
-          Employee: [
-            { employeeId: "emp-001", createdAt: "bad", score: "also-bad" },
-          ],
-        }),
-        schema
+      validateSeedObject(
+        { employeeId: "emp-001", createdAt: "bad", score: "also-bad" },
+        employeeType
       );
       expect.unreachable("should have thrown");
     } catch (e: unknown) {
-      expect(e).toBeInstanceOf(SeedError);
+      expect(e).toBeInstanceOf(Error);
       const msg = (e as Error).message;
       expect(msg).toContain("createdAt");
       expect(msg).toContain("score");

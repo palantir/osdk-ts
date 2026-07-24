@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-import type { SchemaMap } from "./schema.js";
-import { SeedError } from "./SeedError.js";
-import type { SeedOutput } from "./types.js";
-
-/**
- * One string-format validation failure (e.g., a timestamp value that doesn't
- * match the wire format regex). Format failures are collected across the
- * whole output and reported together at the end so users can fix many
- * content mistakes in one pass. Structural failures (unknown object type,
- * unknown property name, null value, wrong JS type) throw immediately
- * instead — they're not aggregated, so they don't need this struct.
- */
-interface FormatError {
-  objectType: string;
-  objectIndex: number;
-  field: string;
-  message: string;
-}
+import type * as Ontology from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 
 /**
  * Expected runtime JS type for each cataloged wire type.
@@ -104,102 +88,91 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 };
 
 /**
- * Validates each seed object entry against format & metadata.
+ * Validates a single seed object's properties against its schema.
  *
- * @throws {SeedError} on any structural violation listed above, or listing all
- *         format failures grouped by object type.
+ * Structural violations (unknown property name, null/undefined value, wrong JS
+ * type) throw immediately. String-format violations (e.g. a timestamp that
+ * doesn't match the wire format regex) are collected across the object's
+ * properties and reported together in one error so a user can fix every
+ * content mistake on the object in a single pass.
+ *
+ * The object type's existence in the ontology is assumed — callers resolve the
+ * {@link Ontology.ObjectTypeV2} before invoking this validator.
+ *
+ * @throws on any structural violation, or listing all format failures for the
+ *         object.
  */
-export function validateSeedObjects(
-  objects: SeedOutput["objects"],
-  schemaMap: SchemaMap
+export function validateSeedObject(
+  props: Record<string, unknown>,
+  objectType: Ontology.ObjectTypeV2
 ): void {
-  const errors = collectFormatErrors(objects, schemaMap);
-  if (errors.length > 0) {
-    throw new SeedError(formatValidationErrors(errors));
+  const apiName = objectType.apiName;
+  const identity = pkIdentity(props, objectType);
+  const formatErrors: string[] = [];
+
+  for (const [key, value] of Object.entries(props)) {
+    const wireType = objectType.properties[key]?.dataType.type;
+    invariant(
+      wireType !== undefined,
+      () =>
+        `Property '${key}' on '${apiName}' object` +
+        ` (primary key ${identity}) is not defined in the ontology`
+    );
+
+    invariant(
+      value != null,
+      () =>
+        `Property '${key}' on '${apiName}' object` +
+        ` (primary key ${identity}) is null or undefined`
+    );
+
+    const expectedJsType = EXPECTED_JS_TYPE[wireType];
+    invariant(
+      expectedJsType === undefined || typeof value === expectedJsType,
+      () =>
+        `Property '${key}' on '${apiName}' object` +
+        ` (primary key ${identity}) expects ${wireType} (a ${expectedJsType})` +
+        ` but got ${typeof value}`
+    );
+
+    const format = WIRE_TYPE_FORMAT[wireType];
+    if (!format) continue;
+
+    if (format.pattern.test(value as string)) continue;
+    formatErrors.push(
+      `property '${key}' has invalid ${wireType}` +
+        ` format: '${String(value)}'.` +
+        ` Expected format like '${format.example}'`
+    );
   }
+
+  invariant(formatErrors.length === 0, () =>
+    formatValidationErrors(apiName, identity, formatErrors)
+  );
 }
 
-function collectFormatErrors(
-  objects: SeedOutput["objects"],
-  schemaMap: SchemaMap
-): FormatError[] {
-  const errors: FormatError[] = [];
-
-  for (const [apiName, bucket] of Object.entries(objects)) {
-    const schema = schemaMap.objects.get(apiName);
-    if (!schema) {
-      throw new SeedError(
-        `Object type '${apiName}' in seed data is not defined in the ontology`
-      );
-    }
-
-    for (const [i, obj] of bucket.entries()) {
-      for (const [key, value] of Object.entries(obj)) {
-        const wireType = schema.properties.get(key);
-        if (wireType === undefined) {
-          throw new SeedError(
-            `Property '${key}' on '${apiName}' object` +
-              ` (index ${i}) is not defined in the ontology`
-          );
-        }
-
-        if (value == null) {
-          throw new SeedError(
-            `Property '${key}' on '${apiName}' object` +
-              ` (index ${i}) is null or undefined`
-          );
-        }
-
-        const expectedJsType = EXPECTED_JS_TYPE[wireType];
-        if (expectedJsType !== undefined && typeof value !== expectedJsType) {
-          throw new SeedError(
-            `Property '${key}' on '${apiName}' object` +
-              ` (index ${i}) expects ${wireType} (a ${expectedJsType})` +
-              ` but got ${typeof value}`
-          );
-        }
-
-        const format = WIRE_TYPE_FORMAT[wireType];
-        if (!format) continue;
-
-        if (format.pattern.test(value as string)) continue;
-        errors.push({
-          objectType: apiName,
-          objectIndex: i,
-          field: key,
-          message:
-            `property '${key}' has invalid ${wireType}` +
-            ` format: '${String(value)}'.` +
-            ` Expected format like '${format.example}'`,
-        });
-      }
-    }
-  }
-
-  return errors;
+/**
+ * Derives the human-readable identity for an object from its primary key,
+ * falling back to `<unknown>` when the key is absent (e.g. a `create` call that
+ * omits it) or null.
+ */
+function pkIdentity(
+  props: Record<string, unknown>,
+  objectType: Ontology.ObjectTypeV2
+): string {
+  const pk = props[objectType.primaryKey];
+  return pk == null ? "<unknown>" : String(pk);
 }
 
-function formatValidationErrors(errors: FormatError[]): string {
-  const grouped = new Map<string, string[]>();
-  for (const err of errors) {
-    let messages = grouped.get(err.objectType);
-    if (messages === undefined) {
-      messages = [];
-      grouped.set(err.objectType, messages);
-    }
-    messages.push(`  object[${err.objectIndex}]: ${err.message}`);
-  }
-
-  const body = [...grouped.entries()]
-    .map(([type, msgs]) => `${type}:\n${msgs.join("\n")}`)
-    .join("\n\n");
-
-  const errorWord = errors.length === 1 ? "error" : "errors";
-  const typeWord = grouped.size === 1 ? "object type" : "object types";
-
+function formatValidationErrors(
+  apiName: string,
+  identity: string,
+  messages: string[]
+): string {
+  const errorWord = messages.length === 1 ? "error" : "errors";
+  const body = messages.map((msg) => `  ${msg}`).join("\n");
   return (
-    `Seed data validation failed ` +
-    `(${errors.length} ${errorWord} across ${grouped.size} ${typeWord}` +
-    `):\n\n${body}`
+    `Seed data validation failed for '${apiName}' object` +
+    ` (primary key ${identity}) (${messages.length} ${errorWord}):\n\n${body}`
   );
 }
