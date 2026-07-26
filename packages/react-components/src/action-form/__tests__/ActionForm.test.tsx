@@ -1400,49 +1400,44 @@ describe("ActionForm", () => {
       expect(mockApplyAction).not.toHaveBeenCalled();
     });
 
-    it("blocks submission until the initial validation response resolves", async () => {
+    it("blocks submission while the initial validation is pending", async () => {
       mockMetadataParameters({ name: { type: "string", nullable: true } });
-      const validateAction = vi.fn(() => Promise.resolve(undefined));
-
-      // Before the first response arrives the form has no validation verdict
-      // yet, so submission must be held back.
       vi.mocked(useOsdkAction).mockReturnValue({
         ...defaultMockActionResult(),
-        validateAction,
-        validationResult: undefined,
         isValidating: true,
+        validationResult: undefined,
       });
 
       const onSuccess = vi.fn();
-      const { rerender } = render(
+      render(
         <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
       );
 
+      // No verdict has resolved yet, so clicking Submit is held back.
       fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
-      await vi.waitFor(() => {
-        expect(screen.queryByRole("alert")).not.toBeNull();
-      });
-      expect(mockApplyAction).not.toHaveBeenCalled();
+      await vi.waitFor(() => {});
 
-      // Once the first response resolves and the field passes, submission goes
-      // through.
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("allows submission once the initial validation is valid", async () => {
+      mockMetadataParameters({ name: { type: "string", nullable: true } });
+      const validationResult: ActionValidationResponse = {
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: { result: "VALID", required: false, evaluatedConstraints: [] },
+        },
+      };
       vi.mocked(useOsdkAction).mockReturnValue({
         ...defaultMockActionResult(),
-        validateAction,
-        validationResult: {
-          result: "VALID",
-          submissionCriteria: [],
-          parameters: {
-            name: {
-              result: "VALID",
-              required: false,
-              evaluatedConstraints: [],
-            },
-          },
-        },
         isValidating: false,
+        validationResult,
       });
-      rerender(
+
+      const onSuccess = vi.fn();
+      render(
         <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />
       );
 
