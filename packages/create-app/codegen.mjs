@@ -62,6 +62,17 @@ export const TEMPLATES = [
     buildDirectory: "dist",
     hidden: true,
   },
+  {
+    id: "react-experimental",
+    label: "React (Experimental)",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    hidden: true,
+    // The package is named `@osdk/create-app.template.react-experimental` (no
+    // version suffix), which would otherwise resolve as both the 1.x and 2.x
+    // loader. This template only targets the 2.x SDK, so suppress the 1.x slot.
+    only2x: true,
+  },
 ];
 
 const packagesDir = path.join(__dirname, "../");
@@ -80,10 +91,12 @@ fs.writeFileSync(
 
   export const TEMPLATES: readonly Template[] = [
   ${TEMPLATES.map((template) => {
-    const v1Name = findPackageName([
-      `@osdk/create-app.template.${template.id}.v1`,
-      `@osdk/create-app.template.${template.id}`,
-    ]);
+    const v1Name = template.only2x
+      ? undefined
+      : findPackageName([
+          `@osdk/create-app.template.${template.id}.v1`,
+          `@osdk/create-app.template.${template.id}`,
+        ]);
     const v2Name = findPackageName([
       `@osdk/create-app.template.${template.id}.v2`,
       `@osdk/create-app.template.${template.id}.beta`,

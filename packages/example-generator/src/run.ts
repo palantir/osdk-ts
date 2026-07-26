@@ -455,6 +455,21 @@ const UPDATE_PACKAGE_JSON: Mutator = {
         `"@osdk/oauth": "workspace:*"`,
       )
       .replace(
+        // Use the local package in the monorepo
+        /"@osdk\/react-components": "\^.*?"/,
+        `"@osdk/react-components": "workspace:*"`,
+      )
+      .replace(
+        // Use the local package in the monorepo
+        /"@osdk\/react-devtools": "\^.*?"/,
+        `"@osdk/react-devtools": "workspace:*"`,
+      )
+      .replace(
+        // Use the local package in the monorepo
+        /"@osdk\/aip-core": "\^.*?"/,
+        `"@osdk/aip-core": "workspace:*"`,
+      )
+      .replace(
         // Use locally generated SDK in the monorepo
         /"@osdk\/widget.client-react": "\^.*?"/,
         `"@osdk/widget.client-react": "workspace:*"`,
