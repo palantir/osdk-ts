@@ -110,6 +110,8 @@ export namespace ActionMetadata {
         		// (undocumented)
         description?: string;
         		// (undocumented)
+        displayName?: string;
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;

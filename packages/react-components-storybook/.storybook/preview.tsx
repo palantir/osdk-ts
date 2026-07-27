@@ -102,13 +102,42 @@ const preview: Preview = {
           const aIsOverview = aParts[1] === "Overview";
           const bIsOverview = bParts[1] === "Overview";
           if (aIsOverview !== bIsOverview) return aIsOverview ? -1 : 1;
+        }
 
-          // Same component folder: "Docs" entry first
-          if (aParts[1] === bParts[1]) {
-            const aIsDoc = aParts[2] === "Docs";
-            const bIsDoc = bParts[2] === "Docs";
-            if (aIsDoc !== bIsDoc) return aIsDoc ? -1 : 1;
-          }
+        // Within "Components" — same component folder
+        if (
+          aParts[0] === "Components" &&
+          bParts[0] === "Components" &&
+          aParts[1] === bParts[1]
+        ) {
+          /**
+           * The ordering within each component folder:
+           * Docs
+           * Default (part of __root__ and pinned later)
+           * Features
+           * Building blocks
+           * Everything else
+           */
+          const sectionOrder = [
+            "Docs",
+            "__root__",
+            "Features",
+            "Building Blocks",
+          ];
+          const aSection = aParts.length > 2 ? aParts[2] : "__root__";
+          const bSection = bParts.length > 2 ? bParts[2] : "__root__";
+          // indexOf is -1 for unlisted sections; rank those after every listed
+          // one so they sort to the bottom ("everything else").
+          const aIdx = sectionOrder.indexOf(aSection);
+          const bIdx = sectionOrder.indexOf(bSection);
+          const aRank = aIdx === -1 ? sectionOrder.length : aIdx;
+          const bRank = bIdx === -1 ? sectionOrder.length : bIdx;
+          if (aRank !== bRank) return aRank - bRank;
+
+          // Pin the "Default" story to the top of its leaf.
+          const aDefault = a.name === "Default";
+          const bDefault = b.name === "Default";
+          if (aDefault !== bDefault) return aDefault ? -1 : 1;
         }
 
         // Default: alphabetical

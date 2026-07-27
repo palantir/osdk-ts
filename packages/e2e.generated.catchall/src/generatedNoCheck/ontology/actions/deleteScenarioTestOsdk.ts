@@ -14,6 +14,7 @@ export namespace deleteScenarioTestOsdk {
   export type ParamsDefinition = {
     ScenarioTestOsdk: {
       description: undefined;
+      displayName: 'Scenario Test Osdk';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ScenarioTestOsdk>;

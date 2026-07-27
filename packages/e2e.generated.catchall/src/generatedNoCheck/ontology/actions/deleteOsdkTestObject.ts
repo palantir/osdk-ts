@@ -14,6 +14,7 @@ export namespace deleteOsdkTestObject {
   export type ParamsDefinition = {
     OsdkTestObject: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<OsdkTestObject>;

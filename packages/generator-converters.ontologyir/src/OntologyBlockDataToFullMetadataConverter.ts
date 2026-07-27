@@ -56,6 +56,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         ...transitiveImportedBlockData?.interfaceTypes,
       },
       interfaceTypeLookup,
+      importedTypes?.interfaceTypes,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
@@ -744,6 +745,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getOsdkInterfaceTypesFromBlockData(
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    importedInterfaceTypes: Record<ApiName, Ontologies.InterfaceType> = {},
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -858,6 +860,36 @@ export class OntologyBlockDataToFullMetadataConverter {
       };
 
       result[result_interfaceType.apiName] = result_interfaceType;
+    }
+
+    const availableInterfaceTypes = {
+      ...importedInterfaceTypes,
+      ...result,
+    };
+    for (const interfaceType of Object.values(result)) {
+      const ancestorInterfaceTypes = getAllAncestorInterfaceTypes(
+        interfaceType.apiName,
+        availableInterfaceTypes,
+      );
+
+      interfaceType.allExtendsInterfaces = ancestorInterfaceTypes.map(
+        ancestor => ancestor.apiName,
+      );
+      interfaceType.allProperties = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allProperties),
+        interfaceType.properties,
+      );
+      interfaceType.allPropertiesV2 = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allPropertiesV2),
+        interfaceType.allPropertiesV2,
+      );
+      interfaceType.allLinks = Object.assign(
+        {},
+        ...ancestorInterfaceTypes.map(ancestor => ancestor.allLinks),
+        interfaceType.links,
+      );
     }
 
     return result;
@@ -1091,6 +1123,38 @@ export class OntologyBlockDataToFullMetadataConverter {
     }
   }
 }
+
+function getAllAncestorInterfaceTypes(
+  apiName: ApiName,
+  interfaceTypes: Record<ApiName, Ontologies.InterfaceType>,
+): Ontologies.InterfaceType[] {
+  const ancestors: Ontologies.InterfaceType[] = [];
+  const visited = new Set<ApiName>([apiName]);
+
+  const visitParents = (currentApiName: ApiName): void => {
+    const current = interfaceTypes[currentApiName];
+    if (!current) {
+      return;
+    }
+
+    for (const parentApiName of current.extendsInterfaces) {
+      if (visited.has(parentApiName)) {
+        continue;
+      }
+      visited.add(parentApiName);
+      const parent = interfaceTypes[parentApiName];
+      if (!parent) {
+        continue;
+      }
+      ancestors.push(parent);
+      visitParents(parentApiName);
+    }
+  };
+
+  visitParents(apiName);
+  return ancestors;
+}
+
 function isBlockDataParameterRequired(
   action: ActionTypeBlockDataV2,
   paramKey: string,

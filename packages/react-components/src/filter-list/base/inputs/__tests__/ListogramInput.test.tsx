@@ -132,7 +132,7 @@ describe("ListogramInput ordering", () => {
     expect(screen.queryByRole("button", { name: "View all (4)" })).toBeNull();
   });
 
-  it("omits the View all button when all values fit in the collapsed view", () => {
+  it("omits the view toggle entirely when all values fit in the collapsed view", () => {
     render(
       <ControlledListogram
         values={mockValues}
@@ -147,7 +147,97 @@ describe("ListogramInput ordering", () => {
       "Marketing",
       "Support",
     ]);
+    expect(
+      screen.queryByRole("button", { name: /View (all|less)/u })
+    ).toBeNull();
+  });
+
+  it("keeps a single view toggle present in both the collapsed and expanded states", () => {
+    render(
+      <ControlledListogram
+        values={mockValues}
+        maxCount={42}
+        maxVisibleItems={2}
+      />
+    );
+
+    expect(
+      screen.queryAllByRole("button", { name: /View (all|less)/u })
+    ).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "View all (4)" }));
+
+    expect(
+      screen.queryAllByRole("button", { name: /View (all|less)/u })
+    ).toHaveLength(1);
+  });
+
+  it("labels the toggle with the filtered count when collapsed and drops the count once expanded", () => {
+    render(
+      <ControlledListogram
+        values={mockValues}
+        maxCount={42}
+        maxVisibleItems={2}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "View all (4)" })).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "View all (4)" }));
+
+    expect(screen.queryByRole("button", { name: "View less" })).not.toBeNull();
     expect(screen.queryByRole("button", { name: /View all/u })).toBeNull();
+  });
+
+  it("collapses back to the head values when the toggle is clicked a second time", () => {
+    render(
+      <ControlledListogram
+        values={mockValues}
+        maxCount={42}
+        maxVisibleItems={2}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "View all (4)" }));
+    expect(getRenderedOrder()).toEqual([
+      "Engineering",
+      "Sales",
+      "Marketing",
+      "Support",
+    ]);
+
+    const viewLessToggle = getToggle("viewLess");
+    expect(viewLessToggle).not.toBeNull();
+    fireEvent.click(viewLessToggle!);
+
+    expect(getRenderedOrder()).toEqual(["Engineering", "Sales"]);
+    expect(queryRow("Marketing")).toBeNull();
+    expect(queryRow("Support")).toBeNull();
+  });
+
+  it("flips aria-expanded on the toggle across clicks", () => {
+    render(
+      <ControlledListogram
+        values={mockValues}
+        maxCount={42}
+        maxVisibleItems={2}
+      />
+    );
+
+    const collapsed = screen.getByRole("button", { name: "View all (4)" });
+    expect(collapsed.getAttribute("aria-expanded")).toBe("false");
+
+    fireEvent.click(collapsed);
+
+    const viewLessToggle = getToggle("viewLess");
+    expect(viewLessToggle).not.toBeNull();
+    expect(viewLessToggle!.getAttribute("aria-expanded")).toBe("true");
+
+    fireEvent.click(viewLessToggle!);
+
+    const viewAllToggle = getToggle("viewAll");
+    expect(viewAllToggle).not.toBeNull();
+    expect(viewAllToggle!.getAttribute("aria-expanded")).toBe("false");
   });
 });
 
@@ -164,6 +254,17 @@ function queryRow(value: string): HTMLElement | null {
   return screen.queryByRole("button", {
     name: new RegExp(`^${value}\\s+\\d+`, "u"),
   });
+}
+
+// The expand/collapse toggle is the only button whose label reads "View
+// all…" (collapsed) or "View less" (expanded); row buttons never contain that
+// text. Pass the expected label so the assertion is explicit about which state
+// the toggle should be in. Returns null unless exactly one such toggle is
+// mounted so callers can assert its presence.
+function getToggle(label: "viewAll" | "viewLess"): HTMLElement | null {
+  const name = label === "viewAll" ? /View all/u : /View less/u;
+  const toggles = screen.queryAllByRole("button", { name });
+  return toggles.length === 1 ? toggles[0] : null;
 }
 
 /** Controlled wrapper so a click actually updates selection and re-renders. */

@@ -423,7 +423,9 @@ function renderType(
     case "attachment": {
       return type.hasAttachments ? "attachment" : "{}";
     }
-    case "interface":
+    case "interface": {
+      return `{ $objectType: "objectTypeApiName", $primaryKey: "primaryKeyValue" }`;
+    }
     case "marking": {
       return "{}";
     }
@@ -452,6 +454,8 @@ function renderType(
       )}: ${renderType(type.valueType, majorVersion, context)}}`;
     }
 
+    case "string":
+    case "unknown":
     default: {
       return `"${type.value ?? "value"}"`;
     }
