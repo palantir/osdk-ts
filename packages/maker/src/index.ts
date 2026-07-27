@@ -106,6 +106,7 @@ export type {
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
+export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";

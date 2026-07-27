@@ -1409,7 +1409,8 @@ export const WithBelowFoldSelection: Story = {
         story:
           "A selected value that sorts below the collapsed fold stays visible, " +
           "appended at the tail of the collapsed view rather than hoisted to " +
-          'the top. The "View all" button remains so the rest can be revealed.',
+          'the top. The "View all" toggle reveals the rest, and "View less" ' +
+          "collapses back to this state.",
       },
       source: {
         code: `<FilterList
@@ -1422,6 +1423,95 @@ export const WithBelowFoldSelection: Story = {
     },
   },
   render: (args) => <WithBelowFoldSelectionStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Every distinct department bucket, used to read the rendered row order
+    // regardless of which are currently visible.
+    const allDepartments = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+      "Operations",
+      "People",
+      "Sales",
+      "Customer Success",
+      "Legal",
+      "Product",
+    ];
+    const departmentRowName =
+      /^(Engineering|Marketing|Design|Data|Finance|Operations|People|Sales|Customer Success|Legal|Product)\s+\d+/u;
+
+    const renderedDepartments = () =>
+      canvas.getAllByRole("button", { name: departmentRowName }).map((row) => {
+        const label = allDepartments.find((name) =>
+          row.textContent?.includes(name)
+        );
+        if (label == null) {
+          throw new Error(
+            `Unable to identify department row from "${row.textContent}"`
+          );
+        }
+        return label;
+      });
+
+    // Collapsed initial state: the five highest-count departments form the
+    // head, plus the below-fold selected "Sales" appended at the tail.
+    const initialCollapsedOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+      "Sales",
+    ];
+    // With no below-fold selection the collapsed view is just the head.
+    const headOnlyOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    await canvas.findByRole("button", { name: "Marketing 4" });
+    await expect(renderedDepartments()).toEqual(initialCollapsedOrder);
+    await expect(
+      canvas.getByRole("button", { name: "Sales 2" })
+    ).toHaveAttribute("aria-pressed", "true");
+
+    // Unselect the below-fold "Sales": it is no longer selected, so it drops
+    // out of the collapsed view and the list falls back to the head alone.
+    await userEvent.click(canvas.getByRole("button", { name: "Sales 2" }));
+    await waitFor(() => expect(renderedDepartments()).toEqual(headOnlyOrder));
+    await expect(canvas.queryByRole("button", { name: "Sales 2" })).toBeNull();
+
+    // Expand with "View all (N)" to reach "Sales" again, then re-select it.
+    await userEvent.click(
+      canvas.getByRole("button", { name: /^View all \(\d+\)/u })
+    );
+    await canvas.findByRole("button", { name: "View less" });
+    await userEvent.click(canvas.getByRole("button", { name: "Sales 2" }));
+    await waitFor(() =>
+      expect(canvas.getByRole("button", { name: "Sales 2" })).toHaveAttribute(
+        "aria-pressed",
+        "true"
+      )
+    );
+
+    // "View less" collapses back to the initial state: the head plus the
+    // re-selected below-fold "Sales" appended at the tail.
+    await userEvent.click(canvas.getByRole("button", { name: "View less" }));
+    await canvas.findByRole("button", { name: /^View all \(\d+\)/u });
+    await expect(
+      canvas.queryByRole("button", { name: "View less" })
+    ).toBeNull();
+    await waitFor(() =>
+      expect(renderedDepartments()).toEqual(initialCollapsedOrder)
+    );
+  },
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {

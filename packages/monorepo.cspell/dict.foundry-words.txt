@@ -1,6 +1,7 @@
 ASMT
 BDUS
 bellaso
+binarize
 blockset
 CBAC
 CMYK

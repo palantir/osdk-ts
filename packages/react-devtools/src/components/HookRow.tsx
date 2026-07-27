@@ -178,6 +178,7 @@ export const HookRow: React.FC<HookRowProps> = ({
             </Tag>
           </Tooltip>
         );
+      case "idle":
       default:
         return null;
     }
