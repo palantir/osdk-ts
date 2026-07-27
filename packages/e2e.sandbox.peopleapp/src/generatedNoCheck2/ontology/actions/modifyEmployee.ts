@@ -14,18 +14,21 @@ export namespace modifyEmployee {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     primary_office_id: {
       description: undefined;
+      displayName: 'Primary Office ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     stockOptions: {
       description: undefined;
+      displayName: 'Stock Options';
       multiplicity: false;
       nullable: true;
       type: 'long';

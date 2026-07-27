@@ -77,4 +77,5 @@ type AggregateOptsThatErrors<
               Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>,
               never
             >;
-        });
+        }) &
+  Record<Exclude<keyof AO, keyof AggregateOpts<Q>>, never>;
