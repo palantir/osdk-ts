@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionValidationResponse } from "@osdk/api";
 import { FauxFoundry, TypeHelpers } from "@osdk/faux";
 
 import type { Employee } from "../types/Employee.js";
@@ -166,6 +167,104 @@ export const unsupportedFieldsStoryAction = TypeHelpers.actionTypeBuilder(
   })
 ).build();
 
+const constraintsActionParameters = {
+  role: {
+    displayName: "Role",
+    dataType: { type: "string" },
+    required: true,
+    typeClasses: [],
+  },
+  bio: {
+    displayName: "Bio",
+    dataType: { type: "string" },
+    required: false,
+    typeClasses: [],
+  },
+  level: {
+    displayName: "Level",
+    dataType: { type: "integer" },
+    required: true,
+    typeClasses: [],
+  },
+  tags: {
+    displayName: "Tags",
+    dataType: { type: "array", subType: { type: "string" } },
+    required: false,
+    typeClasses: [],
+  },
+  email: {
+    displayName: "Email",
+    dataType: { type: "string" },
+    required: true,
+    typeClasses: [],
+  },
+} satisfies ActionParameterMap;
+
+export const constraintsStoryAction = TypeHelpers.actionTypeBuilder(
+  TypeHelpers.createActionType({
+    apiName: "constraintsStoryAction",
+    displayName: "Create profile with constraints",
+    parameters: constraintsActionParameters,
+  })
+).build();
+
+// FauxFoundry's validate-only path reuses the apply endpoint and echoes this
+// impl's return value verbatim as the response. `ActionParameterV2` has no
+// constraint field, so a canned validation response is the only way to get
+// `evaluatedConstraints` (oneOf, stringLength, range, arraySize,
+// stringRegexMatch) in front of ActionForm in Storybook.
+const constraintsStoryActionValidation: ActionValidationResponse = {
+  result: "VALID",
+  submissionCriteria: [],
+  parameters: {
+    role: {
+      result: "VALID",
+      required: true,
+      evaluatedConstraints: [
+        {
+          type: "oneOf",
+          options: [
+            { displayName: "Engineer", value: "engineer" },
+            { displayName: "Designer", value: "designer" },
+            { displayName: "Manager", value: "manager" },
+          ],
+          otherValuesAllowed: false,
+        },
+      ],
+    },
+    bio: {
+      result: "VALID",
+      required: false,
+      evaluatedConstraints: [{ type: "stringLength", gte: 10, lte: 200 }],
+    },
+    level: {
+      result: "VALID",
+      required: true,
+      evaluatedConstraints: [{ type: "range", gte: 1, lte: 10 }],
+    },
+    tags: {
+      result: "VALID",
+      required: false,
+      evaluatedConstraints: [{ type: "arraySize", gte: 1, lte: 5 }],
+    },
+    email: {
+      result: "VALID",
+      required: true,
+      evaluatedConstraints: [
+        {
+          type: "stringRegexMatch",
+          regex: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+          configuredFailureMessage: "Enter a valid email address",
+        },
+      ],
+    },
+  },
+};
+
+const constraintsStoryActionResponse: {
+  validation: ActionValidationResponse;
+} = { validation: constraintsStoryActionValidation };
+
 let isInitialized = false;
 
 export async function setupFauxFoundry(): Promise<void> {
@@ -203,6 +302,12 @@ export async function setupFauxFoundry(): Promise<void> {
     .registerActionType(
       unsupportedFieldsStoryAction.actionTypeV2,
       () => undefined
+    );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerActionType(
+      constraintsStoryAction.actionTypeV2,
+      () => constraintsStoryActionResponse
     );
 
   // Add mock data from JSON file. We synthesize marking values so the

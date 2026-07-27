@@ -55,7 +55,8 @@ export default defineConfig({
     "jsdoc/require-returns-description": "off",
     // Cyclomatic-complexity ceiling. Not a pure autofix (requires extracting
     // helpers, which adds bundle size), so it's handled in its own PR.
-    "complexity": "off",
+    complexity: "off",
+    "unicorn/no-useless-switch-case": "off",
 
     // Rules whose autofix would change behavior or the public API of these
     // already-published packages. Kept at prior severity / disabled so the
@@ -63,7 +64,7 @@ export default defineConfig({
     "typescript/no-explicit-any": "warn",
     // `no-eq-null` is off so `x == null` / `x != null` stay allowed as the
     // coercion-free "is null or undefined" idiom. We eventually want to move to ===.
-    "eqeqeq": ["error", "always", { "null": "never" }],
+    eqeqeq: ["error", "always", { null: "never" }],
     "no-eq-null": "off",
     "unicorn/custom-error-definition": "error",
     "default-param-last": "error",
@@ -78,7 +79,7 @@ export default defineConfig({
     // no bugs and change no behavior, so they are disabled repo-wide. Revisit
     // as a group in a dedicated formatting-only PR if desired.
     "sort-keys": "off",
-    "curly": "off",
+    curly: "off",
     "prefer-destructuring": "off",
     "arrow-body-style": "off",
     "no-else-return": "off",
@@ -237,7 +238,7 @@ export default defineConfig({
     "typescript/no-this-alias": "warn",
     "typescript/prefer-for-of": "warn",
     "no-bitwise": "warn",
-    "radix": "warn",
+    radix: "warn",
     // New Ultracite-preset rules not enforced by prior ESLint (off):
     // Adding named capture groups to existing regexes is churn and risks changing
     // match semantics; same rationale as widget.vite-plugin's deferred override.

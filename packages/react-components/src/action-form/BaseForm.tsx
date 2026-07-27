@@ -28,6 +28,7 @@ import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
+import { buildDefaultValues } from "./utils/buildDefaultValues.js";
 
 import styles from "./BaseForm.module.css";
 
@@ -40,6 +41,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isSubmitDisabled = false,
   isPending = false,
   isLoading = false,
+  isValidating = false,
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
@@ -105,9 +107,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
       clearError();
-      onFieldValueChange?.(fieldKey, value);
+      onFieldValueChange?.(fieldKey, value, getValues());
     },
-    [clearError, onFieldValueChange]
+    [clearError, onFieldValueChange, getValues]
   );
 
   const labelByFieldKey = useMemo(
@@ -184,6 +186,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         })}
       </div>
       <div className={styles.osdkFormFooter}>
+        {hasAttemptedSubmit && isValidating && (
+          <div role="alert" className={styles.osdkFormErrorIndicator}>
+            <ErrorIcon size={14} />
+            Validating…
+          </div>
+        )}
         <ErrorIndicator errorEntries={errorEntries} />
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
@@ -231,19 +239,6 @@ const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
     <SkeletonBar className={styles.osdkFormSkeletonInput} />
   </div>
 ));
-
-function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>
-): Record<string, unknown> {
-  const values: Record<string, unknown> = {};
-  for (const def of fieldDefinitions) {
-    const props: Record<string, unknown> = def.fieldComponentProps;
-    if ("defaultValue" in props) {
-      values[def.fieldKey] = props.defaultValue;
-    }
-  }
-  return values;
-}
 
 interface ErrorEntry {
   label: string;

@@ -15,9 +15,14 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
+import type { ActionValidationError } from "@osdk/client";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
+import type { DebounceOptions } from "../shared/hooks/useDebouncedCallback.js";
+import { useDebouncedCallback } from "../shared/hooks/useDebouncedCallback.js";
+import { useEventCallback } from "../shared/hooks/useEventCallback.js";
+import { useDeepEqual } from "../shared/hooks/variables/useDeepEqual.js";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -26,11 +31,18 @@ import type {
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { applyValidationConstraints } from "./utils/applyValidationConstraints.js";
+import { buildDefaultValues } from "./utils/buildDefaultValues.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
+
+// Validate on the leading edge so the first edit surfaces feedback immediately,
+// then coalesce a burst of rapid edits into a single trailing validation.
+const VALIDATION_WAIT_MS = 500;
+const VALIDATION_DEBOUNCE_OPTIONS: DebounceOptions = { leading: true };
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>
@@ -45,12 +57,19 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onFormStateChange,
   isSubmitDisabled,
   onSubmit,
+  // Intentionally ignored: surfacing the raw validation response to callers is
+  // deferred to a later change. Destructured so it is not forwarded onward.
   onValidationResponse: _onValidationResponse,
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } =
-    useOsdkAction(actionDefinition);
+  const {
+    applyAction: osdkApplyAction,
+    isPending,
+    isValidating,
+    validateAction,
+    validationResult,
+  } = useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -67,6 +86,11 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const parameters = metadata?.parameters;
+
+  // Lifecycle guard, not a value shadow: prevents a validate → validationResult
+  // → recompute → revalidate loop by ensuring mount validation fires exactly
+  // once.
+  const hasRunInitialValidationRef = useRef(false);
 
   const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
     useMemo(() => {
@@ -90,13 +114,21 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       });
     }, [formFieldDefinitions, parameters]);
 
-  const rendererFieldDefinitions = useMemo(
-    () =>
+  const rendererFieldDefinitions = useMemo(() => {
+    const baseDefinitions =
       customFieldDefinitions ??
       (metadata != null
         ? getDefaultFieldDefinitions(metadata)
-        : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata]
+        : EMPTY_FIELD_DEFINITIONS);
+    return applyValidationConstraints(baseDefinitions, validationResult);
+  }, [customFieldDefinitions, metadata, validationResult]);
+
+  // The default value seeded into each field's store, keyed by field. Shares
+  // BaseForm's buildDefaultValues so uncontrolled validation reflects the same
+  // starting values the form holds.
+  const defaultFieldValues = useMemo(
+    () => buildDefaultValues(rendererFieldDefinitions),
+    [rendererFieldDefinitions]
   );
 
   const formContent = useMemo(
@@ -120,6 +152,79 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [parameters]
   );
 
+  const isControlled = controlledFormState != null;
+
+  // Runs a single validation pass against the supplied form values. A rejected
+  // validation is surfaced through `onError` as a `validation` error rather than
+  // being left as an unhandled promise rejection.
+  const runValidate = useEventCallback(
+    (values: Record<string, unknown>): void => {
+      if (metadata == null) {
+        return;
+      }
+      // `coerceFormState` converts each raw field value to its parameter's
+      // declared type using `metadata` (guaranteed non-null above), producing
+      // the typed parameter map `validateAction` expects.
+      const coerced = coerceFormState(values) as Parameters<
+        typeof validateAction
+      >[0];
+      Promise.resolve(validateAction(coerced)).catch((error: unknown) => {
+        onError?.({
+          type: "validation",
+          error: error as ActionValidationError,
+        });
+      });
+    }
+  );
+
+  const runDebouncedValidation = useDebouncedCallback(
+    runValidate,
+    VALIDATION_WAIT_MS,
+    VALIDATION_DEBOUNCE_OPTIONS
+  );
+
+  const isFormReady = metadata != null;
+
+  // `useDeepEqual` returns a stable reference that only changes identity on a
+  // real structural change, so an unrelated parent re-render that reconstructs
+  // an equivalent controlled state does not fire a redundant network validation.
+  const stableControlledFormState = useDeepEqual(controlledFormState);
+
+  useEffect(
+    function validateOnReadyOrControlledChange() {
+      if (!isFormReady) {
+        return;
+      }
+      // Mount validation runs immediately, deliberately NOT through the edit
+      // debounce, so that debounce's leading edge stays reserved for the user's
+      // first edit.
+      if (!hasRunInitialValidationRef.current) {
+        hasRunInitialValidationRef.current = true;
+        runValidate(
+          isControlled && stableControlledFormState != null
+            ? stableControlledFormState
+            : defaultFieldValues
+        );
+        return;
+      }
+      // A controlling parent replaced the form state. Debounce real changes so a
+      // burst of committed keystrokes coalesces into a single trailing
+      // validation.
+      if (!isControlled || stableControlledFormState == null) {
+        return;
+      }
+      runDebouncedValidation(stableControlledFormState);
+    },
+    [
+      isFormReady,
+      isControlled,
+      stableControlledFormState,
+      defaultFieldValues,
+      runValidate,
+      runDebouncedValidation,
+    ]
+  );
+
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
       const formState = coerceFormState(rawFormState) as FormState<Q>;
@@ -138,7 +243,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const handleFieldValueChange = useCallback(
-    (fieldKey: string, value: unknown) => {
+    (fieldKey: string, value: unknown, formValues: Record<string, unknown>) => {
       onFormStateChange?.(
         (prev) =>
           ({
@@ -146,15 +251,20 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
             [fieldKey]: value,
           }) as FormState<Q>
       );
+      // In controlled mode the parent owns the value: validation runs against
+      // the committed value via the controlled-change effect, never this raw
+      // pre-commit keystroke. In uncontrolled mode there is no re-render to
+      // drive validation, so we validate against RHF's live snapshot here.
+      if (!isControlled) {
+        runDebouncedValidation(formValues);
+      }
     },
-    [onFormStateChange]
+    [isControlled, onFormStateChange, runDebouncedValidation]
   );
 
   const resolvedTitle = showFormTitle
     ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
     : undefined;
-
-  const isControlled = controlledFormState != null;
 
   const commonProps = {
     formTitle: resolvedTitle,
@@ -163,6 +273,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isSubmitDisabled,
     isPending,
     isLoading: metadataLoading,
+    isValidating,
     onFieldValueChange: handleFieldValueChange,
   };
 

@@ -165,11 +165,21 @@ export type BaseFormProps = BaseFormCommonProps &
   (
     | {
         formState: Record<string, unknown>;
-        onFieldValueChange: (fieldKey: string, value: unknown) => void;
+        onFieldValueChange: (
+          fieldKey: string,
+          value: unknown,
+          /** Post-change form snapshot (defaults + all edits). */
+          formValues: Record<string, unknown>
+        ) => void;
       }
     | {
         formState?: undefined;
-        onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+        onFieldValueChange?: (
+          fieldKey: string,
+          value: unknown,
+          /** Post-change form snapshot (defaults + all edits). */
+          formValues: Record<string, unknown>
+        ) => void;
       }
   );
 
@@ -180,6 +190,13 @@ interface BaseFormCommonProps {
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
+  /**
+   * Whether a validation pass for the current values is still in flight. While
+   * true, submission is held back: the current values have no resolved
+   * validation verdict yet, so applying them would either skip validation
+   * entirely (initial load) or trust a response computed for stale values.
+   */
+  isValidating?: boolean;
   className?: string;
   /** Label for the submit button. Default `"Submit"`. */
   submitButtonText?: string;

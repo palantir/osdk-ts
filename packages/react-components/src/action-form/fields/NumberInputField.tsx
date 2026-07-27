@@ -125,6 +125,8 @@ export function NumberInputField({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
+        min={min}
+        max={max}
       />
       <div className={styles.osdkNumberInputStepper}>
         <Button
