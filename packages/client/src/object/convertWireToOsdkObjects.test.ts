@@ -716,246 +716,256 @@ describe("convertWireToOsdkObjects", () => {
           employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata
         ).toMatchInlineSnapshot(
           `
-            {
-              "apiName": "Employee",
-              "description": "A full-time or part-time 
+          {
+            "apiName": "Employee",
+            "description": "A full-time or part-time 
 
-             employee of our firm",
-              "displayName": "Employee",
-              "icon": {
-                "color": "blue",
-                "name": "person",
-                "type": "blueprint",
-              },
-              "implements": [
-                "FooInterface",
-              ],
-              "interfaceImplementations": {
-                "FooInterface": {
-                  "fooIdp": {
-                    "propertyApiName": "office",
-                    "type": "localProperty",
-                  },
-                  "fooSpt": {
-                    "propertyApiName": "fullName",
-                    "type": "localProperty",
-                  },
+           employee of our firm",
+            "displayName": "Employee",
+            "icon": {
+              "color": "blue",
+              "name": "person",
+              "type": "blueprint",
+            },
+            "implements": [
+              "FooInterface",
+            ],
+            "interfaceImplementations": {
+              "FooInterface": {
+                "fooIdp": {
+                  "propertyApiName": "office",
+                  "type": "localProperty",
+                },
+                "fooSpt": {
+                  "propertyApiName": "fullName",
+                  "type": "localProperty",
                 },
               },
-              "interfaceMap": {
-                "FooInterface": {
-                  "fooIdp": "office",
-                  "fooSpt": "fullName",
-                },
+            },
+            "interfaceMap": {
+              "FooInterface": {
+                "fooIdp": "office",
+                "fooSpt": "fullName",
               },
-              "inverseInterfaceMap": {
-                "FooInterface": {
-                  "fullName": "fooSpt",
-                  "office": "fooIdp",
-                },
+            },
+            "inverseInterfaceMap": {
+              "FooInterface": {
+                "fullName": "fooSpt",
+                "office": "fooIdp",
               },
-              "links": {
-                "lead": {
-                  "multiplicity": false,
-                  "targetType": "Employee",
-                },
-                "officeLink": {
-                  "multiplicity": false,
-                  "targetType": "Office",
-                },
-                "peeps": {
-                  "multiplicity": true,
-                  "targetType": "Employee",
-                },
-                "visitedOffices": {
-                  "multiplicity": true,
-                  "targetType": "Office",
-                },
+            },
+            "links": {
+              "lead": {
+                "multiplicity": false,
+                "targetType": "Employee",
               },
-              "pluralDisplayName": "Employees",
-              "primaryKeyApiName": "employeeId",
-              "primaryKeyType": "integer",
-              "properties": {
-                "class": {
-                  "description": "",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "employeeId": {
-                  "description": undefined,
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": false,
-                  "type": "integer",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "employeeLocation": {
-                  "description": "Geotime series reference of the location of the employee",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "geotimeSeriesReference",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "employeeProfile": {
-                  "description": "Employee profile with main value being the bio",
-                  "displayName": undefined,
-                  "mainValue": {
-                    "fields": [
-                      "bio",
-                    ],
-                  },
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": {
-                    "bio": "string",
-                    "yearsExperience": "integer",
-                  },
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "employeeSensor": {
-                  "description": "TimeSeries sensor of the status of the employee",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "stringTimeseries",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "employeeStatus": {
-                  "description": "TimeSeries of the status of the employee",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "stringTimeseries",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "favoriteRestaurants": {
-                  "description": undefined,
-                  "displayName": undefined,
-                  "hasReducers": false,
-                  "multiplicity": true,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "fullName": {
-                  "description": undefined,
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "office": {
-                  "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
-             This is some more text.",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "performanceScores": {
-                  "description": "Array of performance scores with reducers",
-                  "displayName": undefined,
-                  "hasReducers": true,
-                  "multiplicity": true,
-                  "nullable": true,
-                  "type": "double",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "skillSet": {
-                  "description": "The skills of the employee",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "skillSetEmbedding": {
-                  "description": "Vectorized skill set",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "vector",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "startDate": {
-                  "description": "The date the employee was hired (most recently, if they were re-hired)",
-                  "displayName": undefined,
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "datetime",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
+              "officeLink": {
+                "multiplicity": false,
+                "targetType": "Office",
               },
-              "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
-              "status": "ACTIVE",
-              "titleProperty": "fullName",
-              "type": "object",
-              "visibility": "NORMAL",
-              Symbol(InterfaceDefinitions): {
-                "FooInterface": {
-                  "def": {
-                    "apiName": "FooInterface",
-                    "description": "Interface for Foo",
-                    "displayName": "Foo Interface",
-                    "implementedBy": [
-                      "Employee",
-                      "Person",
-                    ],
-                    "implements": [],
-                    "links": {
-                      "toBar": {
-                        "multiplicity": true,
-                        "targetType": "interface",
-                        "targetTypeApiName": "BarInterface",
-                      },
+              "peeps": {
+                "multiplicity": true,
+                "targetType": "Employee",
+              },
+              "visitedOffices": {
+                "multiplicity": true,
+                "targetType": "Office",
+              },
+            },
+            "pluralDisplayName": "Employees",
+            "primaryKeyApiName": "employeeId",
+            "primaryKeyType": "integer",
+            "properties": {
+              "class": {
+                "description": "",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "employeeId": {
+                "description": undefined,
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": false,
+                "type": "integer",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "employeeLocation": {
+                "description": "Geotime series reference of the location of the employee",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "geotimeSeriesReference",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "employeeProfile": {
+                "description": "Employee profile with main value being the bio",
+                "displayName": undefined,
+                "mainValue": {
+                  "fields": [
+                    "bio",
+                  ],
+                },
+                "multiplicity": false,
+                "nullable": true,
+                "type": {
+                  "bio": "string",
+                  "yearsExperience": "integer",
+                },
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "employeeSensor": {
+                "description": "TimeSeries sensor of the status of the employee",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "stringTimeseries",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "employeeStatus": {
+                "description": "TimeSeries of the status of the employee",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "stringTimeseries",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "favoriteRestaurants": {
+                "description": undefined,
+                "displayName": undefined,
+                "hasReducers": false,
+                "multiplicity": true,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "fullName": {
+                "description": undefined,
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "office": {
+                "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+           This is some more text.",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "performanceScores": {
+                "description": "Array of performance scores with reducers",
+                "displayName": undefined,
+                "hasReducers": true,
+                "multiplicity": true,
+                "nullable": true,
+                "type": "double",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "skillSet": {
+                "description": "The skills of the employee",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "skillSetEmbedding": {
+                "description": "Vectorized skill set",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "vector",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "startDate": {
+                "description": "The date the employee was hired (most recently, if they were re-hired)",
+                "displayName": undefined,
+                "multiplicity": false,
+                "nullable": true,
+                "type": "datetime",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+            },
+            "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+            "status": "ACTIVE",
+            "titleProperty": "fullName",
+            "type": "object",
+            "visibility": "NORMAL",
+            Symbol(InterfaceDefinitions): {
+              "FooInterface": {
+                "def": {
+                  "apiName": "FooInterface",
+                  "description": "Interface for Foo",
+                  "displayName": "Foo Interface",
+                  "implementedBy": [
+                    "Employee",
+                    "Person",
+                  ],
+                  "implements": [],
+                  "links": {
+                    "toBar": {
+                      "multiplicity": true,
+                      "targetType": "interface",
+                      "targetTypeApiName": "BarInterface",
                     },
-                    "properties": {
-                      "fooIdp": {
-                        "description": "A Foo IDP",
-                        "displayName": "Foo IDP",
-                        "multiplicity": false,
-                        "nullable": true,
-                        "type": "string",
-                        "valueFormatting": undefined,
-                        "valueTypeApiName": undefined,
-                      },
-                      "fooSpt": {
-                        "description": "A foo",
-                        "displayName": "Foo",
-                        "multiplicity": false,
-                        "nullable": true,
-                        "type": "string",
-                        "valueFormatting": undefined,
-                        "valueTypeApiName": undefined,
-                      },
-                    },
-                    "rid": "ri.interface.main.interface.1",
-                    "type": "interface",
                   },
-                  "handler": undefined,
+                  "properties": {
+                    "fooArray": {
+                      "description": "An array-valued Foo property",
+                      "displayName": "Foo Array",
+                      "hasReducers": false,
+                      "multiplicity": true,
+                      "nullable": true,
+                      "type": "string",
+                      "valueFormatting": undefined,
+                      "valueTypeApiName": undefined,
+                    },
+                    "fooIdp": {
+                      "description": "A Foo IDP",
+                      "displayName": "Foo IDP",
+                      "multiplicity": false,
+                      "nullable": true,
+                      "type": "string",
+                      "valueFormatting": undefined,
+                      "valueTypeApiName": undefined,
+                    },
+                    "fooSpt": {
+                      "description": "A foo",
+                      "displayName": "Foo",
+                      "multiplicity": false,
+                      "nullable": true,
+                      "type": "string",
+                      "valueFormatting": undefined,
+                      "valueTypeApiName": undefined,
+                    },
+                  },
+                  "rid": "ri.interface.main.interface.1",
+                  "type": "interface",
                 },
+                "handler": undefined,
               },
-            }
-          `
+            },
+          }
+        `
         );
       });
 
@@ -1014,46 +1024,56 @@ describe("convertWireToOsdkObjects", () => {
             .InterfaceMetadata
         ).toMatchInlineSnapshot(
           `
-            {
-              "apiName": "FooInterface",
-              "description": "Interface for Foo",
-              "displayName": "Foo Interface",
-              "implementedBy": [
-                "Employee",
-                "Person",
-              ],
-              "implements": [],
-              "links": {
-                "toBar": {
-                  "multiplicity": true,
-                  "targetType": "interface",
-                  "targetTypeApiName": "BarInterface",
-                },
+          {
+            "apiName": "FooInterface",
+            "description": "Interface for Foo",
+            "displayName": "Foo Interface",
+            "implementedBy": [
+              "Employee",
+              "Person",
+            ],
+            "implements": [],
+            "links": {
+              "toBar": {
+                "multiplicity": true,
+                "targetType": "interface",
+                "targetTypeApiName": "BarInterface",
               },
-              "properties": {
-                "fooIdp": {
-                  "description": "A Foo IDP",
-                  "displayName": "Foo IDP",
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "fooSpt": {
-                  "description": "A foo",
-                  "displayName": "Foo",
-                  "multiplicity": false,
-                  "nullable": true,
-                  "type": "string",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
+            },
+            "properties": {
+              "fooArray": {
+                "description": "An array-valued Foo property",
+                "displayName": "Foo Array",
+                "hasReducers": false,
+                "multiplicity": true,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
               },
-              "rid": "ri.interface.main.interface.1",
-              "type": "interface",
-            }
-          `
+              "fooIdp": {
+                "description": "A Foo IDP",
+                "displayName": "Foo IDP",
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+              "fooSpt": {
+                "description": "A foo",
+                "displayName": "Foo",
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+                "valueFormatting": undefined,
+                "valueTypeApiName": undefined,
+              },
+            },
+            "rid": "ri.interface.main.interface.1",
+            "type": "interface",
+          }
+        `
         );
       });
       it("$experimental_metadata is not enumerable", async () => {
