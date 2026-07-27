@@ -327,6 +327,19 @@ function extractImportedInterfaceTypes(
       )
     );
 
+    const propertiesV2: string[] = [];
+    for (const [propertyRid] of Object.entries(
+      interfaceType.propertiesV3 ?? {}
+    )) {
+      const propReadableId = ridGenerator
+        .getInterfacePropertyTypeRids()
+        .inverse()
+        .get(propertyRid);
+      if (propReadableId) {
+        propertiesV2.push(ridGenerator.toBlockInternalId(propReadableId));
+      }
+    }
+
     // Build links list
     const links: string[] = (interfaceType.links ?? []).map(
       (ilt: MarketplaceInterfaceLinkType) => {
@@ -351,7 +364,7 @@ function extractImportedInterfaceTypes(
       ),
       actionTypeConstraints,
       properties,
-      propertiesV2: [],
+      propertiesV2,
       links,
     };
 
