@@ -122,6 +122,56 @@ describe("generateOntologyMetadata", () => {
     `);
   });
 
+  it("writes nested metadata as pretty printed json", async () => {
+    const { json } = await generate(ontologyMetadataWithObjectType);
+    expect(json).toMatchInlineSnapshot(`
+      "{
+        "ontology": {
+          "apiName": "default-ontology",
+          "displayName": "Ontology",
+          "description": "The default ontology",
+          "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361"
+        },
+        "objectTypes": {
+          "Employee": {
+            "objectType": {
+              "apiName": "Employee",
+              "displayName": "Employee",
+              "pluralDisplayName": "Employees",
+              "status": "ACTIVE",
+              "icon": {
+                "type": "blueprint",
+                "color": "#00B3A4",
+                "name": "person"
+              },
+              "primaryKey": "employeeId",
+              "titleProperty": "employeeId",
+              "rid": "ri.ontology.main.object-type.employee",
+              "properties": {
+                "employeeId": {
+                  "dataType": {
+                    "type": "integer"
+                  },
+                  "rid": "ri.ontology.main.property.employee-id",
+                  "typeClasses": []
+                }
+              }
+            },
+            "linkTypes": [],
+            "implementsInterfaces": [],
+            "implementsInterfaces2": {},
+            "sharedPropertyTypeMapping": {}
+          }
+        },
+        "actionTypes": {},
+        "queryTypes": {},
+        "interfaceTypes": {},
+        "sharedPropertyTypes": {},
+        "valueTypes": {}
+      }"
+    `);
+  });
+
   it("declares the json as OntologyFullMetadata", async () => {
     const { dts } = await generate(emptyOntologyMetadata);
     expect(dts).toMatchInlineSnapshot(`
@@ -132,11 +182,6 @@ describe("generateOntologyMetadata", () => {
       export = ontologyFullMetadata;
       "
     `);
-  });
-
-  it("round trips the metadata verbatim", async () => {
-    const { json } = await generate(ontologyMetadataWithObjectType);
-    expect(JSON.parse(json)).toEqual(ontologyMetadataWithObjectType);
   });
 
   it("is reachable as a package.json subpath export", async () => {
