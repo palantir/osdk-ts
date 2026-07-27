@@ -19,8 +19,10 @@ import {
   addOne,
   editTodo,
   Employee,
+  FooInterface,
   moveOffice,
   Office,
+  promoteEmployee,
   Todo,
 } from "@osdk/client.test.ontology";
 import {
@@ -29,6 +31,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
+import invariant from "tiny-invariant";
 import type { MockedObject } from "vitest";
 import {
   afterEach,
@@ -47,7 +50,12 @@ import type { ListPayload } from "../../ListPayload.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { Store } from "../Store.js";
-import { mockObserver } from "../testUtils.js";
+import {
+  createDefer,
+  mockListSubCallback,
+  mockObserver,
+  waitForPayload,
+} from "../testUtils.js";
 
 function mockFunctionSubCallback(): MockedObject<
   Observer<FunctionPayload | undefined>
@@ -541,6 +549,146 @@ describe("ActionApplication invalidation", () => {
       expect(devModeWarnings).toHaveLength(1);
 
       consoleWarnSpy.mockRestore();
+    });
+  });
+});
+
+const defer = createDefer();
+
+const EMPLOYEE_ID = 1;
+
+// Materialize a flag-on object entry by reading the backing Employee through
+// FooInterface with $includeAllBaseObjectProperties. Returns the concrete
+// object cache key so tests can inspect it after an action.
+async function observeFlagOnEmployeeEntry(store: Store) {
+  const withFlag = mockListSubCallback();
+  const subscription = store.lists.observe(
+    { type: FooInterface, $includeAllBaseObjectProperties: true },
+    withFlag
+  );
+  defer(subscription);
+  await waitForPayload(
+    withFlag,
+    (p) => p?.status === "loaded" && (p.resolvedList?.length ?? 0) > 0
+  );
+  const flagOnObjectKey = store.getValue(subscription.query.cacheKey)?.value
+    ?.data[0];
+  invariant(flagOnObjectKey, "expected a flag-on object entry");
+  return flagOnObjectKey;
+}
+
+describe("ActionApplication edits and $includeAllBaseObjectProperties families", () => {
+  describe("modifying an edited object", () => {
+    let client: Client;
+    let store: Store;
+    let fauxFoundry: FauxFoundry;
+
+    beforeAll(() => {
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient
+      );
+      ({ client, fauxFoundry } = testSetup);
+      const fauxOntology = fauxFoundry.getDefaultOntology();
+      ontologies.addEmployeeOntology(fauxOntology);
+      fauxOntology.registerActionType(
+        stubData.PromoteEmployee,
+        (b, payload) => {
+          b.modifyObject<typeof Employee>(
+            Employee.apiName,
+            payload.parameters.employeeId as number,
+            { fullName: payload.parameters.newTitle as string }
+          );
+        }
+      );
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      const dataStore = fauxFoundry.getDefaultDataStore();
+      dataStore.clear();
+      dataStore.registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: EMPLOYEE_ID,
+        fullName: "Alice",
+      });
+      store = new Store(client);
+    });
+
+    it("refreshes the flag-on object entry after an action modifies the backing object", async () => {
+      const flagOnObjectKey = await observeFlagOnEmployeeEntry(store);
+      expect(store.getValue(flagOnObjectKey)?.value?.fullName).toBe("Alice");
+
+      await store.applyAction(promoteEmployee, {
+        employeeId: EMPLOYEE_ID,
+        newTitle: "Zelda",
+        newCompensation: 0,
+      });
+
+      // The per-object pass reaches only the flag-off family and the per-type
+      // pass skips object queries on the edits branch, so the flag-on entry
+      // stays stale today.
+      expect(store.getValue(flagOnObjectKey)?.value?.fullName).toBe("Zelda");
+    });
+  });
+
+  describe("deleting an edited object", () => {
+    let client: Client;
+    let store: Store;
+    let fauxFoundry: FauxFoundry;
+
+    beforeAll(() => {
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient
+      );
+      ({ client, fauxFoundry } = testSetup);
+      const fauxOntology = fauxFoundry.getDefaultOntology();
+      ontologies.addEmployeeOntology(fauxOntology);
+      fauxOntology.registerActionType(
+        stubData.PromoteEmployee,
+        (b, payload) => {
+          b.deleteObject(
+            Employee.apiName,
+            payload.parameters.employeeId as number
+          );
+        }
+      );
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      const dataStore = fauxFoundry.getDefaultDataStore();
+      dataStore.clear();
+      dataStore.registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: EMPLOYEE_ID,
+        fullName: "Alice",
+      });
+      store = new Store(client);
+    });
+
+    it("removes a flag-on-only object entry when an action deletes the backing object", async () => {
+      const flagOnObjectKey = await observeFlagOnEmployeeEntry(store);
+      expect(store.getValue(flagOnObjectKey)?.value).toMatchObject({
+        $primaryKey: EMPLOYEE_ID,
+      });
+
+      await store.applyAction(promoteEmployee, {
+        employeeId: EMPLOYEE_ID,
+        newTitle: "unused",
+        newCompensation: 0,
+      });
+
+      // The delete pass only tombstones the flag-off variants, so the
+      // flag-on-only entry is never removed today.
+      expect(store.getValue(flagOnObjectKey)?.value).toBeUndefined();
     });
   });
 });

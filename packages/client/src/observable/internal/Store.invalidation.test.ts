@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet, Osdk } from "@osdk/api";
 import {
   Employee,
   FooInterface,
@@ -29,10 +30,18 @@ import {
 import invariant from "tiny-invariant";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import { Store } from "./Store.js";
-import { createDefer, mockListSubCallback, updateList } from "./testUtils.js";
+import {
+  createDefer,
+  mockListSubCallback,
+  mockObserver,
+  updateList,
+  waitForPayload,
+} from "./testUtils.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
 import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
@@ -803,5 +812,178 @@ describe("Store Invalidation Type Isolation", () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
       expect(officeLinkSubFn.next).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("invalidateObject and $includeAllBaseObjectProperties families", () => {
+  let client: Client;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  const INVALIDATE_EMPLOYEE_ID = 1;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient
+    );
+    ({ client, fauxFoundry } = testSetup);
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: INVALIDATE_EMPLOYEE_ID,
+      fullName: "Santa Claus",
+      office: "NYC",
+    });
+  });
+
+  // Materialize one object entry per base-property family by reading the same
+  // Employee through FooInterface with and without the interface-only flag.
+  async function observeBothFamilies() {
+    const withFlag = mockListSubCallback();
+    const withFlagSub = store.lists.observe(
+      { type: FooInterface, $includeAllBaseObjectProperties: true },
+      withFlag
+    );
+    defer(withFlagSub);
+    await waitForPayload(
+      withFlag,
+      (p) => p?.status === "loaded" && (p.resolvedList?.length ?? 0) > 0
+    );
+
+    const withoutFlag = mockListSubCallback();
+    const withoutFlagSub = store.lists.observe(
+      { type: FooInterface },
+      withoutFlag
+    );
+    defer(withoutFlagSub);
+    await waitForPayload(
+      withoutFlag,
+      (p) => p?.status === "loaded" && (p.resolvedList?.length ?? 0) > 0
+    );
+
+    const flagOnObjectKey = store.getValue(withFlagSub.query.cacheKey)?.value
+      ?.data[0];
+    const flagOffObjectKey = store.getValue(withoutFlagSub.query.cacheKey)
+      ?.value?.data[0];
+    invariant(flagOnObjectKey, "expected a flag-on object entry");
+    invariant(flagOffObjectKey, "expected a flag-off object entry");
+    expect(flagOnObjectKey).not.toBe(flagOffObjectKey);
+
+    return { flagOnObjectKey, flagOffObjectKey };
+  }
+
+  it("refreshes the flag-on object entry when the backing object changes", async () => {
+    const { flagOnObjectKey, flagOffObjectKey } = await observeBothFamilies();
+
+    // Change the server-side value out from under both cached families.
+    fauxFoundry.getDefaultDataStore().replaceObjectOrThrow({
+      __apiName: "Employee",
+      __primaryKey: INVALIDATE_EMPLOYEE_ID,
+      employeeId: INVALIDATE_EMPLOYEE_ID,
+      fullName: "Kris Kringle",
+      office: "NYC",
+    });
+
+    await store.invalidateObject(Employee, INVALIDATE_EMPLOYEE_ID);
+
+    // Regression guard: the flag-off family must pick up the new value.
+    expect(store.getValue(flagOffObjectKey)?.value?.fullName).toBe(
+      "Kris Kringle"
+    );
+
+    // The flag-on family must also refresh; today invalidateObject only reaches
+    // the flag-off variants so this entry stays stale.
+    expect(store.getValue(flagOnObjectKey)?.value?.fullName).toBe(
+      "Kris Kringle"
+    );
+  });
+
+  it("fetches a single base-family object when no variants are registered", async () => {
+    // Nothing has observed this object, so the registry has no variants for it.
+    expect(
+      store.objectCacheKeyRegistry.getVariants(
+        Employee.apiName,
+        INVALIDATE_EMPLOYEE_ID
+      ).size
+    ).toBe(0);
+
+    await store.invalidateObject(Employee, INVALIDATE_EMPLOYEE_ID);
+
+    const baseKey = store.objects.getQuery(
+      { apiName: Employee.apiName, pk: INVALIDATE_EMPLOYEE_ID },
+      undefined
+    ).cacheKey;
+
+    // A single flag-off, no-RDP base query was created and loaded.
+    expect(store.getValue(baseKey)?.value).toMatchObject({
+      $primaryKey: INVALIDATE_EMPLOYEE_ID,
+    });
+    expect(
+      store.objectCacheKeyRegistry.getVariants(
+        Employee.apiName,
+        INVALIDATE_EMPLOYEE_ID
+      ).size
+    ).toBe(1);
+    // The fallback must not fabricate a flag-on variant.
+    expect(
+      store.objectCacheKeyRegistry.getVariants(
+        Employee.apiName,
+        INVALIDATE_EMPLOYEE_ID,
+        true
+      ).size
+    ).toBe(0);
+  });
+
+  it("deletes both base-property families when the object streams out", async () => {
+    const { flagOnObjectKey, flagOffObjectKey } = await observeBothFamilies();
+
+    const baseObjectSet = client(Employee) as ObjectSet<Employee>;
+    // Capture the streaming listener so we can drive a REMOVED update through
+    // onOswChange -> onOswRemoved without reaching protected internals.
+    const subscribeSpy = vi
+      .spyOn(baseObjectSet, "subscribe")
+      .mockReturnValue({ unsubscribe: () => {} });
+
+    const osSub = mockObserver<ObjectSetPayload | undefined>();
+    defer(
+      store.objectSets.observe({ baseObjectSet, streamUpdates: true }, osSub)
+    );
+
+    await vi.waitFor(() => {
+      expect(osSub.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded" })
+      );
+    });
+    await vi.waitFor(() => {
+      expect(subscribeSpy).toHaveBeenCalled();
+    });
+
+    const removed = await client(Employee).fetchOne(INVALIDATE_EMPLOYEE_ID);
+
+    const listener = subscribeSpy.mock.calls[0]?.[0];
+    if (!listener?.onChange) {
+      throw new Error("expected captured listener to define onChange");
+    }
+    listener.onChange({
+      object: removed as Osdk.Instance<Employee>,
+      state: "REMOVED",
+    });
+
+    // Regression guard: the flag-off family entry is removed.
+    expect(store.getValue(flagOffObjectKey)?.value).toBeUndefined();
+    // The flag-on family entry must also be removed; today onOswRemoved only
+    // reaches the flag-off variants so this entry survives.
+    expect(store.getValue(flagOnObjectKey)?.value).toBeUndefined();
   });
 });

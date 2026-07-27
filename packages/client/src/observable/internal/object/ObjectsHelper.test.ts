@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectSet, Osdk } from "@osdk/api";
 import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -29,6 +29,8 @@ import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
 import {
+  createClientMockHelper,
+  type MockClientHelper,
   mockSingleSubCallback,
   updateObject,
   waitForCall,
@@ -907,5 +909,79 @@ describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
     expect(cached.$objectType).toBe("Employee");
     expect(cached[ObjectDefRef]).toBeDefined();
     expect(InterfaceDefRef in cached).toBe(false);
+  });
+});
+
+describe("ObjectsHelper.getQuery derived-property revalidation", () => {
+  let mockClient: MockClientHelper;
+  let store: Store;
+
+  beforeEach(() => {
+    mockClient = createClientMockHelper();
+    store = new Store(mockClient.client);
+  });
+
+  // A flag-on interface list with derived properties registers its concrete
+  // object variants under the flag-on partition AND with an RDP config (see
+  // ObjectsHelper.storeOsdkInstances). Revalidating such a variant runs the
+  // RDP branch of ObjectQuery._fetchAndStore, which does a concrete
+  // withProperties(...).fetchOne(...). Build that exact query shape.
+  function getConcreteRdpFlagOnQuery() {
+    return store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+        $includeAllBaseObjectProperties: true,
+      },
+      createFakeRdpConfig("derivedThing"),
+      /* objectKeyIncludeAllBaseObjectProperties */ true
+    );
+  }
+
+  function mockWithPropertiesFetchOne(
+    onFetchOne?: (opts: Record<string, unknown>) => void
+  ) {
+    const objectSet = {
+      withProperties: () => ({
+        fetchOne: async (_pk: unknown, opts: Record<string, unknown>) => {
+          onFetchOne?.(opts);
+          return {
+            $apiName: "Employee",
+            $objectType: "Employee",
+            $primaryKey: 1,
+          };
+        },
+      }),
+    } as Pick<ObjectSet<Employee>, "withProperties"> as ObjectSet<Employee>;
+    mockClient.client.mockReturnValueOnce(objectSet);
+  }
+
+  it("does not send the interface-only base-property flag to a concrete object fetch", async () => {
+    const query = getConcreteRdpFlagOnQuery();
+
+    let capturedOptions: Record<string, unknown> | undefined;
+    mockWithPropertiesFetchOne((opts) => {
+      capturedOptions = opts;
+    });
+
+    await query.revalidate(true);
+
+    expect(capturedOptions).toBeDefined();
+    // The flag is interface-only; leaking it into a concrete object fetch is
+    // the Finding-2 bug.
+    expect(capturedOptions?.$includeAllBaseObjectProperties).toBeUndefined();
+  });
+
+  it("keeps the derived-property variant partitioned under the flag-on family", async () => {
+    const query = getConcreteRdpFlagOnQuery();
+    mockWithPropertiesFetchOne();
+
+    await query.revalidate(true);
+
+    const registry = store.objectCacheKeyRegistry;
+    // Guard: the flag-on partition must still hold this variant so the
+    // Finding-2 fix drops only the wire flag, not the cache-key partition.
+    expect(registry.getVariants("Employee", 1, true)).toContain(query.cacheKey);
+    expect(registry.getVariants("Employee", 1)).not.toContain(query.cacheKey);
   });
 });
