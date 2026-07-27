@@ -230,6 +230,8 @@ describe("writeImportedOntology", () => {
         objectType: {
           apiName: "com.example.Employee",
           displayName: "Employee",
+          aliases: [],
+          datasources: [],
           description: "An employee",
           primaryKey: "employeeId",
           titleProperty: "fullName",
@@ -377,6 +379,8 @@ describe("writeImportedOntology", () => {
           objectType: {
             apiName: "com.a.Foo",
             displayName: "Foo A",
+            aliases: [],
+            datasources: [],
             primaryKey: "id",
             titleProperty: "id",
             status: "ACTIVE",
@@ -401,6 +405,8 @@ describe("writeImportedOntology", () => {
           objectType: {
             apiName: "com.b.Foo",
             displayName: "Foo B",
+            aliases: [],
+            datasources: [],
             primaryKey: "id",
             titleProperty: "id",
             status: "ACTIVE",
@@ -466,6 +472,8 @@ describe("writeImportedOntology", () => {
           objectType: {
             apiName: "Foo",
             displayName: "Foo",
+            aliases: [],
+            datasources: [],
             primaryKey: "id",
             titleProperty: "id",
             status: "ACTIVE",
