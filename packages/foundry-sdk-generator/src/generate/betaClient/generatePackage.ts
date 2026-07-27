@@ -18,6 +18,7 @@ import type { MinimalFs } from "@osdk/generator";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
 import { mkdir, readdir, writeFile } from "fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { normalize } from "node:path/posix";
 import { fileURLToPath } from "node:url";
@@ -28,6 +29,11 @@ import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
+import {
+  generateOntologyMetadata,
+  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "./generateOntologyMetadata.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
@@ -93,12 +99,21 @@ export async function generatePackage(
     ontologyInfo.fixedVersionQueryTypes,
   );
 
+  await generateOntologyMetadata({
+    metadata: ontologyInfo.requestedMetadata,
+    path: join(packagePath, ONTOLOGY_METADATA_JSON_PATH),
+    typePath: join(packagePath, ONTOLOGY_METADATA_DTS_PATH),
+  });
+
   // actually write file plus save contents
   const contents = await generatePackageJson({
     packageName: options.packageName,
     packagePath,
     packageVersion: options.packageVersion,
-    dependencies: [],
+    dependencies: [{
+      dependencyName: "@osdk/foundry.ontologies",
+      dependencyVersion: `^${resolveFoundryOntologiesVersion()}`,
+    }],
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
     packageRid: options.packageRid,
@@ -213,4 +228,22 @@ export async function generatePackage(
 
 export function customNormalize(pathName: string): string {
   return normalize(pathName.replace(/\\/g, "/"));
+}
+
+/**
+ * Reads the concrete installed version of `@osdk/foundry.ontologies` so generated
+ * packages can pin it as a dependency. `./package.json` is not an exported subpath of
+ * that package, so resolve its main entry and derive the package root instead. Reading
+ * the installed package's own version works in both the dev workspace and a published
+ * generator, unlike the generator's `catalog:`-pinned spec.
+ */
+function resolveFoundryOntologiesVersion(): string {
+  const require = createRequire(import.meta.url);
+  const marker = "@osdk/foundry.ontologies";
+  const entry = require.resolve(marker);
+  const pkgRoot = entry.slice(0, entry.indexOf(marker) + marker.length);
+  const { version } = require(join(pkgRoot, "package.json")) as {
+    version: string;
+  };
+  return version;
 }
