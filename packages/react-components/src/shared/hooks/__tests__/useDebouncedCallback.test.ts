@@ -15,11 +15,15 @@
  */
 
 import { renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useDebouncedCallback } from "../useDebouncedCallback.js";
 
 describe("useDebouncedCallback", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("calls the callback provided callback once when called multiple times with `wait` ms", () => {
     vi.useFakeTimers();
     const cb = vi.fn();
