@@ -102,6 +102,26 @@ describe("generateOntologyMetadata", () => {
     };
   }
 
+  it("writes the metadata as pretty printed json", async () => {
+    const { json } = await generate(emptyOntologyMetadata);
+    expect(json).toMatchInlineSnapshot(`
+      "{
+        "ontology": {
+          "apiName": "default-ontology",
+          "displayName": "Ontology",
+          "description": "The default ontology",
+          "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361"
+        },
+        "objectTypes": {},
+        "actionTypes": {},
+        "queryTypes": {},
+        "interfaceTypes": {},
+        "sharedPropertyTypes": {},
+        "valueTypes": {}
+      }"
+    `);
+  });
+
   it("declares the json as OntologyFullMetadata", async () => {
     const { dts } = await generate(emptyOntologyMetadata);
     expect(dts).toMatchInlineSnapshot(`
