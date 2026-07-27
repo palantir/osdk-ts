@@ -321,6 +321,7 @@ export function convertLinkStatus(
       return { type: "experimental", experimental: {} };
     case "example":
       return { type: "example", example: {} };
+    case "active":
     default:
       return { type: "active", active: {} };
   }
