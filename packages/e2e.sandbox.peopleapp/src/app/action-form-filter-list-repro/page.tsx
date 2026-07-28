@@ -10,7 +10,6 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "@osdk/client";
-import { useObservableClient } from "@osdk/react";
 import type {
   FormError,
   FormFieldDefinition,
@@ -248,7 +247,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
         text: `Department update failed: ${formatFormError(error)}`,
       });
     }, []);
-    const oc = useObservableClient();
     const handleAssignLeadSuccess = useCallback(
       function handleAssignLeadSuccess() {
         setStatusMessage({
@@ -256,8 +254,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
           text: "Lead assignment submitted.",
         });
         setIsAssignLeadDialogOpen(false);
-        // does not fix
-        // await oc.invalidateAll();
       },
       []
     );
