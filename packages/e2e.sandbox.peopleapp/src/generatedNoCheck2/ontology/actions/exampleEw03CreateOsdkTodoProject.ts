@@ -14,24 +14,28 @@ export namespace exampleEw03CreateOsdkTodoProject {
   export type ParamsDefinition = {
     budget: {
       description: undefined;
+      displayName: 'Budget';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     description: {
       description: undefined;
+      displayName: 'Description';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     osdkTodoProject: {
       description: undefined;
+      displayName: 'Osdk Todo Project';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleEw03osdkTodoProject>;

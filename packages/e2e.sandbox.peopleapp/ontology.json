@@ -328,9 +328,7 @@
                 "mainValueType": {
                   "type": "integer"
                 },
-                "fields": [
-                  "days"
-                ]
+                "fields": ["days"]
               }
             },
             "rid": "ri.ontology.main.property.24b2f036-9125-47c4-8025-54b9a7325df6",
@@ -663,10 +661,7 @@
           "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
         }
       ],
-      "implementsInterfaces": [
-        "Worker",
-        "Person"
-      ],
+      "implementsInterfaces": ["Worker", "Person"],
       "implementsInterfaces2": {
         "Person": {
           "apiName": "Person",
@@ -686,15 +681,9 @@
             }
           },
           "links": {
-            "peeps": [
-              "peeps"
-            ],
-            "office": [
-              "primaryOffice"
-            ],
-            "lead": [
-              "lead"
-            ]
+            "peeps": ["peeps"],
+            "office": ["primaryOffice"],
+            "lead": ["lead"]
           }
         },
         "Worker": {
@@ -1148,9 +1137,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "ExampleInterface"
-      ],
+      "implementsInterfaces": ["ExampleInterface"],
       "implementsInterfaces2": {
         "ExampleInterface": {
           "apiName": "ExampleInterface",
@@ -1907,9 +1894,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "TodoLike"
-      ],
+      "implementsInterfaces": ["TodoLike"],
       "implementsInterfaces2": {
         "TodoLike": {
           "apiName": "TodoLike",
@@ -1995,9 +1980,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "TodoLike"
-      ],
+      "implementsInterfaces": ["TodoLike"],
       "implementsInterfaces2": {
         "TodoLike": {
           "apiName": "TodoLike",
@@ -3814,9 +3797,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "ExampleObjects"
-      ],
+      "implementedByObjectTypes": ["ExampleObjects"],
       "links": {},
       "allLinks": {}
     },
@@ -3942,9 +3923,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "Employee"
-      ],
+      "implementedByObjectTypes": ["Employee"],
       "links": {
         "peeps": {
           "rid": "ri.ontology.main.interface-link.a9fcc905-c097-42de-b441-a86df889b442",
@@ -4171,10 +4150,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "WontDo",
-        "Todo"
-      ],
+      "implementedByObjectTypes": ["WontDo", "Todo"],
       "links": {},
       "allLinks": {}
     },
@@ -4367,9 +4343,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "Employee"
-      ],
+      "implementedByObjectTypes": ["Employee"],
       "links": {},
       "allLinks": {}
     }

@@ -14,12 +14,14 @@ export namespace completeTodo {
   export type ParamsDefinition = {
     is_complete: {
       description: undefined;
+      displayName: 'Is Complete';
       multiplicity: false;
       nullable: false;
       type: 'boolean';
     };
     Todo: {
       description: undefined;
+      displayName: 'Todo';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Todo>;

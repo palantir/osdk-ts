@@ -13,6 +13,7 @@ export namespace createLowerCase {
   export type ParamsDefinition = {
     IdParam: {
       description: undefined;
+      displayName: 'Id Param';
       multiplicity: false;
       nullable: false;
       type: 'string';

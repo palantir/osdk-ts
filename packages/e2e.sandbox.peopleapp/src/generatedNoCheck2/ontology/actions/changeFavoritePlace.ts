@@ -14,18 +14,21 @@ export namespace changeFavoritePlace {
   export type ParamsDefinition = {
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     'favorite-place-area': {
       description: undefined;
+      displayName: 'Favorite Place Area';
       multiplicity: false;
       nullable: false;
       type: 'geoshape';
     };
     favplace: {
       description: undefined;
+      displayName: 'Favorite Place';
       multiplicity: false;
       nullable: false;
       type: 'geohash';

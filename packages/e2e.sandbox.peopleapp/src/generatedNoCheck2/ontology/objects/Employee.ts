@@ -350,6 +350,32 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'person';
     };
     implements: ['Person', 'Worker'];
+    interfaceImplementations: {
+      Person: {
+        email: {
+          type: 'localProperty';
+          propertyApiName: 'emailPrimaryWork';
+        };
+        employeeNumber: {
+          type: 'localProperty';
+          propertyApiName: 'employeeNumber';
+        };
+      };
+      Worker: {
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'fullName';
+        };
+        email: {
+          type: 'localProperty';
+          propertyApiName: 'emailPrimaryWork';
+        };
+        employeeNumber: {
+          type: 'localProperty';
+          propertyApiName: 'employeeNumber';
+        };
+      };
+    };
     interfaceMap: {
       Person: {
         email: 'emailPrimaryWork';

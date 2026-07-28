@@ -14,6 +14,7 @@ export namespace deleteTodo {
   export type ParamsDefinition = {
     todo: {
       description: undefined;
+      displayName: 'Todo';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Todo>;

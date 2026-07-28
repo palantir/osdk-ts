@@ -13,6 +13,7 @@ export namespace createEmployeeTest {
   export type ParamsDefinition = {
     employee_number: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';

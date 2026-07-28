@@ -14,24 +14,28 @@ export namespace modifyTodoLike {
   export type ParamsDefinition = {
     isComplete: {
       description: undefined;
+      displayName: 'isComplete';
       multiplicity: false;
       nullable: true;
       type: 'boolean';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     todo_like_type: {
       description: undefined;
+      displayName: 'TodoLike Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
     };
     TodoLike: {
       description: undefined;
+      displayName: 'TodoLike';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<TodoLike>;

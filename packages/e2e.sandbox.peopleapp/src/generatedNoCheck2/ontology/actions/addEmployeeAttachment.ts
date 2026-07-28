@@ -14,12 +14,14 @@ export namespace addEmployeeAttachment {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employee_file: {
       description: undefined;
+      displayName: 'Employee File';
       multiplicity: false;
       nullable: false;
       type: 'attachment';

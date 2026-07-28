@@ -13,6 +13,7 @@ export namespace createTodo3 {
   export type ParamsDefinition = {
     title: {
       description: undefined;
+      displayName: 'Title';
       multiplicity: false;
       nullable: false;
       type: 'string';

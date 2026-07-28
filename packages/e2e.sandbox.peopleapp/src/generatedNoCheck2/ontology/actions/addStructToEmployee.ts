@@ -14,22 +14,30 @@ export namespace addStructToEmployee {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     latest_venture: {
       description: undefined;
+      displayName: 'Latest Venture ';
       multiplicity: false;
       nullable: false;
-      type: ActionMetadata.DataType.Struct<{ days: 'integer'; venture: 'string' }>;
+      type: ActionMetadata.DataType.Struct<{
+        days: { type: 'integer'; nullable: false };
+        venture: { type: 'string'; nullable: false };
+      }>;
     };
   };
 
   export interface Params {
     readonly employee: ActionParam.ObjectType<Employee>;
 
-    readonly latest_venture: ActionParam.StructType<{ days: 'integer'; venture: 'string' }>;
+    readonly latest_venture: ActionParam.StructType<{
+      days: { type: 'integer'; nullable: false };
+      venture: { type: 'string'; nullable: false };
+    }>;
   }
 
   // Represents a fqn of the action
@@ -48,7 +56,7 @@ export namespace addStructToEmployee {
 
 /**
  * @param {ActionParam.ObjectType<Employee>} employee
- * @param {ActionParam.StructType<{"days":"integer","venture":"string"}>} latest_venture
+ * @param {ActionParam.StructType<{"days":{"type":"integer","nullable":false},"venture":{"type":"string","nullable":false}}>} latest_venture
  */
 export interface addStructToEmployee extends ActionDefinition<addStructToEmployee.Signatures> {
   __DefinitionMetadata?: {

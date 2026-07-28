@@ -14,12 +14,14 @@ export namespace addMedia {
   export type ParamsDefinition = {
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employee_media: {
       description: undefined;
+      displayName: 'Employee Media';
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';

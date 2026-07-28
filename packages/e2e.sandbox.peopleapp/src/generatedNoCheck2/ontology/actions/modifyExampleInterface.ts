@@ -14,12 +14,14 @@ export namespace modifyExampleInterface {
   export type ParamsDefinition = {
     ExampleInterface: {
       description: undefined;
+      displayName: 'Example Interface';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<ExampleInterface>;
     };
     type: {
       description: undefined;
+      displayName: 'type';
       multiplicity: false;
       nullable: true;
       type: 'string';

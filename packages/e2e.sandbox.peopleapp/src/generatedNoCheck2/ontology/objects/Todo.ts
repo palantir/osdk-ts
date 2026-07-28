@@ -87,6 +87,18 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'confirm';
     };
     implements: ['TodoLike'];
+    interfaceImplementations: {
+      TodoLike: {
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'title';
+        };
+        isComplete: {
+          type: 'localProperty';
+          propertyApiName: 'isComplete';
+        };
+      };
+    };
     interfaceMap: {
       TodoLike: {
         name: 'title';

@@ -13,18 +13,21 @@ export namespace modifyPerson {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employeeNumber: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     person_type: {
       description: undefined;
+      displayName: 'Person Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';

@@ -13,6 +13,7 @@ export namespace createExampleObjects {
   export type ParamsDefinition = {
     type: {
       description: undefined;
+      displayName: 'type';
       multiplicity: false;
       nullable: true;
       type: 'string';

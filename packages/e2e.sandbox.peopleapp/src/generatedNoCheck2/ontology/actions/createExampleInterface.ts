@@ -13,12 +13,14 @@ export namespace createExampleInterface {
   export type ParamsDefinition = {
     example_interface_type: {
       description: undefined;
+      displayName: 'Example Interface Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
     };
     type: {
       description: undefined;
+      displayName: 'type';
       multiplicity: false;
       nullable: true;
       type: 'string';

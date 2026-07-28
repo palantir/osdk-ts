@@ -14,6 +14,7 @@ export namespace deleteWorker {
   export type ParamsDefinition = {
     Worker: {
       description: undefined;
+      displayName: 'Worker';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<Worker>;

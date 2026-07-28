@@ -71,6 +71,18 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ExampleInterface'];
+    interfaceImplementations: {
+      ExampleInterface: {
+        id: {
+          type: 'localProperty';
+          propertyApiName: 'primaryKey_';
+        };
+        type: {
+          type: 'localProperty';
+          propertyApiName: 'type';
+        };
+      };
+    };
     interfaceMap: {
       ExampleInterface: {
         id: 'primaryKey_';

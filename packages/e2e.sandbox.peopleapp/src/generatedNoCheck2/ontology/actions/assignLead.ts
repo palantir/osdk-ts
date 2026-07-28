@@ -14,12 +14,14 @@ export namespace assignLead {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     leadEmployeeNumber: {
       description: undefined;
+      displayName: 'Lead Employee Number';
       multiplicity: false;
       nullable: true;
       type: 'integer';

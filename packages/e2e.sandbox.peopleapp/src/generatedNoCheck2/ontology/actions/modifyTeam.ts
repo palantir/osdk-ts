@@ -14,18 +14,21 @@ export namespace modifyTeam {
   export type ParamsDefinition = {
     department: {
       description: undefined;
+      displayName: 'Department';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     team: {
       description: undefined;
+      displayName: 'Team';
       multiplicity: false;
       nullable: false;
       type: 'string';

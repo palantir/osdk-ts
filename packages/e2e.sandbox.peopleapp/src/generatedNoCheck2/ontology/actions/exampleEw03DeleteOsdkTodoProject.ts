@@ -14,6 +14,7 @@ export namespace exampleEw03DeleteOsdkTodoProject {
   export type ParamsDefinition = {
     osdkTodoProject: {
       description: undefined;
+      displayName: 'Osdk Todo Project';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleEw03osdkTodoProject>;

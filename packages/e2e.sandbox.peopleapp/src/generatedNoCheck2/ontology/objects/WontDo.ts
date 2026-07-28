@@ -69,6 +69,18 @@ export interface WontDo extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['TodoLike'];
+    interfaceImplementations: {
+      TodoLike: {
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'wontDoName';
+        };
+        isComplete: {
+          type: 'localProperty';
+          propertyApiName: 'isComplete';
+        };
+      };
+    };
     interfaceMap: {
       TodoLike: {
         name: 'wontDoName';

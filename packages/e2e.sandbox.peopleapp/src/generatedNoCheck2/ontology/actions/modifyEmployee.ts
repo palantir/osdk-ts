@@ -14,30 +14,35 @@ export namespace modifyEmployee {
   export type ParamsDefinition = {
     adUsername: {
       description: undefined;
+      displayName: 'Ad Username';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     businessArea: {
       description: undefined;
+      displayName: 'Business Area';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     businessTitle: {
       description: undefined;
+      displayName: 'Business Title';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     department: {
       description: undefined;
+      displayName: 'Department';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     emailPrimaryWork: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -51,126 +56,150 @@ export namespace modifyEmployee {
     };
     employeeDocuments: {
       description: undefined;
+      displayName: 'employeeDocuments';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     employeeFile: {
       description: undefined;
+      displayName: 'Employee File';
       multiplicity: false;
       nullable: true;
       type: 'attachment';
     };
     employeeMedia: {
       description: undefined;
+      displayName: 'Media';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     favoritePlaceArea: {
       description: undefined;
+      displayName: 'Favorite Place Area';
       multiplicity: false;
       nullable: true;
       type: 'geoshape';
     };
     favPlace: {
       description: undefined;
+      displayName: 'Favorite Place';
       multiplicity: false;
       nullable: true;
       type: 'geohash';
     };
     firstFullTimeStartDate: {
       description: undefined;
+      displayName: 'First Full Time Start Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     firstInternStartDate: {
       description: undefined;
+      displayName: 'First Intern Start Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     fullName: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     jobProfile: {
       description: undefined;
+      displayName: 'Job Profile';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     jobTitle: {
       description: undefined;
+      displayName: 'Job Title';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     latestVenture: {
       description: undefined;
+      displayName: 'Latest Venture ';
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ days: 'integer'; venture: 'string' }>;
+      type: ActionMetadata.DataType.Struct<{
+        days: { type: 'integer'; nullable: false };
+        venture: { type: 'string'; nullable: false };
+      }>;
     };
     leadEmployeeNumber: {
       description: undefined;
+      displayName: 'Lead Employee Number';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     locationCity: {
       description: undefined;
+      displayName: 'Location City';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationCountry: {
       description: undefined;
+      displayName: 'Location Country';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationName: {
       description: undefined;
+      displayName: 'Location Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationRegion: {
       description: undefined;
+      displayName: 'Location Region';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationType: {
       description: undefined;
+      displayName: 'Location Type';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     mentorEmployeeNumber: {
       description: undefined;
+      displayName: 'Mentor Employee Number';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     newProperty1: {
       description: undefined;
+      displayName: 'New property 1';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     preferredNameFirst: {
       description: undefined;
+      displayName: 'Preferred Name First';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     preferredNameLast: {
       description: undefined;
+      displayName: 'Preferred Name Last';
       multiplicity: false;
       nullable: true;
       type: 'string';
@@ -191,12 +220,14 @@ export namespace modifyEmployee {
     };
     team: {
       description: undefined;
+      displayName: 'Team';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     workerType: {
       description: undefined;
+      displayName: 'Worker Type';
       multiplicity: false;
       nullable: true;
       type: 'string';
@@ -236,7 +267,10 @@ export namespace modifyEmployee {
 
     readonly jobTitle?: ActionParam.PrimitiveType<'string'> | null;
 
-    readonly latestVenture?: ActionParam.StructType<{ days: 'integer'; venture: 'string' }> | null;
+    readonly latestVenture?: ActionParam.StructType<{
+      days: { type: 'integer'; nullable: false };
+      venture: { type: 'string'; nullable: false };
+    }> | null;
 
     readonly leadEmployeeNumber?: ActionParam.PrimitiveType<'integer'> | null;
 
@@ -298,7 +332,7 @@ export namespace modifyEmployee {
  * @param {ActionParam.PrimitiveType<"string">} [fullName]
  * @param {ActionParam.PrimitiveType<"string">} [jobProfile]
  * @param {ActionParam.PrimitiveType<"string">} [jobTitle]
- * @param {ActionParam.StructType<{"days":"integer","venture":"string"}>} [latestVenture]
+ * @param {ActionParam.StructType<{"days":{"type":"integer","nullable":false},"venture":{"type":"string","nullable":false}}>} [latestVenture]
  * @param {ActionParam.PrimitiveType<"integer">} [leadEmployeeNumber]
  * @param {ActionParam.PrimitiveType<"string">} [locationCity]
  * @param {ActionParam.PrimitiveType<"string">} [locationCountry]

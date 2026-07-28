@@ -14,12 +14,14 @@ export namespace modifyPersonFafe32 {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     Person: {
       description: undefined;
+      displayName: 'Person';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<Person>;

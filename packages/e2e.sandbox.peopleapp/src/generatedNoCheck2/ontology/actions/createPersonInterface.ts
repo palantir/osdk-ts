@@ -13,24 +13,28 @@ export namespace createPersonInterface {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employeeNumber: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     media: {
       description: undefined;
+      displayName: 'Media';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     person_type: {
       description: undefined;
+      displayName: 'Person Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';

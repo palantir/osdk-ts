@@ -13,24 +13,28 @@ export namespace createWorker {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employeeNumber: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     worker_type: {
       description: undefined;
+      displayName: 'Worker Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';

@@ -14,6 +14,7 @@ export namespace deleteExampleObjects {
   export type ParamsDefinition = {
     ExampleObjects: {
       description: undefined;
+      displayName: 'Example Objects';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleObjects>;
