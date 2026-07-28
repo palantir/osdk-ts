@@ -125,6 +125,16 @@ export const MultipleSelection: Story = {
     await expect(firstRow).toBeChecked();
     await expect(secondRow).toBeChecked();
 
+    // Unselecting via the checkbox must drop the row's highlight entirely.
+    // `data-focused` renders the same active background as `data-selected`, so
+    // a checkbox click must not focus the row on its way through.
+    await userEvent.click(firstRow);
+    await expect(firstRow).not.toBeChecked();
+    await expect(rowContaining(firstRow)).toHaveAttribute(
+      "data-focused",
+      "false"
+    );
+
     // The header checkbox toggles every row. Once rows are selected its label
     // flips to "Deselect all rows", so clicking it clears the selection.
     await userEvent.click(await findDeselectAllCheckbox(canvas));

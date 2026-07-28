@@ -19,6 +19,7 @@ import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { useCallback, useMemo } from "react";
 
 import { TableCell } from "./TableCell.js";
+import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 
 import styles from "./TableRow.module.css";
 
@@ -48,9 +49,23 @@ export function TableRow<TData extends RowData>({
 }: TableRowProps<TData>): React.ReactElement {
   // Use the capture phase so row focus is set even when children call
   // stopPropagation on the click event (e.g. DatePicker's input).
-  const handleClickCapture = useCallback(() => {
-    setFocusedRowId?.(row.id);
-  }, [row.id, setFocusedRowId]);
+  const handleClickCapture = useCallback(
+    (event: React.MouseEvent<HTMLTableRowElement>) => {
+      // Toggling the selection checkbox is not a row interaction, so it must
+      // not focus the row: focus and selection share the same highlight, so a
+      // lingering focus would leave the row looking selected after it was
+      // unselected. `SelectionCell` calls stopPropagation for the same reason,
+      // but that runs in the bubble phase — too late to stop this handler.
+      const target = event.target as Element | null;
+      if (
+        target?.closest?.(`[data-column-id="${SELECTION_COLUMN_ID}"]`) != null
+      ) {
+        return;
+      }
+      setFocusedRowId?.(row.id);
+    },
+    [row.id, setFocusedRowId]
+  );
 
   const handleClick = useCallback(() => {
     if (!isInEditMode) {
