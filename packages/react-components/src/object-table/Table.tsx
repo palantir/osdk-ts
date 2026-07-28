@@ -136,19 +136,6 @@ export interface BaseTableProps<TData extends RowData> {
   ) => React.ReactNode;
 
   /**
-   * Class name applied to the table's outermost wrapper element. Use it as the
-   * styling hook for `--osdk-table-*` variable overrides — the component's own
-   * class names are hashed by CSS Modules and are not public API.
-   */
-  className?: string;
-
-  /**
-   * A fetch error to surface. When set, an error message is rendered in place
-   * of the empty state.
-   */
-  error?: Error;
-
-  /**
    * Toggles which items appear in the column header menu (sorting, pinning,
    * resizing, and so on). Every flag defaults to shown. See
    * {@link HeaderMenuFeatureFlags}.
@@ -163,32 +150,47 @@ export interface BaseTableProps<TData extends RowData> {
   editableConfig?: EditableConfig<TData, unknown>;
 
   /**
-   * Returns extra HTML attributes (typically `data-*`) to apply to each
-   * row element. Use this to drive conditional row styling
-   */
-  getRowAttributes?: (object: TData) => Record<string, string | undefined>;
-
-  /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable
    * column (`hasEditableColumns`).
    */
   showEditFooter?: boolean;
+
+  /**
+   * The row ID of the row to render as visually focused. When provided, focus state is controlled by the caller.
+   */
+  focusedRowId?: string | null;
+
+  /**
+   * Fires whenever the focused row changes, in both controlled and
+   * uncontrolled modes.
+   */
+  onFocusedRowChanged?: (row: TData | null) => void;
+
   /**
    * Render override for the empty state. Called when the table has no
    * rows and no error. When omitted, a default "No Data" indicator is
    * rendered.
    */
   renderEmptyState?: () => React.ReactNode;
+
   /**
-   * Controlled focused row id. `undefined` enables internal management
+   * A fetch error to surface. When set, an error message is rendered in place
+   * of the empty state.
    */
-  focusedRowId?: string | null;
+  error?: Error;
+
   /**
-   * Fires whenever the focused row changes, in both controlled and
-   * uncontrolled modes.
+   * Returns extra HTML attributes (typically `data-*`) to apply to each
+   * row element. Use this to drive conditional row styling
    */
-  onFocusedRowChanged?: (row: TData | null) => void;
+  getRowAttributes?: (object: TData) => Record<string, string | undefined>;
+
+  /**
+   * Class name applied to the table's outermost wrapper element.
+   */
+  className?: string;
+
   /**
    * Overrides for the table's user-facing strings. Provide any subset; unset
    * keys fall back to the built-in English defaults. See
