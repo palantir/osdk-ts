@@ -81,21 +81,93 @@ declare module "@tanstack/react-table" {
 }
 
 export interface BaseTableProps<TData extends RowData> {
+  /**
+   * The TanStack React Table instance backing the table. Build it with
+   * `useReactTable` (see the `useColumnDefs` / `useObjectTableData` hooks for
+   * the pieces `ObjectTable` itself feeds in).
+   */
   table: Table<TData>;
+
+  /**
+   * Whether a fetch is in flight. While loading with no rows yet, a skeleton
+   * table is rendered in place of the header and body; while loading with rows
+   * already present, an extra skeleton row is appended and further
+   * `fetchNextPage` calls are suppressed.
+   */
   isLoading?: boolean;
+
+  /**
+   * Loads the next page of rows. Called when the user scrolls near the bottom
+   * of the table. Omit it to disable infinite scrolling.
+   */
   fetchNextPage?: () => Promise<void>;
+
+  /**
+   * Called when a row is clicked.
+   *
+   * @param row The row data of the clicked row
+   */
   onRowClick?: (row: TData) => void;
+
+  /**
+   * Called when a column header is clicked.
+   *
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
   onColumnHeaderClick?: (columnId: string) => void;
+
+  /**
+   * The height of each row in pixels. Also drives row virtualization, so an
+   * accurate value keeps scrolling smooth.
+   *
+   * @default 40
+   */
   rowHeight?: number;
+
+  /**
+   * If provided, will render this context menu when right clicking on a cell
+   */
   renderCellContextMenu?: (
     row: TData,
     cell: Cell<TData, unknown>
   ) => React.ReactNode;
+
+  /**
+   * Class name applied to the table's outermost wrapper element. Use it as the
+   * styling hook for `--osdk-table-*` variable overrides — the component's own
+   * class names are hashed by CSS Modules and are not public API.
+   */
   className?: string;
+
+  /**
+   * A fetch error to surface. When set, an error message is rendered in place
+   * of the empty state.
+   */
   error?: Error;
+
+  /**
+   * Toggles which items appear in the column header menu (sorting, pinning,
+   * resizing, and so on). Every flag defaults to shown. See
+   * {@link HeaderMenuFeatureFlags}.
+   */
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
+
+  /**
+   * Wiring for inline cell editing — pending edits, edit-mode state, and the
+   * submit/clear/validation callbacks. Omit it to render a read-only table.
+   * `useEditableTable` produces this shape. See {@link EditableConfig}.
+   */
   editableConfig?: EditableConfig<TData, unknown>;
+
+  /**
+   * Returns extra HTML attributes (typically `data-*`) to apply to each
+   * row element. Use this to drive conditional row styling
+   */
   getRowAttributes?: (object: TData) => Record<string, string | undefined>;
+
   /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable
