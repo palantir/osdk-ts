@@ -21,10 +21,10 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState,
 } from "react";
 
 import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
+import { useFetchMoreOnScroll } from "./hooks/useFetchMoreOnScroll.js";
 import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
@@ -37,7 +37,6 @@ import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import { SCROLL_FETCH_THRESHOLD } from "./utils/constants.js";
 import { isColumnDeclaredEditable } from "./utils/editableUtils.js";
 import {
   PortalTrackerProvider,
@@ -157,7 +156,10 @@ function BaseTableInner<TData extends RowData>({
 }: BaseTableProps<TData>): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const { handleScroll, isLoadingMore } = useFetchMoreOnScroll({
+    isLoading,
+    fetchNextPage,
+  });
   const labels = useObjectTableLabels();
 
   const getRowById = useCallback(
@@ -189,44 +191,6 @@ function BaseTableInner<TData extends RowData>({
   if (table.options.meta) {
     table.options.meta.focusedRowId = focusedRowId;
   }
-
-  // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
-  const fetchingRef = useRef(false);
-
-  useEffect(() => {
-    if (!isLoading || fetchNextPage == null) {
-      setIsLoadingMore(false);
-    }
-  }, [isLoading, fetchNextPage]);
-
-  const fetchMoreOnEndReached = useCallback(
-    async (containerRefElement?: HTMLDivElement | null) => {
-      if (containerRefElement && !fetchingRef.current && !isLoadingMore) {
-        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-        if (
-          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD &&
-          !isLoading &&
-          fetchNextPage != null
-        ) {
-          fetchingRef.current = true;
-          setIsLoadingMore(true);
-          try {
-            await fetchNextPage();
-          } finally {
-            fetchingRef.current = false;
-          }
-        }
-      }
-    },
-    [fetchNextPage, isLoading, isLoadingMore]
-  );
-
-  const handleScroll = useCallback(
-    async (e: React.UIEvent<HTMLDivElement>) => {
-      await fetchMoreOnEndReached(e.currentTarget);
-    },
-    [fetchMoreOnEndReached]
-  );
 
   const rows = table.getRowModel().rows;
   const headerGroups = table.getHeaderGroups();
