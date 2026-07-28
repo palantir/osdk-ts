@@ -1,0 +1,90 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import invariant from "tiny-invariant";
+
+import type { ResolveBearerTokenOptions } from "./foundry-token.js";
+import { readGitRemoteUrl } from "./gitRemote.js";
+
+export type ArtifactPlatform =
+  | "linux-amd64"
+  | "linux-arm64"
+  | "macos-amd64"
+  | "macos-arm64"
+  | "windows-amd64";
+
+export interface FoundryCliInstallPathsOptions {
+  env?: NodeJS.ProcessEnv;
+  platform?: NodeJS.Platform;
+}
+
+export const getArtifactPlatform = (
+  platform: NodeJS.Platform = process.platform,
+  arch: string = process.arch
+): ArtifactPlatform => {
+  switch (`${platform}-${arch}`) {
+    case "linux-x64":
+      return "linux-amd64";
+    case "linux-arm64":
+      return "linux-arm64";
+    case "darwin-x64":
+      return "macos-amd64";
+    case "darwin-arm64":
+      return "macos-arm64";
+    case "win32-x64":
+      return "windows-amd64";
+    default:
+      invariant(
+        false,
+        `The Foundry CLI is not published for ${platform}-${arch}`
+      );
+  }
+};
+
+const parseGitRemoteHost = (gitRemote: string): string | undefined => {
+  try {
+    // Strips any userinfo (`https://user:token@host/...`)
+    return new URL(gitRemote).host || undefined;
+  } catch {
+    // scp-like remotes (`user@host:path`)
+    const host = gitRemote
+      .slice(gitRemote.lastIndexOf("@") + 1)
+      .split(":")[0]
+      .split("/")[0];
+    return host === "" ? undefined : host;
+  }
+};
+
+export const resolveFoundryHost = async (
+  options: ResolveBearerTokenOptions = {}
+): Promise<string> => {
+  const env = options.env ?? process.env;
+  if (env.FOUNDRY_EXTERNAL_HOST) {
+    return new URL(env.FOUNDRY_EXTERNAL_HOST).host;
+  }
+  if (env.FOUNDRY_HOSTNAME) {
+    return env.FOUNDRY_HOSTNAME;
+  }
+  const gitRemote = await readGitRemoteUrl(options);
+  const gitRemoteHost =
+    gitRemote === undefined ? undefined : parseGitRemoteHost(gitRemote);
+  invariant(
+    gitRemoteHost !== undefined,
+    "Cannot resolve the Foundry host. Please set FOUNDRY_EXTERNAL_HOST or " +
+      "FOUNDRY_HOSTNAME, or configure a git remote pointing at Foundry."
+  );
+  return gitRemoteHost;
+};
