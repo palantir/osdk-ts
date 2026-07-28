@@ -19,7 +19,7 @@ Each component card groups its observed usage.
 - Related properties lists fields read by descendants.
 - React props lists values captured from the mounted component.
 
-The health badge reads Healthy when the monitor has not detected wasted renders or unused fetched properties. An unhealthy card summarizes the detected waste so you can inspect the component without leaving this tab.
+The health badge remains Healthy unless the monitor detects wasted renders or a property that the component accessed in fewer than 10% of its renders. The property analysis begins after the component has rendered more than five times. An unhealthy card summarizes the detected waste.
 
 ## When to use it
 

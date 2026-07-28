@@ -22,7 +22,7 @@ You can also install it with npm.
 npm install --save-dev @osdk/react-devtools
 ```
 
-The package declares peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `react`, `react-dom`, and `vite`. An OSDK React application usually already includes them.
+The package declares peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `@types/react`, `react`, `react-dom`, and `vite`. An OSDK React application usually already includes them.
 
 ## Configure the Vite plugin
 
@@ -79,11 +79,11 @@ You do not need another provider or component. The production bundle does not in
 
 Start Vite in development mode with the dev script your app already uses, typically `pnpm dev`, `npm run dev`, or `yarn dev`.
 
-The collapsed `</>` launcher appears in the bottom right corner of the browser window. Select it to open the panel.
+The panel opens automatically in the top right corner of the browser window. Minimizing it collapses it to a `</>` launcher in the bottom right corner. Select the launcher to reopen the panel.
 
 ![Collapsed OSDK Devtools launcher](/img/react-devtools/launcher.png)
 
-The panel opens in dark mode by default. Use the header controls to switch between dark, light, and automatic themes. The dock control cycles through floating, docked to the bottom, and docked to the right. The browser stores the position, size, theme, and dock mode across reloads.
+The panel uses dark mode by default. Use the header controls to switch between dark, light, and automatic themes. The dock control cycles through floating, docked to the bottom, and docked to the right. The browser stores the position, size, theme, dock mode, and collapsed state across reloads.
 
 ## Plugin options
 

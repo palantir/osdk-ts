@@ -12,14 +12,14 @@ Complete the [Prerequisites](./Prerequisites.md) before using the panel. Your ap
 
 ## Open the panel
 
-Start the Vite development server and select the `</>` launcher in the bottom right corner. The panel opens on Overview.
+Start the Vite development server. The panel opens automatically in the top right corner on Overview. Use Minimize in the panel header to collapse it to a `</>` launcher in the bottom right corner. Select the launcher to reopen the panel.
 
 ## Tabs
 
 | Tab | Purpose |
 | --- | --- |
 | [Overview](./Overview.md) | Summarizes Ontology usage, request behavior, optimistic actions, errors, overfetching, and recommendations. |
-| [Components](./Components.md) | Shows which React components use OSDK hooks and which object types, actions, links, and properties they touch. |
+| [Components](./Components.md) | Shows which React components use OSDK hooks and which object types, actions, and properties they touch. |
 | [Console](./Console.md) | Captures console output with text search, level filters, counts, and source locations. |
 | [Cache](./Cache.md) | Inspects normalized cache entries and the recent cache operation timeline. |
 

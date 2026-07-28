@@ -16,8 +16,8 @@ The Ontology section counts the distinct object types, action types, and links u
 - Optimistic coverage measures the share of observed actions that updated the UI before the server response arrived.
 - Cache hit rate measures the share of object reads that the client served from cache or revalidation. The panel waits for enough reads before showing a percentage. Open [Cache](./Cache.md) to inspect the entries and operations behind the rate.
 - Avg response time combines cache and network reads for the current session.
-- Errors & warnings counts captured console warnings, console errors, and uncaught errors. Open [Console](./Console.md) to inspect them.
-- Overfetching counts components that fetched fields no descendant read. Open [Components](./Components.md) to inspect them.
+- Errors & warnings counts captured `console.warn` and `console.error` entries. Open [Console](./Console.md) to inspect them.
+- Overfetching counts analyzed component queries whose descendants read less than 70% of the fetched fields.
 
 The cache hit rate, error count, and overfetching count use color to call attention to poor states. The metric help controls explain each threshold.
 
