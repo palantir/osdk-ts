@@ -34,6 +34,12 @@ interface TableRowProps<TData extends RowData> {
   setFocusedRowId?: (id: string | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (object: TData) => Record<string, string | undefined>;
+  /**
+   * Whether this row sits at the visual bottom of the table body and should
+   * carry the terminating border. Derived from the data index rather than DOM
+   * position because rows are virtualized.
+   */
+  isLastRow?: boolean;
 }
 
 export function TableRow<TData extends RowData>({
@@ -45,6 +51,7 @@ export function TableRow<TData extends RowData>({
   setFocusedRowId,
   isInEditMode,
   getRowAttributes,
+  isLastRow = false,
 }: TableRowProps<TData>): React.ReactElement {
   // Use the capture phase so row focus is set even when children call
   // stopPropagation on the click event (e.g. DatePicker's input).
@@ -75,6 +82,7 @@ export function TableRow<TData extends RowData>({
       data-selected={row.getIsSelected()}
       data-focused={isFocused}
       data-row-parity={virtualRow.index % 2 === 0 ? "even" : "odd"}
+      data-last-row={isLastRow ? "true" : undefined}
       className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,

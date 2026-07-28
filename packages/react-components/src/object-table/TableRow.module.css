@@ -23,7 +23,10 @@
   border-top: var(--osdk-table-row-divider);
   border-bottom: var(--osdk-table-border-width) solid transparent;
 
-  &:last-child {
+  /* Terminating border for the visually last row — keyed off an explicit
+     attribute, not :last-child, because rows are virtualized and the last
+     rendered row is usually a trailing overscan row below the fold. */
+  &[data-last-row="true"] {
     border-bottom: var(--osdk-table-border);
   }
 

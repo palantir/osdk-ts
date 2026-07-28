@@ -28,6 +28,12 @@ interface LoadingRowProps<TData extends RowData> {
   translateY: number;
   rowHeight?: number;
   columnWidth?: number;
+  /**
+   * Whether this row sits at the visual bottom of the table body and should
+   * carry the terminating border. `LoadingStateTable` renders a whole column
+   * of skeleton rows, so only its final row sets this.
+   */
+  isLastRow?: boolean;
 }
 
 export function LoadingRow<TData extends RowData>({
@@ -36,10 +42,12 @@ export function LoadingRow<TData extends RowData>({
   translateY,
   rowHeight = DEFAULT_ROW_HEIGHT,
   columnWidth = DEFAULT_COLUMN_WIDTH,
+  isLastRow = false,
 }: LoadingRowProps<TData>): React.ReactElement {
   return (
     <tr
       className={rowStyles.osdkTableRow}
+      data-last-row={isLastRow ? "true" : undefined}
       style={{
         height: `${rowHeight}px`,
         transform: `translateY(${translateY}px)`,

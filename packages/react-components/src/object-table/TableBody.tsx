@@ -93,6 +93,10 @@ export function TableBody<TData extends RowData>({
             setFocusedRowId={setFocusedRowId}
             isInEditMode={isInEditMode}
             getRowAttributes={getRowAttributes}
+            // The terminating border belongs to whichever row is visually
+            // last. While loading more, that's the skeleton row below —
+            // marking both would butt two 1px borders into a 2px line.
+            isLastRow={!isLoadingMore && virtualRow.index === rows.length - 1}
           />
         );
       })}
@@ -102,6 +106,7 @@ export function TableBody<TData extends RowData>({
           translateY={totalSize}
           rowHeight={rowHeight}
           columnCount={headers.length}
+          isLastRow={true}
         />
       )}
     </tbody>

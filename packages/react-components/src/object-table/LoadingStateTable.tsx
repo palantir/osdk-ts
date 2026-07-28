@@ -127,6 +127,7 @@ export function LoadingStateTable<TData extends RowData>({
             translateY={rowHeight * index}
             rowHeight={rowHeight}
             columnWidth={columnWidth}
+            isLastRow={index === loadingRowCount - 1}
           />
         ))}
       </tbody>
