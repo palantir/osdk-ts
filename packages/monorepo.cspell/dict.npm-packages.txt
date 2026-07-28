@@ -27,5 +27,6 @@ trivago
 tsgolint
 tsup
 timecode
+Turborepo
 ultracite
 utif

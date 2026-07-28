@@ -187,6 +187,7 @@ async function transpileWithTsup(format, target) {
     // create-app templates (private, must be bundled)
     "@osdk/create-app.template.expo.v2",
     "@osdk/create-app.template.react",
+    "@osdk/create-app.template.react-component-library.beta",
     "@osdk/create-app.template.react.beta",
     "@osdk/create-app.template.tutorial-todo-aip-app",
     "@osdk/create-app.template.tutorial-todo-aip-app.beta",

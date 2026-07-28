@@ -1,0 +1,24 @@
+---
+title: Introduction
+slug: /
+sidebar_position: 1
+---
+
+# Introduction
+
+A Turborepo monorepo for building component libraries on top of Foundry's Ontology SDK. It ships with a Docusaurus docs site and a starter package for your own components.
+
+## What's inside
+
+- **`apps/docs`** — Docusaurus docs site grouped into _Getting Started_ and _Components_. Each component page renders live, with a code snippet and props table.
+- **`packages/components`** — a publishable npm package consumed by the docs site. Ships with one starter component (`Example`) wired up.
+- **`/new-component` skill** — a Claude Code skill that scaffolds a new component plus its docs page (with a `<Playground>` whose controls are auto-derived from the prop types) in one step.
+- **Foundry deploy + publish** — CI publishes the docs site to your application's website host, and on tagged commits also runs `npm publish` for every non-private package under `packages/` against your repo's internal Foundry npm registry.
+
+## Who this template is for
+
+Teams who want a documented, shared component library against an OSDK ontology — typically a platform team building a design system used by several consumer apps. If you just need a single OSDK React app, use **OSDK React Application** instead.
+
+## Next step
+
+Head to **Installation** in the sidebar to run the project locally.

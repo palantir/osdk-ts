@@ -1,0 +1,38 @@
+---
+title: Creating components
+sidebar_position: 4
+---
+
+# Creating components
+
+Adding a new component creates two files (component + MDX docs page) and adds a named subpath export to `packages/components/package.json`. The bundled Claude Code skill handles all of it, including a `<Playground>` whose controls are auto-derived from the component's prop types.
+
+## Claude Code skill
+
+In a Claude Code session, run:
+
+```
+/new-component
+```
+
+Claude will ask for:
+
+- A **name** (PascalCase, e.g. `UserCard`).
+- The **props** with TypeScript types — Claude maps these to the right `<Playground>` control (text input, slider, switch, segmented control, etc.) automatically.
+- A **one-sentence description** for the docs page.
+
+It then writes:
+
+- `packages/components/src/components/<Name>.tsx` — the typed component.
+- `packages/components/package.json` — adds a named subpath export pointing at the new file.
+- `apps/docs/docs/custom/<slug>.mdx` — docs page with `<ComponentPage>` tabs, `<Playground>` controls, and a synced source code block.
+- `apps/docs/sidebars.ts` — adds the new page to the Components sidebar.
+
+## After generating
+
+If `npm run dev` is running, Docusaurus hot-reloads — the new page appears in the sidebar immediately. Open the generated MDX and refine anything you want: default control values, descriptions, source-code template.
+
+## Conventions
+
+- `packages/components` stays design-system-free (no Blueprint, no MUI). If a Blueprint icon (or other primitive) is needed for the **docs demo**, import it at the top of the MDX file — the docs site has Blueprint as a dependency — and pass it through as a `ReactNode` prop.
+- The skill prompt itself lives at `.claude/skills/new-component/SKILL.md` and is part of the template, so it's available to everyone who clones the project.
