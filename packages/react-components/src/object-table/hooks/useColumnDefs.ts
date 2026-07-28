@@ -190,6 +190,11 @@ function getDefaultColumns<
     > = {
       accessorKey: key,
       header: property.displayName ?? key,
+      meta: {
+        // Surfaced so type-aware rendering (e.g. the header's sort icons)
+        // works for default columns too, not just explicit columnDefinitions.
+        dataType: typeof property.type === "string" ? property.type : undefined,
+      },
     };
     return colDef;
   });
