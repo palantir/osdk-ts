@@ -29,7 +29,7 @@ import {
 
 const meta: Meta<BaseFormStoryProps> = {
   ...baseFormMeta,
-  title: "Components/ActionForm/BaseForm/Title & Sections",
+  title: "Components/ActionForm/Building Blocks/BaseForm/Title & Sections",
 };
 
 export default meta;

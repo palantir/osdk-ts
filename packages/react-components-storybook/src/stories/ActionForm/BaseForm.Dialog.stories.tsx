@@ -32,7 +32,7 @@ import {
 
 const meta: Meta<BaseFormStoryProps> = {
   ...baseFormMeta,
-  title: "Components/ActionForm/BaseForm/In a Dialog",
+  title: "Components/ActionForm/Building Blocks/BaseForm/In a Dialog",
 };
 
 export default meta;

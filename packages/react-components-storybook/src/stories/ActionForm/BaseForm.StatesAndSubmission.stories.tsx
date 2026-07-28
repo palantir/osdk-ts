@@ -39,7 +39,7 @@ import { THEMED_SLIDER_DEFAULT_VALUE } from "./ThemedSliderField.js";
 
 const meta: Meta<BaseFormStoryProps> = {
   ...baseFormMeta,
-  title: "Components/ActionForm/BaseForm/States & Submission",
+  title: "Components/ActionForm/Building Blocks/BaseForm/States & Submission",
 };
 
 export default meta;

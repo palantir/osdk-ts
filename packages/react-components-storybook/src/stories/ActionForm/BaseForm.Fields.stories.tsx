@@ -36,7 +36,7 @@ import {
 
 const meta: Meta<BaseFormStoryProps> = {
   ...baseFormMeta,
-  title: "Components/ActionForm/BaseForm/Fields",
+  title: "Components/ActionForm/Building Blocks/BaseForm/Fields",
 };
 
 export default meta;
