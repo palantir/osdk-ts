@@ -19,10 +19,11 @@ import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
-// `Functions.streamingExecute` was removed from the `@osdk/foundry.functions`
-// platform SDK at 2.67.0. The Foundry Functions team has confirmed that
-// streaming query execution is no longer supported, so this helper throws
-// instead of calling the endpoint.
+// The `streamingExecute` callable was dropped from the generated
+// `@osdk/foundry.functions` SDK at 2.67.0, so this helper can no longer call
+// it and throws instead. The underlying platform endpoint may still exist as
+// an SSE (`text/event-stream`) operation; if the generated SDK regains a
+// streaming callable, this helper should be reimplemented against it.
 export function applyStreamingQuery<
   QD extends QueryDefinition<any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
@@ -37,6 +38,6 @@ export function applyStreamingQuery<
 > {
   throw new Error(
     "Streaming query execution is not supported: the `streamingExecute` " +
-      "endpoint was removed from the Foundry Functions platform SDK."
+      "callable was dropped from the generated `@osdk/foundry.functions` SDK."
   );
 }
