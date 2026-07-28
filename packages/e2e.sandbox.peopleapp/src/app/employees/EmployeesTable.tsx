@@ -1,4 +1,4 @@
-import type { DerivedProperty, Osdk } from "@osdk/api";
+import type { DerivedProperty } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import type {
   ColumnDefinition,
@@ -15,19 +15,13 @@ import React, { useCallback, useRef } from "react";
 import { Button } from "../../components/Button.js";
 
 import "./EmployeesTable.css";
-import {
-  Employee,
-  getEmployeeDaysSinceStart,
-} from "../../generatedNoCheck2/index.js";
+import type { getEmployeeDaysSinceStart } from "../../generatedNoCheck2/index.js";
+import { Person } from "../../generatedNoCheck2/index.js";
 import { DownloadEmployeesButton } from "./DownloadEmployeesButton.js";
 
 type RDPs = {
-  managerName: "string";
-  // Derived `long` via a `get` selection -- the reported scenario.
-  leadStockOptions: "long";
-  // Derived `long` via a `max` aggregation -- min/max preserve the source type,
-  // so this also arrives as a string and must sort numerically.
-  maxPeepStockOptions: "long";
+  leadNumber: "string";
+  leadCount: "integer";
 };
 
 type FunctionColumns = {
@@ -35,113 +29,32 @@ type FunctionColumns = {
 };
 
 const columnDefinitions: Array<
-  ColumnDefinition<Employee, RDPs, FunctionColumns>
+  ColumnDefinition<Person, RDPs, FunctionColumns>
 > = [
-  {
-    locator: {
-      type: "property",
-      id: "fullName",
-    },
-    columnName: "My Name",
-    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-    validateEdit: async (value: unknown) => {
-      if (typeof value !== "string" || !value.trim()) {
-        return "Name cannot be empty";
-      }
-      return undefined;
-    },
-  },
-  // Function-backed column
-  {
-    locator: {
-      type: "function",
-      id: "daysSinceStart",
-      queryDefinition: getEmployeeDaysSinceStart,
-      getFunctionParams: (objectSet) => ({ employees: objectSet }),
-      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data) =>
-        (data as { daysSinceStart?: number } | undefined)?.daysSinceStart,
-    },
-    columnName: "Days Since Start",
-    width: 150,
-  },
   {
     locator: {
       type: "property",
       id: "employeeNumber",
     },
-    columnName: "Employee Number",
+    columnName: "Person Number",
   },
-  {
-    locator: { type: "property", id: "jobTitle" },
-  },
-  // Base long property -- longs arrive as strings; sorting must be numeric.
-  {
-    locator: { type: "property", id: "stockOptions" },
-    columnName: "Stock Options",
-  },
-  // Derived long via `get` selection (the reported scenario): the lead's stock
-  // options.
   {
     locator: {
       type: "rdp",
-      id: "leadStockOptions",
-      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-        baseObjectSet.pivotTo("lead").selectProperty("stockOptions"),
+      id: "leadNumber",
+      creator: (baseObjectSet: DerivedProperty.Builder<Person, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("employeeNumber"),
     },
-    columnName: "Lead Stock Options (derived get)",
+    columnName: "Lead Number",
   },
-  // Derived long via `max` aggregation: the highest stock options among the
-  // employee's reports. min/max preserve the aggregated property's type, so
-  // this is captured as `long` and sorts numerically.
   {
     locator: {
       type: "rdp",
-      id: "maxPeepStockOptions",
-      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-        baseObjectSet.pivotTo("peeps").aggregate("stockOptions:max"),
+      id: "leadCount",
+      creator: (baseObjectSet: DerivedProperty.Builder<Person, false>) =>
+        baseObjectSet.pivotTo("lead").aggregate("$count"),
     },
-    columnName: "Max Report Stock Options (derived max)",
-  },
-  {
-    locator: { type: "property", id: "firstFullTimeStartDate" },
-    width: 300,
-    renderHeader: () => "Start Date",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      return (
-        <div>
-          {object.firstFullTimeStartDate
-            ? new Date(object.firstFullTimeStartDate).toISOString()
-            : "No value"}
-        </div>
-      );
-    },
-  },
-  // RDP
-  {
-    locator: {
-      type: "rdp",
-      id: "managerName",
-      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-    },
-    columnName: "Derived Manager Name",
-  },
-  // Custom
-  {
-    locator: {
-      type: "custom",
-      id: "Custom Column",
-    },
-    renderHeader: () => "Custom",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      return (
-        <button onClick={() => alert(`Clicked ${object.$title}`)}>
-          Click me
-        </button>
-      );
-    },
-    orderable: false,
+    columnName: "Lead Count",
   },
 ];
 
@@ -186,9 +99,9 @@ export function EmployeesTable(): React.ReactElement {
 
   const client = useOsdkClient();
 
-  const os = client(Employee);
+  const os = client(Person);
 
-  const tableRef = useRef<ObjectTableHandle<Employee, RDPs>>(null);
+  const tableRef = useRef<ObjectTableHandle<Person, RDPs>>(null);
 
   return (
     <OsdkThemeProvider>
@@ -209,17 +122,17 @@ export function EmployeesTable(): React.ReactElement {
             overflow: "hidden",
           }}
         >
-          <ObjectTable<Employee, RDPs, FunctionColumns>
+          <ObjectTable<Person, RDPs, FunctionColumns>
             objectSet={os}
-            objectType={Employee}
+            objectType={Person}
             columnDefinitions={columnDefinitions}
             selectionMode={"multiple"}
-            defaultOrderBy={[
-              {
-                property: "leadStockOptions",
-                direction: "asc",
-              },
-            ]}
+            // defaultOrderBy={[
+            //   {
+            //     property: "leadStockOptions",
+            //     direction: "asc",
+            //   },
+            // ]}
             onSubmitEdits={handleSubmitEdits}
             tableRef={tableRef}
           />
