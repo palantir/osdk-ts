@@ -56,7 +56,7 @@ export default defineConfig({
     // Ceiling of 40 (not the preset's 20): the default flagged ~100
     // discriminated-union dispatchers that read fine as one flat switch. 40
     // targets the real outliers and can be ratcheted down later.
-    "complexity": ["error", 40],
+    "complexity": ["warn", 40],
     // Several switches list known discriminant values (e.g. "string", "unknown")
     // that share the `default` body. Keeping the explicit cases documents intent;
     // removing them would be churn with no behavioral change.

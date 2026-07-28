@@ -150,51 +150,53 @@ class BaseParameterTypeConverter {
     switch (t) {
       case "decimal":
       case "decimalList":
-        return this.#convertDecimal(t, pt);
+        return this.convertDecimal(t, pt);
 
       // Object reference types - need to look up objectTypeId in knownIdentifiers
       case "objectReference":
       case "objectReferenceList":
       case "objectSetRid":
-        return this.#convertObjectReference(t, pt);
+        return this.convertObjectReference(t, pt);
 
       // Interface reference types - need to look up interfaceTypeRid
       case "interfaceReference":
       case "interfaceReferenceList":
       case "interfaceObjectSetRid":
-        return this.#convertInterfaceReference(t, pt);
+        return this.convertInterfaceReference(t, pt);
 
       case "struct":
       case "structList":
-        return this.#convertStruct(t, pt);
+        return this.convertStruct(t, pt);
 
       default:
         return convertSimpleParameterType(t);
     }
   }
 
-  #convertDecimal(
-    t: "decimal" | "decimalList",
-    pt: Record<string, unknown>
+  private convertDecimal(
+    type: "decimal" | "decimalList",
+    parameterType: Record<string, unknown>
   ): BaseParameterType {
-    const dec = pt[t] as { precision?: number; scale?: number } | undefined;
+    const dec = parameterType[type] as
+      | { precision?: number; scale?: number }
+      | undefined;
     const decimal = { precision: dec?.precision, scale: dec?.scale };
-    if (t === "decimal") {
+    if (type === "decimal") {
       return { type: "decimal", decimal };
     }
     return { type: "decimalList", decimalList: decimal };
   }
 
-  #convertObjectReference(
-    t: "objectReference" | "objectReferenceList" | "objectSetRid",
-    pt: Record<string, unknown>
+  private convertObjectReference(
+    type: "objectReference" | "objectReferenceList" | "objectSetRid",
+    parameterType: Record<string, unknown>
   ): BaseParameterType {
-    const objRef = pt[t] as { objectTypeId: string } | undefined;
+    const objRef = parameterType[type] as { objectTypeId: string } | undefined;
     const blockId = objRef
       ? this.objectTypeIds[objRef.objectTypeId]
       : undefined;
     const ref = { objectTypeId: blockId ?? "" };
-    switch (t) {
+    switch (type) {
       case "objectReference":
         return { type: "objectReference", objectReference: ref };
       case "objectReferenceList":
@@ -204,19 +206,21 @@ class BaseParameterTypeConverter {
     }
   }
 
-  #convertInterfaceReference(
-    t:
+  private convertInterfaceReference(
+    type:
       | "interfaceReference"
       | "interfaceReferenceList"
       | "interfaceObjectSetRid",
-    pt: Record<string, unknown>
+    parameterType: Record<string, unknown>
   ): BaseParameterType {
-    const ifRef = pt[t] as { interfaceTypeRid: string } | undefined;
+    const ifRef = parameterType[type] as
+      | { interfaceTypeRid: string }
+      | undefined;
     const blockId = ifRef
       ? this.interfaceTypes[ifRef.interfaceTypeRid]
       : undefined;
     const ref = { interfaceTypeRid: blockId ?? "" };
-    switch (t) {
+    switch (type) {
       case "interfaceReference":
         return { type: "interfaceReference", interfaceReference: ref };
       case "interfaceReferenceList":
@@ -226,11 +230,11 @@ class BaseParameterTypeConverter {
     }
   }
 
-  #convertStruct(
-    t: "struct" | "structList",
-    pt: Record<string, unknown>
+  private convertStruct(
+    type: "struct" | "structList",
+    parameterType: Record<string, unknown>
   ): BaseParameterType {
-    const structType = pt[t] as
+    const structType = parameterType[type] as
       | {
           structFieldTypes?: Record<
             string,
