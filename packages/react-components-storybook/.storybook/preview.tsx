@@ -175,7 +175,7 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <div className="root">
-        <OsdkProvider client={mockClient}>
+        <OsdkProvider client={mockClient} enableDevTools={false}>
           <Story />
         </OsdkProvider>
       </div>

@@ -4,79 +4,63 @@ sidebar_position: 2
 
 # Getting Started
 
-A tour of the `@osdk/react-devtools` panel and the four tabs it exposes.
+The OSDK Devtools panel observes an `@osdk/react` application while it runs. It summarizes Ontology usage, attributes hooks to React components, captures console output, and exposes the observable cache.
 
 ## Prerequisites
 
-Before continuing, complete the setup described in [Prerequisites](./Prerequisites.md):
+Complete the [Prerequisites](./Prerequisites.md) before using the panel. Your application needs the Vite plugin, an `OsdkProvider`, and at least one component that calls an `@osdk/react` hook.
 
-- Install `@osdk/react-devtools` as a dev dependency
-- Add `osdkDevTools()` to your Vite plugins
-- Wrap your app with `OsdkProvider`
-- Run `vite dev`
+## Open the panel
 
-The floating `</>` panel should appear in the bottom-right corner of the browser. If it doesn't, see [Troubleshooting](#troubleshooting).
+Start the Vite development server and select the `</>` launcher in the bottom right corner. The panel opens on Overview.
 
-## What the panel shows
+## Tabs
 
-The devtools panel sits alongside your application and observes `@osdk/react` in real time. It surfaces behavior that is otherwise invisible to your app code — the underlying object cache, network deduplication, compute consumption, and which components are bound to which hooks.
+| Tab | Purpose |
+| --- | --- |
+| [Overview](./Overview.md) | Summarizes Ontology usage, request behavior, optimistic actions, errors, overfetching, and recommendations. |
+| [Components](./Components.md) | Shows which React components use OSDK hooks and which object types, actions, links, and properties they touch. |
+| [Console](./Console.md) | Captures console output with text search, level filters, counts, and source locations. |
+| [Cache](./Cache.md) | Inspects normalized cache entries and the recent cache operation timeline. |
 
-The panel has four tabs:
+## Header controls
 
-| Tab                                | Purpose                                                                                                                                                                  |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Performance](./Performance.md)    | Live metrics for object loads, action latency, cache hits and misses, deduplication, and revalidation. Flags slow queries, redundant work, and unused fields.            |
-| [Compute](./Compute.md)            | Per-request Foundry compute usage, broken down by hook and component, with a bubble-chart visualization for the heaviest requests. Pause network traffic to freeze against the cache. |
-| [Intercept](./Intercept.md)        | Mock OSDK queries and actions inline. Click any component to capture its OSDK usage, then override responses with static data, dynamic functions, or pass-through.       |
-| [Debugging](./Debugging.md)        | Unified issues panel (errors, console logs, stack traces), a component view of every active `@osdk/react` hook, and a cache inspector for the normalized cache.          |
+The controls in the panel header apply to every tab.
 
-## Panel layout
+- The theme control cycles through dark, light, and automatic themes.
+- The dock control cycles through floating, docked to the bottom, and docked to the right.
+- Reset metrics clears the metrics collected during the current session.
+- Minimize closes the panel back to the `</>` launcher.
 
-The panel is a floating surface that can be docked. The header exposes the controls that apply to every tab:
+Drag the header to move a floating panel. Drag an edge or corner to resize it. The browser stores the panel position, size, theme, and dock mode.
 
-- **Position** — drag the panel to any corner, or dock it to the bottom of the viewport.
-- **Size** — resize the panel by dragging its edges.
-- **Theme** — toggle between light, dark, and auto (follows the system color scheme).
-- **Tabs** — switch between Performance, Compute, Intercept, and Debugging.
+## How collection works
 
-All preferences (position, size, theme, active tab) persist across reloads.
+The package wraps the observable client used by `@osdk/react`. It records the cache and requests that the application already uses. Opening the panel does not issue a second copy of each query.
 
-## How the data is collected
-
-`@osdk/react-devtools` plugs into the same store and observable cache that `@osdk/react` already uses. It does not duplicate fetches or open new connections — every metric the panel shows is read from the cache and the requests `@osdk/react` is making anyway.
-
-The Vite plugin installs the React Fiber hook automatically, which is what lets the panel walk the component tree and attribute hooks back to the components that mounted them.
+The Vite plugin installs a React Fiber hook before the application loads. The hook attributes OSDK hooks to the components that mounted them. If React loads first, the panel remains usable but shows a notice that component inspection is unavailable.
 
 ## Quick checklist
 
-Before you dive into the tabs, confirm:
-
-- [ ] `osdkDevTools()` is in your Vite `plugins` array
-- [ ] The dev server is started via `vite dev` (not a production build)
-- [ ] Your app is wrapped in `<OsdkProvider client={client}>`
-- [ ] Your components use hooks from `@osdk/react` (the devtools cannot observe direct `fetch` or `axios` calls)
+- [ ] `osdkDevTools()` appears in the Vite `plugins` array.
+- [ ] The application runs through `vite dev`, not a production build.
+- [ ] The application root renders `<OsdkProvider client={client}>`.
+- [ ] The screen under inspection calls hooks from `@osdk/react`.
 
 ## Troubleshooting
 
 ### Panel does not appear
 
-- Confirm `osdkDevTools()` is the second argument to `plugins`, not commented out
-- Confirm you started Vite in dev mode (`vite dev` or `vite`)
-- Open the browser DevTools and check the network tab for `@osdk/react-devtools` modules — if they 404, your install is broken; reinstall with `pnpm add -D @osdk/react-devtools`
-- Check the browser console for plugin errors. Re-run with `osdkDevTools({ verbose: true })` to print plugin-side logs
+Confirm that `osdkDevTools()` is enabled and that Vite runs in development mode. Check the browser network panel for failed `@osdk/react-devtools` modules. Run the plugin with `osdkDevTools({ verbose: true })` to print startup diagnostics.
 
 ### Panel appears but no data shows
 
-- Verify your app is wrapped in `OsdkProvider` at the root (see [@osdk/react Getting Started](/react/getting-started#provider-setup))
-- Verify components are reading data through `@osdk/react` hooks. The devtools cannot observe raw `fetch` calls or non-OSDK data sources.
+Open the panel before exercising the screen you want to inspect. Confirm that the screen reads data through `@osdk/react` hooks. The monitor does not observe raw `fetch`, `axios`, or unrelated data sources.
 
-### Panel is in production builds
+### Component inspection is unavailable
 
-It should not be. The Vite plugin returns `false` from `apply()` when `mode === "production"`, so the dev hook, register script, and CSS are never injected. If you are seeing it in production, check that you do not have a custom plugin re-injecting it or a stale build artifact.
+The Vite plugin must install the Fiber hook before React loads. Keep `osdkDevTools()` in the Vite plugin list and remove manual imports that load React before the injected Devtools script.
 
-## Next steps
+### Panel appears in a production build
 
-- [Performance](./Performance.md) — measure where your app is spending request time
-- [Compute](./Compute.md) — track Foundry compute usage per request
-- [Intercept](./Intercept.md) — mock queries and actions without touching app code
-- [Debugging](./Debugging.md) — inspect errors, hooks, and the normalized cache
+The plugin is inactive in production. Check for a custom script that imports `@osdk/react-devtools` directly or a stale development artifact in the deployed bundle.
