@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseTableProps } from "@osdk/react-components/experimental";
-import { BaseTable } from "@osdk/react-components/experimental";
+import type { BaseTableProps } from "@osdk/react-components/experimental/object-table";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
   ColumnPinningState,
@@ -29,6 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
+
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 
 type Person = {
@@ -80,6 +81,7 @@ const mockData: Person[] = [
 const meta: Meta<BaseTableProps<Person>> = {
   title: "Components/ObjectTable/Building Blocks/BaseTable",
   component: BaseTable,
+  tags: ["beta"],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -189,7 +191,7 @@ export const Default: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import { 
   getCoreRowModel,
   useReactTable,
@@ -250,7 +252,7 @@ export const WithSorting: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -300,10 +302,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -319,7 +318,7 @@ export const WithColumnPinning: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   useReactTable,
@@ -370,10 +369,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -389,7 +385,7 @@ export const WithColumnResizing: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   useReactTable,
@@ -438,10 +434,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -457,20 +450,22 @@ export const WithColumnConfig: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import type {
-  SortingState,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 const headerMenuFeatureFlags = {
-  showSortingItems: true,
+  showConfigItem: true,
 };
-const [sorting, setSorting] = useState<SortingState>();
+const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+  columns.reduce((acc, col) => ({ ...acc, [col.accessorKey]: true }), {})
+);
 
 const table = useReactTable({
   data: mockData,
@@ -478,10 +473,9 @@ const table = useReactTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   state: {
-    sorting,
+    columnVisibility,
   },
-  enableSorting: true,
-  onSortingChange: setSorting,
+  onColumnVisibilityChange: setColumnVisibility,
 });
 
 
@@ -497,7 +491,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {}),
+      }, {})
     );
 
     const table = useReactTable({
@@ -513,10 +507,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },

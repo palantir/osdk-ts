@@ -15,18 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CancelBatchExecutionRequest as _api_executor_CancelBatchExecutionRequest,
   CancelBatchExecutionResponse as _api_executor_CancelBatchExecutionResponse,
 } from "../__components.js";
 export async function cancelBatchExecution(
   ctx: ConjureContext,
-  request: _api_executor_CancelBatchExecutionRequest,
+  request: _api_executor_CancelBatchExecutionRequest
 ): Promise<_api_executor_CancelBatchExecutionResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/cancelBatchExecution`,
     "POST",
-    request,
+    request
   );
 }

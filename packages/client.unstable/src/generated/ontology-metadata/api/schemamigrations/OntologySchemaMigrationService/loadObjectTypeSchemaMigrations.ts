@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  LoadObjectTypeSchemaMigrationsRequest
-    as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
-  LoadObjectTypeSchemaMigrationsResponse
-    as _api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse,
+  LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
+  LoadObjectTypeSchemaMigrationsResponse as _api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse,
 } from "../__components.js";
 
 /**
@@ -28,7 +27,7 @@ import type {
  */
 export async function loadObjectTypeSchemaMigrations(
   ctx: ConjureContext,
-  request: _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
+  request: _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest
 ): Promise<_api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse> {
   return conjureFetch(ctx, `/schemamigrations/load/objecttype`, "PUT", request);
 }

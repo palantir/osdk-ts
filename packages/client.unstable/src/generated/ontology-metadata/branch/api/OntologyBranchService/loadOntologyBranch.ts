@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
 import type {
   LoadOntologyBranchRequest as _branch_api_LoadOntologyBranchRequest,
@@ -27,12 +28,12 @@ import type {
 export async function loadOntologyBranch(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_LoadOntologyBranchRequest,
+  request: _branch_api_LoadOntologyBranchRequest
 ): Promise<_branch_api_LoadOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/load/${ontologyBranchRid}`,
     "POST",
-    request,
+    request
   );
 }

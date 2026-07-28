@@ -15,11 +15,16 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import {
+  InterfaceDefRef,
+  ObjectDefRef,
+} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
@@ -46,7 +51,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   beforeAll(async () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient,
+      createClient
     );
     client = testSetup.client;
 
@@ -78,10 +83,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("fullName");
 
     // Create key B (with RDP for "fullName") and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -100,7 +108,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       expect.objectContaining({
         $primaryKey: 1,
         fullName: "Bob",
-      }),
+      })
     );
   });
 
@@ -108,10 +116,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Create key B (with RDP for "derivedAddress") — no prior write
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
 
     // First write — there is no existing value so the merge guard
     // (existing?.value) is false and the value is written as-is.
@@ -124,17 +135,20 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       expect.objectContaining({
         $primaryKey: 1,
         fullName: "Alice",
-      }),
+      })
     );
   });
 
   it("does not merge for a non-RDP cache key", () => {
     // Create a plain (no RDP) key and write twice — the merge block
     // should be skipped because expectedRdpFields is empty.
-    const query = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, undefined);
+    const query = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      undefined
+    );
 
     store.batch({}, (batch) => {
       query.writeToStore(emp as any, "loaded", batch);
@@ -150,7 +164,7 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       expect.objectContaining({
         $primaryKey: 1,
         fullName: "Dave",
-      }),
+      })
     );
   });
 
@@ -161,10 +175,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Create key B (with RDP for "derivedAddress") and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -183,8 +200,139 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
       expect.objectContaining({
         $primaryKey: 1,
         fullName: "Charlie",
-      }),
+      })
     );
+  });
+
+  it("clears a derived value when a same-key refetch omits it", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+    expect(
+      (store.getValue(queryB.cacheKey)?.value as any)?.derivedAddress
+    ).toBe("123 Main St");
+
+    store.batch({}, (batch) => {
+      queryB.writeToStore(emp as any, "loaded", batch);
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Alice");
+    expect(valueB?.derivedAddress).toBeUndefined();
+  });
+
+  it("preserves the cached derived value when a no-RDP sibling writes", () => {
+    // The sibling did not compute the derived field, so it must survive.
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryWithRdp = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
+    const queryNoRdp = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      undefined
+    );
+
+    store.cacheKeys.retain(queryWithRdp.cacheKey);
+    store.subjects.get(queryWithRdp.cacheKey).subscribe(() => {});
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryWithRdp.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    const updated = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryNoRdp.writeToStore(updated as any, "loaded", batch);
+    });
+
+    const rdpValue = store.getValue(queryWithRdp.cacheKey)?.value as any;
+    expect(rdpValue?.fullName).toBe("Bob");
+    expect(rdpValue?.derivedAddress).toBe("123 Main St");
+
+    store.cacheKeys.release(queryWithRdp.cacheKey);
+  });
+
+  it("keeps the recomputed derived value on a $select refetch", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
+
+    const seeded = emp.$clone({ derivedAddress: "old-addr" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    const reloaded = emp.$clone({
+      fullName: "Bob",
+      derivedAddress: "new-addr",
+    } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        reloaded as any,
+        "loaded",
+        batch,
+        new Set(["fullName"])
+      );
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Bob");
+    expect(valueB?.derivedAddress).toBe("new-addr");
+  });
+
+  it("preserves the cached derived value when a same-key write computed no derived fields", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
+
+    const seeded = emp.$clone({ derivedAddress: "123 Main St" } as any);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(seeded as any, "loaded", batch);
+    });
+
+    // A write that computed no derived fields (empty set) carries base props
+    // only, so the cached derived value must survive.
+    const updated = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        updated as any,
+        "loaded",
+        batch,
+        undefined,
+        new Set<string>()
+      );
+    });
+
+    const valueB = store.getValue(queryB.cacheKey)?.value as any;
+    expect(valueB?.fullName).toBe("Bob");
+    expect(valueB?.derivedAddress).toBe("123 Main St");
   });
 });
 
@@ -196,7 +344,7 @@ describe("ObjectsHelper.isKeyActive", () => {
   beforeAll(async () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient,
+      createClient
     );
     client = testSetup.client;
 
@@ -229,16 +377,15 @@ describe("ObjectsHelper.isKeyActive", () => {
     updateObject(store, emp);
 
     // Create key B (with RDP) and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
-      queryB.writeToStore(
-        emp as any,
-        "loaded",
-        batch,
-      );
+      queryB.writeToStore(emp as any, "loaded", batch);
     });
 
     // Subscribe then unsubscribe to make key B unobserved
@@ -260,7 +407,7 @@ describe("ObjectsHelper.isKeyActive", () => {
       expect.objectContaining({
         $primaryKey: 1,
         fullName: "Bob",
-      }),
+      })
     );
   });
 
@@ -271,16 +418,15 @@ describe("ObjectsHelper.isKeyActive", () => {
     updateObject(store, emp);
 
     // Create key B (with RDP) and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
-      queryB.writeToStore(
-        emp as any,
-        "loaded",
-        batch,
-      );
+      queryB.writeToStore(emp as any, "loaded", batch);
     });
 
     // Subscribe then unsubscribe, no pending cleanup (cleanup already ran)
@@ -297,7 +443,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     expect(valueB?.value).toEqual(
       expect.objectContaining({
         fullName: "Alice", // still the original seeded value
-      }),
+      })
     );
   });
 
@@ -306,10 +452,13 @@ describe("ObjectsHelper.isKeyActive", () => {
 
     // Seed both keys
     updateObject(store, emp);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -323,7 +472,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Should propagate while pending cleanup is active
     updateObject(store, emp.$clone({ fullName: "Bob" }));
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
-      expect.objectContaining({ fullName: "Bob" }),
+      expect.objectContaining({ fullName: "Bob" })
     );
 
     // Simulate cleanup microtask completing
@@ -332,7 +481,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Should NOT propagate after cleanup ran
     updateObject(store, emp.$clone({ fullName: "Charlie" }));
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
-      expect.objectContaining({ fullName: "Bob" }),
+      expect.objectContaining({ fullName: "Bob" })
     );
   });
 
@@ -341,10 +490,13 @@ describe("ObjectsHelper.isKeyActive", () => {
 
     // Seed both keys
     updateObject(store, emp);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -361,9 +513,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Re-subscribe (remount) — should see updated data
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
-    const sub2 = subjectB.subscribe(
-      (value) => subFn.next(value as any),
-    );
+    const sub2 = subjectB.subscribe((value) => subFn.next(value as any));
 
     await waitForCall(subFn);
     expect(subFn.next).toHaveBeenCalledWith(
@@ -371,7 +521,7 @@ describe("ObjectsHelper.isKeyActive", () => {
         value: expect.objectContaining({
           fullName: "Updated",
         }),
-      }),
+      })
     );
 
     sub2.unsubscribe();
@@ -386,7 +536,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
   beforeAll(async () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
-      createClient,
+      createClient
     );
     client = testSetup.client;
 
@@ -423,14 +573,20 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     const rdpConfigA = createFakeRdpConfig("fieldA");
     const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
 
-    const queryA = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigA);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigAB);
+    const queryA = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigA
+    );
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigAB
+    );
 
     store.batch({}, (batch) => {
       queryA.writeToStore(emp as any, "loaded", batch);
@@ -439,17 +595,14 @@ describe("Two variants with different RDP configs - GC of one should not affect 
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(2);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(2);
 
     simulateGc(queryB.cacheKey);
 
     // A's data should be intact
     const valueA = store.getValue(queryA.cacheKey);
     expect(valueA?.value).toEqual(
-      expect.objectContaining({ $primaryKey: 1, fullName: "Alice" }),
+      expect.objectContaining({ $primaryKey: 1, fullName: "Alice" })
     );
     expect(valueA?.status).toBe("loaded");
 
@@ -462,10 +615,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     expect(store.subjects.peek(queryB.cacheKey)).toBeUndefined();
 
     // Registry should only have A
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(1);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(1);
     const variants = store.objectCacheKeyRegistry.getVariants("Employee", 1);
     expect(variants.has(queryA.cacheKey)).toBe(true);
     expect(variants.has(queryB.cacheKey)).toBe(false);
@@ -475,14 +625,20 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     const rdpConfigA = createFakeRdpConfig("fieldA");
     const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
 
-    const queryA = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigA);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigAB);
+    const queryA = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigA
+    );
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigAB
+    );
 
     store.batch({}, (batch) => {
       queryA.writeToStore(emp as any, "loaded", batch);
@@ -497,19 +653,259 @@ describe("Two variants with different RDP configs - GC of one should not affect 
 
     simulateGc(queryB.cacheKey);
 
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(1);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(1);
 
     // Update via base variant — should still propagate to A
     updateObject(store, emp.$clone({ fullName: "Bob" }));
 
     const valueA = store.getValue(queryA.cacheKey);
     expect(valueA?.value).toEqual(
-      expect.objectContaining({ $primaryKey: 1, fullName: "Bob" }),
+      expect.objectContaining({ $primaryKey: 1, fullName: "Bob" })
     );
 
     store.cacheKeys.release(queryA.cacheKey);
+  });
+});
+
+describe("ObjectsHelper variant cache keys", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("returns distinct queries for different selects on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName"],
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId"],
+    });
+
+    expect(q1).not.toBe(q2);
+    expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("returns the same query for canonicalized-equal selects on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName", "employeeId"],
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId", "fullName"],
+    });
+
+    expect(q1).toBe(q2);
+    expect(q1.cacheKey).toBe(q2.cacheKey);
+  });
+
+  it("returns distinct queries for different $loadPropertySecurityMetadata on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $loadPropertySecurityMetadata: true,
+    });
+
+    expect(q1).not.toBe(q2);
+    expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("treats no-select and empty-select as the same cache key", () => {
+    const qNone = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const qEmpty = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: [],
+    });
+
+    expect(qNone).toBe(qEmpty);
+  });
+
+  it("propagateWrite preserves sibling-variant fields when a partial-select fetch propagates", () => {
+    const queryA = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName"],
+    });
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId"],
+    });
+
+    // Make both variants observed so propagation runs.
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    // Seed variant A with the loaded "fullName" view.
+    store.batch({}, (batch) => {
+      queryA.writeToStore(emp as any, "loaded", batch, new Set(["fullName"]));
+    });
+
+    store.batch({}, (batch) => {
+      queryB.writeToStore(emp as any, "loaded", batch, new Set(["employeeId"]));
+    });
+
+    const valueA = store.getValue(queryA.cacheKey);
+    expect(valueA?.value).toEqual(
+      expect.objectContaining({
+        $primaryKey: 1,
+        fullName: "Alice",
+        employeeId: 1,
+      })
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
+  });
+});
+
+describe("ObjectsHelper.storeOsdkInstances interface unwrap", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("unwraps an InterfaceHolder to the underlying ObjectHolder when storing", () => {
+    const ifaceInstance = emp.$as(FooInterface);
+
+    expect(ifaceInstance.$apiName).toBe("FooInterface");
+    expect(ifaceInstance.$objectType).toBe("Employee");
+    expect(InterfaceDefRef in ifaceInstance).toBe(true);
+
+    const cacheKeys = store.batch({}, (batch) => {
+      return store.objects.storeOsdkInstances([ifaceInstance], batch);
+    }).retVal;
+
+    expect(cacheKeys).toHaveLength(1);
+
+    const cached = store.getValue(cacheKeys[0])?.value;
+    expect(cached).toBeDefined();
+    if (!cached) {
+      return;
+    }
+    expect(cached.$apiName).toBe("Employee");
+    expect(cached.$objectType).toBe("Employee");
+    expect(cached[ObjectDefRef]).toBeDefined();
+    expect(InterfaceDefRef in cached).toBe(false);
+  });
+
+  it("unwraps an InterfaceHolder when storing through the rdpConfig merge path", () => {
+    // Use an RDP field that is NOT present on the Employee object so the
+    // propagateWrite merge branch runs (actualRdpFields < expectedRdpFields).
+    // The merge path reads objectDef.properties from the incoming holder; if
+    // an InterfaceHolder slips through unwrapped, ObjectDefRef is undefined
+    // and the merge crashes. This test would FAIL on the pre-PR code.
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+
+    // Seed the cache key for (Employee, pk=1, rdpConfig) with a concrete
+    // Employee value so that the second write goes through the merge branch.
+    const queryEmp = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig
+    );
+    store.batch({}, (batch) => {
+      queryEmp.writeToStore(emp as any, "loaded", batch);
+    });
+
+    const ifaceInstance = emp.$as(FooInterface);
+    expect(InterfaceDefRef in ifaceInstance).toBe(true);
+
+    // Now write the same object via the InterfaceHolder through
+    // storeOsdkInstances with a NON-NULL rdpConfig. This must not throw.
+    const cacheKeys = store.batch({}, (batch) => {
+      return store.objects.storeOsdkInstances(
+        [ifaceInstance],
+        batch,
+        rdpConfig
+      );
+    }).retVal;
+
+    expect(cacheKeys).toHaveLength(1);
+    expect(cacheKeys[0]).toBe(queryEmp.cacheKey);
+
+    const cached = store.getValue(cacheKeys[0])?.value;
+    expect(cached).toBeDefined();
+    if (!cached) {
+      return;
+    }
+    expect(cached.$apiName).toBe("Employee");
+    expect(cached.$objectType).toBe("Employee");
+    expect(cached[ObjectDefRef]).toBeDefined();
+    expect(InterfaceDefRef in cached).toBe(false);
   });
 });

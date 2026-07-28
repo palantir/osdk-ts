@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// `FailedWithUserMessage` is a deliberate name (thrown at ~10 call sites and
+// surfaced in vitest error snapshots); appending "Error" would be churn with no
+// behavioral benefit.
+// oxlint-disable-next-line unicorn/custom-error-definition
 export class FailedWithUserMessage extends Error {
   constructor(message: string) {
     super(message);

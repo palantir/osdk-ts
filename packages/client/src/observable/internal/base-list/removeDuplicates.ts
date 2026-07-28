@@ -27,7 +27,7 @@ import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
  */
 export function removeDuplicates(
   objectCacheKeys: ObjectCacheKey[],
-  batch: BatchContext,
+  batch: BatchContext
 ): ObjectCacheKey[] {
   const visited = new Set<ObjectCacheKey>();
   return objectCacheKeys.filter((key) => {

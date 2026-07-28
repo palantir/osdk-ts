@@ -7,6 +7,9 @@ OKLCH
 oklch
 Resizer
 Segoe
+texttags
 unitless
+vhidden
+Vhidden
 vermillion
 WCAG

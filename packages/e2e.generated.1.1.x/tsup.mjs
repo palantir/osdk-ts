@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import * as path from "node:path";
+
+import { findUp } from "find-up";
 
 /**
  * @param {import('tsup').Options} options
  * @param {{cjsExtension?: ".cjs" | ".js", esmOnly?: boolean }} ourOptions
  * @returns {Promise<import('tsup').Options | import('tsup').Options[]>}
  */
-export default async (options, ourOptions) => {
+export default async function makeTsupOptions(options, ourOptions) {
   const babel = (await import("esbuild-plugin-babel")).default;
 
-  const packageJson = await readFile("package.json", "utf-8").then(f =>
+  const packageJson = await readFile("package.json", "utf-8").then((f) =>
     JSON.parse(f)
   );
 
   /** @type {import("tsup").Options} */
   const baseConfig = {
-    entry: [
-      "src/index.ts",
-      "src/public/*.ts",
-      "src/public/*.mts",
-    ],
+    entry: ["src/index.ts", "src/public/*.ts", "src/public/*.mts"],
     outExtension: ({ format }) => {
       return {
         js: ".js",
@@ -56,7 +53,7 @@ export default async (options, ourOptions) => {
     splitting: true,
     shims: true, // so we can use __dirname in both esm and cjs
     minify: false, // !options.watch,
-    onSuccess: async () => {
+    onSuccess: () => {
       // eslint-disable-next-line no-console
       console.log("👍");
     },
@@ -65,12 +62,14 @@ export default async (options, ourOptions) => {
     target: "es2022",
 
     esbuildPlugins: [
-      /** @type {any} */ (babel({
-        config: {
-          presets: ["@babel/preset-typescript"],
-          plugins: ["babel-plugin-dev-expression"],
-        },
-      })),
+      /** @type {any} */ (
+        babel({
+          config: {
+            presets: ["@babel/preset-typescript"],
+            plugins: ["babel-plugin-dev-expression"],
+          },
+        })
+      ),
     ],
   };
 
@@ -107,12 +106,14 @@ export default async (options, ourOptions) => {
   const ret = [esmConfig, browserConfig];
   if (!ourOptions.esmOnly) ret.push(cjsConfig);
   return ret;
-};
+}
 
 async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
-  if (!workspaceFile) throw "couldn't find workspace file";
+  if (!workspaceFile) throw new Error("couldn't find workspace file");
   const workspaceRoot = path.dirname(workspaceFile);
-  return await readFile(path.join(workspaceRoot, k, "package.json"), "utf-8")
-    .then(f => JSON.parse(f).version);
+  return await readFile(
+    path.join(workspaceRoot, k, "package.json"),
+    "utf-8"
+  ).then((f) => JSON.parse(f).version);
 }

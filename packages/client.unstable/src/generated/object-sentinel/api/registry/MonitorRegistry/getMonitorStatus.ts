@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
@@ -27,13 +28,13 @@ import type { GetMonitorStatusResponse as _api_registry_GetMonitorStatusResponse
 export async function getMonitorStatus(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<_api_registry_GetMonitorStatusResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors-getMonitorStatus/${monitorRid}`,
     "GET",
     undefined,
-    { branchRid },
+    { branchRid }
   );
 }

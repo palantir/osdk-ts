@@ -26,11 +26,13 @@ import {
 import { CaretDown } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./Select.module.css";
 
-export interface SelectProps<Value, Multiple extends boolean = false>
-  extends Omit<SelectRootProps<Value, Multiple>, "className">
-{}
+export interface SelectProps<
+  Value,
+  Multiple extends boolean = false,
+> extends Omit<SelectRootProps<Value, Multiple>, "className"> {}
 
 function SelectRoot<Value, Multiple extends boolean = false>({
   children,
@@ -41,9 +43,10 @@ function SelectRoot<Value, Multiple extends boolean = false>({
   );
 }
 
-interface SelectTriggerComponentProps
-  extends Omit<SelectTriggerProps, "className">
-{
+interface SelectTriggerComponentProps extends Omit<
+  SelectTriggerProps,
+  "className"
+> {
   className?: string;
   placeholder?: string;
 }
@@ -79,7 +82,7 @@ function SelectTrigger({
 }
 
 function SelectValue(
-  props: Omit<SelectValueProps, "className"> & { className?: string },
+  props: Omit<SelectValueProps, "className"> & { className?: string }
 ): React.ReactElement {
   const { className, ...rest } = props;
   return (
@@ -90,9 +93,10 @@ function SelectValue(
   );
 }
 
-interface SelectPositionerComponentProps
-  extends Omit<SelectPositionerProps, "className">
-{
+interface SelectPositionerComponentProps extends Omit<
+  SelectPositionerProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -105,6 +109,11 @@ function SelectPositioner({
     <BaseUISelect.Positioner
       className={classnames(styles.osdkSelectPositioner, className)}
       sideOffset={4}
+      /* Disable Base UI's default behavior of aligning the selected item in
+         the popup with the trigger. This causes layout jumps when the popup
+         opens because the list scrolls to center the selected item. A static
+         dropdown position below the trigger is more predictable. */
+      alignItemWithTrigger={false}
       {...rest}
     >
       {children}
@@ -112,9 +121,10 @@ function SelectPositioner({
   );
 }
 
-interface SelectPopupComponentProps
-  extends Omit<SelectPopupProps, "className">
-{
+interface SelectPopupComponentProps extends Omit<
+  SelectPopupProps,
+  "className"
+> {
   className?: string;
 }
 

@@ -319,7 +319,9 @@ function generateAllExamplesForVersion(
     }
 
     // Extract blocks using TemplateAnalyzer
-    const blocks = analysis.value.blocks;
+    const blocks = analysis.value.blocks.filter(
+      block => block.name.replace(/^[#^]/, "") !== "arrayContains",
+    );
 
     if (blocks.length > 0) {
       // For block templates, only generate variations, not base files
@@ -368,7 +370,9 @@ function generateAllExamplesForVersion(
         if (!blockVarsByName[varName]) {
           blockVarsByName[varName] = [];
         }
-        blockVarsByName[varName].push(prefix);
+        if (!blockVarsByName[varName].includes(prefix)) {
+          blockVarsByName[varName].push(prefix);
+        }
       }
 
       for (const [varName, prefixes] of Object.entries(blockVarsByName)) {

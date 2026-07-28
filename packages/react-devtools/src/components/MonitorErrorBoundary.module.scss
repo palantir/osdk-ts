@@ -1,0 +1,33 @@
+.container {
+  padding: 20px;
+  background: #ff000020;
+  border: 1px solid red;
+  margin: 10px;
+  border-radius: 4px;
+}
+
+.title {
+  color: red;
+  margin: 0 0 10px 0;
+}
+
+.message {
+  margin: 0 0 10px 0;
+}
+
+.stack {
+  background: #00000010;
+  padding: 10px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.retryButton {
+  padding: 5px 10px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

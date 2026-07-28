@@ -40,7 +40,7 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-import { convertDataType } from "./convertDataType.js";
+import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
@@ -49,11 +49,16 @@ export interface IDataType {
   [key: string]: unknown;
 }
 
-interface IDiscoveredFunction {
-  locator: { type: string; typescriptOsdk?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: IDataType }>;
+export interface IDiscoveredFunction {
+  locator: { type: string; typescript?: { functionName: string } };
+  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output: { single: { dataType: IDataType } };
   customTypes: Record<string, unknown>;
+  ontologyProvenance?: {
+    editedLinks: Record<string, {}>;
+    editedObjects: Record<string, {}>;
+    editedInterfaces: Record<string, {}>;
+  };
 }
 
 interface IFunctionDiscoverer {
@@ -329,7 +334,7 @@ export class OntologyIrToFullMetadataConverter {
     );
   }
 
-  private static async discoverTypeScriptFunctions(
+  static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
     irOutputFile?: string,
@@ -356,6 +361,7 @@ export class OntologyIrToFullMetadataConverter {
     // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
     // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
     let entityMetadataMapping: unknown;
+    const interfaceRidToApiName: Record<string, string> = {};
     if (previewMetadata) {
       if (!previewMetadata.ontology?.rid) {
         throw new Error("previewMetadata.ontology.rid is required");
@@ -393,8 +399,15 @@ export class OntologyIrToFullMetadataConverter {
         { interfaceTypeRid: string }
       > = {};
       if (previewMetadata.interfaceTypes) {
-        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
-          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        for (
+          const [apiName, interfaceType] of Object.entries(
+            previewMetadata.interfaceTypes,
+          )
+        ) {
+          interfaceTypesMap[apiName] = {
+            interfaceTypeRid: interfaceType.rid,
+          };
+          interfaceRidToApiName[interfaceType.rid] = apiName;
         }
       }
       entityMetadataMapping = {
@@ -423,22 +436,21 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     const tsFunctions = functions.discoveredFunctions.filter(
-      (func: IDiscoveredFunction) => func.locator.type === "typescriptOsdk",
+      (func: IDiscoveredFunction) => func.locator.type === "typescript",
     );
 
     if (tsFunctions.length === 0) {
       consola.warn(
         `No TypeScript OSDK functions discovered in ${functionsDir}. `
           + `Found ${functions.discoveredFunctions.length} total function(s) `
-          + `but none with locator type "typescriptOsdk".`,
+          + `but none with locator type "typescript".`,
       );
     } else {
       consola.info(
         `Discovered ${tsFunctions.length} TypeScript function(s): ${
           tsFunctions
             .map(
-              (f: IDiscoveredFunction) =>
-                f.locator.typescriptOsdk!.functionName,
+              (f: IDiscoveredFunction) => f.locator.typescript!.functionName,
             )
             .join(", ")
         }`,
@@ -450,22 +462,34 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     return tsFunctions.map((func: IDiscoveredFunction) => {
-      const functionName = func.locator.typescriptOsdk!.functionName;
+      const functionName = func.locator.typescript!.functionName;
       return {
         apiName: functionName,
         rid: `ri.function-registry.main.function.${functionName}`,
         version: "0.0.0",
         parameters: func.inputs.reduce<
           Record<ApiName, Ontologies.QueryParameterV2>
-        >((acc, input) => {
+        >((acc, input, index) => {
+          // Discovery emits diagnostics requiring injected context to be the
+          // first function argument, so only strip it from that position.
+          if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
+            return acc;
+          }
+
           acc[input.name] = {
-            dataType: convertDataType(input.dataType, func.customTypes),
+            dataType: convertDataType(
+              input.dataType,
+              func.customTypes,
+              interfaceRidToApiName,
+            ),
+            required: input.required ?? true,
           };
           return acc;
         }, {}),
         output: convertDataType(
           func.output.single.dataType,
           func.customTypes,
+          interfaceRidToApiName,
         ),
         typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
@@ -597,17 +621,21 @@ export class OntologyIrToFullMetadataConverter {
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {
+            // TODO (ethana): interface support for python queries
             dataType: convertDataType(
               input.dataType,
               customTypes,
+              {},
               input.required,
             ),
+            required: input.required ?? true,
           };
           return acc;
         }, {}),
         output: convertDataType(
           resolvedOutput,
           customTypes,
+          {},
         ),
         typeReferences: {},
       };
@@ -811,7 +839,7 @@ export class OntologyIrToFullMetadataConverter {
       const linkType = link.linkType;
       const linkStatus = this.convertLinkTypeStatus(linkType.status);
 
-      let mappings: Record<string, Ontologies.LinkTypeSideV2>;
+      let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
@@ -830,13 +858,17 @@ export class OntologyIrToFullMetadataConverter {
             ...sideA,
             apiName: linkDef.objectTypeBToALinkMetadata.apiName
               ?? "",
+            displayName: linkDef.objectTypeBToALinkMetadata
+              .displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidA,
           };
 
           mappings = {
-            [linkDef.objectTypeRidA]: sideA,
-            [linkDef.objectTypeRidB]: sideB,
+            [linkDef.objectTypeRidA]: [],
+            [linkDef.objectTypeRidB]: [],
           };
+          mappings[linkDef.objectTypeRidA].push(sideA);
+          mappings[linkDef.objectTypeRidB].push(sideB);
           break;
         }
         case "oneToMany": {
@@ -854,9 +886,9 @@ export class OntologyIrToFullMetadataConverter {
 
           const manySide: Ontologies.LinkTypeSideV2 = {
             ...common,
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidOneSide,
             cardinality: "ONE",
             // This should only exist on the one side and it should be the property on this object
@@ -869,16 +901,18 @@ export class OntologyIrToFullMetadataConverter {
           const oneSide: Ontologies.LinkTypeSideV2 = {
             ...common,
             cardinality: "MANY",
-            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
-              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
             objectTypeApiName: linkDef.objectTypeRidManySide,
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: oneSide,
-            [linkDef.objectTypeRidManySide]: manySide,
+            [linkDef.objectTypeRidOneSide]: [],
+            [linkDef.objectTypeRidManySide]: [],
           };
+          mappings[linkDef.objectTypeRidOneSide].push(oneSide);
+          mappings[linkDef.objectTypeRidManySide].push(manySide);
           break;
         }
         default:
@@ -890,7 +924,7 @@ export class OntologyIrToFullMetadataConverter {
         if (!result[objectTypeApiName]) {
           result[objectTypeApiName] = [];
         }
-        result[objectTypeApiName].push(linkSide);
+        result[objectTypeApiName].push(...linkSide);
       }
     }
 
@@ -929,7 +963,7 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -969,15 +1003,24 @@ export class OntologyIrToFullMetadataConverter {
           const r = irLogic.deleteObjectRule;
           const ontologyIrParameter =
             action.actionType.metadata.parameters[r.objectToDelete];
-          if (ontologyIrParameter.type.type !== "objectReference") {
-            throw new Error("invalid parameter type");
+          switch (ontologyIrParameter.type.type) {
+            case "objectReference": {
+              return {
+                type: "deleteObject",
+                objectTypeApiName:
+                  ontologyIrParameter.type.objectReference.objectTypeId,
+              } satisfies Ontologies.LogicRule;
+            }
+            case "interfaceReference": {
+              return {
+                type: "deleteInterfaceObject",
+                interfaceTypeApiName:
+                  ontologyIrParameter.type.interfaceReference.interfaceTypeRid,
+              } satisfies Ontologies.LogicRule;
+            }
+            default:
+              throw new Error("invalid objectToDelete parameter type");
           }
-
-          return {
-            type: "deleteObject",
-            objectTypeApiName:
-              ontologyIrParameter.type.objectReference.objectTypeId,
-          } satisfies Ontologies.LogicRule;
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;
@@ -1026,6 +1069,9 @@ export class OntologyIrToFullMetadataConverter {
             );
           }
         }
+        case "addInterfaceLinkRuleV2":
+        case "deleteInterfaceLinkRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -1118,10 +1164,6 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
         case "long":
           dataType = { type: "long" };
           break;
@@ -1149,6 +1191,25 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "mediaReference" },
           };
           break;
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: t.interfaceTypeRid,
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: t.interfaceTypeRid,
+            },
+          };
+          break;
+        }
         case "objectReference": {
           const t = irParameter.type.objectReference;
           dataType = {
@@ -1410,13 +1471,13 @@ export class OntologyIrToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${

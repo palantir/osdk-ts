@@ -15,6 +15,7 @@
  */
 
 import { describe, it } from "vitest";
+
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../../workflow/api/__components.js";
 import type { GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPermissionsResponse } from "../__components.js";
 
@@ -23,7 +24,7 @@ import type { GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPerm
  */
 export async function getWorkflowPermissions(
   ctx: ConjureContext,
-  workflowRid: _workflow_api_WorkflowRid,
+  workflowRid: _workflow_api_WorkflowRid
 ): Promise<_api_permissions_GetWorkflowPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/workflow/${workflowRid}`, "GET");
 }

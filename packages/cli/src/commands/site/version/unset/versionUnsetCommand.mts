@@ -15,25 +15,28 @@
  */
 
 import { consola } from "consola";
+import { colorize } from "consola/utils";
 
 import { createInternalClientContext, thirdPartyApplications } from "#net";
-import { colorize } from "consola/utils";
+
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionUnsetArgs } from "./VersionUnsetArgs.js";
 
-export default async function versionUnsetCommand(
-  { yes, application, foundryUrl, token, tokenFile }: VersionUnsetArgs,
-): Promise<void> {
+export default async function versionUnsetCommand({
+  yes,
+  application,
+  foundryUrl,
+  token,
+  tokenFile,
+}: VersionUnsetArgs): Promise<void> {
   if (!yes) {
     const confirmed = await consola.prompt(
-      `Are you sure you want to clear the live site version?\n${
-        colorize(
-          "bold",
-          "Your site will no longer be accessible until a new live site version is set.",
-        )
-      }`,
-      { type: "confirm", cancel: "symbol" },
+      `Are you sure you want to clear the live site version?\n${colorize(
+        "bold",
+        "Your site will no longer be accessible until a new live site version is set."
+      )}`,
+      { type: "confirm", cancel: "symbol" }
     );
     handlePromptCancel(confirmed);
   }

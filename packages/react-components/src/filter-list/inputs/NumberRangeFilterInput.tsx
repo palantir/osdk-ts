@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import { useOsdkAggregation, useOsdkMetadata } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
   createGroupByAggregateOptions,
   createNullCountAggregateOptions,
-  createNullWhereClause,
+  createNullCountWhereClause,
 } from "../utils/aggregationHelpers.js";
 
 interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
+  clickToFilter?: boolean;
 }
 
 function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -40,11 +43,20 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
+  clickToFilter,
 }: NumberRangeFilterInputProps<Q>): React.ReactElement {
-  const numberRangeState = filterState?.type === "NUMBER_RANGE"
-    ? filterState
-    : undefined;
+  const numberRangeState =
+    filterState?.type === "NUMBER_RANGE" ? filterState : undefined;
   const includeNull = filterState?.includeNull;
+
+  const { metadata } = useOsdkMetadata(objectType);
+  const propertyType = metadata?.properties?.[propertyKey]?.type;
+  const isInteger =
+    propertyType === "integer" ||
+    propertyType === "long" ||
+    propertyType === "short" ||
+    propertyType === "byte";
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
@@ -59,85 +71,85 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       onFilterStateChanged,
       numberRangeState?.minValue,
       numberRangeState?.maxValue,
-    ],
+    ]
   );
 
   const handleRangeChange = useCallback(
     (minValue: number | undefined, maxValue: number | undefined) => {
+      const coerceMin = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.ceil(v) : v;
+      const coerceMax = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.floor(v) : v;
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue,
-        maxValue,
+        minValue: coerceMin(minValue),
+        maxValue: coerceMax(maxValue),
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull],
+    [onFilterStateChanged, includeNull, isInteger]
   );
 
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey),
-    [propertyKey],
+    [propertyKey]
   );
 
   const histogramArgs = useMemo(
-    () => ({ aggregate: aggregateOptions, objectSet }),
-    [aggregateOptions, objectSet],
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
+    [aggregateOptions, objectSet, whereClause]
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    histogramArgs,
+    histogramArgs
   );
 
-  const valueCountPairs = useMemo<Array<{ value: number; count: number }>>(
-    () => {
-      if (!aggregateData) return [];
-      const dataArray = aggregateData as Iterable<{
-        $group: Record<string, unknown>;
-        $count?: number;
-      }>;
-      const pairs: Array<{ value: number; count: number }> = [];
-      for (const item of dataArray) {
-        const rawValue = item.$group[propertyKey];
-        if (rawValue != null) {
-          const parsed = parseFloat(String(rawValue));
-          if (!isNaN(parsed)) {
-            pairs.push({ value: parsed, count: item.$count ?? 0 });
-          }
+  const valueCountPairs = useMemo<
+    Array<{ value: number; count: number }>
+  >(() => {
+    if (!aggregateData) return [];
+    const dataArray = aggregateData as Iterable<{
+      $group: Record<string, unknown>;
+      $count?: number;
+    }>;
+    const pairs: Array<{ value: number; count: number }> = [];
+    for (const item of dataArray) {
+      const rawValue = item.$group[propertyKey];
+      if (rawValue != null) {
+        const parsed = parseFloat(String(rawValue));
+        if (!isNaN(parsed)) {
+          pairs.push({ value: parsed, count: item.$count ?? 0 });
         }
       }
-      return pairs;
-    },
-    [aggregateData, propertyKey],
-  );
+    }
+    return pairs;
+  }, [aggregateData, propertyKey]);
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
-    [],
+    []
   );
 
-  const nullWhereClause = useMemo(
-    () => createNullWhereClause<Q>(propertyKey),
-    [propertyKey],
+  const nullCountWhereClause = useMemo(
+    () => createNullCountWhereClause<Q>(propertyKey, whereClause),
+    [propertyKey, whereClause]
   );
 
   const nullCountArgs = useMemo(
     () => ({
-      where: nullWhereClause,
+      where: nullCountWhereClause,
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullWhereClause, nullCountAggregateOptions, objectSet],
+    [nullCountWhereClause, nullCountAggregateOptions, objectSet]
   );
 
   const {
     data: nullCountData,
     isLoading: nullLoading,
     error: nullError,
-  } = useOsdkAggregation(
-    objectType,
-    nullCountArgs,
-  );
+  } = useOsdkAggregation(objectType, nullCountArgs);
 
   const nullCount = useMemo(() => {
     if (!nullCountData) return 0;
@@ -164,11 +176,12 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
+        clickToFilter={clickToFilter && metadata != null}
       />
     </NullValueWrapper>
   );
 }
 
 export const NumberRangeFilterInput: typeof NumberRangeFilterInputInner = memo(
-  NumberRangeFilterInputInner,
+  NumberRangeFilterInputInner
 ) as typeof NumberRangeFilterInputInner;

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { QueryParameterDefinition } from "@osdk/api";
+import type {
+  QueryDataTypeDefinition,
+  QueryParameterDefinition,
+} from "@osdk/api";
 import type { QueryDataType } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
@@ -30,6 +33,7 @@ import { getInterfaceTypeApiNamesFromQuery } from "../shared/getInterfaceTypeApi
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
@@ -127,6 +131,10 @@ async function generateV2QueryFile(
     query.fullApiName,
   );
 
+  const typeRefs = query.raw.typeReferences ?? {};
+  const customTypesNs = generateCustomTypesNamespace(ontology, typeRefs);
+  const typeRefNames = buildTypeRefNames(typeRefs, true);
+
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
@@ -138,6 +146,8 @@ async function generateV2QueryFile(
         ${importObjects}
 
         export namespace ${query.shortApiName} {
+          ${customTypesNs}
+
           export interface Signature {
             ${getDescriptionIfPresent(query.description)}
             (${
@@ -160,7 +170,7 @@ async function generateV2QueryFile(
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                getQueryParamType(ontology, q, "Param"),
+                getQueryParamType(ontology, q, "Param", false, typeRefNames),
               ];
             },
           })
@@ -170,26 +180,22 @@ async function generateV2QueryFile(
     }
 
             ${
-      query.output.type === "struct"
-        ? `
-            export interface ReturnType 
-            ${
-          getQueryParamType(
-            ontology,
-            paramToDef({ dataType: query.output }),
-            "Result",
-          )
-        }
-        `
-        : `
-        export type ReturnType = ${
-          getQueryParamType(
-            ontology,
-            paramToDef({ dataType: query.output }),
-            "Result",
-          )
-        }
-          `
+      (() => {
+        const outputDef = paramToDef({
+          dataType: query.output,
+          required: true,
+        });
+        const outputType = getQueryParamType(
+          ontology,
+          outputDef,
+          "Result",
+          false,
+          typeRefNames,
+        );
+        return query.output.type === "struct"
+          ? `export interface ReturnType ${outputType}`
+          : `export type ReturnType = ${outputType};`;
+      })()
     }
       }
 
@@ -208,14 +214,14 @@ async function generateV2QueryFile(
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
             signature: ${query.shortApiName}.Signature;
-        }, 
+        },
         ${
       stringify(baseProps, {
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,
       })
-    }, 
+    },
           osdkMetadata: typeof $osdkMetadata;
               }
 
@@ -272,7 +278,7 @@ export function queryParamJsDoc(
 
   if (param.description) {
     if (param.description) {
-      ret += ` *   description: ${param.description}\n`;
+      ret += ` *   description: ${escapeJsDocText(param.description)}\n`;
     }
   } else {
     ret += ` * (no ontology metadata)\n`;
@@ -284,16 +290,19 @@ export function queryParamJsDoc(
 
 export function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
-  input: QueryParameterDefinition,
+  input: QueryDataTypeDefinition,
   type: "Param" | "Result",
   isMapKey = false,
+  typeRefNames?: Map<string, string>,
 ): string {
   let paramType = `unknown /* ${input.type} */`;
+  const recurse = (i: QueryDataTypeDefinition, mk = false) =>
+    getQueryParamType(enhancedOntology, i, type, mk, typeRefNames);
 
   switch (input.type) {
     case "array":
       paramType = `${type === "Param" ? "Readonly" : ""}Array<${
-        getQueryParamType(enhancedOntology, input.array, type)
+        recurse(input.array)
       }>`;
       break;
     case "date":
@@ -327,7 +336,7 @@ export function getQueryParamType(
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
                 p.nullable ? "?" : ""
               }`,
-              getQueryParamType(enhancedOntology, p, type),
+              recurse(p),
             ];
           },
         })
@@ -351,7 +360,7 @@ export function getQueryParamType(
         input.threeDimensionalAggregation.valueType.keyType === "range"
           ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.valueType.keySubtype}">`
           : `"${input.threeDimensionalAggregation.valueType.keyType}"`
-      }, 
+      },
         "${input.threeDimensionalAggregation.valueType.valueType}">`;
       break;
     case "object":
@@ -390,21 +399,75 @@ export function getQueryParamType(
 
     case "set":
       paramType = `${type === "Param" ? "Readonly" : ""}Set<${
-        getQueryParamType(enhancedOntology, input.set, type)
+        recurse(input.set)
       }>`;
       break;
 
     case "union":
-      paramType = input.union.map((u) =>
-        getQueryParamType(enhancedOntology, u, type)
-      ).join(" | ");
+      paramType = input.union.map((u) => recurse(u)).join(" | ");
       break;
 
     case "map":
-      paramType = `Partial<Record<${
-        getQueryParamType(enhancedOntology, input.keyType, type, true)
-      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>>`;
+      paramType = `Partial<Record<${recurse(input.keyType, true)}, ${
+        recurse(input.valueType)
+      }>>`;
+      break;
+
+    case "typeReference": {
+      const resolved = typeRefNames?.get(input.typeId);
+      if (resolved == null) {
+        throw new Error(`Unknown typeReference: ${input.typeId}`);
+      }
+      paramType = resolved;
+      break;
+    }
   }
 
   return paramType;
+}
+
+function buildTypeRefNames(
+  typeRefs: Record<string, QueryDataType>,
+  expand: boolean,
+): Map<string, string> {
+  const names = new Map<string, string>();
+  for (const id of Object.keys(typeRefs)) {
+    // We prefix with $ to ensure the name is a valid TypeScript identifier, and replace any dashes with underscores for the same reason
+    // An example ID looks like so "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
+    const sanitized = `$${id.replace(/-/g, "_")}`;
+    const qualName = `CustomTypes.${sanitized}`;
+    names.set(id, expand ? `CustomTypes.Expand<${qualName}>` : qualName);
+  }
+  return names;
+}
+
+function generateCustomTypesNamespace(
+  ontology: EnhancedOntologyDefinition,
+  typeRefs: Record<string, QueryDataType>,
+): string {
+  const names = buildTypeRefNames(typeRefs, false);
+  if (names.size === 0) return "";
+
+  const interfaces: string[] = [];
+  for (const [id, dt] of Object.entries(typeRefs)) {
+    if (dt.type !== "struct") {
+      throw new Error(
+        `Unsupported typeReference type "${dt.type}" for id "${id}": only struct type references are supported`,
+      );
+    }
+    const sanitized = `$${id.replace(/-/g, "_")}`;
+    const converted = wireQueryDataTypeToQueryDataTypeDefinition(dt);
+    interfaces.push(
+      `export interface ${sanitized} ${
+        getQueryParamType(ontology, converted, "Param", false, names)
+      }`,
+    );
+  }
+
+  if (interfaces.length === 0) return "";
+
+  return `namespace CustomTypes {
+    export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+    ${interfaces.join("\n\n")}
+  }`;
 }

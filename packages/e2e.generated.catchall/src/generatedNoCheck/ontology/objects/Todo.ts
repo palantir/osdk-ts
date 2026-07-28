@@ -16,7 +16,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Todo {
-  export type PropertyKeys = 'id' | 'body' | 'text' | 'priority' | 'complete';
+  export type PropertyKeys = 'body' | 'complete' | 'id' | 'priority' | 'text';
 
   export interface Links {
     readonly Assignee: $SingleLinkAccessor<Person>;

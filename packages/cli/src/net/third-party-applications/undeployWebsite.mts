@@ -20,16 +20,17 @@ import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 
 export async function undeployWebsite(
   ctx: InternalClientContext,
-  thirdPartyAppRid: ThirdPartyAppRid,
+  thirdPartyAppRid: ThirdPartyAppRid
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/undeploy?preview=true`;
-
-  await fetch(
-    url,
-    {
-      method: "POST",
-    },
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/undeploy`,
+    ctx.foundryUrl
   );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
+
+  await fetch(url, {
+    method: "POST",
+  });
 }

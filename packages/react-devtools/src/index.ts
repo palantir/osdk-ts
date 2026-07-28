@@ -14,4 +14,50 @@
  * limitations under the License.
  */
 
-export {};
+import "./register.js";
+
+export { BubbleChart } from "./components/BubbleChart.js";
+export { MonitorErrorBoundary } from "./components/MonitorErrorBoundary.js";
+export type { MonitorErrorBoundaryProps } from "./components/MonitorErrorBoundary.js";
+export {
+  MonitoringPanel,
+  SafeMonitoringPanel,
+} from "./components/MonitoringPanel.js";
+export type { MonitoringPanelProps } from "./components/MonitoringPanel.js";
+export { OsdkAppErrorBoundary } from "./components/OsdkAppErrorBoundary.js";
+export type { OsdkAppErrorBoundaryProps } from "./components/OsdkAppErrorBoundary.js";
+export { OsdkDevTools } from "./components/OsdkDevTools.js";
+
+export {
+  useComputeMetrics,
+  useComputeRecording,
+  useComputeRequests,
+} from "./hooks/useComputeSelectors.js";
+export { useClientMetrics } from "./hooks/useClientMetrics.js";
+export { useMetrics } from "./hooks/useMetrics.js";
+export { usePersistedState } from "./hooks/usePersistedState.js";
+
+export { getClientMetrics, MIN_SAMPLES } from "./metrics/clientMetrics.js";
+export type { ClientMetrics, Metric } from "./metrics/clientMetrics.js";
+
+export type { Fiber } from "./fiber/types.js";
+export { ComputeStore } from "./store/ComputeStore.js";
+export { MonitorStore } from "./store/MonitorStore.js";
+export { componentContextCapture } from "./utils/ComponentContextCapture.js";
+export type {
+  ComponentContext,
+  ComponentContextCapture,
+} from "./utils/ComponentContextCapture.js";
+export type { ComponentQueryRegistry } from "./utils/ComponentQueryRegistry.js";
+export { ComputeMonitor } from "./utils/ComputeMonitor.js";
+
+export type {
+  AggregateMetrics,
+  MetricRates,
+  MetricsSnapshot,
+  Operation,
+  OperationMetadata,
+  OperationType,
+  PanelPosition,
+  TimeSeriesData,
+} from "./types/index.js";

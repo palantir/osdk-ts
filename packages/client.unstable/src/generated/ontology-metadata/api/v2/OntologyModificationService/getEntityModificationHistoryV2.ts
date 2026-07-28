@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetEntityModificationHistoryRequest
-    as _api_modification_GetEntityModificationHistoryRequest,
-  GetEntityModificationHistoryResponse
-    as _api_modification_GetEntityModificationHistoryResponse,
+  GetEntityModificationHistoryRequest as _api_modification_GetEntityModificationHistoryRequest,
+  GetEntityModificationHistoryResponse as _api_modification_GetEntityModificationHistoryResponse,
 } from "../../modification/__components.js";
 
 /**
@@ -30,12 +29,12 @@ import type {
  */
 export async function getEntityModificationHistoryV2(
   ctx: ConjureContext,
-  request: _api_modification_GetEntityModificationHistoryRequest,
+  request: _api_modification_GetEntityModificationHistoryRequest
 ): Promise<_api_modification_GetEntityModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/modification/history/entity`,
     "POST",
-    request,
+    request
   );
 }

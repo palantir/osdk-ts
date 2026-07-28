@@ -16,6 +16,7 @@
 
 import type { User } from "@osdk/foundry.admin";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import { FauxAdmin } from "./FauxAdmin.js";
 
@@ -52,7 +53,7 @@ describe(FauxAdmin, () => {
       fauxAdmin.registerUser(user);
 
       expect(() => fauxAdmin.registerUser(user)).toThrow(
-        `Failed to register new user. A user with ID ${user.id} already exists.`,
+        `Failed to register new user. A user with ID ${user.id} already exists.`
       );
     });
 
@@ -80,7 +81,7 @@ describe(FauxAdmin, () => {
 
     it("should throw when setting current user to non-existent user", () => {
       expect(() => fauxAdmin.setCurrentUser("non-existent")).toThrow(
-        OpenApiCallError,
+        OpenApiCallError
       );
     });
 
@@ -200,7 +201,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-3", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const page1 = fauxAdmin.listUsers(2, undefined, "ACTIVE");
 
@@ -236,7 +237,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-3", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const result = fauxAdmin.listUsers(1, undefined, "ACTIVE");
 
@@ -253,7 +254,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-4", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const result = fauxAdmin.listUsers(2, "user-2", "ACTIVE");
 

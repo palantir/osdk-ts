@@ -15,11 +15,12 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
 export function getFilterLabel<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
+  definition: FilterDefinitionUnion<Q>
 ): string {
   if ("label" in definition && definition.label) {
     return definition.label;
@@ -34,6 +35,8 @@ export function getFilterLabel<Q extends ObjectTypeDefinition>(
     case "KEYWORD_SEARCH":
       return "Search";
     case "CUSTOM":
+      return definition.key;
+    case "STATIC_VALUES":
       return definition.key;
     default:
       return assertUnreachable(definition);

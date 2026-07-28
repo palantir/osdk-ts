@@ -21,7 +21,8 @@
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import type { Osdk } from "@osdk/client";
+import { client } from "./client.js";
 
-const responseNoErrorWrapper: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);
+const responseNoErrorWrapper: Osdk.Instance<Employee> = await client(Employee)
+  .fetchOne(12345);

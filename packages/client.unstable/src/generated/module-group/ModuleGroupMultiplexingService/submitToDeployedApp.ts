@@ -15,18 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   Job as _Job,
   SubmitJobToDeployedAppRequest as _SubmitJobToDeployedAppRequest,
 } from "../__components.js";
 export async function submitToDeployedApp(
   ctx: ConjureContext,
-  request: _SubmitJobToDeployedAppRequest,
+  request: _SubmitJobToDeployedAppRequest
 ): Promise<_Job> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/deployed-apps/jobs`,
     "POST",
-    request,
+    request
   );
 }

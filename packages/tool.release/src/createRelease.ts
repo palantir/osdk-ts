@@ -46,31 +46,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { getChangelogEntry } from "@changesets/release-utils";
-import type { Package } from "@manypkg/get-packages";
 import * as fs from "node:fs";
 import path from "node:path";
+
+import { getChangelogEntry } from "@changesets/release-utils";
+import type { Package } from "@manypkg/get-packages";
+
 import type { GithubContext } from "./runVersion.js";
 
 export const createRelease = async (
   context: GithubContext,
-  { pkg, tagName }: { pkg: Package; tagName: string },
+  { pkg, tagName }: { pkg: Package; tagName: string }
 ): Promise<void> => {
   try {
     const changelog = await fs.promises.readFile(
       path.join(pkg.dir, "CHANGELOG.md"),
-      "utf-8",
+      "utf-8"
     );
 
     const changelogEntry = getChangelogEntry(
       changelog,
-      pkg.packageJson.version,
+      pkg.packageJson.version
     );
     if (!changelogEntry) {
       // we can find a changelog but not the entry for this version
       // if this is true, something has probably gone wrong
       throw new Error(
-        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`,
+        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`
       );
     }
 
@@ -84,10 +86,10 @@ export const createRelease = async (
   } catch (err) {
     // if we can't find a changelog, the user has probably disabled changelogs
     if (
-      err
-      && typeof err === "object"
-      && "code" in err
-      && err.code !== "ENOENT"
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code !== "ENOENT"
     ) {
       throw err;
     }

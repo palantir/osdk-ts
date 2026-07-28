@@ -2,7 +2,7 @@ import { PalantirApiError } from "@osdk/client";
 
 export async function assertThrowsExpectedError(
   expectedErrorName: string,
-  callable: () => Promise<any>,
+  callable: () => Promise<any>
 ): Promise<void> {
   try {
     await callable();
@@ -12,7 +12,7 @@ export async function assertThrowsExpectedError(
         return;
       }
       throw new Error(
-        `Expected ${expectedErrorName} error, got ${err.errorName}`,
+        `Expected ${expectedErrorName} error, got ${err.errorName}`
       );
     } else {
       throw new Error(`Expected PalantirApiError got ${err}`);

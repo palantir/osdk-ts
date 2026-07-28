@@ -28,7 +28,7 @@ import type {
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
 
-interface UseColumnVisibilityProps<
+export interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -42,11 +42,11 @@ interface UseColumnVisibilityProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       isVisible: boolean;
-    }>,
+    }>
   ) => void;
 }
 
-interface UseColumnVisibilityResult {
+export interface UseColumnVisibilityResult {
   columnVisibility: VisibilityState;
   onColumnVisibilityChange: OnChangeFn<VisibilityState>;
   columnOrder: ColumnOrderState;
@@ -61,18 +61,21 @@ export const useColumnVisibility = <
     never
   >,
   TData = unknown,
->(
-  {
-    allColumns,
-    onColumnVisibilityChanged,
-  }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns, TData>,
-): UseColumnVisibilityResult => {
+>({
+  allColumns,
+  onColumnVisibilityChanged,
+}: UseColumnVisibilityProps<
+  Q,
+  RDPs,
+  FunctionColumns,
+  TData
+>): UseColumnVisibilityResult => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    () => getColumnVisibilityState<TData>(allColumns),
+    () => getColumnVisibilityState<TData>(allColumns)
   );
 
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    () => getColumnOrder(allColumns),
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(() =>
+    getColumnOrder(allColumns)
   );
 
   // TODO: Explore other ways to respond to props changes for controlled mode
@@ -87,16 +90,17 @@ export const useColumnVisibility = <
   const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
     (updaterOrValue) => {
       setColumnVisibility((prev) => {
-        const newState = typeof updaterOrValue === "function"
-          ? updaterOrValue(prev)
-          : updaterOrValue;
+        const newState =
+          typeof updaterOrValue === "function"
+            ? updaterOrValue(prev)
+            : updaterOrValue;
 
         if (onColumnVisibilityChanged) {
           const changes = Object.entries(newState).map(
             ([columnId, isVisible]) => ({
               columnId,
               isVisible,
-            }),
+            })
           );
           onColumnVisibilityChanged(changes);
         }
@@ -104,19 +108,20 @@ export const useColumnVisibility = <
         return newState;
       });
     },
-    [onColumnVisibilityChanged],
+    [onColumnVisibilityChanged]
   );
 
   const onColumnOrderChange: OnChangeFn<ColumnOrderState> = useCallback(
     (updaterOrValue) => {
       setColumnOrder((prev) => {
-        const newState = typeof updaterOrValue === "function"
-          ? updaterOrValue(prev)
-          : updaterOrValue;
+        const newState =
+          typeof updaterOrValue === "function"
+            ? updaterOrValue(prev)
+            : updaterOrValue;
         return newState;
       });
     },
-    [],
+    []
   );
 
   return {
@@ -128,27 +133,24 @@ export const useColumnVisibility = <
 };
 
 const getColumnVisibilityState = <TData>(
-  allColumns: ColumnDef<TData>[],
+  allColumns: ColumnDef<TData>[]
 ): VisibilityState => {
-  return allColumns.reduce(
-    (acc, col) => {
-      const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
-      if (colId) {
-        return {
-          ...acc,
-          [colId]: col.meta?.isVisible !== false,
-        };
-      }
-      return acc;
-    },
-    {},
-  );
+  return allColumns.reduce((acc, col) => {
+    const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
+    if (colId) {
+      return {
+        ...acc,
+        [colId]: col.meta?.isVisible !== false,
+      };
+    }
+    return acc;
+  }, {});
 };
 
 const getColumnOrder = <TData>(
-  allColumns: ColumnDef<TData>[],
+  allColumns: ColumnDef<TData>[]
 ): ColumnOrderState => {
   return allColumns
-    .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
+    .map((col) => col.id ?? (col as { accessorKey?: string }).accessorKey)
     .filter((id): id is string => id != null);
 };

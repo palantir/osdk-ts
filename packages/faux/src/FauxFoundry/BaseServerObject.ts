@@ -36,11 +36,11 @@ export interface BaseServerObject extends OntologiesV2.OntologyObjectV2 {
  */
 export function isBaseServerObject(obj: unknown): obj is BaseServerObject {
   return (
-    typeof obj === "object"
-    && obj != null
-    && "__primaryKey" in obj
-    && "__apiName" in obj
-    && !("$apiName" in obj)
-    && !("$primaryKey" in obj)
+    typeof obj === "object" &&
+    obj != null &&
+    "__primaryKey" in obj &&
+    "__apiName" in obj &&
+    !("$apiName" in obj) &&
+    !("$primaryKey" in obj)
   );
 }

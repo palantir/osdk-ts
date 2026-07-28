@@ -17,6 +17,7 @@
 import { createPublicOauthClient } from "@osdk/oauth";
 import * as oauthModule from "@osdk/oauth";
 import { describe, expect, it, vi } from "vitest";
+
 import * as utilsModule from "../utils.js";
 
 const originalCreatePublicOauthClient = oauthModule.createPublicOauthClient;
@@ -42,32 +43,29 @@ type ProcessedPublicOauthClientOptionsReturn = ReturnType<
 >;
 
 describe("createPublicOauthClient", () => {
-  it("should return the same processed options for both client creation methods", async () => {
-    const mockProcessOptionsAndAssignDefaults = vi.fn<
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => ProcessedPublicOauthClientOptionsReturn
-    >();
+  it("should return the same processed options for both client creation methods", () => {
+    const mockProcessOptionsAndAssignDefaults =
+      vi.fn<
+        (
+          ...args: ProcessedPublicOauthClientOptionsParams
+        ) => ProcessedPublicOauthClientOptionsReturn
+      >();
 
     // Mock processOptionsAndAssignDefaults to call the mock function
     vi.spyOn(utilsModule, "processOptionsAndAssignDefaults").mockImplementation(
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => {
+      (...args: ProcessedPublicOauthClientOptionsParams) => {
         mockProcessOptionsAndAssignDefaults(...args);
         return utilsModule.processOptionsAndAssignDefaults(...args);
-      },
+      }
     );
 
     // Mock createPublicOauthClient to call both the mock and the original function
     vi.spyOn(oauthModule, "createPublicOauthClient").mockImplementation(
-      (
-        ...args: CreatePublicOauthClientParams
-      ) => {
+      (...args: CreatePublicOauthClientParams) => {
         const [_client_id, ...rest] = args;
         mockProcessOptionsAndAssignDefaults(...rest);
         return originalCreatePublicOauthClient(...args);
-      },
+      }
     );
 
     const authClient = createPublicOauthClient(
@@ -79,7 +77,7 @@ describe("createPublicOauthClient", () => {
       undefined,
       undefined,
       fetch,
-      undefined,
+      undefined
     );
 
     expect(authClient).toBeDefined();
@@ -92,7 +90,7 @@ describe("createPublicOauthClient", () => {
       {
         useHistory: true,
         fetchFn: fetch,
-      },
+      }
     );
 
     expect(authClientWithOptions).toBeDefined();

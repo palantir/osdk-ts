@@ -24,6 +24,6 @@ import { Office } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const OfficeObjectSet = client(Office)
-    .where({
-        entrance: { $isNull: true }
-    });
+  .where({
+    entrance: { $isNull: true },
+  });

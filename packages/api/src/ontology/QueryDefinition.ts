@@ -27,6 +27,7 @@ export interface QueryMetadata {
   parameters: Record<string, QueryParameterDefinition<any>>;
   output: QueryDataTypeDefinition;
   rid: string;
+  typeReferences?: Record<string, QueryDataTypeDefinition>;
 }
 
 export interface QueryCompileTimeMetadata<T> {
@@ -39,9 +40,7 @@ export interface QueryDefinition<T = any> {
   version?: string;
   isFixedVersion?: boolean;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?:
-    & QueryCompileTimeMetadata<T>
-    & QueryMetadata;
+  __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata;
 }
 
 export type QueryParameterDefinition<
@@ -64,7 +63,8 @@ export type QueryDataTypeDefinition<
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType
   | MapDataType
-  | ArrayQueryDataType;
+  | ArrayQueryDataType
+  | TypeReferenceQueryDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
   nullable?: boolean;
@@ -119,38 +119,32 @@ export interface SetQueryDataType extends BaseQueryDataTypeDefinition<"set"> {
   set: QueryDataTypeDefinition;
 }
 
-export interface ArrayQueryDataType
-  extends BaseQueryDataTypeDefinition<"array">
-{
+export interface ArrayQueryDataType extends BaseQueryDataTypeDefinition<"array"> {
   array: QueryDataTypeDefinition;
 }
-export interface UnionQueryDataType
-  extends BaseQueryDataTypeDefinition<"union">
-{
+export interface UnionQueryDataType extends BaseQueryDataTypeDefinition<"union"> {
   union: ReadonlyArray<QueryDataTypeDefinition>;
 }
 
-export interface StructQueryDataType
-  extends BaseQueryDataTypeDefinition<"struct">
-{
+export interface StructQueryDataType extends BaseQueryDataTypeDefinition<"struct"> {
   struct: Record<string, QueryDataTypeDefinition>;
 }
 
-export interface TwoDimensionalAggregationDataType
-  extends BaseQueryDataTypeDefinition<"twoDimensionalAggregation">
-{
+export interface TwoDimensionalAggregationDataType extends BaseQueryDataTypeDefinition<"twoDimensionalAggregation"> {
   twoDimensionalAggregation: TwoDimensionalQueryAggregationDefinition;
 }
 
-export interface ThreeDimensionalAggregationDataType
-  extends BaseQueryDataTypeDefinition<"threeDimensionalAggregation">
-{
+export interface ThreeDimensionalAggregationDataType extends BaseQueryDataTypeDefinition<"threeDimensionalAggregation"> {
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
 }
 
 export interface MapDataType extends BaseQueryDataTypeDefinition<"map"> {
   keyType: QueryDataTypeDefinition;
   valueType: QueryDataTypeDefinition;
+}
+
+export interface TypeReferenceQueryDataType extends BaseQueryDataTypeDefinition<"typeReference"> {
+  typeId: string;
 }
 
 export type AggregationKeyDataType<V = any> =
@@ -167,13 +161,11 @@ export interface RangeAggregationKeyDataType<V = any> {
   valueType: V;
 }
 
-export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<
-  AggregationValueTypes
->;
+export type TwoDimensionalQueryAggregationDefinition =
+  AggregationKeyDataType<AggregationValueTypes>;
 
-export type ThreeDimensionalQueryAggregationDefinition = AggregationKeyDataType<
-  TwoDimensionalQueryAggregationDefinition
->;
+export type ThreeDimensionalQueryAggregationDefinition =
+  AggregationKeyDataType<TwoDimensionalQueryAggregationDefinition>;
 
 export type AggregationKeyTypes =
   | "boolean"

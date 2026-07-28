@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
+
+import { findUp } from "find-up";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { loadFoundryConfig } from "./config.js";
 
 vi.mock("find-up");
@@ -44,7 +46,7 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(correctConfig),
+      JSON.stringify(correctConfig)
     );
     await expect(loadFoundryConfig("site")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",
@@ -64,7 +66,7 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(correctConfig),
+      JSON.stringify(correctConfig)
     );
     await expect(loadFoundryConfig("site")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",
@@ -87,7 +89,7 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(correctConfig),
+      JSON.stringify(correctConfig)
     );
     await expect(loadFoundryConfig("site")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",
@@ -110,11 +112,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(inCorrectConfig),
+      JSON.stringify(inCorrectConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match",
+      "The configuration file /path/foundry.config.json does not match"
     );
   });
 
@@ -129,11 +131,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(inCorrectConfig),
+      JSON.stringify(inCorrectConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/autoVersion must match exactly one schema in oneOf"
     );
   });
 
@@ -148,11 +150,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(inCorrectConfig),
+      JSON.stringify(inCorrectConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/uploadOnly must be boolean",
+      "The configuration file /path/foundry.config.json does not match the expected schema: data/site/uploadOnly must be boolean"
     );
   });
 
@@ -160,7 +162,7 @@ describe("loadFoundryConfig - site", () => {
     vi.mocked(fsPromises.readFile).mockRejectedValue(new Error("Read error"));
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "Couldn't read or parse config",
+      "Couldn't read or parse config"
     );
   });
 
@@ -170,11 +172,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(fakeConfig),
+      JSON.stringify(fakeConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match",
+      "The configuration file /path/foundry.config.json does not match"
     );
   });
 
@@ -187,11 +189,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(fakeConfig),
+      JSON.stringify(fakeConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match",
+      "The configuration file /path/foundry.config.json does not match"
     );
   });
 
@@ -205,11 +207,11 @@ describe("loadFoundryConfig - site", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(fakeConfig),
+      JSON.stringify(fakeConfig)
     );
 
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "The configuration file /path/foundry.config.json does not match",
+      "The configuration file /path/foundry.config.json does not match"
     );
   });
 
@@ -221,7 +223,7 @@ describe("loadFoundryConfig - site", () => {
   it("should throw if config file extension isn't supported", async () => {
     vi.mocked(extname).mockResolvedValue(".yaml");
     await expect(loadFoundryConfig("site")).rejects.toThrow(
-      "Unsupported file extension:",
+      "Unsupported file extension:"
     );
   });
 });
@@ -246,7 +248,7 @@ describe("loadFoundryConfig - widget set", () => {
     };
 
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify(correctConfig),
+      JSON.stringify(correctConfig)
     );
     await expect(loadFoundryConfig("widgetSet")).resolves.toEqual({
       configFilePath: "/path/foundry.config.json",

@@ -15,12 +15,37 @@
  */
 
 export { augment } from "../object/fetchPage.js";
+export { hydrateOsdkObject } from "../object/hydrateOsdkObject.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
-// THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
-export type { ActionSignatureFromDef } from "../actions/applyAction.js";
-export { createObservableClient } from "../observable/ObservableClient.js";
+export {
+  createClientWithSubscriptionConnection,
+  createClientWithTransaction,
+} from "../createClient.js";
 export type {
+  CreateSubscriptionConnectionFn,
+  SubscriptionConnection,
+} from "../SubscriptionConnection.js";
+
+export { createScenario } from "../scenarios/createScenario.js";
+export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
+export { withScenario } from "../scenarios/withScenario.js";
+
+export {
+  applyShapeTransformations,
+  applyShapeTransformationsToArray,
+  buildObjectSetFromLinkDefByType,
+  getLinkQueryOptions,
+} from "../shapes/index.js";
+
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { ActionSignatureFromDef } from "../actions/applyAction.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export { createObservableClient } from "../observable/ObservableClient.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type {
+  CacheEntry,
+  CacheSnapshot,
   CanonicalizedOptions,
   CanonicalizeOptionsInput,
   ObservableClient,
@@ -32,20 +57,9 @@ export type {
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { Observer } from "../observable/ObservableClient/common.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
-export {
-  getMetaTagContent,
-  getOsdkConfig,
-} from "../public-utils/osdkConfig.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
-
-export { createClientWithTransaction } from "../createClient.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";
-
-export {
-  applyShapeTransformations,
-  applyShapeTransformationsToArray,
-  buildObjectSetFromLinkDefByType,
-  getLinkQueryOptions,
-} from "../shapes/index.js";

@@ -15,18 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BatchExecutionEventsRequest as _api_executor_BatchExecutionEventsRequest,
   BatchExecutionEventsResponse as _api_executor_BatchExecutionEventsResponse,
 } from "../__components.js";
 export async function getBatchExecutionEvents(
   ctx: ConjureContext,
-  request: _api_executor_BatchExecutionEventsRequest,
+  request: _api_executor_BatchExecutionEventsRequest
 ): Promise<_api_executor_BatchExecutionEventsResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/batchExecutionEvents`,
     "POST",
-    request,
+    request
   );
 }

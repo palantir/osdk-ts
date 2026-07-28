@@ -20,43 +20,52 @@ import type {
   LinkTypeMetadata,
   Visibility,
 } from "@osdk/client.unstable";
+
 import type { OptionalFields } from "../../util/OptionalFields.js";
 import type { RequiredFields } from "../../util/RequiredFields.js";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import type { TypeClass } from "../common/TypeClass.js";
 import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 
 export type LinkType =
-  | (OntologyEntityBase & OneToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & ManyToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & IntermediaryLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  });
+  | (OntologyEntityBase &
+      OneToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      ManyToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      IntermediaryLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      });
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        OneToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        ManyToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & IntermediaryLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >;
+      OntologyEntityBase &
+        IntermediaryLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >;
 
 export type ObjectTypePropertyApiName = string;
 
@@ -67,6 +76,7 @@ export interface OneToManyLinkTypeDefinition {
   manyForeignKeyProperty: ObjectTypePropertyApiName;
   cardinality: "OneToMany" | "OneToOne" | undefined;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
@@ -82,6 +92,7 @@ export interface OneToManyLinkTypeUserDefinition {
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   cardinality?: "OneToMany" | "OneToOne" | undefined;
 }
@@ -96,6 +107,7 @@ export interface ManyToManyLinkTypeDefinition {
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
   includeEmptyBackingDatasource?: boolean;
@@ -111,6 +123,7 @@ export interface ManyToManyLinkTypeUserDefinition {
   many: ManyToManyObjectLinkReferenceUserDefinition;
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   includeEmptyBackingDatasource?: boolean;
 }
@@ -126,6 +139,7 @@ export interface IntermediaryLinkTypeDefinition {
   toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
@@ -142,6 +156,7 @@ export interface IntermediaryLinkTypeUserDefinition {
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
 }
 
@@ -157,6 +172,7 @@ export interface LinkTypeMetadataUserDefinition {
   pluralDisplayName?: string;
   visibility?: Visibility;
   groupDisplayName?: string;
+  typeClasses?: TypeClass[];
 }
 
 export type LinkSideMetadata = OptionalFields<
@@ -172,8 +188,8 @@ export type UserLinkTypeStatus =
   | "experimental"
   | "example"
   | {
-    type: "deprecated";
-    message: string;
-    deadline: string;
-    replacedBy?: LinkTypeId;
-  };
+      type: "deprecated";
+      message: string;
+      deadline: string;
+      replacedBy?: LinkTypeId;
+    };

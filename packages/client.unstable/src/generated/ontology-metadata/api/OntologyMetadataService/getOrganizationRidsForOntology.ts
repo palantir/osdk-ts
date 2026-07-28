@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyRid as _api_OntologyRid,
-  OrganizationRidsForOntologyResponse
-    as _api_OrganizationRidsForOntologyResponse,
+  OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse,
 } from "../__components.js";
 
 /**
@@ -27,11 +27,11 @@ import type {
  */
 export async function getOrganizationRidsForOntology(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid,
+  ontologyRid: _api_OntologyRid
 ): Promise<_api_OrganizationRidsForOntologyResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/${ontologyRid}/organizationRids`,
-    "GET",
+    "GET"
   );
 }

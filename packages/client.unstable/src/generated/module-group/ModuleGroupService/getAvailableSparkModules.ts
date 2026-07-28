@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   AvailableModulesResponse as _AvailableModulesResponse,
   ModuleGroupName as _ModuleGroupName,
@@ -30,11 +31,11 @@ import type {
  */
 export async function getAvailableSparkModules(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName,
+  moduleGroupName: _ModuleGroupName
 ): Promise<_AvailableModulesResponse> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}/available-modules`,
-    "GET",
+    "GET"
   );
 }

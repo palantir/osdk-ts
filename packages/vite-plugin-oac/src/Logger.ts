@@ -28,12 +28,13 @@ export class Logger {
   #level: Level;
   #viteLogger: ViteLogger;
 
-  constructor(
-    { level, viteLogger }: {
-      level: Level | keyof typeof Level;
-      viteLogger: ViteLogger;
-    },
-  ) {
+  constructor({
+    level,
+    viteLogger,
+  }: {
+    level: Level | keyof typeof Level;
+    viteLogger: ViteLogger;
+  }) {
     this.#level = typeof level === "string" ? Level[level] : level;
     this.#viteLogger = viteLogger;
   }
@@ -42,7 +43,7 @@ export class Logger {
     if (this.#level <= Level.debug) {
       this.#viteLogger.info(
         `${chalk.cyan("[osdk]")} ${chalk.gray(`DEBUG: ${message}`)}`,
-        { timestamp: true },
+        { timestamp: true }
       );
     }
   }
@@ -67,7 +68,7 @@ export class Logger {
     if (this.#level <= Level.warn) {
       this.#viteLogger.warn(
         `${chalk.cyan("[osdk]")} ${chalk.yellow(message)}`,
-        { timestamp: true },
+        { timestamp: true }
       );
     }
   }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import express from "express";
 import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import express from "express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,9 +33,10 @@ export function createServer(filePath: string): express.Express {
       res.type("text/plain").send(raw);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      res.status(500).type("text/plain").send(
-        `Failed to read ontology file: ${message}`,
-      );
+      res
+        .status(500)
+        .type("text/plain")
+        .send(`Failed to read ontology file: ${message}`);
     }
   });
 

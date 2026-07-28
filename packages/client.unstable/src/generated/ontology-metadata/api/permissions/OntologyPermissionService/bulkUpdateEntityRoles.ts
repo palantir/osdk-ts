@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
-  BulkUpdateEntityRolesResponse
-    as _api_permissions_BulkUpdateEntityRolesResponse,
+  BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse,
 } from "../__components.js";
 
 /**
@@ -30,12 +30,12 @@ import type {
  */
 export async function bulkUpdateEntityRoles(
   ctx: ConjureContext,
-  updateRequest: _api_permissions_BulkUpdateEntityRolesRequest,
+  updateRequest: _api_permissions_BulkUpdateEntityRolesRequest
 ): Promise<_api_permissions_BulkUpdateEntityRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/bulkUpdateEntityRoles`,
     "POST",
-    updateRequest,
+    updateRequest
   );
 }

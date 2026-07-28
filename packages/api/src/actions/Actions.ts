@@ -23,7 +23,6 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { ObjectIdentifiers } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
-
 import type {
   ActionResults,
   ValidateActionResponseV2,
@@ -33,9 +32,9 @@ import type { NULL_VALUE } from "./NullValue.js";
 export type ApplyActionOptions =
   | { $returnEdits?: true; $validateOnly?: false }
   | {
-    $validateOnly?: true;
-    $returnEdits?: false;
-  };
+      $validateOnly?: true;
+      $returnEdits?: false;
+    };
 
 export type ApplyBatchActionOptions = { $returnEdits?: boolean };
 
@@ -66,16 +65,51 @@ export namespace ActionParam {
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
     $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
-      ? (U extends ReadonlyArray<never> ? string
-        : U extends ReadonlyArray<string> ? U[number]
-        : string)
+      ? U extends ReadonlyArray<never>
+        ? string
+        : U extends ReadonlyArray<string>
+          ? U[number]
+          : string
       : string;
     $primaryKey: string | number;
   };
 
   export type StructType<
-    T extends Record<string, keyof DataValueClientToWire>,
-  > = { [K in keyof T]: DataValueClientToWire[T[K]] };
+    T extends Record<
+      string,
+      | keyof DataValueClientToWire
+      | {
+          type: keyof DataValueClientToWire;
+          nullable: boolean;
+        }
+    >,
+  > = {
+    [K in keyof T as T[K] extends { type: infer U; nullable: infer R }
+      ? R extends true
+        ? never
+        : K
+      : K]: T[K] extends { type: infer U; nullable: infer R }
+      ? U extends keyof DataValueClientToWire
+        ? R extends true
+          ? never
+          : DataValueClientToWire[U]
+        : never
+      : T[K] extends keyof DataValueClientToWire
+        ? DataValueClientToWire[T[K]]
+        : never;
+  } & {
+    [K in keyof T as T[K] extends { type: infer U; nullable: infer R }
+      ? R extends true
+        ? K
+        : never
+      : never]?: T[K] extends { type: infer U; nullable: infer R }
+      ? U extends keyof DataValueClientToWire
+        ? R extends true
+          ? DataValueClientToWire[U] | null
+          : never
+        : never
+      : never;
+  };
 
   /**
    * Type of the symbol that indicates that a "null" value should be passed for the action parameter.

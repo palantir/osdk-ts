@@ -15,6 +15,7 @@
  */
 
 import React, { memo, useCallback } from "react";
+
 import { ToggleInput } from "../base/inputs/ToggleInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -33,7 +34,7 @@ function ToggleFilterInputInner({
     (enabled: boolean) => {
       onFilterStateChanged({ type: "TOGGLE", enabled });
     },
-    [onFilterStateChanged],
+    [onFilterStateChanged]
   );
 
   return <ToggleInput enabled={enabled} onChange={handleChange} />;

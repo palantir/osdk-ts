@@ -205,8 +205,7 @@ export interface MediaViewItemReference {
  * Expected to match mime format from  https://www.iana.org/assignments/media-types/media-types.xhtml
  */
 export type MimeType = string;
-export interface NullValue {
-}
+export interface NullValue {}
 export interface NumericValue_integer {
   type: "integer";
   integer: IntegerValue;

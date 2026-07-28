@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 
@@ -30,11 +31,11 @@ describe("Marking Constraints", () => {
       apiName: "document",
       primaryKeyPropertyApiName: "title",
       properties: {
-        "title": {
+        title: {
           type: "string",
           displayName: "Title",
         },
-        "classification": {
+        classification: {
           type: {
             type: "marking",
             markingType: "CBAC",
@@ -46,11 +47,11 @@ describe("Marking Constraints", () => {
     });
 
     const ontology = dumpOntologyFullMetadata();
-    const classificationConstraint = ontology.ontology
-      .objectTypes["com.palantir.document"].datasources[0].dataSecurity
-      ?.classificationConstraint!;
+    const classificationConstraint =
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0]
+        .dataSecurity?.classificationConstraint!;
     expect(classificationConstraint.markingGroupName).toEqual(
-      "classificationGroup",
+      "classificationGroup"
     );
   });
 
@@ -62,11 +63,11 @@ describe("Marking Constraints", () => {
       apiName: "document",
       primaryKeyPropertyApiName: "title",
       properties: {
-        "title": {
+        title: {
           type: "string",
           displayName: "Title",
         },
-        "classification": {
+        classification: {
           type: {
             type: "marking",
             markingType: "CBAC",
@@ -74,7 +75,7 @@ describe("Marking Constraints", () => {
           },
           displayName: "Classification",
         },
-        "mandatory": {
+        mandatory: {
           type: {
             type: "marking",
             markingType: "MANDATORY",
@@ -86,13 +87,14 @@ describe("Marking Constraints", () => {
     });
 
     const ontology = dumpOntologyFullMetadata();
-    const dataSecurity = ontology.ontology.objectTypes["com.palantir.document"]
-      .datasources[0].dataSecurity!;
+    const dataSecurity =
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0]
+        .dataSecurity!;
     expect(dataSecurity.markingConstraint!.markingGroupName).toEqual(
-      "mandatoryMarkingGroup",
+      "mandatoryMarkingGroup"
     );
     expect(dataSecurity.classificationConstraint!.markingGroupName).toEqual(
-      "classificationGroup",
+      "classificationGroup"
     );
   });
 
@@ -104,11 +106,11 @@ describe("Marking Constraints", () => {
       apiName: "document",
       primaryKeyPropertyApiName: "title",
       properties: {
-        "title": {
+        title: {
           type: "string",
           displayName: "Title",
         },
-        "string": {
+        string: {
           type: "string",
           displayName: "string",
         },
@@ -129,11 +131,11 @@ describe("Marking Constraints", () => {
       apiName: "document",
       primaryKeyPropertyApiName: "title",
       properties: {
-        "title": {
+        title: {
           type: "string",
           displayName: "Title",
         },
-        "classification": {
+        classification: {
           type: {
             type: "marking",
             markingType: "CBAC",
@@ -145,11 +147,11 @@ describe("Marking Constraints", () => {
     });
 
     const ontology = dumpOntologyFullMetadata();
-    const classificationConstraint = ontology.ontology
-      .objectTypes["com.palantir.document"].datasources[0].dataSecurity
-      ?.classificationConstraint!;
+    const classificationConstraint =
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0]
+        .dataSecurity?.classificationConstraint!;
     expect(classificationConstraint.markingGroupName).toEqual(
-      "classificationGroup",
+      "classificationGroup"
     );
   });
 });

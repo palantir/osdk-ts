@@ -50,21 +50,18 @@ export function createObjectSpecifierFromInterfaceSpecifier<
   interfaceSpecifier: {
     objectTypeApiName: string;
     primaryKeyValue: PrimaryKeyType<Q>;
-  },
+  }
 ): ObjectSpecifier<Q> {
-  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<
-    Q
-  >;
+  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<Q>;
 }
 
 /**
  * Extracts the primary key from an ObjectSpecifier on an OSDK object.
  *
- * @param ObjectSpecifier
  * @returns A string representing the primary key
  */
 export function extractPrimaryKeyFromObjectSpecifier(
-  ObjectSpecifier: ObjectSpecifier<any>,
+  ObjectSpecifier: ObjectSpecifier<any>
 ): string {
   return ObjectSpecifier.split(":")[1];
 }
@@ -72,11 +69,10 @@ export function extractPrimaryKeyFromObjectSpecifier(
 /**
  * Extracts the object type from an ObjectSpecifier on an OSDK object.
  *
- * @param ObjectSpecifier
  * @returns The object type extracted from the ObjectSpecifier
  */
 export function extractObjectTypeFromObjectSpecifier(
-  ObjectSpecifier: ObjectSpecifier<any>,
+  ObjectSpecifier: ObjectSpecifier<any>
 ): string {
   return ObjectSpecifier.split(":")[0];
 }

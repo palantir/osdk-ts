@@ -483,6 +483,7 @@ const referencingOntology: WireOntologyDefinition = {
             objectApiName: "com.example.dep.Task",
             objectTypeApiName: "com.example.dep.Task",
           },
+          required: true,
         },
       },
       rid: "ri.a.b.c",
@@ -562,6 +563,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -572,7 +578,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -593,6 +599,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -677,6 +684,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -950,7 +958,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -960,7 +968,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1253,6 +1261,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -1263,7 +1276,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -1284,6 +1297,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'Todo(s) to be deleted';
+              displayName: 'deleteTodos';
               multiplicity: true;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1368,6 +1382,7 @@ describe("generator", () => {
           export type ParamsDefinition = {
             object: {
               description: 'A Todo to mark completed';
+              displayName: 'markTodoCompleted';
               multiplicity: false;
               nullable: true;
               type: ActionMetadata.DataType.Object<Todo>;
@@ -1641,7 +1656,7 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -1651,7 +1666,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -2082,7 +2097,7 @@ describe("generator", () => {
           } from '@osdk/api';
 
           export namespace UsesForeignSpt {
-            export type PropertyKeys = 'id' | 'body';
+            export type PropertyKeys = 'body' | 'id';
 
             export type Links = {};
 
@@ -2205,12 +2220,14 @@ describe("generator", () => {
             export type ParamsDefinition = {
               body: {
                 description: undefined;
+                displayName: 'body';
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
                 description: undefined;
+                displayName: 'taskBody';
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
@@ -2314,6 +2331,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
         export const $ontologyRid = 'ridHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = undefined;
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2324,7 +2346,7 @@ describe("generator", () => {
         export { getCount, returnsTodo } from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
@@ -2450,7 +2472,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -2714,8 +2736,11 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
-
-        export const $branch = 'someRidHere';
+        /**
+         * The RID of the Foundry branch this SDK was generated against, or
+         * \`undefined\` if it was generated against the main branch.
+         */
+        export const $branch: string | undefined = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2726,7 +2751,7 @@ describe("generator", () => {
         export {} from './ontology/queries.js';
         export * as $Queries from './ontology/queries.js';
         export { $osdkMetadata } from './OntologyMetadata.js';
-        export { $ontologyRid } from './OntologyMetadata.js';
+        export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
         ",
@@ -2833,7 +2858,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Task {
-          export type PropertyKeys = 'taskId' | 'body';
+          export type PropertyKeys = 'body' | 'taskId';
 
           export type Links = {};
 

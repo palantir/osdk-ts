@@ -15,5 +15,5 @@
  */
 
 export const NULL_VALUE: symbol & { __type: "NULL_VALUE" } = Symbol.for(
-  "NULL_VALUE",
+  "NULL_VALUE"
 ) as symbol & { __type: "NULL_VALUE" };

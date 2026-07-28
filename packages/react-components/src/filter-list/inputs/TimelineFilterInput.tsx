@@ -15,24 +15,27 @@
  */
 
 import React, { memo, useCallback, useMemo } from "react";
+
 import { TimelineInput } from "../base/inputs/TimelineInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
 interface TimelineFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  formatDate?: (date: Date) => string;
 }
 
 function TimelineFilterInputInner({
   filterState,
   onFilterStateChanged,
+  formatDate,
 }: TimelineFilterInputProps): React.ReactElement {
   const { startDate, endDate } = useMemo(
     () =>
       filterState?.type === "TIMELINE"
         ? { startDate: filterState.startDate, endDate: filterState.endDate }
         : { startDate: undefined, endDate: undefined },
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -45,7 +48,7 @@ function TimelineFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
   return (
@@ -53,6 +56,7 @@ function TimelineFilterInputInner({
       startDate={startDate}
       endDate={endDate}
       onChange={handleChange}
+      formatDate={formatDate}
     />
   );
 }

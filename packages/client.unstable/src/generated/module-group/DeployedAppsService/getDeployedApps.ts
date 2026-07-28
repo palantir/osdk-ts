@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetDeployedAppResponse as _GetDeployedAppResponse } from "../__components.js";
 
 /**
@@ -24,7 +25,7 @@ import type { GetDeployedAppResponse as _GetDeployedAppResponse } from "../__com
  */
 export async function getDeployedApps(
   ctx: ConjureContext,
-  deployedAppRids: Array<string>,
+  deployedAppRids: Array<string>
 ): Promise<Record<string, _GetDeployedAppResponse>> {
   return conjureFetch(ctx, `/deployed-apps/bulk`, "PUT", deployedAppRids);
 }

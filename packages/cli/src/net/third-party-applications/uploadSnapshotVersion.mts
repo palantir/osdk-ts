@@ -24,28 +24,27 @@ export async function uploadSnapshotVersion(
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
   snapshotId: string,
-  zipFile: ReadableStream | Blob | BufferSource,
+  zipFile: ReadableStream | Blob | BufferSource
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot?version=${
-      encodeURIComponent(version)
-    }&preview=true${
-      snapshotId !== ""
-        ? `&snapshotIdentifier=${encodeURIComponent(snapshotId)}`
-        : ""
-    }`;
-
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot`,
+    ctx.foundryUrl
   );
+  urlObj.searchParams.set("version", version);
+  urlObj.searchParams.set("preview", "true");
+  if (snapshotId !== "") {
+    urlObj.searchParams.set("snapshotIdentifier", snapshotId);
+  }
+  const url = urlObj.toString();
+
+  const result = await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
   return result.json();
 }

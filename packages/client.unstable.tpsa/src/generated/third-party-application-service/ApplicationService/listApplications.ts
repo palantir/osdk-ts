@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationPageToken } from "../ApplicationPageToken.js";
 import type { ListApplicationsResponse } from "../ListApplicationsResponse.js";
 import type { PageSize } from "../PageSize.js";
@@ -29,7 +30,7 @@ import type { PageSize } from "../PageSize.js";
 export async function listApplications(
   ctx: ConjureContext,
   pageSize: PageSize | undefined,
-  pageToken: ApplicationPageToken | undefined,
+  pageToken: ApplicationPageToken | undefined
 ): Promise<ListApplicationsResponse> {
   return conjureFetch(ctx, `/applications`, "GET", undefined, {
     pageSize,

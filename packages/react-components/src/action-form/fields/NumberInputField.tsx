@@ -18,7 +18,9 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
+
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
+
 import styles from "./NumberInputField.module.css";
 
 /**
@@ -33,21 +35,21 @@ import styles from "./NumberInputField.module.css";
  *
  * Rejects obviously invalid strings like "1.2.3" or "+-5".
  */
-const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
+const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/u;
 
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
 
-// TODO: Add min/max validation so the field can surface
-// out-of-range errors through the form validation system.
 export function NumberInputField({
   id,
   value,
   onChange,
+  error,
   placeholder,
-  min: _min,
-  max: _max,
+  min,
+  max,
   step,
+  disabled,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
     formatNumberForDisplay(value)
@@ -74,19 +76,19 @@ export function NumberInputField({
       setDisplayValue(newValue);
       onChange?.(parseNumericValue(newValue));
     },
-    [onChange],
+    [onChange]
   );
 
   const applyStep = useCallback(
     (direction: 1 | -1) => {
       const current = parseNumericValue(displayValue) ?? 0;
       const delta = direction * (step ?? DEFAULT_STEP);
-      const next = current + delta;
+      const next = clamp(current + delta, min, max);
       const formatted = formatNumberForDisplay(next);
       setDisplayValue(formatted);
       onChange?.(next);
     },
-    [displayValue, onChange, step],
+    [displayValue, onChange, step, min, max]
   );
 
   const handleKeyDown = useCallback(
@@ -97,7 +99,7 @@ export function NumberInputField({
       e.preventDefault();
       applyStep(e.key === "ArrowUp" ? 1 : -1);
     },
-    [applyStep],
+    [applyStep]
   );
 
   const handleStepUp = useCallback(() => {
@@ -109,7 +111,10 @@ export function NumberInputField({
   }, [applyStep]);
 
   return (
-    <div className={styles.osdkNumberInputWrapper}>
+    <div
+      className={styles.osdkNumberInputWrapper}
+      aria-invalid={error != null || undefined}
+    >
       <Input
         id={id}
         className={styles.osdkNumberInputField}
@@ -119,12 +124,14 @@ export function NumberInputField({
         onValueChange={handleValueChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        disabled={disabled}
       />
       <div className={styles.osdkNumberInputStepper}>
         <Button
           className={styles.osdkNumberInputStepButton}
           aria-label="Increment"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepUp}
         >
           <ChevronUp size={CHEVRON_SIZE} />
@@ -133,6 +140,7 @@ export function NumberInputField({
           className={styles.osdkNumberInputStepButton}
           aria-label="Decrement"
           tabIndex={-1}
+          disabled={disabled}
           onClick={handleStepDown}
         >
           <ChevronDown size={CHEVRON_SIZE} />
@@ -156,4 +164,14 @@ function parseNumericValue(text: string): number | null {
 
 function formatNumberForDisplay(value: number | null): string {
   return value != null ? String(value) : "";
+}
+
+function clamp(
+  value: number,
+  min: number | undefined,
+  max: number | undefined
+): number {
+  if (min != null && value < min) return min;
+  if (max != null && value > max) return max;
+  return value;
 }

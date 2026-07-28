@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   AcceptStagedActionsRequest as _api_registry_AcceptStagedActionsRequest,
   AcceptStagedActionsResponse as _api_registry_AcceptStagedActionsResponse,
@@ -26,12 +27,12 @@ import type {
  */
 export async function acceptStagedActions(
   ctx: ConjureContext,
-  request: _api_registry_AcceptStagedActionsRequest,
+  request: _api_registry_AcceptStagedActionsRequest
 ): Promise<_api_registry_AcceptStagedActionsResponse> {
   return conjureFetch(
     ctx,
     `/staged-actions/v0/monitors-acceptStagedAction`,
     "PUT",
-    request,
+    request
   );
 }

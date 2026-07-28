@@ -1,5 +1,6 @@
 import type { WhereClause } from "@osdk/api";
 import React from "react";
+
 import { Button } from "./Button.js";
 import type { Todo } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
@@ -29,16 +30,12 @@ function FilterSelector({ setFilter, heading }: FilterSelectorProps) {
 
   return (
     <>
-      <H2>
-        {heading ?? "Filter"}
-      </H2>
+      <H2>{heading ?? "Filter"}</H2>
       <pre className="text-sm">
         {JSON.stringify(whereClauses[clauseIdx], null, 2)}
       </pre>
       <div className="my-4">
-        <Button onClick={onClick}>
-          ChangeFilter
-        </Button>
+        <Button onClick={onClick}>ChangeFilter</Button>
       </div>
     </>
   );

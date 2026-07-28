@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { JobId as _JobId } from "../__components.js";
 
 /**
@@ -24,7 +25,7 @@ import type { JobId as _JobId } from "../__components.js";
  */
 export async function getJobResult(
   ctx: ConjureContext,
-  jobId: _JobId,
+  jobId: _JobId
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -33,6 +34,6 @@ export async function getJobResult(
     undefined,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

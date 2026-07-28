@@ -16,6 +16,7 @@
 
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { Trie } from "@wry/trie";
+
 import {
   getWireObjectSet,
   isObjectSet,
@@ -59,7 +60,7 @@ export class FunctionParamsCanonicalizer {
   >();
 
   public canonicalize(
-    params: Record<string, unknown> | undefined | null,
+    params: Record<string, unknown> | undefined | null
   ): Canonical<CanonicalFunctionParams> | undefined {
     if (params == null) {
       return undefined;
@@ -74,7 +75,7 @@ export class FunctionParamsCanonicalizer {
     const canonicalValue = this.#encodeAndBuild(
       params,
       path,
-      seen,
+      seen
     ) as CanonicalFunctionParams;
 
     const marker = this.#trie.lookupArray(path);
@@ -91,7 +92,7 @@ export class FunctionParamsCanonicalizer {
   #encodeAndBuild(
     value: unknown,
     path: PathElement[],
-    seen: WeakSet<object>,
+    seen: WeakSet<object>
   ): CanonicalValue {
     if (value == null) {
       path.push(value);
@@ -117,7 +118,7 @@ export class FunctionParamsCanonicalizer {
 
     if (Array.isArray(value)) {
       path.push("$:array");
-      const arr = value.map(item => this.#encodeAndBuild(item, path, seen));
+      const arr = value.map((item) => this.#encodeAndBuild(item, path, seen));
       path.push("$:array_end");
       return arr;
     }
@@ -125,7 +126,7 @@ export class FunctionParamsCanonicalizer {
     if (value instanceof Set) {
       path.push("$:set");
       const sorted = this.#sortSetValues(Array.from(value));
-      const arr = sorted.map(item => this.#encodeAndBuild(item, path, seen));
+      const arr = sorted.map((item) => this.#encodeAndBuild(item, path, seen));
       path.push("$:set_end");
       return arr;
     }

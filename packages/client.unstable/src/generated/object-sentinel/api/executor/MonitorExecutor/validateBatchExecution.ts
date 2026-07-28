@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ValidateBatchExecutionRequest as _api_executor_ValidateBatchExecutionRequest,
-  ValidatedBatchExecutionResponse
-    as _api_executor_ValidatedBatchExecutionResponse,
+  ValidatedBatchExecutionResponse as _api_executor_ValidatedBatchExecutionResponse,
 } from "../__components.js";
 
 /**
@@ -26,12 +26,12 @@ import type {
  */
 export async function validateBatchExecution(
   ctx: ConjureContext,
-  request: _api_executor_ValidateBatchExecutionRequest,
+  request: _api_executor_ValidateBatchExecutionRequest
 ): Promise<_api_executor_ValidatedBatchExecutionResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/validateRun`,
     "POST",
-    request,
+    request
   );
 }

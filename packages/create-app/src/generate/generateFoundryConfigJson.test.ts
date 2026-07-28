@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { generateFoundryConfigJson } from "./generateFoundryConfigJson.js";
 
 const expected = `
@@ -37,6 +38,6 @@ test("it generates foundry.config.json", () => {
       foundryUrl: "https://example.palantirfoundry.com",
       application: "ri.third-party-applications.main.application.fake",
       directory: "./dist",
-    }),
+    })
   ).toEqual(expected);
 });

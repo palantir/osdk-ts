@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetObjectsNextScrollRequest as _api_GetObjectsNextScrollRequest,
   GetObjectsScrollResponse as _api_GetObjectsScrollResponse,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getObjectsNextScroll(
   ctx: ConjureContext,
-  request: _api_GetObjectsNextScrollRequest,
+  request: _api_GetObjectsNextScrollRequest
 ): Promise<_api_GetObjectsScrollResponse> {
   return conjureFetch(ctx, `/scroll/next`, "POST", request);
 }

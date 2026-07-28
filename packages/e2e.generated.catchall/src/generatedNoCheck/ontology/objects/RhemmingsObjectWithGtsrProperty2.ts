@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace RhemmingsObjectWithGtsrProperty2 {
-  export type PropertyKeys = 'id' | 'type' | 'location' | 'gtsr' | 'timestamp';
+  export type PropertyKeys = 'gtsr' | 'id' | 'location' | 'timestamp' | 'type';
 
   export type Links = {};
 

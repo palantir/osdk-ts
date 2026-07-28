@@ -15,7 +15,7 @@ export interface OsdkObjectLinks$CollateralConcernCandidate {
 }
 
 export namespace CollateralConcernCandidate {
-  export type PropertyKeys = 'collateralConcernName' | 'collateralConcernDescription';
+  export type PropertyKeys = 'collateralConcernDescription' | 'collateralConcernName';
 
   export interface Props {
     /**

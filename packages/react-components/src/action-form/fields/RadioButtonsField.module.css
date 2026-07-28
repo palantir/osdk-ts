@@ -18,12 +18,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-radio-gap);
+
+  &[data-orientation="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 
 .osdkRadioItem {
   display: flex;
   align-items: center;
   gap: var(--osdk-radio-item-gap);
+
+  &:has(.osdkRadioRoot[data-disabled]) {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity);
+  }
 }
 
 .osdkRadioRoot {
@@ -57,6 +67,10 @@
     }
   }
 
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+
   &:focus-visible {
     outline: var(--osdk-focus-outline);
     outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
@@ -75,9 +89,13 @@
 }
 
 .osdkRadioLabel {
-  font-family: var(--osdk-typography-font-family);
-  font-size: var(--osdk-typography-font-size-default);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
   line-height: var(--osdk-typography-line-height-default);
-  color: var(--osdk-typography-color-default);
+  color: var(--osdk-typography-color-default-rest);
   cursor: pointer;
+
+  .osdkRadioRoot[data-disabled] + & {
+    cursor: not-allowed;
+  }
 }

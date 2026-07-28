@@ -22,6 +22,7 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+
 import type { Unsubscribable } from "../Unsubscribable.js";
 import type {
   CommonObserveOptions,
@@ -36,7 +37,8 @@ export namespace ObserveLinks {
   export interface Options<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
-  > extends CommonObserveOptions, ObserveOptions {
+  >
+    extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
     sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;
@@ -47,15 +49,31 @@ export namespace ObserveLinks {
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
+
+    /**
+     * When true, includes all properties of the underlying concrete object type
+     * when the link target is an interface. Has no effect for non-interface
+     * targets.
+     */
+    $includeAllBaseObjectProperties?: boolean;
+
+    /**
+     * When traversing to linked objects via an interface link target, return
+     * the full concrete object type instances instead of interface views.
+     * Has no effect when the link target is already an object type.
+     *
+     * @default false
+     */
+    resolveToObjectType?: boolean;
   }
 
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
-    resolvedList: Osdk.Instance<T>[] | undefined;
+    resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
     linkedObjectsBySourcePrimaryKey: ReadonlyMap<
       string | number,
-      ReadonlyArray<Osdk.Instance<T>>
+      ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
     >;
     isOptimistic: boolean;
     lastUpdated: number;
@@ -80,6 +98,6 @@ export interface ObserveLinks {
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]
       >
-    >,
+    >
   ): Unsubscribable;
 }

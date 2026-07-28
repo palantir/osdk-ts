@@ -17,6 +17,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+
 import type { Logger } from "./Logger.js";
 
 /**
@@ -25,7 +26,7 @@ import type { Logger } from "./Logger.js";
 export async function syncDirectories(
   sourceDir: string,
   targetDir: string,
-  logger: Logger,
+  logger: Logger
 ): Promise<void> {
   logger.debug(`Synchronizing ${sourceDir} to ${targetDir}`);
 
@@ -102,13 +103,13 @@ export async function syncDirectories(
     logger.warn(
       `Failed to clean up empty directories: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
 
   // Log summary
   logger.debug(
-    `Sync complete: ${addedCount} added, ${updatedCount} updated, ${removedCount} removed, ${unchangedCount} unchanged`,
+    `Sync complete: ${addedCount} added, ${updatedCount} updated, ${removedCount} removed, ${unchangedCount} unchanged`
   );
 
   if (errors.length > 0) {
@@ -163,7 +164,7 @@ async function getFileHash(filePath: string): Promise<string> {
  */
 async function areFilesDifferent(
   sourceFile: string,
-  targetFile: string,
+  targetFile: string
 ): Promise<boolean> {
   try {
     const [sourceHash, targetHash] = await Promise.all([
@@ -182,7 +183,7 @@ async function areFilesDifferent(
  */
 async function getAllFiles(
   dir: string,
-  baseDir: string = dir,
+  baseDir: string = dir
 ): Promise<string[]> {
   const files: string[] = [];
 

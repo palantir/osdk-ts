@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
   OntologyDeleteRequest as _api_modification_OntologyDeleteRequest,
@@ -28,12 +29,12 @@ import type {
 export async function deleteOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_OntologyDeleteRequest,
+  request: _api_modification_OntologyDeleteRequest
 ): Promise<_api_modification_OntologyDeleteResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/delete/${ontologyRid}`,
     "POST",
-    request,
+    request
   );
 }

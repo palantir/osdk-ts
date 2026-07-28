@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  LoadOntologyEntityAssociationsRequest
-    as _api_association_metadata_LoadOntologyEntityAssociationsRequest,
-  LoadOntologyEntityAssociationsResponse
-    as _api_association_metadata_LoadOntologyEntityAssociationsResponse,
+  LoadOntologyEntityAssociationsRequest as _api_association_metadata_LoadOntologyEntityAssociationsRequest,
+  LoadOntologyEntityAssociationsResponse as _api_association_metadata_LoadOntologyEntityAssociationsResponse,
 } from "../association/metadata/__components.js";
 
 /**
@@ -29,12 +28,12 @@ import type {
 export async function loadOntologyEntityAssociations(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_association_metadata_LoadOntologyEntityAssociationsRequest,
+  request: _api_association_metadata_LoadOntologyEntityAssociationsRequest
 ): Promise<_api_association_metadata_LoadOntologyEntityAssociationsResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/loadOntologyEntityAssociation`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   NaturalLanguageObjectSetRequest as _api_query_NaturalLanguageObjectSetRequest,
-  NaturalLanguageObjectSetResponse
-    as _api_query_NaturalLanguageObjectSetResponse,
+  NaturalLanguageObjectSetResponse as _api_query_NaturalLanguageObjectSetResponse,
 } from "../__components.js";
 
 /**
@@ -26,7 +26,7 @@ import type {
  */
 export async function naturalLanguageToObjectSet(
   ctx: ConjureContext,
-  request: _api_query_NaturalLanguageObjectSetRequest,
+  request: _api_query_NaturalLanguageObjectSetRequest
 ): Promise<_api_query_NaturalLanguageObjectSetResponse> {
   return conjureFetch(ctx, `/natural-language/llm/objectSet`, "PUT", request);
 }

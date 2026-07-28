@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
+
+import type { JSONSchemaType } from "ajv";
 
 export interface LoadedFoundryConfig<T extends "site" | "widgetSet"> {
   foundryConfig: FoundryConfig<T>;
@@ -25,8 +26,9 @@ export interface LoadedFoundryConfig<T extends "site" | "widgetSet"> {
 
 export type FoundryConfig<T extends "site" | "widgetSet"> = T extends "site"
   ? FoundrySiteConfig
-  : T extends "widgetSet" ? FoundryWidgetSetConfig
-  : never;
+  : T extends "widgetSet"
+    ? FoundryWidgetSetConfig
+    : never;
 
 export interface FoundrySiteConfig {
   foundryUrl: string;
@@ -66,9 +68,7 @@ export interface PackageJsonAutoVersionConfig {
   type: "package-json";
 }
 
-const CONFIG_FILE_NAMES: string[] = [
-  "foundry.config.json",
-];
+const CONFIG_FILE_NAMES: string[] = ["foundry.config.json"];
 
 const FOUNDRY_SITE_CONFIG_SCHEMA = {
   type: "object",
@@ -140,13 +140,13 @@ const FOUNDRY_CONFIG_SCHEMA: {
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
 export async function loadFoundryConfig(
-  type: "site",
+  type: "site"
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 export async function loadFoundryConfig(
-  type: "widgetSet",
+  type: "widgetSet"
 ): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 export async function loadFoundryConfig(
-  type: "site" | "widgetSet",
+  type: "site" | "widgetSet"
 ): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
@@ -163,15 +163,15 @@ export async function loadFoundryConfig(
       foundryConfig = parseConfigFile(fileContent, configFilePath);
     } catch (error) {
       throw new Error(
-        `Couldn't read or parse config file ${configFilePath}. Error: ${error}`,
+        `Couldn't read or parse config file ${configFilePath}. Error: ${error}`
       );
     }
 
     if (!validate(foundryConfig)) {
       throw new Error(
-        `The configuration file ${configFilePath} does not match the expected schema: ${
-          ajv.errorsText(validate.errors)
-        }`,
+        `The configuration file ${configFilePath} does not match the expected schema: ${ajv.errorsText(
+          validate.errors
+        )}`
       );
     }
 
@@ -183,7 +183,7 @@ export async function loadFoundryConfig(
 
 function parseConfigFile<T extends "site" | "widgetSet">(
   fileContent: string,
-  configFilePath: string,
+  configFilePath: string
 ): FoundryConfig<T> {
   const extension = extname(configFilePath);
   switch (extension) {
@@ -191,7 +191,7 @@ function parseConfigFile<T extends "site" | "widgetSet">(
       return JSON.parse(fileContent);
     default:
       throw new Error(
-        `Unsupported file extension: ${extension} for config file.`,
+        `Unsupported file extension: ${extension} for config file.`
       );
   }
 }

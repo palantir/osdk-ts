@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyProposalRid as _api_OntologyProposalRid } from "../../../api/__components.js";
 import type {
-  LoadOntologyBranchForProposalRequest
-    as _branch_api_LoadOntologyBranchForProposalRequest,
-  LoadOntologyBranchForProposalResponse
-    as _branch_api_LoadOntologyBranchForProposalResponse,
+  LoadOntologyBranchForProposalRequest as _branch_api_LoadOntologyBranchForProposalRequest,
+  LoadOntologyBranchForProposalResponse as _branch_api_LoadOntologyBranchForProposalResponse,
 } from "../__components.js";
 
 /**
@@ -29,12 +28,12 @@ import type {
 export async function loadOntologyBranchForProposal(
   ctx: ConjureContext,
   ontologyProposalRid: _api_OntologyProposalRid,
-  request: _branch_api_LoadOntologyBranchForProposalRequest,
+  request: _branch_api_LoadOntologyBranchForProposalRequest
 ): Promise<_branch_api_LoadOntologyBranchForProposalResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/load/proposalV2/${ontologyProposalRid}`,
     "POST",
-    request,
+    request
   );
 }

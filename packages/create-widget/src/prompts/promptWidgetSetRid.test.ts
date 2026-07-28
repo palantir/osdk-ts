@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptWidgetSetRid } from "./promptWidgetSetRid.js";
 
@@ -47,7 +48,7 @@ test("it accepts valid initial value without prompt", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(
-    await promptWidgetSetRid({ widgetSet: "ri.something.else.and.fake" }),
+    await promptWidgetSetRid({ widgetSet: "ri.something.else.and.fake" })
   ).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-
 export class RefCounts<T extends {}> {
   private refCounts = new Map<T, number>();
 
@@ -23,8 +21,11 @@ export class RefCounts<T extends {}> {
   // needed which is good for quick clicks across tabs.
   private gcMap = new Map<T, number /* death time */>();
 
-  constructor(private keepAlive: number, private cleanup: (key: T) => void) {
-  }
+  constructor(
+    private keepAlive: number,
+    private cleanup: (key: T) => void,
+    private debug: boolean = false
+  ) {}
 
   register<X extends T>(key: X): X {
     if (!this.refCounts.has(key)) {
@@ -65,7 +66,7 @@ export class RefCounts<T extends {}> {
   gc(): void {
     const now = Date.now();
 
-    if (DEBUG_REFCOUNTS) {
+    if (process.env.NODE_ENV !== "production" && this.debug) {
       for (const [key, count] of this.refCounts) {
         // eslint-disable-next-line no-console
         console.debug("RefCounts.gc() - counts: ", JSON.stringify(key), count);
@@ -73,21 +74,25 @@ export class RefCounts<T extends {}> {
     }
 
     for (const [key, deathTime] of this.gcMap) {
-      if (DEBUG_REFCOUNTS && deathTime >= now) {
+      if (
+        process.env.NODE_ENV !== "production" &&
+        this.debug &&
+        deathTime >= now
+      ) {
         // eslint-disable-next-line no-console
         console.debug(
           "RefCounts.gc() - ttl ",
           JSON.stringify(key),
-          deathTime - now,
+          deathTime - now
         );
       }
 
       if (deathTime < now) {
-        if (DEBUG_REFCOUNTS) {
+        if (process.env.NODE_ENV !== "production" && this.debug) {
           // eslint-disable-next-line no-console
           console.debug(
             "RefCounts.gc() - registering cleaning up",
-            JSON.stringify(key),
+            JSON.stringify(key)
           );
         }
         this.gcMap.delete(key);

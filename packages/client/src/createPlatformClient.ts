@@ -16,6 +16,7 @@
 
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { SharedClientContext } from "@osdk/shared.client2";
+
 import { USER_AGENT } from "./util/UserAgent.js";
 
 export interface PlatformClient extends SharedClientContext {}
@@ -26,22 +27,13 @@ export interface PlatformClient extends SharedClientContext {}
  * If you already have an OSDK Client (from `createClient`), you do not need to
  * create one of these - those clients can be used with Platform APIs as well.
  *
- * @param baseUrl
- * @param tokenProvider
- * @param options Currently unused, reserved for future use.
- * @param fetchFn
- * @returns
+ * @param options - Currently unused, reserved for future use.
  */
 export function createPlatformClient(
   baseUrl: string,
   tokenProvider: () => Promise<string>,
   options: undefined = undefined,
-  fetchFn: typeof globalThis.fetch = fetch,
+  fetchFn: typeof globalThis.fetch = fetch
 ): PlatformClient {
-  return createSharedClientContext(
-    baseUrl,
-    tokenProvider,
-    USER_AGENT,
-    fetchFn,
-  );
+  return createSharedClientContext(baseUrl, tokenProvider, USER_AGENT, fetchFn);
 }

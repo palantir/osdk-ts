@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "@osdk/faux";
 import * as path from "node:path";
+
+import { FauxFoundry } from "@osdk/faux";
 import type { ResolvedConfig } from "vite";
+
 import { Level as LoggerLevel, Logger } from "./Logger.js";
 import { OacConfig } from "./OacConfig.js";
 
@@ -32,8 +34,7 @@ export class OacContext extends OacConfig {
     this.serverUrl = `http${
       resolvedConfig.server.https ? "s" : ""
     }://localhost:${resolvedConfig.server.port}`;
-    this.defaultOntologyRid =
-      `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`;
+    this.defaultOntologyRid = `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`;
     this.workDir = path.join("node_modules", ".osdk", ".oac");
     this.logger = new Logger({
       level: config.loggerLevel ?? LoggerLevel.info,

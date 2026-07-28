@@ -26,7 +26,7 @@ import type { FieldType } from "../FormFieldApi.js";
  */
 export function coerceFieldValue(
   parameterType: FieldType | undefined,
-  rawValue: unknown,
+  rawValue: unknown
 ): unknown {
   if (rawValue == null) {
     return undefined;

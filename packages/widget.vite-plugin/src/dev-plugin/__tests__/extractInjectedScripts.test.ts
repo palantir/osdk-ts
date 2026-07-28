@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { extractInjectedScripts } from "../extractInjectedScripts.js";
 
 const EXAMPLE_SCRIPTS = `
@@ -32,6 +33,6 @@ test("extractInjectedScripts", async () => {
   const result = await extractInjectedScripts(server);
   expect(result).toEqual({
     scriptSources: ["/src-script.js"],
-    inlineScripts: ["console.log(\"Hello, world!\");"],
+    inlineScripts: ['console.log("Hello, world!");'],
   });
 });

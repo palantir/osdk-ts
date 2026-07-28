@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetReferencedEntitiesRequest as _api_GetReferencedEntitiesRequest,
   GetReferencedEntitiesResponse as _api_GetReferencedEntitiesResponse,
@@ -28,7 +29,7 @@ import type {
  */
 export async function getReferencedEntities(
   ctx: ConjureContext,
-  request: _api_GetReferencedEntitiesRequest,
+  request: _api_GetReferencedEntitiesRequest
 ): Promise<_api_GetReferencedEntitiesResponse> {
   return conjureFetch(ctx, `/objectSets/entities`, "PUT", request);
 }

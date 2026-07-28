@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  LinkedType,
+  LinkNames,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  LinkedFilter,
+  LinkedPropertyFilterDefinition,
+  LinkedPropertyFilterState,
+} from "../types/LinkedFilterTypes.js";
+import { NO_VALUE } from "./filterValues.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -30,7 +42,7 @@ interface CompoundFilter {
 }
 
 function isCompoundFilter(
-  f: PropertyFilter | CompoundFilter,
+  f: PropertyFilter | CompoundFilter
 ): f is CompoundFilter {
   return typeof f === "object" && f != null && "__compound" in f;
 }
@@ -44,7 +56,7 @@ const NUMERIC_BOUNDS: Record<string, { min: number; max: number }> = {
 
 function clampToPropertyBounds(
   value: number,
-  propertyType: string | undefined,
+  propertyType: string | undefined
 ): number {
   if (propertyType === undefined) {
     return value;
@@ -56,10 +68,7 @@ function clampToPropertyBounds(
   return Math.max(bounds.min, Math.min(bounds.max, value));
 }
 
-function formatDateValue(
-  date: Date,
-  propertyType: string | undefined,
-): string {
+function formatDateValue(date: Date, propertyType: string | undefined): string {
   if (propertyType === "datetime") {
     return formatDateForInput(date);
   }
@@ -68,7 +77,7 @@ function formatDateValue(
 
 function filterStateToPropertyFilter(
   state: FilterState,
-  propertyType?: string,
+  propertyType?: string
 ): PropertyFilter | CompoundFilter | undefined {
   switch (state.type) {
     case "CONTAINS_TEXT": {
@@ -149,12 +158,7 @@ function filterStateToPropertyFilter(
     }
 
     case "EXACT_MATCH": {
-      if (state.values.length === 0) {
-        return undefined;
-      }
-      return state.values.length === 1
-        ? state.values[0]
-        : { $in: state.values };
+      return buildValueOrNullFilter(state.values);
     }
 
     case "SELECT": {
@@ -165,9 +169,9 @@ function filterStateToPropertyFilter(
         (v) =>
           v instanceof Date
             ? formatDateValue(v, propertyType)
-            : v as string | number | boolean,
+            : (v as string | number | boolean)
       );
-      return values.length === 1 ? values[0] : { $in: values };
+      return buildValueOrNullFilter(values);
     }
 
     case "TIMELINE": {
@@ -209,27 +213,51 @@ function filterStateToPropertyFilter(
 }
 
 /**
- * Builds a WhereClause from filter definitions and their current states.
- *
- * The filterStates map uses string keys derived from filter definitions via
- * getFilterKey(). This ensures stable state lookups even when filters are
- * reordered or definition object references change.
- *
- * Note: The `as WhereClause<Q>` casts are necessary because we're building
- * clauses dynamically from property keys determined at runtime. TypeScript
- * cannot verify that the constructed clause structure matches the generic Q's
- * expected shape, but the structure is guaranteed to be valid by construction.
+ * Builds a WHERE clause fragment for a single property key from filter state.
  */
+export function buildPropertyKeyClause(
+  key: string | number | symbol,
+  state: FilterState,
+  propertyType?: string
+): Record<string, unknown> | undefined {
+  const filter = filterStateToPropertyFilter(state, propertyType);
+  if (filter === undefined) {
+    return undefined;
+  }
+  const isExcluding = "isExcluding" in state && state.isExcluding;
+  if (isCompoundFilter(filter)) {
+    const fieldClauses = filter.conditions.map((c) => ({
+      [key]: c,
+    }));
+    let rangeClause: Record<string, unknown> =
+      fieldClauses.length === 1 ? fieldClauses[0] : { $and: fieldClauses };
+    if (filter.includeNull) {
+      rangeClause = {
+        $or: [rangeClause, { [key]: { $isNull: true } }],
+      };
+    }
+    return isExcluding ? { $not: rangeClause } : rangeClause;
+  } else {
+    const clause = { [key]: filter };
+    return isExcluding ? { $not: clause } : clause;
+  }
+}
+
 export interface PropertyTypeInfo {
   type: string;
   multiplicity: boolean;
 }
 
+/**
+ * Builds a `WhereClause<Q>` from direct (non-link-traversing) filter
+ * definitions and current states. LINKED_PROPERTY filters are excluded —
+ * use `getActiveLinkedFilters` for those and apply via `narrowObjectSet`.
+ */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   propertyTypes?: Map<string, PropertyTypeInfo>,
-  excludeFilterKey?: string,
+  excludeFilterKey?: string
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
     return {} as WhereClause<Q>;
@@ -250,28 +278,14 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
     switch (definition.type) {
       case "PROPERTY": {
-        const propertyType = propertyTypes?.get(definition.key as string)
-          ?.type;
-        const filter = filterStateToPropertyFilter(state, propertyType);
-        if (filter !== undefined) {
-          const isExcluding = "isExcluding" in state && state.isExcluding;
-          if (isCompoundFilter(filter)) {
-            const fieldClauses = filter.conditions.map(c => ({
-              [definition.key]: c,
-            }));
-            let rangeClause: Record<string, unknown> = fieldClauses.length === 1
-              ? fieldClauses[0]
-              : { $and: fieldClauses };
-            if (filter.includeNull) {
-              rangeClause = {
-                $or: [rangeClause, { [definition.key]: { $isNull: true } }],
-              };
-            }
-            clauses.push(isExcluding ? { $not: rangeClause } : rangeClause);
-          } else {
-            const clause = { [definition.key]: filter };
-            clauses.push(isExcluding ? { $not: clause } : clause);
-          }
+        const propertyType = propertyTypes?.get(definition.key as string)?.type;
+        const clause = buildPropertyKeyClause(
+          definition.key,
+          state,
+          propertyType
+        );
+        if (clause !== undefined) {
+          clauses.push(clause);
         }
         break;
       }
@@ -281,7 +295,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`
             );
           }
           break;
@@ -289,25 +303,25 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (!state.hasLink) {
           break;
         }
-        clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        const hasLinkClause = { [definition.linkName]: { $isNotNull: true } };
+        // "Excluding" keeps objects that do NOT have the link.
+        clauses.push(
+          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause
+        );
         break;
       }
 
-      case "LINKED_PROPERTY": {
-        // OSDK WhereClause does not support filtering through links.
-        // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
-        // LinkedProperty filters render UI for selection but cannot be included
-        // in the where clause. Consumers needing linked property filtering must
-        // implement it using ObjectSet.pivotTo() and intersect().
+      case "LINKED_PROPERTY":
+        // Handled by getActiveLinkedFilters — can't be expressed as a
+        // WhereClause<Q>.
         break;
-      }
 
       case "KEYWORD_SEARCH": {
         if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
+              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`
             );
           }
           break;
@@ -336,7 +350,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             if (process.env.NODE_ENV !== "production") {
               // eslint-disable-next-line no-console
               console.warn(
-                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped.",
+                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped."
               );
             }
             break;
@@ -349,9 +363,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
 
-        const containsOp = state.operator === "AND"
-          ? "$containsAllTerms"
-          : "$containsAnyTerm";
+        const containsOp =
+          state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
 
         const propertySearches = propertiesToSearch.map((prop) => ({
           [prop]: { [containsOp]: searchTerm },
@@ -363,9 +376,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         } else {
           searchClause = { $or: propertySearches };
         }
-        clauses.push(
-          state.isExcluding ? { $not: searchClause } : searchClause,
-        );
+        clauses.push(state.isExcluding ? { $not: searchClause } : searchClause);
         break;
       }
 
@@ -374,7 +385,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`
             );
           }
           break;
@@ -383,6 +394,21 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         const customClause = definition.toWhereClause(state);
         if (customClause && Object.keys(customClause).length > 0) {
           clauses.push(customClause as Record<string, unknown>);
+        }
+        break;
+      }
+
+      case "STATIC_VALUES": {
+        if (definition.toWhereClause) {
+          const staticClause = definition.toWhereClause(state);
+          if (staticClause && Object.keys(staticClause).length > 0) {
+            clauses.push(staticClause as Record<string, unknown>);
+          }
+        } else {
+          const clause = buildPropertyKeyClause(definition.key, state);
+          if (clause !== undefined) {
+            clauses.push(clause);
+          }
         }
         break;
       }
@@ -401,4 +427,103 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   }
 
   return { $and: clauses } as WhereClause<Q>;
+}
+
+/**
+ * Builds the inner `WhereClause` for a linked-property filter, typed against
+ * the linked object type. Returns `undefined` when the state doesn't yield a
+ * predicate (e.g. empty selection).
+ */
+export function buildLinkedInnerWhere<
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q>,
+>(
+  definition: LinkedPropertyFilterDefinition<Q, L>,
+  state: LinkedPropertyFilterState
+): WhereClause<LinkedType<Q, L>> | undefined {
+  const record = buildPropertyKeyClause(
+    definition.linkedPropertyKey,
+    state.linkedFilterState
+  );
+  if (record === undefined) {
+    return undefined;
+  }
+  return record as WhereClause<LinkedType<Q, L>>;
+}
+
+/**
+ * Returns the active LINKED_PROPERTY filters as `LinkedFilter<Q>` records.
+ */
+export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  excludeFilterKey?: string
+): Array<LinkedFilter<Q>> {
+  if (!definitions || definitions.length === 0) {
+    return [];
+  }
+  const result: Array<LinkedFilter<Q>> = [];
+  for (const definition of definitions) {
+    if (definition.type !== "LINKED_PROPERTY") {
+      continue;
+    }
+    const key = getFilterKey(definition);
+    if (key === excludeFilterKey) {
+      continue;
+    }
+    const state = filterStates.get(key);
+    if (!state || state.type !== "linkedProperty") {
+      continue;
+    }
+    if (definition.reverseLinkName == null) {
+      continue;
+    }
+    const innerWhere = buildLinkedInnerWhere(definition, state);
+    if (innerWhere === undefined) {
+      continue;
+    }
+    result.push({
+      linkName: definition.linkName,
+      reverseLinkName: definition.reverseLinkName,
+      innerWhere,
+    } as LinkedFilter<Q>);
+  }
+  return result;
+}
+
+/**
+ * Splits values into real values and the NO_VALUE sentinel, returning $isNull
+ * for the sentinel. A literal empty string `""` is a real value and matches
+ * via equality (`{ key: "" }`), not `$isNull`.
+ */
+function buildValueOrNullFilter(
+  values: (string | number | boolean)[]
+): PropertyFilter | CompoundFilter | undefined {
+  if (values.length === 0) {
+    return undefined;
+  }
+
+  const realValues = values.filter((v) => v !== NO_VALUE);
+  const hasNoValue = realValues.length < values.length;
+
+  const valueClause: PropertyFilter | undefined =
+    realValues.length === 0
+      ? undefined
+      : realValues.length === 1
+        ? realValues[0]
+        : { $in: realValues };
+
+  if (!hasNoValue) {
+    return valueClause;
+  }
+
+  if (valueClause === undefined) {
+    return { $isNull: true };
+  }
+
+  return {
+    __compound: true,
+    conditions: [valueClause],
+    includeNull: true,
+  };
 }

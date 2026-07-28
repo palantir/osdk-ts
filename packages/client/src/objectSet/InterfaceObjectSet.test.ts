@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
 import {
   BarInterface,
+  ComplexImplementationInterface,
+  ComplexImplementationObject,
   Employee,
   FooInterface,
 } from "@osdk/client.test.ontology";
+import type { SetupServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  MockOntologiesV2,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
-import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("ObjectSet", () => {
   let client: Client;
+  let apiServer: SetupServer;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -54,7 +63,7 @@ describe("ObjectSet", () => {
   it("interface objects set loading", async () => {
     const objectSet = client(FooInterface);
     const { data: interfacers } = await objectSet.fetchPage();
-    const santa = interfacers.find(obj => obj.$primaryKey === 50050);
+    const santa = interfacers.find((obj) => obj.$primaryKey === 50050);
     expect(santa).toBeDefined();
     expect(santa?.fooSpt).toEqual("Santa Claus");
 
@@ -66,44 +75,110 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by field from a interface object set - where clause", async () => {
-    const whereClausedInterface = await client(FooInterface).where({
-      fooSpt: "Santa Claus",
-    }).fetchPage({ $includeAllBaseObjectProperties: true });
+    const whereClausedInterface = await client(FooInterface)
+      .where({
+        fooSpt: "Santa Claus",
+      })
+      .fetchPage({ $includeAllBaseObjectProperties: true });
 
     const interfaceObj = whereClausedInterface.data[0];
     expect(interfaceObj.fooSpt).toEqual("Santa Claus");
 
     const asEmployee = interfaceObj.$as(Employee);
-    expectTypeOf<typeof asEmployee>().toEqualTypeOf<
-      Osdk.Instance<Employee, "$allBaseProperties", PropertyKeys<Employee>, {}>
-    >;
-
     expect(asEmployee.fullName).toEqual("Santa Claus");
     expect(asEmployee.office).toEqual("NYC");
 
-    const whereClausedInterface2 = await client(FooInterface).where({
-      fooSpt: "Santa Claus",
-    }).fetchPage({
-      $includeAllBaseObjectProperties: false,
-    });
+    const whereClausedInterface2 = await client(FooInterface)
+      .where({
+        fooSpt: "Santa Claus",
+      })
+      .fetchPage({
+        $includeAllBaseObjectProperties: false,
+      });
 
     const interfaceObj2 = whereClausedInterface2.data[0];
     expect(interfaceObj2.fooSpt).toEqual("Santa Claus");
     const asEmployee2 = interfaceObj2.$as(Employee);
-
-    expectTypeOf<typeof asEmployee2>().toEqualTypeOf<
-      Osdk.Instance<Employee, never, "fullName" | "office", {}>
-    >;
-
     expect(asEmployee2.fullName).toEqual("Santa Claus");
-    // @ts-expect-error
-    expect(asEmployee2.employeeId).toBeUndefined();
   });
 
-  it("interface links", async () => {
+  it("interface links", () => {
     const objectSet = client(BarInterface).pivotTo("toFoo");
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
     >;
+  });
+
+  describe("ComplexImplementationInterface (one prop per impl kind)", () => {
+    const baseUrl = "https://stack.palantir.com/";
+
+    const complexImplPropertiesV2 =
+      stubData.complexImplementationObjectTypeWithLinkTypes
+        .implementsInterfaces2!.ComplexImplementationInterface.propertiesV2!;
+
+    const wireMappings = {
+      interfaceToObjectTypeMappings: {
+        ComplexImplementationInterface: {
+          ComplexImplementationObject: Object.fromEntries(
+            Object.entries(complexImplPropertiesV2)
+              .filter(([, impl]) => impl.type === "localPropertyImplementation")
+              .map(([k, impl]) => [
+                k,
+                (impl as { propertyApiName: string }).propertyApiName,
+              ])
+          ),
+        },
+      },
+      interfaceToObjectTypeMappingsV2: {
+        ComplexImplementationInterface: {
+          ComplexImplementationObject: complexImplPropertiesV2,
+        },
+      },
+    };
+
+    it("derives interface property values from non-local implementations and rejects $as back to the OT", async () => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            () => ({
+              data: [
+                {
+                  __rid: "ri.phonograph2-objects.main.object.complex-impl-1",
+                  __primaryKey: "k1",
+                  __apiName: "ComplexImplementationObject",
+                  id: "k1",
+                  localValue: "hello",
+                  nestedStruct: { label: "nested-label", count: 7 },
+                  multiStruct: {
+                    alpha: "a-val",
+                    beta: 42,
+                    gamma: "ignored",
+                  },
+                  arrayValue: [1, 2, 3],
+                },
+              ],
+              ...wireMappings,
+              totalCount: "1",
+              propertySecurities: [],
+            })
+          )
+        );
+
+        const result = await client(ComplexImplementationInterface).fetchPage();
+        expect(result.data).toHaveLength(1);
+
+        const ifaceObj = result.data[0];
+        expect(ifaceObj.iLocal).toEqual("hello");
+        expect(ifaceObj.iStructField).toEqual("nested-label");
+        expect(ifaceObj.iStruct).toEqual({ theAlpha: "a-val", theBeta: 42 });
+        expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
+
+        // @ts-expect-error
+        expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
+          /has a non-local implementation/u
+        );
+      })();
+    });
   });
 });

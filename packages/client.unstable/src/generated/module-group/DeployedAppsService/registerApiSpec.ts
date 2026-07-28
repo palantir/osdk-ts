@@ -24,7 +24,7 @@ export async function registerApiSpec(
   ctx: ConjureContext,
   deployedAppRid: string,
   branch: string,
-  specContent: string,
+  specContent: string
 ): Promise<void> {
   return conjureFetch(
     ctx,
@@ -32,6 +32,6 @@ export async function registerApiSpec(
     "PUT",
     specContent,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest,
   OntologyBulkLoadEntitiesResponse as _api_OntologyBulkLoadEntitiesResponse,
@@ -32,12 +33,12 @@ import type {
 export async function bulkLoadOntologyEntities(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
-  request: _api_OntologyBulkLoadEntitiesRequest,
+  request: _api_OntologyBulkLoadEntitiesRequest
 ): Promise<_api_OntologyBulkLoadEntitiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/bulkLoadEntities`,
     "POST",
-    request,
+    request
   );
 }

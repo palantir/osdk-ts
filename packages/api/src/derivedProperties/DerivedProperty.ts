@@ -46,52 +46,52 @@ export namespace DerivedProperty {
   export interface NumericPropertyDefinition<
     T extends SimplePropertyDef,
     Q extends ObjectOrInterfaceDefinition,
-  > extends Definition<T, Q>, NumericExpressions<Q, T> {}
+  >
+    extends Definition<T, Q>, NumericExpressions<Q, T> {}
 
   export interface DatetimePropertyDefinition<
     T extends SimplePropertyDef,
     Q extends ObjectOrInterfaceDefinition,
-  > extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
+  >
+    extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
 
   export type Creator<
     Q extends ObjectOrInterfaceDefinition,
     T extends SimplePropertyDef,
   > = (
-    baseObjectSet: Builder<Q, false>,
+    baseObjectSet: Builder<Q, false>
   ) =>
     | Definition<T, Q>
     | NumericPropertyDefinition<T, Q>
     | DatetimePropertyDefinition<T, Q>;
 
-  export type Clause<
-    Q extends ObjectOrInterfaceDefinition,
-  > = {
+  export type Clause<Q extends ObjectOrInterfaceDefinition> = {
     [key: string]: Creator<Q, SimplePropertyDef>;
   };
 
   interface BaseBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {
-  }
+  >
+    extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
 
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {
-  }
+  >
+    extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
 
   export interface AggregateBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {
-  }
+  >
+    extends BaseBuilder<Q, CONSTRAINED>, Aggregatable<Q> {}
 
   export interface SelectPropertyBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
-  }
+  >
+    extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
 
   export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
 }
@@ -99,15 +99,34 @@ export namespace DerivedProperty {
 type BuilderTypeFromConstraint<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
-> = CONSTRAINED extends true ? DerivedProperty.AggregateBuilder<Q, true>
+> = CONSTRAINED extends true
+  ? DerivedProperty.AggregateBuilder<Q, true>
   : DerivedProperty.SelectPropertyBuilder<Q, false>;
 
 type Filterable<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
 > = {
+  /**
+   * Narrows the builder's object set to only the objects matching the given clause, so that any
+   * subsequent pivot, aggregation, or selection in the chain runs against the filtered subset
+   * rather than the full object set.
+   * @param clause - A {@link WhereClause} used to filter the builder's current object set; only objects
+   *   matching all conditions remain.
+   * @example
+   * ```ts
+   * // Count only the reports whose status is "active" rather than every report.
+   * await client(Employee).withProperties({
+   *   activeReportCount: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports")
+   *       .where({ status: { $eq: "active" } })
+   *       .aggregate("$count"),
+   * }).fetchPage();
+   * ```
+   * @returns the builder, narrowed to objects matching the clause
+   */
   readonly where: (
-    clause: WhereClause<Q>,
+    clause: WhereClause<Q>
   ) => BuilderTypeFromConstraint<Q, CONSTRAINED>;
 };
 
@@ -115,45 +134,59 @@ type Pivotable<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
 > = {
+  /**
+   * Traverses a link from the builder's object set to its linked object type.
+   * @param type - The linked object type's link api name
+   * @example
+   * ```ts
+   * await client(Employee).withProperties({
+   *   leadName: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+   * }).fetchPage();
+   * ```
+   * @returns a builder over the linked object type
+   */
   readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L,
+    type: L
   ) => CONSTRAINED extends true
     ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
-    : NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-      true ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
-    : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
+    : NonNullable<
+          CompileTimeMetadata<Q>["links"][L]["multiplicity"]
+        > extends true
+      ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
+      : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
 };
 
 type Constant<Q extends ObjectOrInterfaceDefinition> = {
   readonly constant: {
     readonly double: (
-      value: number,
+      value: number
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"double", "non-nullable", "single">,
       Q
     >;
 
     readonly integer: (
-      value: number,
+      value: number
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"integer", "non-nullable", "single">,
       Q
     >;
     readonly long: (
-      value: string,
+      value: string
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"long", "non-nullable", "single">,
       Q
     >;
 
     readonly datetime: (
-      value: string,
+      value: string
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
       Q
     >;
     readonly timestamp: (
-      value: string,
+      value: string
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
       Q
@@ -161,57 +194,75 @@ type Constant<Q extends ObjectOrInterfaceDefinition> = {
   };
 };
 
-type Aggregatable<
-  Q extends ObjectOrInterfaceDefinition,
-> = {
+type Aggregatable<Q extends ObjectOrInterfaceDefinition> = {
+  /**
+   * Aggregates over the builder's object set to produce a derived property value.
+   * @param aggregationSpecifier - Either `"$count"` or a `"<propertyName>:<aggregation>"` key
+   *   (e.g., `"salary:max"`, `"salary:approximatePercentile"`, `"name:collectList"`)
+   * @param opts - For `collectList` / `collectSet` accepts `{ limit }`; for
+   *   `approximatePercentile` accepts `{ percentile }`. Not accepted for other aggregations.
+   * @example
+   * ```ts
+   * await client(Employee).withProperties({
+   *   reportCount: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports").aggregate("$count"),
+   *   p95Salary: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports")
+   *       .aggregate("salary:approximatePercentile", { percentile: 95 }),
+   * }).fetchPage();
+   * ```
+   * @returns a derived property definition holding the aggregation result
+   */
   readonly aggregate: <
-    V extends ValidAggregationKeys<
-      Q,
-      "withPropertiesAggregate"
-    >,
+    V extends ValidAggregationKeys<Q, "withPropertiesAggregate">,
   >(
     aggregationSpecifier: V,
     opts?: V extends `${any}:${infer P}`
-      ? P extends CollectWithPropAggregations ? { limit: number }
-      : P extends "approximatePercentile" ? { percentile: number }
+      ? P extends CollectWithPropAggregations
+        ? { limit: number }
+        : P extends "approximatePercentile"
+          ? { percentile: number }
+          : never
       : never
-      : never,
   ) => DefinitionForType<
     Q,
     V extends `${infer N}:${infer P}`
-      ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
-          CompileTimeMetadata<Q>["properties"][N]["type"],
-          "nullable",
-          "array"
-        >
-      : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
-          CompileTimeMetadata<Q>["properties"][N]["type"],
-          "nullable",
-          "single"
-        >
-      : P extends "approximateDistinct" | "exactDistinct"
+      ? P extends CollectWithPropAggregations
         ? SimplePropertyDef.Make<
-          "integer",
-          "non-nullable",
-          "single"
-        >
-      : SimplePropertyDef.Make<
-        "double",
-        "nullable",
-        "single"
-      >
-      : V extends "$count" ? SimplePropertyDef.Make<
-          "integer",
-          "non-nullable",
-          "single"
-        >
-      : never
+            CompileTimeMetadata<Q>["properties"][N]["type"],
+            "nullable",
+            "array"
+          >
+        : P extends MinMaxWithPropAggregateOption
+          ? SimplePropertyDef.Make<
+              CompileTimeMetadata<Q>["properties"][N]["type"],
+              "nullable",
+              "single"
+            >
+          : P extends "approximateDistinct" | "exactDistinct"
+            ? SimplePropertyDef.Make<"integer", "non-nullable", "single">
+            : SimplePropertyDef.Make<"double", "nullable", "single">
+      : V extends "$count"
+        ? SimplePropertyDef.Make<"integer", "non-nullable", "single">
+        : never
   >;
 };
 
 type Selectable<Q extends ObjectOrInterfaceDefinition> = {
+  /**
+   * Exposes an existing property of the builder's object type as a derived property value.
+   * @param propertyName - The api name of the property to expose
+   * @example
+   * ```ts
+   * await client(Employee).withProperties({
+   *   leadName: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+   * }).fetchPage();
+   * ```
+   * @returns a derived property definition holding the property value
+   */
   readonly selectProperty: <R extends PropertyKeys<Q>>(
-    propertyName: R,
+    propertyName: R
   ) => DefinitionForType<
     Q,
     SimplePropertyDef.Make<

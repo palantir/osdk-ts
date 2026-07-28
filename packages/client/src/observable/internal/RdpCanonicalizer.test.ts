@@ -17,6 +17,7 @@
 import type { DerivedProperty } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import { extractRdpFieldNames } from "./utils/rdpFieldOperations.js";
 
@@ -97,7 +98,7 @@ describe("RdpCanonicalizer", () => {
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
     const objectSetCanonical = sharedCanonicalizer.canonicalize(
-      objectSetWithProperties,
+      objectSetWithProperties
     );
 
     expect(listCanonical).toBe(objectSetCanonical);

@@ -16,6 +16,7 @@
 
 import { Dialog } from "@osdk/react-components/primitives";
 import React from "react";
+
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
 import { CbacPickerDialogFooter } from "./CbacPickerDialogFooter.js";
@@ -45,7 +46,7 @@ export function BaseCbacPickerDialog({
       }
       onOpenChange(open);
     },
-    [onCancel, onOpenChange],
+    [onCancel, onOpenChange]
   );
 
   return (

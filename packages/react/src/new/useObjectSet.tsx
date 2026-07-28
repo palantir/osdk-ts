@@ -24,15 +24,17 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-
-import {
-  getWireObjectSet,
-  type ObserveObjectSetArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client";
+import type { ObserveObjectSetArgs } from "@osdk/client/observable";
 import React from "react";
+
 import { extractPayloadError } from "./hookUtils.js";
-import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import {
+  devToolsMetadata,
+  makeExternalStore,
+  type Snapshot,
+} from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -64,7 +66,10 @@ export interface UseObjectSetOptions<
   subtract?: ObjectSet<Q>[];
 
   /**
-   * Link to pivot to (changes the type)
+   * Link to pivot to (changes the type).
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<Q>;
 
@@ -99,6 +104,9 @@ export interface UseObjectSetOptions<
    * When true, the object set will automatically update when matching objects are
    * added, updated, or removed.
    *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
    * @default false
    */
   streamUpdates?: boolean;
@@ -123,11 +131,13 @@ export interface UseObjectSetOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for filter selection
    * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
    *   where: { status: selectedStatus },
-   *   enabled: !!selectedStatus
+   *   enabled: !!selectedStatus,
    * });
+   * ```
    */
   enabled?: boolean;
 }
@@ -175,12 +185,6 @@ export interface UseObjectSetResult<
   refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
 /**
  * React hook for observing and interacting with OSDK object sets.
@@ -193,30 +197,59 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @param options - Options for filtering, sorting, and adding new derived properties
  * @returns Object set data with both existing and new derived properties
  */
+// pivotTo overload: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
 export function useObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
-  options: UseObjectSetOptions<Q, RDPs> = {},
-): UseObjectSetResult<Q, RDPs> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  options: UseObjectSetOptions<Q, RDPs> & {
+    pivotTo: LinkNames<Q>;
+    streamUpdates?: never;
+  }
+): UseObjectSetResult<Q, RDPs>;
 
-  const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
-    options;
+// Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never }
+): UseObjectSetResult<Q, RDPs>;
+
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options: UseObjectSetOptions<Q, RDPs> = {}
+): UseObjectSetResult<Q, RDPs> {
+  const { observableClient } = React.useContext(OsdkContext);
+
+  const {
+    enabled: enabledOption = true,
+    streamUpdates,
+    ...otherOptions
+  } = options;
   const enabled = enabledOption && baseObjectSet != null;
 
   // Track object type to detect when we switch to a different object type
-  const objectTypeKey = enabled && baseObjectSet
-    ? baseObjectSet.$objectSetInternals.def.apiName
-    : OBJECT_TYPE_PLACEHOLDER;
+  const objectTypeKey =
+    enabled && baseObjectSet
+      ? baseObjectSet.$objectSetInternals.def.apiName
+      : OBJECT_TYPE_PLACEHOLDER;
 
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
   const previousCompletedPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
   >();
-
+  // TODO: Is it expected to only clear the previousCompletedPayloadRef when the object type changes?
+  // What if the same object type is queried with different filters, should we also clear the cache?
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;
@@ -244,71 +277,70 @@ export function useObjectSet<
   const baseObjectSetRef = React.useRef(baseObjectSet);
   baseObjectSetRef.current = baseObjectSet;
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
-          () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `objectSet [DISABLED]`
-            : void 0,
-        );
-      }
-
-      const initialValue = objectTypeChanged
-        ? undefined
-        : previousCompletedPayloadRef.current;
-
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
-        (observer) => {
-          if (!baseObjectSetRef.current) {
-            return { unsubscribe: () => {} };
-          }
-          const subscription = observableClient.observeObjectSet(
-            baseObjectSetRef.current as ObjectSet<Q>,
-            {
-              where: canonOptions.where,
-              withProperties: canonOptions.withProperties,
-              union: canonOptions.union,
-              intersect: canonOptions.intersect,
-              subtract: canonOptions.subtract,
-              pivotTo: otherOptions.pivotTo,
-              pageSize: otherOptions.pageSize,
-              orderBy: canonOptions.orderBy,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              autoFetchMore: otherOptions.autoFetchMore,
-              streamUpdates,
-              select: canonOptions.$select,
-            },
-            observer,
-          );
-          return subscription;
-        },
-        process.env.NODE_ENV !== "production"
-          ? `objectSet ${objectTypeKey}`
-          : void 0,
-        initialValue,
+        () => ({ unsubscribe: () => {} }),
+        devToolsMetadata({
+          hookType: "useObjectSet",
+          objectType: objectTypeKey,
+        })
       );
-    },
-    [
-      enabled,
-      observableClient,
-      objectSetKey,
-      canonOptions.where,
-      canonOptions.withProperties,
-      canonOptions.orderBy,
-      canonOptions.union,
-      canonOptions.intersect,
-      canonOptions.subtract,
-      canonOptions.$select,
-      otherOptions.pivotTo,
-      otherOptions.pageSize,
-      otherOptions.autoFetchMore,
-      otherOptions.dedupeIntervalMs,
-      streamUpdates,
-      objectTypeKey,
-    ],
-  );
+    }
+
+    const initialValue = objectTypeChanged
+      ? undefined
+      : previousCompletedPayloadRef.current;
+
+    return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+      (observer) => {
+        if (!baseObjectSetRef.current) {
+          return { unsubscribe: () => {} };
+        }
+        const subscription = observableClient.observeObjectSet(
+          baseObjectSetRef.current as ObjectSet<Q>,
+          {
+            where: canonOptions.where,
+            withProperties: canonOptions.withProperties,
+            union: canonOptions.union,
+            intersect: canonOptions.intersect,
+            subtract: canonOptions.subtract,
+            pivotTo: otherOptions.pivotTo,
+            pageSize: otherOptions.pageSize,
+            orderBy: canonOptions.orderBy,
+            dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+            autoFetchMore: otherOptions.autoFetchMore,
+            streamUpdates,
+            select: canonOptions.$select,
+          },
+          observer
+        );
+        return subscription;
+      },
+      devToolsMetadata({
+        hookType: "useObjectSet",
+        objectType: objectTypeKey,
+      }),
+      initialValue
+    );
+  }, [
+    enabled,
+    observableClient,
+    objectSetKey,
+    canonOptions.where,
+    canonOptions.withProperties,
+    canonOptions.orderBy,
+    canonOptions.union,
+    canonOptions.intersect,
+    canonOptions.subtract,
+    canonOptions.$select,
+    otherOptions.pivotTo,
+    otherOptions.pageSize,
+    otherOptions.autoFetchMore,
+    otherOptions.dedupeIntervalMs,
+    streamUpdates,
+    objectTypeKey,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
   if (payload && isPayloadCompleted(payload)) {
@@ -334,9 +366,7 @@ export function useObjectSet<
         PropertyKeys<Q>,
         RDPs
       >[],
-      isLoading: enabled
-        ? !isPayloadCompleted(payload)
-        : false,
+      isLoading: enabled ? !isPayloadCompleted(payload) : false,
       error: extractPayloadError(lastLoaded, "Failed to load object set"),
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
@@ -351,9 +381,7 @@ export function useObjectSet<
 function isPayloadCompleted<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
->(
-  payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>,
-): boolean {
+>(payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>): boolean {
   if (payload != null && "error" in payload) {
     return true;
   }

@@ -21,11 +21,15 @@ import type { ListVersionsResponse } from "./ListVersionsResponse.mjs";
 
 export async function listVersions(
   ctx: InternalClientContext,
-  thirdPartyAppRid: ThirdPartyAppRid,
+  thirdPartyAppRid: ThirdPartyAppRid
 ): Promise<ListVersionsResponse> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions?preview=true`;
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions`,
+    ctx.foundryUrl
+  );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
 
   const result = await fetch(url);
   return result.json();

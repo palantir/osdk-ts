@@ -20,6 +20,7 @@ import type {
   ObjectSpecifier,
   PropertySecurity,
 } from "@osdk/api";
+
 import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type {
@@ -44,23 +45,21 @@ export interface BaseHolder {
   readonly $objectSpecifier: ObjectSpecifier<any>;
   readonly $propertySecurities: PropertySecurity[];
 
-  readonly "$as": (
-    newDef: string | ObjectOrInterfaceDefinition,
+  readonly $as: (
+    newDef: string | ObjectOrInterfaceDefinition
   ) => ObjectHolder | InterfaceHolder;
 
-  readonly "$clone": (
-    newProps?: Record<string, any>,
-  ) => this;
+  readonly $clone: (newProps?: Record<string, any>) => this;
 
-  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
+  readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
     readonly ObjectMetadata: ObjectMetadata;
   };
 
-  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": <
+  readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
     PropertyApiName extends string,
   >(
     propertyApiName: PropertyApiName,
-    options?: FormatPropertyOptions,
+    options?: FormatPropertyOptions
   ) => string | undefined;
 
   // [key: `$$${string}`]: any;

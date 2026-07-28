@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { GetMetricsRequest } from "../GetMetricsRequest.js";
 import type { GetMetricsResponse } from "../GetMetricsResponse.js";
@@ -29,12 +30,12 @@ import type { GetMetricsResponse } from "../GetMetricsResponse.js";
 export async function getMetrics(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: GetMetricsRequest,
+  request: GetMetricsRequest
 ): Promise<GetMetricsResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/${applicationRid}/metrics`,
     "PUT",
-    request,
+    request
   );
 }

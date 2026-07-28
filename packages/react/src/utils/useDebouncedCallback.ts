@@ -52,7 +52,7 @@ export interface DebouncedCallback<TArgs extends readonly unknown[]> {
  */
 export function useDebouncedCallback<TArgs extends readonly unknown[]>(
   callback: (...args: TArgs) => void | Promise<void>,
-  delay: number,
+  delay: number
 ): DebouncedCallback<TArgs> {
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
   const callbackRef = React.useRef(callback);
@@ -83,7 +83,7 @@ export function useDebouncedCallback<TArgs extends readonly unknown[]>(
         void callbackRef.current(...args);
       }, delay);
     },
-    [delay, cancel],
+    [delay, cancel]
   );
 
   React.useEffect(() => {

@@ -14,18 +14,66 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import type { ActionType, InterfaceType } from "@osdk/maker";
 import {
+  addDependency,
   defineCreateObjectAction,
+  defineInterface,
+  defineInterfaceActionTypeConstraint,
+  defineLink,
   defineObject,
   defineOntology,
+  defineSharedPropertyType,
   dumpOntologyFullMetadata,
+  importOntologyEntity,
+  importSharedPropertyType,
+  OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
+
+import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
 
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
+  });
+
+  describe("Dependencies", () => {
+    it("writes dependencies to the configured file", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "maker-experimental-dependencies-")
+      );
+      const dependencyFile = path.join(outputDir, "dependencies.json");
+
+      try {
+        await defineOntologyV2(
+          "com.palantir.",
+          () => {
+            addDependency("com.palantir", fileURLToPath(import.meta.url));
+          },
+          undefined,
+          dependencyFile
+        );
+
+        const packageJson = JSON.parse(
+          fs.readFileSync(
+            new URL("../../package.json", import.meta.url),
+            "utf8"
+          )
+        );
+        expect(JSON.parse(fs.readFileSync(dependencyFile, "utf8"))).toEqual({
+          "com.palantir": packageJson.version,
+        });
+      } finally {
+        fs.rmSync(outputDir, { recursive: true, force: true });
+      }
+    });
   });
 
   describe("Imports", () => {
@@ -44,16 +92,16 @@ describe("Experimental Test Suite", () => {
         titlePropertyApiName: "id",
         primaryKeyPropertyApiName: "id",
         properties: {
-          "id": { type: "string" },
-          "date": { type: "date" },
-          "team": { type: "string" },
+          id: { type: "string" },
+          date: { type: "date" },
+          team: { type: "string" },
         },
       });
       defineCreateObjectAction({
         objectType: foo,
         parameterOrdering: ["ref", "team", "id", "date"],
         parameterConfiguration: {
-          "ref": {
+          ref: {
             customParameterType: {
               type: "objectReference",
               objectReference: {
@@ -61,7 +109,7 @@ describe("Experimental Test Suite", () => {
               },
             },
           },
-          "team": {
+          team: {
             defaultValue: {
               type: "objectParameterPropertyValue",
               objectParameterPropertyValue: {
@@ -248,6 +296,7 @@ describe("Experimental Test Suite", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-foo",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -351,8 +400,10 @@ describe("Experimental Test Suite", () => {
           },
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -390,6 +441,7 @@ describe("Experimental Test Suite", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -550,8 +602,10 @@ describe("Experimental Test Suite", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -585,6 +639,7 @@ describe("Experimental Test Suite", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -704,8 +759,486 @@ describe("Experimental Test Suite", () => {
           },
           "sharedPropertyTypes": {},
         }
-      `,
+      `
       );
     });
+  });
+
+  describe("defineOntologyV2 import shapes", () => {
+    it("generates input shapes for imported object types", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineImportObject({
+          apiName: "importedFoo",
+          properties: {
+            id: { type: "string" },
+            name: { type: "string" },
+          },
+        });
+        defineObject({
+          apiName: "localBar",
+          displayName: "Local Bar",
+          pluralDisplayName: "Local Bars",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      // Imported object should have an input shape
+      const objectInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "objectType");
+      expect(objectInputShapes).toHaveLength(1);
+      expect(objectInputShapes[0][1]).toMatchObject({
+        type: "objectType",
+        objectType: {
+          about: { fallbackTitle: "ImportedFoo" },
+          editsSupport: "ANY",
+          objectsBackendVersion: "V2",
+        },
+      });
+
+      // Imported object properties should have input shapes
+      const propertyInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(
+        ([key, shape]) =>
+          shape.type === "property" && key.includes("importedFoo")
+      );
+      expect(propertyInputShapes).toHaveLength(2);
+
+      // Local object should have an output shape, not input
+      const objectOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "objectType");
+      expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("handles local links referencing imported objects", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedObj = defineImportObject({
+          apiName: "importedEmployee",
+          properties: {
+            empId: { type: "string" },
+            name: { type: "string" },
+          },
+        });
+        const localObj = defineObject({
+          apiName: "localTeam",
+          displayName: "Local Team",
+          pluralDisplayName: "Local Teams",
+          titlePropertyApiName: "teamId",
+          primaryKeyPropertyApiName: "teamId",
+          properties: {
+            teamId: { type: "string" },
+            empId: { type: "string" },
+          },
+        });
+        defineLink({
+          apiName: "emp-to-team",
+          one: {
+            object: importedObj.apiName,
+            metadata: {
+              apiName: "team",
+              displayName: "Team",
+            },
+          },
+          toMany: {
+            object: localObj,
+            metadata: {
+              apiName: "employees",
+              displayName: "Employees",
+            },
+          },
+          manyForeignKeyProperty: "empId",
+        });
+      });
+
+      // The link should have an output shape
+      const linkOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "linkType");
+      expect(linkOutputShapes).toHaveLength(1);
+
+      // The imported object should have an input shape
+      const objectInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "objectType");
+      expect(objectInputShapes).toHaveLength(1);
+      expect(objectInputShapes[0][1]).toMatchObject({
+        type: "objectType",
+        objectType: {
+          about: { fallbackTitle: "ImportedEmployee" },
+        },
+      });
+    });
+
+    it("resolves imported objects in action parameter knownIdentifiers", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedObj = defineImportObject({
+          apiName: "imported",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+        const localObj = defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+        defineCreateObjectAction({
+          objectType: localObj,
+          parameterOrdering: ["ref", "id"],
+          parameterConfiguration: {
+            ref: {
+              customParameterType: {
+                type: "objectReference",
+                objectReference: {
+                  objectTypeId: importedObj.apiName,
+                },
+              },
+            },
+          },
+        });
+      });
+
+      // The main ontology's knownIdentifiers should include the imported
+      // object type in objectTypeIds
+      const knownIds = result.ontologyIr.ontology.knownIdentifiers;
+      const importedObjId = Object.keys(knownIds.objectTypeIds ?? {}).find(
+        (id) => id === "imported"
+      );
+      expect(importedObjId).toBeDefined();
+
+      // The action output shape should exist
+      const actionShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "action");
+      expect(actionShapes).toHaveLength(1);
+    });
+
+    it("generates input shapes for imported SPTs", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        importSharedPropertyType({
+          apiName: "externalId",
+          packageName: "com.external.pkg",
+          typeHint: "string",
+        });
+        defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      // The imported SPT should have an input shape
+      const sptInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "sharedPropertyType");
+      expect(sptInputShapes).toHaveLength(1);
+      expect(sptInputShapes[0][1]).toMatchObject({
+        type: "sharedPropertyType",
+        sharedPropertyType: {
+          about: { fallbackTitle: "com.external.pkg.externalId" },
+        },
+      });
+    });
+
+    it("generates input shapes for imported action types", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedAction: ActionType = {
+          apiName: "importedAction",
+          displayName: "Imported Action",
+          rules: [],
+          status: "active",
+          __type: OntologyEntityTypeEnum.ACTION_TYPE,
+        };
+        importOntologyEntity(importedAction);
+
+        defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      // The imported action should have an input shape
+      const actionInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "action");
+      expect(actionInputShapes).toHaveLength(1);
+      expect(actionInputShapes[0][1]).toMatchObject({
+        type: "action",
+        action: {
+          about: { fallbackTitle: "Imported Action" },
+        },
+      });
+
+      // No parameters on this action, so no parameter input shapes
+      const paramInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "actionParameter");
+      expect(paramInputShapes).toHaveLength(0);
+    });
+
+    it("generates input shapes for imported interface types", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const spt = defineSharedPropertyType({
+          apiName: "sharedName",
+          type: "string",
+        });
+
+        const importedInterface: InterfaceType = {
+          apiName: "importedInterface",
+          displayMetadata: {
+            displayName: "Imported Interface",
+            description: "An imported interface",
+          },
+          propertiesV2: {
+            sharedName: {
+              sharedPropertyType: spt,
+              required: false,
+            },
+          },
+          propertiesV3: {
+            sharedName: {
+              sharedPropertyType: spt,
+              required: false,
+            },
+          },
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      // The imported interface should have an input shape
+      const interfaceInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceType");
+      expect(interfaceInputShapes).toHaveLength(1);
+      expect(interfaceInputShapes[0][1]).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          about: { fallbackTitle: "Imported Interface" },
+        },
+      });
+    });
+  });
+
+  describe("Action Type Constraints", () => {
+    it("produces output shapes for interface with action type constraints", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const iface = defineInterface({ apiName: "MyInterface" });
+
+        defineInterfaceActionTypeConstraint({
+          interfaceType: iface,
+          apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A constraint",
+          requireImplementation: false,
+          parameters: [
+            {
+              apiName: "boolParam",
+              displayName: "Bool Param",
+              type: { type: "boolean", boolean: {} },
+              requireImplementation: false,
+            },
+          ],
+        });
+      });
+
+      const constraintOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
+      expect(constraintOutputShapes).toHaveLength(1);
+      expect(constraintOutputShapes[0][1]).toMatchObject({
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: {
+          about: { fallbackTitle: "My Constraint" },
+          requireImplementation: false,
+        },
+      });
+
+      const paramOutputShapes = Array.from(
+        result.shapes.outputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+      expect(paramOutputShapes).toHaveLength(1);
+      expect(paramOutputShapes[0][1]).toMatchObject({
+        type: "interfaceParameterConstraint",
+        interfaceParameterConstraint: {
+          about: { fallbackTitle: "Bool Param" },
+          requireImplementation: false,
+        },
+      });
+    });
+
+    it("produces input shapes for imported interface with action type constraints", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedInterface: InterfaceType = {
+          apiName: "importedInterface",
+          displayMetadata: {
+            displayName: "Imported Interface",
+            description: "An imported interface",
+          },
+          propertiesV2: {},
+          propertiesV3: {},
+          extendsInterfaces: [],
+          actionTypeConstraints: [
+            {
+              metadata: {
+                apiName: "importedConstraint",
+                displayName: "Imported Constraint",
+                description: "An imported constraint",
+              },
+              parameters: {
+                boolParam: {
+                  displayMetadata: {
+                    displayName: "Bool Param",
+                    apiName: "boolParam",
+                  },
+                  type: { type: "boolean", boolean: {} },
+                  requireImplementation: false,
+                },
+              },
+              requireImplementation: false,
+            },
+          ],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "localObj",
+          displayName: "Local Obj",
+          pluralDisplayName: "Local Objs",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+          },
+        });
+      });
+
+      const constraintInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
+      expect(constraintInputShapes).toHaveLength(1);
+      expect(constraintInputShapes[0][1]).toMatchObject({
+        type: "interfaceActionTypeConstraint",
+        interfaceActionTypeConstraint: {
+          about: { fallbackTitle: "Imported Constraint" },
+          requireImplementation: false,
+        },
+      });
+
+      const paramInputShapes = Array.from(
+        result.shapes.inputShapes.entries()
+      ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
+      expect(paramInputShapes).toHaveLength(1);
+      expect(paramInputShapes[0][1]).toMatchObject({
+        type: "interfaceParameterConstraint",
+        interfaceParameterConstraint: {
+          about: { fallbackTitle: "Bool Param" },
+          requireImplementation: false,
+        },
+      });
+    });
+  });
+
+  it("Fails if a derived datasource added after defineObject maps a property not on the object", async () => {
+    await expect(
+      defineOntologyV2("com.palantir.", () => {
+        const passenger = defineObject({
+          displayName: "Passenger",
+          pluralDisplayName: "Passengers",
+          apiName: "passenger",
+          primaryKeyPropertyApiName: "name",
+          titlePropertyApiName: "name",
+          editsEnabled: true,
+          properties: {
+            name: { type: "string", displayName: "Name" },
+            flight_id: { type: "string", displayName: "Flight ID" },
+          },
+        });
+        const flightToPassengers = defineLink({
+          apiName: "flightToPassengersLink",
+          one: {
+            object: "com.palantir.flight",
+            metadata: { apiName: "flightFromPassengers" },
+          },
+          toMany: {
+            object: passenger.apiName,
+            metadata: { apiName: "passengersFromFlight" },
+          },
+          manyForeignKeyProperty: "flight_id",
+        });
+        const flight = defineObject({
+          displayName: "Flight",
+          pluralDisplayName: "Flights",
+          apiName: "flight",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          editsEnabled: true,
+          properties: {
+            id: { type: "string", displayName: "ID" },
+            passengersList: {
+              type: "string",
+              array: true,
+              displayName: "Passengers",
+            },
+          },
+          datasources: [{ type: "dataset" }],
+        });
+        // Pushed AFTER defineObject() returns, mirroring the real factory
+        // pattern that bypasses defineObject's own validation.
+        flight.datasources!.push({
+          type: "derived",
+          linkDefinition: [{ linkType: flightToPassengers }],
+          propertyMapping: {
+            ghostProperty: {
+              type: "collectList",
+              property: "name",
+              limit: 100,
+            },
+          },
+        });
+      })
+    ).rejects.toThrow(
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
+    );
   });
 });

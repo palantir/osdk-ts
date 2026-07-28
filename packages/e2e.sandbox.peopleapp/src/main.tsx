@@ -1,14 +1,16 @@
+import { OsdkProvider } from "@osdk/react";
 import React from "react";
-import ReactDOM from "react-dom/client";
+
 import "./index.css";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import ReactDOM from "react-dom/client";
+
 import { $ } from "./foundryClient.js";
 import { Router } from "./router.js";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <OsdkProvider2 client={$}>
+    <OsdkProvider client={$}>
       <Router />
-    </OsdkProvider2>
-  </React.StrictMode>,
+    </OsdkProvider>
+  </React.StrictMode>
 );

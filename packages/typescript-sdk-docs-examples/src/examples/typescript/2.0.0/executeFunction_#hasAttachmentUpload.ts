@@ -20,18 +20,21 @@
 // Example: executeFunction (Variation: #hasAttachmentUpload)
 
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
 import { calculateTotal } from "../../../generatedNoCheck/index.js";
+import { client } from "./client.js";
 
 async function callFunctionWithAttachmentUpload() {
-    async function createAttachmentReference() {
-        const file = await fetch("file.json");
-        const blob = await file.blob();
-        return createAttachmentUpload(blob, "myFile");
-    }
-    const attachment: AttachmentUpload = await createAttachmentReference();
-    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });
-    return result;
+  async function createAttachmentReference() {
+    const file = await fetch("file.json");
+    const blob = await file.blob();
+    return createAttachmentUpload(blob, "myFile");
+  }
+  const attachment: AttachmentUpload = await createAttachmentReference();
+  const result = await client(calculateTotal).executeFunction({
+    documentFile: attachment,
+    includeMetadata: true,
+  });
+  return result;
 }

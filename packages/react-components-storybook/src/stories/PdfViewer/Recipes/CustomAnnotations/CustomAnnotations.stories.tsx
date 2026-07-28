@@ -18,14 +18,13 @@ import type {
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (
@@ -107,8 +106,9 @@ const CUSTOM_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Components/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
   args: {
     src: SAMPLE_PDF_URL,
     annotations: CUSTOM_ANNOTATIONS,
@@ -133,9 +133,8 @@ export const CustomAnnotation: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+        code: `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (

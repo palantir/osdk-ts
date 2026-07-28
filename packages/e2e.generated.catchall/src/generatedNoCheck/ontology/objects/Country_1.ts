@@ -16,7 +16,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Country_1 {
-  export type PropertyKeys = 'airportCountryName' | 'airportCountryIsoCode';
+  export type PropertyKeys = 'airportCountryIsoCode' | 'airportCountryName';
 
   export interface Links {
     readonly stateTerritory: StateTerritory.ObjectSet;

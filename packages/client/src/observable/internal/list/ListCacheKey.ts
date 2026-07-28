@@ -33,28 +33,27 @@ export const PIVOT_IDX = 6;
 export const RIDS_IDX = 7;
 export const SELECT_IDX = 8;
 export const LOAD_PROPERTY_SECURITY_IDX = 9;
+export const INCLUDE_ALL_BASE_PROPERTIES_IDX = 10;
+export const RESOLVE_TO_OBJECT_TYPE_IDX = 11;
 
 export interface ListStorageData extends CollectionStorageData {}
 
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig?: Canonical<Rdp> | undefined,
-      intersectWith?:
-        | Canonical<Array<Canonical<SimpleWhereClause>>>
-        | undefined,
-      pivotInfo?: Canonical<PivotInfo> | undefined,
-      rids?: Canonical<string[]> | undefined,
-      select?: Canonical<readonly string[]> | undefined,
-      loadPropertySecurity?: true | undefined,
-    ]
-  >
-{
-}
+export interface ListCacheKey extends CacheKey<
+  "list",
+  ListStorageData,
+  ListQuery,
+  [
+    type: "object" | "interface",
+    apiName: string,
+    whereClause: Canonical<SimpleWhereClause>,
+    orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    rdpConfig?: Canonical<Rdp> | undefined,
+    intersectWith?: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
+    pivotInfo?: Canonical<PivotInfo> | undefined,
+    rids?: Canonical<string[]> | undefined,
+    select?: Canonical<readonly string[]> | undefined,
+    loadPropertySecurity?: true | undefined,
+    includeAllBaseObjectProperties?: true | undefined,
+    resolveToObjectType?: true | undefined,
+  ]
+> {}

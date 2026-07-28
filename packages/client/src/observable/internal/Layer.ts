@@ -72,17 +72,14 @@ export class Layer {
     return this.#cache.keys();
   }
 
-  public get<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): Entry<K> | undefined {
-    return this.#cache.get(cacheKey) as Entry<K> | undefined
-      ?? this.#parent?.get(cacheKey) as Entry<K> | undefined;
+  public get<K extends KnownCacheKey>(cacheKey: K): Entry<K> | undefined {
+    return (
+      (this.#cache.get(cacheKey) as Entry<K> | undefined) ??
+      (this.#parent?.get(cacheKey) as Entry<K> | undefined)
+    );
   }
 
-  public set<K extends KnownCacheKey>(
-    cacheKey: K,
-    value: Entry<K>,
-  ): void {
+  public set<K extends KnownCacheKey>(cacheKey: K, value: Entry<K>): void {
     this.#cache.set(cacheKey, value);
   }
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { UpdateApplicationRequestV2 } from "../UpdateApplicationRequestV2.js";
 import type { VersionedApplication } from "../VersionedApplication.js";
@@ -27,12 +28,12 @@ import type { VersionedApplication } from "../VersionedApplication.js";
 export async function updateApplicationV2(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: UpdateApplicationRequestV2,
+  request: UpdateApplicationRequestV2
 ): Promise<VersionedApplication> {
   return conjureFetch(
     ctx,
     `/applications/v2/${applicationRid}`,
     "PUT",
-    request,
+    request
   );
 }

@@ -18,6 +18,7 @@ export * as Actions from "./Actions.js";
 export * as ActionTypesV2 from "./ActionTypesV2.js";
 export * as AttachmentPropertiesV2 from "./AttachmentPropertiesV2.js";
 export * as Attachments from "./Attachments.js";
+export * as CipherTextProperties from "./CipherTextProperties.js";
 export * as LinkedObjectsV2 from "./LinkedObjectsV2.js";
 export * as MediaReferenceProperties from "./MediaReferenceProperties.js";
 export * as ObjectTypesV2 from "./ObjectTypesV2.js";

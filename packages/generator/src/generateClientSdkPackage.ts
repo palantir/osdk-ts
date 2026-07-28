@@ -137,12 +137,16 @@ export interface DependencyVersions {
   areTheTypesWrongVersion: string;
   osdkApiVersion: string;
   osdkClientVersion: string;
+  osdkApiPeerVersion?: string;
+  osdkClientPeerVersion?: string;
 }
 
 export function getExpectedDependencies(
   {
     osdkApiVersion,
     osdkClientVersion,
+    osdkApiPeerVersion = osdkApiVersion,
+    osdkClientPeerVersion = osdkClientVersion,
   }: DependencyVersions,
 ): {
   devDependencies: Record<string, string>;
@@ -153,8 +157,8 @@ export function getExpectedDependencies(
       "@osdk/api": osdkApiVersion,
     },
     peerDependencies: {
-      "@osdk/api": osdkApiVersion,
-      "@osdk/client": osdkClientVersion,
+      "@osdk/api": osdkApiPeerVersion,
+      "@osdk/client": osdkClientPeerVersion,
     },
   };
 }
@@ -238,8 +242,6 @@ async function writeJson(
   filePath: string,
   body: unknown,
 ) {
-  // consola.info(`Writing ${filePath}`);
-  // consola.debug(`Writing ${filePath} with body`, body);
   return void await minimalFs.writeFile(
     filePath,
     JSON.stringify(body, undefined, 2) + "\n",

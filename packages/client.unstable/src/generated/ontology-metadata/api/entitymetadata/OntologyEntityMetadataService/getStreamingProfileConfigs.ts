@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStreamingProfileConfigsResponse } from "../__components.js";
 
 /**
@@ -25,7 +26,7 @@ import type { GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStrea
  * that paging is not required because the response size is fixed and low cardinality.
  */
 export async function getStreamingProfileConfigs(
-  ctx: ConjureContext,
+  ctx: ConjureContext
 ): Promise<_api_entitymetadata_GetStreamingProfileConfigsResponse> {
   return conjureFetch(ctx, `/entityMetadata/profile-configs/streaming`, "GET");
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest,
   LoadAllWorkflowsPageResponse as _workflow_api_LoadAllWorkflowsPageResponse,
@@ -35,12 +36,12 @@ export async function loadAllWorkflowsFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _workflow_api_LoadAllWorkflowsPageRequest,
+  request: _workflow_api_LoadAllWorkflowsPageRequest
 ): Promise<_workflow_api_LoadAllWorkflowsPageResponse> {
   return conjureFetch(
     ctx,
     `/workflow/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllWorkflowsFromOntology`,
     "POST",
-    request,
+    request
   );
 }

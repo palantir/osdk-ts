@@ -29,8 +29,7 @@ export function createOptimisticId(): OptimisticId {
       (createOptimisticId as OptimisticIdFactory).counter = 0;
     }
     return {
-      __optimisticId: (createOptimisticId as OptimisticIdFactory)
-        .counter!++,
+      __optimisticId: (createOptimisticId as OptimisticIdFactory).counter!++,
     };
   }
 

@@ -19,8 +19,8 @@
 import type {
   PdfFormFieldValue,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   PDFCheckBox,
@@ -60,13 +60,13 @@ const FORM_RECIPES: FormRecipe[] = [
     title: "John Smith",
     description: "Software engineer from London",
     data: {
-      "FullName": "John Smith",
-      "ID": "JS-12345",
-      "Gender": "0",
-      "Married": false,
-      "City": "London",
-      "Language": "English",
-      "Notes":
+      FullName: "John Smith",
+      ID: "JS-12345",
+      Gender: "0",
+      Married: false,
+      City: "London",
+      Language: "English",
+      Notes:
         "Senior developer at Acme Corp.\nSpecializes in React and TypeScript.",
     },
   },
@@ -74,33 +74,33 @@ const FORM_RECIPES: FormRecipe[] = [
     title: "Marie Dupont",
     description: "Married designer from Paris",
     data: {
-      "FullName": "Marie Dupont",
-      "ID": "MD-67890",
-      "Gender": "1",
-      "Married": true,
-      "City": "Paris",
-      "Language": "French",
-      "Notes": "Lead UX designer.\nFluent in French and English.",
+      FullName: "Marie Dupont",
+      ID: "MD-67890",
+      Gender: "1",
+      Married: true,
+      City: "Paris",
+      Language: "French",
+      Notes: "Lead UX designer.\nFluent in French and English.",
     },
   },
   {
     title: "Hans Müller",
     description: "Engineer from Berlin",
     data: {
-      "FullName": "Hans Müller",
-      "ID": "HM-24680",
-      "Gender": "0",
-      "Married": true,
-      "City": "Berlin",
-      "Language": "German",
-      "Notes": "Mechanical engineer with 10 years experience.",
+      FullName: "Hans Müller",
+      ID: "HM-24680",
+      Gender: "0",
+      Married: true,
+      City: "Berlin",
+      Language: "German",
+      Notes: "Mechanical engineer with 10 years experience.",
     },
   },
 ];
 
 function formatFieldValue(
   key: string,
-  value: PdfFormFieldValue | undefined,
+  value: PdfFormFieldValue | undefined
 ): string {
   if (value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -153,7 +153,7 @@ function RecipeCard({ recipe, onLoad }: RecipeCardProps): React.ReactElement {
 }
 
 async function downloadFilledPdf(
-  formValues: Record<string, PdfFormFieldValue>,
+  formValues: Record<string, PdfFormFieldValue>
 ): Promise<void> {
   const response = await fetch(PDF_SRC);
   const pdfBytes = await response.arrayBuffer();
@@ -203,9 +203,10 @@ interface FormSidebarProps {
   onLoadRecipe: (recipe: Record<string, PdfFormFieldValue>) => void;
 }
 
-function FormSidebar(
-  { formValues, onLoadRecipe }: FormSidebarProps,
-): React.ReactElement {
+function FormSidebar({
+  formValues,
+  onLoadRecipe,
+}: FormSidebarProps): React.ReactElement {
   const handleDownload = useCallback(() => {
     void downloadFilledPdf(formValues);
   }, [formValues]);
@@ -301,7 +302,7 @@ function InteractiveFormWithSidebar(): React.ReactElement {
     (fieldName: string, value: PdfFormFieldValue) => {
       setFormValues((prev) => ({ ...prev, [fieldName]: value }));
     },
-    [],
+    []
   );
 
   const handleLoadRecipe = useCallback(
@@ -310,7 +311,7 @@ function InteractiveFormWithSidebar(): React.ReactElement {
       setFormValues(recipe);
       setRecipeLoadCount((c) => c + 1);
     },
-    [],
+    []
   );
 
   return (
@@ -329,8 +330,9 @@ function InteractiveFormWithSidebar(): React.ReactElement {
 }
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Components/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
 };
 
 export default meta;
@@ -348,7 +350,7 @@ export const InteractiveForm: Story = {
         code: `// This story demonstrates using formData and onFormChange
 // to build a sidebar that tracks form values and loads presets.
 // Uses pdf-lib to download the filled PDF.
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import { PDFDocument } from "pdf-lib";
 
 const [formData, setFormData] = useState<Record<string, PdfFormFieldValue>>();

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-
 import * as fs from "node:fs";
+
+import { consola } from "consola";
 
 // Environment variable names
 const JEMMA_JOB_CUSTOM_METADATA_PATH = "JEMMA_JOB_CUSTOM_METADATA_PATH";
@@ -49,7 +49,7 @@ export function maybeUpdateJemmaCustomMetadata({
   try {
     // Read or create the custom metadata file
     const customMetadata = getOrCreateCustomMetadata(
-      jemmaCustomMetadataFilePath,
+      jemmaCustomMetadataFilePath
     );
 
     // Set the site link in the custom metadata
@@ -60,7 +60,7 @@ export function maybeUpdateJemmaCustomMetadata({
     writeCustomMetadata(jemmaCustomMetadataFilePath, customMetadata);
   } catch (err) {
     consola.error(
-      `Failed to update custom metadata file at ${jemmaCustomMetadataFilePath}`,
+      `Failed to update custom metadata file at ${jemmaCustomMetadataFilePath}`
     );
   }
 }
@@ -74,7 +74,7 @@ function getOrCreateCustomMetadata(jemmaCustomMetadataFilePath: string): {
 } {
   try {
     const parsedValue = JSON.parse(
-      fs.readFileSync(jemmaCustomMetadataFilePath, "utf-8"),
+      fs.readFileSync(jemmaCustomMetadataFilePath, "utf-8")
     );
     return typeof parsedValue === "object" && parsedValue != null
       ? parsedValue
@@ -86,10 +86,10 @@ function getOrCreateCustomMetadata(jemmaCustomMetadataFilePath: string): {
 
 function writeCustomMetadata(
   jemmaCustomMetadataFilePath: string,
-  customMetadata: { [key: string]: unknown },
+  customMetadata: { [key: string]: unknown }
 ) {
   fs.writeFileSync(
     jemmaCustomMetadataFilePath,
-    JSON.stringify(customMetadata, null, 2),
+    JSON.stringify(customMetadata, null, 2)
   );
 }

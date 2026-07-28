@@ -18,21 +18,26 @@ import type { DerivedProperty } from "@osdk/api";
 import { BarInterface, Employee } from "@osdk/client.test.ontology";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 
 describe(createWithPropertiesObjectSet, () => {
   it("correctly creates basic object set with derived properties", () => {
     const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      map
+    );
 
     const clause = {
-      "derivedPropertyName": (base) =>
+      derivedPropertyName: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
     } satisfies DerivedProperty.Clause<Employee>;
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
     expect(definition).toMatchInlineSnapshot(`
         {
@@ -59,15 +64,13 @@ describe(createWithPropertiesObjectSet, () => {
       {
         type: "methodInput",
       },
-      map,
+      map
     );
 
     const clause = {
-      "derivedPropertyName": (base) =>
+      derivedPropertyName: (base) =>
         base.pivotTo("toFoo").aggregate("fooIdp:collectList"),
-    } satisfies DerivedProperty.Clause<
-      BarInterface
-    >;
+    } satisfies DerivedProperty.Clause<BarInterface>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
     const definition = map.get(result);
@@ -99,14 +102,14 @@ describe(createWithPropertiesObjectSet, () => {
         type: "methodInput",
       },
       map,
-      true,
+      true
     );
 
     const clause = {
-      "derivedPropertyName": (base) => base.selectProperty("employeeId"),
+      derivedPropertyName: (base) => base.selectProperty("employeeId"),
     } satisfies DerivedProperty.Clause<Employee>;
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
     expect(definition).toMatchInlineSnapshot(`
       {
@@ -118,28 +121,30 @@ describe(createWithPropertiesObjectSet, () => {
 
   it("correctly handles multiple definitions in one clause", () => {
     const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      map
+    );
 
     const clause: DerivedProperty.Clause<Employee> = {
-      "derivedPropertyName": (base) =>
+      derivedPropertyName: (base) =>
         base.pivotTo("lead").aggregate("employeeId:approximatePercentile", {
           percentile: 0.5,
         }),
 
-      "secondaryDerivedPropertyName": (base) =>
+      secondaryDerivedPropertyName: (base) =>
         base.pivotTo("lead").aggregate("fullName:collectSet", {
           limit: 10,
         }),
     };
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
 
-    const secondResult = clause["secondaryDerivedPropertyName"](
-      deriveObjectSet,
-    );
+    const secondResult = clause.secondaryDerivedPropertyName(deriveObjectSet);
     const secondDefinition = map.get(secondResult);
 
     expect(definition).toMatchInlineSnapshot(`
@@ -188,19 +193,20 @@ describe(createWithPropertiesObjectSet, () => {
           type: "methodInput",
         },
         map,
-        true,
+        true
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").add(
-            base.selectProperty("employeeId"),
-          ),
+        derivedPropertyName: (base) =>
+          base
+            .pivotTo("lead")
+            .selectProperty("employeeId")
+            .add(base.selectProperty("employeeId")),
         // "secondaryDerivedPropertyName": (base) =>
         //   base.pivotTo("lead").aggregate("employeeId:avg").divide("employeeId", 2),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -236,17 +242,18 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true,
+        true
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").subtract(
-            base.selectProperty("employeeId"),
-          ),
+        derivedPropertyName: (base) =>
+          base
+            .pivotTo("lead")
+            .selectProperty("employeeId")
+            .subtract(base.selectProperty("employeeId")),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -280,17 +287,18 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true,
+        true
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").divide(
-            base.selectProperty("employeeId"),
-          ),
+        derivedPropertyName: (base) =>
+          base
+            .pivotTo("lead")
+            .selectProperty("employeeId")
+            .divide(base.selectProperty("employeeId")),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -324,17 +332,18 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true,
+        true
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").multiply(
-            base.selectProperty("employeeId"),
-          ),
+        derivedPropertyName: (base) =>
+          base
+            .pivotTo("lead")
+            .selectProperty("employeeId")
+            .multiply(base.selectProperty("employeeId")),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -367,18 +376,23 @@ describe(createWithPropertiesObjectSet, () => {
     // TODO: Add test for literal
     it("can handle nested definitions in an expression", () => {
       const map = new Map<any, DerivedPropertyDefinition>();
-      const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-        type: "methodInput",
-      }, map);
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        {
+          type: "methodInput",
+        },
+        map
+      );
 
       const clause: DerivedProperty.Clause<Employee> = {
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId").add(
-            base.pivotTo("lead").selectProperty("employeeId"),
-          ),
+        derivedPropertyName: (base) =>
+          base
+            .pivotTo("lead")
+            .selectProperty("employeeId")
+            .add(base.pivotTo("lead").selectProperty("employeeId")),
       };
 
-      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const result = clause.derivedPropertyName(deriveObjectSet);
       const definition = map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
@@ -421,20 +435,25 @@ describe(createWithPropertiesObjectSet, () => {
 
   it("handles datetime expressions", () => {
     const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      {
+        type: "methodInput",
+      },
+      map
+    );
 
     const clause: DerivedProperty.Clause<Employee> = {
-      "derivedPropertyName": (base) =>
+      derivedPropertyName: (base) =>
         base.pivotTo("lead").selectProperty("startDate").extractPart("MONTHS"),
-      "secondaryDerivedPropertyName": (base) =>
-        base.pivotTo("lead").selectProperty("startDate").min(
-          base.pivotTo("lead").selectProperty("startDate"),
-        ),
+      secondaryDerivedPropertyName: (base) =>
+        base
+          .pivotTo("lead")
+          .selectProperty("startDate")
+          .min(base.pivotTo("lead").selectProperty("startDate")),
     };
 
-    const result = clause["derivedPropertyName"](deriveObjectSet);
+    const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
 
     expect(definition).toMatchInlineSnapshot(`

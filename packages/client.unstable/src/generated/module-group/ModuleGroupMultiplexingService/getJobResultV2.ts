@@ -15,10 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { Job as _Job } from "../__components.js";
 export async function getJobResultV2(
   ctx: ConjureContext,
-  job: _Job,
+  job: _Job
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -27,6 +28,6 @@ export async function getJobResultV2(
     job,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

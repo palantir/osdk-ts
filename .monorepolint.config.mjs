@@ -54,9 +54,6 @@ const OUTPUT_BUNDLE_ALL =
 const OUTPUT_ESM_ONLY =
   /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: "normal" });
 
-const OUTPUT_NONE =
-  /** @type {const} */ ({ browser: undefined, cjs: undefined, esm: undefined });
-
 /** @type {OsdkPackageOptions}  */
 const LIBRARY_RULES = {
   tsVersion: LATEST_TYPESCRIPT_DEP,
@@ -81,16 +78,19 @@ const archetypeRules = archetypes(
   },
 )
   .addArchetype(
-    "checkApiPackages",
+    "clientPackage",
     [
       "@osdk/client",
-      "@osdk/api",
-      "@osdk/functions",
-      "@osdk/functions-testing.experimental",
     ],
     {
       ...LIBRARY_RULES,
       checkApi: true,
+      typecheckProject: "tsconfig.typecheck.json",
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
+      // config (oxcConfig) holding behavior-preserving carve-outs for the
+      // error-level Ultracite rules this hand-written package first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -108,12 +108,11 @@ const archetypeRules = archetypes(
   .addArchetype(
     "minimal packages",
     [
-      "@osdk/e2e.generated.1.1.x",
+      // @osdk/e2e.generated.1.1.x migrated to the oxc toolchain (it joins "oxc
+      // migrated minimal packages" below).
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
-      "@osdk/react-components-storybook",
-      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
@@ -124,28 +123,14 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
-      "@osdk/foundry-config-json",
+      // The generator packages stay on ESLint (generators are excluded from the oxc
+      // migration). The vite-plugin-* packages migrated to the oxc toolchain (they
+      // join "oxc migrated libraries with carve-outs" below).
       "@osdk/generator-converters",
-      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
-      "@osdk/maker",
-      "@osdk/maker-experimental",
-      "@osdk/oauth",
-      "@osdk/shared.client.impl",
-      "@osdk/shared.net.errors",
-      "@osdk/shared.net.fetch",
-      "@osdk/shared.net",
-      "@osdk/react-sdk-docs",
-      "@osdk/typescript-sdk-docs",
-      "@osdk/widget.api",
-      "@osdk/widget.client",
-      "@osdk/vite-plugin-oac",
-      "@osdk/vite-plugin-superrepo",
-      "@osdk/faux",
-      "@osdk/osdk-docs-context",
     ],
     {
       ...LIBRARY_RULES,
@@ -154,9 +139,9 @@ const archetypeRules = archetypes(
   .addArchetype(
     "consumerCliPackages",
     [
-      "@osdk/cli",
-      "@osdk/create-app",
-      "@osdk/create-widget",
+      // @osdk/cli, @osdk/create-app, and @osdk/create-widget migrated to the oxc
+      // toolchain (see "oxc migrated consumer clis" below); @osdk/foundry-sdk-generator
+      // is a generator package and stays on ESLint.
       "@osdk/foundry-sdk-generator",
     ],
     {
@@ -183,27 +168,21 @@ const archetypeRules = archetypes(
       },
       fixedDepsOnly: true,
       extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "forceBundle",
-    [
-      "@osdk/client.unstable",
-      "@osdk/client.unstable.tpsa",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: OUTPUT_BUNDLE_ALL,
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
     "internal clis",
     [
-      "@osdk/create-app.template-packager",
+      // @osdk/create-app.template-packager, @osdk/tool.*, and @osdk/version-updater
+      // migrated to the oxc toolchain (see "oxc migrated internal clis" below); the
+      // *-generator packages stay on ESLint (generators are excluded from the oxc
+      // migration).
       "@osdk/example-generator",
-      "@osdk/tool.*",
       "@osdk/typescript-docs-example-generator",
-      "@osdk/version-updater",
       "@osdk/osdk-docs-context-generator",
     ],
     {
@@ -211,17 +190,266 @@ const archetypeRules = archetypes(
       skipTypes: true,
     },
   )
+  // Internal libraries / templates migrated to the oxc toolchain. Split by whether
+  // the package's source first surfaces error-level Ultracite rules the prior
+  // ESLint config did not enforce: those that do carry a nested oxlint config
+  // (oxcConfig) turning them off; those that do not lint against the root config.
   .addArchetype(
-    "internal libraries / templates",
+    "oxc migrated internal libraries / templates with carve-outs",
     [
       "@osdk/cli.*",
-      "@osdk/client.test.ontology",
-      "@osdk/create-app.template.*",
-      "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/shared.test.intellisense",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  .addArchetype(
+    "oxc migrated internal libraries / templates",
+    [
+      "@osdk/client.test.ontology",
+      // These are the create-app / create-widget template *packages* (their own
+      // 1-file src). The shipped scaffolding under each package's templates/ dir is
+      // ignored by oxlint + oxfmt and migrates separately.
+      "@osdk/create-app.template.*",
+      "@osdk/create-widget.template.*",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      oxc: true,
+    },
+  )
+  // Consumer CLIs migrated to the oxc toolchain (from consumerCliPackages; same
+  // esm-bundle output + fixedDepsOnly options). Each surfaces error-level Ultracite
+  // rules the prior ESLint config did not enforce, so each carries a nested config.
+  .addArchetype(
+    "oxc migrated consumer clis",
+    [
+      "@osdk/cli",
+      "@osdk/create-app",
+      "@osdk/create-widget",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // Internal CLIs migrated to the oxc toolchain (from internal clis; same
+  // INTERNAL_LIBRARY_RULES + skipTypes options). Each surfaces error-level Ultracite
+  // rules the prior ESLint config did not enforce, so each carries a nested config.
+  .addArchetype(
+    "oxc migrated internal clis",
+    [
+      "@osdk/create-app.template-packager",
+      "@osdk/tool.*",
+      "@osdk/version-updater",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // Packages migrated to the oxc toolchain (oxlint + oxfmt). As more packages
+  // are migrated, add them here (taking care not to capture generated
+  // namespace-prefix children via monorepolint's archetype matching).
+  //
+  // TODO: these "oxc migrated ..." archetypes are transitional. Once every
+  // package is on the oxc toolchain (the final flip in #3031), oxc becomes the
+  // default and the "migrated" distinction disappears — collapse these back into
+  // the base library archetypes and drop the `oxc: true` / `oxcConfig` plumbing.
+  .addArchetype(
+    "oxc migrated libraries",
+    [
+      "@osdk/language-models",
+      "@osdk/react-sdk-docs",
+      "@osdk/shared.client.impl",
+      "@osdk/shared.net.errors",
+      "@osdk/shared.net.fetch",
+      "@osdk/shared.net",
+      "@osdk/typescript-sdk-docs",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+    },
+  )
+  // Same as "oxc migrated libraries" but with a nested oxlint config (oxcConfig)
+  // holding behavior-preserving carve-outs. The maker family is hand-written and
+  // first surfaces a set of error-level Ultracite rules the prior ESLint config
+  // did not enforce; each package's oxlint.config.ts `extends` the root and turns
+  // them off so the migration is a reformat, not a rewrite.
+  .addArchetype(
+    "oxc migrated libraries with carve-outs",
+    [
+      "@osdk/maker",
+      "@osdk/maker-experimental",
+      "@osdk/maker-import",
+      "@osdk/aip-core",
+      "@osdk/foundry-config-json",
+      "@osdk/seed-compiler",
+      "@osdk/seed-helpers",
+      "@osdk/oauth",
+      "@osdk/faux",
+      "@osdk/osdk-docs-context",
+      // vite-plugin-* packages (migrated from standardLibraries): plain
+      // LIBRARY_RULES like the standard libraries, each surfacing error-level rules
+      // the prior ESLint config did not enforce, so each carries a nested config.
+      "@osdk/vite-plugin-oac",
+      "@osdk/vite-plugin-superrepo",
+      "@osdk/vite-plugin-status-reporter",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // Same as "oxc migrated libraries with carve-outs" but additionally carries
+  // checkApi (API Extractor reports). These are the core published API-surface
+  // packages (@osdk/api is the core SDK type surface) that previously lived in
+  // the checkApiPackages archetype before being migrated to the oxc toolchain.
+  // Each is hand-written and first surfaces error-level Ultracite rules the
+  // prior ESLint config did not enforce, so each carries a nested oxlint config
+  // (oxcConfig) turning them off to keep the migration a reformat, not a
+  // rewrite.
+  .addArchetype(
+    "oxc migrated libraries with check-api",
+    [
+      "@osdk/api",
+      "@osdk/functions",
+      "@osdk/unit-testing",
+    ],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      checkApi: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  // React packages migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but with `react: true` (happy-dom vitest env + react tsconfig).
+  // @osdk/widget.client-react is the first React package on oxc, validating
+  // the Ultracite React preset for the rest of the repo.
+  .addArchetype(
+    "oxc migrated react libraries",
+    [
+      "@osdk/widget.client-react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+    },
+  )
+  // React packages with CSS exports migrated to the oxc toolchain. Same as
+  // "oxc migrated react libraries" but additionally carries the cssExport,
+  // extraPublishFiles, and setupFiles options. @osdk/cbac-components is the
+  // first React package with CSS exports on oxc, validating the cssExport
+  // archetype path ahead of @osdk/react-components.
+  .addArchetype(
+    "oxc migrated react libraries with css",
+    [
+      "@osdk/cbac-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      cssExport: ["styles.css"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
+  // React package with bundled docs migrated to the oxc toolchain. Same as
+  // "oxc migrated react libraries" but additionally carries the extraPublishFiles
+  // and customTsconfigExcludes options. @osdk/react is the React family's core
+  // hooks package.
+  .addArchetype(
+    "oxc migrated react libraries with docs",
+    [
+      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+    },
+  )
+  // ESM-only React package with CSS exports migrated to the oxc toolchain. Same
+  // as "oxc migrated react libraries with css" but ESM-only output and without
+  // the extra publish/setup files. @osdk/react-devtools.
+  .addArchetype(
+    "oxc migrated esm react libraries with css",
+    [
+      "@osdk/react-devtools",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      oxc: true,
+      output: OUTPUT_ESM_ONLY,
+      cssExport: ["styles.css"],
+    },
+  )
+  // Private, minimal-change packages migrated to the oxc toolchain. Mirrors the
+  // "minimal packages" archetype (minimalChangesOnly + private) but on oxc.
+  // @osdk/react-components-storybook is the storybook for
+  // @osdk/react-components; its lint scripts are not monorepolint-managed (see
+  // minimalPackageRules), so they are set directly in its package.json.
+  .addArchetype(
+    "oxc migrated minimal packages",
+    [
+      "@osdk/react-components-storybook",
+      // e2e.generated.1.1.x (migrated from "minimal packages"): a generated SDK
+      // fixture; its one hand-written index surfaces no error-level rules, so it
+      // lints against the root config (its scripts are hand-set, see below).
+      "@osdk/e2e.generated.1.1.x",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+      oxc: true,
+    },
+  )
+  // Force-bundle libraries migrated to the oxc toolchain. Same as "oxc migrated
+  // libraries" but carry OUTPUT_BUNDLE_ALL (bundled cjs/esm/browser), which is
+  // what the former forceBundle archetype provided (now removed; both its members
+  // live here). @osdk/client.unstable and @osdk/client.unstable.tpsa are both
+  // almost entirely conjure-generated code under src/generated; this repo treats
+  // that as first-class checked-in source (ESLint + dprint processed it before
+  // the migration), so each carries a nested oxlint config (oxcConfig) that
+  // re-includes the generated tree and turns off the few error-level rules it
+  // surfaces, keeping the migration behavior-preserving. The generated tree is
+  // also oxfmt-formatted via the root oxfmt.config.ts (which no longer ignores
+  // `**/generated`).
+  .addArchetype(
+    "oxc migrated force-bundle libraries with carve-outs",
+    [
+      "@osdk/client.unstable",
+      "@osdk/client.unstable.tpsa",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_BUNDLE_ALL,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -234,6 +462,15 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "lib": ["ES2023", "DOM", "ESNEXT.Array"],
       },
+      // NOT migrated to the oxc toolchain in this increment. Its `codegen` step
+      // reformats freshly-generated documentation examples via `pnpm run format`,
+      // and that step runs on every CI test-matrix leg (Node 18-24) because a
+      // generator package, @osdk/osdk-docs-context-generator, depends on this
+      // package's codegen output. oxfmt cannot load the repo's TypeScript
+      // oxfmt.config.ts on Node < 22.18, so the format step must stay on dprint
+      // (which is Node-version-independent). Migrate this package once codegen is
+      // restored from the Node-24 build cache on the matrix (see #3031 follow-up)
+      // rather than re-executed per leg.
     },
   )
   .addArchetype("publishedSandboxes", [
@@ -244,10 +481,19 @@ const archetypeRules = archetypes(
     private: false,
     extraFiles: ["src/"],
     skipBuildInFiles: true,
+    // Migrated to the oxc toolchain; carries a nested oxlint config for the
+    // error-level Ultracite rules its source first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
   })
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    // Migrated to the oxc toolchain; carries a nested oxlint config (its
+    // src/index.ts barrel re-exports the generated ontology, tripping
+    // oxc/no-barrel-file once the module graph is resolvable).
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
   })
   .addArchetype(
     "currentlyGeneratedSdks",
@@ -258,11 +504,17 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       skipAttw: true,
       private: true,
+      // Migrated to the oxc toolchain; carries a nested oxlint config (one member's
+      // hand-written index surfaces an error-level rule the prior ESLint did not
+      // enforce).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officeassignment",
       "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",
@@ -276,6 +528,11 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
       },
+      // Migrated to the oxc toolchain; each carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces (including the
+      // license-header carve-out the prior ESLint config applied to e2e.sandbox.*).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -293,6 +550,11 @@ const archetypeRules = archetypes(
         "rootDirs": ["./src", "./build/scss-types"],
         "allowArbitraryExtensions": true,
       },
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces. Its .scss/.css are
+      // left to their authors (oxfmt ignores them).
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -303,6 +565,9 @@ const archetypeRules = archetypes(
     {
       ...INTERNAL_LIBRARY_RULES,
       skipTypes: true,
+      // Migrated to the oxc toolchain; surfaces no error-level rules, so it lints
+      // against the root config.
+      oxc: true,
     },
   )
   .addArchetype(
@@ -314,6 +579,10 @@ const archetypeRules = archetypes(
       ...INTERNAL_LIBRARY_RULES,
       output: OUTPUT_NORMAL,
       skipTypes: true,
+      // Migrated to the oxc toolchain; carries a nested oxlint config for the
+      // error-level Ultracite rules its source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype(
@@ -326,40 +595,55 @@ const archetypeRules = archetypes(
       react: true,
       output: OUTPUT_ESM_ONLY,
       extraPublishFiles: ["build/site"],
+      // Migrated to the oxc toolchain (deferred from the widget batch for churn);
+      // carries a nested oxlint config for the error-level Ultracite rules its
+      // source first surfaces.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
+  // The 221-tsx component-library giant migrated to the oxc toolchain. Same
+  // options as the former "reactComponentsLibrary" archetype (react + cssExport
+  // + extraPublishFiles + the full experimental/* attw exclude list + the test
+  // setup/env/pool) plus `oxc: true`. Its package-specific carve-outs live in a
+  // nested oxlint config (packages/react-components/oxlint.config.ts, which
+  // `extends` the root), so `oxcConfig` points lint/fix-lint at that file rather
+  // than the root config.
   .addArchetype(
-    "reactLibrary",
+    "oxc migrated react components library",
     [
-      "@osdk/widget.client-react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithCss",
-    [
-      "@osdk/cbac-components",
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
-      cssExport: true,
-      extraPublishFiles: ["AGENTS.md"],
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithDocs",
-    [
-      "@osdk/react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+      cssExport: ["styles.css"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      attwExcludeEntrypoints: [
+        "./experimental/action-form",
+        "./experimental/aip-agent-chat",
+        "./experimental/cbac-picker",
+        "./experimental/document-viewer",
+        "./experimental/email-viewer",
+        "./experimental/excel-viewer",
+        "./experimental/filter-list",
+        "./experimental/image-viewer",
+        "./experimental/markdown-renderer",
+        "./experimental/object-table",
+        "./experimental/pdf-viewer",
+        "./experimental/theme",
+        "./experimental/tiff-renderer",
+        "./experimental/video-viewer",
+        "./experimental/xml-viewer",
+      ],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+      vitestEnv: {
+        TZ: "UTC",
+        LANG: "en_US.UTF-8",
+      },
+      vitestPool: "threads",
     },
   )
   .addArchetype(
@@ -372,23 +656,11 @@ const archetypeRules = archetypes(
       minimalChangesOnly: true,
       private: true,
     },
-  )
-  .addArchetype(
-    "cssOnlyPackage",
-    [
-      "@osdk/react-components-styles",
-    ],
-    {
-      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
-      private: false,
-      output: OUTPUT_NONE,
-      minimalChangesOnly: true,
-    },
   );
 
 /**
- * We don't want to allow `workspace:^` in our dependencies because our current release branch
- * strategy only allows for patch changes in the release branch and minors elsewhere.
+ * We don't want to allow `workspace:^` in our regular dependencies because our current release
+ * branch strategy only allows for patch changes in the release branch and minors elsewhere.
  *
  * If we were to allow `workspace:^`, then the follow scenario causes issues:
  *   - Suppose we have a Foo and a Bar package and Bar depends on Foo.
@@ -400,6 +672,15 @@ const archetypeRules = archetypes(
  * on Foo @ `^1.1.0` would be satisfied by the shipped `Foo@1.2.0`.
  *
  * Using `workspace:~` prevents this as `~` can only resolve patch changes.
+ *
+ * However, peerDependencies are the exception: they MUST use `workspace:^`. With `workspace:~`,
+ * a minor bump in a peer dep (e.g. @osdk/api 2.8.0 -> 2.9.0) falls outside the tilde range
+ * (`~2.8.0`), so changesets treats it as a breaking change and forces a major bump on the
+ * consuming package. Using `workspace:^` keeps minor bumps in range (`^2.8.0` accepts `2.9.0`).
+ * Additionally, this is how most of our public packages with peer dependencies are treated. They
+ * should be compatible with any higher version of the dependency, and anything else would be a break
+ * for users.
+ * See: https://github.com/palantir/osdk-ts/pull/3020
  */
 const disallowWorkspaceCaret = createRuleFactory({
   name: "disallowWorkspaceCaret",
@@ -423,11 +704,10 @@ const disallowWorkspaceCaret = createRuleFactory({
                 // always refetch in fixer since another fixer may have already changed the file
                 let packageJson = context.getPackageJson();
                 if (packageJson[d]) {
-                  packageJson[d] = Object.assign(
-                    {},
-                    packageJson[d],
-                    { [dep]: expected },
-                  );
+                  packageJson[d] = {
+                    ...packageJson[d],
+                    [dep]: expected,
+                  };
 
                   context.host.writeJson(
                     context.getPackageJsonPath(),
@@ -437,7 +717,30 @@ const disallowWorkspaceCaret = createRuleFactory({
               },
             });
           }
-        } else if (version === "workspace:^") {
+        } else if (d === "peerDependencies" && version === "workspace:~") {
+          const message =
+            `'workspace:~' not allowed in peerDependencies (${d}['${dep}']).`;
+          context.addError({
+            message,
+            longMessage:
+              `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
+            file: context.getPackageJsonPath(),
+            fixer: () => {
+              let packageJson = context.getPackageJson();
+              if (packageJson[d]?.[dep] === "workspace:~") {
+                packageJson[d] = {
+                  ...packageJson[d],
+                  [dep]: "workspace:^",
+                };
+
+                context.host.writeJson(
+                  context.getPackageJsonPath(),
+                  packageJson,
+                );
+              }
+            },
+          });
+        } else if (version === "workspace:^" && d !== "peerDependencies") {
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
@@ -453,11 +756,10 @@ const disallowWorkspaceCaret = createRuleFactory({
               // always refetch in fixer since another fixer may have already changed the file
               let packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
-                packageJson[d] = Object.assign(
-                  {},
-                  packageJson[d],
-                  { [dep]: "workspace:~" },
-                );
+                packageJson[d] = {
+                  ...packageJson[d],
+                  [dep]: "workspace:~",
+                };
 
                 context.host.writeJson(
                   context.getPackageJsonPath(),
@@ -477,7 +779,7 @@ const disallowWorkspaceCaret = createRuleFactory({
 // of typescript which broke code formatting. This rule is to make sure we don't experience that again.
 // (note devDeps are only happening at buildtime so they should be fine)
 const fixedDepsOnly = createRuleFactory({
-  name: "disallowWorkspaceCaret",
+  name: "fixedDepsOnly",
   check: async (context) => {
     const packageJson = context.getPackageJson();
 
@@ -489,6 +791,7 @@ const fixedDepsOnly = createRuleFactory({
         if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
+        if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
@@ -542,7 +845,7 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExport?: boolean
+ *   cssExports?: string[]
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -616,9 +919,10 @@ const ourExportsConvention = createRuleFactory({
       }
     }
 
-    // add CSS export if enabled (must come before the wildcard)
-    if (options.cssExport) {
-      expectedExports.exports["./styles.css"] = "./build/browser/styles.css";
+    // add CSS exports if any (must come before the wildcard)
+    const cssDir = options.browser ? "build/browser" : "build/esm";
+    for (const cssFile of options.cssExports ?? []) {
+      expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -847,6 +1151,9 @@ function minimalPackageRules(shared, options) {
  * @property { string[] } [extraPublishFiles]
  * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
+ * @property { string[] } [setupFiles]
+ * @property { Record<string, string> } [vitestEnv]
+ * @property { "forks" | "threads" } [vitestPool]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -856,9 +1163,13 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [fixedDepsOnly]
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]
+ * @property { boolean } [oxc]
+ * @property { string } [oxcConfig]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
- * @property { boolean } [cssExport]
+ * @property { string[] } [cssExport]
+ * @property { string[] } [attwExcludeEntrypoints]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -867,11 +1178,38 @@ function minimalPackageRules(shared, options) {
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
+  /** @type {string[]} */
+  const cssExports = options.cssExport ?? [];
+
   options = {
     ...options,
     vitestEnvironment: options.vitestEnvironment
       ?? (options.react ? "happy-dom" : undefined),
     skipAttw: options.skipAttw ?? options.skipTypes,
+  };
+
+  // CSS bundling runs from the leaf transpile step. For ESM-only packages it
+  // hooks onto transpileEsm; for browser-targeted packages it hooks onto
+  // transpileBrowser so the browser build sees the freshly-bundled CSS.
+  const buildCssSuffix = cssExports.length > 0
+    ? " && node scripts/build-css.mjs"
+    : "";
+
+  const getTranspileEsmScript = () => {
+    if (!options.output.esm) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    const base =
+      `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`;
+    return options.output.browser ? base : base + buildCssSuffix;
+  };
+
+  const getTranspileBrowserScript = () => {
+    if (!options.output.browser) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+      + buildCssSuffix;
   };
 
   if (options.minimalChangesOnly) {
@@ -936,6 +1274,9 @@ function standardPackageRules(shared, options) {
         devDependencies: {
           "@osdk/monorepo.tsconfig": "workspace:~",
           "@osdk/monorepo.api-extractor": "workspace:~",
+          ...(options.output.esm === "bundle"
+            ? { "@osdk/monorepo.tool.check-bundle": "workspace:~" }
+            : {}),
         },
       },
     }),
@@ -948,20 +1289,31 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+              cssExports.length > 0 || options.attwExcludeEntrypoints?.length
+                ? ` --exclude-entrypoints ${
+                  [
+                    ...cssExports.map(f => `./${f}`),
+                    ...(options.attwExcludeEntrypoints ?? []),
+                  ].join(" ")
+                }`
+                : ""
             }`,
-          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          "fix-lint":
-            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+          "check-bundle": options.output.esm === "bundle"
+            ? "monorepo.tool.check-bundle"
+            : DELETE_SCRIPT_ENTRY,
+          lint: options.oxc
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } . && oxfmt -c ../../oxfmt.config.ts --check .`
+            : "eslint . && dprint check",
+          "fix-lint": options.oxc
+            ? `oxlint -c ${
+              options.oxcConfig ?? "../../oxlint.config.ts"
+            } --fix . && oxfmt -c ../../oxfmt.config.ts .`
+            : "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
-          transpileEsm: options.output.esm
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
-            : DELETE_SCRIPT_ENTRY,
-          transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
-              options.cssExport ? " && node scripts/build-css.mjs" : ""
-            }`
-            : DELETE_SCRIPT_ENTRY,
+          transpileEsm: getTranspileEsmScript(),
+          transpileBrowser: getTranspileBrowserScript(),
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
             : DELETE_SCRIPT_ENTRY,
@@ -969,7 +1321,9 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: options.typecheckProject
+            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
+            : "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
@@ -978,7 +1332,7 @@ function standardPackageRules(shared, options) {
       options: {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
-        cssExport: !!options.cssExport,
+        cssExports,
       },
     }),
     packageEntry({
@@ -1073,18 +1427,44 @@ function standardPackageRules(shared, options) {
               },`
               : ""
           }
-              pool: "forks",
+              pool: "${options.vitestPool ?? "forks"}",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
               : ""
+          }${
+            options.setupFiles && options.setupFiles.length > 0
+              ? `\n            setupFiles: ${
+                JSON.stringify(options.setupFiles)
+              },`
+              : ""
+          }${
+            options.vitestEnv
+              ? `\n            env: {\n${
+                Object.entries(options.vitestEnv)
+                  .map(([k, v]) => `              ${k}: ${JSON.stringify(v)},`)
+                  .join("\n")
+              }\n            },`
+              : ""
           }
+              coverage: {
+                include: ["src/**"],
+                // Exclude tests, generated code, and index.ts barrels (no logic).
+                exclude: [
+                  "**/*.test.*",
+                  "**/__tests__/**",
+                  "**/__mocks__/**",
+                  "**/generatedNoCheck/**",
+                  "**/*.d.ts",
+                  "**/index.ts",
+                ],
+              },
               fakeTimers: {
                 toFake: ["setTimeout", "clearTimeout", "Date"],
               },
             },
           });
-     
+
           `,
           "js",
         ),

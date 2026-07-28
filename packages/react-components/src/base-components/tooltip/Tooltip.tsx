@@ -24,24 +24,19 @@ import {
 } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
+
 import styles from "./Tooltip.module.css";
 
 export interface TooltipProps extends Omit<TooltipRootProps, "className"> {}
 
-function TooltipRoot({
-  children,
-  ...rest
-}: TooltipProps): React.ReactElement {
-  return (
-    <BaseUITooltip.Root {...rest}>
-      {children}
-    </BaseUITooltip.Root>
-  );
+function TooltipRoot({ children, ...rest }: TooltipProps): React.ReactElement {
+  return <BaseUITooltip.Root {...rest}>{children}</BaseUITooltip.Root>;
 }
 
-interface TooltipProviderComponentProps
-  extends Omit<TooltipProviderProps, "className">
-{
+interface TooltipProviderComponentProps extends Omit<
+  TooltipProviderProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -49,29 +44,29 @@ function TooltipProvider({
   children,
   ...rest
 }: TooltipProviderComponentProps): React.ReactElement {
-  return (
-    <BaseUITooltip.Provider
-      {...rest}
-    >
-      {children}
-    </BaseUITooltip.Provider>
-  );
+  return <BaseUITooltip.Provider {...rest}>{children}</BaseUITooltip.Provider>;
 }
 
-interface TooltipTriggerComponentProps
-  extends Omit<TooltipTriggerProps, "className">
-{
+interface TooltipTriggerComponentProps extends Omit<
+  TooltipTriggerProps,
+  "className"
+> {
   className?: string;
 }
+
+// Base UI defaults to 600ms which feels too slow
+const TOOLTIP_TRIGGER_DELAY_MS = 200;
 
 function TooltipTrigger({
   className,
   children,
+  delay = TOOLTIP_TRIGGER_DELAY_MS,
   ...rest
 }: TooltipTriggerComponentProps): React.ReactElement {
   return (
     <BaseUITooltip.Trigger
       className={classnames(styles.osdkTooltipTrigger, className)}
+      delay={delay}
       {...rest}
     >
       {children}
@@ -79,9 +74,10 @@ function TooltipTrigger({
   );
 }
 
-interface TooltipPositionerComponentProps
-  extends Omit<TooltipPositionerProps, "className">
-{
+interface TooltipPositionerComponentProps extends Omit<
+  TooltipPositionerProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -102,9 +98,10 @@ function TooltipPositioner({
   );
 }
 
-interface TooltipPopupComponentProps
-  extends Omit<TooltipPopupProps, "className">
-{
+interface TooltipPopupComponentProps extends Omit<
+  TooltipPopupProps,
+  "className"
+> {
   className?: string;
 }
 

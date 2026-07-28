@@ -15,10 +15,11 @@
  */
 
 import type { OntologyIrOneToManyLinkDefinition } from "@osdk/client.unstable";
+
 import type { OneToManyLinkTypeDefinition } from "../../api/links/LinkType.js";
 
 export function convertCardinality(
-  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+  cardinality: OneToManyLinkTypeDefinition["cardinality"]
 ): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
   if (cardinality === "OneToMany" || cardinality === undefined) {
     return "ONE_TO_MANY";

@@ -16,15 +16,19 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { PdfViewerToolbar } from "../PdfViewerToolbar.js";
 
 const defaultProps = {
   currentPage: 1,
   numPages: 10,
   scale: 1.0,
+  autoSize: false,
   sidebarOpen: false,
   onPageChange: vi.fn(),
-  onScaleChange: vi.fn(),
+  onZoomIn: vi.fn(),
+  onZoomOut: vi.fn(),
+  onAutoSizeToggle: vi.fn(),
   onSearchOpen: vi.fn(),
   onSidebarToggle: vi.fn(),
   onDownload: vi.fn(),
@@ -44,7 +48,7 @@ afterEach(() => {
 describe("PdfViewerToolbar", () => {
   it("should render the current page and total pages", () => {
     render(
-      <PdfViewerToolbar {...defaultProps} currentPage={3} numPages={10} />,
+      <PdfViewerToolbar {...defaultProps} currentPage={3} numPages={10} />
     );
 
     const pageInput = screen.getByLabelText("Page number") as HTMLInputElement;
@@ -59,7 +63,7 @@ describe("PdfViewerToolbar", () => {
         {...defaultProps}
         currentPage={3}
         onPageChange={onPageChange}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByLabelText("Next page"));
@@ -73,7 +77,7 @@ describe("PdfViewerToolbar", () => {
         {...defaultProps}
         currentPage={3}
         onPageChange={onPageChange}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByLabelText("Previous page"));
@@ -84,24 +88,23 @@ describe("PdfViewerToolbar", () => {
     render(<PdfViewerToolbar {...defaultProps} currentPage={1} />);
 
     expect(
-      (screen.getByLabelText("Previous page") as HTMLButtonElement).disabled,
+      (screen.getByLabelText("Previous page") as HTMLButtonElement).disabled
     ).toBe(true);
   });
 
   it("should disable next page button on last page", () => {
     render(
-      <PdfViewerToolbar {...defaultProps} currentPage={10} numPages={10} />,
+      <PdfViewerToolbar {...defaultProps} currentPage={10} numPages={10} />
     );
 
-    expect((screen.getByLabelText("Next page") as HTMLButtonElement).disabled)
-      .toBe(true);
+    expect(
+      (screen.getByLabelText("Next page") as HTMLButtonElement).disabled
+    ).toBe(true);
   });
 
   it("should navigate to page on Enter in page input", () => {
     const onPageChange = vi.fn();
-    render(
-      <PdfViewerToolbar {...defaultProps} onPageChange={onPageChange} />,
-    );
+    render(<PdfViewerToolbar {...defaultProps} onPageChange={onPageChange} />);
 
     const input = screen.getByLabelText("Page number");
     fireEvent.change(input, { target: { value: "5" } });
@@ -118,7 +121,7 @@ describe("PdfViewerToolbar", () => {
         currentPage={3}
         numPages={10}
         onPageChange={onPageChange}
-      />,
+      />
     );
 
     const input = screen.getByLabelText("Page number") as HTMLInputElement;
@@ -131,23 +134,23 @@ describe("PdfViewerToolbar", () => {
     expect(input.value).toBe("3");
   });
 
-  it("should call onScaleChange when zoom buttons are clicked", () => {
-    const onScaleChange = vi.fn();
+  it("should call onZoomIn and onZoomOut when zoom buttons are clicked", () => {
+    const onZoomIn = vi.fn();
+    const onZoomOut = vi.fn();
     render(
       <PdfViewerToolbar
         {...defaultProps}
         scale={1.0}
-        onScaleChange={onScaleChange}
-      />,
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
+      />
     );
 
     fireEvent.click(screen.getByLabelText("Zoom in"));
-    expect(onScaleChange).toHaveBeenCalledWith(1.25);
-
-    onScaleChange.mockClear();
+    expect(onZoomIn).toHaveBeenCalled();
 
     fireEvent.click(screen.getByLabelText("Zoom out"));
-    expect(onScaleChange).toHaveBeenCalledWith(0.75);
+    expect(onZoomOut).toHaveBeenCalled();
   });
 
   it("should display scale as percentage", () => {
@@ -159,7 +162,7 @@ describe("PdfViewerToolbar", () => {
   it("should call onSidebarToggle when sidebar button is clicked", () => {
     const onSidebarToggle = vi.fn();
     render(
-      <PdfViewerToolbar {...defaultProps} onSidebarToggle={onSidebarToggle} />,
+      <PdfViewerToolbar {...defaultProps} onSidebarToggle={onSidebarToggle} />
     );
 
     fireEvent.click(screen.getByLabelText("Open sidebar"));
@@ -168,9 +171,7 @@ describe("PdfViewerToolbar", () => {
 
   it("should call onSearchOpen when search button is clicked", () => {
     const onSearchOpen = vi.fn();
-    render(
-      <PdfViewerToolbar {...defaultProps} onSearchOpen={onSearchOpen} />,
-    );
+    render(<PdfViewerToolbar {...defaultProps} onSearchOpen={onSearchOpen} />);
 
     fireEvent.click(screen.getByLabelText("Search"));
     expect(onSearchOpen).toHaveBeenCalled();
@@ -178,7 +179,7 @@ describe("PdfViewerToolbar", () => {
 
   it("should update page input when currentPage prop changes", () => {
     const { rerender } = render(
-      <PdfViewerToolbar {...defaultProps} currentPage={1} />,
+      <PdfViewerToolbar {...defaultProps} currentPage={1} />
     );
 
     const input = screen.getByLabelText("Page number") as HTMLInputElement;
@@ -188,13 +189,37 @@ describe("PdfViewerToolbar", () => {
     expect(input.value).toBe("5");
   });
 
+  it("should render auto-size button with correct aria-pressed state", () => {
+    const { rerender } = render(
+      <PdfViewerToolbar {...defaultProps} autoSize={false} />
+    );
+
+    const button = screen.getByLabelText("Fit to width");
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+
+    rerender(<PdfViewerToolbar {...defaultProps} autoSize={true} />);
+
+    const activeButton = screen.getByLabelText("Disable fit to width");
+    expect(activeButton.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("should call onAutoSizeToggle when auto-size button is clicked", () => {
+    const onAutoSizeToggle = vi.fn();
+    render(
+      <PdfViewerToolbar {...defaultProps} onAutoSizeToggle={onAutoSizeToggle} />
+    );
+
+    fireEvent.click(screen.getByLabelText("Fit to width"));
+    expect(onAutoSizeToggle).toHaveBeenCalled();
+  });
+
   it("should render save button when enableFormSave is true", () => {
     render(
       <PdfViewerToolbar
         {...defaultProps}
         enableFormSave={true}
         onFormSave={vi.fn()}
-      />,
+      />
     );
 
     expect(screen.getByLabelText("Save form")).toBeTruthy();
@@ -213,7 +238,7 @@ describe("PdfViewerToolbar", () => {
         {...defaultProps}
         enableFormSave={true}
         onFormSave={onFormSave}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByLabelText("Save form"));

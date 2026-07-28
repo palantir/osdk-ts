@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type {
   UpdateMonitorRequest as _api_registry_UpdateMonitorRequest,
@@ -33,12 +34,12 @@ import type {
 export async function updateMonitor(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_registry_UpdateMonitorRequest,
+  request: _api_registry_UpdateMonitorRequest
 ): Promise<_api_registry_UpdateMonitorResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}`,
     "POST",
-    request,
+    request
   );
 }

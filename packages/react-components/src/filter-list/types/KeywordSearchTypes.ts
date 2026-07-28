@@ -15,7 +15,11 @@
  */
 
 import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import type { BaseFilterState } from "../FilterListItemApi.js";
+
+import type {
+  BaseFilterState,
+  FilterDefinitionControls,
+} from "../FilterListItemApi.js";
 
 /**
  * Keys of string properties on an object type
@@ -43,7 +47,7 @@ export interface KeywordSearchFilterState extends BaseFilterState {
 export interface KeywordSearchFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends StringPropertyKeys<Q> = StringPropertyKeys<Q>,
-> {
+> extends FilterDefinitionControls {
   type: "KEYWORD_SEARCH";
   /**
    * Optional unique identifier for stable keying across filter reorders.

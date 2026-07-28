@@ -36,22 +36,19 @@ import type { Experiment } from "./Experiment.js";
 type createMediaReference = <
   Q extends ObjectOrInterfaceDefinition,
   const L extends PropertyKeys.Filtered<Q, "mediaReference">,
->(
-  args: {
-    data: Blob;
-    fileName: string;
-    objectType: Q;
-    propertyType: L;
-  },
-) => Promise<MediaReference>;
+>(args: {
+  data: Blob;
+  fileName: string;
+  objectType: Q;
+  propertyType: L;
+}) => Promise<MediaReference>;
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference:
-  Experiment<
-    "2.1.0",
-    "__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference",
-    { createMediaReference: createMediaReference }
-  > = {
-    name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference",
-    type: "experiment",
-    version: "2.1.0",
-  };
+export const __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference: Experiment<
+  "2.1.0",
+  "__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference",
+  { createMediaReference: createMediaReference }
+> = {
+  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference",
+  type: "experiment",
+  version: "2.1.0",
+};

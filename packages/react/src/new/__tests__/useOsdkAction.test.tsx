@@ -16,11 +16,12 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OsdkContext2 } from "../OsdkContext2.js";
+
+import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkAction } from "../useOsdkAction.js";
 
 const MOCK_ACTION_DEF: ActionDefinition<never> = {
@@ -39,7 +40,7 @@ const MOCK_EDIT_RESPONSE: ActionEditResponse = {
 };
 
 function createMockObservableClient(
-  overrides?: Partial<ObservableClient>,
+  overrides?: Partial<ObservableClient>
 ): ObservableClient {
   return {
     applyAction: vi.fn().mockResolvedValue(MOCK_EDIT_RESPONSE),
@@ -51,11 +52,15 @@ function createMockObservableClient(
 function createWrapper(observableClient: ObservableClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <OsdkContext2.Provider
-        value={{ client: {} as never, observableClient }}
+      <OsdkContext.Provider
+        value={{
+          client: {} as never,
+          observableClient,
+          devtoolsEnabled: false,
+        }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 }
@@ -72,10 +77,9 @@ describe("useOsdkAction", () => {
   });
 
   it("resolves with ActionEditResponse on success", async () => {
-    const { result } = renderHook(
-      () => useOsdkAction(MOCK_ACTION_DEF),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     let actionResult: ActionEditResponse | undefined;
     await act(async () => {
@@ -97,14 +101,13 @@ describe("useOsdkAction", () => {
       applyAction: vi.fn().mockRejectedValue(validationError),
     });
 
-    const { result } = renderHook(
-      () => useOsdkAction(MOCK_ACTION_DEF),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     await act(async () => {
       await expect(result.current.applyAction({})).rejects.toThrow(
-        validationError,
+        validationError
       );
     });
 
@@ -119,14 +122,13 @@ describe("useOsdkAction", () => {
       applyAction: vi.fn().mockRejectedValue(unknownError),
     });
 
-    const { result } = renderHook(
-      () => useOsdkAction(MOCK_ACTION_DEF),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     await act(async () => {
       await expect(result.current.applyAction({})).rejects.toThrow(
-        unknownError,
+        unknownError
       );
     });
 
@@ -143,10 +145,9 @@ describe("useOsdkAction", () => {
       applyAction: vi.fn().mockReturnValue(pendingPromise),
     });
 
-    const { result } = renderHook(
-      () => useOsdkAction(MOCK_ACTION_DEF),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     expect(result.current.isPending).toBe(false);
 
@@ -169,17 +170,17 @@ describe("useOsdkAction", () => {
 
   it("clears error on new applyAction call", async () => {
     const error = new Error("first failure");
-    const applyActionMock = vi.fn()
+    const applyActionMock = vi
+      .fn()
       .mockRejectedValueOnce(error)
       .mockResolvedValueOnce(MOCK_EDIT_RESPONSE);
     mockObservableClient = createMockObservableClient({
       applyAction: applyActionMock,
     });
 
-    const { result } = renderHook(
-      () => useOsdkAction(MOCK_ACTION_DEF),
-      { wrapper: createWrapper(mockObservableClient) },
-    );
+    const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+      wrapper: createWrapper(mockObservableClient),
+    });
 
     // First call fails
     await act(async () => {
@@ -197,10 +198,9 @@ describe("useOsdkAction", () => {
 
   describe("batch actions", () => {
     it("resolves with ActionEditResponse for batch calls", async () => {
-      const { result } = renderHook(
-        () => useOsdkAction(MOCK_ACTION_DEF),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       let actionResult: ActionEditResponse | undefined;
       await act(async () => {
@@ -217,14 +217,13 @@ describe("useOsdkAction", () => {
         applyAction: vi.fn().mockRejectedValue(error),
       });
 
-      const { result } = renderHook(
-        () => useOsdkAction(MOCK_ACTION_DEF),
-        { wrapper: createWrapper(mockObservableClient) },
-      );
+      const { result } = renderHook(() => useOsdkAction(MOCK_ACTION_DEF), {
+        wrapper: createWrapper(mockObservableClient),
+      });
 
       await act(async () => {
         await expect(result.current.applyAction([{}, {}])).rejects.toThrow(
-          error,
+          error
         );
       });
 

@@ -26,7 +26,7 @@ import { client } from "./client.js";
 const objectTypeMetadata = await client.fetchMetadata(Employee);
 
 if (objectTypeMetadata?.icon?.type === "blueprint") {
-    const blueprintIconName = objectTypeMetadata.icon.name;
+  const blueprintIconName = objectTypeMetadata.icon.name;
 }
 const currentVisibility = objectTypeMetadata.visibility;
 const currentDescription = objectTypeMetadata.description;

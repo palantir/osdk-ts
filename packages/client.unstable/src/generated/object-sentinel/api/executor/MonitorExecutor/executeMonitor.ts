@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type {
   ExecuteMonitorRequest as _api_executor_ExecuteMonitorRequest,
@@ -30,12 +31,12 @@ import type {
 export async function executeMonitor(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_executor_ExecuteMonitorRequest,
+  request: _api_executor_ExecuteMonitorRequest
 ): Promise<_api_executor_ExecuteMonitorResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/${monitorRid}/execute`,
     "POST",
-    request,
+    request
   );
 }

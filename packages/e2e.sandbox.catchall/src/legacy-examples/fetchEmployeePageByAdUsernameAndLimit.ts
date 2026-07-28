@@ -23,17 +23,19 @@ import invariant from "tiny-invariant";
  */
 export async function fetchEmployeePageByAdUsernameAndLimit(
   client: Client,
-  adUsername: string,
+  adUsername: string
 ): Promise<void> {
-  const result = await client(Employee).where({
-    $and: [
-      { adUsername },
-      { employeeNumber: { $ne: 5 } },
-      { employeeNumber: { $gte: 5 } },
-    ],
-  }).fetchPage({
-    $select: ["adUsername", "employeeNumber", "jobProfile"],
-  });
+  const result = await client(Employee)
+    .where({
+      $and: [
+        { adUsername },
+        { employeeNumber: { $ne: 5 } },
+        { employeeNumber: { $gte: 5 } },
+      ],
+    })
+    .fetchPage({
+      $select: ["adUsername", "employeeNumber", "jobProfile"],
+    });
 
   console.log(`fetchEmployeePageByAdUsernameAndLimit('${adUsername}')`);
   console.table(result.data);

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GenerateOpenApiRequest } from "../GenerateOpenApiRequest.js";
 
 /**
@@ -25,7 +26,7 @@ import type { GenerateOpenApiRequest } from "../GenerateOpenApiRequest.js";
  */
 export async function generateOpenApi(
   ctx: ConjureContext,
-  request: GenerateOpenApiRequest,
+  request: GenerateOpenApiRequest
 ): Promise<Blob> {
   return conjureFetch(
     ctx,
@@ -33,6 +34,6 @@ export async function generateOpenApi(
     "POST",
     request,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

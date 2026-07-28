@@ -16,6 +16,7 @@
 
 import type { OntologyIrPropertyType } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+
 import { convertObjectStatus, namespace } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import {
@@ -32,15 +33,15 @@ import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstrain
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertObjectPropertyType(
-  property: ObjectPropertyType,
+  property: ObjectPropertyType
 ): OntologyIrPropertyType {
   const apiName = namespace + property.apiName;
   invariant(
-    !shouldNotHaveRenderHints(property.type)
-      || !hasRenderHints(property.typeClasses),
-    `Property type ${apiName} of type '${
-      getPropertyTypeName(property.type)
-    }' should not have render hints`,
+    !shouldNotHaveRenderHints(property.type) ||
+      !hasRenderHints(property.typeClasses),
+    `Property type ${apiName} of type '${getPropertyTypeName(
+      property.type
+    )}' should not have render hints`
   );
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
@@ -50,30 +51,31 @@ export function convertObjectPropertyType(
       description: property.description,
       visibility: property.visibility ?? "NORMAL",
     },
-    indexedForSearch: property.indexedForSearch
-      ?? shouldBeIndexedForSearch(property.type),
+    indexedForSearch:
+      property.indexedForSearch ?? shouldBeIndexedForSearch(property.type),
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: property.array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(
-            property.type,
-            property.apiName,
-            property.sharedPropertyType,
-          ),
-          reducers: convertReducers(
-            property.type,
-            property.apiName,
-            property.reducers ?? [],
-            property.sharedPropertyType,
-          ),
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(
+              property.type,
+              property.apiName,
+              property.sharedPropertyType
+            ),
+            reducers: convertReducers(
+              property.type,
+              property.apiName,
+              property.reducers ?? [],
+              property.sharedPropertyType
+            ),
+          },
+        }
       : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
-    typeClasses: property.typeClasses
-      ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
+    typeClasses:
+      property.typeClasses ??
+      (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: property.valueType

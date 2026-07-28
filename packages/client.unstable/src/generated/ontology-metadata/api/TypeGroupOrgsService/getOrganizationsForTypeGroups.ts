@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   TypeGroupGetOrganizationsRequest as _api_TypeGroupGetOrganizationsRequest,
   TypeGroupGetOrganizationsResponse as _api_TypeGroupGetOrganizationsResponse,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getOrganizationsForTypeGroups(
   ctx: ConjureContext,
-  request: _api_TypeGroupGetOrganizationsRequest,
+  request: _api_TypeGroupGetOrganizationsRequest
 ): Promise<_api_TypeGroupGetOrganizationsResponse> {
   return conjureFetch(ctx, `/type-groups/orgs/get`, "PUT", request);
 }

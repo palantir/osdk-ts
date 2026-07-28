@@ -17,8 +17,8 @@
 import type {
   OutlineItem,
   PdfViewerOutlineSidebarProps,
-} from "@osdk/react-components/experimental";
-import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -78,8 +78,10 @@ const SAMPLE_OUTLINE: OutlineItem[] = [
 ];
 
 const meta: Meta<PdfViewerOutlineSidebarProps> = {
-  title: "Components/PdfViewer/Building Blocks/OutlineSidebar",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/OutlineSidebar",
   component: PdfViewerOutlineSidebar,
+  tags: ["beta"],
   args: {
     outlineItems: SAMPLE_OUTLINE,
     currentPage: 1,

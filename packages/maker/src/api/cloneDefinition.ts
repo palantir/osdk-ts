@@ -22,14 +22,12 @@
  * Does NOT deep-clone nested objects so that entity references (interfaces,
  * link types, etc.) preserve their identity for registry lookups.
  */
-export function cloneDefinition<T extends object>(
-  input: T,
-): T {
+export function cloneDefinition<T extends object>(input: T): T {
   const clone = { ...input };
   for (const key in clone) {
     if (
-      Object.prototype.hasOwnProperty.call(clone, key)
-      && Array.isArray(clone[key])
+      Object.prototype.hasOwnProperty.call(clone, key) &&
+      Array.isArray(clone[key])
     ) {
       (clone as any)[key] = [...(clone[key] as unknown[])];
     }

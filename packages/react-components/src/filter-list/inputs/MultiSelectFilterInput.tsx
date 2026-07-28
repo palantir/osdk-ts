@@ -21,20 +21,33 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
-import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
+import {
+  MultiSelectInput,
+  type MultiSelectInputLayout,
+} from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
+import {
+  EMPTY_LINKED_FILTERS,
+  type LinkedFilter,
+} from "../types/LinkedFilterTypes.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  linkedFilters?: ReadonlyArray<LinkedFilter<Q>>;
+  showFilteredOutValues?: boolean;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => React.ReactNode;
+  showCount?: boolean;
+  layout?: MultiSelectInputLayout;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -44,14 +57,19 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  linkedFilters = EMPTY_LINKED_FILTERS,
+  showFilteredOutValues,
   excludeRowOpen,
+  renderValue,
+  showCount,
+  layout,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
       filterState?.type === "SELECT"
         ? coerceToStringArray(filterState.selectedValues)
         : [],
-    [filterState],
+    [filterState]
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -71,19 +89,16 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding]
   );
 
-  const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
-  );
-
-  const { data, isLoading, error } = usePropertyAggregation(
+  const { data, isLoading, error } = useFilterPropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
-    aggregationOptions,
+    whereClause,
+    linkedFilters,
+    { selectedValues, showFilteredOutValues }
   );
 
   return (
@@ -100,12 +115,15 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValues={selectedValues}
         onChange={handleChange}
+        showCounts={showCount}
         ariaLabel={`Search ${propertyKey} values`}
+        renderValue={renderValue}
+        layout={layout}
       />
     </FilterInputExcludeRow>
   );
 }
 
 export const MultiSelectFilterInput: typeof MultiSelectFilterInputInner = memo(
-  MultiSelectFilterInputInner,
+  MultiSelectFilterInputInner
 ) as typeof MultiSelectFilterInputInner;

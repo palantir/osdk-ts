@@ -14,30 +14,88 @@
  * limitations under the License.
  */
 
-import { addons } from "storybook/manager-api";
+import React from "react";
+import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
+import type { API } from "storybook/manager-api";
+import { addons, types } from "storybook/manager-api";
+import { create } from "storybook/theming";
 
-function redirectToObjectTableIfAtRoot() {
+import {
+  ADDON_ID,
+  PANEL_ID,
+} from "./addons/brand-theme-extractor/constants.js";
+import { Panel } from "./addons/brand-theme-extractor/Panel.js";
+import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
+// Composed Palantir mark + "OSDK React Components" wordmark (text pre-outlined).
+import brandImage from "./osdk-react-components-logo.svg";
+
+addons.setConfig({
+  theme: create({
+    base: "light",
+    brandTitle: "OSDK React Components",
+    brandImage,
+    brandUrl: "./?path=/docs/docs-welcome--docs",
+    brandTarget: "_self",
+  }),
+  tagBadges: [
+    {
+      tags: "beta",
+      badge: {
+        text: "Beta",
+        style: {
+          backgroundColor: "rgba(143, 153, 168, .15)",
+          color: "#1c2127",
+        },
+        tooltip: "This component is in beta and may change",
+      },
+      display: {
+        sidebar: [
+          { type: "component", skipInherited: false },
+          { type: "group", skipInherited: false },
+        ],
+        toolbar: true,
+      },
+    },
+  ] satisfies TagBadgeParameters,
+});
+
+// Must match <Meta title="Docs/Welcome" /> in src/docs/Welcome.mdx
+const WELCOME_DOCS_PATH = "/docs/docs-welcome--docs";
+
+function redirectToWelcomeIfNoStorySelected() {
   const url = new URL(window.location.href);
-  if (
-    !url.searchParams.has("path")
-    && window.location.pathname === "/"
-  ) {
-    window.location.href = "/?path=/story/components-objecttable--default";
+
+  if (!url.searchParams.has("path")) {
+    url.searchParams.set("path", WELCOME_DOCS_PATH);
+    window.location.replace(url);
   }
 }
 
-// Redirect to the object table story if we're at the root
-addons.register(
-  "redirect-to-first-story",
-  (api: { on: (arg0: string, arg1: () => void) => void }) => {
-    // Check if we're at the root path (no story selected)
-    api.on("STORY_RENDERED", () => {
-      redirectToObjectTableIfAtRoot();
-    });
+// Redirect to the Welcome docs page if we're at the root
+addons.register("redirect-to-first-story", (api: Pick<API, "on">) => {
+  api.on("STORY_RENDERED", () => {
+    redirectToWelcomeIfNoStorySelected();
+  });
 
-    // Also check immediately when Storybook loads
-    setTimeout(() => {
-      redirectToObjectTableIfAtRoot();
-    }, 100);
-  },
-);
+  // Allow Storybook's initial render cycle to complete
+  setTimeout(() => {
+    redirectToWelcomeIfNoStorySelected();
+  }, 100);
+});
+
+// Brand Theme Extractor toolbar
+addons.register(ADDON_ID, () => {
+  addons.add(`${ADDON_ID}/theme-toolbar`, {
+    type: types.TOOL,
+    title: "Theme",
+    match: ({ viewMode, tabId }) =>
+      Boolean(viewMode?.match(/^(story|docs)$/u)) && !tabId,
+    render: ThemeToolbar,
+  });
+
+  addons.add(PANEL_ID, {
+    type: types.PANEL,
+    title: "Brand Theme",
+    render: ({ active }) => React.createElement(Panel, { active: !!active }),
+  });
+});

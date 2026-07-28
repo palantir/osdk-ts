@@ -60,7 +60,7 @@ class ShapeBuilderImpl<
 
   #addProps(
     props: string[],
-    type: "select" | "require" | "dropIfNull",
+    type: "select" | "require" | "dropIfNull"
   ): Record<string, ShapePropertyConfig> {
     const newProps = { ...this.#state.props };
     for (const prop of props) {
@@ -109,7 +109,7 @@ class ShapeBuilderImpl<
     V extends NonNullable<PropertyType<BASE, K>>,
   >(
     prop: K,
-    defaultValue: V,
+    defaultValue: V
   ): ShapeBuilder<
     BASE,
     PROPS & { [P in K]: NonNullable<PropertyType<BASE, P>> },
@@ -128,7 +128,7 @@ class ShapeBuilderImpl<
 
   withTransform<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>, R>(
     prop: K,
-    transform: (value: PropertyType<BASE, K>) => R,
+    transform: (value: PropertyType<BASE, K>) => R
   ): ShapeBuilder<BASE, PROPS & { [P in K]: R }, LINKS> {
     return new ShapeBuilderImpl({
       ...this.#state,
@@ -147,11 +147,11 @@ class ShapeBuilderImpl<
   >(
     name: NAME,
     builder: (
-      linkBuilder: ShapeLinkBuilder<BASE, BASE>,
-    ) => ShapeLinkResult<TARGET_SHAPE>,
+      linkBuilder: ShapeLinkBuilder<BASE, BASE>
+    ) => ShapeLinkResult<TARGET_SHAPE>
   ): ShapeBuilder<BASE, PROPS, LINKS & { [K in NAME]: TARGET_SHAPE }> {
     const linkBuilder = createShapeLinkBuilder<BASE, BASE>(
-      this.#state.baseTypeApiName,
+      this.#state.baseTypeApiName
     );
     const linkResult = builder(linkBuilder);
     return new ShapeBuilderImpl({
@@ -212,7 +212,7 @@ class ShapeLinkBuilderImpl<
   }
 
   pivotTo<L extends LinkNames<CURRENT>>(
-    link: L,
+    link: L
   ): ShapeLinkBuilder<SOURCE, LinkedType<CURRENT, L>> {
     const newSegments: ShapeLinkSegment[] = [
       ...this.#state.segments,
@@ -242,7 +242,7 @@ class ShapeLinkBuilderImpl<
 
   #setOp(
     type: "union" | "intersect" | "subtract",
-    others: ShapeLinkBuilder<SOURCE, CURRENT>[],
+    others: ShapeLinkBuilder<SOURCE, CURRENT>[]
   ): ShapeLinkBuilder<SOURCE, CURRENT> {
     return new ShapeLinkBuilderImpl({
       ...this.#state,
@@ -250,8 +250,9 @@ class ShapeLinkBuilderImpl<
         ...this.#state.setOperations,
         ...others.map((other) => ({
           type,
-          other: (other as ShapeLinkBuilderImpl<SOURCE, CURRENT>)
-            .toObjectSetDef(),
+          other: (
+            other as ShapeLinkBuilderImpl<SOURCE, CURRENT>
+          ).toObjectSetDef(),
         })),
       ],
     });
@@ -277,7 +278,7 @@ class ShapeLinkBuilderImpl<
 
   orderBy<K extends PropertyKeys<CURRENT>>(
     property: K,
-    direction: "asc" | "desc" = "asc",
+    direction: "asc" | "desc" = "asc"
   ): ShapeLinkBuilder<SOURCE, CURRENT> {
     return new ShapeLinkBuilderImpl({
       ...this.#state,
@@ -291,7 +292,7 @@ class ShapeLinkBuilderImpl<
   limit(n: number): ShapeLinkBuilder<SOURCE, CURRENT> {
     if (!Number.isInteger(n) || n <= 0) {
       throw new Error(
-        `ShapeLinkBuilder.limit() requires a positive integer, got: ${n}`,
+        `ShapeLinkBuilder.limit() requires a positive integer, got: ${n}`
       );
     }
     return new ShapeLinkBuilderImpl({
@@ -309,7 +310,7 @@ class ShapeLinkBuilderImpl<
 
   as<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
     shape: TARGET_SHAPE,
-    config: DerivedLinkConfig = {},
+    config: DerivedLinkConfig = {}
   ): ShapeLinkResult<TARGET_SHAPE> {
     // The brand is a compile-time only marker, at runtime it's just undefined
     return {
@@ -323,14 +324,16 @@ class ShapeLinkBuilderImpl<
     return {
       segments: Object.freeze([...this.#state.segments]),
       where: this.#state.where,
-      orderBy: this.#state.orderBy.length > 0
-        ? Object.freeze([...this.#state.orderBy])
-        : undefined,
+      orderBy:
+        this.#state.orderBy.length > 0
+          ? Object.freeze([...this.#state.orderBy])
+          : undefined,
       limit: this.#state.limit,
       distinct: this.#state.distinct || undefined,
-      setOperations: this.#state.setOperations.length > 0
-        ? Object.freeze([...this.#state.setOperations])
-        : undefined,
+      setOperations:
+        this.#state.setOperations.length > 0
+          ? Object.freeze([...this.#state.setOperations])
+          : undefined,
     };
   }
 }
@@ -365,7 +368,7 @@ export function createShapeLinkBuilder<
  */
 export function createShapeBuilder<BASE extends ObjectOrInterfaceDefinition>(
   baseType: BASE,
-  debugName?: string,
+  debugName?: string
 ): ShapeBuilder<BASE, {}, {}> {
   const state: ShapeBuilderState = {
     baseType,

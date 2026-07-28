@@ -39,7 +39,7 @@ import * as semver from "semver";
 export function determineMinVersion(
   mappings,
   currentPackageVersion,
-  peerPackageName,
+  peerPackageName
 ) {
   const currentParsed = semver.parse(currentPackageVersion);
   if (!currentParsed) {

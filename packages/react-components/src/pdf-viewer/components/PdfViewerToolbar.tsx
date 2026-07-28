@@ -27,19 +27,25 @@ import {
   Plus,
   RotatePage,
   Search,
+  ZoomToFit,
 } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
-import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
+
+import { MAX_SCALE, MIN_SCALE } from "../constants.js";
+
 import styles from "./PdfViewerToolbar.module.css";
 
 export interface PdfViewerToolbarProps {
   currentPage: number;
   numPages: number;
   scale: number;
+  autoSize: boolean;
   sidebarOpen: boolean;
   onPageChange: (page: number) => void;
-  onScaleChange: (scale: number) => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onAutoSizeToggle: () => void;
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
   onDownload: () => void;
@@ -57,9 +63,12 @@ export function PdfViewerToolbar({
   currentPage,
   numPages,
   scale,
+  autoSize,
   sidebarOpen,
   onPageChange,
-  onScaleChange,
+  onZoomIn,
+  onZoomOut,
+  onAutoSizeToggle,
   onSearchOpen,
   onSidebarToggle,
   onDownload,
@@ -75,9 +84,12 @@ export function PdfViewerToolbar({
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
   // Sync input display when currentPage changes from scrolling
-  useEffect(function syncPageInput() {
-    setPageInputValue(String(currentPage));
-  }, [currentPage]);
+  useEffect(
+    function syncPageInput() {
+      setPageInputValue(String(currentPage));
+    },
+    [currentPage]
+  );
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 1) {
@@ -99,7 +111,7 @@ export function PdfViewerToolbar({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPageInputValue(e.target.value);
     },
-    [],
+    []
   );
 
   const handlePageInputKeyDown = useCallback(
@@ -113,22 +125,12 @@ export function PdfViewerToolbar({
         }
       }
     },
-    [pageInputValue, numPages, onPageChange, currentPage],
+    [pageInputValue, numPages, onPageChange, currentPage]
   );
 
   const handlePageInputBlur = useCallback(() => {
     setPageInputValue(String(currentPage));
   }, [currentPage]);
-
-  const handleZoomIn = useCallback(() => {
-    const newScale = Math.min(scale + SCALE_STEP, MAX_SCALE);
-    onScaleChange(newScale);
-  }, [scale, onScaleChange]);
-
-  const handleZoomOut = useCallback(() => {
-    const newScale = Math.max(scale - SCALE_STEP, MIN_SCALE);
-    onScaleChange(newScale);
-  }, [scale, onScaleChange]);
 
   const scalePercent = `${Math.round(scale * 100)}%`;
 
@@ -185,7 +187,7 @@ export function PdfViewerToolbar({
       <div className={styles.toolbarGroup}>
         <Button
           className={styles.toolbarButton}
-          onClick={handleZoomOut}
+          onClick={onZoomOut}
           disabled={scale <= MIN_SCALE}
           aria-label="Zoom out"
           title="Zoom out"
@@ -196,13 +198,26 @@ export function PdfViewerToolbar({
         <span className={styles.scaleDisplay}>{scalePercent}</span>
         <Button
           className={styles.toolbarButton}
-          onClick={handleZoomIn}
+          onClick={onZoomIn}
           disabled={scale >= MAX_SCALE}
           aria-label="Zoom in"
           title="Zoom in"
           type="button"
         >
           <Plus size={16} />
+        </Button>
+        <Button
+          className={classnames(
+            styles.toolbarButton,
+            autoSize && styles.toolbarButtonActive
+          )}
+          onClick={onAutoSizeToggle}
+          aria-label={autoSize ? "Disable fit to width" : "Fit to width"}
+          title={autoSize ? "Disable fit to width" : "Fit to width"}
+          aria-pressed={autoSize}
+          type="button"
+        >
+          <ZoomToFit size={16} />
         </Button>
       </div>
 
@@ -236,15 +251,19 @@ export function PdfViewerToolbar({
           <Button
             className={classnames(
               styles.toolbarButton,
-              highlightModeActive && styles.toolbarButtonActive,
+              highlightModeActive && styles.toolbarButtonActive
             )}
             onClick={onHighlightToggle}
-            aria-label={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
-            title={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
+            aria-label={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
+            title={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
             aria-pressed={highlightModeActive}
             type="button"
           >

@@ -15,13 +15,14 @@
  */
 
 import type { FauxActionImpl, TypeHelpers as TH } from "@osdk/faux";
+
 import type { MoveOffice } from "../actionTypes.js";
 import { officeObjectType } from "../objectTypeV2.js";
 
 export const moveOfficeImpl: FauxActionImpl<typeof MoveOffice> = (
   batch,
   payload,
-  ctx,
+  ctx
 ): void => {
   // we are only setting capacity because we don't have a way to go from address
   // to gps coord
@@ -30,6 +31,6 @@ export const moveOfficeImpl: FauxActionImpl<typeof MoveOffice> = (
     payload.parameters.officeId as string,
     {
       capacity: payload.parameters.newCapacity as number,
-    } satisfies Partial<TH.JustProps<typeof officeObjectType>>,
+    } satisfies Partial<TH.JustProps<typeof officeObjectType>>
   );
 };

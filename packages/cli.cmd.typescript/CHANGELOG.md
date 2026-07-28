@@ -1,5 +1,357 @@
 # @osdk/cli.cmd.typescript
 
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/generator@2.51.0
+- @osdk/cli.common@0.76.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/generator@2.50.0
+- @osdk/cli.common@0.75.0
+
+## 0.74.0
+
+### Patch Changes
+
+- @osdk/generator@2.49.0
+- @osdk/cli.common@0.74.0
+
+## 0.73.0
+
+### Patch Changes
+
+- @osdk/generator@2.48.0
+- @osdk/cli.common@0.73.0
+
+## 0.72.0
+
+### Patch Changes
+
+- @osdk/generator@2.47.0
+- @osdk/cli.common@0.72.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/generator@2.46.0
+- @osdk/cli.common@0.71.0
+
+## 0.70.0
+
+### Patch Changes
+
+- @osdk/cli.common@0.70.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/generator@2.45.0
+- @osdk/cli.common@0.69.0
+
+## 0.68.0
+
+### Patch Changes
+
+- Updated dependencies [f29a4df]
+  - @osdk/generator@2.44.0
+  - @osdk/cli.common@0.68.0
+
+## 0.67.0
+
+### Patch Changes
+
+- @osdk/generator@2.43.0
+- @osdk/cli.common@0.67.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/generator@2.42.0
+- @osdk/cli.common@0.66.0
+
+## 0.65.0
+
+### Patch Changes
+
+- @osdk/generator@2.41.0
+- @osdk/cli.common@0.65.0
+
+## 0.64.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator@2.40.0
+  - @osdk/cli.common@0.64.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/generator@2.39.0
+- @osdk/cli.common@0.63.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/generator@2.38.0
+- @osdk/cli.common@0.62.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/generator@2.37.0
+  - @osdk/cli.common@0.61.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/generator@2.36.0
+- @osdk/cli.common@0.60.0
+
+## 0.59.0
+
+### Patch Changes
+
+- Updated dependencies [54dc175]
+  - @osdk/generator@2.35.0
+  - @osdk/cli.common@0.59.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/generator@2.34.0
+- @osdk/cli.common@0.58.0
+
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/generator@2.33.0
+- @osdk/cli.common@0.57.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/generator@2.32.0
+- @osdk/cli.common@0.56.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/generator@2.31.0
+- @osdk/cli.common@0.55.0
+
+## 0.54.0
+
+### Patch Changes
+
+- @osdk/generator@2.30.0
+- @osdk/cli.common@0.54.0
+
+## 0.53.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/generator@2.29.0
+  - @osdk/cli.common@0.53.0
+
+## 0.52.0
+
+### Patch Changes
+
+- @osdk/generator@2.28.0
+- @osdk/cli.common@0.52.0
+
+## 0.51.0
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator@2.27.0
+  - @osdk/cli.common@0.51.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/generator@2.26.0
+- @osdk/cli.common@0.50.0
+
+## 0.49.0
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+  - @osdk/generator@2.25.0
+  - @osdk/cli.common@0.49.0
+
+## 0.48.0
+
+### Patch Changes
+
+- Updated dependencies [60aff19]
+  - @osdk/generator@2.24.0
+  - @osdk/cli.common@0.48.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+  - @osdk/generator@2.23.0
+  - @osdk/cli.common@0.47.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/generator@2.22.0
+- @osdk/cli.common@0.46.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/generator@2.21.0
+  - @osdk/cli.common@0.45.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/generator@2.20.0
+- @osdk/cli.common@0.44.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+  - @osdk/generator@2.19.0
+  - @osdk/cli.common@0.43.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/generator@2.18.0
+- @osdk/cli.common@0.42.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/generator@2.17.0
+- @osdk/cli.common@0.41.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/cli.common@0.40.0
+  - @osdk/generator@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/generator@2.15.0
+- @osdk/cli.common@0.39.0
+
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/generator@2.14.0
+- @osdk/cli.common@0.38.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/generator@2.13.0
+- @osdk/cli.common@0.37.0
+
+## 0.36.0
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+- Updated dependencies [df1a4f8]
+  - @osdk/cli.common@0.36.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator@2.12.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/generator@2.11.0
+- @osdk/cli.common@0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [f01a8f4]
+  - @osdk/generator@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/cli.common@0.34.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 9171453: Alphabetize code generation for sdk.
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [48e0cab]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator@2.9.0
+  - @osdk/cli.common@0.33.0
+
 ## 0.32.0
 
 ### Minor Changes

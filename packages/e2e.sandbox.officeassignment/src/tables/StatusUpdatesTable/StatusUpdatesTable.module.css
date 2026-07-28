@@ -1,0 +1,7 @@
+.tableRoot {
+  height: 100%;
+}
+
+.excludedValue {
+  color: var(--oa-text-muted);
+}

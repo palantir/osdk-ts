@@ -16,22 +16,19 @@
 
 import type { QueryMetadata } from "@osdk/api";
 import * as QueryTypes from "@osdk/foundry.ontologies/QueryType";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadQueryMetadata(
   client: MinimalClient,
-  queryTypeApiNameAndVersion: string,
+  queryTypeApiNameAndVersion: string
 ): Promise<QueryMetadata> {
   const [apiName, version] = queryTypeApiNameAndVersion.split(":");
-  const r = await QueryTypes.get(
-    client,
-    await client.ontologyRid,
-    apiName,
-    { version },
-  );
+  const r = await QueryTypes.get(client, await client.ontologyRid, apiName, {
+    version,
+  });
 
-  const { wireQueryTypeV2ToSdkQueryMetadata } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireQueryTypeV2ToSdkQueryMetadata } =
+    await import("@osdk/generator-converters");
   return wireQueryTypeV2ToSdkQueryMetadata(r);
 }

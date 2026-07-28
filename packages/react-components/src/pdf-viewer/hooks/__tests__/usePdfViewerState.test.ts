@@ -23,6 +23,7 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../../constants.js";
 import { usePdfViewerState } from "../usePdfViewerState.js";
 
@@ -64,10 +65,12 @@ function createMockCoreResult(overrides: { scale?: number } = {}) {
     scrollToPage: vi.fn(),
     scale,
     setScale: vi.fn(),
+    autoSize: false,
+    setAutoSize: vi.fn(),
     portalTargets: [],
-    pdfViewerRef: { current: { pagesRotation: 0 } } as unknown as RefObject<
-      PDFViewer
-    >,
+    pdfViewerRef: {
+      current: { pagesRotation: 0 },
+    } as unknown as RefObject<PDFViewer>,
     eventBusRef: { current: null } as RefObject<EventBus | null>,
     findControllerRef: {
       current: null,
@@ -90,12 +93,14 @@ function createMockSearchResult() {
 }
 
 describe("usePdfViewerState", () => {
-  function setup(options: {
-    initialScale?: number;
-    initialSidebarOpen?: boolean;
-    sidebarMode?: "thumbnails" | "outline";
-    coreScale?: number;
-  } = {}) {
+  function setup(
+    options: {
+      initialScale?: number;
+      initialSidebarOpen?: boolean;
+      sidebarMode?: "thumbnails" | "outline";
+      coreScale?: number;
+    } = {}
+  ) {
     const coreResult = createMockCoreResult({
       scale: options.coreScale ?? options.initialScale,
     });
@@ -124,7 +129,7 @@ describe("usePdfViewerState", () => {
           initialSidebarOpen: options.initialSidebarOpen,
           sidebarMode: options.sidebarMode,
         },
-      },
+      }
     );
 
     return { result, rerender, coreResult, searchResult, outlineItems };
@@ -178,6 +183,43 @@ describe("usePdfViewerState", () => {
     });
 
     expect(coreResult.setScale).toHaveBeenCalledWith(MIN_SCALE);
+  });
+
+  it("should disable autoSize when zooming in", () => {
+    const { result, coreResult } = setup({ coreScale: 1.0 });
+
+    act(() => {
+      result.current.zoomIn();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(false);
+  });
+
+  it("should disable autoSize when zooming out", () => {
+    const { result, coreResult } = setup({ coreScale: 1.5 });
+
+    act(() => {
+      result.current.zoomOut();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(false);
+  });
+
+  // --- Auto-size ---
+
+  it("should expose autoSize from core", () => {
+    const { result } = setup();
+    expect(result.current.autoSize).toBe(false);
+  });
+
+  it("should toggle autoSize", () => {
+    const { result, coreResult } = setup();
+
+    act(() => {
+      result.current.toggleAutoSize();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(true);
   });
 
   // --- Rotation ---
@@ -331,7 +373,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download("report.pdf");
     });
 
@@ -339,6 +381,54 @@ describe("usePdfViewerState", () => {
       success: true,
       filename: "report.pdf",
     });
+  });
+
+  async function expectDownloadFilename(
+    src: string | ArrayBuffer,
+    expectedFilename: string
+  ) {
+    const onDownload = vi.fn();
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.resolve(new Uint8Array([1, 2, 3])),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() => usePdfViewerState({ src, onDownload }));
+
+    await act(() => {
+      result.current.download();
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: true,
+      filename: expectedFilename,
+    });
+  }
+
+  it("should derive the download filename from the src URL basename", async () => {
+    await expectDownloadFilename(
+      "https://example.com/files/report-2024.pdf",
+      "report-2024.pdf"
+    );
+  });
+
+  it("should strip the query string when deriving the filename from src", async () => {
+    await expectDownloadFilename(
+      "https://example.com/files/report.pdf?token=abc&page=1",
+      "report.pdf"
+    );
+  });
+
+  it("should fall back to document.pdf when src has no usable basename", async () => {
+    await expectDownloadFilename("https://example.com/files/", "document.pdf");
+  });
+
+  it("should use document.pdf when src is an ArrayBuffer", async () => {
+    await expectDownloadFilename(new ArrayBuffer(8), "document.pdf");
   });
 
   it("should call onDownload with failure result when getData rejects", async () => {
@@ -357,7 +447,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 
@@ -382,7 +472,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({ src: "test.pdf", onDownload })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 
@@ -413,7 +503,7 @@ describe("usePdfViewerState", () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.download();
     });
 

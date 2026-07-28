@@ -37,6 +37,10 @@
   flex-shrink: 1;
 }
 
+.osdkHeaderContentLeftClickable {
+  cursor: pointer;
+}
+
 .osdkHeaderContentRight {
   flex-shrink: 0;
 }

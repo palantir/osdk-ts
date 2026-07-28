@@ -24,8 +24,10 @@ import type {
   OntologyIrValidationRule,
   SectionId,
 } from "@osdk/client.unstable";
+
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../common/TypeClass.js";
@@ -54,12 +56,11 @@ interface ActionTypeInner {
   submissionMetadata: SubmissionMetadata;
 }
 
-export type ActionType =
-  & OntologyEntityBase
-  & RequiredFields<
+export type ActionType = OntologyEntityBase &
+  RequiredFields<
     Partial<ActionTypeInner>,
     "apiName" | "displayName" | "rules" | "status"
-  >
-  & {
+  > & {
+    permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.ACTION_TYPE;
   };

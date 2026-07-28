@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ContainerModuleGroupStatusInfoV2 as _ContainerModuleGroupStatusInfoV2,
   ModuleGroupName as _ModuleGroupName,
@@ -27,11 +28,11 @@ import type {
  */
 export async function getContainerModuleGroupStatus(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName,
+  moduleGroupName: _ModuleGroupName
 ): Promise<_ContainerModuleGroupStatusInfoV2> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}/container-module-group-status`,
-    "GET",
+    "GET"
   );
 }

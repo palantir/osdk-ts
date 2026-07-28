@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  SearchTitleInCombinedEntityTypeRequest
-    as _api_search_SearchTitleInCombinedEntityTypeRequest,
-  SearchTitleInCombinedEntityTypeResponse
-    as _api_search_SearchTitleInCombinedEntityTypeResponse,
+  SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest,
+  SearchTitleInCombinedEntityTypeResponse as _api_search_SearchTitleInCombinedEntityTypeResponse,
 } from "../search/__components.js";
 
 /**
@@ -33,12 +32,12 @@ import type {
  */
 export async function searchTitleInCombinedEntityType(
   ctx: ConjureContext,
-  request: _api_search_SearchTitleInCombinedEntityTypeRequest,
+  request: _api_search_SearchTitleInCombinedEntityTypeRequest
 ): Promise<_api_search_SearchTitleInCombinedEntityTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchTitleInCombinedEntityType`,
     "POST",
-    request,
+    request
   );
 }

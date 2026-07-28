@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ApplicationRid } from "../ApplicationRid.js";
 import type { LinkWebsiteCodeRepositoryRequest } from "../LinkWebsiteCodeRepositoryRequest.js";
 
@@ -34,12 +35,12 @@ import type { LinkWebsiteCodeRepositoryRequest } from "../LinkWebsiteCodeReposit
 export async function linkWebsiteCodeRepository(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: LinkWebsiteCodeRepositoryRequest,
+  request: LinkWebsiteCodeRepositoryRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/application-websites/${applicationRid}/link`,
     "PUT",
-    request,
+    request
   );
 }

@@ -1,0 +1,7 @@
+.customEmployeesTable {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f5f0ff;
+    --osdk-table-row-bg-alternate: #ede8ff;
+    --osdk-table-row-bg-hover: #e8e0ff;
+  }
+}

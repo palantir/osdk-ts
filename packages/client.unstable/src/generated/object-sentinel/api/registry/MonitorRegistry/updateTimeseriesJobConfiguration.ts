@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type {
-  UpdateTimeseriesJobConfigurationRequest
-    as _api_registry_UpdateTimeseriesJobConfigurationRequest,
-  UpdateTimeseriesJobConfigurationResponse
-    as _api_registry_UpdateTimeseriesJobConfigurationResponse,
+  UpdateTimeseriesJobConfigurationRequest as _api_registry_UpdateTimeseriesJobConfigurationRequest,
+  UpdateTimeseriesJobConfigurationResponse as _api_registry_UpdateTimeseriesJobConfigurationResponse,
 } from "../__components.js";
 
 /**
@@ -29,12 +28,12 @@ import type {
 export async function updateTimeseriesJobConfiguration(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_registry_UpdateTimeseriesJobConfigurationRequest,
+  request: _api_registry_UpdateTimeseriesJobConfigurationRequest
 ): Promise<_api_registry_UpdateTimeseriesJobConfigurationResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/update-timeseries-job-configuration/${monitorRid}`,
     "POST",
-    request,
+    request
   );
 }

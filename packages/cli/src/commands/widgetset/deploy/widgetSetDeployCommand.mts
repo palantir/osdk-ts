@@ -14,43 +14,44 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, widgetRegistry } from "#net";
+import * as fs from "node:fs";
+import path from "node:path";
+import { Readable } from "node:stream";
+
 import { ExitProcessError } from "@osdk/cli.common";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import archiver from "archiver";
 import { consola } from "consola";
-import * as fs from "node:fs";
-import path from "node:path";
-import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
+
+import { createInternalClientContext, widgetRegistry } from "#net";
+
 import type { StemmaRepositoryRid } from "../../../net/StemmaRepositoryRid.js";
 import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-export default async function widgetSetDeployCommand(
-  {
-    widgetSet,
-    foundryUrl,
-    directory,
-    repository,
-    token,
-    tokenFile,
-  }: WidgetSetDeployArgs,
-): Promise<void> {
+export default async function widgetSetDeployCommand({
+  widgetSet,
+  foundryUrl,
+  directory,
+  repository,
+  token,
+  tokenFile,
+}: WidgetSetDeployArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
 
   consola.debug(
-    `Using directory for widget set files: "${path.resolve(directory)}`,
+    `Using directory for widget set files: "${path.resolve(directory)}`
   );
   const stat = await fs.promises.stat(directory);
   if (!stat.isDirectory()) {
     throw new ExitProcessError(
       2,
-      "Specified path exists but is not a directory",
+      "Specified path exists but is not a directory"
     );
   }
 
@@ -73,7 +74,7 @@ export default async function widgetSetDeployCommand(
       clientCtx,
       deployRid,
       widgetSetVersion,
-      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
+      Readable.toWeb(archive) as ReadableStream<any> // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),
   ]);
@@ -84,7 +85,7 @@ async function findWidgetSetVersion(directory: string): Promise<string> {
   try {
     const manifestContent = await fs.promises.readFile(
       path.resolve(directory, MANIFEST_FILE_LOCATION),
-      "utf8",
+      "utf8"
     );
     const manifest: WidgetSetManifest = JSON.parse(manifestContent);
     if (manifest.widgetSet == null || manifest.widgetSet.version == null) {
@@ -96,7 +97,7 @@ async function findWidgetSetVersion(directory: string): Promise<string> {
       2,
       `Unable to process manifest at ${MANIFEST_FILE_LOCATION}${
         e instanceof Error ? `: ${e.message}` : ""
-      }`,
+      }`
     );
   }
 }
@@ -110,9 +111,9 @@ function logArchiveStats(archive: archiver.Archiver): void {
   });
   archive.on("finish", () => {
     consola.info(
-      `Zipped ${
-        prettyBytes(archiveStats.bytes, { binary: true })
-      } total over ${archiveStats.fileCount} files`,
+      `Zipped ${prettyBytes(archiveStats.bytes, {
+        binary: true,
+      })} total over ${archiveStats.fileCount} files`
     );
   });
 }

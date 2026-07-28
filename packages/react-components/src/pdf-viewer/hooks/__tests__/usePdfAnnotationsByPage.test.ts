@@ -16,11 +16,12 @@
 
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
 import type { PdfAnnotation } from "../../types.js";
 import { usePdfAnnotationsByPage } from "../usePdfAnnotationsByPage.js";
 
 function createAnnotation(
-  overrides: Record<string, unknown> = {},
+  overrides: Record<string, unknown> = {}
 ): PdfAnnotation {
   return {
     id: "ann-1",

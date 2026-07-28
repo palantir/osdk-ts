@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  LoadGothamTypeInstallationStatusesRequest
-    as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
-  LoadGothamTypeInstallationStatusesResponse
-    as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
+  LoadGothamTypeInstallationStatusesRequest as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
+  LoadGothamTypeInstallationStatusesResponse as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
 } from "../typemapping/__components.js";
 
 /**
@@ -38,12 +37,12 @@ import type {
 export async function loadGothamTypeInstallationStatuses(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
+  request: _api_typemapping_LoadGothamTypeInstallationStatusesRequest
 ): Promise<_api_typemapping_LoadGothamTypeInstallationStatusesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/loadGothamTypeInstallationStatuses/${ontologyRid}`,
     "PUT",
-    request,
+    request
   );
 }

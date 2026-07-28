@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { quadPointsToRects, rgbArrayToHex } from "../usePdfHighlightMode.js";
 
 describe("rgbArrayToHex", () => {
@@ -67,31 +68,15 @@ describe("quadPointsToRects", () => {
     // width = |300 - 100| = 200
     // height = |700 - 680| = 20
     const rects = quadPointsToRects(quad);
-    expect(rects).toEqual([
-      { x: 100, y: 680, width: 200, height: 20 },
-    ]);
+    expect(rects).toEqual([{ x: 100, y: 680, width: 200, height: 20 }]);
   });
 
   it("should convert two quads to two rects", () => {
     const quads = new Float32Array([
       // First line
-      50,
-      500,
-      250,
-      500,
-      50,
-      490,
-      250,
-      490,
+      50, 500, 250, 500, 50, 490, 250, 490,
       // Second line
-      50,
-      490,
-      200,
-      490,
-      50,
-      480,
-      200,
-      480,
+      50, 490, 200, 490, 50, 480, 200, 480,
     ]);
     // Quad 1: x1=50, y1=500, x3=250, y4=490
     //   → x=50, y=490, width=200, height=10

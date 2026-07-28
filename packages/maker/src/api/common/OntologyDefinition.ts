@@ -18,13 +18,11 @@ import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVe
 import type { OntologyEntityTypeEnum } from "./OntologyEntityTypeEnum.js";
 import type { OntologyEntityTypeMapping } from "./OntologyEntityTypeMapping.js";
 
-export type OntologyDefinition =
-  & {
-    [K in Exclude<OntologyEntityTypeEnum, "VALUE_TYPE">]: Record<
-      string,
-      OntologyEntityTypeMapping[K]
-    >;
-  }
-  & {
-    VALUE_TYPE: Record<string, ValueTypeDefinitionVersion[]>;
-  };
+export type OntologyDefinition = {
+  [K in Exclude<OntologyEntityTypeEnum, "VALUE_TYPE">]: Record<
+    string,
+    OntologyEntityTypeMapping[K]
+  >;
+} & {
+  VALUE_TYPE: Record<string, ValueTypeDefinitionVersion[]>;
+};

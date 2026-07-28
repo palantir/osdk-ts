@@ -11,7 +11,7 @@ There are two main ways to use actions in your app:
 The `useOsdkAction` hook is the recommended approach for most use cases. It provides built-in state management, error handling, and support for optimistic updates.
 
 ```tsx
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { modifyEmployee } from "../generatedNoCheck2/index.js";
 
 function AssignOfficeButton({ employee }) {
@@ -120,9 +120,10 @@ function AssignOfficeButton({ employee }) {
 
    ```tsx
    // CORRECT
-   const primary_office_id = selectedOfficeId === null
-     ? undefined // API will treat as null
-     : selectedOfficeId;
+   const primary_office_id =
+     selectedOfficeId === null
+       ? undefined // API will treat as null
+       : selectedOfficeId;
 
    await $(modifyEmployee).applyAction({
      employee,
@@ -154,21 +155,19 @@ function AssignOfficeButton({ employee }) {
 ## Example: Complete Implementation with useOsdkAction
 
 ```tsx
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { useCallback, useState } from "react";
 import { Employee, modifyEmployee } from "../generatedNoCheck2/index.js";
 
 export function OfficeAssigner({ employee, availableOffices }) {
   const [selectedOfficeId, setSelectedOfficeId] = useState(null);
-  const { applyAction, isPending, error, isSuccess } = useOsdkAction(
-    modifyEmployee,
-  );
+  const { applyAction, isPending, error, isSuccess } =
+    useOsdkAction(modifyEmployee);
 
   const handleAssign = useCallback(() => {
     // Convert null to undefined for the API
-    const primary_office_id = selectedOfficeId === null
-      ? undefined
-      : selectedOfficeId;
+    const primary_office_id =
+      selectedOfficeId === null ? undefined : selectedOfficeId;
 
     applyAction({
       employee,
@@ -187,7 +186,7 @@ export function OfficeAssigner({ employee, availableOffices }) {
         disabled={isPending}
       >
         <option value="">-- No office --</option>
-        {availableOffices.map(office => (
+        {availableOffices.map((office) => (
           <option key={office.$primaryKey} value={office.$primaryKey}>
             {office.name}
           </option>
@@ -198,16 +197,10 @@ export function OfficeAssigner({ employee, availableOffices }) {
         {isPending ? "Assigning..." : "Assign Office"}
       </button>
 
-      {error && (
-        <div className="error-message">
-          {error.message}
-        </div>
-      )}
+      {error && <div className="error-message">{error.message}</div>}
 
       {isSuccess && (
-        <div className="success-message">
-          Office successfully assigned!
-        </div>
+        <div className="success-message">Office successfully assigned!</div>
       )}
     </div>
   );

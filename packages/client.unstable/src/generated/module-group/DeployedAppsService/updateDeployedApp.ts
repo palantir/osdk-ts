@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   UpdateDeployedAppConfigRequest as _UpdateDeployedAppConfigRequest,
   UpdateDeployedAppConfigResponse as _UpdateDeployedAppConfigResponse,
@@ -26,7 +27,7 @@ import type {
 export async function updateDeployedApp(
   ctx: ConjureContext,
   deployedAppRid: string,
-  request: _UpdateDeployedAppConfigRequest,
+  request: _UpdateDeployedAppConfigRequest
 ): Promise<_UpdateDeployedAppConfigResponse> {
   return conjureFetch(ctx, `/deployed-apps/${deployedAppRid}`, "PUT", request);
 }

@@ -32,12 +32,12 @@ export interface BaseOauthClient<K extends keyof Events & string> {
   addEventListener: <T extends K>(
     type: T,
     listener: ((evt: Events[T]) => void) | null,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
   ) => void;
 
   removeEventListener: <T extends K>(
     type: T,
     callback: ((evt: Events[T]) => void) | null,
-    options?: EventListenerOptions | boolean,
+    options?: EventListenerOptions | boolean
   ) => void;
 }

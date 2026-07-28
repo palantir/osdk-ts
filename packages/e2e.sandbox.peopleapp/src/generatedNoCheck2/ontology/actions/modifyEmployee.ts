@@ -14,15 +14,24 @@ export namespace modifyEmployee {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     primary_office_id: {
       description: undefined;
+      displayName: 'Primary Office ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
+    };
+    stockOptions: {
+      description: undefined;
+      displayName: 'Stock Options';
+      multiplicity: false;
+      nullable: true;
+      type: 'long';
     };
   };
 
@@ -30,6 +39,8 @@ export namespace modifyEmployee {
     readonly employee: ActionParam.ObjectType<Employee>;
 
     readonly primary_office_id?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly stockOptions?: ActionParam.PrimitiveType<'long'> | null;
   }
 
   // Represents a fqn of the action
@@ -49,6 +60,7 @@ export namespace modifyEmployee {
 /**
  * @param {ActionParam.ObjectType<Employee>} employee
  * @param {ActionParam.PrimitiveType<"string">} [primary_office_id]
+ * @param {ActionParam.PrimitiveType<"long">} [stockOptions]
  */
 export interface modifyEmployee extends ActionDefinition<modifyEmployee.Signatures> {
   __DefinitionMetadata?: {

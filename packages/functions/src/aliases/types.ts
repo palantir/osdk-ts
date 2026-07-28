@@ -22,9 +22,14 @@ export interface Model {
   rid: string;
 }
 
+export interface Source {
+  rid: string;
+}
+
 export interface ResolvedAliases {
   custom: Record<string, string>;
   models: Record<string, Model>;
+  sources: Record<string, Source>;
 }
 
 // Environment
@@ -42,13 +47,23 @@ export interface ModelResource {
   alias?: string | null;
 }
 
+export interface EgressConnection {
+  rid: string;
+  alias?: string | null;
+}
+
 export interface ResourceScopes {
   custom: Record<string, string>;
   models: ModelResource[];
 }
 
+export interface FunctionEgress {
+  connections: EgressConnection[];
+}
+
 export interface ResourcesFile {
   resources: ResourceScopes;
+  egress: FunctionEgress;
 }
 
 // Published mode types (aliases.json)
@@ -61,9 +76,18 @@ export interface ModelValue {
   id: ModelIdentifier;
 }
 
+export interface ConnectionIdentifier {
+  rid: string;
+}
+
+export interface EgressConnectionValue {
+  id: ConnectionIdentifier;
+}
+
 export interface DefaultAliases {
   custom: Record<string, string>;
   models: Record<string, ModelValue>;
+  egressConnections: Record<string, EgressConnectionValue>;
 }
 
 export interface AliasesFile {

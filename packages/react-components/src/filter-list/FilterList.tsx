@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import React, { useCallback, useMemo } from "react";
+
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
+  FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
+import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
+import { getEmptyDisplayState } from "./utils/emptyFilterDisplayState.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
+const EMPTY_WHERE = {};
+
 export function FilterList<Q extends ObjectTypeDefinition>(
-  props: FilterListProps<Q>,
+  props: FilterListProps<Q>
 ): React.ReactElement {
   const {
+    objectType,
     objectSet,
     title,
     titleIcon,
@@ -43,29 +50,46 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
+    showFilteredOutValues = false,
     className,
     enableSorting,
     onFilterAdded,
     onFilterRemoved,
+    onFilterVisibilityChange,
     renderAddFilterButton,
   } = props;
-
-  const objectType = objectSet.$objectSetInternals.def;
 
   const {
     filterStates,
     setFilterState,
     clearFilterState,
     perFilterWhereClauses,
+    perFilterLinkedFilters,
     activeFilterCount,
+    hasChangesFromInitial,
     reset,
   } = useFilterListState(props);
 
   const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
 
-  const getIsVisible = useCallback(
-    (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
-    [],
+  const handleVisibilityChange = useCallback(
+    (visibleKeys: string[], hiddenKeys: string[]) => {
+      if (!onFilterVisibilityChange) {
+        return;
+      }
+      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: true,
+        })),
+        ...hiddenKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: false,
+        })),
+      ];
+      onFilterVisibilityChange(states);
+    },
+    [onFilterVisibilityChange]
   );
 
   const {
@@ -73,9 +97,15 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     hiddenDefinitions: managedHiddenDefinitions,
     showFilter,
     hideFilter,
+    reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
-  } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
+  } = useFilterVisibility(
+    filterDefinitions,
+    uncontrolledAddFilterMode ? handleVisibilityChange : undefined
+  );
+
+  const canReset = hasChangesFromInitial || hasVisibilityChanges;
 
   const handleReset = useCallback(() => {
     reset();
@@ -88,7 +118,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       return undefined;
     }
     return filterDefinitions.filter(
-      (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
+      (def: FilterDefinitionUnion<Q>) => def.isVisible !== false
     );
   }, [filterDefinitions]);
 
@@ -104,7 +134,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       }
       onFilterRemoved?.(filterKey);
     },
-    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
+    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved]
   );
 
   const handleFilterShown = useCallback(
@@ -112,7 +142,14 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       showFilter(filterKey);
       onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
-    [showFilter, onFilterAdded, filterDefinitions],
+    [showFilter, onFilterAdded, filterDefinitions]
+  );
+
+  const handleOrderChange = useCallback(
+    (orderedKeys: string[]) => {
+      reorderVisible(orderedKeys);
+    },
+    [reorderVisible]
   );
 
   const hiddenFilterItems = useMemo(
@@ -121,7 +158,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         key: getFilterKey(def),
         label: getFilterLabel(def),
       })),
-    [managedHiddenDefinitions],
+    [managedHiddenDefinitions]
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
@@ -151,29 +188,36 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     : onFilterRemoved;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
-    (
-      {
-        definition,
-        filterKey,
-        filterState,
-        onFilterStateChanged,
-        searchQuery,
-        excludeRowOpen,
-      },
-    ) => (
+    ({
+      definition,
+      filterKey,
+      filterState,
+      onFilterStateChanged,
+      searchQuery,
+      excludeRowOpen,
+    }) => (
       <FilterInput
         objectType={objectType}
         objectSet={objectSet}
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
-          ?? ({} as WhereClause<Q>)}
+        whereClause={perFilterWhereClauses.get(filterKey) ?? EMPTY_WHERE}
+        linkedFilters={
+          perFilterLinkedFilters.get(filterKey) ?? EMPTY_LINKED_FILTERS
+        }
+        showFilteredOutValues={showFilteredOutValues}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [
+      objectType,
+      objectSet,
+      perFilterWhereClauses,
+      perFilterLinkedFilters,
+      showFilteredOutValues,
+    ]
   );
 
   return (
@@ -188,13 +232,15 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       renderInput={renderInput}
       getFilterKey={getFilterKey}
       getFilterLabel={getFilterLabel}
+      getEmptyDisplayState={getEmptyDisplayState}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
-      hasVisibilityChanges={hasVisibilityChanges}
+      canReset={canReset}
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
+      onOrderChange={handleOrderChange}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
     />

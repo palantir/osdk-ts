@@ -49,6 +49,7 @@ export interface PdfAnnotationRenderProps {
   annotation: PdfAnnotation;
   scale: number;
   pageHeight: number;
+  transform: number[];
 }
 
 /** Common fields shared by all annotation types. */
@@ -119,8 +120,8 @@ export interface PdfViewerHandle {
  * Equivalent to {@link PdfViewerProps} minus the `className` rendering concern.
  */
 export interface PdfViewerInstanceOptions {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */
@@ -143,6 +144,14 @@ export interface PdfViewerInstanceOptions {
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
   initialScale?: number;
+  /**
+   * Whether auto-size (fit to width) is initially enabled.
+   * When enabled, the PDF scales to fit the container width and
+   * re-fits automatically on resize. Manual zoom disables auto-size.
+   * Takes precedence over {@link initialScale} when enabled.
+   * @default false
+   */
+  initialAutoSize?: boolean;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
   /** Whether the download button is shown in the toolbar */
@@ -153,10 +162,20 @@ export interface PdfViewerInstanceOptions {
   outlineIcons?: Partial<Record<number, React.ComponentType>>;
 }
 
+/**
+ * PDF source input.
+ *
+ * - `string` — a URL the PDF is fetched from
+ * - `ArrayBuffer` / `Uint8Array` — raw PDF bytes already in memory (a Node
+ *   `Buffer` satisfies `Uint8Array` and is accepted as-is)
+ * - `Blob` — read into an `ArrayBuffer` before rendering
+ */
+export type PdfSource = string | ArrayBuffer | Uint8Array | Blob;
+
 /** Props for the {@link PdfViewer} component. */
 export interface PdfViewerProps {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /**
@@ -197,6 +216,14 @@ export interface PdfViewerProps {
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
   initialScale?: number;
+  /**
+   * Whether auto-size (fit to width) is initially enabled.
+   * When enabled, the PDF scales to fit the container width and
+   * re-fits automatically on resize. Manual zoom disables auto-size.
+   * Takes precedence over {@link initialScale} when enabled.
+   * @default false
+   */
+  initialAutoSize?: boolean;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
   /**
@@ -204,6 +231,11 @@ export interface PdfViewerProps {
    * @default false
    */
   enableDownload?: boolean;
+  /**
+   * Filename used when the user downloads the PDF via the toolbar button.
+   * If omitted, the name is derived from the `src` URL, falling back to "document.pdf".
+   */
+  downloadFileName?: string;
   /**
    * Which sidebar panel to show: thumbnails or document outline.
    * @default "thumbnails"

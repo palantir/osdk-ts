@@ -14,33 +14,31 @@
  * limitations under the License.
  */
 
-/* cspell:disable */
-
-import type { PdfViewerMediaProps } from "@osdk/react-components/experimental";
-import { PdfViewer } from "@osdk/react-components/experimental";
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
+import type { PdfViewerMediaProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
 const meta: Meta<PdfViewerMediaProps> = {
-  title: "Components/PdfViewer",
+  title: "Components/DocumentViewer/Renderers/PdfViewer",
   component: PdfViewer,
-  render: (args: PdfViewerMediaProps) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer {...args} />
-    </div>
-  ),
+  tags: ["beta"],
+  parameters: {
+    controls: { expanded: true },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithOsdkMedia: Story = {
+export const Default: Story = {
   render: () => {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
-      MEDIA_EMPLOYEE_PK,
+      MEDIA_EMPLOYEE_PK
     );
 
     if (isLoading || !employee?.employeeDocuments) {
@@ -56,7 +54,7 @@ export const WithOsdkMedia: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 // Access media from an OSDK object's media reference property
 const employee = useOsdkObject(Employee, employeePk);

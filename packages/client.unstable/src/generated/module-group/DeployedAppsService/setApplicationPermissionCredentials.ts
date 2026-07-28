@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ComputeModuleThirdParty as _ComputeModuleThirdParty,
   ComputeModuleThirdPartyRequest as _ComputeModuleThirdPartyRequest,
@@ -29,12 +30,12 @@ import type {
 export async function setApplicationPermissionCredentials(
   ctx: ConjureContext,
   deployedAppRid: string,
-  request: _ComputeModuleThirdPartyRequest,
+  request: _ComputeModuleThirdPartyRequest
 ): Promise<_ComputeModuleThirdParty | null | undefined> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/permissions`,
     "POST",
-    request,
+    request
   );
 }

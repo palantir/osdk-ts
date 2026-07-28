@@ -19,7 +19,7 @@
 
 // Example: client (Client setup for examples)
 
-import { createClient, type Client } from "@osdk/client";
+import { type Client, createClient } from "@osdk/client";
 import { $ontologyRid } from "../../../generatedNoCheck/index.js";
 
 const getToken = () => {
@@ -31,4 +31,3 @@ export const client: Client = createClient(
   $ontologyRid,
   getToken,
 );
-

@@ -15,10 +15,11 @@
  */
 
 import type { DataConstraint, DataConstraints } from "@osdk/client.unstable";
+
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertDataConstraintToDataConstraints(
-  dc: DataConstraint,
+  dc: DataConstraint
 ): DataConstraints {
   return {
     propertyTypeConstraints: [

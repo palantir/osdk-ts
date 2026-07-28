@@ -33,14 +33,14 @@ function reviver(_key: string, value: unknown): unknown {
 }
 
 export function serializeFilterStates(
-  states: Map<string, FilterState>,
+  states: Map<string, FilterState>
 ): string {
   const entries = Array.from(states.entries());
   return JSON.stringify(entries, replacer);
 }
 
 export function deserializeFilterStates(
-  json: string,
+  json: string
 ): Map<string, FilterState> {
   try {
     const entries: Array<[string, FilterState]> = JSON.parse(json, reviver);

@@ -25,7 +25,7 @@ type DeepWriteable<T> = {
  */
 export function conjureUnionType<T extends string, const V>(
   type: T,
-  value: V,
+  value: V
 ): { type: T } & Record<T, DeepWriteable<V>> {
   return {
     type,

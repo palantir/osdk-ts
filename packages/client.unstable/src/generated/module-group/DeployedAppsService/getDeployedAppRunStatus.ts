@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { DeployedAppRunStatus as _DeployedAppRunStatus } from "../__components.js";
 
 /**
@@ -23,11 +24,11 @@ import type { DeployedAppRunStatus as _DeployedAppRunStatus } from "../__compone
  */
 export async function getDeployedAppRunStatus(
   ctx: ConjureContext,
-  deployedAppRid: string,
+  deployedAppRid: string
 ): Promise<_DeployedAppRunStatus> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/deployed-app-run-status`,
-    "GET",
+    "GET"
   );
 }

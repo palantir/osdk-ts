@@ -16,8 +16,9 @@
 
 import { type User, Users } from "@osdk/foundry.admin";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseCurrentFoundryUserOptions {
   /**
@@ -49,14 +50,14 @@ export interface UseCurrentFoundryUserResult {
  * Get the currently signed in User.
  * @param options Options to control the query.
  */
-export function useCurrentFoundryUser(
-  { enabled = true }: UseCurrentFoundryUserOptions = {},
-): UseCurrentFoundryUserResult {
-  const { client } = React.useContext(OsdkContext2);
+export function useCurrentFoundryUser({
+  enabled = true,
+}: UseCurrentFoundryUserOptions = {}): UseCurrentFoundryUserResult {
+  const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(
     () => Users.getCurrent(client),
-    [client],
+    [client]
   );
 
   const query = usePlatformQuery({

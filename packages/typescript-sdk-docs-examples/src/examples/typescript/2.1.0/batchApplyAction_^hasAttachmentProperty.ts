@@ -20,37 +20,39 @@
 // Example: batchApplyAction (Variation: ^hasAttachmentProperty)
 
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import type { MediaReference, MediaUpload } from "@osdk/api";
-import { documentEquipment , Equipment  } from "../../../generatedNoCheck/index.js";
+import {
+  documentEquipment,
+  Equipment,
+} from "../../../generatedNoCheck/index.js";
+import { client } from "./client.js";
 
 async function callBatchAction() {
-    // You can upload media data via your Action
-    const mediaFile = await fetch("media.mp4");
-    const mediaBlob = await mediaFile.blob();
-    const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-    
-    // You can also pass an existing media reference into your Action
-    const objectPage = await client(Equipment).fetchPage();
-    const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!.getMediaReference();
-    
-    const result = await client(documentEquipment).batchApplyAction([
-            {
-                "equipmentId": "mac-1234",
-                "instructionalVideo": mediaReference,
-            },
-            {
-                "equipmentId": "mac-1234",
-                "instructionalVideo": mediaReference,
-            },
-        ],
-        {
-            $returnEdits: true,
-        }
-    );
-    if (result.type === "edits") {
-        // use the result object to report back on action results
-        const updatedObject = result.editedObjectTypes[0];
-        console.log("Updated object", updatedObject);
-    }
+  // You can upload media data via your Action
+  const mediaFile = await fetch("media.mp4");
+  const mediaBlob = await mediaFile.blob();
+  const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+  // You can also pass an existing media reference into your Action
+  const objectPage = await client(Equipment).fetchPage();
+  const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!
+    .getMediaReference();
+
+  const result = await client(documentEquipment).batchApplyAction([
+    {
+      "equipmentId": "mac-1234",
+      "instructionalVideo": mediaReference,
+    },
+    {
+      "equipmentId": "mac-1234",
+      "instructionalVideo": mediaReference,
+    },
+  ], {
+    $returnEdits: true,
+  });
+  if (result.type === "edits") {
+    // use the result object to report back on action results
+    const updatedObject = result.editedObjectTypes[0];
+    console.log("Updated object", updatedObject);
+  }
 }

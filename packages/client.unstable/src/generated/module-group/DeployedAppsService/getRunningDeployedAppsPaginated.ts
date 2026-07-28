@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetRunningDeployedAppsPaginatedRequest
-    as _GetRunningDeployedAppsPaginatedRequest,
-  GetRunningDeployedAppsPaginatedResponse
-    as _GetRunningDeployedAppsPaginatedResponse,
+  GetRunningDeployedAppsPaginatedRequest as _GetRunningDeployedAppsPaginatedRequest,
+  GetRunningDeployedAppsPaginatedResponse as _GetRunningDeployedAppsPaginatedResponse,
 } from "../__components.js";
 
 /**
@@ -29,7 +28,7 @@ import type {
  */
 export async function getRunningDeployedAppsPaginated(
   ctx: ConjureContext,
-  request: _GetRunningDeployedAppsPaginatedRequest,
+  request: _GetRunningDeployedAppsPaginatedRequest
 ): Promise<_GetRunningDeployedAppsPaginatedResponse> {
   return conjureFetch(ctx, `/deployed-apps/running-paginated`, "POST", request);
 }

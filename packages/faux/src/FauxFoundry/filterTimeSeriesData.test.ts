@@ -15,6 +15,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { filterTimeSeriesData } from "./filterTimeSeriesData.js";
 
 /*
@@ -54,41 +55,51 @@ describe(filterTimeSeriesData, () => {
     vi.useRealTimers();
   });
   it("properly handles $before", () => {
-    expect(filterTimeSeriesData([
-      { time: "2021-12-01T00:00:00Z", value: 1 },
-      { time: "2021-12-26T00:00:00Z", value: 2 },
-      { time: "2021-12-27T00:00:00Z", value: 3 },
-    ], {
-      range: {
-        type: "relative",
-        startTime: {
-          when: "BEFORE",
-          value: 7,
-          unit: "DAYS",
-        },
-      },
-    })).toEqual([
+    expect(
+      filterTimeSeriesData(
+        [
+          { time: "2021-12-01T00:00:00Z", value: 1 },
+          { time: "2021-12-26T00:00:00Z", value: 2 },
+          { time: "2021-12-27T00:00:00Z", value: 3 },
+        ],
+        {
+          range: {
+            type: "relative",
+            startTime: {
+              when: "BEFORE",
+              value: 7,
+              unit: "DAYS",
+            },
+          },
+        }
+      )
+    ).toEqual([
       { time: "2021-12-26T00:00:00Z", value: 2 },
       { time: "2021-12-27T00:00:00Z", value: 3 },
     ]);
   });
 
   it("properly handles $after", () => {
-    expect(filterTimeSeriesData([
-      { time: "2022-01-01T00:00:00Z", value: 1 },
-      { time: "2022-01-02T00:00:00Z", value: 2 },
-      { time: "2022-01-03T00:00:00Z", value: 3 },
-      { time: "2022-02-03T00:00:00Z", value: 4 },
-    ], {
-      range: {
-        type: "relative",
-        endTime: {
-          when: "AFTER",
-          value: 7,
-          unit: "DAYS",
-        },
-      },
-    })).toEqual([
+    expect(
+      filterTimeSeriesData(
+        [
+          { time: "2022-01-01T00:00:00Z", value: 1 },
+          { time: "2022-01-02T00:00:00Z", value: 2 },
+          { time: "2022-01-03T00:00:00Z", value: 3 },
+          { time: "2022-02-03T00:00:00Z", value: 4 },
+        ],
+        {
+          range: {
+            type: "relative",
+            endTime: {
+              when: "AFTER",
+              value: 7,
+              unit: "DAYS",
+            },
+          },
+        }
+      )
+    ).toEqual([
       { time: "2022-01-01T00:00:00Z", value: 1 },
       { time: "2022-01-02T00:00:00Z", value: 2 },
       { time: "2022-01-03T00:00:00Z", value: 3 },

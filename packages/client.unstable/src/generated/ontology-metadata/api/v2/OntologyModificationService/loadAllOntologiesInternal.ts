@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  LoadAllOntologiesInternalRequest
-    as _api_modification_LoadAllOntologiesInternalRequest,
-  LoadAllOntologiesInternalResponse
-    as _api_modification_LoadAllOntologiesInternalResponse,
+  LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest,
+  LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse,
 } from "../../modification/__components.js";
 
 /**
@@ -29,7 +28,7 @@ import type {
  */
 export async function loadAllOntologiesInternal(
   ctx: ConjureContext,
-  request: _api_modification_LoadAllOntologiesInternalRequest,
+  request: _api_modification_LoadAllOntologiesInternalRequest
 ): Promise<_api_modification_LoadAllOntologiesInternalResponse> {
   return conjureFetch(ctx, `/ontology/v2/load/all`, "POST", request);
 }

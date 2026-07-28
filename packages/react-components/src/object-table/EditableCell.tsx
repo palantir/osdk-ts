@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-import { Input } from "@base-ui/react/input";
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
-import classNames from "classnames";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
+import { DatePickerCellField } from "./components/DatePickerCellField.js";
+import { DropdownCellField } from "./components/DropdownCellField.js";
+import { TextInputCellField } from "./components/TextInputCellField.js";
+import { useObjectTableLabels } from "./ObjectTableLabels.js";
+import { cellValuesEqual } from "./utils/editableUtils.js";
+import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
+
 import styles from "./EditableCell.module.css";
-import type { CellEditInfo } from "./utils/types.js";
 
-export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
-  initialValue: CellValue;
-  currentValue: CellValue;
-  cellId: string;
-  dataType?: string;
-  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  onCellValidationError?: (
-    cellId: string,
-    error: string,
-  ) => void;
-  clearCellValidationError?: (cellId: string) => void;
-  validationError?: string;
-  originalRowData: TData;
-  rowId: string;
-  columnId: string;
-  validateEdit?: (value: unknown) => Promise<string | undefined>;
-}
-
-const NUMBER_TYPES: string[] = [
+const NUMBER_TYPES: readonly string[] = [
   "double",
   "integer",
   "long",
@@ -50,6 +43,32 @@ const NUMBER_TYPES: string[] = [
   "byte",
   "short",
 ];
+
+const DATE_TYPES: readonly string[] = ["datetime", "timestamp"];
+
+export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
+  initialValue: CellValue;
+  currentValue: CellValue;
+  cellId: string;
+  dataType?: string;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
+  onCellValidationError?: (cellId: string, error: string) => void;
+  clearCellValidationError?: (cellId: string) => void;
+  validationError?: string;
+  originalRowData: TData;
+  rowId: string;
+  columnId: string;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
+  editFieldConfig?: EditFieldConfig<TData>;
+  /**
+   * Pending edits for this row, keyed by `columnId`. Forwarded to
+   * `EditFieldConfig#getFieldComponentProps`. Filtering happens in
+   * `DefaultCellRenderer` so unedited rows receive a stable `undefined`
+   * reference and `React.memo` can skip them.
+   */
+  rowCellEdits?: Record<string, CellEditInfo<TData, unknown>>;
+  isRowFocused?: boolean;
+}
 
 function valueToString(value: unknown): string {
   if (value == null) {
@@ -62,10 +81,7 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType(
-  value: string,
-  dataType?: string,
-): unknown {
+function parseValueByType(value: string, dataType?: string): unknown {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
     return value;
   }
@@ -83,8 +99,6 @@ function parseValueByType(
   return parsedNumber;
 }
 
-const VALIDATION_ERROR_MESSAGE = "Validation error";
-
 function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
@@ -98,14 +112,18 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   columnId,
   validateEdit,
   validationError,
+  editFieldConfig,
+  rowCellEdits,
+  isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
+  const labels = useObjectTableLabels();
   const [inputValue, setInputValue] = useState<string>(
-    valueToString(currentValue),
+    valueToString(currentValue)
   );
   const isCancelled = useRef(false);
   const validationAbortControllerRef = useRef<AbortController | null>(null);
 
-  const abortController = useCallback(() => {
+  const abortValidation = useCallback(() => {
     if (validationAbortControllerRef.current) {
       validationAbortControllerRef.current.abort();
       validationAbortControllerRef.current = null;
@@ -113,43 +131,26 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   }, []);
 
   const hasValidationError = validationError != null;
-  const isEdited = currentValue !== initialValue;
+  const isEdited = !cellValuesEqual(currentValue, initialValue);
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
   }, [currentValue]);
 
   useEffect(() => {
-    // Cleanup abort controller on unmount
     return () => {
-      abortController();
+      abortValidation();
     };
-  }, [abortController]);
+  }, [abortValidation]);
 
-  const handleBlur = useCallback(() => {
-    // Do not commit the edit if it was cancelled with Escape key
-    if (isCancelled.current) {
-      isCancelled.current = false;
-      return;
-    }
+  const runValidation = useCallback(
+    (parsedValue: unknown) => {
+      if (!validateEdit) {
+        return;
+      }
 
-    // Cancel any in-flight validation
-    abortController();
-
-    const parsedValue = parseValueByType(inputValue, dataType) as CellValue;
-
-    onCellEdit(cellId, {
-      rowId,
-      columnId,
-      newValue: parsedValue,
-      oldValue: initialValue,
-      originalRowData,
-    });
-
-    if (validateEdit) {
-      // Create new AbortController for this validation
-      const abortController = new AbortController();
-      validationAbortControllerRef.current = abortController;
+      const controller = new AbortController();
+      validationAbortControllerRef.current = controller;
 
       const validationPromise = validateEdit(parsedValue);
 
@@ -157,13 +158,13 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       Promise.race([
         validationPromise,
         new Promise<string | undefined>((_, reject) => {
-          abortController.signal.addEventListener("abort", () => {
+          controller.signal.addEventListener("abort", () => {
             reject(new DOMException("Aborted", "AbortError"));
           });
         }),
       ]).then(
         (errorMessage) => {
-          if (abortController.signal.aborted) {
+          if (controller.signal.aborted) {
             return;
           }
           if (errorMessage) {
@@ -173,32 +174,71 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
           }
         },
         (error) => {
-          if (!abortController.signal.aborted && error.name !== "AbortError") {
-            onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
+          if (!controller.signal.aborted && error.name !== "AbortError") {
+            onCellValidationError?.(cellId, labels.cellValidationError);
           }
-        },
+        }
       );
-    }
-  }, [
-    abortController,
-    inputValue,
-    dataType,
-    onCellEdit,
-    cellId,
-    rowId,
-    columnId,
-    initialValue,
-    originalRowData,
-    validateEdit,
-    onCellValidationError,
-    clearCellValidationError,
-  ]);
+    },
+    [
+      validateEdit,
+      onCellValidationError,
+      clearCellValidationError,
+      cellId,
+      labels,
+    ]
+  );
 
-  const handleChange = useCallback((value: string) => {
-    // Cancel any in-flight validation
-    abortController();
-    setInputValue(value);
-  }, [abortController]);
+  const commitEdit = useCallback(
+    (newValue: CellValue) => {
+      abortValidation();
+
+      onCellEdit(cellId, {
+        rowId,
+        columnId,
+        newValue,
+        oldValue: initialValue,
+        originalRowData,
+      });
+
+      runValidation(newValue);
+    },
+    [
+      abortValidation,
+      onCellEdit,
+      cellId,
+      rowId,
+      columnId,
+      initialValue,
+      originalRowData,
+      runValidation,
+    ]
+  );
+
+  // Text/number input: commit on blur
+  const handleBlur = useCallback(() => {
+    if (isCancelled.current) {
+      isCancelled.current = false;
+      return;
+    }
+
+    // No-op when the input wasn't actually changed by the user
+    if (inputValue === valueToString(currentValue)) {
+      return;
+    }
+
+    const parsedValue = parseValueByType(inputValue, dataType) as CellValue;
+    commitEdit(parsedValue);
+  }, [inputValue, currentValue, dataType, commitEdit]);
+
+  const handleInputChange = useCallback(
+    (value: string) => {
+      // Cancel any in-flight validation
+      abortValidation();
+      setInputValue(value);
+    },
+    [abortValidation]
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -211,34 +251,100 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         e.currentTarget.blur();
       }
     },
-    [currentValue],
+    [currentValue]
   );
 
-  const inputType = dataType && NUMBER_TYPES.includes(dataType)
-    ? "number"
-    : "text";
+  const handleCommit = useCallback(
+    (newValue: unknown) => {
+      // No-op if the value hasn't actually moved from what the cell already
+      // displays. null and undefined are treated as the same empty state so
+      // a dropdown that clears a never-set cell doesn't fire; "" stays
+      // distinct since an empty string can be meaningful data.
+      if (cellValuesEqual(newValue, currentValue)) return;
+      commitEdit(newValue as CellValue);
+    },
+    [commitEdit, currentValue]
+  );
+
+  const inputType =
+    dataType && NUMBER_TYPES.includes(dataType) ? "number" : "text";
+
+  // Compute field-component props once per (editFieldConfig, originalRowData, rowCellEdits).
+  // The narrowed return type is preserved in each useMemo
+  const dropdownFieldProps = useMemo(
+    () =>
+      editFieldConfig?.fieldComponent === "DROPDOWN"
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
+        : undefined,
+    [editFieldConfig, originalRowData, rowCellEdits]
+  );
+
+  const datePickerFieldProps = useMemo(
+    () =>
+      editFieldConfig?.fieldComponent === "DATE_PICKER"
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
+        : undefined,
+    [editFieldConfig, originalRowData, rowCellEdits]
+  );
+
+  const renderFieldInput = () => {
+    switch (editFieldConfig?.fieldComponent) {
+      case "DROPDOWN":
+        return (
+          <DropdownCellField
+            fieldComponentProps={dropdownFieldProps!}
+            isRowFocused={isRowFocused}
+            inputValue={inputValue}
+            value={currentValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onChange={handleCommit}
+          />
+        );
+      case "DATE_PICKER":
+        return (
+          <DatePickerCellField
+            fieldComponentProps={datePickerFieldProps}
+            inputValue={inputValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onChange={handleCommit}
+          />
+        );
+      default:
+        if (dataType != null && DATE_TYPES.includes(dataType)) {
+          return (
+            <DatePickerCellField
+              inputValue={inputValue}
+              hasValidationError={hasValidationError}
+              isEdited={isEdited}
+              onChange={handleCommit}
+              dataType={dataType}
+            />
+          );
+        }
+        return (
+          <TextInputCellField
+            inputType={inputType}
+            inputValue={inputValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onValueChange={handleInputChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+          />
+        );
+    }
+  };
 
   return (
     <Tooltip.Provider>
       <Tooltip.Root disabled={!hasValidationError}>
-        <Tooltip.Trigger>
-          <div
-            className={classNames(styles.osdkEditableCell, {
-              [styles.error]: hasValidationError,
-              [styles.osdkEditedInput]: isEdited,
-            })}
-          >
-            <Input
-              type={inputType}
-              value={inputValue}
-              className={styles.osdkEditableInput}
-              onValueChange={handleChange}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              aria-invalid={hasValidationError}
-            />
-            {hasValidationError && <Error className={styles.errorIcon} />}
-          </div>
+        <Tooltip.Trigger
+          className={styles.osdkEditableCellTrigger}
+          render={<span className={styles.osdkTooltipTriggerWrapper} />}
+        >
+          {renderFieldInput()}
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>
@@ -257,5 +363,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 }
 
 export const EditableCell = React.memo(
-  EditableCellInner,
+  EditableCellInner
 ) as typeof EditableCellInner;
+("");

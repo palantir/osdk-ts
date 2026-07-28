@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace FintrafficAis {
-  export type PropertyKeys = 'mmsi' | 'name' | 'centroid' | 'geometry' | 'seriesId' | 'shipType' | 'timestamp';
+  export type PropertyKeys = 'centroid' | 'geometry' | 'mmsi' | 'name' | 'seriesId' | 'shipType' | 'timestamp';
 
   export type Links = {};
 

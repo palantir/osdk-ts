@@ -81,7 +81,7 @@ export type ActionParameterType =
   | ActionParameterTypePrimitive
   | ActionParameterTypeComplex;
 export function isActionParameterTypePrimitive(
-  type: string,
+  type: string
 ): type is ActionParameterTypePrimitive {
   return [
     "boolean",

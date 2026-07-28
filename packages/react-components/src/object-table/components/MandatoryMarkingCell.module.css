@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--osdk-surface-spacing);
+  align-items: center;
+}
+
+.pill {
+  max-width: 100%;
+}

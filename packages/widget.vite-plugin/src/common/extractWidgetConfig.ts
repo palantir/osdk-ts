@@ -16,11 +16,12 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { ViteDevServer } from "vite";
+
 import { validateWidgetConfig } from "./validateWidgetConfig.js";
 
 export async function extractWidgetConfig(
   moduleId: string,
-  server: ViteDevServer,
+  server: ViteDevServer
 ): Promise<WidgetConfig<ParameterConfig>> {
   try {
     const configModule = await server.ssrLoadModule(moduleId);
@@ -31,13 +32,13 @@ export async function extractWidgetConfig(
     }
 
     if (
-      typeof config !== "object"
-      || (config["id"] == null && config["name"] == null)
+      typeof config !== "object" ||
+      (config["id"] == null && config["name"] == null)
     ) {
       server.config.logger.warn(
-        `Config object does not look like a widget config: ${
-          JSON.stringify(config)
-        }`,
+        `Config object does not look like a widget config: ${JSON.stringify(
+          config
+        )}`
       );
     }
 
@@ -45,10 +46,10 @@ export async function extractWidgetConfig(
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
     throw new Error(
-      `Encountered error: '${(error instanceof Error
-        ? error.message
-        : error)}' while loading widget config from ${moduleId}`,
-      { cause: error },
+      `Encountered error: '${
+        error instanceof Error ? error.message : error
+      }' while loading widget config from ${moduleId}`,
+      { cause: error }
     );
   }
 }

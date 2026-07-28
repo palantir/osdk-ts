@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import consola from "consola";
 import { getRandomValues, subtle } from "node:crypto";
 import { createServer } from "node:http";
-import { join } from "node:path/posix";
 import { exit } from "node:process";
 import { parse } from "node:url";
+
+import consola from "consola";
 import open from "open";
+
+import { ensureTrailingSlash } from "../../../util/ensureTrailingSlash.js";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
@@ -28,11 +30,12 @@ import { isTokenErrorResponse } from "./token.js";
 const BROWSER_PROMPT_TIME_MS = 60 * 1000;
 
 export async function invokeLoginFlow(
-  args: LoginArgs,
+  args: LoginArgs
 ): Promise<TokenSuccessResponse> {
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;
+  const foundryUrl = ensureTrailingSlash(args.foundryUrl);
   let resolve: (value: string) => void;
   const authCode: Promise<string> = new Promise((_res) => {
     resolve = _res;
@@ -41,13 +44,13 @@ export async function invokeLoginFlow(
   const server = createServer((req, res) => {
     const query = parse(req.url!, true).query;
     res.end("Authenticated");
-    resolve(query["code"] as string);
+    resolve(query.code as string);
   });
 
   server.on("error", (e) => {
     if ((e as any).code === "EADDRINUSE") {
       consola.error(
-        `Port ${port} is already in use, unable to perform authentication flow.`,
+        `Port ${port} is already in use, unable to perform authentication flow.`
       );
       server.close();
       exit(1);
@@ -61,25 +64,25 @@ export async function invokeLoginFlow(
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
   const authorizeUrl = generateAuthorizeUrl(
-    args.foundryUrl,
+    foundryUrl,
     clientId,
     state,
     redirectUrl,
-    codeChallenge,
+    codeChallenge
   );
 
   try {
     await open(authorizeUrl);
   } catch {
     consola.warn(
-      `Unable to open browser, please open this url in your browser to to authenticate: ${authorizeUrl}`,
+      `Unable to open browser, please open this url in your browser to to authenticate: ${authorizeUrl}`
     );
   }
 
   // nag the user if we didn't get an auth token for a relatively long time
   const browserPrompt = setTimeout(() => {
     consola.warn(
-      `Still waiting for the authentication to complete. Please open a browser to ${authorizeUrl}`,
+      `Still waiting for the authentication to complete. Please open a browser to ${authorizeUrl}`
     );
   }, BROWSER_PROMPT_TIME_MS);
 
@@ -92,15 +95,15 @@ export async function invokeLoginFlow(
     clientId,
     redirectUrl,
     code,
-    args.foundryUrl,
-    codeVerifier,
+    foundryUrl,
+    codeVerifier
   );
 
   if (isTokenErrorResponse(token)) {
     consola.error(
       "Unable to authenticate",
       token.error,
-      token.error_description,
+      token.error_description
     );
     exit(1);
   }
@@ -130,9 +133,9 @@ async function generateCodeChallenge(codeVerifier: string) {
   const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\//g, "_")
-    .replace(/\+/g, "-")
-    .replace(/=/g, "");
+    .replace(/\//gu, "_")
+    .replace(/\+/gu, "-")
+    .replace(/=/gu, "");
   return {
     codeChallenge,
     codeChallengeMethod,
@@ -144,25 +147,23 @@ function generateAuthorizeUrl(
   clientId: string,
   state: string,
   redirectUrl: string,
-  codeChallenge: { codeChallenge: string; codeChallengeMethod: string },
+  codeChallenge: { codeChallenge: string; codeChallengeMethod: string }
 ) {
-  const queryParams = new URLSearchParams();
-  queryParams.append("client_id", clientId);
-  queryParams.append("response_type", "code");
-  queryParams.append("state", state);
-  queryParams.append("redirect_uri", redirectUrl);
-  queryParams.append("code_challenge", codeChallenge.codeChallenge);
-  queryParams.append(
+  const url = new URL("multipass/api/oauth2/authorize", baseUrl);
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("state", state);
+  url.searchParams.set("redirect_uri", redirectUrl);
+  url.searchParams.set("code_challenge", codeChallenge.codeChallenge);
+  url.searchParams.set(
     "code_challenge_method",
-    codeChallenge.codeChallengeMethod,
+    codeChallenge.codeChallengeMethod
   );
-  queryParams.append(
+  url.searchParams.set(
     "scope",
-    ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" "),
+    ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" ")
   );
-
-  return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
-    + queryParams.toString();
+  return url.toString();
 }
 
 async function getTokenWithCodeVerifier(
@@ -170,7 +171,7 @@ async function getTokenWithCodeVerifier(
   redirectUrl: string,
   code: string,
   baseUrl: string,
-  codeVerifier: string,
+  codeVerifier: string
 ): Promise<TokenResponse> {
   const body = new URLSearchParams();
   body.append("client_id", clientId);
@@ -179,8 +180,9 @@ async function getTokenWithCodeVerifier(
   body.append("redirect_uri", redirectUrl);
   body.append("code_verifier", codeVerifier);
 
-  const tokenUrl = join(baseUrl, "multipass", "api", "oauth2", "token")
-    + `?state=${codeVerifier}`;
+  const tokenUrlObj = new URL("multipass/api/oauth2/token", baseUrl);
+  tokenUrlObj.searchParams.set("state", codeVerifier);
+  const tokenUrl = tokenUrlObj.toString();
   try {
     const response = await fetch(tokenUrl, {
       body: body.toString(),
@@ -195,9 +197,10 @@ async function getTokenWithCodeVerifier(
   } catch (e) {
     throw new Error(
       `Failed to get token: ${
-        (e as { cause?: any })?.cause?.toString() ?? e?.toString()
-          ?? "Unknown error"
-      }`,
+        (e as { cause?: any })?.cause?.toString() ??
+        e?.toString() ??
+        "Unknown error"
+      }`
     );
   }
 }

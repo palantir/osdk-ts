@@ -24,7 +24,7 @@ export function makeGeoFilterPolygon(
   coordinates: Position[][],
   filterType: "intersectsPolygon" | "withinPolygon",
   propertyIdentifier?: PropertyIdentifier,
-  field?: string,
+  field?: string
 ): SearchJsonQueryV2 {
   return {
     type: filterType,

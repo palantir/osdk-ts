@@ -1,5 +1,35 @@
 # @osdk/typescript-sdk-docs-examples
 
+## 0.7.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/client@2.16.0
+  - @osdk/functions@1.9.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/functions@1.7.0
+
 ## 0.5.0
 
 ### Minor Changes

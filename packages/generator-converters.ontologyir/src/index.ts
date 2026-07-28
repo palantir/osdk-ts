@@ -15,11 +15,28 @@
  */
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
+export type {
+  IAnonymousCustomDataType,
+  IFunctionCustomDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
+  IListDataType,
+  IObjectDataType,
+  IObjectSetDataType,
+  IOptionalDataType,
+  ISetDataType,
+} from "./convertDataType.js";
+export { isInjectedRuntimeInput } from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
+  buildBlockDataInterfaceLinkTypeLookup,
   buildBlockDataInterfaceTypeLookup,
   buildBlockDataObjectTypeLookup,
   OntologyBlockDataToFullMetadataConverter,
   resolveBlockDataApiName,
 } from "./OntologyBlockDataToFullMetadataConverter.js";
-export { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
+export {
+  type IDataType,
+  type IDiscoveredFunction,
+  OntologyIrToFullMetadataConverter,
+} from "./OntologyIrToFullMetadataConverter.js";

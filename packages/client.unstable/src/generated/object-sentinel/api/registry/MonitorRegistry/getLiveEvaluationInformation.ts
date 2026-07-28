@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ObjectSetRid as _api_ObjectSetRid } from "../../__components.js";
 import type { LiveEvaluationInformationResponse as _api_registry_LiveEvaluationInformationResponse } from "../__components.js";
 
@@ -23,11 +24,11 @@ import type { LiveEvaluationInformationResponse as _api_registry_LiveEvaluationI
  */
 export async function getLiveEvaluationInformation(
   ctx: ConjureContext,
-  objectSetRid: _api_ObjectSetRid,
+  objectSetRid: _api_ObjectSetRid
 ): Promise<_api_registry_LiveEvaluationInformationResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors-getLiveEvaluationInformation/${objectSetRid}`,
-    "GET",
+    "GET"
   );
 }

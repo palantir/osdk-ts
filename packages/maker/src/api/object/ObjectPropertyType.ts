@@ -18,6 +18,7 @@ import type {
   OntologyIrBaseFormatter,
   Visibility,
 } from "@osdk/client.unstable";
+
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { Nullability } from "../properties/Nullability.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";

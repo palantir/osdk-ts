@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { PalantirApiError } from "@osdk/shared.net.errors";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "./fetchPage.js";
 
@@ -33,7 +34,7 @@ export async function fetchSingle<
   client: MinimalClient,
   objectType: Q,
   args: A,
-  objectSet: ObjectSet,
+  objectSet: ObjectSet
 ): Promise<
   A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
     ? SingleOsdkResult<Q, L, R, S>
@@ -43,14 +44,14 @@ export async function fetchSingle<
     client,
     objectType,
     { ...args, $pageSize: 1 },
-    objectSet,
+    objectSet
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {
     throw new PalantirApiError(
       `Expected a single result but got ${result.data.length} instead${
         result.nextPageToken != null ? " with nextPageToken set" : ""
-      }`,
+      }`
     );
   }
 
@@ -65,7 +66,7 @@ export async function fetchSingleWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: A,
-  objectSet: ObjectSet,
+  objectSet: ObjectSet
 ): Promise<
   Result<
     A extends FetchPageArgs<Q, infer L, infer R, any, infer S>

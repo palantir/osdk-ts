@@ -17,6 +17,7 @@
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { getCellId } from "../../utils/getCellId.js";
 import { useEditableTable } from "../useEditableTable.js";
 
@@ -25,7 +26,7 @@ type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
 
 function createMockObjectInstance(
   id: string,
-  additionalProps = {},
+  additionalProps = {}
 ): MockInstance {
   return {
     $apiName: "mock-object" as const,
@@ -105,6 +106,40 @@ describe("useEditableTable", () => {
     // Should remove the cell from cellEdits
     expect(result.current.cellEdits).toEqual({});
   });
+
+  it.each([
+    {
+      name: "null newValue clearing undefined oldValue",
+      newValue: null,
+      oldValue: undefined,
+    },
+    {
+      name: "undefined newValue clearing null oldValue",
+      newValue: undefined,
+      oldValue: null,
+    },
+    { name: "null clearing null", newValue: null, oldValue: null },
+  ])(
+    "removes cell from cellEdits when $name (null/undefined equivalence)",
+    ({ newValue, oldValue }) => {
+      const { result } = renderHook(() =>
+        useEditableTable({ editMode: "always" })
+      );
+      const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+
+      act(() => {
+        result.current.onCellEdit(cellId, {
+          rowId: "row-1",
+          columnId: "col-1",
+          newValue,
+          oldValue,
+          originalRowData: createMockObjectInstance("row-1"),
+        });
+      });
+
+      expect(result.current.cellEdits).toEqual({});
+    }
+  );
 
   it("handles multiple cell edits", () => {
     const { result } = renderHook(() =>
@@ -234,7 +269,7 @@ describe("useEditableTable", () => {
     expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
-  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
+  it("when submit edits is undefined, onSubmitEdits is undefined", () => {
     const { result } = renderHook(() =>
       useEditableTable({
         editMode: "always",
@@ -256,23 +291,23 @@ describe("useEditableTable", () => {
       expect(result.current.editModeState.setActive).toBeDefined();
 
       act(() => {
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.setActive(true);
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.setActive(true);
       });
 
       expect(
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.isActive,
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.isActive
       ).toBe(true);
 
       act(() => {
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.setActive(false);
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.setActive(false);
       });
 
       expect(
-        result.current.editModeState.type === "manual"
-          && result.current.editModeState.isActive,
+        result.current.editModeState.type === "manual" &&
+          result.current.editModeState.isActive
       ).toBe(false);
     }
   });

@@ -14,24 +14,51 @@
  * limitations under the License.
  */
 
+/**
+ * @deprecated The platform/admin hooks previously exported from
+ * `@osdk/react/experimental/admin` have moved to `@osdk/react/platform-apis`.
+ * Update imports — this entry will be removed in a future major.
+ */
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useCbacBanner } from "../../new/platform-apis/admin/useCbacBanner.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export type {
   CbacBannerData,
   UseCbacBannerOptions,
   UseCbacBannerResult,
 } from "../../new/platform-apis/admin/useCbacBanner.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useCbacMarkingRestrictions } from "../../new/platform-apis/admin/useCbacMarkingRestrictions.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export type {
   CbacMarkingRestrictionsData,
   UseCbacMarkingRestrictionsOptions,
   UseCbacMarkingRestrictionsResult,
 } from "../../new/platform-apis/admin/useCbacMarkingRestrictions.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useCurrentFoundryUser } from "../../new/platform-apis/admin/useCurrentFoundryUser.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useFoundryUser } from "../../new/platform-apis/admin/useFoundryUser.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useFoundryUsersList } from "../../new/platform-apis/admin/useFoundryUsersList.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useMarkingCategories } from "../../new/platform-apis/admin/useMarkingCategories.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useMarkings } from "../../new/platform-apis/admin/useMarkings.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export { useUserViewMarkings } from "../../new/platform-apis/admin/useUserMarkings.js";
+
+/** @deprecated Import from `@osdk/react/platform-apis` instead. */
 export type {
   UseUserViewMarkingsOptions,
   UseUserViewMarkingsResult,

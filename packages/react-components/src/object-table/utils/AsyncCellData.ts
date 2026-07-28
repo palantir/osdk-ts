@@ -23,16 +23,18 @@ export interface AsyncCellData {
 
 export const isAsyncCellData = (value: unknown): value is AsyncCellData => {
   return (
-    value != null
-    && typeof value === "object"
-    && "__asyncCell" in value
-    && value.__asyncCell === true
+    value != null &&
+    typeof value === "object" &&
+    "__asyncCell" in value &&
+    value.__asyncCell === true
   );
 };
 
-export const createAsyncCellData = (
-  { data, isLoading, error }: Omit<AsyncCellData, "__asyncCell">,
-): AsyncCellData => ({
+export const createAsyncCellData = ({
+  data,
+  isLoading,
+  error,
+}: Omit<AsyncCellData, "__asyncCell">): AsyncCellData => ({
   __asyncCell: true,
   data,
   isLoading,

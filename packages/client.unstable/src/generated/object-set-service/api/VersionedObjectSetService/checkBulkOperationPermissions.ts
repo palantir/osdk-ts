@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  CheckBulkOperationPermissionsRequest
-    as _api_CheckBulkOperationPermissionsRequest,
-  CheckBulkOperationPermissionsResponse
-    as _api_CheckBulkOperationPermissionsResponse,
+  CheckBulkOperationPermissionsRequest as _api_CheckBulkOperationPermissionsRequest,
+  CheckBulkOperationPermissionsResponse as _api_CheckBulkOperationPermissionsResponse,
 } from "../__components.js";
 
 /**
@@ -27,12 +26,12 @@ import type {
  */
 export async function checkBulkOperationPermissions(
   ctx: ConjureContext,
-  request: _api_CheckBulkOperationPermissionsRequest,
+  request: _api_CheckBulkOperationPermissionsRequest
 ): Promise<_api_CheckBulkOperationPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/permissionCheck`,
     "PUT",
-    request,
+    request
   );
 }

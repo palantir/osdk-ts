@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+
 import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
+  getImportedTypes,
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeDependencyFile,
+  writeStaticObjects,
 } from "@osdk/maker";
+
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
@@ -33,10 +41,17 @@ export interface OntologyV2Result {
   backingDatasourceLinkApiNames: string[];
 }
 
+export interface FunctionsIr {
+  discoveredFunctions: Array<IDiscoveredFunction>;
+}
+
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
-  randomnessKey?: string,
+  outputDir?: string,
+  dependencyFile?: string,
+  functionsIrFile?: string,
+  randomnessKey?: string
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -46,45 +61,76 @@ export async function defineOntologyV2(
     // eslint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
-      e,
+      e
     );
     throw e;
   }
 
   const ontologyDefinition = getOntologyDefinition();
 
-  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
+  let functionsIr: FunctionsIr | undefined;
+  if (functionsIrFile) {
+    functionsIr = JSON.parse(fs.readFileSync(functionsIrFile, "utf-8"));
+  }
+
+  const ridGenerator = new OntologyRidGeneratorImpl(
+    getImportedTypes(),
+    randomnessKey
+  );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
-    randomnessKey,
+    functionsIr,
+    randomnessKey
   );
 
   const shapes = await getShapes(
     ontDef.ontology,
     ridGenerator,
-    randomnessKey,
+    functionsIr,
+    randomnessKey
   );
 
+  // Generate input shapes for imported entities and merge into main shapes
+  const importedShapes = getImportedShapes(
+    ontDef.importedOntology,
+    ridGenerator
+  );
+  for (const [key, value] of importedShapes.inputShapes) {
+    shapes.inputShapes.set(key, value);
+  }
+  for (const [key, value] of importedShapes.inputShapeMetadata) {
+    shapes.inputShapeMetadata.set(key, value);
+  }
+
   const backingDatasourceApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE]
   )
-    .filter(([_, obj]) =>
-      (obj as ObjectType).includeEmptyBackingDatasource === true
+    .filter(
+      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true
     )
     .map(([apiName]) => apiName);
 
   const backingDatasourceLinkApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE]
   )
     .filter(([_, link]) => {
       const lt = link as LinkType;
-      return "many" in lt
-        && !("intermediaryObjectType" in lt)
-        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
-            .includeEmptyBackingDatasource === true;
+      return (
+        "many" in lt &&
+        !("intermediaryObjectType" in lt) &&
+        (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
+          .includeEmptyBackingDatasource === true
+      );
     })
     .map(([apiName]) => apiName);
+
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
+  }
 
   return {
     ontologyIr: ontDef,

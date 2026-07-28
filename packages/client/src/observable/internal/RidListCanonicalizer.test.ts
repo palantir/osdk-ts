@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { RidListCanonicalizer } from "./RidListCanonicalizer.js";
 
 describe("RidListCanonicalizer", () => {

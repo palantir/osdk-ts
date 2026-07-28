@@ -6,6 +6,37 @@ sidebar_position: 6
 
 This guide covers available platform APIs that can used with OSDK React hooks.
 
+## Handling errors with PalantirApiError
+
+All platform-API hooks return errors as plain `Error` instances; when the failure originates from a Foundry API call, the error is a `PalantirApiError` (re-exported from `@osdk/client`). Narrow with `instanceof` to access the structured fields. All fields below are optional — narrow before you use them:
+
+| Field              | Type      | Use                                                 |
+| ------------------ | --------- | --------------------------------------------------- |
+| `errorName`        | `string?` | Stable machine identifier (e.g. `UserNotFound`)     |
+| `errorCode`        | `string?` | HTTP-style code (e.g. `NOT_FOUND`)                  |
+| `errorDescription` | `string?` | Human-readable message                              |
+| `statusCode`       | `number?` | HTTP status                                         |
+| `errorInstanceId`  | `string?` | Server-side correlation ID — include in bug reports |
+| `parameters`       | `object?` | Server-supplied context (e.g. `{ userId }`)         |
+
+Switch on `errorName` for branching behavior; show `errorInstanceId` to support engineers when surfacing an opaque failure.
+
+```tsx
+import { PalantirApiError } from "@osdk/client";
+
+function describe(error: Error): string {
+  if (!(error instanceof PalantirApiError)) {
+    return error.message;
+  }
+  if (error.errorName === "UserNotFound") {
+    return "We couldn't find that user.";
+  }
+  return `${error.errorDescription} (id: ${error.errorInstanceId})`;
+}
+```
+
+---
+
 ## useFoundryUser
 
 Retrieves a specific Foundry user by their user ID.
@@ -14,7 +45,7 @@ Retrieves a specific Foundry user by their user ID.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUser } from "@osdk/react/experimental";
+import { useFoundryUser } from "@osdk/react/platform-apis";
 
 export function UserProfile({ userId }: { userId: string }) {
   const { user, isLoading, error } = useFoundryUser(userId);
@@ -67,7 +98,7 @@ Retrieves the currently signed-in Foundry user.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useCurrentFoundryUser } from "@osdk/react/experimental";
+import { useCurrentFoundryUser } from "@osdk/react/platform-apis";
 
 export function CurrentUserBadge() {
   const { currentUser, isLoading, error } = useCurrentFoundryUser();
@@ -110,7 +141,7 @@ Lists all Foundry users with pagination support.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUsersList } from "@osdk/react/experimental";
+import { useFoundryUsersList } from "@osdk/react/platform-apis";
 
 export function UsersList() {
   const { users, isLoading, error } = useFoundryUsersList();
@@ -159,7 +190,7 @@ export function UsersList() {
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUsersList } from "@osdk/react/experimental";
+import { useFoundryUsersList } from "@osdk/react/platform-apis";
 import { useState } from "react";
 
 export function UsersList() {

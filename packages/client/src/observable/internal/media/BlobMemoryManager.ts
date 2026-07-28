@@ -38,16 +38,13 @@ export function createBlobMemoryManager(): BlobMemoryManager {
   // cached 60s after last access so quick navigation between views reuses them
   const EVICTION_THRESHOLD_MS = 60_000;
 
-  const urlRefCounts = new RefCounts<string>(
-    EVICTION_THRESHOLD_MS,
-    (key) => {
-      const entry = cache.get(key);
-      if (entry?.blobUrl) {
-        URL.revokeObjectURL(entry.blobUrl);
-        entry.blobUrl = undefined;
-      }
-    },
-  );
+  const urlRefCounts = new RefCounts<string>(EVICTION_THRESHOLD_MS, (key) => {
+    const entry = cache.get(key);
+    if (entry?.blobUrl) {
+      URL.revokeObjectURL(entry.blobUrl);
+      entry.blobUrl = undefined;
+    }
+  });
 
   let gcIntervalId: ReturnType<typeof setInterval> | undefined;
 

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetOntologySummaryRequest as _api_GetOntologySummaryRequest,
   GetOntologySummaryResponse as _api_GetOntologySummaryResponse,
@@ -34,12 +35,12 @@ import type {
 export async function getOntologySummary(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_GetOntologySummaryRequest,
+  request: _api_GetOntologySummaryRequest
 ): Promise<_api_GetOntologySummaryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/summary`,
     "POST",
-    request,
+    request
   );
 }

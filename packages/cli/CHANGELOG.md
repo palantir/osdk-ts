@@ -1,5 +1,332 @@
 # @osdk/cli
 
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 0.74.0
+
+### Minor Changes
+
+- a7ff4d3: Improve branch command OSDK discovery and global branch<->main dependency syncing.
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
+## 0.73.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.46.0
+
+## 0.72.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.45.0
+
+## 0.71.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.44.0
+
+## 0.70.0
+
+### Minor Changes
+
+- 2d4ad2d: Introduce branched SDKs commands to @osdk/cli
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.42.0
+
+## 0.68.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/foundry-config-json@1.12.0
+  - @osdk/widget.api@3.41.0
+
+## 0.67.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/shared.net.errors@2.12.0
+  - @osdk/shared.net.fetch@1.12.0
+  - @osdk/foundry-config-json@1.11.0
+  - @osdk/widget.api@3.40.0
+
+## 0.66.0
+
+### Minor Changes
+
+- cbcdce1: Re-enable the oxlint rules the `**/*.{js,mjs,cjs}` override had disabled and delete the override, so JS build scripts, bin shims, and config files are held to the same ruleset as TypeScript. Changes are behavior-preserving (lint/format fixes to build tooling only).
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- Updated dependencies [6010d45]
+  - @osdk/foundry-config-json@1.10.0
+  - @osdk/widget.api@3.39.0
+
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [2f91c0e]
+  - @osdk/widget.api@3.38.0
+
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.37.0
+
+## 0.63.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.36.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.35.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.net.fetch@1.11.0
+  - @osdk/widget.api@3.34.0
+
+## 0.60.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.33.0
+
+## 0.59.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.32.0
+
+## 0.58.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.31.0
+
+## 0.57.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.30.0
+
+## 0.56.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.29.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.28.0
+
+## 0.54.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.27.0
+
+## 0.53.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.26.0
+
+## 0.52.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.25.0
+
+## 0.51.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.24.0
+
+## 0.50.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.23.0
+
+## 0.49.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.22.0
+
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.21.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.20.0
+
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.api@3.19.0
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.18.0
+
+## 0.44.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.17.0
+
+## 0.43.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.16.0
+
+## 0.42.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.15.0
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.14.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/foundry-config-json@1.9.0
+  - @osdk/shared.net.errors@2.10.0
+  - @osdk/shared.net.fetch@1.10.0
+  - @osdk/widget.api@3.13.0
+
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.12.0
+
+## 0.38.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- @osdk/widget.api@3.11.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build API URLs in site and widgetset commands via the URL constructor. The `foundryUrl` argument coerce now ensures a trailing slash (previously stripped it), so base URLs with path prefixes resolve correctly.
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/widget.api@3.7.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 0.32.0
 
 ### Minor Changes

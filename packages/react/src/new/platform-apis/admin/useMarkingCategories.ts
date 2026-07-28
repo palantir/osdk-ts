@@ -17,8 +17,9 @@
 import type { MarkingCategory } from "@osdk/foundry.admin";
 import { MarkingCategories } from "@osdk/foundry.admin";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseMarkingCategoriesOptions {
   /**
@@ -49,10 +50,10 @@ export interface UseMarkingCategoriesResult {
  * List all marking categories.
  * @param options Options to control the query.
  */
-export function useMarkingCategories(
-  { enabled = true }: UseMarkingCategoriesOptions = {},
-): UseMarkingCategoriesResult {
-  const { client } = React.useContext(OsdkContext2);
+export function useMarkingCategories({
+  enabled = true,
+}: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
+  const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
     return MarkingCategories.list(client);

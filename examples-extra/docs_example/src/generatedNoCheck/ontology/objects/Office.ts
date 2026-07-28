@@ -16,12 +16,12 @@ import type {
 
 export namespace Office {
   export type PropertyKeys =
-    | 'officeId'
     | 'entrance'
-    | 'occupiedArea'
-    | 'name'
+    | 'meetingRoomCapacities'
     | 'meetingRooms'
-    | 'meetingRoomCapacities';
+    | 'name'
+    | 'occupiedArea'
+    | 'officeId';
 
   export type Links = {};
 

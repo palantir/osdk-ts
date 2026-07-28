@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  MigrateEntitiesToProjectsRequest
-    as _api_permissions_MigrateEntitiesToProjectsRequest,
-  MigrateEntitiesToProjectsResponse
-    as _api_permissions_MigrateEntitiesToProjectsResponse,
+  MigrateEntitiesToProjectsRequest as _api_permissions_MigrateEntitiesToProjectsRequest,
+  MigrateEntitiesToProjectsResponse as _api_permissions_MigrateEntitiesToProjectsResponse,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function migrateEntitiesToProjects(
   ctx: ConjureContext,
-  request: _api_permissions_MigrateEntitiesToProjectsRequest,
+  request: _api_permissions_MigrateEntitiesToProjectsRequest
 ): Promise<_api_permissions_MigrateEntitiesToProjectsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/migrateEntitiesToProjects`,
     "PUT",
-    request,
+    request
   );
 }

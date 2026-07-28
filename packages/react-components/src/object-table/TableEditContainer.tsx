@@ -17,22 +17,21 @@
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import styles from "./TableEditContainer.module.css";
+import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import type { EditableConfig } from "./utils/types.js";
 
-interface TableEditContainerProps<
-  TData extends RowData,
-> {
+import styles from "./TableEditContainer.module.css";
+
+interface TableEditContainerProps<TData extends RowData> {
   editableConfig: EditableConfig<TData, unknown>;
-  focusedRowId?: string | null;
+  hasFocusedRow?: boolean;
 }
 
-export function TableEditContainer<
-  TData extends RowData,
->({
+export function TableEditContainer<TData extends RowData>({
   editableConfig,
-  focusedRowId,
+  hasFocusedRow,
 }: TableEditContainerProps<TData>): ReactElement {
   const {
     cellEdits,
@@ -42,6 +41,7 @@ export function TableEditContainer<
     validationErrors,
   } = editableConfig;
 
+  const labels = useObjectTableLabels();
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
   const hasValidationError = (validationErrors?.size ?? 0) > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,47 +79,40 @@ export function TableEditContainer<
 
   return (
     <div className={styles.tableEditContainer}>
-      {hasEdits || hasValidationError
-        ? (
-          <div className={styles.editsInfoContainer}>
-            {hasEdits && (
-              <div className={styles.modificationCount}>
-                {`${
-                  cellEdits ? Object.keys(cellEdits).length : 0
-                } modifications`}
-              </div>
-            )}
-            {hasEdits && hasValidationError && (
-              <div className={styles.divider} />
-            )}
-            {hasValidationError && (
-              <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
-                Validation error
-              </div>
-            )}
+      {hasEdits || hasValidationError ? (
+        <div className={styles.editsInfoContainer}>
+          {hasEdits && (
+            <div className={styles.modificationCount}>
+              {labels.editFooterModificationCount(
+                cellEdits ? Object.keys(cellEdits).length : 0
+              )}
+            </div>
+          )}
+          {hasEdits && hasValidationError && <div className={styles.divider} />}
+          {hasValidationError && (
+            <div className={styles.validationError}>
+              <Error className={styles.errorIcon} />
+              {labels.editFooterValidationError}
+            </div>
+          )}
+        </div>
+      ) : (
+        isInEditMode &&
+        !hasFocusedRow && (
+          <div className={styles.placeholder}>
+            {labels.editFooterSelectRowToEdit}
           </div>
         )
-        : (isInEditMode && !focusedRowId && (
-          <div className={styles.placeholder}>
-            Select a row to edit data…
-          </div>
-        ))}
+      )}
       <div className={styles.editButtons}>
         {!isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="primary"
-            onClick={handleEnterEditMode}
-          >
-            Edit Table
+          <ActionButton variant="primary" onClick={handleEnterEditMode}>
+            {labels.editFooterEditTable}
           </ActionButton>
         )}
         {isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="secondary"
-            onClick={handleCancelEdits}
-          >
-            Cancel
+          <ActionButton variant="secondary" onClick={handleCancelEdits}>
+            {labels.editFooterCancel}
           </ActionButton>
         )}
         {isInEditMode && !!onSubmitEdits && (
@@ -128,7 +121,7 @@ export function TableEditContainer<
             onClick={handleSubmitEdits}
             disabled={!hasEdits || isSubmitting || hasValidationError}
           >
-            Submit Edits
+            {labels.editFooterSubmitEdits}
           </ActionButton>
         )}
       </div>

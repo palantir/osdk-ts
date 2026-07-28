@@ -17,12 +17,62 @@
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   type FetchPageByRidPayload,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export type {
+  AnnotateGeometry,
+  Annotation,
+  AudioEncoding,
+  AudioOperation,
+  AudioToTextOperation,
+  BoundingBox,
+  Color,
+  ContrastType,
+  DicomToImageOperation,
+  DocumentTextExtractionConfig,
+  DocumentToDocumentOperation,
+  DocumentToImageOperation,
+  DocumentToTextOperation,
+  EmailToAttachmentOperation,
+  EmailToTextOperation,
+  ImageOperation,
+  ImagePixelCoordinate,
+  ImageRegionPolygon,
+  ImageSpec,
+  ImageToDocumentOperation,
+  ImageToEmbeddingOperation,
+  ImageToTextOperation,
+  LayoutAwareExtractionParameters,
+  LlmSpec,
+  MediaTransformation,
+  OcrLanguageOrScript,
+  OcrOutputFormat,
+  OcrParameters,
+  PageRange,
+  SpreadsheetToTextOperation,
+  TranscribeOutputFormat,
+  VideoOperation,
+  VideoToArchiveOperation,
+  VideoToAudioOperation,
+  VideoToImageOperation,
+  VideoToTextOperation,
+  VlmPreprocessingConfig,
+} from "../experimental/MediaTransformation.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
+export {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type TransformOptions,
+} from "../experimental/transformAndWait.js";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "../object/MediaTransformationErrors.js";
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";

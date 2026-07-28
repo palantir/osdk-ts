@@ -18,13 +18,10 @@ import type {
   OntologyBlockDataV2,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
-import type { BaseType } from "./generated/type-registry/api/BaseType.js";
-import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
-import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
-import type { ValueTypeDataConstraint } from "./generated/type-registry/api/ValueTypeDataConstraint.js";
-import type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
-import type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
-import type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
+import type {
+  OntologyIrValueTypeBlockData,
+  ValueTypeBlockData,
+} from "./generated/type-registry-marketplace/__components.js";
 
 export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
@@ -42,30 +39,8 @@ export interface OntologyIr {
 export interface OntologyIrV2 {
   ontology: OntologyBlockDataV2;
   importedOntology: OntologyBlockDataV2;
-  valueTypes: OntologyIrValueTypeBlockData;
-  importedValueTypes: OntologyIrValueTypeBlockData;
+  valueTypes: ValueTypeBlockData[];
+  importedValueTypes: ValueTypeBlockData[];
+  transitiveImportedOntology: OntologyBlockDataV2;
   randomnessKey?: string;
 }
-
-export type OntologyIrPackagedValueType = {
-  version: ValueTypeVersion;
-  baseType: BaseType;
-  constraints: ValueTypeDataConstraint[];
-  exampleValues: ExampleValue[];
-};
-
-export type OntologyIrPackagedValueTypeMetadata = {
-  apiName: ValueTypeApiName;
-  packageNamespace: string;
-  displayMetadata: ValueTypeDisplayMetadata;
-  status: ValueTypeStatus;
-};
-
-export type OntologyIrValueTypeBlockDataEntry = {
-  metadata: OntologyIrPackagedValueTypeMetadata;
-  versions: OntologyIrPackagedValueType[];
-};
-
-export type OntologyIrValueTypeBlockData = {
-  valueTypes: OntologyIrValueTypeBlockDataEntry[];
-};

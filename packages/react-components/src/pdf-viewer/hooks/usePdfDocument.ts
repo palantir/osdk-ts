@@ -18,9 +18,29 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 const pdfWorkerUrl = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
+  import.meta.url
 );
 import { useEffect, useState } from "react";
+
+import type { PdfSource } from "../types.js";
+
+type GetDocumentParams = Parameters<typeof getDocument>[0];
+
+/**
+ * Resolve a {@link PdfSource} to pdfjs `getDocument` parameters.
+ *
+ * A Blob is read into an ArrayBuffer first; URLs and in-memory bytes
+ * (ArrayBuffer/Uint8Array) resolve immediately. Always returns a promise so
+ * callers have a single code path regardless of source type.
+ */
+function toDocumentParams(src: PdfSource): Promise<GetDocumentParams> {
+  if (src instanceof Blob) {
+    return src.arrayBuffer().then((data) => ({ data }));
+  }
+  return Promise.resolve(
+    typeof src === "string" ? { url: src } : { data: src }
+  );
+}
 
 const pdfWorker = {
   workerInitialized: false,
@@ -37,50 +57,59 @@ interface UsePdfDocumentResult {
   error: Error | undefined;
 }
 
-export function usePdfDocument(
-  src: string | ArrayBuffer,
-): UsePdfDocumentResult {
+export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
   const [document, setDocument] = useState<PDFDocumentProxy | undefined>(
-    undefined,
+    undefined
   );
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
 
-  useEffect(function loadPdfDocument() {
-    pdfWorker.ensureWorker();
-    setLoading(true);
-    setError(undefined);
+  useEffect(
+    function loadPdfDocument() {
+      pdfWorker.ensureWorker();
+      setLoading(true);
+      setError(undefined);
 
-    const loadingTask = getDocument(
-      typeof src === "string" ? { url: src } : { data: src },
-    );
+      let cancelled = false;
+      let loadingTask: ReturnType<typeof getDocument> | undefined;
 
-    let cancelled = false;
+      const startLoad = (params: GetDocumentParams) => {
+        if (cancelled) {
+          return;
+        }
+        loadingTask = getDocument(params);
+        loadingTask.promise.then(
+          (pdf) => {
+            if (!cancelled) {
+              setDocument(pdf);
+              setNumPages(pdf.numPages);
+              setLoading(false);
+            }
+          },
+          (err: unknown) => {
+            if (!cancelled) {
+              setError(err instanceof Error ? err : new Error(String(err)));
+              setLoading(false);
+            }
+          }
+        );
+      };
 
-    loadingTask.promise.then(
-      (pdf) => {
+      toDocumentParams(src).then(startLoad, (err: unknown) => {
         if (!cancelled) {
-          setDocument(pdf);
-          setNumPages(pdf.numPages);
+          setError(err instanceof Error ? err : new Error(String(err)));
           setLoading(false);
         }
-      },
-      (err: unknown) => {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err : new Error(String(err)),
-          );
-          setLoading(false);
-        }
-      },
-    );
+      });
 
-    return () => {
-      cancelled = true;
-      void loadingTask.destroy();
-    };
-  }, [src]);
+      return () => {
+        cancelled = true;
+        void loadingTask?.destroy();
+      };
+    },
+    [src]
+  );
 
   return { document, numPages, loading, error };
 }

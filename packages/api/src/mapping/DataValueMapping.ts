@@ -50,13 +50,14 @@ export interface DataValueWireToClient {
   objectType: string;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
+  scenarioReference: never;
 }
 
 /**
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: string | AttachmentUpload | Blob & { readonly name: string };
+  attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
   byte: number;
   datetime: string;
@@ -73,6 +74,12 @@ export interface DataValueClientToWire {
   timestamp: string;
   set: Set<any>;
   mediaReference: MediaReference | MediaUpload | Media;
+  /**
+   * Structurally typed as the object that exposes `getScenarioReference()` — matches the `EXPERIMENTAL_ScenarioClient`
+   * returned by `withScenario` / `createScenario` in `@osdk/client/unstable-do-not-use`. Defined inline to
+   * avoid a circular dependency on `@osdk/client`.
+   */
+  scenarioReference: { getScenarioReference(): string };
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;
@@ -91,6 +98,6 @@ export type AllowedBucketTypes = string | number | boolean;
 export type AllowedBucketKeyTypes =
   | AllowedBucketTypes
   | {
-    startValue: AllowedBucketTypes;
-    endValue: AllowedBucketTypes;
-  };
+      startValue: AllowedBucketTypes;
+      endValue: AllowedBucketTypes;
+    };

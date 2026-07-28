@@ -24,8 +24,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
-    .withProperties({
-      "abs_salary": (baseObjectSet) =>
-          baseObjectSet.pivotTo("lead")
-          .selectProperty("salary").abs()
-    }).fetchPage();
+  .withProperties({
+    "abs_salary": (baseObjectSet) =>
+      baseObjectSet.pivotTo("lead")
+        .selectProperty("salary").abs(),
+  }).fetchPage();

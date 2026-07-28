@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BulkGetBranchesForMonitorRequest
-    as _api_registry_BulkGetBranchesForMonitorRequest,
-  BulkGetBranchesForMonitorResponse
-    as _api_registry_BulkGetBranchesForMonitorResponse,
+  BulkGetBranchesForMonitorRequest as _api_registry_BulkGetBranchesForMonitorRequest,
+  BulkGetBranchesForMonitorResponse as _api_registry_BulkGetBranchesForMonitorResponse,
 } from "../__components.js";
 
 /**
@@ -27,7 +26,7 @@ import type {
  */
 export async function bulkGetBranchesForMonitor(
   ctx: ConjureContext,
-  request: _api_registry_BulkGetBranchesForMonitorRequest,
+  request: _api_registry_BulkGetBranchesForMonitorRequest
 ): Promise<_api_registry_BulkGetBranchesForMonitorResponse> {
   return conjureFetch(ctx, `/registry/v0/all-branches-bulk`, "POST", request);
 }

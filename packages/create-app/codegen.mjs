@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import dedent from "dedent";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import dedent from "dedent";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,6 +55,13 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
     hidden: true,
   },
+  {
+    id: "typescript-library",
+    label: "TypeScript Library",
+    envPrefix: "",
+    buildDirectory: "dist",
+    hidden: true,
+  },
 ];
 
 const packagesDir = path.join(__dirname, "../");
@@ -71,18 +79,17 @@ fs.writeFileSync(
   import { getPackageFiles } from "../getPackageFiles.js";
 
   export const TEMPLATES: readonly Template[] = [
-  ${
-    TEMPLATES.map((template) => {
-      const v1Name = findPackageName([
-        `@osdk/create-app.template.${template.id}.v1`,
-        `@osdk/create-app.template.${template.id}`,
-      ]);
-      const v2Name = findPackageName([
-        `@osdk/create-app.template.${template.id}.v2`,
-        `@osdk/create-app.template.${template.id}.beta`,
-        `@osdk/create-app.template.${template.id}`,
-      ]);
-      return dedent`
+  ${TEMPLATES.map((template) => {
+    const v1Name = findPackageName([
+      `@osdk/create-app.template.${template.id}.v1`,
+      `@osdk/create-app.template.${template.id}`,
+    ]);
+    const v2Name = findPackageName([
+      `@osdk/create-app.template.${template.id}.v2`,
+      `@osdk/create-app.template.${template.id}.beta`,
+      `@osdk/create-app.template.${template.id}`,
+    ]);
+    return dedent`
           // ${template.label}
           {
             id: "template-${template.id}",
@@ -95,10 +102,9 @@ fs.writeFileSync(
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
             },
           },`;
-    }).join("\n")
-  }
+  }).join("\n")}
   ];
-  `,
+  `
 );
 
 /**

@@ -7,6 +7,7 @@
       "@osdk/api",
       "@osdk/client.unstable",
       "@osdk/client",
+      "@osdk/react",
       "@osdk/create-app.template-packager",
       "@osdk/create-app.template.*",
       "@osdk/create-app",
@@ -26,10 +27,6 @@
       "@osdk/widget.vite-plugin",
       "@osdk/create-widget",
       "@osdk/create-widget.template.*"
-    ],
-    [
-      "@osdk/react-components",
-      "@osdk/react-components-styles"
     ]
   ],
   "linked": [],
@@ -50,7 +47,11 @@
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
-    "useCalculatedVersion": true
+    "useCalculatedVersion": true,
+    "prereleaseTemplate": "{tag}-{commit}"
   },
-  "prereleaseTemplate": "{tag}-{datetime}-{commit}"
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true,
+    "updateInternalDependents": "out-of-range"
+  }
 }

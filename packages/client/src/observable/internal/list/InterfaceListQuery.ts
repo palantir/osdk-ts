@@ -23,19 +23,8 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
-function groupBy<T>(
-  arr: T[],
-  fn: (item: T) => string,
-): Record<string, T[]> {
-  const result: Record<string, T[]> = {};
-  for (const item of arr) {
-    const key = fn(item);
-    (result[key] ??= []).push(item);
-  }
-  return result;
-}
-import invariant from "tiny-invariant";
-import { additionalContext, type Client } from "../../../Client.js";
+
+import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -44,15 +33,18 @@ import type { CollectionConnectableParams } from "../base-list/BaseCollectionQue
 import type { Changes } from "../Changes.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
-import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
+import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import { ListQuery, PIVOT_IDX, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
 
-type ExtractRelevantObjectsResult = Record<"added" | "modified", {
-  all: (ObjectHolder | InterfaceHolder)[];
-  strictMatches: Set<(ObjectHolder | InterfaceHolder)>;
-  sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
-}>;
+type ExtractRelevantObjectsResult = Record<
+  "added" | "modified",
+  {
+    all: (ObjectHolder | InterfaceHolder)[];
+    strictMatches: Set<ObjectHolder | InterfaceHolder>;
+    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
+  }
+>;
 
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
@@ -69,7 +61,7 @@ export class InterfaceListQuery extends ListQuery {
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
         );
       }
 
@@ -87,11 +79,10 @@ export class InterfaceListQuery extends ListQuery {
     const clientCtx = store.client[additionalContext];
     let objectSet: ObjectSet<ObjectTypeDefinition>;
     if (rids != null) {
-      objectSet = clientCtx.objectSetFactory(
-        objectTypeDef,
-        clientCtx,
-        { type: "static", objects: [...rids] },
-      );
+      objectSet = clientCtx.objectSetFactory(objectTypeDef, clientCtx, {
+        type: "static",
+        objects: [...rids],
+      });
     } else {
       objectSet = store.client(objectTypeDef);
     }
@@ -103,28 +94,38 @@ export class InterfaceListQuery extends ListQuery {
     return objectSet.where(this.canonicalWhere);
   }
 
-  async revalidateObjectType(apiName: string): Promise<void> {
-    const objectMetadata = await this.store.client.fetchMetadata({
-      type: "object",
-      apiName,
-    });
+  async revalidateObjectType(objectType: string): Promise<boolean> {
+    if (await super.revalidateObjectType(objectType)) return true;
 
-    if (this.apiName in objectMetadata.interfaceMap) {
-      await this.revalidate(/* force */ true);
+    // For interface queries: also check if the invalidated concrete type
+    // implements this query's interface. e.g. invalidating "Employee"
+    // should revalidate a query for "Assignable" if Employee implements it.
+    try {
+      const objectMetadata = await this.store.client.fetchMetadata({
+        type: "object",
+        apiName: objectType,
+      });
+      return this.apiName in objectMetadata.interfaceMap;
+    } catch {
+      return true;
     }
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   protected async postProcessFetchedData(
-    data: Osdk.Instance<any>[],
+    data: Osdk.Instance<any>[]
   ): Promise<Osdk.Instance<any>[]> {
     return reloadDataAsFullObjects(this.store.client, data);
   }
 
-  protected createPayload(
-    params: CollectionConnectableParams,
-  ): ListPayload {
+  private wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
+    return this.options.resolveToObjectType ? object : object.$as(this.apiName);
+  }
+
+  protected createPayload(params: CollectionConnectableParams): ListPayload {
     const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
-      obj.$as(this.apiName)
+      this.wrapObject(obj)
     );
 
     return {
@@ -134,20 +135,19 @@ export class InterfaceListQuery extends ListQuery {
   }
 
   protected extractRelevantObjects(
-    changes: Changes,
+    changes: Changes
   ): ExtractRelevantObjectsResult {
     const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
       return this.apiName in object[ObjectDefRef].interfaceMap;
     };
 
-    const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
-      [, object],
-    ) => object.$as(this.apiName));
+    const added = Array.from(changes.addedObjects)
+      .filter(matchesApiName)
+      .map(([, object]) => this.wrapObject(object));
 
-    const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
-      .map((
-        [, object],
-      ) => object.$as(this.apiName));
+    const modified = Array.from(changes.modifiedObjects)
+      .filter(matchesApiName)
+      .map(([, object]) => this.wrapObject(object));
 
     return {
       added: {
@@ -167,7 +167,7 @@ export class InterfaceListQuery extends ListQuery {
 function createSourceSetForPivot(
   store: Store,
   pivotInfo: PivotInfo,
-  rids: string[] | undefined,
+  rids: string[] | undefined
 ): ObjectSet<ObjectOrInterfaceDefinition> {
   const clientCtx = store.client[additionalContext];
 
@@ -178,7 +178,7 @@ function createSourceSetForPivot(
         apiName: pivotInfo.sourceType,
       } as ObjectTypeDefinition,
       clientCtx,
-      { type: "static", objects: [...rids] },
+      { type: "static", objects: [...rids] }
     );
   }
 
@@ -193,61 +193,4 @@ function createSourceSetForPivot(
     type: "object",
     apiName: pivotInfo.sourceType,
   } as ObjectTypeDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
-}
-
-// Hopefully this can go away when we can just request the full object properties on first load
-async function reloadDataAsFullObjects(
-  client: Client,
-  data: Osdk.Instance<any>[],
-) {
-  if (data.length === 0) {
-    return data;
-  }
-
-  const groups = groupBy(data, (x) => x.$objectType);
-  const objectTypeToPrimaryKeyToObject = Object.fromEntries(
-    await Promise.all(
-      Object.entries(groups).map<
-        Promise<
-          [
-            /** objectType **/ string,
-            Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
-          ]
-        >
-      >(async ([apiName, objects]) => {
-        // Interface query results don't have ObjectDefRef, so we fetch metadata to get primaryKeyApiName
-        const objectDef = await client.fetchMetadata({
-          type: "object",
-          apiName,
-        });
-        const where: SimpleWhereClause = {
-          [objectDef.primaryKeyApiName]: {
-            $in: objects.map(x => x.$primaryKey),
-          },
-        };
-
-        const result = await client(
-          objectDef as ObjectTypeDefinition,
-        ).where(
-          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage({ $includeRid: true });
-        return [
-          apiName,
-          Object.fromEntries(result.data.map(
-            x => [x.$primaryKey, x],
-          )),
-        ];
-      }),
-    ),
-  );
-
-  return data.map((obj) => {
-    const fullObject =
-      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
-    invariant(
-      fullObject,
-      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
-    );
-    return fullObject;
-  });
 }

@@ -16,6 +16,7 @@
 
 import type { ViteDevServer } from "vite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import * as codeWorkspacesMode from "../codeWorkspacesMode.js";
 import { getBaseHref } from "../getBaseHref.js";
 
@@ -40,7 +41,7 @@ describe("getBaseHref", () => {
   test("returns code workspaces URLs in code workspaces mode", () => {
     // Representative value when running dev mode in Code Workspaces mode
     vi.spyOn(codeWorkspacesMode, "getCodeWorkspacesBaseHref").mockReturnValue(
-      "https://workspace.stack.com/proxy/path",
+      "https://workspace.stack.com/proxy/path"
     );
 
     const server = {

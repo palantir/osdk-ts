@@ -19,15 +19,22 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   Logger,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   QueryDefinition,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
+
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type {
+  CacheEntry,
+  CacheSnapshot,
+  ObservableClientOptions,
+} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -51,6 +58,7 @@ import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
+import { SOURCE_API_NAME_IDX as LINK_API_NAME_IDX } from "./links/SpecificLinkCacheKey.js";
 import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
@@ -87,6 +95,9 @@ export namespace Store {
     - Data is one per layer per cache key
 */
 
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
+
 /**
  * Central data store with layered cache architecture.
  * - Truth layer: server state | Optimistic layers: pending changes
@@ -114,6 +125,20 @@ export class Store {
 
   /** @internal */
   readonly logger?: Logger;
+
+  /**
+   * Resolved dev-mode action delay in ms (0 disables); only read in dev builds.
+   * @internal
+   */
+  readonly devModeActionDelayMs: number;
+
+  #devModeDelayWarned = false;
+
+  /**
+   * Resolved dev-mode refcount debug flag; only read in dev builds.
+   * @internal
+   */
+  #debugRefCounts: boolean;
 
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
@@ -148,14 +173,22 @@ export class Store {
   readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
-  constructor(client: Client) {
-    this.logger = client[additionalContext].logger?.child({}, {
-      msgPrefix: "Store",
-    });
+  constructor(client: Client, options?: ObservableClientOptions) {
+    this.logger = client[additionalContext].logger?.child(
+      {},
+      {
+        msgPrefix: "Store",
+        level: options?.devMode?.logLevel,
+      }
+    );
     this.client = client;
+    this.devModeActionDelayMs = options?.devMode?.actionDelayMs ?? 1000;
+    this.#debugRefCounts =
+      options?.devMode?.debug?.refCounts ?? DEBUG_REFCOUNTS;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
+      debug: options?.devMode?.debug,
     });
 
     this.aggregations = new AggregationsHelper(
@@ -163,7 +196,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.rdpCanonicalizer,
-      this.intersectCanonicalizer,
+      this.intersectCanonicalizer
     );
     this.functions = new FunctionsHelper(this, this.cacheKeys);
     this.lists = new ListsHelper(
@@ -175,7 +208,7 @@ export class Store {
       this.intersectCanonicalizer,
       this.pivotCanonicalizer,
       this.ridListCanonicalizer,
-      this.selectCanonicalizer,
+      this.selectCanonicalizer
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
@@ -183,7 +216,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
-      this.selectCanonicalizer,
+      this.selectCanonicalizer
     );
     this.media = new MediaHelper(this, this.cacheKeys);
     this.objectSets = new ObjectSetHelper(
@@ -193,8 +226,28 @@ export class Store {
       this.orderByCanonicalizer,
       this.rdpCanonicalizer,
       this.selectCanonicalizer,
-      this.objectSetArrayCanonicalizer,
+      this.objectSetArrayCanonicalizer
     );
+  }
+
+  /**
+   * Logs the dev-mode delay explanation once per store. No-op in production.
+   * @internal
+   */
+  maybeWarnDevModeDelayApplied(): void {
+    if (process.env.NODE_ENV !== "production" && !this.#devModeDelayWarned) {
+      this.#devModeDelayWarned = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[@osdk/client] Applied a ${this.devModeActionDelayMs}ms dev-mode ` +
+          `delay to an action with an optimistic update so the optimistic ` +
+          `state is visible before the server responds. This only happens ` +
+          `in dev mode and only for actions with an optimistic update. Tune ` +
+          `it via the OsdkProvider \`devMode={{ actionDelayMs }}\` prop ` +
+          `(or the createObservableClient \`devMode.actionDelayMs\` option); ` +
+          `set it to 0 to disable.`
+      );
+    }
   }
 
   /**
@@ -204,16 +257,14 @@ export class Store {
   #cleanupCacheKey = (key: KnownCacheKey) => {
     const subject = this.subjects.peek(key);
 
-    if (DEBUG_REFCOUNTS) {
+    if (process.env.NODE_ENV !== "production" && this.#debugRefCounts) {
       // eslint-disable-next-line no-console
       console.log(
-        `CacheKey cleaning up (${
-          JSON.stringify({
-            closed: subject?.closed,
-            observed: subject?.observed,
-          })
-        })`,
-        JSON.stringify([key.type, ...key.otherKeys], null, 2),
+        `CacheKey cleaning up (${JSON.stringify({
+          closed: subject?.closed,
+          observed: subject?.observed,
+        })})`,
+        JSON.stringify([key.type, ...key.otherKeys], null, 2)
       );
     }
 
@@ -234,14 +285,14 @@ export class Store {
     args:
       | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
-    opts?: Store.ApplyActionOptions,
+    opts?: Store.ApplyActionOptions
   ) => Promise<ActionEditResponse> = async (action, args, opts) => {
     return await new ActionApplication(this).applyAction(action, args, opts);
   };
 
   validateAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
   ) => Promise<ActionValidationResponse> = async (action, args) => {
     const result = await this.client(action).applyAction(args as any, {
       $validateOnly: true,
@@ -250,18 +301,19 @@ export class Store {
     return result as ActionValidationResponse;
   };
 
-  public getValue<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): Entry<K> | undefined {
+  public getValue<K extends KnownCacheKey>(cacheKey: K): Entry<K> | undefined {
     return this.layers.top.get(cacheKey);
   }
 
   batch<X>(
-    { optimisticId, changes = createChangedObjects() }: {
+    {
+      optimisticId,
+      changes = createChangedObjects(),
+    }: {
       optimisticId?: OptimisticId;
       changes?: Changes;
     },
-    batchFn: (batchContext: BatchContext) => X,
+    batchFn: (batchContext: BatchContext) => X
   ): {
     batchResult: BatchContext;
     retVal: X;
@@ -272,7 +324,7 @@ export class Store {
 
   public invalidateObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
+    pk: PrimaryKeyType<T>
   ): Promise<unknown> {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
@@ -287,10 +339,15 @@ export class Store {
     if (variants.size === 0) {
       // No registered variants - create and revalidate the base variant (no RDP)
       promises.push(
-        this.objects.getQuery({
-          apiName,
-          pk,
-        }, undefined).revalidate(/* force */ true),
+        this.objects
+          .getQuery(
+            {
+              apiName,
+              pk,
+            },
+            undefined
+          )
+          .revalidate(/* force */ true)
       );
     } else {
       // Revalidate all registered variants
@@ -302,16 +359,56 @@ export class Store {
       }
     }
 
+    // Per-PK invalidation doesn't propagate to specificLink queries (they're
+    // keyed on srcType+srcPk+linkName, not the linked object's pk).
+    promises.push(this.invalidateLinkQueriesForType(apiName));
+
+    // Function queries with explicit `dependsOnObjects` need to be told the
+    // edited PK directly — they aren't object-cache variants and so aren't
+    // reachable via objectCacheKeyRegistry.
+    promises.push(this.functions.invalidateFunctionsByObject(apiName, pk));
+
     return Promise.allSettled(promises);
+  }
+
+  /**
+   * Force every cached `specificLink` query to re-evaluate against the given
+   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
+   * than the linked object's pk, so per-object propagation never marks them
+   * as modified.
+   *
+   * TODO: make SpecificLinkQuery self-invalidate from per-type changes so
+   * callers don't need this manual kick.
+   */
+  public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger
+        ?.child({ methodName: "invalidateLinkQueriesForType" })
+        .debug(apiName);
+    }
+
+    const promises: Array<Promise<void>> = [];
+    for (const cacheKey of this.queries.keys()) {
+      if (cacheKey.type !== "specificLink") {
+        continue;
+      }
+      const query = this.queries.peek(cacheKey);
+      if (!query) {
+        continue;
+      }
+      promises.push(query.invalidateObjectType(apiName, undefined));
+    }
+    return Promise.allSettled(promises).then(() => void 0);
   }
 
   async #maybeRevalidateQueries(
     changes: Changes,
-    optimisticId?: OptimisticId | undefined,
+    optimisticId?: OptimisticId | undefined
   ): Promise<void> {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
-      : undefined;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
+        : undefined;
 
     if (changes.isEmpty()) {
       if (process.env.NODE_ENV !== "production") {
@@ -340,7 +437,7 @@ export class Store {
               maybeUpdateAndRevalidate: query.maybeUpdateAndRevalidate,
             },
             changes,
-            optimisticId,
+            optimisticId
           )
         ) {
           continue;
@@ -371,11 +468,11 @@ export class Store {
       cacheKey: KnownCacheKey;
       maybeUpdateAndRevalidate?: (
         changes: Changes,
-        optimisticId: OptimisticId | undefined,
+        optimisticId: OptimisticId | undefined
       ) => Promise<void> | undefined;
     },
     changes: Changes,
-    optimisticId?: OptimisticId,
+    optimisticId?: OptimisticId
   ): boolean {
     // Always propagate optimistic updates (user-initiated actions need immediate feedback)
     if (optimisticId) {
@@ -411,12 +508,14 @@ export class Store {
    */
   #shouldPropagateForObjectTypeChanges(
     cacheKey: KnownCacheKey,
-    changes: Changes,
+    changes: Changes
   ): boolean {
-    if (cacheKey.type === "objectSet") {
+    if (cacheKey.type === "objectSet" || cacheKey.type === "list") {
       const query = this.queries.peek(cacheKey);
-      if (query) {
-        for (const objectType of query.objectTypes) {
+      // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
+      if (query && "objectTypes" in query) {
+        for (const objectType of (query as { objectTypes: ReadonlySet<string> })
+          .objectTypes) {
           if (this.#changesAffectObjectType(changes, objectType)) {
             return true;
           }
@@ -433,15 +532,14 @@ export class Store {
     const affected = this.#changesAffectObjectType(changes, queryObjectType);
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "shouldPropagateToQuery" }).debug(
-        `Query type: ${queryObjectType}, affected: ${affected}`,
-        {
+      this.logger
+        ?.child({ methodName: "shouldPropagateToQuery" })
+        .debug(`Query type: ${queryObjectType}, affected: ${affected}`, {
           queryKey: DEBUG_ONLY__cacheKeyToString(cacheKey),
           addedCount: changes.addedObjects.get(queryObjectType)?.length ?? 0,
-          modifiedCount: changes.modifiedObjects.get(queryObjectType)?.length
-            ?? 0,
-        },
-      );
+          modifiedCount:
+            changes.modifiedObjects.get(queryObjectType)?.length ?? 0,
+        });
     }
 
     return affected;
@@ -454,7 +552,7 @@ export class Store {
    * @returns The RDP configuration, null, or undefined
    */
   #getQueryRdpConfig(
-    cacheKey: KnownCacheKey,
+    cacheKey: KnownCacheKey
   ): Canonical<Rdp> | null | undefined {
     if ("otherKeys" in cacheKey && Array.isArray(cacheKey.otherKeys)) {
       if (cacheKey.type === "object") {
@@ -520,8 +618,8 @@ export class Store {
 
     for (const deletedKey of changes.deleted) {
       if (
-        deletedKey.type === "object"
-        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+        deletedKey.type === "object" &&
+        deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
       ) {
         return true;
       }
@@ -543,24 +641,24 @@ export class Store {
    */
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
-    changes: Changes | undefined,
+    changes: Changes | undefined
   ): Promise<void> {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "invalidateObjectType" }).info(
-        changes ? DEBUG_ONLY__changesToString(changes) : void 0,
-      );
+      this.logger
+        ?.child({ methodName: "invalidateObjectType" })
+        .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.layers.truth.keys()) {
       if (
-        cacheKey.type !== "mediaMetadata"
-        && changes
-        && changes.modified.has(cacheKey)
+        cacheKey.type !== "mediaMetadata" &&
+        changes &&
+        changes.modified.has(cacheKey)
       ) {
         continue;
       }
@@ -574,6 +672,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateAll(): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const cacheKey of this.queries.keys()) {
@@ -586,10 +686,12 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateObjects(
     objects:
-      | Osdk.Instance<ObjectTypeDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+      | Osdk.Instance<ObjectOrInterfaceDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>
   ): Promise<void> {
     const objectsArray = Array.isArray(objects) ? objects : [objects];
     const promises: Array<Promise<unknown>> = [];
@@ -602,17 +704,108 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
-    params?: Record<string, unknown>,
+    params?: Record<string, unknown>
   ): Promise<void> {
     return this.functions.invalidateFunction(apiName, params);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: string | number,
+    primaryKey: string | number
   ): Promise<void> {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
+  }
+
+  #sizeCache: WeakMap<object, number> | undefined;
+
+  public getCacheSnapshot(): CacheSnapshot {
+    if (__DEV__) {
+      const sizeCache = (this.#sizeCache ??= new WeakMap<object, number>());
+      const entries: CacheEntry[] = [];
+      let totalSize = 0;
+
+      for (const cacheKey of this.layers.truth.keys()) {
+        const entry = this.layers.top.get(cacheKey);
+        if (!entry) {
+          continue;
+        }
+
+        let entryType: CacheEntry["type"] | undefined;
+        let objectType = "";
+
+        if (cacheKey.type === "object") {
+          entryType = "object";
+          objectType = cacheKey.otherKeys[OBJECT_API_NAME_IDX];
+        } else if (cacheKey.type === "list") {
+          entryType = "list";
+          objectType = cacheKey.otherKeys[LIST_API_NAME_IDX];
+        } else if (cacheKey.type === "specificLink") {
+          entryType = "link";
+          objectType = cacheKey.otherKeys[LINK_API_NAME_IDX];
+        } else if (cacheKey.type === "objectSet") {
+          entryType = "objectSet";
+          objectType = "";
+        }
+
+        if (!entryType) {
+          continue;
+        }
+
+        let estimatedSize = 0;
+        if (entry.value != null && typeof entry.value === "object") {
+          const objectValue = entry.value;
+          const cached = sizeCache.get(objectValue);
+          if (cached !== undefined) {
+            estimatedSize = cached;
+          } else {
+            try {
+              estimatedSize = JSON.stringify(entry.value).length * 2;
+            } catch {
+              // TODO: surface unserializable entries to devtools users
+              estimatedSize = 0;
+            }
+            sizeCache.set(objectValue, estimatedSize);
+          }
+        } else if (entry.value != null) {
+          try {
+            estimatedSize = JSON.stringify(entry.value).length * 2;
+          } catch {
+            estimatedSize = 0;
+          }
+        }
+        totalSize += estimatedSize;
+
+        entries.push({
+          key: DEBUG_ONLY__cacheKeyToString(cacheKey),
+          type: entryType,
+          objectType,
+          metadata: {
+            timestamp: entry.lastUpdated,
+            status: entry.status,
+            size: estimatedSize,
+          },
+          data: entry.value,
+        });
+      }
+
+      return {
+        entries,
+        stats: {
+          totalEntries: entries.length,
+          totalSize,
+        },
+      };
+    }
+
+    return {
+      entries: [],
+      stats: { totalEntries: 0, totalSize: 0 },
+    };
   }
 }

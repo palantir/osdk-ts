@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type {
   CategoryMarkingGroup,
   PickerMarking,
@@ -220,7 +221,7 @@ describe("groupMarkingsByCategory", () => {
     };
     const groups = groupMarkingsByCategory(
       [...markings, orphanMarking],
-      [categoryA, categoryB],
+      [categoryA, categoryB]
     );
     expect(groups).toHaveLength(2);
     const allMarkingIds = groups.flatMap((g) => g.markings.map((m) => m.id));

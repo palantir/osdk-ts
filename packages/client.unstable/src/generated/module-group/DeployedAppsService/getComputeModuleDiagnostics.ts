@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ModuleStatus as _ModuleStatus } from "../__components.js";
 
 /**
@@ -24,11 +25,11 @@ export async function getComputeModuleDiagnostics(
   ctx: ConjureContext,
   compassRid: string,
   branch: string,
-  moduleId: string,
+  moduleId: string
 ): Promise<_ModuleStatus> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${compassRid}/${branch}/${moduleId}/diagnostics`,
-    "GET",
+    "GET"
   );
 }

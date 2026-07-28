@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-// @ts-check
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { $ } from "execa";
 import * as fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// @ts-check
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { $ } from "execa";
+
 async function setup() {
   const dir = await fs.mkdtemp(
-    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
+    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-")
   );
 
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), undefined);
@@ -75,10 +76,7 @@ async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
-    interfaceTypes: [
-      "FooInterface",
-      "BarInterface",
-    ],
+    interfaceTypes: ["FooInterface", "BarInterface"],
     linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
     palantirOnlyTest: true,
     _: [],
@@ -115,7 +113,7 @@ async function setup() {
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "build",
-    "codegen",
+    "codegen"
   );
 
   await fs.rm(finalOutDir, { recursive: true, force: true });
@@ -134,7 +132,7 @@ await setup();
 async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });
-  } catch (e) {
+  } catch {
     // console.debug("rm error", e);
     // Only needed for regenerations
   }
@@ -157,7 +155,7 @@ async function safeStat(filePath, type) {
     return ret;
   } catch (e) {
     if (type === "should exist") {
-      throw new Error(`Expected ${filePath} to exist`);
+      throw new Error(`Expected ${filePath} to exist`, { cause: e });
     }
 
     // eslint-disable-next-line no-console

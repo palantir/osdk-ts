@@ -16,7 +16,9 @@
 
 import { Input } from "@base-ui/react/input";
 import React, { useCallback } from "react";
+
 import type { TextAreaFieldProps } from "../FormFieldApi.js";
+
 import styles from "./BaseInput.module.css";
 
 const TEXTAREA_STYLE: React.CSSProperties = { resize: "vertical" };
@@ -25,17 +27,19 @@ export function TextAreaField({
   id,
   value,
   onChange,
+  error,
   placeholder,
   rows,
   wrap,
   minLength,
   maxLength,
+  disabled,
 }: TextAreaFieldProps): React.ReactElement {
   const renderTextarea = useCallback(
     (props: React.ComponentPropsWithRef<"textarea">) => (
       <textarea {...props} rows={rows} wrap={wrap} style={TEXTAREA_STYLE} />
     ),
-    [rows, wrap],
+    [rows, wrap]
   );
 
   return (
@@ -47,7 +51,9 @@ export function TextAreaField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      disabled={disabled}
       render={renderTextarea}
+      aria-invalid={error != null || undefined}
     />
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { expect, test } from "vitest";
+
 import { isConfigFile } from "../isConfigFile.js";
 
 test("isConfigFile identifies config files", () => {

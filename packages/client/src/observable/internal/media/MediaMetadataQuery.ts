@@ -29,6 +29,7 @@ import {
   type Observable,
   type Subject,
 } from "rxjs";
+
 import { additionalContext } from "../../../Client.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type {
@@ -63,7 +64,7 @@ export class MediaMetadataQuery extends Query<
     primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
     propertyName: string,
     cacheKey: MediaMetadataCacheKey,
-    opts: MediaMetadataObserveOptions,
+    opts: MediaMetadataObserveOptions
   ) {
     super(
       store,
@@ -71,12 +72,15 @@ export class MediaMetadataQuery extends Query<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? store.client[additionalContext].logger?.child({}, {
-          msgPrefix: `MediaMetadataQuery<${objectType}, ${
-            JSON.stringify(primaryKey)
-          }, ${propertyName}>`,
-        })
-        : undefined,
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `MediaMetadataQuery<${objectType}, ${JSON.stringify(
+                primaryKey
+              )}, ${propertyName}>`,
+            }
+          )
+        : undefined
     );
 
     this.#objectType = objectType;
@@ -86,7 +90,7 @@ export class MediaMetadataQuery extends Query<
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<MediaMetadataCacheKey>>,
+    subject: Observable<SubjectPayload<MediaMetadataCacheKey>>
   ): Connectable<MediaMetadataPayload> {
     return connectable<MediaMetadataPayload>(
       subject.pipe(
@@ -95,7 +99,7 @@ export class MediaMetadataQuery extends Query<
           status: x.status,
           lastUpdated: x.lastUpdated,
           isOptimistic: x.isOptimistic,
-        })),
+        }))
       ),
       {
         connector: () =>
@@ -105,15 +109,15 @@ export class MediaMetadataQuery extends Query<
             lastUpdated: 0,
             isOptimistic: false,
           }),
-      },
+      }
     );
   }
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "Fetching media metadata",
-      );
+      this.logger
+        ?.child({ methodName: "_fetchAndStore" })
+        .debug("Fetching media metadata");
     }
 
     this.store.batch({}, (batch) => {
@@ -121,16 +125,16 @@ export class MediaMetadataQuery extends Query<
     });
 
     try {
-      const ontologyRid = await this.store.client[additionalContext]
-        .ontologyRid;
-      const response = await OntologiesV2.MediaReferenceProperties
-        .getMediaMetadata(
+      const ontologyRid =
+        await this.store.client[additionalContext].ontologyRid;
+      const response =
+        await OntologiesV2.MediaReferenceProperties.getMediaMetadata(
           this.store.client[additionalContext],
           ontologyRid,
           this.#objectType,
           String(this.#primaryKey),
           this.#propertyName,
-          { preview: this.#preview },
+          { preview: this.#preview }
         );
 
       const metadata: MediaMetadata = {
@@ -144,10 +148,9 @@ export class MediaMetadataQuery extends Query<
       });
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "_fetchAndStore" }).error(
-          "Failed to fetch media metadata",
-          error,
-        );
+        this.logger
+          ?.child({ methodName: "_fetchAndStore" })
+          .error("Failed to fetch media metadata", error);
       }
 
       this.store.batch({}, (batch) => {
@@ -161,24 +164,23 @@ export class MediaMetadataQuery extends Query<
   writeToStore(
     metadata: MediaMetadata | undefined,
     status: Status,
-    batch: BatchContext,
+    batch: BatchContext
   ): Entry<MediaMetadataCacheKey> {
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(metadata, entry.value) && entry.status === status) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "writeToStore" }).debug(
-          "Metadata unchanged, skipping write",
-        );
+        this.logger
+          ?.child({ methodName: "writeToStore" })
+          .debug("Metadata unchanged, skipping write");
       }
       return entry;
     }
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "writeToStore" }).debug(
-        "Writing metadata to store",
-        { status },
-      );
+      this.logger
+        ?.child({ methodName: "writeToStore" })
+        .debug("Writing metadata to store", { status });
     }
 
     return batch.write(this.cacheKey, metadata, status);
@@ -186,12 +188,12 @@ export class MediaMetadataQuery extends Query<
 
   maybeUpdateAndRevalidate = (
     changes: Changes,
-    optimisticId: OptimisticId | undefined,
+    optimisticId: OptimisticId | undefined
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-        "Checking if metadata needs revalidation",
-      );
+      this.logger
+        ?.child({ methodName: "maybeUpdateAndRevalidate" })
+        .debug("Checking if metadata needs revalidation");
     }
 
     const modifiedObjectsOfType = changes.modifiedObjects.get(this.#objectType);
@@ -200,9 +202,9 @@ export class MediaMetadataQuery extends Query<
     for (const obj of modifiedObjectsOfType ?? []) {
       if (obj.$primaryKey === this.#primaryKey) {
         if (process.env.NODE_ENV !== "production") {
-          this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-            "Parent object changed, revalidating metadata",
-          );
+          this.logger
+            ?.child({ methodName: "maybeUpdateAndRevalidate" })
+            .debug("Parent object changed, revalidating metadata");
         }
         return this.revalidate(true);
       }
@@ -211,9 +213,9 @@ export class MediaMetadataQuery extends Query<
     for (const obj of addedObjectsOfType ?? []) {
       if (obj.$primaryKey === this.#primaryKey) {
         if (process.env.NODE_ENV !== "production") {
-          this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-            "Parent object changed, revalidating metadata",
-          );
+          this.logger
+            ?.child({ methodName: "maybeUpdateAndRevalidate" })
+            .debug("Parent object changed, revalidating metadata");
         }
         return this.revalidate(true);
       }
@@ -221,14 +223,14 @@ export class MediaMetadataQuery extends Query<
 
     for (const cacheKey of changes.deleted) {
       if (
-        cacheKey.type === "object"
-        && cacheKey.otherKeys[0] === this.#objectType
-        && cacheKey.otherKeys[1] === this.#primaryKey
+        cacheKey.type === "object" &&
+        cacheKey.otherKeys[0] === this.#objectType &&
+        cacheKey.otherKeys[1] === this.#primaryKey
       ) {
         if (process.env.NODE_ENV !== "production") {
-          this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
-            "Parent object deleted, marking as error",
-          );
+          this.logger
+            ?.child({ methodName: "maybeUpdateAndRevalidate" })
+            .debug("Parent object deleted, marking as error");
         }
         this.store.batch({}, (batch) => {
           this.writeToStore(undefined, "error", batch);

@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type { Attachment } from "./Attachment.js";
 
@@ -29,14 +30,13 @@ describe("Object definitions", () => {
       multiplicity: true,
     } as const;
 
-    expectTypeOf<OsdkObjectPropertyType<typeof attachment>>().toEqualTypeOf<
-      Attachment
-    >();
+    expectTypeOf<
+      OsdkObjectPropertyType<typeof attachment>
+    >().toEqualTypeOf<Attachment>();
 
-    expectTypeOf<OsdkObjectPropertyType<typeof attachmentArray>>()
-      .toEqualTypeOf<
-        Attachment[]
-      >();
+    expectTypeOf<
+      OsdkObjectPropertyType<typeof attachmentArray>
+    >().toEqualTypeOf<Attachment[]>();
   });
   it("correctly maps struct types", () => {
     const structType = {
@@ -55,21 +55,20 @@ describe("Object definitions", () => {
       },
       multiplicity: true,
     } as const;
-    expectTypeOf<OsdkObjectPropertyType<typeof structType>>().toEqualTypeOf<
+    expectTypeOf<OsdkObjectPropertyType<typeof structType>>().toEqualTypeOf<{
+      readonly integerField: number;
+      readonly floatField: number;
+      readonly attachment: Attachment;
+    }>();
+
+    expectTypeOf<
+      OsdkObjectPropertyType<typeof structTypeArray>
+    >().toEqualTypeOf<
       {
         readonly integerField: number;
         readonly floatField: number;
         readonly attachment: Attachment;
-      }
+      }[]
     >();
-
-    expectTypeOf<OsdkObjectPropertyType<typeof structTypeArray>>()
-      .toEqualTypeOf<
-        {
-          readonly integerField: number;
-          readonly floatField: number;
-          readonly attachment: Attachment;
-        }[]
-      >();
   });
 });

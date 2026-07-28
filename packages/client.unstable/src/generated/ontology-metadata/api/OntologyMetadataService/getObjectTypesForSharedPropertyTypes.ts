@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetObjectTypesForSharedPropertyTypesRequest
-    as _api_GetObjectTypesForSharedPropertyTypesRequest,
-  GetObjectTypesForSharedPropertyTypesResponse
-    as _api_GetObjectTypesForSharedPropertyTypesResponse,
+  GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest,
+  GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getObjectTypesForSharedPropertyTypes(
   ctx: ConjureContext,
-  request: _api_GetObjectTypesForSharedPropertyTypesRequest,
+  request: _api_GetObjectTypesForSharedPropertyTypesRequest
 ): Promise<_api_GetObjectTypesForSharedPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForSharedPropertyTypes`,
     "PUT",
-    request,
+    request
   );
 }

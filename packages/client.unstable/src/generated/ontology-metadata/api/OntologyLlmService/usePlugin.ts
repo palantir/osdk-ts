@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   OntologyLmsRequest as _api_llm_OntologyLmsRequest,
   OntologyLmsResponse as _api_llm_OntologyLmsResponse,
@@ -26,7 +27,7 @@ import type {
  */
 export async function usePlugin(
   ctx: ConjureContext,
-  request: _api_llm_OntologyLmsRequest,
+  request: _api_llm_OntologyLmsRequest
 ): Promise<_api_llm_OntologyLmsResponse> {
   return conjureFetch(ctx, `/llm/usePlugin`, "POST", request);
 }

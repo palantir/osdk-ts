@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import type { BaseServerObject } from "./BaseServerObject.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
@@ -27,29 +29,35 @@ describe(FauxDataStore, () => {
     let fauxDataStore: FauxDataStore;
 
     const pks = ["a", "b", "c", "d"] as const;
-    const employees = Object
-      .fromEntries(
-        pks.map((id) =>
-          [id, {
-            __apiName: "Employee",
-            __primaryKey: id,
+    const employees = Object.fromEntries(
+      pks.map(
+        (id) =>
+          [
             id,
-          }] as const
-        ),
-      ) as unknown as Record<typeof pks[number], BaseServerObject>;
+            {
+              __apiName: "Employee",
+              __primaryKey: id,
+              id,
+            },
+          ] as const
+      )
+    ) as unknown as Record<(typeof pks)[number], BaseServerObject>;
 
     const projectPks = ["p1", "p2"] as const;
-    const projects = Object
-      .fromEntries(
-        projectPks.map((id) =>
-          [id, {
-            __apiName: "Project",
-            __primaryKey: id,
+    const projects = Object.fromEntries(
+      projectPks.map(
+        (id) =>
+          [
             id,
-            name: `Project ${id}`,
-          }] as const
-        ),
-      ) as unknown as Record<typeof projectPks[number], BaseServerObject>;
+            {
+              __apiName: "Project",
+              __primaryKey: id,
+              id,
+              name: `Project ${id}`,
+            },
+          ] as const
+      )
+    ) as unknown as Record<(typeof projectPks)[number], BaseServerObject>;
 
     beforeEach(() => {
       attachmentsStore = new FauxAttachmentStore();
@@ -62,42 +70,47 @@ describe(FauxDataStore, () => {
       fauxDataStore = new FauxDataStore(
         fauxOntology,
         attachmentsStore,
-        /*strict*/ true,
+        /*strict*/ true
       );
 
       const Employee = {
         implementsInterfaces: [],
         implementsInterfaces2: {},
-        linkTypes: [{
-          apiName: "peeps",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Employee",
-          cardinality: "MANY",
-          displayName: "Peeps",
-          linkTypeRid: "rid.link-type.327",
-        }, {
-          apiName: "lead",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Employee",
-          cardinality: "ONE",
-          displayName: "Lead",
-          linkTypeRid: "rid.link-type.327",
-          foreignKeyPropertyApiName: "leadId",
-        }, {
-          apiName: "ownedProjects",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Project",
-          cardinality: "MANY",
-          displayName: "Owned Projects",
-          linkTypeRid: "rid.link-type.328",
-        }, {
-          apiName: "contributedProjects",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Project",
-          cardinality: "MANY",
-          displayName: "Contributed Projects",
-          linkTypeRid: "rid.link-type.329",
-        }],
+        linkTypes: [
+          {
+            apiName: "peeps",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Employee",
+            cardinality: "MANY",
+            displayName: "Peeps",
+            linkTypeRid: "rid.link-type.327",
+          },
+          {
+            apiName: "lead",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Employee",
+            cardinality: "ONE",
+            displayName: "Lead",
+            linkTypeRid: "rid.link-type.327",
+            foreignKeyPropertyApiName: "leadId",
+          },
+          {
+            apiName: "ownedProjects",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Project",
+            cardinality: "MANY",
+            displayName: "Owned Projects",
+            linkTypeRid: "rid.link-type.328",
+          },
+          {
+            apiName: "contributedProjects",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Project",
+            cardinality: "MANY",
+            displayName: "Contributed Projects",
+            linkTypeRid: "rid.link-type.329",
+          },
+        ],
         objectType: {
           apiName: "Employee",
           description: "Employee",
@@ -125,6 +138,13 @@ describe(FauxDataStore, () => {
               description: "leadId",
               typeClasses: [],
             },
+            status: {
+              dataType: { type: "string" },
+              rid: "ri.status",
+              displayName: "status",
+              description: "status",
+              typeClasses: [],
+            },
           },
           status: "ACTIVE",
           titleProperty: "id",
@@ -135,22 +155,25 @@ describe(FauxDataStore, () => {
       const Project = {
         implementsInterfaces: [],
         implementsInterfaces2: {},
-        linkTypes: [{
-          apiName: "owner",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Employee",
-          cardinality: "ONE",
-          displayName: "Owner",
-          linkTypeRid: "rid.link-type.328",
-          foreignKeyPropertyApiName: "ownerId",
-        }, {
-          apiName: "contributors",
-          status: "EXPERIMENTAL",
-          objectTypeApiName: "Employee",
-          cardinality: "MANY",
-          displayName: "Contributors",
-          linkTypeRid: "rid.link-type.329",
-        }],
+        linkTypes: [
+          {
+            apiName: "owner",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Employee",
+            cardinality: "ONE",
+            displayName: "Owner",
+            linkTypeRid: "rid.link-type.328",
+            foreignKeyPropertyApiName: "ownerId",
+          },
+          {
+            apiName: "contributors",
+            status: "EXPERIMENTAL",
+            objectTypeApiName: "Employee",
+            cardinality: "MANY",
+            displayName: "Contributors",
+            linkTypeRid: "rid.link-type.329",
+          },
+        ],
         objectType: {
           apiName: "Project",
           description: "Project",
@@ -206,7 +229,7 @@ describe(FauxDataStore, () => {
       contributors: fauxDataStore.getLinksOrThrow(
         "Project",
         projectId,
-        "contributors",
+        "contributors"
       ),
     });
 
@@ -214,13 +237,123 @@ describe(FauxDataStore, () => {
       ownedProjects: fauxDataStore.getLinksOrThrow(
         "Employee",
         employeeId,
-        "ownedProjects",
+        "ownedProjects"
       ),
       contributedProjects: fauxDataStore.getLinksOrThrow(
         "Employee",
         employeeId,
-        "contributedProjects",
+        "contributedProjects"
       ),
+    });
+
+    describe("object set references", () => {
+      const activeEmployeesRid =
+        "ri.object-set.active-employees" as OntologiesV2.ObjectSetRid;
+
+      const activeEmployeesObjectSet = {
+        type: "filter",
+        objectSet: {
+          type: "base",
+          objectType: "Employee",
+        },
+        where: {
+          type: "eq",
+          field: "status",
+          value: "ACTIVE",
+        },
+      } as OntologiesV2.ObjectSet;
+
+      it("registers and returns object sets by rid", () => {
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet
+        );
+
+        expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
+          activeEmployeesObjectSet
+        );
+      });
+
+      it("overwrites an object set registered with the same rid", () => {
+        const inactiveEmployeesObjectSet = {
+          type: "filter",
+          objectSet: {
+            type: "base",
+            objectType: "Employee",
+          },
+          where: {
+            type: "eq",
+            field: "status",
+            value: "INACTIVE",
+          },
+        } as OntologiesV2.ObjectSet;
+
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet
+        );
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          inactiveEmployeesObjectSet
+        );
+
+        expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
+          inactiveEmployeesObjectSet
+        );
+      });
+
+      it("throws ObjectSetNotFound for unknown object set rids", () => {
+        expect(() =>
+          fauxDataStore.getObjectSetOrThrow("ri.object-set.missing")
+        ).toThrow(
+          'NOT_FOUND ObjectSetNotFound {"objectSetRid":"ri.object-set.missing"}'
+        );
+      });
+
+      it("loads objects from a registered object set reference", () => {
+        const { a, b, c } = employees;
+        fauxDataStore.registerObject({ ...a, status: "ACTIVE" });
+        fauxDataStore.registerObject({ ...b, status: "INACTIVE" });
+        fauxDataStore.registerObject({ ...c, status: "ACTIVE" });
+        fauxDataStore.registerObjectSet(
+          activeEmployeesRid,
+          activeEmployeesObjectSet
+        );
+
+        const page = fauxDataStore.getObjectsFromObjectSet({
+          objectSet: {
+            type: "reference",
+            reference: activeEmployeesRid,
+          },
+          select: [],
+          selectV2: [
+            {
+              type: "property",
+              apiName: "id",
+            },
+            {
+              type: "property",
+              apiName: "status",
+            },
+          ],
+        });
+
+        expect(page.totalCount).toBe("2");
+        expect(page.data).toEqual([
+          {
+            __apiName: "Employee",
+            __primaryKey: "a",
+            id: "a",
+            status: "ACTIVE",
+          },
+          {
+            __apiName: "Employee",
+            __primaryKey: "c",
+            id: "c",
+            status: "ACTIVE",
+          },
+        ]);
+      });
     });
 
     it("should work in the happy paths", () => {
@@ -281,10 +414,11 @@ describe(FauxDataStore, () => {
         lead: d,
         peeps: [a], // b's peeps should not change
       });
-      expect(fauxDataStore.getObject(b.__apiName, b.__primaryKey))
-        .toMatchObject({
-          leadId: "d",
-        });
+      expect(
+        fauxDataStore.getObject(b.__apiName, b.__primaryKey)
+      ).toMatchObject({
+        leadId: "d",
+      });
       expect(getLeadsAndPeeps("c")).toMatchObject({
         lead: d,
         peeps: [], // c should no longer have b as a peep
@@ -364,10 +498,11 @@ describe(FauxDataStore, () => {
         ownedProjects: [p1],
         contributedProjects: [],
       });
-      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
-        .toMatchObject({
-          ownerId: "a",
-        });
+      expect(
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+      ).toMatchObject({
+        ownerId: "a",
+      });
 
       // 2. Change project ownership
       fauxDataStore.registerLink(p1, "owner", b, "ownedProjects");
@@ -384,10 +519,11 @@ describe(FauxDataStore, () => {
         ownedProjects: [p1],
         contributedProjects: [],
       });
-      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
-        .toMatchObject({
-          ownerId: "b",
-        });
+      expect(
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+      ).toMatchObject({
+        ownerId: "b",
+      });
 
       // 3. Add project contributors (MANY cardinality)
       fauxDataStore.registerLink(p1, "contributors", c, "contributedProjects");
@@ -411,7 +547,7 @@ describe(FauxDataStore, () => {
         p1,
         "contributors",
         c,
-        "contributedProjects",
+        "contributedProjects"
       );
 
       expect(getProjectLinks("p1")).toMatchObject({
@@ -450,10 +586,11 @@ describe(FauxDataStore, () => {
         ownedProjects: [], // no longer owns p1
         contributedProjects: [p2],
       });
-      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
-        .toMatchObject({
-          "ownerId": undefined,
-        });
+      expect(
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+      ).toMatchObject({
+        ownerId: undefined,
+      });
 
       // 7. Test setting foreign key directly on project object
       const updatedP1 = {
@@ -471,10 +608,11 @@ describe(FauxDataStore, () => {
         ownedProjects: [p1],
         contributedProjects: [],
       });
-      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
-        .toMatchObject({
-          "ownerId": "c",
-        });
+      expect(
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+      ).toMatchObject({
+        ownerId: "c",
+      });
 
       // 8. Test removing foreign key by setting it to undefined
       const unlinkedP1 = {

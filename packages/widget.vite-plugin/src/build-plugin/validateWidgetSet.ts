@@ -26,7 +26,7 @@ function validateWidgetIds(widgetBuilds: WidgetBuildOutputs[]): void {
     const widgetConfigId = widgetBuild.widgetConfig.id;
     if (widgetIds.has(widgetConfigId)) {
       throw new Error(
-        `Duplicate widget ID: ${widgetConfigId}. Each widget must have a unique ID.`,
+        `Duplicate widget ID: ${widgetConfigId}. Each widget must have a unique ID.`
       );
     }
     widgetIds.add(widgetConfigId);

@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { SelectCanonicalizer } from "./SelectCanonicalizer.js";
 
 describe(SelectCanonicalizer, () => {

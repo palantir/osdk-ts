@@ -15,18 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BatchExecutionSummaryRequest as _api_executor_BatchExecutionSummaryRequest,
   BatchExecutionSummaryResponse as _api_executor_BatchExecutionSummaryResponse,
 } from "../__components.js";
 export async function getBatchExecutionSummary(
   ctx: ConjureContext,
-  request: _api_executor_BatchExecutionSummaryRequest,
+  request: _api_executor_BatchExecutionSummaryRequest
 ): Promise<_api_executor_BatchExecutionSummaryResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/batchExecuteSummary`,
     "POST",
-    request,
+    request
   );
 }

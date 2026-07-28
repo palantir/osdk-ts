@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import { expect } from "vitest";
+
 import type { TypedObjectPayload } from "../../../ObjectPayload.js";
 import type { Store } from "../../Store.js";
 import type { MockedSingleSubCallback } from "../../testUtils.js";
@@ -44,29 +45,30 @@ const defer = createDefer();
  */
 export async function expectStandardObserveObject<
   T extends ObjectTypeDefinition,
->(
-  { cache, type, primaryKey }: {
-    cache: Store;
-    type: T;
-    primaryKey: PrimaryKeyType<T>;
-  },
-): Promise<{
+>({
+  cache,
+  type,
+  primaryKey,
+}: {
+  cache: Store;
+  type: T;
+  primaryKey: PrimaryKeyType<T>;
+}): Promise<{
   payload: TypedObjectPayload<T>;
   subFn: MockedSingleSubCallback;
 }> {
   const subFn = mockSingleSubCallback();
   defer(
-    cache.objects.observe({
-      apiName: type,
-      pk: primaryKey,
-    }, subFn),
+    cache.objects.observe(
+      {
+        apiName: type,
+        pk: primaryKey,
+      },
+      subFn
+    )
   );
 
-  expectSingleObjectCallAndClear(
-    subFn,
-    undefined,
-    "loading",
-  );
+  expectSingleObjectCallAndClear(subFn, undefined, "loading");
 
   await waitForCall(subFn);
 
@@ -76,7 +78,7 @@ export async function expectStandardObserveObject<
       $apiName: type.apiName,
       $primaryKey: primaryKey,
     }),
-    "loaded",
+    "loaded"
   );
   return { payload: obj as TypedObjectPayload<T>, subFn };
 }

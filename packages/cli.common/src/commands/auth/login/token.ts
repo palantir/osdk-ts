@@ -29,7 +29,7 @@ export interface TokenErrorResponse {
 export type TokenResponse = TokenErrorResponse | TokenSuccessResponse;
 
 export function isTokenErrorResponse(
-  response: TokenSuccessResponse | TokenErrorResponse,
+  response: TokenSuccessResponse | TokenErrorResponse
 ): response is TokenErrorResponse {
   return (response as TokenErrorResponse).error != null;
 }

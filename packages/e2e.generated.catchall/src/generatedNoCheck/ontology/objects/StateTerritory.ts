@@ -16,7 +16,7 @@ import type {
 } from '@osdk/client';
 
 export namespace StateTerritory {
-  export type PropertyKeys = 'airportStateName' | 'airportStateCode' | 'country';
+  export type PropertyKeys = 'airportStateCode' | 'airportStateName' | 'country';
 
   export interface Links {
     readonly country1: $SingleLinkAccessor<Country_1>;

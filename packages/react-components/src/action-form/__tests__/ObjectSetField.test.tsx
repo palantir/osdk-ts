@@ -17,17 +17,16 @@
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { ObjectSetField } from "../fields/ObjectSetField.js";
 
-vi.mock("@osdk/react/experimental", () => ({
-  useObjectSet: vi.fn(),
-}));
-
 vi.mock("@osdk/react", () => ({
+  useObjectSet: vi.fn(),
+  useRegisterUserAgent: vi.fn(),
   useOsdkMetadata: vi.fn(),
 }));
 
-const { useObjectSet } = await import("@osdk/react/experimental");
+const { useObjectSet } = await import("@osdk/react");
 const { useOsdkMetadata } = await import("@osdk/react");
 
 const mockUseObjectSet = vi.mocked(useObjectSet);
@@ -71,7 +70,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />,
+        <ObjectSetField value={createMockObjectSet()} />
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);
@@ -207,7 +206,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />,
+        <ObjectSetField value={createMockObjectSet()} />
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);

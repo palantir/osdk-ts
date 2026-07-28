@@ -21,7 +21,7 @@ type FilterValue = string | boolean | number | Date;
  * Returns undefined if the value is undefined.
  */
 export function coerceToString(
-  value: FilterValue | undefined,
+  value: FilterValue | undefined
 ): string | undefined {
   if (value === undefined) return undefined;
   return String(value);
@@ -31,7 +31,7 @@ export function coerceToString(
  * Coerces an array of filter values to string[] for display.
  */
 export function coerceToStringArray(
-  values: FilterValue[] | undefined,
+  values: FilterValue[] | undefined
 ): string[] {
   if (values === undefined) return [];
   return values.map((v) => String(v));

@@ -251,14 +251,12 @@ export interface GetStreamingTimeseriesMonitorGroupResponse {
 export interface IncludedObjects {
   affectedObjects: _api_ObjectSetRid;
 }
-export interface InvalidCron {
-}
+export interface InvalidCron {}
 export type JobSpecRid = string;
 export interface LiveEvaluationInformationResponse {
   nonLiveIssues?: UnableToMonitorLiveReasons | null | undefined;
 }
-export interface LiveMonitorNotScheduled {
-}
+export interface LiveMonitorNotScheduled {}
 export interface LiveMonitorStatus {
   objectTypeRid: _api_ObjectTypeRid;
   progress?: Progress | null | undefined;
@@ -297,8 +295,7 @@ export interface MonitorsSearchResponse {
 export interface MoreThanOneObjectType {
   objectTypes: Array<_api_ObjectTypeRid>;
 }
-export interface MuteMonitorForSelfResponse {
-}
+export interface MuteMonitorForSelfResponse {}
 export interface NextExecution_nonDeterministic {
   type: "nonDeterministic";
   nonDeterministic: NonDeterministicNextExecution;
@@ -322,14 +319,12 @@ export interface NonDeterministicNextExecution {
   isRunning: boolean;
   scheduledAt?: string | null | undefined;
 }
-export interface NoObjectType {
-}
+export interface NoObjectType {}
 export interface NotUsingObjectsV2 {
   linkTypes: Array<_api_LinkTypeRid>;
   objectTypes: Array<_api_ObjectTypeRid>;
 }
-export interface ObjectSetUsesRelativeTimes {
-}
+export interface ObjectSetUsesRelativeTimes {}
 /**
  * Represents a page token for a paged request.
  */
@@ -341,8 +336,7 @@ export interface Progress {
 export interface PublishMonitorVersionRequest {
   branchRid?: _api_BranchRid | null | undefined;
 }
-export interface PublishMonitorVersionResponse {
-}
+export interface PublishMonitorVersionResponse {}
 export interface RejectStagedActionsRequest {
   actionInReviewIds: Array<_api_ActionEffectInReviewId>;
   monitorRid: _api_MonitorRid;
@@ -351,8 +345,7 @@ export interface RejectStagedActionsRequest {
 export interface RejectStagedActionsResponse {
   rejectedActions: Array<_api_RejectStagedActionEffectLog>;
 }
-export interface ResetMonitorEventSetViewResponse {
-}
+export interface ResetMonitorEventSetViewResponse {}
 export interface ScheduledNextExecution {
   isRunning: boolean;
   scheduledAt?: string | null | undefined;
@@ -363,13 +356,11 @@ export interface ScopedEventToUpdate {
   eventSetRid: _api_MonitorEventSetRid;
   update: EventUpdate;
 }
-export interface ScopedTokenMode {
-}
+export interface ScopedTokenMode {}
 export interface SeenMonitorEventsRequest {
   monitorToEvents: Record<_api_MonitorRid, Array<UpdateSeenMonitorEventValue>>;
 }
-export interface SeenMonitorEventsResponse {
-}
+export interface SeenMonitorEventsResponse {}
 /**
  * Overrides for the job configuration. This is collection of optional overrides which will be applied to the streaming job
  * at run time. If a field is not present in the overrides, a default value defined in the job will be used.
@@ -386,8 +377,7 @@ export interface StreamingTimeseriesJobConfiguration {
   flinkProfiles: Array<FlinkTransformProfile>;
 }
 export type StreamingTimeseriesMonitorGroupRid = string;
-export interface SubscribeToMonitorRequest {
-}
+export interface SubscribeToMonitorRequest {}
 export interface TimeseriesMonitorStatus {
   alertDatasetRid: _api_DatasetRid;
   jobConfiguration?: BatchTimeseriesJobConfiguration | null | undefined;
@@ -436,10 +426,8 @@ export interface UnableToMonitorLiveReasons {
   unsupportedObjectType?: UnsupportedObjectType | null | undefined;
   usesStreamingObjectType?: UsesStreamingObjectType | null | undefined;
 }
-export interface UnmuteMonitorForSelfResponse {
-}
-export interface UnsubscribeFromMonitorRequest {
-}
+export interface UnmuteMonitorForSelfResponse {}
+export interface UnsubscribeFromMonitorRequest {}
 export type UnsupportedFilterType =
   | "PREFIXONLASTTOKEN"
   | "TERMS"
@@ -556,13 +544,11 @@ export type UpdateTimeseriesJobConfigurationRequestV2 =
   | UpdateTimeseriesJobConfigurationRequestV2_streaming
   | UpdateTimeseriesJobConfigurationRequestV2_batch;
 
-export interface UpdateTimeseriesJobConfigurationResponse {
-}
+export interface UpdateTimeseriesJobConfigurationResponse {}
 export interface UpdateTimeseriesJobConfigurationStreaming {
   newConfiguration: StreamingTimeseriesJobConfiguration;
 }
-export interface UserScopedTokenMode {
-}
+export interface UserScopedTokenMode {}
 export interface UsesStreamingObjectType {
   objectType: _api_ObjectTypeRid;
 }

@@ -24,15 +24,15 @@ import type { OsdkBase } from "../OsdkBase.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 
 export const SourcePrimaryKeySymbol: unique symbol = Symbol.for(
-  "osdk.query.$sourcePk",
+  "osdk.query.$sourcePk"
 );
 
 const LegacyShapesSymbol = Symbol.for("osdk.shapes.$primaryKey");
 
 export function isSourcePkSymbol(value: unknown): value is symbol {
   return (
-    typeof value === "symbol"
-    && (value === SourcePrimaryKeySymbol || value === LegacyShapesSymbol)
+    typeof value === "symbol" &&
+    (value === SourcePrimaryKeySymbol || value === LegacyShapesSymbol)
   );
 }
 
@@ -149,16 +149,14 @@ export type ShapeDerivedLinks<
 
 export type ShapeInstance<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
-> = S extends ShapeDefinition<infer BASE, infer PROPS, infer LINKS> ?
-    & OsdkBase<BASE>
-    & { readonly $rid: string }
-    & PROPS
-    & {
-      [K in keyof LINKS]: LINKS[K] extends
-        ShapeDefinition<ObjectOrInterfaceDefinition> ? ShapeInstance<LINKS[K]>[]
-        : never;
-    }
-  : never;
+> =
+  S extends ShapeDefinition<infer BASE, infer PROPS, infer LINKS>
+    ? OsdkBase<BASE> & { readonly $rid: string } & PROPS & {
+          [K in keyof LINKS]: LINKS[K] extends ShapeDefinition<ObjectOrInterfaceDefinition>
+            ? ShapeInstance<LINKS[K]>[]
+            : never;
+        }
+    : never;
 
 export type PropertyType<
   BASE extends ObjectOrInterfaceDefinition,
@@ -172,7 +170,7 @@ export interface ShapeLinkBuilder<
   CURRENT extends ObjectOrInterfaceDefinition,
 > {
   pivotTo<L extends LinkNames<CURRENT>>(
-    link: L,
+    link: L
   ): ShapeLinkBuilder<SOURCE, LinkedType<CURRENT, L>>;
 
   where(clause: WhereClause<CURRENT>): ShapeLinkBuilder<SOURCE, CURRENT>;
@@ -191,7 +189,7 @@ export interface ShapeLinkBuilder<
 
   orderBy<K extends PropertyKeys<CURRENT>>(
     property: K,
-    direction?: "asc" | "desc",
+    direction?: "asc" | "desc"
   ): ShapeLinkBuilder<SOURCE, CURRENT>;
 
   limit(n: number): ShapeLinkBuilder<SOURCE, CURRENT>;
@@ -200,34 +198,28 @@ export interface ShapeLinkBuilder<
 
   as<TARGET_SHAPE extends ShapeDefinition<CURRENT>>(
     shape: TARGET_SHAPE,
-    config?: DerivedLinkConfig,
+    config?: DerivedLinkConfig
   ): ShapeLinkResult<TARGET_SHAPE>;
 
   readonly $primaryKey: symbol;
 }
 
-export interface ShapeLinkBuilderInternal
-  extends
-    ShapeLinkBuilder<ObjectOrInterfaceDefinition, ObjectOrInterfaceDefinition>
-{
+export interface ShapeLinkBuilderInternal extends ShapeLinkBuilder<
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceDefinition
+> {
   toObjectSetDef(): ShapeLinkObjectSetDef;
 }
 
 export interface ShapeBuilder<
   BASE extends ObjectOrInterfaceDefinition,
   PROPS extends Record<string, unknown> = {},
-  LINKS extends Record<
-    string,
-    ShapeDefinition<ObjectOrInterfaceDefinition>
-  > = {},
+  LINKS extends Record<string, ShapeDefinition<ObjectOrInterfaceDefinition>> =
+    {},
 > {
   select<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>>(
     ...props: K[]
-  ): ShapeBuilder<
-    BASE,
-    PROPS & { [P in K]: PropertyType<BASE, P> },
-    LINKS
-  >;
+  ): ShapeBuilder<BASE, PROPS & { [P in K]: PropertyType<BASE, P> }, LINKS>;
 
   require<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>>(
     ...props: K[]
@@ -250,19 +242,16 @@ export interface ShapeBuilder<
     V extends NonNullable<PropertyType<BASE, K>>,
   >(
     prop: K,
-    defaultValue: V,
+    defaultValue: V
   ): ShapeBuilder<
     BASE,
     PROPS & { [P in K]: NonNullable<PropertyType<BASE, P>> },
     LINKS
   >;
 
-  withTransform<
-    K extends Exclude<PropertyKeys<BASE>, keyof PROPS>,
-    R,
-  >(
+  withTransform<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>, R>(
     prop: K,
-    transform: (value: PropertyType<BASE, K>) => R,
+    transform: (value: PropertyType<BASE, K>) => R
   ): ShapeBuilder<BASE, PROPS & { [P in K]: R }, LINKS>;
 
   deriveLink<
@@ -271,8 +260,8 @@ export interface ShapeBuilder<
   >(
     name: NAME,
     builder: (
-      linkBuilder: ShapeLinkBuilder<BASE, BASE>,
-    ) => ShapeLinkResult<TARGET_SHAPE>,
+      linkBuilder: ShapeLinkBuilder<BASE, BASE>
+    ) => ShapeLinkResult<TARGET_SHAPE>
   ): ShapeBuilder<BASE, PROPS, LINKS & { [K in NAME]: TARGET_SHAPE }>;
 
   build(): ShapeDefinition<BASE, PROPS, LINKS>;
@@ -301,12 +290,12 @@ export interface NullabilityViolation {
 export class ShapeNullabilityError extends Error {
   constructor(
     public readonly shape: ShapeDefinition<ObjectOrInterfaceDefinition>,
-    public readonly violations: readonly NullabilityViolation[],
+    public readonly violations: readonly NullabilityViolation[]
   ) {
     const props = violations.map((v) => v.property).join(", ");
     const shapeName = shape.__debugName ?? shape.__shapeId;
     super(
-      `Shape "${shapeName}" requires these properties to be non-null: ${props}`,
+      `Shape "${shapeName}" requires these properties to be non-null: ${props}`
     );
     this.name = "ShapeNullabilityError";
   }

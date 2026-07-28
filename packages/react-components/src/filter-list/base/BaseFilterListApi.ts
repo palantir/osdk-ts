@@ -15,7 +15,11 @@
  */
 
 import type React from "react";
-import type { FilterState } from "../FilterListItemApi.js";
+
+import type {
+  FilterDefinitionControls,
+  FilterState,
+} from "../FilterListItemApi.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -26,17 +30,24 @@ export type RenderFilterInput<D> = (props: {
   excludeRowOpen?: boolean;
 }) => React.ReactNode;
 
-export interface BaseFilterListProps<D> {
+export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
+  /**
+   * Display-only fallback state for a filter that has no stored state, used so
+   * capability-driven header controls (overflow … menu, search) render for
+   * empty/just-added filters. Never written into the filter-state map.
+   */
+  getEmptyDisplayState?: (definition: D) => FilterState | undefined;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
+  onOrderChange?: (orderedKeys: string[]) => void;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -44,6 +55,16 @@ export interface BaseFilterListProps<D> {
   titleIcon?: React.ReactNode;
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
+  /**
+   * Whether the reset button is enabled. Hosts compute this from whether the
+   * filter and/or visibility state has diverged from its initial snapshot.
+   */
+  canReset?: boolean;
+  /**
+   * @deprecated Use {@link canReset} instead. When `canReset` is provided it
+   * takes precedence; `hasVisibilityChanges` is only consulted as a fallback
+   * for the reset button's enabled state.
+   */
   hasVisibilityChanges?: boolean;
   enableSorting?: boolean;
   className?: string;

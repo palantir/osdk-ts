@@ -25,7 +25,7 @@ export function evaluateFilter(
   f: PossibleWhereClauseFilters,
   realValue: any,
   expected: any,
-  strict: boolean,
+  strict: boolean
 ): boolean {
   switch (f) {
     case "$eq":
@@ -45,12 +45,13 @@ export function evaluateFilter(
     case "$isNull":
       return realValue == null;
     case "$startsWith":
-      return realValue.startsWith(expected);
+      return typeof realValue === "string" && realValue.startsWith(expected);
     case "$contains":
     case "$containsAllTerms":
     case "$containsAllTermsInOrder":
     case "$containsAnyTerm":
     case "$interval":
+    case "$matchesRegex":
     case "$intersects":
     case "$within":
       // for these we will strictly say no and loosely say yes

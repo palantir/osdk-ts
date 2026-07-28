@@ -15,6 +15,7 @@
  */
 
 import { describe, it } from "vitest";
+
 import type { GroupByClause } from "./GroupByClause.js";
 
 export type F = GroupByClause<

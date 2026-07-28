@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
   apiName: "MockObject",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
+
+const MockInterface = {
+  apiName: "MockInterface",
+  type: "interface",
+} as unknown as InterfaceDefinition;
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
@@ -38,9 +44,11 @@ describe("useOsdkObjects enabled option", () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -52,10 +60,9 @@ describe("useOsdkObjects enabled option", () => {
   it("should NOT call observeList when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObjects(MockObjectType, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObjects(MockObjectType, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveList).not.toHaveBeenCalled();
   });
@@ -68,7 +75,7 @@ describe("useOsdkObjects enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      },
+      }
     );
 
     expect(mockObserveList).not.toHaveBeenCalled();
@@ -88,7 +95,7 @@ describe("useOsdkObjects enabled option", () => {
           pageSize: 50,
           enabled: true,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -98,7 +105,7 @@ describe("useOsdkObjects enabled option", () => {
         where: { id: "123" },
         pageSize: 50,
       }),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
@@ -112,7 +119,7 @@ describe("useOsdkObjects enabled option", () => {
           rids,
           pageSize: 10,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -122,7 +129,7 @@ describe("useOsdkObjects enabled option", () => {
         rids,
         pageSize: 10,
       }),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
@@ -138,7 +145,7 @@ describe("useOsdkObjects enabled option", () => {
           where,
           pageSize: 5,
         }),
-      { wrapper },
+      { wrapper }
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -149,7 +156,7 @@ describe("useOsdkObjects enabled option", () => {
         where: expect.anything(),
         pageSize: 5,
       }),
-      expect.any(Object),
+      expect.any(Object)
     );
   });
 
@@ -161,10 +168,9 @@ describe("useOsdkObjects enabled option", () => {
       return { unsubscribe: vitest.fn() };
     });
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     expect(result.current.hasMore).toBe(false);
 
@@ -190,10 +196,9 @@ describe("useOsdkObjects enabled option", () => {
 
     const mockObjectSet = { type: "objectSet" };
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     act(() => {
       capturedObserver?.next({
@@ -210,15 +215,114 @@ describe("useOsdkObjects enabled option", () => {
   it("should call invalidateObjectType when refetch is called", async () => {
     const wrapper = createWrapper();
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     await act(async () => {
       await result.current.refetch();
     });
 
     expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+  });
+
+  it("should pass $includeAllBaseObjectProperties to observeList when true", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObjects(MockObjectType, {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper }
+    );
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+    expect(mockObserveList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MockObjectType,
+        $includeAllBaseObjectProperties: true,
+      }),
+      expect.any(Object)
+    );
+  });
+
+  it("should not resubscribe when rerendered with a new inline withProperties of the same shape", () => {
+    const canonicalWithProperties = { leadName: () => {} };
+    const observableClient = {
+      observeList: mockObserveList,
+      canonicalizeOptions: vitest.fn((opts) => ({
+        ...opts,
+        withProperties: canonicalWithProperties,
+      })),
+      invalidateObjectType: mockInvalidateObjectType,
+    } as any;
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkContext.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
+        {children}
+      </OsdkContext.Provider>
+    );
+
+    const { rerender } = renderHook(
+      ({ withProperties }) =>
+        useOsdkObjects(MockObjectType, {
+          withProperties: withProperties as any,
+        }),
+      {
+        wrapper,
+        initialProps: {
+          withProperties: { leadName: () => "a" },
+        },
+      }
+    );
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+
+    rerender({ withProperties: { leadName: () => "a" } });
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+  });
+
+  describe("resolveToObjectType", () => {
+    it("should pass resolveToObjectType: true to observeList when true", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+            resolveToObjectType: true,
+          }),
+        { wrapper }
+      );
+
+      expect(mockObserveList).toHaveBeenCalledTimes(1);
+      expect(mockObserveList).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MockInterface,
+          pivotTo: "linkedItems",
+          resolveToObjectType: true,
+        }),
+        expect.any(Object)
+      );
+    });
+
+    it("should not include resolveToObjectType when not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useOsdkObjects(MockInterface, {
+            pivotTo: "linkedItems",
+          }),
+        { wrapper }
+      );
+
+      const callArgs = mockObserveList.mock.calls[0][0];
+      expect(callArgs.resolveToObjectType).toBeUndefined();
+    });
   });
 });

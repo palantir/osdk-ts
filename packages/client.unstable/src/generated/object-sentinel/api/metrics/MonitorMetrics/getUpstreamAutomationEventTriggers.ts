@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetAutomationEventDependenciesRequest
-    as _api_metrics_GetAutomationEventDependenciesRequest,
-  GetAutomationTriggerDependenciesResponse
-    as _api_metrics_GetAutomationTriggerDependenciesResponse,
+  GetAutomationEventDependenciesRequest as _api_metrics_GetAutomationEventDependenciesRequest,
+  GetAutomationTriggerDependenciesResponse as _api_metrics_GetAutomationTriggerDependenciesResponse,
 } from "../__components.js";
 
 /**
@@ -27,12 +26,12 @@ import type {
  */
 export async function getUpstreamAutomationEventTriggers(
   ctx: ConjureContext,
-  request: _api_metrics_GetAutomationEventDependenciesRequest,
+  request: _api_metrics_GetAutomationEventDependenciesRequest
 ): Promise<_api_metrics_GetAutomationTriggerDependenciesResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/upstreamAutomationEventTriggers`,
     "POST",
-    request,
+    request
   );
 }

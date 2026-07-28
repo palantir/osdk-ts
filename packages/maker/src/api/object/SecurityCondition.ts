@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrSecurityGroupGranularCondition,
-} from "@osdk/client.unstable";
+import type { OntologyIrSecurityGroupGranularCondition } from "@osdk/client.unstable";
 
 export type SecurityConditionDefinition =
   | SecurityUnionCondition

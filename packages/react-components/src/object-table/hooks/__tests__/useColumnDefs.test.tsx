@@ -22,12 +22,13 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import { OsdkProvider } from "@osdk/react";
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
 import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
+
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useColumnDefs } from "../useColumnDefs.js";
 
@@ -67,9 +68,12 @@ describe(useColumnDefs, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkProvider client={client}>
+        <TestOsdkProvider
+          client={client}
+          observableClient={fakeObservableClient}
+        >
           {children}
-        </OsdkProvider>
+        </TestOsdkProvider>
       );
     };
   };
@@ -82,10 +86,9 @@ describe(useColumnDefs, () => {
 
     const wrapper = createWrapper(fakeClient);
 
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+      wrapper,
+    });
 
     expect(result.current.loading).toBe(true);
     expect(result.current.columns).toEqual([]);
@@ -101,10 +104,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       expect(result.current.loading).toBe(true);
 
@@ -141,10 +143,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       deferred.resolve({
         ...mockMetadata,
@@ -166,10 +167,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       deferred.resolve({
         ...mockMetadata,
@@ -212,7 +212,6 @@ describe(useColumnDefs, () => {
           maxWidth: 400,
           resizable: true,
           orderable: true,
-          filterable: false,
         },
         {
           locator: { type: "property", id: "email" as TestObjectKeys },
@@ -221,7 +220,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -236,7 +235,7 @@ describe(useColumnDefs, () => {
       expect(nameColumn.id).toBe("name");
       expect(
         (nameColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
+          .accessorKey
       ).toBe("name");
       expect(nameColumn.header).toBe("Name");
       expect(nameColumn.size).toBe(200);
@@ -244,13 +243,12 @@ describe(useColumnDefs, () => {
       expect(nameColumn.maxSize).toBe(400);
       expect(nameColumn.enableResizing).toBe(true);
       expect(nameColumn.enableSorting).toBe(true);
-      expect(nameColumn.enableColumnFilter).toBe(false);
 
       const emailColumn = result.current.columns[1];
       expect(emailColumn.id).toBe("email");
       expect(
         (emailColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
+          .accessorKey
       ).toBe("email");
       expect(emailColumn.header).toBe("Email Address");
     });
@@ -267,7 +265,6 @@ describe(useColumnDefs, () => {
           maxWidth: 400,
           resizable: true,
           orderable: true,
-          filterable: false,
         },
         {
           locator: { type: "property", id: "email" as TestObjectKeys },
@@ -282,7 +279,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve({
@@ -321,7 +318,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -341,9 +338,11 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const customRenderCell = vitest.fn((
-        object: Osdk.Instance<TestObject>,
-      ) => <div>Custom: {(object as unknown as { name: string }).name}</div>);
+      const customRenderCell = vitest.fn(
+        (object: Osdk.Instance<TestObject>) => (
+          <div>Custom: {(object as unknown as { name: string }).name}</div>
+        )
+      );
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
@@ -354,7 +353,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -367,24 +366,143 @@ describe(useColumnDefs, () => {
       expect(nameColumn.cell).toBeDefined();
 
       // Test the cell renderer
-      const mockObject = { name: "John" } as unknown as Osdk.Instance<
-        TestObject
-      >;
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
       const mockCellContext = {
         row: { original: mockObject },
         getValue: () => "John",
+        table: { options: { meta: {} } },
+        column: { columnDef: { meta: {} } },
       };
 
       if (typeof nameColumn.cell === "function") {
-        (nameColumn.cell as unknown as (
-          ctx: typeof mockCellContext,
-        ) => unknown)(mockCellContext);
+        (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
       }
 
-      expect(customRenderCell).toHaveBeenCalledWith(
-        mockObject,
-        { type: "property", id: "name" },
+      expect(customRenderCell).toHaveBeenCalledWith(mockObject, {
+        type: "property",
+        id: "name",
+      });
+    });
+
+    it("uses custom renderCell when column is editable but table is not in edit mode", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const customRenderCell = vitest.fn(
+        (object: Osdk.Instance<TestObject>) => (
+          <div>Custom: {(object as unknown as { name: string }).name}</div>
+        )
       );
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        {
+          locator: { type: "property", id: "name" as TestObjectKeys },
+          editable: true,
+          renderCell: customRenderCell,
+        },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper }
+      );
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      const nameColumn = result.current.columns[0];
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
+      const mockCellContext = {
+        row: { original: mockObject },
+        getValue: () => "John",
+        table: {
+          options: {
+            meta: { onCellEdit: vitest.fn(), isInEditMode: false },
+          },
+        },
+        column: { columnDef: { meta: { editable: true } } },
+      };
+
+      if (typeof nameColumn.cell === "function") {
+        (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
+      }
+
+      expect(customRenderCell).toHaveBeenCalledWith(mockObject, {
+        type: "property",
+        id: "name",
+      });
+    });
+
+    it("skips renderCell and renders editable cell when in edit mode", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const customRenderCell = vitest.fn(
+        (object: Osdk.Instance<TestObject>) => (
+          <div>Custom: {(object as unknown as { name: string }).name}</div>
+        )
+      );
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        {
+          locator: { type: "property", id: "name" as TestObjectKeys },
+          editable: true,
+          renderCell: customRenderCell,
+        },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper }
+      );
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      const nameColumn = result.current.columns[0];
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
+      const mockCellContext = {
+        row: { original: mockObject, id: "row-0" },
+        column: { id: "name", columnDef: { meta: { editable: true } } },
+        getValue: () => "John",
+        table: {
+          options: {
+            meta: { onCellEdit: vitest.fn(), isInEditMode: true },
+          },
+        },
+      };
+
+      if (typeof nameColumn.cell === "function") {
+        (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
+      }
+
+      expect(customRenderCell).not.toHaveBeenCalled();
     });
 
     it("defaults to getValue when renderCell is not provided", async () => {
@@ -403,7 +521,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -415,9 +533,9 @@ describe(useColumnDefs, () => {
       const nameColumn = result.current.columns[0];
       expect(nameColumn.cell).toBeDefined();
 
-      const mockObject = { name: "John" } as unknown as Osdk.Instance<
-        TestObject
-      >;
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
       const mockGetValue = vitest.fn(() => "John");
       const mockCellContext = {
         row: { original: mockObject, id: "row-1" },
@@ -433,15 +551,11 @@ describe(useColumnDefs, () => {
       let cellResult: unknown;
 
       if (typeof nameColumn.cell === "function") {
-        cellResult = (nameColumn.cell as unknown as (
-          ctx: typeof mockCellContext,
-        ) => unknown)(mockCellContext);
+        cellResult = (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
       }
-      expect(cellResult).toEqual(
-        <React.Fragment>
-          John
-        </React.Fragment>,
-      );
+      expect(cellResult).toEqual(<React.Fragment>John</React.Fragment>);
       expect(mockGetValue).toHaveBeenCalled();
     });
 
@@ -470,7 +584,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -485,7 +599,7 @@ describe(useColumnDefs, () => {
       expect(functionColumn.id).toBe("myFunction");
       expect(
         (functionColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
+          .accessorKey
       ).toBe("myFunction");
       expect(functionColumn.header).toBeUndefined();
       expect(functionColumn.size).toBe(150);
@@ -515,7 +629,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+        { wrapper }
       );
 
       deferred.resolve(mockMetadata);
@@ -530,7 +644,7 @@ describe(useColumnDefs, () => {
       expect(rdpColumn.id).toBe("myRdp");
       expect(
         (rdpColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
+          .accessorKey
       ).toBe("myRdp");
       expect(rdpColumn.header).toBeUndefined();
       expect(rdpColumn.size).toBe(180);
@@ -554,8 +668,8 @@ describe(useColumnDefs, () => {
 
       type ColDefs =
         | Array<
-          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
-        >
+            ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+          >
         | undefined;
 
       const { result, rerender } = renderHook(
@@ -564,7 +678,7 @@ describe(useColumnDefs, () => {
         {
           initialProps: { colDefs: initialColumnDefinitions as ColDefs },
           wrapper,
-        },
+        }
       );
 
       deferred.resolve(mockMetadata);
@@ -605,10 +719,9 @@ describe(useColumnDefs, () => {
 
     const wrapper = createWrapper(fakeClient);
 
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+      wrapper,
+    });
 
     const error = new Error("Failed to fetch metadata");
     deferred.reject(error);
@@ -621,6 +734,75 @@ describe(useColumnDefs, () => {
     expect(result.current.columns).toEqual([]);
   });
 
+  describe("marking column meta", () => {
+    const markingMetadata = {
+      ...mockMetadata,
+      properties: {
+        cbacMarking: {
+          type: "marking" as const,
+          displayName: "CBAC Marking",
+          typeMetadata: {
+            type: "marking" as const,
+            markingType: "CBAC" as const,
+          },
+        },
+        mandatoryMarking: {
+          type: "marking" as const,
+          displayName: "Mandatory Marking",
+          typeMetadata: {
+            type: "marking" as const,
+            markingType: "MANDATORY" as const,
+          },
+        },
+        plainMarking: {
+          type: "marking" as const,
+          displayName: "Plain Marking",
+        },
+        notAMarking: {
+          type: "string" as const,
+          displayName: "Plain String",
+        },
+      },
+    };
+
+    it("propagates markingType from property metadata onto column meta", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        { locator: { type: "property", id: "cbacMarking" as TestObjectKeys } },
+        {
+          locator: {
+            type: "property",
+            id: "mandatoryMarking" as TestObjectKeys,
+          },
+        },
+        { locator: { type: "property", id: "plainMarking" as TestObjectKeys } },
+        { locator: { type: "property", id: "notAMarking" as TestObjectKeys } },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper }
+      );
+
+      deferred.resolve(markingMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]?.meta?.markingType).toBe("CBAC");
+      expect(result.current.columns[1]?.meta?.markingType).toBe("MANDATORY");
+      expect(result.current.columns[2]?.meta?.markingType).toBeUndefined();
+      expect(result.current.columns[3]?.meta?.markingType).toBeUndefined();
+    });
+  });
+
   it("memoizes columns based on metadata properties", async () => {
     const deferred = pDefer();
     const fakeClient = {
@@ -631,7 +813,7 @@ describe(useColumnDefs, () => {
 
     const { result, rerender } = renderHook(
       () => useColumnDefs(TestObjectType),
-      { wrapper },
+      { wrapper }
     );
 
     deferred.resolve(mockMetadata);

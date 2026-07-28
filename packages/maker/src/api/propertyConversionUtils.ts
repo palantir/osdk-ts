@@ -17,21 +17,24 @@
 import type { TypeClass } from "./common/TypeClass.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 
-export const defaultTypeClasses: TypeClass[] = [{
-  kind: "render_hint",
-  name: "SELECTABLE",
-}, { kind: "render_hint", name: "SORTABLE" }];
+export const defaultTypeClasses: TypeClass[] = [
+  {
+    kind: "render_hint",
+    name: "SELECTABLE",
+  },
+  { kind: "render_hint", name: "SORTABLE" },
+];
 
 // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
   return ["struct", "mediaReference", "geotimeSeries", "attachment"].includes(
-    getPropertyTypeName(type),
+    getPropertyTypeName(type)
   );
 }
 
 export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
-  return (typeClasses ?? []).some(tc =>
-    tc.kind.toLowerCase() === "render_hint"
+  return (typeClasses ?? []).some(
+    (tc) => tc.kind.toLowerCase() === "render_hint"
   );
 }
 
@@ -39,11 +42,7 @@ export function getPropertyTypeName(type: PropertyTypeType): string {
   return typeof type === "object" ? type.type : type;
 }
 
-export function shouldBeIndexedForSearch(
-  type: PropertyTypeType,
-): boolean {
+export function shouldBeIndexedForSearch(type: PropertyTypeType): boolean {
   const typeName = getPropertyTypeName(type);
-  return !["attachment"].includes(
-    getPropertyTypeName(type),
-  );
+  return !["attachment"].includes(getPropertyTypeName(type));
 }

@@ -5,6 +5,7 @@ export {
   createMediaObject,
   createMediaViaFunction,
   createOsdkTestObject,
+  createScenarioTestOsdk,
   createStructPerson,
   createStructPersonOpiTeam,
   createTestGeoAction,
@@ -12,7 +13,9 @@ export {
   createUnstructuredImageExample,
   deleteFooInterface,
   deleteOsdkTestObject,
+  deleteScenarioTestOsdk,
   editOsdkTestObject,
+  scenarioOsdkTestAction,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
 export {
@@ -31,12 +34,14 @@ export {
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
   OsdkTestInterface,
+  ReducerTestInterface,
 } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
   BoundariesUsState,
   BuilderDeploymentState,
+  CipherTextTest,
   Country_1,
   DherlihyComplexObject,
   Employee,
@@ -60,7 +65,9 @@ export {
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,
+  ReducerTest,
   RhemmingsObjectWithGtsrProperty2,
+  ScenarioTestOsdk,
   SotSensor,
   StateTerritory,
   StructPerson,
@@ -83,7 +90,8 @@ export {
   identity2DArray,
   kbnTsv2MediaReferenceParamOutput,
   queryTakesAllParameterTypes,
+  recursiveStruct,
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';
-export { $ontologyRid } from './OntologyMetadata.js';
+export { $branch, $ontologyRid } from './OntologyMetadata.js';

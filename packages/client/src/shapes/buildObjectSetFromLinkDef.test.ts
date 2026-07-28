@@ -17,6 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, describe, expect, it } from "vitest";
+
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
@@ -56,7 +57,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef,
+      linkDef
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -66,19 +67,21 @@ describe("buildObjectSetFromLinkDefByType", () => {
   it("builds ObjectSet with union set operation", async () => {
     const linkDef = {
       segments: [{ type: "pivotTo" as const, linkName: "lead" }],
-      setOperations: [{
-        type: "union" as const,
-        other: {
-          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+      setOperations: [
+        {
+          type: "union" as const,
+          other: {
+            segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+          },
         },
-      }],
+      ],
     };
 
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
       sourceType,
       50030,
-      linkDef,
+      linkDef
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -89,19 +92,21 @@ describe("buildObjectSetFromLinkDefByType", () => {
   it("builds ObjectSet with intersect set operation", async () => {
     const linkDef = {
       segments: [{ type: "pivotTo" as const, linkName: "lead" }],
-      setOperations: [{
-        type: "intersect" as const,
-        other: {
-          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+      setOperations: [
+        {
+          type: "intersect" as const,
+          other: {
+            segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+          },
         },
-      }],
+      ],
     };
 
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
       sourceType,
       50030,
-      linkDef,
+      linkDef
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -112,19 +117,21 @@ describe("buildObjectSetFromLinkDefByType", () => {
   it("builds ObjectSet with subtract set operation", async () => {
     const linkDef = {
       segments: [{ type: "pivotTo" as const, linkName: "lead" }],
-      setOperations: [{
-        type: "subtract" as const,
-        other: {
-          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+      setOperations: [
+        {
+          type: "subtract" as const,
+          other: {
+            segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+          },
         },
-      }],
+      ],
     };
 
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
       sourceType,
       50030,
-      linkDef,
+      linkDef
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -155,7 +162,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef,
+      linkDef
     );
 
     const wireOs = getWireObjectSet(objectSet);

@@ -15,6 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
 describe("SatisfiesSemver", () => {

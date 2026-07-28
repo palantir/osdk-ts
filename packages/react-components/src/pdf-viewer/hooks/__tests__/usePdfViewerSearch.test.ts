@@ -23,6 +23,7 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { describe, expect, it, vi } from "vitest";
+
 import { usePdfViewerSearch } from "../usePdfViewerSearch.js";
 
 type Listener = (...args: unknown[]) => void;
@@ -117,7 +118,7 @@ describe("usePdfViewerSearch", () => {
         query: "hello",
         highlightAll: true,
         caseSensitive: false,
-      }),
+      })
     );
   });
 
@@ -139,7 +140,7 @@ describe("usePdfViewerSearch", () => {
       expect.objectContaining({
         type: "again",
         findPrevious: false,
-      }),
+      })
     );
   });
 
@@ -161,7 +162,7 @@ describe("usePdfViewerSearch", () => {
       expect.objectContaining({
         type: "again",
         findPrevious: true,
-      }),
+      })
     );
   });
 
@@ -235,7 +236,7 @@ describe("usePdfViewerSearch", () => {
       "find",
       expect.objectContaining({
         query: "",
-      }),
+      })
     );
   });
 });

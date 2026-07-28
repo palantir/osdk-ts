@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  UpdateAssociationRequest
-    as _api_association_metadata_UpdateAssociationRequest,
-  UpdateAssociationResponse
-    as _api_association_metadata_UpdateAssociationResponse,
+  UpdateAssociationRequest as _api_association_metadata_UpdateAssociationRequest,
+  UpdateAssociationResponse as _api_association_metadata_UpdateAssociationResponse,
 } from "../association/metadata/__components.js";
 
 /**
@@ -29,12 +28,12 @@ import type {
 export async function updateAssociation(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_association_metadata_UpdateAssociationRequest,
+  request: _api_association_metadata_UpdateAssociationRequest
 ): Promise<_api_association_metadata_UpdateAssociationResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/updateOntologyEntityAssociation`,
     "PUT",
-    request,
+    request
   );
 }

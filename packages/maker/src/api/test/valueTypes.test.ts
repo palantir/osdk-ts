@@ -15,6 +15,7 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { defineObject } from "../defineObject.js";
 import {
   defineOntology,
@@ -34,13 +35,13 @@ describe("Value Types", () => {
         apiName: "apiName",
         displayName: "displayName",
         type: {
-          "type": "boolean",
-          constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
+          type: "boolean",
+          constraints: [{ constraint: { allowedValues: ["TRUE_VALUE"] } }],
         },
         version: "not a version",
       })
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Version is not a valid semver]",
+      "[Error: Invariant failed: Version is not a valid semver]"
     );
   });
 
@@ -50,7 +51,7 @@ describe("Value Types", () => {
       displayName: "String With Constraints",
       description: "A string type with additional constraints",
       type: {
-        "type": "string",
+        type: "string",
         constraints: [
           {
             constraint: {
@@ -76,7 +77,7 @@ describe("Value Types", () => {
       apiName: "testObject",
       primaryKeyPropertyApiName: "constrainedString",
       properties: {
-        "constrainedString": {
+        constrainedString: {
           type: "string",
           displayName: "Constrained String",
           valueType: testStringValueType,
@@ -86,8 +87,8 @@ describe("Value Types", () => {
 
     const ontology = dumpOntologyFullMetadata();
     const objectPropertyType =
-      ontology.ontology.objectTypes["com.palantir.testObject"]
-        .objectType.propertyTypes["constrainedString"];
+      ontology.ontology.objectTypes["com.palantir.testObject"].objectType
+        .propertyTypes["constrainedString"];
 
     expect(objectPropertyType.valueType).toEqual({
       apiName: "stringWithConstraints",
@@ -100,26 +101,31 @@ describe("Value Types", () => {
     });
 
     expect(objectPropertyType.dataConstraints).toBeDefined();
-    expect(objectPropertyType.dataConstraints?.propertyTypeConstraints)
-      .toHaveLength(1);
+    expect(
+      objectPropertyType.dataConstraints?.propertyTypeConstraints
+    ).toHaveLength(1);
 
-    const constraintWrapper = objectPropertyType.dataConstraints
-      ?.propertyTypeConstraints[0];
+    const constraintWrapper =
+      objectPropertyType.dataConstraints?.propertyTypeConstraints[0];
     expect(constraintWrapper?.constraints?.type).toBe("string");
     expect(
-      (constraintWrapper?.constraints as {
-        type: "string";
-        string: { length: { minSize: number; maxSize: number } };
-      }).string.length.minSize,
+      (
+        constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }
+      ).string.length.minSize
     ).toBe(5);
     expect(
-      (constraintWrapper?.constraints as {
-        type: "string";
-        string: { length: { minSize: number; maxSize: number } };
-      }).string.length.maxSize,
+      (
+        constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }
+      ).string.length.maxSize
     ).toBe(20);
     expect(constraintWrapper?.failureMessage?.message).toBe(
-      "String must be between 5 and 20 characters",
+      "String must be between 5 and 20 characters"
     );
   });
 
@@ -128,8 +134,8 @@ describe("Value Types", () => {
       apiName: "apiName",
       displayName: "displayName",
       type: {
-        "type": "boolean",
-        constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
+        type: "boolean",
+        constraints: [{ constraint: { allowedValues: ["TRUE_VALUE"] } }],
       },
       version: "0.1.0",
     });
@@ -184,8 +190,8 @@ describe("Value Types", () => {
       apiName: "apiName",
       displayName: "displayName",
       type: {
-        "type": "boolean",
-        constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
+        type: "boolean",
+        constraints: [{ constraint: { allowedValues: ["TRUE_VALUE"] } }],
       },
       status: {
         type: "deprecated",
@@ -308,7 +314,7 @@ describe("Value Types", () => {
         version: "1.0.0",
       })
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
+      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]"
     );
   });
 
@@ -334,7 +340,7 @@ describe("Value Types", () => {
     const wireType = dumpValueTypeWireType();
     expect(wireType.valueTypes).toHaveLength(1);
     expect(wireType.valueTypes[0].versions).toHaveLength(2);
-    expect(wireType.valueTypes[0].versions.map(v => v.version)).toEqual([
+    expect(wireType.valueTypes[0].versions.map((v) => v.version)).toEqual([
       "1.0.0",
       "2.0.0",
     ]);

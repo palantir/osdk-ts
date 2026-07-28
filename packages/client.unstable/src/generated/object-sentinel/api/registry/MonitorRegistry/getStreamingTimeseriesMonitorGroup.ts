@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetStreamingTimeseriesMonitorGroupRequest
-    as _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
-  GetStreamingTimeseriesMonitorGroupResponse
-    as _api_registry_GetStreamingTimeseriesMonitorGroupResponse,
+  GetStreamingTimeseriesMonitorGroupRequest as _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
+  GetStreamingTimeseriesMonitorGroupResponse as _api_registry_GetStreamingTimeseriesMonitorGroupResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getStreamingTimeseriesMonitorGroup(
   ctx: ConjureContext,
-  request: _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
+  request: _api_registry_GetStreamingTimeseriesMonitorGroupRequest
 ): Promise<_api_registry_GetStreamingTimeseriesMonitorGroupResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/get-streaming-timeseries-monitor-group`,
     "POST",
-    request,
+    request
   );
 }

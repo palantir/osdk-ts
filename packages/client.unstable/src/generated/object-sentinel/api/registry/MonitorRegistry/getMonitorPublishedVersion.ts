@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
@@ -29,13 +30,13 @@ import type { GetPublishedMonitorVersionResponse as _api_registry_GetPublishedMo
 export async function getMonitorPublishedVersion(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<_api_registry_GetPublishedMonitorVersionResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/published`,
     "GET",
     undefined,
-    { branchRid },
+    { branchRid }
   );
 }

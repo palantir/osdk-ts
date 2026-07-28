@@ -24,11 +24,14 @@ import type {
 
 type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
   ? PropName
-  : T extends "$count" ? T
-  : never;
+  : T extends "$count"
+    ? T
+    : never;
 
-type ExtractMetricNameForPropName<T, PropName extends string> = T extends
-  `${PropName}:${infer MetricName}` ? MetricName : never;
+type ExtractMetricNameForPropName<
+  T,
+  PropName extends string,
+> = T extends `${PropName}:${infer MetricName}` ? MetricName : never;
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition,
@@ -37,10 +40,13 @@ export type AggregationResultsWithoutGroups<
   [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
     ? number
     : {
-      [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
-        MetricName extends "approximateDistinct" | "exactDistinct" ? number
+        [MetricName in ExtractMetricNameForPropName<
+          keyof AC & string,
+          PropName
+        >]: MetricName extends "approximateDistinct" | "exactDistinct"
+          ? number
           : OsdkObjectPropertyType<
-            CompileTimeMetadata<Q>["properties"][PropName]
-          >;
-    };
+              CompileTimeMetadata<Q>["properties"][PropName]
+            >;
+      };
 };

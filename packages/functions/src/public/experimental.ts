@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
+export { ScopeAuthorization, ScopeResources } from "../scope/types.js";
+export type {
+  Scope,
+  ScopeReadAuthorization,
+  ScopeReadWriteAuthorization,
+} from "../scope/types.js";
 export type { WriteableClient } from "../transactions/WriteableClient.js";

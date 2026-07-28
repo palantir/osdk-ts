@@ -21,7 +21,7 @@ import type { PropertyBooleanFormattingRule } from "@osdk/api";
  */
 export function formatBoolean(
   value: boolean,
-  rule: PropertyBooleanFormattingRule,
+  rule: PropertyBooleanFormattingRule
 ): string {
   return value ? rule.valueIfTrue : rule.valueIfFalse;
 }

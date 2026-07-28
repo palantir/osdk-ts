@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 
 describe(GenericCanonicalizer, () => {

@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface ObjectType extends ObjectTypeDefinition {
@@ -53,7 +54,7 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
 }
 
 export interface ObjectSetParameterValue<
-  T extends AllowedObjectSetParameterType,
+  _T extends AllowedObjectSetParameterType,
 > {
   type: "objectSet";
   value: AsyncValue<{

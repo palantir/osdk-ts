@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
   OntologyUpdateRequest as _api_modification_OntologyUpdateRequest,
@@ -28,12 +29,12 @@ import type {
 export async function updateOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_OntologyUpdateRequest,
+  request: _api_modification_OntologyUpdateRequest
 ): Promise<_api_modification_OntologyUpdateResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/update/${ontologyRid}`,
     "POST",
-    request,
+    request
   );
 }

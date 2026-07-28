@@ -20,5 +20,5 @@ import PinoPretty from "pino-pretty";
 
 export const logger: Logger = pino(
   { level: "debug" },
-  PinoPretty.build({ sync: true }),
+  PinoPretty.build({ sync: true })
 );

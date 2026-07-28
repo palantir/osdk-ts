@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkObjectTypePermissionsRequest
-    as _api_permissions_GetBulkObjectTypePermissionsRequest,
-  GetBulkObjectTypePermissionsResponse
-    as _api_permissions_GetBulkObjectTypePermissionsResponse,
+  GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest,
+  GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse,
 } from "../__components.js";
 
 /**
@@ -27,7 +26,7 @@ import type {
  */
 export async function getBulkObjectTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkObjectTypePermissionsRequest,
+  request: _api_permissions_GetBulkObjectTypePermissionsRequest
 ): Promise<_api_permissions_GetBulkObjectTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/objectTypes`, "PUT", request);
 }

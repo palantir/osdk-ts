@@ -15,13 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BranchRid as _api_BranchRid,
   MonitorRid as _api_MonitorRid,
 } from "../../__components.js";
 import type {
-  GetGloballyScopedMonitorMetadataEventsResponse
-    as _api_registry_GetGloballyScopedMonitorMetadataEventsResponse,
+  GetGloballyScopedMonitorMetadataEventsResponse as _api_registry_GetGloballyScopedMonitorMetadataEventsResponse,
   PageToken as _api_registry_PageToken,
 } from "../__components.js";
 
@@ -35,13 +35,13 @@ export async function getGloballyScopedMonitorMetadataEvents(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
   pageToken: _api_registry_PageToken | null | undefined,
-  branchRid: _api_BranchRid | null | undefined,
+  branchRid: _api_BranchRid | null | undefined
 ): Promise<_api_registry_GetGloballyScopedMonitorMetadataEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/metadata-events`,
     "GET",
     undefined,
-    { pageToken, branchRid },
+    { pageToken, branchRid }
   );
 }

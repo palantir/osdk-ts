@@ -18,5 +18,6 @@ export {
   createFetch,
   getAnthropicBaseUrl,
   getFoundryToken,
+  getGoogleBaseUrl,
   getOpenAiBaseUrl,
 } from "./utils.js";

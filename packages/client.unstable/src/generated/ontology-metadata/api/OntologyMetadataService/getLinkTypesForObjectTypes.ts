@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
   GetLinkTypesForObjectTypesResponse as _api_GetLinkTypesForObjectTypesResponse,
@@ -32,12 +33,12 @@ import type {
  */
 export async function getLinkTypesForObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetLinkTypesForObjectTypesRequest,
+  request: _api_GetLinkTypesForObjectTypesRequest
 ): Promise<_api_GetLinkTypesForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/linkTypesForObjectTypes`,
     "POST",
-    request,
+    request
   );
 }

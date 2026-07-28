@@ -23,6 +23,6 @@ import { Equipment } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-async function getLinkedWithPivotEmployee(){
-    return await client(Equipment).pivotTo("assignedTo").fetchPage();
+async function getLinkedWithPivotEmployee() {
+  return await client(Equipment).pivotTo("assignedTo").fetchPage();
 }

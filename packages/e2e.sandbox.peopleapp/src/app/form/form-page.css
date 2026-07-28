@@ -1,5 +1,7 @@
 .formCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
 
   background: var(--osdk-background-primary);
   border: var(--osdk-surface-border-width) solid

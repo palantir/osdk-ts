@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { coerceFieldValue } from "../coerceFieldValue.js";
 
 describe("coerceFieldValue", () => {
@@ -129,7 +130,7 @@ describe("coerceFieldValue", () => {
     it("coerces Date objects to ISO strings", () => {
       const date = new Date("2024-01-15T10:30:00.000Z");
       expect(coerceFieldValue("datetime", date)).toBe(
-        "2024-01-15T10:30:00.000Z",
+        "2024-01-15T10:30:00.000Z"
       );
     });
 

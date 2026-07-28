@@ -1,5 +1,116 @@
 # @osdk/create-app.template.react
 
+## 2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 5e380f2: Template scripts express every check as a standard lint/typecheck/test task instead of a bespoke `check` script, so a scaffolded project's verification runs under the same tasks its CI already runs. The TypeScript Library template folds formatting into `lint` (`ultracite check`); the React template gains a `typecheck` script (`tsc --noEmit`). Both drop their standalone `check` script.
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+## 2.49.0
+
+## 2.48.0
+
+### Minor Changes
+
+- 079b488: Lowercase the generated package.json name field so scaffolded projects with uppercase names are npm-publishable
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
+## 2.43.0
+
+## 2.42.0
+
+## 2.41.0
+
+## 2.40.0
+
+## 2.39.0
+
+## 2.38.0
+
+## 2.37.0
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+## 2.33.0
+
+## 2.32.0
+
+## 2.31.0
+
+## 2.30.0
+
+## 2.29.0
+
+## 2.28.0
+
+## 2.27.0
+
+## 2.26.0
+
+## 2.25.0
+
+## 2.24.0
+
+## 2.23.0
+
+## 2.22.0
+
+## 2.21.0
+
+## 2.20.0
+
+## 2.19.0
+
+## 2.18.0
+
+## 2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+## 2.15.0
+
+## 2.14.0
+
+## 2.13.0
+
+### Minor Changes
+
+- e2bad8f: add @osdk/react dep and OsdkProvider wrapping in app and widget react templates so the commented useOsdkClient example works when uncommented
+
+## 2.12.0
+
+## 2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 2.9.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
 ## 2.8.0
 
 ### Minor Changes

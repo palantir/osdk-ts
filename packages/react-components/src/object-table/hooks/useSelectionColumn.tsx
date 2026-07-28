@@ -22,10 +22,14 @@ import type {
 } from "@osdk/api";
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useRef } from "react";
-import { SelectionCell, SelectionHeaderCell } from "../SelectionCells.js";
-import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
-interface UseSelectionColumnProps {
+import { SelectionCell, SelectionHeaderCell } from "../SelectionCells.js";
+import {
+  SELECTION_COLUMN_ID,
+  SELECTION_COLUMN_WIDTH,
+} from "../utils/constants.js";
+
+export interface UseSelectionColumnProps {
   selectionMode?: "single" | "multiple" | "none";
   isAllSelected: boolean;
   hasSelection: boolean;
@@ -35,22 +39,16 @@ interface UseSelectionColumnProps {
 
 export const useSelectionColumn = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >({
   selectionMode,
   isAllSelected,
   hasSelection,
   onToggleAll,
   onToggleRow,
-}: UseSelectionColumnProps):
-  | ColumnDef<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-  >
-  | null =>
-{
+}: UseSelectionColumnProps): ColumnDef<
+  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+> | null => {
   // TODO: Replace with useLatestRef
   const isAllSelectedRef = useRef(isAllSelected);
   isAllSelectedRef.current = isAllSelected;
@@ -71,35 +69,27 @@ export const useSelectionColumn = <
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: SELECTION_COLUMN_ID,
-      header: () => (
-        selectionMode === "multiple"
-          ? (
-            <SelectionHeaderCell
-              isAllSelected={isAllSelectedRef.current}
-              hasSelection={hasSelectionRef.current}
-              onToggleAll={onToggleAllRef.current}
-            />
-          )
-          : null
-      ),
+      header: () =>
+        selectionMode === "multiple" ? (
+          <SelectionHeaderCell
+            isAllSelected={isAllSelectedRef.current}
+            hasSelection={hasSelectionRef.current}
+            onToggleAll={onToggleAllRef.current}
+          />
+        ) : null,
       cell: ({ row }: { row: any }) => (
-        <SelectionCell
-          row={row}
-          onToggleRow={onToggleRowRef.current}
-        />
+        <SelectionCell row={row} onToggleRow={onToggleRowRef.current} />
       ),
-      size: 50,
-      minSize: 50,
-      maxSize: 50,
+      size: SELECTION_COLUMN_WIDTH,
+      minSize: SELECTION_COLUMN_WIDTH,
+      maxSize: SELECTION_COLUMN_WIDTH,
       enableSorting: false,
       enableResizing: false,
       enablePinning: false,
     };
 
     return colDef;
-  }, [
-    selectionMode,
-  ]);
+  }, [selectionMode]);
 
   return selectionColumn;
 };

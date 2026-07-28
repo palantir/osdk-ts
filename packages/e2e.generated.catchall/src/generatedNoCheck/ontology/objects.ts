@@ -1,6 +1,7 @@
 export { BgaoNflPlayer } from './objects/BgaoNflPlayer.js';
 export { BoundariesUsState } from './objects/BoundariesUsState.js';
 export { BuilderDeploymentState } from './objects/BuilderDeploymentState.js';
+export { CipherTextTest } from './objects/CipherTextTest.js';
 export { Country_1 } from './objects/Country_1.js';
 export { DherlihyComplexObject } from './objects/DherlihyComplexObject.js';
 export { Employee } from './objects/Employee.js';
@@ -24,7 +25,9 @@ export { NihalbCastingObjectTypeC } from './objects/NihalbCastingObjectTypeC.js'
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
+export { ReducerTest } from './objects/ReducerTest.js';
 export { RhemmingsObjectWithGtsrProperty2 } from './objects/RhemmingsObjectWithGtsrProperty2.js';
+export { ScenarioTestOsdk } from './objects/ScenarioTestOsdk.js';
 export { SotSensor } from './objects/SotSensor.js';
 export { StateTerritory } from './objects/StateTerritory.js';
 export { StructPerson } from './objects/StructPerson.js';

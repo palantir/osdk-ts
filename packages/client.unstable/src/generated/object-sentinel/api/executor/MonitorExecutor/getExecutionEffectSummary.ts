@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetExecutionEffectSummaryRequest
-    as _api_executor_GetExecutionEffectSummaryRequest,
-  GetExecutionEffectSummaryResponse
-    as _api_executor_GetExecutionEffectSummaryResponse,
+  GetExecutionEffectSummaryRequest as _api_executor_GetExecutionEffectSummaryRequest,
+  GetExecutionEffectSummaryResponse as _api_executor_GetExecutionEffectSummaryResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getExecutionEffectSummary(
   ctx: ConjureContext,
-  request: _api_executor_GetExecutionEffectSummaryRequest,
+  request: _api_executor_GetExecutionEffectSummaryRequest
 ): Promise<_api_executor_GetExecutionEffectSummaryResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/executionEffectSummary`,
     "POST",
-    request,
+    request
   );
 }

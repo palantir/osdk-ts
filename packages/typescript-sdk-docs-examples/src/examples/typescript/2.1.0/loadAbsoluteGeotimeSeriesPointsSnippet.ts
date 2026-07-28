@@ -23,8 +23,8 @@ import type { Osdk } from "@osdk/client";
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
-    return obj.travelHistory?.getAllValues({
-        $startTime: "2022-08-13T12:34:56Z",
-        $endTime: "2022-08-14T12:34:56Z",
-    });
+  return obj.travelHistory?.getAllValues({
+    $startTime: "2022-08-13T12:34:56Z",
+    $endTime: "2022-08-14T12:34:56Z",
+  });
 }

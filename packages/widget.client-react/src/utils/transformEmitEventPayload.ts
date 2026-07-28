@@ -23,10 +23,11 @@ import type {
   ParameterValue,
 } from "@osdk/widget.api";
 import type { WidgetConfig } from "@osdk/widget.client";
+
 import type { AugmentedEventParameterValueMap } from "../context.js";
 
-type ObjectSetEmitEventPayload = ParameterValue.ObjectSet["value"] extends
-  AsyncValue<infer T> ? T : never;
+type ObjectSetEmitEventPayload =
+  ParameterValue.ObjectSet["value"] extends AsyncValue<infer T> ? T : never;
 
 type TransformedEmitEventPayload<
   C extends WidgetConfig<C["parameters"]>,
@@ -38,13 +39,15 @@ type TransformedEmitEventPayload<
 type TransformedEmitEventPayloadResult<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
-> = {
-  type: "async";
-  payload: Promise<TransformedEmitEventPayload<C, K>>;
-} | {
-  type: "passThrough";
-  payload: TransformedEmitEventPayload<C, K>;
-};
+> =
+  | {
+      type: "async";
+      payload: Promise<TransformedEmitEventPayload<C, K>>;
+    }
+  | {
+      type: "passThrough";
+      payload: TransformedEmitEventPayload<C, K>;
+    };
 
 export function transformEmitEventPayload<
   C extends WidgetConfig<C["parameters"]>,
@@ -53,7 +56,7 @@ export function transformEmitEventPayload<
   config: C,
   eventId: K,
   payload: { parameterUpdates: AugmentedEventParameterValueMap<C, K> },
-  osdkClient?: Client,
+  osdkClient?: Client
 ): TransformedEmitEventPayloadResult<C, K> {
   for (const paramId of Object.keys(payload.parameterUpdates)) {
     const paramConfig = config.parameters[paramId];
@@ -64,7 +67,7 @@ export function transformEmitEventPayload<
           config,
           eventId,
           payload,
-          osdkClient,
+          osdkClient
         ),
       };
     }
@@ -95,12 +98,12 @@ export async function transformEmitEventPayloadAsync<
   config: C,
   eventId: K,
   payload: { parameterUpdates: AugmentedEventParameterValueMap<C, K> },
-  osdkClient?: Client,
+  osdkClient?: Client
 ): Promise<{ parameterUpdates: EventParameterValueMap<C, K> }> {
   const event = config.events[eventId as string];
   if (event == null) {
     throw new Error(
-      `Event with ID "${eventId.toString()}" not found in widget config`,
+      `Event with ID "${eventId.toString()}" not found in widget config`
     );
   }
 
@@ -112,22 +115,22 @@ export async function transformEmitEventPayloadAsync<
       if (paramConfig?.type === "objectSet") {
         if (osdkClient == null) {
           throw new Error(
-            `Cannot emit event "${eventId.toString()}" with ObjectSet parameter "${paramId}" without an osdk client`,
+            `Cannot emit event "${eventId.toString()}" with ObjectSet parameter "${paramId}" without an osdk client`
           );
         }
         const objectSetRid = await createAndFetchTempObjectSetRid(
           osdkClient,
-          paramValue as ObjectSet,
+          paramValue as ObjectSet
         );
         return [paramId, { objectSetRid } satisfies ObjectSetEmitEventPayload];
       }
       return [paramId, paramValue];
-    }),
+    })
   );
 
   return {
     parameterUpdates: Object.fromEntries(
-      transformedEntries,
+      transformedEntries
     ) as EventParameterValueMap<C, K>,
   };
 }

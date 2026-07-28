@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  LoadAllObjectTypesFromOntologyPageRequest
-    as _api_LoadAllObjectTypesFromOntologyPageRequest,
-  LoadAllObjectTypesFromOntologyPageResponse
-    as _api_LoadAllObjectTypesFromOntologyPageResponse,
+  LoadAllObjectTypesFromOntologyPageRequest as _api_LoadAllObjectTypesFromOntologyPageRequest,
+  LoadAllObjectTypesFromOntologyPageResponse as _api_LoadAllObjectTypesFromOntologyPageResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function loadAllObjectTypesFromOntologyPage(
   ctx: ConjureContext,
-  request: _api_LoadAllObjectTypesFromOntologyPageRequest,
+  request: _api_LoadAllObjectTypesFromOntologyPageRequest
 ): Promise<_api_LoadAllObjectTypesFromOntologyPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/loadAllObjectTypes`,
     "POST",
-    request,
+    request
   );
 }

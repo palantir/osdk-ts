@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
@@ -25,6 +26,7 @@ import type {
   SelectFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
+import type { StaticValuesComponentType } from "../types/StaticValuesTypes.js";
 
 export const MockObjectType = {
   apiName: "TestObject",
@@ -53,7 +55,7 @@ export function createPropertyFilterDef<
 >(
   key: K,
   filterComponent: C,
-  filterState: FilterState,
+  filterState: FilterState
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "PROPERTY",
@@ -67,7 +69,7 @@ export function createPropertyFilterDef<
  * Create a hasLink filter definition for testing
  */
 export function createHasLinkFilterDef(
-  linkName: string,
+  linkName: string
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "HAS_LINK",
@@ -78,16 +80,24 @@ export function createHasLinkFilterDef(
 
 /**
  * Create a linkedProperty filter definition for testing.
+ * Pass `reverseLinkName: null` to omit it (UI-only filter); otherwise it
+ * defaults to `"reverseLink"`.
  * Cast required because LinkedPropertyFilterDefinition has complex generic constraints
  * that can't be satisfied with literal link names.
  */
 export function createLinkedPropertyFilterDef(
   linkName: string,
   linkedPropertyKey: string,
+  options: { reverseLinkName?: string | null } = {}
 ): FilterDefinitionUnion<typeof MockObjectType> {
+  const reverseLinkName: string | undefined =
+    "reverseLinkName" in options
+      ? (options.reverseLinkName ?? undefined)
+      : "reverseLink";
   return {
     type: "LINKED_PROPERTY",
     linkName,
+    ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },
@@ -102,7 +112,7 @@ export function createLinkedPropertyFilterDef(
  * Create a keywordSearch filter definition for testing
  */
 export function createKeywordSearchFilterDef(
-  properties: string[] | "all",
+  properties: string[] | "all"
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "KEYWORD_SEARCH",
@@ -116,7 +126,7 @@ export function createKeywordSearchFilterDef(
  * Cast required because CustomFilterDefinition expects specific callback signatures.
  */
 export function createCustomFilterDef(
-  key: string,
+  key: string
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "CUSTOM",
@@ -136,7 +146,7 @@ export function createSelectState<T = string>(
   options?: {
     isExcluding?: boolean;
     includeNull?: boolean;
-  },
+  }
 ): SelectFilterState<T> {
   return {
     type: "SELECT",
@@ -151,7 +161,7 @@ export function createSelectState<T = string>(
  */
 export function createContainsTextState(
   value?: string,
-  options?: { isExcluding?: boolean },
+  options?: { isExcluding?: boolean }
 ): ContainsTextFilterState {
   return {
     type: "CONTAINS_TEXT",
@@ -176,7 +186,7 @@ export function createToggleState(enabled: boolean): ToggleFilterState {
 export function createNumberRangeState(
   minValue?: number,
   maxValue?: number,
-  options?: { includeNull?: boolean; isExcluding?: boolean },
+  options?: { includeNull?: boolean; isExcluding?: boolean }
 ): NumberRangeFilterState {
   return {
     type: "NUMBER_RANGE",
@@ -193,7 +203,7 @@ export function createNumberRangeState(
 export function createDateRangeState(
   minValue?: Date,
   maxValue?: Date,
-  options?: { includeNull?: boolean; isExcluding?: boolean },
+  options?: { includeNull?: boolean; isExcluding?: boolean }
 ): DateRangeFilterState {
   return {
     type: "DATE_RANGE",
@@ -202,4 +212,28 @@ export function createDateRangeState(
     includeNull: options?.includeNull,
     isExcluding: options?.isExcluding,
   };
+}
+
+/**
+ * Create a static values filter definition for testing
+ */
+export function createStaticValuesFilterDef(
+  key: string,
+  filterComponent: StaticValuesComponentType,
+  values: string[],
+  filterState: FilterState,
+  options?: {
+    toWhereClause?: (
+      state: FilterState
+    ) => WhereClause<typeof MockObjectType> | undefined;
+  }
+): FilterDefinitionUnion<typeof MockObjectType> {
+  return {
+    type: "STATIC_VALUES",
+    key,
+    filterComponent,
+    values,
+    filterState,
+    toWhereClause: options?.toWhereClause,
+  } as FilterDefinitionUnion<typeof MockObjectType>;
 }

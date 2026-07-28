@@ -21,7 +21,7 @@ import type {
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
   PdfViewerAnnotationLayer,
@@ -30,14 +30,12 @@ import {
   PdfViewerToolbar,
   usePdfViewerContext,
   usePdfViewerInstance,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 // Stable empty array to avoid re-render loops
 const EMPTY_ANNOTATIONS: PdfAnnotation[] = [];
@@ -204,9 +202,12 @@ function ConnectedPdfView(): React.ReactElement {
         currentPage={ctx.currentPage}
         numPages={ctx.numPages}
         scale={ctx.scale}
+        autoSize={ctx.autoSize}
         sidebarOpen={ctx.sidebarOpen}
         onPageChange={ctx.scrollToPage}
-        onScaleChange={ctx.setScale}
+        onZoomIn={ctx.zoomIn}
+        onZoomOut={ctx.zoomOut}
+        onAutoSizeToggle={ctx.toggleAutoSize}
         onSearchOpen={ctx.search.openSearch}
         onSidebarToggle={ctx.toggleSidebar}
         onDownload={handleDownload}
@@ -235,20 +236,32 @@ function ConnectedPdfView(): React.ReactElement {
           <div ref={ctx.containerRef} style={scrollContainerStyles}>
             <div ref={ctx.viewerRef} className="pdfViewer" />
             {ctx.portalTargets.map((target) => {
-              const pageAnnotations = ctx.annotationsByPage[target.pageNumber]
-                ?? EMPTY_ANNOTATIONS;
+              const pageAnnotations =
+                ctx.annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATIONS;
               if (pageAnnotations.length === 0) {
                 return null;
               }
-              return createPortal(
-                <PdfViewerAnnotationLayer
+              return (
+                <div
                   key={target.pageNumber}
-                  annotations={pageAnnotations}
-                  pageHeight={target.pageHeight}
-                  scale={target.scale}
-                  onAnnotationClick={ctx.onAnnotationClick}
-                />,
-                target.container,
+                  style={{
+                    position: "absolute",
+                    left: target.left,
+                    top: target.top,
+                    width: target.width,
+                    height: target.height,
+                    pointerEvents: "none",
+                    zIndex: 1,
+                  }}
+                >
+                  <PdfViewerAnnotationLayer
+                    annotations={pageAnnotations}
+                    pageHeight={target.pageHeight}
+                    scale={target.scale}
+                    transform={target.transform}
+                    onAnnotationClick={ctx.onAnnotationClick}
+                  />
+                </div>
               );
             })}
           </div>
@@ -277,7 +290,7 @@ function AnnotationSidebarItem({
 
   const handleMouseEnter = useCallback(
     () => onHover(annotation.id),
-    [onHover, annotation.id],
+    [onHover, annotation.id]
   );
 
   const handleMouseLeave = useCallback(() => onHover(null), [onHover]);
@@ -289,7 +302,7 @@ function AnnotationSidebarItem({
         ? "var(--osdk-palette-blue-100, #e3f2fd)"
         : "transparent",
     }),
-    [isHovered],
+    [isHovered]
   );
 
   return (
@@ -333,12 +346,10 @@ function AnnotationSidebar({
   );
 }
 
-function AnnotationExplorerDemo(
-  { src }: { src: string },
-): React.ReactElement {
-  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<
-    string | null
-  >(null);
+function AnnotationExplorerDemo({ src }: { src: string }): React.ReactElement {
+  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
+    null
+  );
 
   const visibleAnnotations = useMemo(() => {
     if (hoveredAnnotationId == null) return EMPTY_ANNOTATIONS;
@@ -350,12 +361,9 @@ function AnnotationExplorerDemo(
     annotations: visibleAnnotations,
   });
 
-  const handleAnnotationHover = useCallback(
-    (annotationId: string | null) => {
-      setHoveredAnnotationId(annotationId);
-    },
-    [],
-  );
+  const handleAnnotationHover = useCallback((annotationId: string | null) => {
+    setHoveredAnnotationId(annotationId);
+  }, []);
 
   return (
     <PdfViewerProvider value={viewer}>
@@ -372,8 +380,9 @@ function AnnotationExplorerDemo(
 }
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Components/PdfViewer/Recipes",
+  title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
+  tags: ["beta"],
 };
 
 export default meta;

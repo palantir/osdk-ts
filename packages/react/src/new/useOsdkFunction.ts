@@ -24,11 +24,12 @@ import type {
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
-} from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+
+import { stableSerialize } from "./core/stableSerialize.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
   /**
@@ -104,8 +105,8 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
    */
   data:
     | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
-      ? Awaited<R>
-      : never)
+        ? Awaited<R>
+        : never)
     | undefined;
 
   /**
@@ -129,12 +130,6 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
    */
   refetch: () => Promise<void>;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for executing and observing OSDK functions.
@@ -171,9 +166,9 @@ declare const process: {
  */
 export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   queryDef: Q,
-  options: UseOsdkFunctionOptions<Q> = {},
+  options: UseOsdkFunctionOptions<Q> = {}
 ): UseOsdkFunctionResult<Q> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
   const {
     params,
     dependsOn,
@@ -184,68 +179,72 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const stableParams = React.useMemo(
     () => params,
-    [JSON.stringify(params)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stableSerialize(params)]
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
-    [JSON.stringify(
-      dependsOn?.map(d => typeof d === "string" ? d : d.apiName),
-    )],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      stableSerialize(
+        dependsOn?.map((d) => (typeof d === "string" ? d : d.apiName))
+      ),
+    ]
   );
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
-    [JSON.stringify(
-      dependsOnObjects?.map(item =>
-        "$apiName" in item
-          ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
-          : { __objectSet: getWireObjectSet(item) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      stableSerialize(
+        dependsOnObjects?.map((item) =>
+          "$apiName" in item
+            ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
+            : item
+        )
       ),
-    )],
+    ]
   );
 
   // Record<string, unknown> required as typing is figured out at runtime
   const paramsForApi = stableParams as Record<string, unknown> | undefined;
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
-          () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `function ${queryDef.apiName} ${
-              JSON.stringify(stableParams)
-            } [DISABLED]`
-            : void 0,
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
-        (observer) =>
-          observableClient.observeFunction(
-            queryDef,
-            paramsForApi,
-            {
-              dependsOn: stableDependsOn,
-              dependsOnObjects: stableDependsOnObjects,
-              dedupeInterval: dedupeIntervalMs ?? 2_000,
-            },
-            observer,
-          ),
-        process.env.NODE_ENV !== "production"
-          ? `function ${queryDef.apiName} ${JSON.stringify(stableParams)}`
-          : void 0,
+        () => ({ unsubscribe: () => {} }),
+        devToolsMetadata({
+          hookType: "useOsdkFunction",
+          objectType: queryDef.apiName,
+        })
       );
-    },
-    [
-      observableClient,
-      queryDef.apiName,
-      queryDef.version,
-      paramsForApi,
-      stableDependsOn,
-      stableDependsOnObjects,
-      dedupeIntervalMs,
-      enabled,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
+      (observer) =>
+        observableClient.observeFunction(
+          queryDef,
+          paramsForApi,
+          {
+            dependsOn: stableDependsOn,
+            dependsOnObjects: stableDependsOnObjects,
+            dedupeInterval: dedupeIntervalMs ?? 2_000,
+          },
+          observer
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkFunction",
+        objectType: queryDef.apiName,
+      })
+    );
+  }, [
+    observableClient,
+    queryDef.apiName,
+    queryDef.version,
+    paramsForApi,
+    stableDependsOn,
+    stableDependsOnObjects,
+    dedupeIntervalMs,
+    enabled,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -254,8 +253,9 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   }, [observableClient, queryDef, paramsForApi]);
 
   return React.useMemo(() => {
-    const error = payload?.error
-      ?? (payload?.status === "error"
+    const error =
+      payload?.error ??
+      (payload?.status === "error"
         ? new Error("Failed to execute function")
         : undefined);
 

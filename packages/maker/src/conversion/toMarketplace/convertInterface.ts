@@ -15,24 +15,25 @@
  */
 
 import type { OntologyIrMarketplaceInterfaceType } from "@osdk/client.unstable";
+
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
-  interfaceType: InterfaceType,
+  interfaceType: InterfaceType
 ): OntologyIrMarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
     propertiesV2: Object.fromEntries(
-      Object.values(interfaceType.propertiesV2)
-        .map((
-          spt,
-        ) => [spt.sharedPropertyType.apiName, {
+      Object.values(interfaceType.propertiesV2).map((spt) => [
+        spt.sharedPropertyType.apiName,
+        {
           required: spt.required,
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
-        }]),
+        },
+      ])
     ),
     displayMetadata: {
       displayName: interfaceType.displayMetadata.displayName,
@@ -42,15 +43,15 @@ export function convertInterface(
         blueprint: { color: "#4C90F0", locator: "layout-hierarchy" },
       },
     },
-    extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
+    extendsInterfaces: interfaceType.extendsInterfaces.map((i) => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     propertiesV3: Object.fromEntries(
       Object.entries(interfaceType.propertiesV3).map(([apiName, prop]) =>
         convertInterfaceProperty(prop, apiName)
-      ),
+      )
     ),
-    extendsInterfacesMetadata: interfaceType.extendsInterfaces.map(i =>
+    extendsInterfacesMetadata: interfaceType.extendsInterfaces.map((i) =>
       convertInterface(i)
     ),
   };

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type { DisableAutomationRequest as _api_registry_DisableAutomationRequest } from "../__components.js";
 
@@ -24,12 +25,12 @@ import type { DisableAutomationRequest as _api_registry_DisableAutomationRequest
 export async function disableAutomation(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_registry_DisableAutomationRequest,
+  request: _api_registry_DisableAutomationRequest
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/registry/v0/disable/${monitorRid}`,
     "POST",
-    request,
+    request
   );
 }

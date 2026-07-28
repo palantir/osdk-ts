@@ -30,6 +30,6 @@ export function getFoundryToken(mode: string | undefined): string {
   return safeGetEnvVar(
     process.env,
     FOUNDRY_TOKEN,
-    "This value is required to run dev mode.",
+    "This value is required to run dev mode."
   );
 }

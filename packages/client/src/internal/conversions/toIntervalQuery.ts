@@ -23,9 +23,7 @@ type IntervalQueryRule = Extract<
   { type: "interval" }
 >["rule"];
 
-export function toIntervalQueryRule(
-  rule: IntervalRule,
-): IntervalQueryRule {
+export function toIntervalQueryRule(rule: IntervalRule): IntervalQueryRule {
   if (rule.$match != null) {
     if (rule.$prefixOnLastTerm) {
       return {

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
 import type {
   CreateOntologyBranchRequest as _approvals_api_CreateOntologyBranchRequest,
@@ -30,12 +31,12 @@ import type {
 export async function createBranch(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _approvals_api_CreateOntologyBranchRequest,
+  request: _approvals_api_CreateOntologyBranchRequest
 ): Promise<_approvals_api_CreateOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/approvals/experimental/${ontologyRid}/createBranch`,
     "POST",
-    request,
+    request
   );
 }

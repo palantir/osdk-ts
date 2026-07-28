@@ -41,7 +41,10 @@ export namespace EmployeeApiTest {
     | "dateOfJoining"
     | "lastUpdated"
     | "skillSet"
-    | "skillSetEmbedding";
+    | "skillSetEmbedding"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -68,12 +71,21 @@ export namespace EmployeeApiTest {
     readonly lastUpdated: $PropType["timestamp"] | undefined;
     readonly skillSet: $PropType["string"] | undefined;
     readonly skillSetEmbedding: $PropType["vector"] | undefined;
+    // Struct with mainValue for modifier tests
+    readonly addressStruct:
+      | { street: string; city: string; zipCode: string }
+      | undefined;
+    // Array with reducers for modifier tests
+    readonly salaryHistory: number[] | undefined;
+    // Array of structs with both mainValue and reducers for modifier tests
+    readonly bonusHistory: Array<{ year: number; amount: number }> | undefined;
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<EmployeeApiTest, EmployeeApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    EmployeeApiTest,
+    EmployeeApiTest.ObjectSet
+  > {}
 }
 
 export interface EmployeeApiTest extends $ObjectTypeDefinition {
@@ -94,15 +106,52 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       color: "blue";
       name: "person";
     };
-    implements: ["FooInterface"];
+    implements: ["FooInterface", "ReducerInterface"];
     interfaceMap: {
       FooInterface: {
         fooSpt: "fullName";
+      };
+      ReducerInterface: {
+        ifaceAddress: "addressStruct";
+        ifaceSalary: "salaryHistory";
+        ifaceBonus: "bonusHistory";
       };
     };
     inverseInterfaceMap: {
       FooInterface: {
         fullName: "fooSpt";
+      };
+      ReducerInterface: {
+        addressStruct: "ifaceAddress";
+        salaryHistory: "ifaceSalary";
+        bonusHistory: "ifaceBonus";
+      };
+    };
+    interfaceImplementations: {
+      FooInterface: {
+        fooSpt: { type: "localProperty"; propertyApiName: "fullName" };
+      };
+      ReducerInterface: {
+        ifaceAddress: {
+          type: "structField";
+          propertyApiName: "addressStruct";
+          structFieldApiName: "city";
+        };
+        ifaceSalary: {
+          type: "reduced";
+          implementation: {
+            type: "localProperty";
+            propertyApiName: "salaryHistory";
+          };
+        };
+        ifaceBonus: {
+          type: "reduced";
+          implementation: {
+            type: "structField";
+            propertyApiName: "bonusHistory";
+            structFieldApiName: "amount";
+          };
+        };
       };
     };
     links: {
@@ -134,6 +183,28 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       lastUpdated: $PropertyDef<"timestamp", "nullable", "single">;
       skillSet: $PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: $PropertyDef<"vector", "nullable", "single">;
+      // Struct with mainValue - main value fields are city and zipCode
+      addressStruct: {
+        type: { street: "string"; city: "string"; zipCode: "string" };
+        nullable: true;
+        multiplicity: false;
+        mainValue: { fields: readonly ["city", "zipCode"] };
+      };
+      // Array with reducers (e.g., get max salary)
+      salaryHistory: {
+        type: "integer";
+        nullable: true;
+        multiplicity: true;
+        hasReducers: true;
+      };
+      // Array of structs with both mainValue and reducers
+      bonusHistory: {
+        type: { year: "integer"; amount: "integer" };
+        nullable: true;
+        multiplicity: true;
+        mainValue: { fields: readonly ["amount"] };
+        hasReducers: true;
+      };
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

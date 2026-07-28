@@ -21,11 +21,12 @@ import { expectType } from "ts-expect";
 
 export async function fetchEmployeeLead(
   client: Client,
-  adUsername: string,
+  adUsername: string
 ): Promise<void> {
-  const result = await client(Employee).where({
-    adUsername,
-  })
+  const result = await client(Employee)
+    .where({
+      adUsername,
+    })
     .pivotTo("lead")
     .fetchPage({
       $select: ["adUsername", "businessTitle", "employeeNumber"],
@@ -50,24 +51,25 @@ export async function fetchEmployeeLead(
   //   });
 
   // Check rough shape is correct.
-  expectType<
-    {
-      nextPageToken: string | undefined;
-      data: {
-        adUsername: string | undefined;
-        businessTitle: string | undefined;
-        employeeNumber: number | undefined;
-      }[];
-    }
-  >(result);
+  expectType<{
+    nextPageToken: string | undefined;
+    data: {
+      adUsername: string | undefined;
+      businessTitle: string | undefined;
+      employeeNumber: number | undefined;
+    }[];
+  }>(result);
 
   // check down select worked
   expectType<
-    TypeOf<{
-      data: {
-        jobProfile: any; // should be omitted
-      }[];
-    }, typeof result>
+    TypeOf<
+      {
+        data: {
+          jobProfile: any; // should be omitted
+        }[];
+      },
+      typeof result
+    >
   >(false);
 
   console.log(`fetchEmployeePageByAdUsername('${adUsername}')`);
@@ -76,7 +78,7 @@ export async function fetchEmployeeLead(
       adUsername,
       businessTitle,
       employeeNumber,
-    })),
+    }))
   );
   console.log();
 }

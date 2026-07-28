@@ -17,21 +17,21 @@
 /**
  * A discriminated union representing different types of property security outcomes.
  *
- * @discriminator type - The type field determines which security outcome is represented:
+ * The type field determines which security outcome is represented:
  *   - "propertyMarkings": Successfully computed security markings for the property
  *   - "unsupportedPolicy": The property is backed by a restricted view that doesn't support property securities
  *   - "errorComputingSecurity": The server was unable to load the securities of the property
  */
 export type PropertySecurity =
   | ({
-    type: "propertyMarkings";
-  } & PropertyMarkings)
-  | ({
-    type: "unsupportedPolicy";
-  })
-  | ({
-    type: "errorComputingSecurity";
-  });
+      type: "propertyMarkings";
+    } & PropertyMarkings)
+  | {
+      type: "unsupportedPolicy";
+    }
+  | {
+      type: "errorComputingSecurity";
+    };
 
 /**
  * All marking requirements applicable to a property value.

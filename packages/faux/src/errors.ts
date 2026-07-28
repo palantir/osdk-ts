@@ -21,6 +21,7 @@ import type {
   UserNotFound,
 } from "@osdk/foundry.admin";
 import type { InvalidPageToken } from "@osdk/foundry.core";
+import type { ObjectSetNotFound } from "@osdk/foundry.ontologies";
 import type {
   ActionNotFound,
   ApplyActionFailed,
@@ -34,13 +35,14 @@ import type {
   QueryEncounteredUserFacingError,
   QueryNotFound,
 } from "@osdk/internal.foundry.ontologies";
+
 import type { BaseAPIError } from "./BaseError.js";
 
 const errorInstanceId = "errorInstanceId";
 const objectTypeRid = "ri.foundry.main.objectType.1";
 
 export function ObjectTypeDoesNotExistError(
-  objectType: string,
+  objectType: string
 ): ObjectTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -57,7 +59,7 @@ export function ObjectTypeDoesNotExistError(
 
 export function LinkTypeNotFound(
   objectType: string,
-  linkType: string,
+  linkType: string
 ): OGLinkTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -73,9 +75,7 @@ export function LinkTypeNotFound(
   };
 }
 
-export function OntologyNotFoundError(
-  ontology: string,
-): OntologyNotFound {
+export function OntologyNotFoundError(ontology: string): OntologyNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "OntologyNotFound",
@@ -91,7 +91,7 @@ export function OntologyNotFoundError(
 
 export function ObjectNotFoundError(
   objectType: string,
-  primaryKey: string,
+  primaryKey: string
 ): ObjectNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -102,6 +102,21 @@ export function ObjectNotFoundError(
     parameters: {
       objectType,
       primaryKey,
+    },
+  };
+}
+
+export function ObjectSetNotFoundError(
+  objectSetRid: string
+): ObjectSetNotFound {
+  return {
+    errorCode: "NOT_FOUND",
+    errorName: "ObjectSetNotFound",
+    errorDescription:
+      "The requested object set is not found, or the client token does not have access to it.",
+    errorInstanceId,
+    parameters: {
+      objectSetRid,
     },
   };
 }
@@ -219,14 +234,12 @@ export const GetUserNotFoundError = (userId: string): UserNotFound => ({
   errorName: "UserNotFound",
   errorInstanceId,
   parameters: {
-    userId: userId,
+    userId,
   },
   errorDescription: "The given User could not be found.",
 });
 
-export const GetUserDeletedStatusError = (
-  userId: string,
-): UserDeleted => ({
+export const GetUserDeletedStatusError = (userId: string): UserDeleted => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserDeleted",
   errorInstanceId,
@@ -236,9 +249,7 @@ export const GetUserDeletedStatusError = (
   errorDescription: "The user is deleted.",
 });
 
-export const GetUserActiveStatusError = (
-  userId: string,
-): UserIsActive => ({
+export const GetUserActiveStatusError = (userId: string): UserIsActive => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserIsActive",
   errorInstanceId,
@@ -249,12 +260,12 @@ export const GetUserActiveStatusError = (
 });
 
 export const GetInvalidPageTokenError = (
-  pageToken: string,
+  pageToken: string
 ): InvalidPageToken => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidPageToken",
   errorDescription: "The provided page token is invalid.",
-  errorInstanceId: errorInstanceId,
+  errorInstanceId,
   parameters: {
     pageToken,
   },

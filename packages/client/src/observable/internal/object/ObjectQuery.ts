@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
+
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../../util/interfaceUtils.js";
@@ -38,6 +39,7 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import { extractRdpFieldNames } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
@@ -50,6 +52,7 @@ export class ObjectQuery extends Query<
   #defType: DefType;
   #select: readonly string[] | undefined;
   #loadPropertySecurityMetadata: boolean;
+  #includeAllBaseObjectProperties: boolean;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -62,6 +65,7 @@ export class ObjectQuery extends Query<
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean
   ) {
     super(
       store,
@@ -69,24 +73,27 @@ export class ObjectQuery extends Query<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `ObjectQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
-        : undefined,
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `ObjectQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            }
+          )
+        : undefined
     );
     this.#apiName = type;
     this.#pk = pk;
     this.#defType = defType;
     this.#select = select;
     this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
+    this.#includeAllBaseObjectProperties =
+      includeAllBaseObjectProperties ?? false;
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<ObjectCacheKey>>,
+    subject: Observable<SubjectPayload<ObjectCacheKey>>
   ): Connectable<ObjectPayload> {
     return connectable<ObjectPayload>(
       subject.pipe(
@@ -97,7 +104,7 @@ export class ObjectQuery extends Query<
             lastUpdated: x.lastUpdated,
             isOptimistic: x.isOptimistic,
           };
-        }),
+        })
       ),
       {
         connector: () =>
@@ -107,15 +114,15 @@ export class ObjectQuery extends Query<
             lastUpdated: 0,
             isOptimistic: false,
           }),
-      },
+      }
     );
   }
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "calling _fetchAndStore",
-      );
+      this.logger
+        ?.child({ methodName: "_fetchAndStore" })
+        .debug("calling _fetchAndStore");
     }
 
     // TODO: In the future, implement tracking of network requests to ensure
@@ -132,32 +139,32 @@ export class ObjectQuery extends Query<
         apiName: this.#apiName,
       } as ObjectTypeDefinition;
 
-      const fetched = await this.store.client(miniDef)
+      const fetched = await this.store
+        .client(miniDef)
         .withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
         )
-        .fetchOne(
-          this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
-          {
-            $includeRid: true,
-            ...(this.#select && this.#select.length > 0
-              ? { $select: this.#select }
-              : {}),
-            $loadPropertySecurityMetadata: this
-              .#loadPropertySecurityMetadata,
-          },
-        );
+        .fetchOne(this.#pk as PrimaryKeyType<ObjectTypeDefinition>, {
+          $includeRid: true,
+          ...(this.#select && this.#select.length > 0
+            ? { $select: this.#select }
+            : {}),
+          $loadPropertySecurityMetadata: this.#loadPropertySecurityMetadata,
+          ...(this.#includeAllBaseObjectProperties
+            ? { $includeAllBaseObjectProperties: true }
+            : {}),
+        });
       obj = fetched as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
-      obj = await getBulkObjectLoader(this.store.client)
-        .fetch(
-          this.#apiName,
-          this.#pk,
-          this.#defType,
-          this.#select,
-          this.#loadPropertySecurityMetadata,
-        );
+      obj = await getBulkObjectLoader(this.store.client).fetch(
+        this.#apiName,
+        this.#pk,
+        this.#defType,
+        this.#select,
+        this.#loadPropertySecurityMetadata,
+        this.#includeAllBaseObjectProperties
+      );
     }
 
     this.store.batch({}, (batch) => {
@@ -165,7 +172,7 @@ export class ObjectQuery extends Query<
         obj,
         "loaded",
         batch,
-        this.#select ? new Set(this.#select) : undefined,
+        this.#select ? new Set(this.#select) : undefined
       );
     });
   }
@@ -175,6 +182,7 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
+    computedRdpFields?: ReadonlySet<string>
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
@@ -183,8 +191,12 @@ export class ObjectQuery extends Query<
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig,
+      rdpConfig
     );
+
+    // a caller passes the derived fields it computed. when it doesn't, default
+    // to every derived field the key tracks.
+    const computed = computedRdpFields ?? extractRdpFieldNames(rdpConfig);
 
     this.store.objects.propagateWrite(
       this.cacheKey,
@@ -192,6 +204,7 @@ export class ObjectQuery extends Query<
       status,
       batch,
       selectFields,
+      computed
     );
 
     return batch.read(this.cacheKey)!;
@@ -199,7 +212,7 @@ export class ObjectQuery extends Query<
 
   deleteFromStore(
     status: Status,
-    batch: BatchContext,
+    batch: BatchContext
   ): Entry<ObjectCacheKey> | undefined {
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
 
@@ -207,22 +220,17 @@ export class ObjectQuery extends Query<
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig,
+      rdpConfig
     );
 
-    this.store.objects.propagateWrite(
-      this.cacheKey,
-      tombstone,
-      status,
-      batch,
-    );
+    this.store.objects.propagateWrite(this.cacheKey, tombstone, status, batch);
 
     return batch.read(this.cacheKey);
   }
 
   invalidateObjectType = async (
     objectType: string,
-    changes: Changes | undefined,
+    changes: Changes | undefined
   ): Promise<void> => {
     if (this.#defType === "object") {
       if (this.#apiName === objectType) {

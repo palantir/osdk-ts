@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace MatthewvsDevOrderEmbedding {
-  export type PropertyKeys = 'orderId' | 'orderTitle' | 'embedding';
+  export type PropertyKeys = 'embedding' | 'orderId' | 'orderTitle';
 
   export type Links = {};
 

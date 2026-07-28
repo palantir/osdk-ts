@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
 import type {
   FindConflictsRequest as _branch_api_FindConflictsRequest,
@@ -30,12 +31,12 @@ import type {
 export async function findConflicts(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_FindConflictsRequest,
+  request: _branch_api_FindConflictsRequest
 ): Promise<_branch_api_FindConflictsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/findConflicts`,
     "POST",
-    request,
+    request
   );
 }

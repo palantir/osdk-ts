@@ -17,7 +17,7 @@
 import {
   PdfViewerSidebar,
   usePdfDocument,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -62,8 +62,10 @@ function ThumbnailSidebarWrapper({
 }
 
 const meta: Meta<ThumbnailSidebarStoryProps> = {
-  title: "Components/PdfViewer/Building Blocks/ThumbnailSidebar",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/ThumbnailSidebar",
   component: ThumbnailSidebarWrapper,
+  tags: ["beta"],
   args: {
     src: SAMPLE_PDF_URL,
     currentPage: 1,

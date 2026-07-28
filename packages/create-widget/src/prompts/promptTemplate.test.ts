@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { TEMPLATES } from "../generatedNoCheck/templates.js";
 import { promptTemplate } from "./promptTemplate.js";
@@ -33,7 +34,7 @@ test("it accepts valid template from prompt", async () => {
 
 test("it accepts valid initial template id value without prompt", async () => {
   expect(await promptTemplate({ template: TEMPLATES[0].id })).toEqual(
-    TEMPLATES[0],
+    TEMPLATES[0]
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
@@ -42,7 +43,7 @@ test("it accepts valid initial template id value without 'template-' prefix with
   expect(
     await promptTemplate({
       template: TEMPLATES[0].id.substring("template-".length),
-    }),
+    })
   ).toEqual(TEMPLATES[0]);
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });

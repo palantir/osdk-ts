@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   Backend as _api_Backend,
   GetTopObjectsInitialPageRequest as _api_GetTopObjectsInitialPageRequest,
@@ -33,7 +34,7 @@ import type {
 export async function getTopObjectsInitialPage(
   ctx: ConjureContext,
   request: _api_GetTopObjectsInitialPageRequest,
-  backend: _api_Backend | null | undefined,
+  backend: _api_Backend | null | undefined
 ): Promise<_api_GetTopObjectsInitialPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/top/initial`, "PUT", request);
 }

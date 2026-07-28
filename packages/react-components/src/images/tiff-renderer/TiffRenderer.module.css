@@ -1,0 +1,21 @@
+.canvas {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.loadingContainer {
+  composes: loadingContainer from "../../shared/LoadingError.module.css";
+}
+
+.errorContainer {
+  composes: errorContainer from "../../shared/LoadingError.module.css";
+}
+
+.spinnerIcon {
+  composes: spinnerIcon from "../../shared/LoadingError.module.css";
+}
+
+.errorIcon {
+  composes: errorIcon from "../../shared/LoadingError.module.css";
+}

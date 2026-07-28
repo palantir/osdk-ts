@@ -51,7 +51,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
                     "type": "integer",
                   },
                   "name": "zipcode",
-                  "required": true,
+                  "required": false,
                 },
               ],
               "type": "struct",
@@ -164,6 +164,21 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           },
         },
         "allPropertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "reducers": [],
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -222,6 +237,22 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           },
         },
         "propertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "reducers": [],
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -311,6 +342,40 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               "rid": "rid",
               "typeClasses": [],
             },
+            "employeeProfile": {
+              "dataType": {
+                "mainValue": {
+                  "fields": [
+                    "bio",
+                  ],
+                  "mainValueType": {
+                    "type": "string",
+                  },
+                },
+                "structFieldTypes": [
+                  {
+                    "apiName": "bio",
+                    "dataType": {
+                      "type": "string",
+                    },
+                    "rid": "ri.struct.bio",
+                    "typeClasses": [],
+                  },
+                  {
+                    "apiName": "yearsExperience",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                    "rid": "ri.struct.yearsExperience",
+                    "typeClasses": [],
+                  },
+                ],
+                "type": "struct",
+              },
+              "description": "Employee profile with main value being the bio",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "employeeSensor": {
               "dataType": {
                 "itemType": {
@@ -357,6 +422,22 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+              "typeClasses": [],
+            },
+            "performanceScores": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                  },
+                ],
+                "subType": {
+                  "type": "double",
+                },
+                "type": "array",
+              },
+              "description": "Array of performance scores with reducers",
               "rid": "rid",
               "typeClasses": [],
             },
@@ -605,6 +686,40 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "rid": "rid",
               "typeClasses": [],
             },
+            "employeeProfile": {
+              "dataType": {
+                "mainValue": {
+                  "fields": [
+                    "bio",
+                  ],
+                  "mainValueType": {
+                    "type": "string",
+                  },
+                },
+                "structFieldTypes": [
+                  {
+                    "apiName": "bio",
+                    "dataType": {
+                      "type": "string",
+                    },
+                    "rid": "ri.struct.bio",
+                    "typeClasses": [],
+                  },
+                  {
+                    "apiName": "yearsExperience",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                    "rid": "ri.struct.yearsExperience",
+                    "typeClasses": [],
+                  },
+                ],
+                "type": "struct",
+              },
+              "description": "Employee profile with main value being the bio",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "employeeSensor": {
               "dataType": {
                 "itemType": {
@@ -651,6 +766,22 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+              "typeClasses": [],
+            },
+            "performanceScores": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                  },
+                ],
+                "subType": {
+                  "type": "double",
+                },
+                "type": "array",
+              },
+              "description": "Array of performance scores with reducers",
               "rid": "rid",
               "typeClasses": [],
             },
@@ -849,6 +980,21 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           },
         },
         "allPropertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "reducers": [],
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -907,6 +1053,22 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           },
         },
         "propertiesV2": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "dataType": {
+              "reducers": [],
+              "subType": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "requireImplementation": false,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.2",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
           "fooIdp": {
             "apiName": "fooIdp",
             "dataType": {
@@ -996,6 +1158,40 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               "rid": "rid",
               "typeClasses": [],
             },
+            "employeeProfile": {
+              "dataType": {
+                "mainValue": {
+                  "fields": [
+                    "bio",
+                  ],
+                  "mainValueType": {
+                    "type": "string",
+                  },
+                },
+                "structFieldTypes": [
+                  {
+                    "apiName": "bio",
+                    "dataType": {
+                      "type": "string",
+                    },
+                    "rid": "ri.struct.bio",
+                    "typeClasses": [],
+                  },
+                  {
+                    "apiName": "yearsExperience",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                    "rid": "ri.struct.yearsExperience",
+                    "typeClasses": [],
+                  },
+                ],
+                "type": "struct",
+              },
+              "description": "Employee profile with main value being the bio",
+              "rid": "rid",
+              "typeClasses": [],
+            },
             "employeeSensor": {
               "dataType": {
                 "itemType": {
@@ -1042,6 +1238,22 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+              "typeClasses": [],
+            },
+            "performanceScores": {
+              "dataType": {
+                "reducers": [
+                  {
+                    "direction": "DESCENDING_NULLS_LAST",
+                  },
+                ],
+                "subType": {
+                  "type": "double",
+                },
+                "type": "array",
+              },
+              "description": "Array of performance scores with reducers",
               "rid": "rid",
               "typeClasses": [],
             },

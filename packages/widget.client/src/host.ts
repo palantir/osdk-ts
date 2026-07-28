@@ -16,9 +16,9 @@
 
 import type { HostMessage, WidgetConfig } from "@osdk/widget.api";
 
-export interface HostMessageEventListener<P extends HostMessage.Payload> {
-  (event: CustomEvent<P>): void;
-}
+export type HostMessageEventListener<P extends HostMessage.Payload> = (
+  event: CustomEvent<P>
+) => void;
 
 export interface HostMessageEventListenerObject<P extends HostMessage.Payload> {
   handleEvent(object: CustomEvent<P>): void;
@@ -30,14 +30,12 @@ export class FoundryHostEventTarget<
   addEventListener<T extends HostMessage<C>["type"]>(
     type: T,
     callback:
-      | HostMessageEventListener<
-        (HostMessage<C> & { type: T })["payload"]
-      >
+      | HostMessageEventListener<(HostMessage<C> & { type: T })["payload"]>
       | HostMessageEventListenerObject<
-        (HostMessage<C> & { type: T })["payload"]
-      >
+          (HostMessage<C> & { type: T })["payload"]
+        >
       | null,
-    options?: AddEventListenerOptions | boolean,
+    options?: AddEventListenerOptions | boolean
   ): void {
     super.addEventListener(type, callback as EventListener, options);
   }
@@ -45,26 +43,24 @@ export class FoundryHostEventTarget<
   removeEventListener<T extends HostMessage<C>["type"]>(
     type: T,
     callback:
-      | HostMessageEventListener<
-        (HostMessage<C> & { type: T })["payload"]
-      >
+      | HostMessageEventListener<(HostMessage<C> & { type: T })["payload"]>
       | HostMessageEventListenerObject<
-        (HostMessage<C> & { type: T })["payload"]
-      >
+          (HostMessage<C> & { type: T })["payload"]
+        >
       | null,
-    options?: EventListenerOptions | boolean,
+    options?: EventListenerOptions | boolean
   ): void {
     super.removeEventListener(type, callback as EventListener, options);
   }
 
   public dispatchEventMessage<T extends HostMessage<C>["type"]>(
     type: T,
-    payload: (HostMessage<C> & { type: T })["payload"],
+    payload: (HostMessage<C> & { type: T })["payload"]
   ): void {
     this.dispatchEvent(
       new CustomEvent<HostMessage.Payload>(type, {
         detail: payload,
-      }),
+      })
     );
   }
 }

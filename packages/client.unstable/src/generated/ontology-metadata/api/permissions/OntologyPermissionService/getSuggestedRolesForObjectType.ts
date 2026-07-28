@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { ObjectTypeRid as _api_ObjectTypeRid } from "../../__components.js";
 import type { GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesResponse } from "../__components.js";
 
@@ -30,11 +31,11 @@ import type { GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesRes
  */
 export async function getSuggestedRolesForObjectType(
   ctx: ConjureContext,
-  objectTypeRid: _api_ObjectTypeRid,
+  objectTypeRid: _api_ObjectTypeRid
 ): Promise<_api_permissions_GetSuggestedRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/suggestRoles/objectType/${objectTypeRid}`,
-    "GET",
+    "GET"
   );
 }

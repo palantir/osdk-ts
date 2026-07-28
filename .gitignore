@@ -4,6 +4,11 @@ node_modules/
 # Build Caching
 .turbo
 
+# Test coverage (root merged report + per-package output).
+# Anchored so it does not also ignore scripts/coverage/ (the tooling).
+/coverage/
+packages/*/coverage/
+
 # Misc
 .DS_Store
 .env
@@ -56,3 +61,5 @@ vitest.workspace.ts
 # Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
 .*.local
 .*.local.*
+
+.playwright-cli

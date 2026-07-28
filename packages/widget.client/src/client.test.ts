@@ -16,6 +16,7 @@
 
 import { defineConfig } from "@osdk/widget.api";
 import { describe, it } from "vitest";
+
 import type { FoundryWidgetClient } from "./client.js";
 
 describe("FoundryWidgetClient", () => {
@@ -56,7 +57,7 @@ describe("FoundryWidgetClient", () => {
 
   const emitEvent: FoundryWidgetClient<typeof config>["emitEvent"] = (
     _eventId,
-    _payload,
+    _payload
   ) => {};
 
   it("should narrow the emit event type when no parameters", () => {

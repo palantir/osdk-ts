@@ -25,11 +25,9 @@ export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
   }
   // value types are a special case
   if (
-    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
-      === undefined
+    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] === undefined
   ) {
     importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] = [];
   }
-  importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
-    .push(e as any);
+  importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName].push(e as any);
 }

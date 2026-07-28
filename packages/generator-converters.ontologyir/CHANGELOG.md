@@ -1,5 +1,353 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.51.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- 9d75f4e: Make full metadata rids parsable
+
+### Patch Changes
+
+- @osdk/client.unstable@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.49.0
+
+## 2.48.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.48.0
+
+## 2.47.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.47.0
+
+## 2.46.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.46.0
+
+## 2.45.0
+
+### Minor Changes
+
+- 93958d7: Support interface link actions in maker-experimental
+
+### Patch Changes
+
+- @osdk/client.unstable@2.45.0
+
+## 2.44.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+
+## 2.43.0
+
+### Minor Changes
+
+- da96711: Make client and durableContext types run-time injected types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.43.0
+
+## 2.42.0
+
+### Patch Changes
+
+- Updated dependencies [0021ee4]
+  - @osdk/client.unstable@2.42.0
+
+## 2.41.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.41.0
+
+## 2.40.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.40.0
+
+## 2.39.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+  - @osdk/client.unstable@2.39.0
+
+## 2.38.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.38.0
+
+## 2.37.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.37.0
+
+## 2.36.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.36.0
+
+## 2.35.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.35.0
+
+## 2.34.0
+
+### Minor Changes
+
+- 07eaaff: Fix function backed actions with interfaces
+- 4a25731: fix interface osdk and function gen for superrepo
+- 48eb46e: Fix full metadata link gen
+
+### Patch Changes
+
+- @osdk/client.unstable@2.34.0
+
+## 2.33.0
+
+### Minor Changes
+
+- a9de941: Fix interfaces in function discovery
+
+### Patch Changes
+
+- @osdk/client.unstable@2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [833f47a]
+  - @osdk/client.unstable@2.32.0
+
+## 2.31.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.31.0
+
+## 2.30.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.29.0
+
+## 2.28.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.28.0
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.27.0
+
+## 2.26.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.26.0
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.25.0
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+- d087189: Handle delete interface rules
+
+### Patch Changes
+
+- @osdk/client.unstable@2.24.0
+
+## 2.23.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.23.0
+
+## 2.22.0
+
+### Minor Changes
+
+- dea392c: Fix maker experimental imports
+- d8f3dfd: fix imported interface shapes
+
+### Patch Changes
+
+- @osdk/client.unstable@2.22.0
+
+## 2.21.0
+
+### Minor Changes
+
+- 5b89f25: Fix IDP packaging
+- b98e084: fix interface resolution for action logic rules
+
+### Patch Changes
+
+- @osdk/client.unstable@2.21.0
+
+## 2.20.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 46c553f: fix interface bugs
+
+### Patch Changes
+
+- @osdk/client.unstable@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.18.0
+
+## 2.17.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+  - @osdk/client.unstable@2.16.0
+
+## 2.15.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+
+### Patch Changes
+
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+  - @osdk/client.unstable@2.14.0
+
+## 2.13.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.13.0
+
+## 2.12.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.unstable@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+
+### Patch Changes
+
+- @osdk/client.unstable@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

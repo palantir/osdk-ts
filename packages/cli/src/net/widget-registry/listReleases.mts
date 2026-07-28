@@ -21,11 +21,15 @@ import type { ListReleasesResponse } from "./ListReleasesResponse.mjs";
 
 export async function listReleases(
   ctx: InternalClientContext,
-  widgetSetRid: WidgetSetRid,
+  widgetSetRid: WidgetSetRid
 ): Promise<ListReleasesResponse> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases?preview=true`;
+  const urlObj = new URL(
+    `api/v2/widgets/widgetSets/${widgetSetRid}/releases`,
+    ctx.foundryUrl
+  );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
   const response = await fetch(url);
   return response.json();
 }

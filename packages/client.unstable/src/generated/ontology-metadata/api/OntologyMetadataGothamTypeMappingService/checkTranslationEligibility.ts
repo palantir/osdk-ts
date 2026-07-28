@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  CheckTranslationEligibilityRequest
-    as _api_typemapping_CheckTranslationEligibilityRequest,
-  CheckTranslationEligibilityResponse
-    as _api_typemapping_CheckTranslationEligibilityResponse,
+  CheckTranslationEligibilityRequest as _api_typemapping_CheckTranslationEligibilityRequest,
+  CheckTranslationEligibilityResponse as _api_typemapping_CheckTranslationEligibilityResponse,
 } from "../typemapping/__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function checkTranslationEligibility(
   ctx: ConjureContext,
-  request: _api_typemapping_CheckTranslationEligibilityRequest,
+  request: _api_typemapping_CheckTranslationEligibilityRequest
 ): Promise<_api_typemapping_CheckTranslationEligibilityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/checkTranslationEligibility`,
     "PUT",
-    request,
+    request
   );
 }

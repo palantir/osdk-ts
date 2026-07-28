@@ -114,7 +114,7 @@
 .categoryHeader {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: 100%;
   padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);
@@ -128,7 +128,6 @@
 .categoryTrigger {
   display: flex;
   align-items: center;
-  flex: 1;
   background: none;
   border: none;
   cursor: pointer;
@@ -204,22 +203,34 @@
   justify-content: center;
 }
 
+.selectAllLabel {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  cursor: pointer;
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.propertyLabel {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
 .propertyName {
   text-align: left;
   flex: 1;
   font-size: var(--osdk-typography-size-body-medium);
   font-weight: 400;
   color: var(--osdk-typography-color-default-rest);
-  padding: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  background: none;
-  border: none;
-  &:focus-visible {
-    outline: var(--osdk-focus-outline);
-    outline-offset: var(--osdk-focus-visible-outline-offset);
-  }
 }
 
 .infoIcon {

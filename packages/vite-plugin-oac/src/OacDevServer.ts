@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry, msw } from "@osdk/faux";
 import EventEmitter from "node:events";
 import * as fs from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import * as util from "node:util";
+
+import type { FauxFoundry, msw } from "@osdk/faux";
 import type { Connect, ViteDevServer } from "vite";
+
 import { applyOntologyAndSeed } from "./applyOntologyAndSeed.js";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
 import type { OacConfig } from "./OacConfig.js";
@@ -47,18 +49,18 @@ export class OacDevServer extends OacServerContext {
   #connectMiddleware = async (
     req: Connect.IncomingMessage,
     res: ServerResponse<IncomingMessage>,
-    next: Connect.NextFunction,
+    next: Connect.NextFunction
   ): Promise<void> => {
     const mswEmitter = new EventEmitter<msw.LifeCycleEventsMap>();
 
-    return void await routeConnectToMsw(
+    return void (await routeConnectToMsw(
       this.serverUrl,
       this.foundry.handlers,
       mswEmitter,
       req,
       res,
-      next,
-    );
+      next
+    ));
   };
 
   watchOntologyAsCode = async (): Promise<void> => {
@@ -99,7 +101,7 @@ export class OacDevServer extends OacServerContext {
       await this.emitter.emit("generatedOntologyAssets");
     } catch (error) {
       this.logger.error(
-        `Error generating ontology assets: ${util.inspect(error)}`,
+        `Error generating ontology assets: ${util.inspect(error)}`
       );
     }
   };

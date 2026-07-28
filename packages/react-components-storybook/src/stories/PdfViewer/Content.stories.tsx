@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from "@osdk/react-components/experimental";
-import { PdfViewerContent } from "@osdk/react-components/experimental";
+import type { PdfViewerContentProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -24,8 +24,10 @@ const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
 const meta: Meta<PdfViewerContentProps> = {
-  title: "Components/PdfViewer/Building Blocks/Content",
+  title:
+    "Components/DocumentViewer/Renderers/PdfViewer/Building Blocks/Content",
   component: PdfViewerContent,
+  tags: ["beta"],
   args: {
     src: SAMPLE_PDF_URL,
     onPageChange: fn(),
@@ -38,7 +40,7 @@ const meta: Meta<PdfViewerContentProps> = {
   ),
   argTypes: {
     src: {
-      description: "PDF source — URL string or ArrayBuffer",
+      description: "PDF source — URL string, ArrayBuffer, Uint8Array, or Blob",
       control: false,
     },
     initialPage: {
@@ -59,7 +61,7 @@ export const Default: Story = {};
 
 export const ZoomedIn: Story = {
   args: {
-    initialScale: 2.0,
+    initialScale: 2,
   },
 };
 

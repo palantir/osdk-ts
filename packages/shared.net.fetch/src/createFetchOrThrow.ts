@@ -27,19 +27,18 @@ import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
   return async function fetchOrThrow(
     url: RequestInfo | URL,
-    requestInit?: RequestInit,
+    requestInit?: RequestInit
   ): Promise<Response> {
     let response;
 
     try {
       response = await fetchFn(url, requestInit);
-    } catch (e) {
-      throw convertError(e, "A network error occurred");
+    } catch (error) {
+      throw convertError(error, "A network error occurred");
     }
 
     if (!response.ok) {
-      const fallbackMessage =
-        `Failed to fetch ${response.status} ${response.statusText}`;
+      const fallbackMessage = `Failed to fetch ${response.status} ${response.statusText}`;
 
       if (response.headers.get("Content-Type") === "text/plain") {
         throw unknownError(await response.text(), response.status);
@@ -49,50 +48,46 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         throw unknownError(
           fallbackMessage,
           response.status,
-          new Error("Received HTML error page: " + await response.text()),
+          new Error(`Received HTML error page: ${await response.text()}`)
         );
       }
 
       let body;
       try {
         body = await response.json();
-      } catch (e) {
+      } catch (error) {
         throw unknownError(
           fallbackMessage,
           response.status,
-          e instanceof Error ? e : undefined,
+          error instanceof Error ? error : undefined
         );
       }
 
       throw new PalantirApiError(
-        body?.message
-          ?? fallbackMessage,
+        body?.message ?? fallbackMessage,
         body?.errorName,
         body?.errorCode,
         body?.errorDescription,
         response.status,
         body?.errorInstanceId,
-        body?.parameters,
+        body?.parameters
       );
     }
     return response;
   };
 }
 
-function convertError(
-  e: any,
-  msgIfNotError: string = "An unknown error occurred",
-) {
+function convertError(e: any, msgIfNotError = "An unknown error occurred") {
   if (e instanceof Error) {
     return unknownError(e.message, undefined, e);
   }
-  return unknownError(msgIfNotError, undefined);
+  return unknownError(msgIfNotError);
 }
 
 function unknownError(
   message: string,
   statusCode?: number,
-  originalError?: Error,
+  originalError?: Error
 ) {
   return new UnknownError(message, undefined, originalError, statusCode);
 }

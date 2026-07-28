@@ -15,21 +15,26 @@
  */
 
 import { AttachmentPropertiesV2 } from "@osdk/foundry.ontologies";
+
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const getAttachment: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof AttachmentPropertiesV2.getAttachment
-> = handleOpenApiCall(
-  AttachmentPropertiesV2.getAttachment,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(AttachmentPropertiesV2.getAttachment, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const readAttachment: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof AttachmentPropertiesV2.readAttachment
-> = handleOpenApiCall(
-  AttachmentPropertiesV2.readAttachment,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(AttachmentPropertiesV2.readAttachment, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);

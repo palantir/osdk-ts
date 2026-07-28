@@ -15,6 +15,7 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
+
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
@@ -25,14 +26,12 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
  * correct fieldComponent and default fieldComponentProps.
  */
 export function getDefaultFieldDefinitions(
-  metadata: ActionMetadata,
+  metadata: ActionMetadata
 ): ReadonlyArray<RendererFieldDefinition> {
-  return Object.entries(metadata.parameters).map(
-    ([key, param]) => buildFieldDefinition(key, param),
+  return Object.entries(metadata.parameters).map(([key, param]) =>
+    buildFieldDefinition(key, param)
   );
 }
-
-const EMPTY_ITEMS: unknown[] = [];
 
 /**
  * Maps a single action parameter to its default RendererFieldDefinition.
@@ -42,11 +41,11 @@ const EMPTY_ITEMS: unknown[] = [];
  */
 function buildFieldDefinition(
   key: string,
-  param: ActionMetadata.Parameter,
+  param: ActionMetadata.Parameter
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
-    label: key,
+    label: param.displayName ?? key,
     isRequired: !param.nullable,
     fieldType: param.type,
   };
@@ -62,17 +61,24 @@ function buildFieldDefinition(
           fieldComponentProps: { value: null },
         };
       case "object":
-      case "interface":
-        // TODO: provide correct items
         return {
           ...base,
-          fieldComponent: "DROPDOWN",
-          fieldComponentProps: { items: EMPTY_ITEMS },
+          fieldComponent: "OBJECT_SELECT",
+          fieldComponentProps: {
+            // Construct a minimal ObjectTypeDefinition from the action
+            // parameter metadata. At runtime useOsdkObjects only reads
+            // type + apiName from the definition.
+            objectType: {
+              type: "object" as const,
+              apiName: paramType.object,
+            },
+          },
         };
+      case "interface":
       case "struct":
         return {
           ...base,
-          fieldComponent: "TEXT_INPUT",
+          fieldComponent: "UNSUPPORTED",
           fieldComponentProps: {},
         };
     }
@@ -80,13 +86,19 @@ function buildFieldDefinition(
 
   switch (paramType) {
     case "string":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      };
     case "marking":
     case "geohash":
     case "geoshape":
     case "objectType":
+    case "scenarioReference":
       return {
         ...base,
-        fieldComponent: "TEXT_INPUT",
+        fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       };
     case "boolean":
@@ -94,10 +106,13 @@ function buildFieldDefinition(
         ...base,
         fieldComponent: "RADIO_BUTTONS",
         fieldComponentProps: {
-          options: [{ label: "True", value: true }, {
-            label: "False",
-            value: false,
-          }],
+          options: [
+            { label: "True", value: true },
+            {
+              label: "False",
+              value: false,
+            },
+          ],
         },
       };
     case "integer":

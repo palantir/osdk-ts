@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import type { ColumnDef } from "@tanstack/react-table";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
 import { useColumnVisibility } from "../useColumnVisibility.js";
 
@@ -29,10 +30,7 @@ const TestObjectType = {
 type TestObject = typeof TestObjectType;
 
 // Helper to create mock ColumnDef objects that mirror what useColumnDefs would produce
-function createMockColumn<T>(
-  id: string,
-  isVisible?: boolean,
-): ColumnDef<T> {
+function createMockColumn<T>(id: string, isVisible?: boolean): ColumnDef<T> {
   return {
     id,
     meta: isVisible !== undefined ? { isVisible } : undefined,
@@ -104,7 +102,7 @@ describe(useColumnVisibility, () => {
           }),
         {
           initialProps: { allColumns: initialColumns },
-        },
+        }
       );
 
       expect(result.current.columnVisibility).toEqual({
@@ -159,9 +157,7 @@ describe(useColumnVisibility, () => {
     });
 
     it("does not call callback when callback is not provided", () => {
-      const allColumns: ColumnDef<unknown>[] = [
-        createMockColumn("name", true),
-      ];
+      const allColumns: ColumnDef<unknown>[] = [createMockColumn("name", true)];
 
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
@@ -254,7 +250,7 @@ describe(useColumnVisibility, () => {
           }),
         {
           initialProps: { allColumns: initialColumns },
-        },
+        }
       );
 
       expect(result.current.columnOrder).toEqual(["name", "email"]);

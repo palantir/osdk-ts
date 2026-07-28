@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import type { User } from "@osdk/foundry.admin";
+import type {
+  CbacBanner,
+  CbacMarkingRestrictions,
+  Marking,
+  MarkingCategory,
+  User,
+} from "@osdk/foundry.admin";
+
 import {
   CurrentUserPermissionDeniedError,
   GetInvalidPageTokenError,
@@ -26,14 +33,29 @@ import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 
 type UserStatus = "ACTIVE" | "DELETED";
 
+interface BannerConfig {
+  classificationString: string;
+  textColor: string;
+  backgroundColors: string[];
+}
+
+type BannerResolver = (
+  markingIds: string[],
+  markings: Marking[],
+  categories: MarkingCategory[]
+) => BannerConfig;
+
 export class FauxAdmin {
   #users: User[] = [];
   #currentUserId: string | undefined;
+  #markings: Marking[] = [];
+  #markingCategories: MarkingCategory[] = [];
+  #bannerResolver: BannerResolver | undefined;
 
   registerUser(user: User): void {
     if (this.#users.some(({ id }) => id === user.id)) {
       throw new Error(
-        `Failed to register new user. A user with ID ${user.id} already exists.`,
+        `Failed to register new user. A user with ID ${user.id} already exists.`
       );
     }
 
@@ -48,26 +70,20 @@ export class FauxAdmin {
 
   getCurrentUser(): User {
     if (this.#currentUserId == null) {
-      throw new OpenApiCallError(
-        403,
-        CurrentUserPermissionDeniedError,
-      );
+      throw new OpenApiCallError(403, CurrentUserPermissionDeniedError);
     }
 
     const user = this.getUser(this.#currentUserId, "ACTIVE");
 
     if (user == null) {
-      throw new OpenApiCallError(
-        403,
-        CurrentUserPermissionDeniedError,
-      );
+      throw new OpenApiCallError(403, CurrentUserPermissionDeniedError);
     }
 
     return user;
   }
 
   getUser(userId: string, status: UserStatus): User {
-    const user = this.#users.find(user => user.id === userId);
+    const user = this.#users.find((user) => user.id === userId);
 
     if (user == null) {
       throw new OpenApiCallError(404, GetUserNotFoundError(userId));
@@ -78,7 +94,7 @@ export class FauxAdmin {
         400,
         status === "DELETED"
           ? GetUserActiveStatusError(userId)
-          : GetUserDeletedStatusError(userId),
+          : GetUserDeletedStatusError(userId)
       );
     }
 
@@ -86,28 +102,84 @@ export class FauxAdmin {
   }
 
   listUsers(
+    // Reordering these params to satisfy default-param-last would change this
+    // exported method's signature; the `pageSize` default mirrors the API's
+    // "return all" behavior and is only reached when a caller passes `undefined`.
+    // oxlint-disable-next-line default-param-last
     pageSize: number | undefined = this.#users.length,
     pageToken: string | undefined,
-    status: UserStatus | undefined,
+    status: UserStatus | undefined
   ): { users: User[]; nextPageToken: string } {
-    const filteredUsers = status != null
-      ? this.#users.filter(user => user.status === status)
-      : this.#users;
+    const filteredUsers =
+      status != null
+        ? this.#users.filter((user) => user.status === status)
+        : this.#users;
 
-    const startIndex = pageToken != null
-      ? filteredUsers.findIndex(user => user.id === pageToken)
-      : 0;
+    const startIndex =
+      pageToken != null
+        ? filteredUsers.findIndex((user) => user.id === pageToken)
+        : 0;
 
     if (pageToken != null && startIndex === -1) {
-      throw new OpenApiCallError(
-        400,
-        GetInvalidPageTokenError(pageToken),
-      );
+      throw new OpenApiCallError(400, GetInvalidPageTokenError(pageToken));
     }
 
     return {
       users: filteredUsers.slice(startIndex, startIndex + pageSize),
       nextPageToken: filteredUsers[startIndex + pageSize]?.id,
+    };
+  }
+
+  registerMarking(marking: Marking): void {
+    this.#markings.push(marking);
+  }
+
+  registerMarkingCategory(category: MarkingCategory): void {
+    this.#markingCategories.push(category);
+  }
+
+  setBannerResolver(resolver: BannerResolver): void {
+    this.#bannerResolver = resolver;
+  }
+
+  listMarkings(): { data: Marking[] } {
+    return { data: this.#markings };
+  }
+
+  listMarkingCategories(): { data: MarkingCategory[] } {
+    return { data: this.#markingCategories };
+  }
+
+  getCbacBanner(markingIds: string[]): CbacBanner {
+    if (this.#bannerResolver != null) {
+      const config = this.#bannerResolver(
+        markingIds,
+        this.#markings,
+        this.#markingCategories
+      );
+      return {
+        classificationString: config.classificationString,
+        markings: markingIds,
+        textColor: config.textColor,
+        backgroundColors: config.backgroundColors,
+      };
+    }
+
+    return {
+      classificationString: markingIds.join(" // "),
+      markings: markingIds,
+      textColor: "#FFFFFF",
+      backgroundColors: ["#8F99A8"],
+    };
+  }
+
+  getCbacMarkingRestrictions(_markingIds: string[]): CbacMarkingRestrictions {
+    return {
+      disallowedMarkings: [],
+      impliedMarkings: [],
+      requiredMarkings: [],
+      userSatisfiesMarkings: true,
+      isValid: _markingIds.length > 0,
     };
   }
 }

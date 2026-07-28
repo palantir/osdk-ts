@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace WeatherStation {
-  export type PropertyKeys = 'stationId' | 'geohash';
+  export type PropertyKeys = 'geohash' | 'stationId';
 
   export type Links = {};
 

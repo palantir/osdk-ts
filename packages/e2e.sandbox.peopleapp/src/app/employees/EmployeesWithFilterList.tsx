@@ -15,17 +15,17 @@
  */
 
 import type { WhereClause } from "@osdk/api";
+import { useOsdkObjects } from "@osdk/react";
+
+import "@osdk/react-components/styles.css";
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental";
-import "@osdk/react-components/styles.css";
-import { useOsdkObjects } from "@osdk/react/experimental";
+} from "@osdk/react-components/experimental/filter-list";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 interface EmployeeListItemProps {
@@ -62,7 +62,7 @@ interface EmployeesWithFilterListProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+const INITIAL_FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
   {
     type: "PROPERTY",
     id: "department",
@@ -70,7 +70,21 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     label: "Department",
     filterComponent: "LISTOGRAM",
     filterState: { type: "EXACT_MATCH", values: [] },
-  } as FilterDefinitionUnion<Employee>,
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "lead-department",
+    linkName: "lead",
+    reverseLinkName: "peeps",
+    linkedPropertyKey: "department",
+    linkedFilterComponent: "LISTOGRAM",
+    linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    },
+    label: "Lead's Department",
+  },
 ];
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
@@ -87,7 +101,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <div>
           <FilterList
-            objectSet={$(Employee)}
+            objectType={Employee}
             filterDefinitions={INITIAL_FILTER_DEFINITIONS}
             onFilterClauseChanged={setWhereClause}
             enableSorting={true}
@@ -112,7 +126,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
               {employees.fetchMore && " (more available)"}
             </div>
             <pre style={{ fontSize: 10, marginTop: 8 }}>
-            Where: {JSON.stringify(whereClause, null, 2)}
+              Where: {JSON.stringify(whereClause, null, 2)}
             </pre>
           </div>
 

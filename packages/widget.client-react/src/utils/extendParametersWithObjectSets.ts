@@ -21,6 +21,7 @@ import type {
   AsyncParameterValueMap,
   WidgetConfig,
 } from "@osdk/widget.api";
+
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
 
 /**
@@ -35,7 +36,7 @@ export function extendParametersWithObjectSets<
   osdkClient: Client | undefined,
   config: C,
   parameters: AsyncParameterValueMap<C>,
-  cache: Map<string, { objectSetRid: string; objectSet: ObjectSet }>,
+  cache: Map<string, { objectSetRid: string; objectSet: ObjectSet }>
 ): ExtendedAsyncParameterValueMap<C> {
   const extendedParameters = {
     ...parameters,
@@ -44,15 +45,15 @@ export function extendParametersWithObjectSets<
   for (const parameterId of Object.keys(extendedParameters)) {
     const param = config.parameters[parameterId];
     if (
-      param.type === "objectSet"
-      && extendedParameters[parameterId].type === "objectSet"
+      param.type === "objectSet" &&
+      extendedParameters[parameterId].type === "objectSet"
     ) {
       const parameterValue = extendedParameters[parameterId].value.value;
       if (parameterValue != null) {
         if (
-          typeof parameterValue === "object"
-          && "objectSetRid" in parameterValue
-          && typeof parameterValue.objectSetRid === "string"
+          typeof parameterValue === "object" &&
+          "objectSetRid" in parameterValue &&
+          typeof parameterValue.objectSetRid === "string"
         ) {
           const objectSetRid = parameterValue.objectSetRid;
           const objectSet = getOrHydrateObjectSet(
@@ -60,12 +61,12 @@ export function extendParametersWithObjectSets<
             cache,
             parameterId,
             objectSetRid,
-            param.allowedType,
+            param.allowedType
           );
           (parameterValue as any).objectSet = objectSet;
         } else {
           throw new Error(
-            `Invalid object set parameter value for parameter "${parameterId}"`,
+            `Invalid object set parameter value for parameter "${parameterId}"`
           );
         }
       } else {
@@ -82,7 +83,7 @@ function getOrHydrateObjectSet<T extends AllowedObjectSetParameterType>(
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
   paramKey: string,
   objectSetRid: string,
-  definition: T,
+  definition: T
 ) {
   if (osdkClient == null) {
     throw new Error("Not provided an OSDK client");
@@ -94,7 +95,7 @@ function getOrHydrateObjectSet<T extends AllowedObjectSetParameterType>(
   const objectSet = hydrateObjectSetFromRid(
     osdkClient,
     definition,
-    objectSetRid,
+    objectSetRid
   );
   cache.set(paramKey, { objectSetRid, objectSet });
   return objectSet;

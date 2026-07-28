@@ -23,7 +23,9 @@ import type {
   GroupId,
   InputShape,
   InputShapeMetadata,
+  InterfaceActionTypeConstraintRid,
   InterfaceLinkTypeRid,
+  InterfaceParameterConstraintRid,
   InterfacePropertyTypeRid,
   InterfaceTypeRid,
   LinkTypeRid,
@@ -38,7 +40,11 @@ import type {
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
 import { createHash } from "crypto";
+
+import type { OntologyDefinition } from "@osdk/maker";
+
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
+import type { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -103,45 +109,63 @@ export interface OntologyRidGenerator {
   generateRidForInterface(apiName: string): InterfaceTypeRid;
   generateRidForInterfaceLinkType(
     apiName: string,
-    interfaceTypeApiName: string,
+    interfaceTypeApiName: string
   ): InterfaceLinkTypeRid;
+  generateRidForInterfaceActionTypeConstraint(
+    apiName: string,
+    interfaceTypeApiName: string
+  ): InterfaceActionTypeConstraintRid;
+  generateRidForInterfaceParameterConstraint(
+    constraintApiName: string,
+    interfaceTypeApiName: string,
+    paramApiName: string
+  ): InterfaceParameterConstraintRid;
+  getInterfaceActionTypeConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  >;
+  getInterfaceParameterConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  >;
   generateRidForObjectType(apiName: string): ObjectTypeRid;
   generateRidForValueType(apiName: string, version: string): ValueTypeReference;
   generateRidForTimeSeriesSync(name: string): TimeSeriesSyncRid;
   generateRidForLinkType(linkTypeId: string): LinkTypeRid;
   generateRidForGeotimeSeriesIntegration(
-    name: string,
+    name: string
   ): GeotimeSeriesIntegrationRid;
   generateRidForActionType(apiName: string): ActionTypeRid;
   generateRidForParameter(
     actionTypeApiName: string,
-    parameterId: string,
+    parameterId: string
   ): ParameterRid;
   generateSptRid(apiName: string): SharedPropertyTypeRid;
   generatePropertyRid(
     apiName: string,
-    objectTypeApiName: string,
+    objectTypeApiName: string
   ): PropertyTypeRid;
   generateInterfacePropertyTypeRid(
     apiName: string,
-    interfaceTypeApiName: string,
+    interfaceTypeApiName: string
   ): InterfacePropertyTypeRid;
+  generateIptRidFromSptRid(sptRid: string): InterfacePropertyTypeRid;
   generateStructFieldRid(
     propertyApiName: string,
-    apiName: string,
+    apiName: string
   ): StructFieldRid;
   // Datasource locator methods
   generateDatasetLocator(
     dataSetName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): DatasetDatasourceLocator;
   generateStreamLocator(
     streamName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): StreamLocator;
   generateRestrictedViewLocator(
     restrictedViewName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): RestrictedViewLocator;
   generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
@@ -163,6 +187,7 @@ export interface BiMap<K, V> {
   asMap(): Map<K, V>;
   inverse(): BiMap<V, K>;
   entries(): IterableIterator<[K, V]>;
+  includes(key: K): boolean;
 }
 
 /**
@@ -172,6 +197,7 @@ export interface BlockShapes {
   inputShapes: Map<ReadableId, InputShape>;
   outputShapes: Map<ReadableId, OutputShape>;
   inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
+  inputMappings: InputMappingEntry[];
 }
 
 /**
@@ -181,7 +207,7 @@ export class ReadableIdGenerator {
   static get(interfaceTypeApiName: string): ReadableId;
   static get(
     interfaceApiName: string,
-    interfaceLinkTypeApiName: string,
+    interfaceLinkTypeApiName: string
   ): ReadableId;
   static get(arg1: string, arg2?: string): ReadableId {
     if (arg2 !== undefined) {
@@ -207,7 +233,7 @@ export class ReadableIdGenerator {
 
   static getForStreamColumn(
     streamName: string,
-    columnName: string,
+    columnName: string
   ): ReadableId {
     return `stream-datasource-column-${streamName}-${columnName}` as ReadableId;
   }
@@ -226,14 +252,14 @@ export class ReadableIdGenerator {
 
   static getForDatasetColumn(
     dataSetName: string,
-    columnName: string,
+    columnName: string
   ): ReadableId {
     return `dataset-datasource-column-${dataSetName}-${columnName}` as ReadableId;
   }
 
   static getForDatasetColumnOutput(
     dataSetName: string,
-    columnName: string,
+    columnName: string
   ): ReadableId {
     return `dataset-datasource-column-output-${dataSetName}-${columnName}` as ReadableId;
   }
@@ -248,7 +274,7 @@ export class ReadableIdGenerator {
 
   static getForRestrictedViewColumn(
     restrictedViewName: string,
-    columnName: string,
+    columnName: string
   ): ReadableId {
     return `restricted-view-datasource-column-${restrictedViewName}-${columnName}` as ReadableId;
   }
@@ -275,14 +301,14 @@ export class ReadableIdGenerator {
 
   static getForProducedValueType(
     valueTypeApiName: string,
-    version: string,
+    version: string
   ): ReadableId {
     return `produced-value-type-${valueTypeApiName}-${version}` as ReadableId;
   }
 
   static getForConsumedValueType(
     valueTypeApiName: string,
-    version: string,
+    version: string
   ): ReadableId {
     return `consumed-value-type-${valueTypeApiName}-${version}` as ReadableId;
   }
@@ -293,30 +319,68 @@ export class ReadableIdGenerator {
 
   static getForObjectProperty(
     objectTypeApiName: string,
-    fieldApiName: string,
+    fieldApiName: string
   ): ReadableId {
     return `${objectTypeApiName}-property-type-${fieldApiName}` as ReadableId;
   }
 
   static getForInterfaceProperty(
     interfaceTypeApiName: string,
-    interfacePropertyTypeApiName: string,
+    interfacePropertyTypeApiName: string
   ): ReadableId {
     return `interface-property-type-${interfaceTypeApiName}-${interfacePropertyTypeApiName}` as ReadableId;
   }
 
+  static getForSptBackedInterfaceProperty(sptApiName: string): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    interfaceTypeApiName: string,
+    sptApiName: string
+  ): ReadableId;
+  static getForSptBackedInterfaceProperty(
+    arg1: string,
+    arg2?: string
+  ): ReadableId {
+    if (arg2 !== undefined) {
+      return `interface-property-type-${arg1}-${arg2}` as ReadableId;
+    }
+    return `interface-property-type-${arg1}` as ReadableId;
+  }
+
   static getForInterfaceLinkType(
     interfaceApiName: string,
-    interfaceLinkTypeApiName: string,
+    interfaceLinkTypeApiName: string
   ): ReadableId {
     return `interface-link-type-${interfaceApiName}-${interfaceLinkTypeApiName}` as ReadableId;
   }
 
+  static getForInterfaceActionTypeConstraint(
+    interfaceApiName: string,
+    constraintApiName: string
+  ): ReadableId {
+    return `interface-action-type-constraint-${interfaceApiName}-${constraintApiName}` as ReadableId;
+  }
+
+  static getForInterfaceParameterConstraint(
+    interfaceApiName: string,
+    constraintApiName: string,
+    paramApiName: string
+  ): ReadableId {
+    return `interface-parameter-constraint-${interfaceApiName}-${constraintApiName}-${paramApiName}` as ReadableId;
+  }
+
   static getForMarking(
     markingId: string,
-    supportedMarkingsType: "CBAC" | "MANDATORY",
+    supportedMarkingsType: "CBAC" | "MANDATORY"
   ): ReadableId {
     return `marking-${markingId}-${supportedMarkingsType}` as ReadableId;
+  }
+
+  static getForFunction(functionApiName: string): ReadableId {
+    return `function-${functionApiName}` as ReadableId;
+  }
+
+  static getForConsumedFunction(functionApiName: string): ReadableId {
+    return `consumed-function-${functionApiName}` as ReadableId;
   }
 }
 
@@ -330,6 +394,9 @@ export class BiMapImpl<K, V> implements BiMap<K, V> {
   private constructor(forward: Map<K, V>, backward: Map<V, K>) {
     this.forward = forward;
     this.backward = backward;
+  }
+  includes(key: K): boolean {
+    return this.forward.has(key);
   }
   asMap(): Map<K, V> {
     return this.forward;
@@ -367,6 +434,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     ReadableId,
     InterfaceLinkTypeRid
   >;
+  private readonly interfaceActionTypeConstraintRids: BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  >;
+  private readonly interfaceParameterConstraintRids: BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  >;
   private readonly interfacePropertyTypeRids: BiMap<
     ReadableId,
     InterfacePropertyTypeRid
@@ -400,10 +475,22 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   private readonly objectTypeIds: BiMap<ReadableId, string>;
   private readonly randomnessUuid?: string;
 
-  constructor(randomnessUuid?: string) {
+  constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
+    this.objectTypeRids = BiMapImpl.create();
+
+    Object.entries(importedTypes.OBJECT_TYPE)
+      .filter(([_apiName, object]) => object.ridHint !== undefined)
+      .map(([apiName, object]) =>
+        this.objectTypeRids.put(
+          ReadableIdGenerator.getForObjectType(object.apiName),
+          object.ridHint!
+        )
+      );
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
+    this.interfaceActionTypeConstraintRids = BiMapImpl.create();
+    this.interfaceParameterConstraintRids = BiMapImpl.create();
     this.interfacePropertyTypeRids = BiMapImpl.create();
     this.interfaceRids = BiMapImpl.create();
     this.actionTypeRids = BiMapImpl.create();
@@ -411,7 +498,6 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.sharedPropertyTypeRids = BiMapImpl.create();
     this.consumedValueTypeReferences = BiMapImpl.create();
     this.producedValueTypeReferences = new Map();
-    this.objectTypeRids = BiMapImpl.create();
     this.datasourceLocators = BiMapImpl.create();
     this.filesDatasourceLocators = BiMapImpl.create();
     this.columnShapes = BiMapImpl.create();
@@ -436,16 +522,17 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Datasource RID matching Java's RidUtils.getDatasourceRidFromName format
   generateDatasourceRid(datasourceName: string): string {
-    return `ri.ontology.main.datasource.${
-      toBlockShapeId(datasourceName, this.randomnessUuid)
-    }`;
+    return `ri.ontology.main.datasource.${toBlockShapeId(
+      datasourceName,
+      this.randomnessUuid
+    )}`;
   }
 
   // Validation rule RID matching Java's format
   generateValidationRuleRid(actionTypeApiName: string, index: number): string {
-    return `ri.ontology-metadata.temp.validation-rule.${
-      this.hashString(`${actionTypeApiName}.${index}`)
-    }`;
+    return `ri.ontology-metadata.temp.validation-rule.${this.hashString(
+      `${actionTypeApiName}.${index}`
+    )}`;
   }
 
   // Section RID matching Java's format: ri.ontology-metadata.temp.section.{hash(sectionId)}
@@ -455,9 +542,9 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Property security group RID matching Java's format
   generatePropertySecurityGroupRid(groupName: string): string {
-    return `ri.ontology-metadata.temp.property-security-group.${
-      this.hashString(groupName)
-    }`;
+    return `ri.ontology-metadata.temp.property-security-group.${this.hashString(
+      groupName
+    )}`;
   }
 
   getActionTypeRids(): BiMap<ReadableId, ActionTypeRid> {
@@ -478,6 +565,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   getInterfaceLinkTypeRids(): BiMap<ReadableId, InterfaceLinkTypeRid> {
     return this.interfaceLinkTypeRids;
+  }
+
+  getInterfaceActionTypeConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceActionTypeConstraintRid
+  > {
+    return this.interfaceActionTypeConstraintRids;
+  }
+
+  getInterfaceParameterConstraintRids(): BiMap<
+    ReadableId,
+    InterfaceParameterConstraintRid
+  > {
+    return this.interfaceParameterConstraintRids;
   }
 
   getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid> {
@@ -535,9 +636,9 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     input: ReadableId;
     output: ReadableId;
   } {
-    const input = this.consumedValueTypeReferences.inverse().get(
-      valueTypeReference,
-    );
+    const input = this.consumedValueTypeReferences
+      .inverse()
+      .get(valueTypeReference);
     const output = this.producedValueTypeReferences.get(valueTypeReference);
 
     if (!input || !output) {
@@ -549,9 +650,9 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Interface types
   generateRidForInterface(apiName: string): InterfaceTypeRid {
-    const rid = `ri.ontology-metadata.temp.interface-type.${
-      this.hashString(apiName)
-    }` as InterfaceTypeRid;
+    const rid = `ri.ontology-metadata.temp.interface-type.${this.hashString(
+      apiName
+    )}` as InterfaceTypeRid;
     this.interfaceRids.put(ReadableIdGenerator.getForInterface(apiName), rid);
     return rid;
   }
@@ -559,43 +660,86 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   // Interface Link Types
   generateRidForInterfaceLinkType(
     apiName: string,
-    interfaceTypeApiName: string,
+    interfaceTypeApiName: string
   ): InterfaceLinkTypeRid {
     const readableId = ReadableIdGenerator.getForInterfaceLinkType(
       interfaceTypeApiName,
-      apiName,
+      apiName
     );
-    const rid = `ri.ontology-metadata.temp.interface-link-type.${
-      this.hashString(readableId)
-    }` as InterfaceLinkTypeRid;
+    const rid =
+      `ri.ontology-metadata.temp.interface-link-type.${this.hashString(
+        readableId
+      )}` as InterfaceLinkTypeRid;
     this.interfaceLinkTypeRids.put(readableId, rid);
+    return rid;
+  }
+
+  // Interface Action Type Constraints
+  generateRidForInterfaceActionTypeConstraint(
+    apiName: string,
+    interfaceTypeApiName: string
+  ): InterfaceActionTypeConstraintRid {
+    const readableId = ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+      interfaceTypeApiName,
+      apiName
+    );
+    const rid =
+      `ri.ontology-metadata.temp.interface-action-type-constraint.${this.hashString(
+        readableId
+      )}` as InterfaceActionTypeConstraintRid;
+    this.interfaceActionTypeConstraintRids.put(readableId, rid);
+    return rid;
+  }
+
+  // Interface Parameter Constraints
+  generateRidForInterfaceParameterConstraint(
+    constraintApiName: string,
+    interfaceTypeApiName: string,
+    paramApiName: string
+  ): InterfaceParameterConstraintRid {
+    const readableId = ReadableIdGenerator.getForInterfaceParameterConstraint(
+      interfaceTypeApiName,
+      constraintApiName,
+      paramApiName
+    );
+    const rid =
+      `ri.ontology-metadata.temp.interface-parameter-constraint.${this.hashString(
+        readableId
+      )}` as InterfaceParameterConstraintRid;
+    this.interfaceParameterConstraintRids.put(readableId, rid);
     return rid;
   }
 
   // Object Types
   generateRidForObjectType(apiName: string): ObjectTypeRid {
-    const rid = `ri.ontology-metadata.temp.object-type.${
-      this.hashString(apiName)
-    }` as ObjectTypeRid;
-    this.objectTypeRids.put(ReadableIdGenerator.getForObjectType(apiName), rid);
+    const readableId = ReadableIdGenerator.getForObjectType(apiName);
+    if (this.objectTypeRids.includes(readableId)) {
+      return this.objectTypeRids.get(readableId)!;
+    }
+    const rid = `ri.ontology-metadata.temp.object-type.${this.hashString(
+      apiName
+    )}` as ObjectTypeRid;
+    this.objectTypeRids.put(readableId, rid);
     return rid;
   }
 
   // Value Types
   generateRidForValueType(
     apiName: string,
-    version: string,
+    version: string
   ): ValueTypeReference {
-    const rid = `ri.ontology-metadata.temp.value-type.${
-      this.hashString(apiName)
-    }`;
+    const rid = `ri.ontology-metadata.temp.value-type.${this.hashString(
+      apiName
+    )}`;
     // Generate UUID from version string (matching Java's UUID.nameUUIDFromBytes)
     const versionHash = createHash("md5").update(version, "utf8").digest("hex");
-    const versionAsUuid = `${versionHash.slice(0, 8)}-${
-      versionHash.slice(8, 12)
-    }-${versionHash.slice(12, 16)}-${versionHash.slice(16, 20)}-${
-      versionHash.slice(20, 32)
-    }`;
+    const versionAsUuid = `${versionHash.slice(0, 8)}-${versionHash.slice(
+      8,
+      12
+    )}-${versionHash.slice(12, 16)}-${versionHash.slice(16, 20)}-${versionHash.slice(
+      20,
+      32
+    )}`;
 
     const valueTypeReference: ValueTypeReference = {
       rid,
@@ -604,62 +748,63 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
     this.consumedValueTypeReferences.put(
       ReadableIdGenerator.getForConsumedValueType(apiName, version),
-      valueTypeReference,
+      valueTypeReference
     );
     this.producedValueTypeReferences.set(
       valueTypeReference,
-      ReadableIdGenerator.getForProducedValueType(apiName, version),
+      ReadableIdGenerator.getForProducedValueType(apiName, version)
     );
     return valueTypeReference;
   }
 
   generateRidForTimeSeriesSync(name: string): TimeSeriesSyncRid {
-    const rid = `ri.ontology-metadata.temp.time-series-sync.${
-      this.hashString(name)
-    }` as TimeSeriesSyncRid;
+    const rid = `ri.ontology-metadata.temp.time-series-sync.${this.hashString(
+      name
+    )}` as TimeSeriesSyncRid;
     this.timeSeriesSyncs.put(
       ReadableIdGenerator.getForTimeSeriesSync(name),
-      rid,
+      rid
     );
     return rid;
   }
 
   generateRidForLinkType(linkTypeId: string): LinkTypeRid {
-    const rid = `ri.ontology-metadata.temp.link-type.${
-      this.hashString(linkTypeId)
-    }` as LinkTypeRid;
+    const rid = `ri.ontology-metadata.temp.link-type.${this.hashString(
+      linkTypeId
+    )}` as LinkTypeRid;
     this.linkTypeRids.put(ReadableIdGenerator.getForLinkType(linkTypeId), rid);
     return rid;
   }
 
   generateRidForGeotimeSeriesIntegration(
-    name: string,
+    name: string
   ): GeotimeSeriesIntegrationRid {
-    const rid = `ri.ontology-metadata.temp.geotime-series-integration.${
-      this.hashString(name)
-    }` as GeotimeSeriesIntegrationRid;
+    const rid =
+      `ri.ontology-metadata.temp.geotime-series-integration.${this.hashString(
+        name
+      )}` as GeotimeSeriesIntegrationRid;
     this.geotimeSeriesIntegrationRids.put(
       ReadableIdGenerator.getForGeotimeSeriesIntegration(name),
-      rid,
+      rid
     );
     return rid;
   }
 
   generateRidForActionType(apiName: string): ActionTypeRid {
-    const rid = `ri.ontology-metadata.temp.action-type.${
-      this.hashString(apiName)
-    }` as ActionTypeRid;
+    const rid = `ri.ontology-metadata.temp.action-type.${this.hashString(
+      apiName
+    )}` as ActionTypeRid;
     this.actionTypeRids.put(ReadableIdGenerator.getForActionType(apiName), rid);
     return rid;
   }
 
   generateRidForParameter(
     actionTypeApiName: string,
-    parameterId: string,
+    parameterId: string
   ): ParameterRid {
-    const rid = `ri.ontology-metadata.temp.parameter.${
-      this.hashString(actionTypeApiName + "." + parameterId)
-    }` as ParameterRid;
+    const rid = `ri.ontology-metadata.temp.parameter.${this.hashString(
+      actionTypeApiName + "." + parameterId
+    )}` as ParameterRid;
 
     let innerMap = this.parameterRids.get(actionTypeApiName);
     if (!innerMap) {
@@ -669,33 +814,34 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
     innerMap.put(
       ReadableIdGenerator.getForParameter(actionTypeApiName, parameterId),
-      { rid, id: parameterId },
+      { rid, id: parameterId }
     );
     return rid;
   }
 
   // Shared Property Types
   generateSptRid(apiName: string): SharedPropertyTypeRid {
-    const rid = `ri.ontology-metadata.temp.shared-property-type.${
-      this.hashString(apiName)
-    }` as SharedPropertyTypeRid;
+    const rid =
+      `ri.ontology-metadata.temp.shared-property-type.${this.hashString(
+        apiName
+      )}` as SharedPropertyTypeRid;
     this.sharedPropertyTypeRids.put(
       ReadableIdGenerator.getForSpt(apiName),
-      rid,
+      rid
     );
     return rid;
   }
 
   generatePropertyRid(
     apiName: string,
-    objectTypeApiName: string,
+    objectTypeApiName: string
   ): PropertyTypeRid {
-    const rid = `ri.ontology-metadata.temp.property-type.${
-      this.hashString(objectTypeApiName + "." + apiName)
-    }` as PropertyTypeRid;
+    const rid = `ri.ontology-metadata.temp.property-type.${this.hashString(
+      objectTypeApiName + "." + apiName
+    )}` as PropertyTypeRid;
     this.propertyTypeRids.put(
       ReadableIdGenerator.getForObjectProperty(objectTypeApiName, apiName),
-      rid,
+      rid
     );
     return rid;
   }
@@ -703,44 +849,52 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   // Interface Property Types
   generateInterfacePropertyTypeRid(
     apiName: string,
-    interfaceTypeApiName: string,
+    interfaceTypeApiName: string
   ): InterfacePropertyTypeRid {
-    const rid = `ri.ontology-metadata.temp.interface-property-type.${
-      this.hashString(interfaceTypeApiName + "." + apiName)
-    }` as InterfacePropertyTypeRid;
+    const rid =
+      `ri.ontology-metadata.temp.interface-property-type.${this.hashString(
+        interfaceTypeApiName + "." + apiName
+      )}` as InterfacePropertyTypeRid;
     this.interfacePropertyTypeRids.put(
       ReadableIdGenerator.getForInterfaceProperty(
         interfaceTypeApiName,
-        apiName,
+        apiName
       ),
-      rid,
+      rid
     );
     return rid;
+  }
+
+  generateIptRidFromSptRid(sptRid: string): InterfacePropertyTypeRid {
+    return sptRid.replace(
+      "shared-property-type",
+      "interface-property-type"
+    ) as InterfacePropertyTypeRid;
   }
 
   // Struct Field RIDs
   generateStructFieldRid(
     propertyApiName: string,
-    apiName: string,
+    apiName: string
   ): StructFieldRid {
-    const rid = `ri.ontology-metadata.temp.struct-field.${
-      this.hashString(propertyApiName + "." + apiName)
-    }` as StructFieldRid;
+    const rid = `ri.ontology-metadata.temp.struct-field.${this.hashString(
+      propertyApiName + "." + apiName
+    )}` as StructFieldRid;
     return rid;
   }
 
   // Datasource locator methods
   generateDatasetLocator(
     dataSetName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): DatasetDatasourceLocator {
-    const datasetRid = `ri.ontology-metadata.temp.dataset.${
-      this.hashString(dataSetName)
-    }`;
+    const datasetRid = `ri.ontology-metadata.temp.dataset.${this.hashString(
+      dataSetName
+    )}`;
     const branchId = "main";
 
     // Register column shapes
-    columnNames.forEach(name => {
+    columnNames.forEach((name) => {
       this.columnShapes.put(
         ReadableIdGenerator.getForDatasetColumn(dataSetName, name),
         {
@@ -749,7 +903,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             dataset: { rid: datasetRid, branch: branchId },
           } as DatasourceLocator,
           name,
-        } as ResolvedDatasourceColumnShape,
+        } as ResolvedDatasourceColumnShape
       );
     });
 
@@ -759,7 +913,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       {
         type: "dataset",
         dataset: { rid: datasetRid, branch: branchId },
-      } as DatasourceLocator,
+      } as DatasourceLocator
     );
 
     return { rid: datasetRid, branchId };
@@ -767,11 +921,11 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   generateStreamLocator(
     streamName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): StreamLocator {
-    const streamLocatorRid = `ri.ontology-metadata.temp.stream-datasource.${
-      this.hashString(streamName)
-    }`;
+    const streamLocatorRid = `ri.ontology-metadata.temp.stream-datasource.${this.hashString(
+      streamName
+    )}`;
     const branchId = "main";
 
     const locator: StreamLocator = {
@@ -788,20 +942,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     } as DatasourceLocator;
 
     // Register column shapes
-    columnNames.forEach(name => {
+    columnNames.forEach((name) => {
       this.columnShapes.put(
         ReadableIdGenerator.getForStreamColumn(streamName, name),
         {
           datasource: marketplaceLocator,
           name,
-        } as ResolvedDatasourceColumnShape,
+        } as ResolvedDatasourceColumnShape
       );
     });
 
     // Register datasource locator
     this.datasourceLocators.put(
       ReadableIdGenerator.getForStream(streamName),
-      marketplaceLocator,
+      marketplaceLocator
     );
 
     return locator;
@@ -809,18 +963,18 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   generateRestrictedViewLocator(
     restrictedViewName: string,
-    columnNames: Set<string>,
+    columnNames: Set<string>
   ): RestrictedViewLocator {
-    const restrictedViewRid = `ri.ontology-metadata.temp.restricted-view.${
-      this.hashString(restrictedViewName)
-    }`;
+    const restrictedViewRid = `ri.ontology-metadata.temp.restricted-view.${this.hashString(
+      restrictedViewName
+    )}`;
 
     // Register column shapes
-    columnNames.forEach(name => {
+    columnNames.forEach((name) => {
       this.columnShapes.put(
         ReadableIdGenerator.getForRestrictedViewColumn(
           restrictedViewName,
-          name,
+          name
         ),
         {
           datasource: {
@@ -828,7 +982,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             restrictedView: { rid: restrictedViewRid },
           } as DatasourceLocator,
           name,
-        } as ResolvedDatasourceColumnShape,
+        } as ResolvedDatasourceColumnShape
       );
     });
 
@@ -838,22 +992,22 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       {
         type: "restrictedView",
         restrictedView: { rid: restrictedViewRid },
-      } as DatasourceLocator,
+      } as DatasourceLocator
     );
 
     return { rid: restrictedViewRid };
   }
 
   generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator {
-    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${
-      this.hashString(mediaSetViewName)
-    }`;
-    const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${
-      this.hashString(mediaSetViewName)
-    }`;
-    const mediaSetViewRid = `ri.ontology-metadata.temp.media-set-view.${
-      this.hashString(mediaSetViewName)
-    }`;
+    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${this.hashString(
+      mediaSetViewName
+    )}`;
+    const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${this.hashString(
+      mediaSetViewName
+    )}`;
+    const mediaSetViewRid = `ri.ontology-metadata.temp.media-set-view.${this.hashString(
+      mediaSetViewName
+    )}`;
 
     // Register files datasource locator
     this.filesDatasourceLocators.put(
@@ -864,7 +1018,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
           rid: mediaSetRid,
           branch: "master", // matches OntologyMetadataConstants.ONTOLOGY_DATASET_BRANCH_ID
         },
-      } as FilesDatasourceLocator,
+      } as FilesDatasourceLocator
     );
 
     return {
@@ -891,7 +1045,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     }
 
     // Match Java: apiName.replace(".", "-").toLowerCase()
-    const objectTypeId = objectTypeApiName.replace(/\./g, "-").toLowerCase();
+    const objectTypeId = objectTypeApiName.replace(/\./gu, "-").toLowerCase();
     this.objectTypeIds.put(readableId, objectTypeId);
     return objectTypeId;
   }

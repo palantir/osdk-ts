@@ -23,6 +23,7 @@ import type {
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { extendParametersWithObjectSets } from "./extendParametersWithObjectSets.js";
 
 vi.mock("@osdk/client/internal", () => ({
@@ -38,7 +39,7 @@ describe("extendParametersWithObjectSets", () => {
 
   // Test helpers
   const createMockObjectType = (
-    rid = "ri.object-type.123",
+    rid = "ri.object-type.123"
   ): AllowedObjectSetParameterType => ({
     apiName: "MyObjectType",
     type: "object",
@@ -104,7 +105,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       parameters,
-      cache,
+      cache
     );
 
     expect(result).toEqual({
@@ -149,7 +150,7 @@ describe("extendParametersWithObjectSets", () => {
       undefined,
       config,
       parameters,
-      cache,
+      cache
     );
 
     expect(result).toEqual(parameters);
@@ -194,7 +195,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       parameters,
-      cache,
+      cache
     );
 
     // Helper to create expected result with hydrated object set
@@ -224,7 +225,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       parameters,
-      cache,
+      cache
     );
 
     expect(result2).toEqual({
@@ -271,7 +272,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       initialParameters,
-      cache,
+      cache
     );
 
     // Verify initial state - object set is loaded and cached
@@ -301,7 +302,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       failedParameters,
-      cache,
+      cache
     );
 
     // Verify failed state - no object set in result and cache is cleared
@@ -332,12 +333,7 @@ describe("extendParametersWithObjectSets", () => {
     };
 
     expect(() =>
-      extendParametersWithObjectSets(
-        undefined,
-        config,
-        parameters,
-        cache,
-      )
+      extendParametersWithObjectSets(undefined, config, parameters, cache)
     ).toThrow("Not provided an OSDK client");
   });
 
@@ -370,7 +366,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       parameters,
-      cache,
+      cache
     );
 
     expect(result).toEqual(parameters);
@@ -404,7 +400,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       initialParameters,
-      cache,
+      cache
     );
 
     // Verify initial state
@@ -420,7 +416,7 @@ describe("extendParametersWithObjectSets", () => {
     expect(hydrateObjectSetFromRid).toHaveBeenCalledWith(
       client,
       expect.anything(),
-      "ri.object-set.123",
+      "ri.object-set.123"
     );
 
     // Step 2: Transition to reloading state (value persists during reload)
@@ -440,7 +436,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       reloadingParameters,
-      cache,
+      cache
     );
 
     // During reloading, the cached objectSet should be reused (no new hydration)
@@ -466,7 +462,7 @@ describe("extendParametersWithObjectSets", () => {
       client,
       config,
       newLoadedParameters,
-      cache,
+      cache
     );
 
     // Verify new state - new object set hydrated and cache updated
@@ -482,7 +478,7 @@ describe("extendParametersWithObjectSets", () => {
     expect(hydrateObjectSetFromRid).toHaveBeenLastCalledWith(
       client,
       expect.anything(),
-      "ri.object-set.456",
+      "ri.object-set.456"
     );
   });
 });

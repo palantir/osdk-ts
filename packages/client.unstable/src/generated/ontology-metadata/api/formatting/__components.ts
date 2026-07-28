@@ -28,8 +28,7 @@ export type Alignment = "LEFT" | "CENTER" | "RIGHT";
 /**
  * Always true.
  */
-export interface AlwaysCondition {
-}
+export interface AlwaysCondition {}
 /**
  * True if all conditions are true.
  */
@@ -179,8 +178,7 @@ export interface IsNullCondition {
 /**
  * Reference to the property this rule is being applied to.
  */
-export interface It {
-}
+export interface It {}
 /**
  * Request object for the loadAllRuleSets endpoint. Users can optionally specify an OntologyRid
  * and OntologyVersion to load rule sets from.
@@ -258,8 +256,7 @@ export type MathValue =
 /**
  * No color style should be applied. This can be thought of as an empty 'optional<ColorStyle>'.
  */
-export interface NoColorStyle {
-}
+export interface NoColorStyle {}
 /**
  * Flip the result of the condition.
  */

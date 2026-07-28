@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { NumberInputField } from "../fields/NumberInputField.js";
 
 afterEach(cleanup);
@@ -40,7 +41,7 @@ describe("NumberInputField", () => {
           value={null}
           onChange={vi.fn()}
           placeholder="Enter number"
-        />,
+        />
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
       expect(input.placeholder).toBe("Enter number");
@@ -168,7 +169,7 @@ describe("NumberInputField", () => {
   describe("external value sync", () => {
     it("updates display when external value changes", () => {
       const { rerender } = render(
-        <NumberInputField value={10} onChange={vi.fn()} />,
+        <NumberInputField value={10} onChange={vi.fn()} />
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
       expect(input.value).toBe("10");
@@ -180,7 +181,7 @@ describe("NumberInputField", () => {
     it("does not reset display when external value is numerically equal", () => {
       const onChange = vi.fn();
       const { rerender } = render(
-        <NumberInputField value={null} onChange={onChange} />,
+        <NumberInputField value={null} onChange={onChange} />
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
 
@@ -195,7 +196,7 @@ describe("NumberInputField", () => {
 
     it("updates display when external value changes from null to number", () => {
       const { rerender } = render(
-        <NumberInputField value={null} onChange={vi.fn()} />,
+        <NumberInputField value={null} onChange={vi.fn()} />
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
       expect(input.value).toBe("");
@@ -206,7 +207,7 @@ describe("NumberInputField", () => {
 
     it("clears display when external value changes to null", () => {
       const { rerender } = render(
-        <NumberInputField value={42} onChange={vi.fn()} />,
+        <NumberInputField value={42} onChange={vi.fn()} />
       );
       const input = screen.getByRole("textbox") as HTMLInputElement;
       expect(input.value).toBe("42");
@@ -246,6 +247,17 @@ describe("NumberInputField", () => {
       fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
       expect(onChange).not.toHaveBeenCalled();
     });
+
+    it("disables the text input when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <NumberInputField value={10} onChange={onChange} disabled={true} />
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      expect(input.disabled).toBe(true);
+      expect(input.value).toBe("10");
+    });
   });
 
   describe("stepper buttons", () => {
@@ -282,12 +294,29 @@ describe("NumberInputField", () => {
       fireEvent.click(screen.getByLabelText("Decrement"));
       expect(onChange).toHaveBeenCalledWith(-1);
     });
+
+    it("shows disabled stepper buttons and blocks clicks when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <NumberInputField value={10} onChange={onChange} disabled={true} />
+      );
+
+      const increment = screen.getByLabelText("Increment") as HTMLButtonElement;
+      const decrement = screen.getByLabelText("Decrement") as HTMLButtonElement;
+      expect(increment.disabled).toBe(true);
+      expect(decrement.disabled).toBe(true);
+
+      fireEvent.click(increment);
+      fireEvent.click(decrement);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("props", () => {
     it("passes id to the input element", () => {
       render(
-        <NumberInputField id="my-field" value={null} onChange={vi.fn()} />,
+        <NumberInputField id="my-field" value={null} onChange={vi.fn()} />
       );
       const input = document.getElementById("my-field");
       expect(input).not.toBeNull();

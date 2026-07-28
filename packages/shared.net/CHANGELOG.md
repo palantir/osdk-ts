@@ -1,5 +1,50 @@
 # @osdk/shared.net
 
+## 2.12.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+## 2.11.0
+
+### Minor Changes
+
+- ff11b06: Lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint. First increment of the repo-wide oxc migration (#3031), covering: `@osdk/shared.net`, `@osdk/shared.net.errors`, `@osdk/shared.net.fetch`, and `@osdk/shared.client.impl`.
+
+### Patch Changes
+
+- Updated dependencies [ff11b06]
+  - @osdk/shared.net.errors@2.11.0
+  - @osdk/shared.client.impl@1.13.0
+  - @osdk/shared.net.fetch@1.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/shared.client.impl@1.12.0
+  - @osdk/shared.net.errors@2.10.0
+  - @osdk/shared.net.fetch@1.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+
 ## 2.8.0
 
 ### Minor Changes

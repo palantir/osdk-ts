@@ -23,12 +23,12 @@ import type {
 
 /** @internal */
 export function modernToLegacyGroupByClause(
-  groupByClause: GroupByClause<any> | undefined,
+  groupByClause: GroupByClause<any> | undefined
 ) {
   if (!groupByClause) return [];
 
   return Object.entries(
-    groupByClause as Record<string, AllGroupByValues>,
+    groupByClause as Record<string, AllGroupByValues>
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
     if (type === "exact") {
       return [{ type, field }];
@@ -49,36 +49,41 @@ export function modernToLegacyGroupByClause(
           field,
           maxGroupCount: type.$exact?.$limit ?? undefined,
           defaultValue: type.$exact.$defaultValue ?? undefined,
-          includeNullValues: type.$exact.$includeNullValue === true
-            ? true
-            : undefined,
+          includeNullValues:
+            type.$exact.$includeNullValue === true ? true : undefined,
         },
       ];
     } else if ("$fixedWidth" in type) {
-      return [{
-        type: "fixedWidth",
-        field,
-        fixedWidth: type.$fixedWidth,
-      }];
+      return [
+        {
+          type: "fixedWidth",
+          field,
+          fixedWidth: type.$fixedWidth,
+        },
+      ];
     } else if ("$ranges" in type) {
-      return [{
-        type: "ranges",
-        field,
-        ranges: type.$ranges.map(range => convertRange(range)),
-      }];
+      return [
+        {
+          type: "ranges",
+          field,
+          ranges: type.$ranges.map((range) => convertRange(range)),
+        },
+      ];
     } else if ("$duration" in type) {
-      return [{
-        type: "duration",
-        field,
-        value: type.$duration[0],
-        unit: DurationMapping[type.$duration[1]],
-      }];
+      return [
+        {
+          type: "duration",
+          field,
+          value: type.$duration[0],
+          unit: DurationMapping[type.$duration[1]],
+        },
+      ];
     } else return [];
   });
 }
 
 function convertRange(
-  range: GroupByRange<number | string>,
+  range: GroupByRange<number | string>
 ): AggregationRangeV2 {
   return { startValue: range[0], endValue: range[1] };
 }

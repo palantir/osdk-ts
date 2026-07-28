@@ -20,6 +20,7 @@ import {
   customFetch,
   processClientCredentialsResponse,
 } from "oauth4webapi";
+
 import { common, createAuthorizationServer } from "./common.js";
 import type { ConfidentialOauthClient } from "./ConfidentialOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
@@ -44,7 +45,7 @@ export function createConfidentialOauthClient(
     "api:use-ontologies-write",
   ],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
-  ctxPath: string = "multipass",
+  ctxPath: string = "multipass"
 ): ConfidentialOauthClient {
   const client: Client = { client_id, client_secret };
   const authServer = createAuthorizationServer(ctxPath, url);
@@ -59,7 +60,7 @@ export function createConfidentialOauthClient(
     undefined,
     undefined,
     joinedScopes,
-    undefined,
+    undefined
   );
 
   async function _signIn() {
@@ -72,11 +73,11 @@ export function createConfidentialOauthClient(
             authServer,
             client,
             new URLSearchParams({ scope: joinedScopes }),
-            oauthHttpOptions,
-          ),
-        ),
+            oauthHttpOptions
+          )
+        )
       ),
-      "signIn",
+      "signIn"
     );
   }
 

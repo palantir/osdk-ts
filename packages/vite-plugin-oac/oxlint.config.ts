@@ -1,0 +1,44 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { defineConfig } from "oxlint";
+
+import root from "../../oxlint.config.ts";
+
+// Nested oxlint config for @osdk/vite-plugin-oac. It inherits the whole repo ruleset by
+// `extends`-ing the root config, then turns off the error-level rules this
+// package's existing source first surfaces so the ESLint -> oxlint migration is a
+// reformat, not a rewrite (`oxlint --fix` applies no source rewrites).
+//
+// `extends` only carries `rules`/`plugins`/`overrides`, so the root's
+// `ignorePatterns` are re-applied explicitly (otherwise generated/ignored files
+// would start being linted).
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: root.ignorePatterns,
+
+  rules: {
+    "no-void": "off", // The `void` operator (e.g. marking a floating promise); intentional.
+    "typescript/no-dynamic-delete": "off", // `delete obj[expr]` with a computed key; intentional.
+    "typescript/no-import-type-side-effects": "off", // The `import type` side-effect form; stylistic.
+    "typescript/no-non-null-assertion": "off", // `!` non-null assertions are a deliberate pattern here; not autofixable.
+    "typescript/no-unsafe-declaration-merging": "off", // Deliberate interface/class declaration merging.
+    "unicorn/prefer-node-protocol": "off", // The `node:` protocol on builtin imports; a source rewrite.
+    "unicorn/prefer-number-properties": "off", // Global `parseInt`/`isNaN` vs `Number.*`; a source rewrite.
+    "unicorn/prefer-optional-catch-binding": "off", // Omitting the unused catch binding; a source rewrite.
+    "unicorn/prefer-string-replace-all": "off", // `String#replaceAll` vs `replace(/g)`; a source rewrite.
+  },
+});

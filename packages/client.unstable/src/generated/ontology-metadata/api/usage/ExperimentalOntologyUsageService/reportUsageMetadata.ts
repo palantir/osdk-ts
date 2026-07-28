@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest,
   ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse,
@@ -30,7 +31,7 @@ import type {
 export async function reportUsageMetadata(
   ctx: ConjureContext,
   serviceToken: string,
-  request: _api_usage_ReportUsageMetadataRequest,
+  request: _api_usage_ReportUsageMetadataRequest
 ): Promise<_api_usage_ReportUsageMetadataResponse> {
   return conjureFetch(ctx, `/usage/reportUsageMetadata`, "POST", request);
 }

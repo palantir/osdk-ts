@@ -17,23 +17,24 @@
 import type { PossibleWhereClauseFilters } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { evaluateFilter } from "./evaluateFilter.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 function is$and(
-  whereClause: SimpleWhereClause,
+  whereClause: SimpleWhereClause
 ): whereClause is { $and: SimpleWhereClause[] } {
   if (process.env.NODE_ENV !== "production") {
     if ("$and" in whereClause) {
       invariant(
         Array.isArray(whereClause.$and),
-        "expected $and to be an array",
+        "expected $and to be an array"
       );
       invariant(
         Object.keys(whereClause).length === 1,
-        "expected only $and to be present",
+        "expected only $and to be present"
       );
     }
   }
@@ -41,17 +42,14 @@ function is$and(
 }
 
 function is$or(
-  whereClause: SimpleWhereClause,
+  whereClause: SimpleWhereClause
 ): whereClause is { $or: SimpleWhereClause[] } {
   if (process.env.NODE_ENV !== "production") {
     if ("$or" in whereClause) {
-      invariant(
-        Array.isArray(whereClause.$or),
-        "expected $or to be an array",
-      );
+      invariant(Array.isArray(whereClause.$or), "expected $or to be an array");
       invariant(
         Object.keys(whereClause).length === 1,
-        "expected only $or to be present",
+        "expected only $or to be present"
       );
     }
   }
@@ -59,13 +57,13 @@ function is$or(
 }
 
 function is$not(
-  whereClause: SimpleWhereClause,
+  whereClause: SimpleWhereClause
 ): whereClause is { $not: SimpleWhereClause } {
   if (process.env.NODE_ENV !== "production") {
     if ("$not" in whereClause) {
       invariant(
         Object.keys(whereClause).length === 1,
-        "expected only $not to be present",
+        "expected only $not to be present"
       );
     }
   }
@@ -76,19 +74,19 @@ function is$not(
 export function objectSortaMatchesWhereClause(
   o: ObjectHolder | InterfaceHolder,
   whereClause: SimpleWhereClause,
-  strict: boolean,
+  strict: boolean
 ): boolean {
   if (deepEqual({}, whereClause)) {
     return true;
   }
 
   if (is$and(whereClause)) {
-    return whereClause.$and.every(w =>
+    return whereClause.$and.every((w) =>
       objectSortaMatchesWhereClause(o, w, strict)
     );
   }
   if (is$or(whereClause)) {
-    return whereClause.$or.some(w =>
+    return whereClause.$or.some((w) =>
       objectSortaMatchesWhereClause(o, w, strict)
     );
   }

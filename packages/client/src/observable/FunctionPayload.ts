@@ -15,6 +15,7 @@
  */
 
 import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
+
 import type { QueryReturnType } from "../queries/types.js";
 import type { Status } from "./ObservableClient/common.js";
 
@@ -25,6 +26,6 @@ export interface FunctionPayload<T = unknown> {
   error?: Error;
 }
 
-export interface TypedFunctionPayload<Q extends QueryDefinition<any>>
-  extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>>
-{}
+export interface TypedFunctionPayload<
+  Q extends QueryDefinition<any>,
+> extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>> {}

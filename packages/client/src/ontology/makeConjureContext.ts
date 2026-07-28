@@ -19,7 +19,7 @@ import type { ConjureContext } from "conjure-lite";
 
 export function makeConjureContext(
   { baseUrl, fetch: fetchFn, tokenProvider }: SharedClientContext,
-  servicePath: string,
+  servicePath: string
 ): ConjureContext {
   return {
     baseUrl,

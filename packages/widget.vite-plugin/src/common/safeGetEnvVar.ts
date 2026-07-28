@@ -17,7 +17,7 @@
 export function safeGetEnvVar(
   env: NodeJS.ProcessEnv,
   name: string,
-  errorMessage: string,
+  errorMessage: string
 ): string {
   const envVar = env[name];
   if (envVar == null) {

@@ -15,9 +15,9 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  DeleteObjectSetsBySecurityRidResponse
-    as _api_internal_DeleteObjectSetsBySecurityRidResponse,
+  DeleteObjectSetsBySecurityRidResponse as _api_internal_DeleteObjectSetsBySecurityRidResponse,
   SecurityRid as _api_internal_SecurityRid,
 } from "../__components.js";
 
@@ -27,11 +27,11 @@ import type {
  */
 export async function deleteObjectSetsBySecurityRid(
   ctx: ConjureContext,
-  securityRid: _api_internal_SecurityRid,
+  securityRid: _api_internal_SecurityRid
 ): Promise<_api_internal_DeleteObjectSetsBySecurityRidResponse> {
   return conjureFetch(
     ctx,
     `/internal/objectSets/securityRid/${securityRid}`,
-    "DELETE",
+    "DELETE"
   );
 }

@@ -24,6 +24,6 @@ import { Office } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const OfficeObjectSet = client(Office)
-    .where({
-        entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-    });
+  .where({
+    entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128] } },
+  });

@@ -21,8 +21,8 @@
 
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import { type Osdk, type PageResult } from "@osdk/client";
+import { client } from "./client.js";
 
-const response:  PageResult<Osdk<HasAddress>>
-    = await client(HasAddress).fetchPage({ $pageSize: 30 });
+const response: PageResult<Osdk<HasAddress>> = await client(HasAddress)
+  .fetchPage({ $pageSize: 30 });

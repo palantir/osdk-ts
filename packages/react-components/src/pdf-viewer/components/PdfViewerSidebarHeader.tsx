@@ -18,7 +18,9 @@ import { Toggle } from "@base-ui/react/toggle";
 import { ToggleGroup } from "@base-ui/react/toggle-group";
 import { GridView, Properties } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
+
 import type { SidebarMode } from "../types.js";
+
 import styles from "./PdfViewerSidebarHeader.module.css";
 
 export interface PdfViewerSidebarHeaderProps {
@@ -33,9 +35,8 @@ export function PdfViewerSidebarHeader({
   sidebarMode,
   onSidebarModeChange,
 }: PdfViewerSidebarHeaderProps): React.ReactElement {
-  const value = sidebarMode === "thumbnails"
-    ? SIDEBAR_MODE_VALUE
-    : OUTLINE_MODE_VALUE;
+  const value =
+    sidebarMode === "thumbnails" ? SIDEBAR_MODE_VALUE : OUTLINE_MODE_VALUE;
 
   const handleValueChange = useCallback(
     (newValue: string[]) => {
@@ -43,7 +44,7 @@ export function PdfViewerSidebarHeader({
         onSidebarModeChange(newValue[0] as SidebarMode);
       }
     },
-    [onSidebarModeChange],
+    [onSidebarModeChange]
   );
 
   return (

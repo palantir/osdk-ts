@@ -18,6 +18,7 @@ import { getChangelogEntry } from "@changesets/release-utils";
 import AdmZip from "adm-zip";
 import chalk from "chalk";
 import consola from "consola";
+
 import type { GithubContext } from "./runVersion.js";
 
 type PublishedPackages = {
@@ -31,11 +32,11 @@ async function createGithubReleaseTag(
   packageName: string,
   version: string,
   context: GithubContext,
-  sha: string,
+  sha: string
 ) {
-  const changelogPath = `packages/${
-    getDirNameFromPackageName(packageName)
-  }/CHANGELOG.md`;
+  const changelogPath = `packages/${getDirNameFromPackageName(
+    packageName
+  )}/CHANGELOG.md`;
   const changelogContent = await context.octokit.rest.repos.getContent({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -48,60 +49,58 @@ async function createGithubReleaseTag(
 
   const changelog = Buffer.from(
     (changelogContent.data as any).content,
-    "base64",
+    "base64"
   ).toString("utf8");
 
-  const changelogEntry = getChangelogEntry(
-    changelog,
-    version,
-  );
+  const changelogEntry = getChangelogEntry(changelog, version);
 
   if (!changelogEntry) {
     throw new Error(
-      `Could not find changelog entry for ${packageName}@${packageName}`,
+      `Could not find changelog entry for ${packageName}@${packageName}`
     );
   }
 
   const tagName = `${packageName}@${version}`;
 
-  void context.octokit.rest.repos.createRelease({
-    ...context.repo,
-    tag_name: tagName,
-    name: tagName,
-    body: changelogEntry.content === "\n"
-      ? "No changes were made."
-      : changelogEntry.content,
-    prerelease: version.includes("beta")
-      || version.includes("rc"),
-    target_commitish: sha,
-  }).then((result) => {
-    consola.log(
-      `Created GitHub release with tag ${
-        chalk.green(`${packageName}@${version}`)
-      } at ${result.data.html_url}`,
-    );
-  }).catch((e) => {
-    if (e.response.data?.errors[0].code === "already_exists") {
+  void context.octokit.rest.repos
+    .createRelease({
+      ...context.repo,
+      tag_name: tagName,
+      name: tagName,
+      body:
+        changelogEntry.content === "\n"
+          ? "No changes were made."
+          : changelogEntry.content,
+      prerelease: version.includes("beta") || version.includes("rc"),
+      target_commitish: sha,
+    })
+    .then((result) => {
       consola.log(
-        chalk.yellow(
-          `Release for ${packageName}@${version} already exists, ignoring`,
-        ),
+        `Created GitHub release with tag ${chalk.green(
+          `${packageName}@${version}`
+        )} at ${result.data.html_url}`
       );
-    } else {
-      consola.error(
-        "Failed to create release for ${packageName}@${version}",
-        e,
-      );
-    }
-  });
+    })
+    .catch((e) => {
+      if (e.response.data?.errors[0].code === "already_exists") {
+        consola.log(
+          chalk.yellow(
+            `Release for ${packageName}@${version} already exists, ignoring`
+          )
+        );
+      } else {
+        consola.error(
+          "Failed to create release for ${packageName}@${version}",
+          e
+        );
+      }
+    });
 }
 
 async function fetchPublishedPackagesAndSha(
   context: GithubContext,
-  sha?: string,
-): Promise<
-  { workflowSha: string; publishedPackages: PublishedPackages }
-> {
+  sha?: string
+): Promise<{ workflowSha: string; publishedPackages: PublishedPackages }> {
   // If SHA is provided, this will only fetch the published packages for that SHA
   const runs = await context.octokit.rest.actions.listWorkflowRuns({
     repo: context.repo.repo,
@@ -111,8 +110,8 @@ async function fetchPublishedPackagesAndSha(
   });
 
   for (const workflowRun of runs.data.workflow_runs) {
-    const artifacts = await context.octokit.rest.actions
-      .listWorkflowRunArtifacts({
+    const artifacts =
+      await context.octokit.rest.actions.listWorkflowRunArtifacts({
         owner: context.repo.owner,
         repo: context.repo.repo,
         run_id: workflowRun.id,
@@ -135,15 +134,15 @@ async function fetchPublishedPackagesAndSha(
         for (const zipEntry of zipEntries) {
           if (zipEntry.entryName === "pnpm-publish-summary.json") {
             const publishedPackages = JSON.parse(
-              zipEntry.getData().toString("utf8"),
+              zipEntry.getData().toString("utf8")
             ) as PublishedPackages;
             if (publishedPackages.publishedPackages.length === 0) {
               continue;
             }
             consola.log(
               chalk.green(
-                `Found published packages in workflow run for commit hash ${workflowRun.head_sha}`,
-              ),
+                `Found published packages in workflow run for commit hash ${workflowRun.head_sha}`
+              )
             );
             return { workflowSha: workflowRun.head_sha, publishedPackages };
           }
@@ -152,13 +151,13 @@ async function fetchPublishedPackagesAndSha(
     }
   }
   throw new Error(
-    "Could not find published packages artifact with any releases",
+    "Could not find published packages artifact with any releases"
   );
 }
 
 export async function runTagRelease(
   context: GithubContext,
-  targetSha?: string,
+  targetSha?: string
 ): Promise<void> {
   const result = await fetchPublishedPackagesAndSha(context, targetSha);
   const publishedPackages = result.publishedPackages;
@@ -166,9 +165,9 @@ export async function runTagRelease(
 
   for (const publishedPackage of publishedPackages.publishedPackages) {
     const packageName = publishedPackage.name;
-    const packagePath = `packages/${
-      getDirNameFromPackageName(packageName)
-    }/package.json`;
+    const packagePath = `packages/${getDirNameFromPackageName(
+      packageName
+    )}/package.json`;
     const pkg = await context.octokit.rest.repos.getContent({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -180,12 +179,12 @@ export async function runTagRelease(
     });
 
     const pkgData = JSON.parse(
-      Buffer.from((pkg.data as any).content, "base64").toString("utf8"),
+      Buffer.from((pkg.data as any).content, "base64").toString("utf8")
     );
 
     if (pkgData.version !== publishedPackage.version) {
       throw new Error(
-        `Version mismatch for ${packageName}: expected ${publishedPackage.version}, got ${pkgData.version}`,
+        `Version mismatch for ${packageName}: expected ${publishedPackage.version}, got ${pkgData.version}`
       );
     }
 
@@ -193,7 +192,7 @@ export async function runTagRelease(
       packageName,
       publishedPackage.version,
       context,
-      workflowSha,
+      workflowSha
     );
   }
 }

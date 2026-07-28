@@ -16,6 +16,7 @@
 
 import type { MockInstance } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { MinimalLogger } from "./MinimalLogger.js";
 
 const orderedLevels = [
@@ -29,16 +30,14 @@ const orderedLevels = [
 
 describe(MinimalLogger, () => {
   const consoleTypes = ["log", "error", "warn", "trace"] as const;
-  type consoleTypes = typeof consoleTypes[number];
+  type consoleTypes = (typeof consoleTypes)[number];
 
   const consoleMocks = Object.fromEntries(
-    consoleTypes.map(name =>
-      [name, vi.spyOn(console, name)] as [consoleTypes, MockInstance<any>]
-    ),
-  ) as Record<
-    typeof consoleTypes[number],
-    MockInstance<any>
-  >;
+    consoleTypes.map(
+      (name) =>
+        [name, vi.spyOn(console, name)] as [consoleTypes, MockInstance<any>]
+    )
+  ) as Record<(typeof consoleTypes)[number], MockInstance<any>>;
 
   beforeEach(() => {
     for (const consoleMock of Object.values(consoleMocks)) {
@@ -60,15 +59,15 @@ describe(MinimalLogger, () => {
   });
 
   describe.for(orderedLevels)("For level %s", (level) => {
-    const idx = orderedLevels.findIndex(a => a === level);
+    const idx = orderedLevels.findIndex((a) => a === level);
     expect(idx).toBeGreaterThan(-1);
 
     const shouldNotOutput = orderedLevels.slice(0, idx);
     const shouldOutput = orderedLevels.slice(idx);
 
     const x = [
-      ...shouldNotOutput.map(x => [x, false] as const),
-      ...shouldOutput.map(x => [x, true] as const),
+      ...shouldNotOutput.map((x) => [x, false] as const),
+      ...shouldOutput.map((x) => [x, true] as const),
     ];
 
     it.for(x)("It should log for %s? %s", ([levelToCheck, shouldLog]) => {

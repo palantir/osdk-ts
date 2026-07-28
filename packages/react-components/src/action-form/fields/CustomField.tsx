@@ -15,6 +15,7 @@
  */
 
 import React, { memo } from "react";
+
 import type { CustomFieldProps } from "../FormFieldApi.js";
 
 /**
@@ -26,5 +27,5 @@ import type { CustomFieldProps } from "../FormFieldApi.js";
 export const CustomField: React.FC<CustomFieldProps<unknown>> = memo(
   function CustomFieldFn({ customRenderer: CustomRenderer, ...baseProps }) {
     return <CustomRenderer {...baseProps} />;
-  },
+  }
 );

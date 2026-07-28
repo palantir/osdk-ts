@@ -42,7 +42,7 @@ export const employeeObjectType: ObjectTypeV2 = {
     },
     office: {
       description:
-        "The unique \"ID\" of the employee's \\\"primary\\\" assigned office.\n This is some more text.",
+        'The unique "ID" of the employee\'s \\"primary\\" assigned office.\n This is some more text.',
       dataType: {
         type: "string",
       },
@@ -107,7 +107,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       dataType: {
         type: "vector",
         dimension: 1536,
-        supportsSearchWith: [{ "value": "COSINE_SIMILARITY" }],
+        supportsSearchWith: [{ value: "COSINE_SIMILARITY" }],
         embeddingModel: {
           type: "lms",
           value: "OPENAI_TEXT_EMBEDDING_ADA_002",
@@ -123,6 +123,42 @@ export const employeeObjectType: ObjectTypeV2 = {
           type: "string",
         },
         reducers: [],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
+    employeeProfile: {
+      description: "Employee profile with main value being the bio",
+      dataType: {
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "bio",
+            dataType: { type: "string" },
+            rid: "ri.struct.bio",
+            typeClasses: [],
+          },
+          {
+            apiName: "yearsExperience",
+            dataType: { type: "integer" },
+            rid: "ri.struct.yearsExperience",
+            typeClasses: [],
+          },
+        ],
+        mainValue: {
+          mainValueType: { type: "string" },
+          fields: ["bio"],
+        },
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
+    performanceScores: {
+      description: "Array of performance scores with reducers",
+      dataType: {
+        type: "array",
+        subType: { type: "double" },
+        reducers: [{ direction: "DESCENDING_NULLS_LAST" }],
       },
       rid: "rid",
       typeClasses: [],
@@ -527,6 +563,13 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         type: "vector",
         dimension: 100,
         supportsSearchWith: [],
+      },
+      rid: "rid",
+      typeClasses: [],
+    },
+    cipherText: {
+      dataType: {
+        type: "cipherText",
       },
       rid: "rid",
       typeClasses: [],

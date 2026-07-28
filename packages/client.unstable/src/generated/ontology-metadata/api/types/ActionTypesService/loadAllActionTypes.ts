@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeLoadAllRequest as _api_ActionTypeLoadAllRequest,
   ActionTypeLoadResponse as _api_ActionTypeLoadResponse,
@@ -27,7 +28,7 @@ import type {
 export async function loadAllActionTypes(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
-  request: _api_ActionTypeLoadAllRequest,
+  request: _api_ActionTypeLoadAllRequest
 ): Promise<_api_ActionTypeLoadResponse> {
   return conjureFetch(ctx, `/actions/types/load/all`, "POST", request);
 }

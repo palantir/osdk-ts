@@ -16,16 +16,20 @@
 
 import { Input } from "@base-ui/react/input";
 import React from "react";
+
 import type { TextInputFieldProps } from "../FormFieldApi.js";
+
 import styles from "./BaseInput.module.css";
 
 export function TextInputField({
   id,
   value,
   onChange,
+  error,
   placeholder,
   minLength,
   maxLength,
+  disabled,
 }: TextInputFieldProps & { id?: string }): React.ReactElement {
   return (
     <Input
@@ -37,6 +41,8 @@ export function TextInputField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      disabled={disabled}
+      aria-invalid={error != null || undefined}
     />
   );
 }

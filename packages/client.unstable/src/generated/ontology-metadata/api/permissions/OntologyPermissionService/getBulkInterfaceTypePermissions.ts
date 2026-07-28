@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkInterfaceTypePermissionsRequest
-    as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
-  GetBulkInterfaceTypePermissionsResponse
-    as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
+  GetBulkInterfaceTypePermissionsRequest as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+  GetBulkInterfaceTypePermissionsResponse as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
 } from "../__components.js";
 
 /**
@@ -28,7 +27,7 @@ import type {
  */
 export async function getBulkInterfaceTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+  request: _api_permissions_GetBulkInterfaceTypePermissionsRequest
 ): Promise<_api_permissions_GetBulkInterfaceTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/interfaceTypes`, "PUT", request);
 }

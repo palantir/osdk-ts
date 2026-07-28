@@ -17,12 +17,12 @@
 import type { Attachment, Media, MediaPropertyLocation } from "@osdk/api";
 
 export function getMediaCacheKey(
-  mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+  mediaOrLocation: Media | Attachment | MediaPropertyLocation
 ): string {
   if ("objectType" in mediaOrLocation) {
-    return `media:${mediaOrLocation.objectType}:${
-      JSON.stringify(mediaOrLocation.primaryKey)
-    }:${mediaOrLocation.propertyName}`;
+    return `media:${mediaOrLocation.objectType}:${JSON.stringify(
+      mediaOrLocation.primaryKey
+    )}:${mediaOrLocation.propertyName}`;
   } else if ("rid" in mediaOrLocation) {
     return `attachment:${mediaOrLocation.rid}`;
   } else {

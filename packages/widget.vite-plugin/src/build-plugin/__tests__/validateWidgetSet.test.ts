@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "../validateWidgetSet.js";
 
@@ -38,7 +39,7 @@ describe("validateWidgetSet", () => {
       ];
 
       expect(() => validateWidgetSet(widgetBuilds)).toThrow(
-        "Duplicate widget ID: widget1. Each widget must have a unique ID.",
+        "Duplicate widget ID: widget1. Each widget must have a unique ID."
       );
     });
   });

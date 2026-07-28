@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  CheckActionTypeProvenanceStatusRequest
-    as _api_usage_CheckActionTypeProvenanceStatusRequest,
-  CheckActionTypeProvenanceStatusResponse
-    as _api_usage_CheckActionTypeProvenanceStatusResponse,
+  CheckActionTypeProvenanceStatusRequest as _api_usage_CheckActionTypeProvenanceStatusRequest,
+  CheckActionTypeProvenanceStatusResponse as _api_usage_CheckActionTypeProvenanceStatusResponse,
 } from "../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function checkActionTypeProvenanceStatus(
   ctx: ConjureContext,
-  request: _api_usage_CheckActionTypeProvenanceStatusRequest,
+  request: _api_usage_CheckActionTypeProvenanceStatusRequest
 ): Promise<_api_usage_CheckActionTypeProvenanceStatusResponse> {
   return conjureFetch(
     ctx,
     `/usage/checkActionTypeProvenanceStatus`,
     "POST",
-    request,
+    request
   );
 }

@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
+
+import { createInternalClientContext, thirdPartyApplications } from "#net";
+
 import { loadToken } from "../../../../util/token.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
-export default async function versionListCommand(
-  { foundryUrl, application, token, tokenFile }: VersionListArgs,
-): Promise<void> {
+export default async function versionListCommand({
+  foundryUrl,
+  application,
+  token,
+  tokenFile,
+}: VersionListArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -42,16 +47,15 @@ export default async function versionListCommand(
 
   const semver = await import("semver");
   const sortedVersions = semver.rsort(
-    versions.data.map(v => v.version).filter(v => semver.valid(v)),
+    versions.data.map((v) => v.version).filter((v) => semver.valid(v))
   );
   for (const version of sortedVersions) {
     consola.log(
       `    - ${version}${
-        website?.deployedVersion
-          && version === website?.deployedVersion
+        website?.deployedVersion && version === website?.deployedVersion
           ? colorize("green", ` (deployed)`)
           : ""
-      }`,
+      }`
     );
   }
 }

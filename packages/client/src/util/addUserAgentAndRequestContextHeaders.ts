@@ -17,31 +17,31 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { USER_AGENT_HEADER } from "@osdk/shared.client.impl";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
+
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export const addUserAgentAndRequestContextHeaders = (
   client: MinimalClient,
-  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
+  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">
 ): MinimalClient => ({
   ...client,
-  fetch: createFetchHeaderMutator(
-    client.fetch,
-    (headers) => {
-      headers.set(
-        "X-OSDK-Request-Context",
-        JSON.stringify(client.requestContext),
-      );
+  fetch: createFetchHeaderMutator(client.fetch, (headers) => {
+    headers.set(
+      "X-OSDK-Request-Context",
+      JSON.stringify(client.requestContext)
+    );
 
-      if (withMetadata.osdkMetadata) {
-        headers.set(
-          USER_AGENT_HEADER,
-          [
-            headers.get(USER_AGENT_HEADER),
-            withMetadata.osdkMetadata.extraUserAgent,
-          ].filter(x => x && x?.length > 0).join(" "),
-        );
-      }
-      return headers;
-    },
-  ),
+    if (withMetadata.osdkMetadata) {
+      headers.set(
+        USER_AGENT_HEADER,
+        [
+          headers.get(USER_AGENT_HEADER),
+          withMetadata.osdkMetadata.extraUserAgent,
+        ]
+          .filter((x) => x && x?.length > 0)
+          .join(" ")
+      );
+    }
+    return headers;
+  }),
 });

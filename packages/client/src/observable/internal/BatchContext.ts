@@ -26,15 +26,13 @@ export interface BatchContext {
   write: <K extends KnownCacheKey>(
     k: K,
     v: Entry<K>["value"],
-    status: Entry<K>["status"],
+    status: Entry<K>["status"]
   ) => Entry<K>;
 
-  read: <K extends KnownCacheKey>(
-    k: K,
-  ) => Entry<K> | undefined;
+  read: <K extends KnownCacheKey>(k: K) => Entry<K> | undefined;
 
   delete: <K extends KnownCacheKey>(
     k: K,
-    status: Entry<K>["status"],
+    status: Entry<K>["status"]
   ) => Entry<K>;
 }

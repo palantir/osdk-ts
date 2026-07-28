@@ -15,23 +15,24 @@
  */
 
 import type { Logger } from "@osdk/api";
+
 import { BaseLogger } from "./BaseLogger.js";
 
 export class MinimalLogger extends BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any> = {},
-    options: { level?: string; msgPrefix?: string } = {},
+    options: { level?: string; msgPrefix?: string } = {}
   ) {
     super(
       bindings,
       { ...options, level: options.level ?? "error" },
-      MinimalLogger,
+      MinimalLogger
     );
   }
 
   createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-    bindings: Record<string, any>,
+    bindings: Record<string, any>
   ): Logger.LogFn {
     const msgs: string[] = [name];
 

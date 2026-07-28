@@ -16,14 +16,15 @@
 
 import type { ValueTypeReference } from "@osdk/client.unstable";
 import type { ValueTypeDefinitionVersion } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertValueType(
   valueType: ValueTypeDefinitionVersion,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): ValueTypeReference {
   return ridGenerator.generateRidForValueType(
     valueType.apiName,
-    valueType.version,
+    valueType.version
   );
 }

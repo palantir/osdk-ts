@@ -41,6 +41,7 @@
   width: 100%;
   padding: var(--osdk-surface-spacing) 0;
   font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
   background: transparent;
 
   &:focus {

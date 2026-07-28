@@ -54,7 +54,7 @@ export class ObjectCacheKeyRegistry {
     cacheKey: ObjectCacheKey,
     apiName: string,
     primaryKey: string | number | boolean,
-    rdpConfig?: Canonical<Rdp>,
+    rdpConfig?: Canonical<Rdp>
   ): void {
     const baseKey = this.makeBaseKey(apiName, primaryKey);
     const primaryKeyStr = String(primaryKey);
@@ -83,7 +83,7 @@ export class ObjectCacheKeyRegistry {
    */
   getVariants(
     apiName: string,
-    primaryKey: string | number | boolean,
+    primaryKey: string | number | boolean
   ): Set<ObjectCacheKey> {
     const baseKey = this.makeBaseKey(apiName, primaryKey);
     const entry = this.baseToVariants.get(baseKey);
@@ -122,7 +122,7 @@ export class ObjectCacheKeyRegistry {
    */
   getVariantCount(
     apiName: string,
-    primaryKey: string | number | boolean,
+    primaryKey: string | number | boolean
   ): number {
     const baseKey = this.makeBaseKey(apiName, primaryKey);
     return this.baseToVariants.get(baseKey)?.variants.size ?? 0;
@@ -133,7 +133,7 @@ export class ObjectCacheKeyRegistry {
    */
   private makeBaseKey(
     apiName: string,
-    primaryKey: string | number | boolean,
+    primaryKey: string | number | boolean
   ): string {
     return `${apiName}:${primaryKey}`;
   }

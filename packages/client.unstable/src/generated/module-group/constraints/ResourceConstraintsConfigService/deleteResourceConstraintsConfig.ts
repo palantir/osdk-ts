@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   CompassRid as _constraints_CompassRid,
   ModuleGroupProducer as _constraints_ModuleGroupProducer,
@@ -26,11 +27,11 @@ import type {
 export async function deleteResourceConstraintsConfig(
   ctx: ConjureContext,
   moduleGroupProducer: _constraints_ModuleGroupProducer,
-  compassRid: _constraints_CompassRid,
+  compassRid: _constraints_CompassRid
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/resource-constraints/${moduleGroupProducer}/${compassRid}`,
-    "DELETE",
+    "DELETE"
   );
 }

@@ -26,32 +26,51 @@ import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
-import styles from "./MultiColumnSortDialog.module.css";
+import type { ObjectTableLabels } from "./ObjectTableLabels.js";
+import {
+  useObjectTableLabels,
+  withObjectTableLabels,
+} from "./ObjectTableLabels.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import type { ColumnOption } from "./utils/types.js";
+
+import styles from "./MultiColumnSortDialog.module.css";
 
 export interface SortColumnItem extends ColumnOption {
   direction: "asc" | "desc";
 }
 
-interface MultiColumnSortDialogProps {
+export interface MultiColumnSortDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (sortColumns: SortingState) => void;
   currentSorting: SortingState;
   columnOptions: ColumnOption[];
+  /**
+   * Overrides for the dialog's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. When this dialog is
+   * rendered inside a `BaseTable`/`ObjectTable`, it inherits that table's
+   * `labels` and this prop is only needed to override further. See
+   * {@link ObjectTableLabels}.
+   */
+  labels?: Partial<ObjectTableLabels>;
 }
 
-export function MultiColumnSortDialog({
+export const MultiColumnSortDialog: React.FC<MultiColumnSortDialogProps> =
+  withObjectTableLabels(MultiColumnSortDialogInner);
+
+function MultiColumnSortDialogInner({
   isOpen,
   onClose,
   onApply,
   currentSorting,
   columnOptions,
-}: MultiColumnSortDialogProps): React.ReactElement {
+}: Omit<MultiColumnSortDialogProps, "labels">): React.ReactElement {
+  const labels = useObjectTableLabels();
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);
@@ -87,7 +106,7 @@ export function MultiColumnSortDialog({
     (fromIndex: number, toIndex: number) => {
       setSelectedSortColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    [],
+    []
   );
 
   const handleToggleSortDirection = useCallback((id: string) => {
@@ -113,15 +132,15 @@ export function MultiColumnSortDialog({
     () =>
       columnOptions.filter(
         (col) =>
-          col.canSort
-          && !selectedSortColumns.some((selected) => selected.id === col.id),
+          col.canSort &&
+          !selectedSortColumns.some((selected) => selected.id === col.id)
       ),
-    [columnOptions, selectedSortColumns],
+    [columnOptions, selectedSortColumns]
   );
 
   const searchableMenuItems = useMemo(
     () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
-    [availableColumns],
+    [availableColumns]
   );
 
   const handleMenuItemSelected = useCallback(
@@ -131,7 +150,7 @@ export function MultiColumnSortDialog({
         handleAddColumn(column);
       }
     },
-    [availableColumns, handleAddColumn],
+    [availableColumns, handleAddColumn]
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
@@ -146,39 +165,46 @@ export function MultiColumnSortDialog({
           <Button
             className={styles.sortDirectionButton}
             onClick={() => handleToggleSortDirection(item.id)}
-            aria-label={`Toggle sort direction for ${item.name}`}
+            aria-label={labels.sortDialogToggleDirection(item.name)}
           >
-            {item.direction === "asc"
-              ? (
-                <SortAlphabetical
-                  className={styles.sortIcon}
-                />
-              )
-              : (
-                <SortAlphabeticalDesc
-                  className={styles.sortIcon}
-                />
-              )}
+            {item.direction === "asc" ? (
+              <SortAlphabetical className={styles.sortIcon} />
+            ) : (
+              <SortAlphabeticalDesc className={styles.sortIcon} />
+            )}
           </Button>
         </div>
       ),
     }));
-  }, [selectedSortColumns, handleToggleSortDirection]);
+  }, [selectedSortColumns, handleToggleSortDirection, labels]);
 
-  const footer = useMemo(() => (
-    <>
-      <ActionButton onClick={onClose}>Cancel</ActionButton>
-      <ActionButton variant="primary" onClick={handleApply}>
-        Apply
-      </ActionButton>
-    </>
-  ), [handleApply, onClose]);
+  const footer = useMemo(
+    () => (
+      <>
+        <ActionButton onClick={onClose}>{labels.sortDialogCancel}</ActionButton>
+        <ActionButton variant="primary" onClick={handleApply}>
+          {labels.sortDialogApply}
+        </ActionButton>
+      </>
+    ),
+    [handleApply, onClose, labels]
+  );
+
+  const dialogTitle = useMemo(
+    () => (
+      <div className={styles.title}>
+        <Cog />
+        {labels.sortDialogTitle}
+      </div>
+    ),
+    [labels]
+  );
 
   return (
     <Dialog
       isOpen={isOpen}
       onOpenChange={onClose}
-      title={DialogTitle}
+      title={dialogTitle}
       footer={footer}
     >
       <div className={styles.sortColumnsList}>
@@ -195,23 +221,17 @@ export function MultiColumnSortDialog({
             <>
               <Add className={styles.addIcon} />
               <span className={styles.addColumnText}>
-                Add Column to Sort
+                {labels.sortDialogAddColumnToSort}
               </span>
               <CaretDown />
             </>
           }
           triggerClassName={styles.addColumnButton}
           disabled={availableColumns.length === 0}
-          searchPlaceholder="Search columns"
-          emptyMessage="No matching columns"
+          searchPlaceholder={labels.sortDialogSearchPlaceholder}
+          emptyMessage={labels.sortDialogNoMatchingColumns}
         />
       </div>
     </Dialog>
   );
 }
-
-const DialogTitle = (
-  <div className={styles.title}>
-    <Cog />Sort on Multiple Columns
-  </div>
-);

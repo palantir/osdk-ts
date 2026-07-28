@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   MonitorsSearchRequest as _api_registry_MonitorsSearchRequest,
   MonitorsSearchResponse as _api_registry_MonitorsSearchResponse,
@@ -27,7 +28,7 @@ import type {
 export async function searchMonitors(
   ctx: ConjureContext,
   request: _api_registry_MonitorsSearchRequest,
-  pageToken: _api_registry_PageToken | null | undefined,
+  pageToken: _api_registry_PageToken | null | undefined
 ): Promise<_api_registry_MonitorsSearchResponse> {
   return conjureFetch(ctx, `/registry/v0/monitors-search`, "PUT", request, {
     pageToken,

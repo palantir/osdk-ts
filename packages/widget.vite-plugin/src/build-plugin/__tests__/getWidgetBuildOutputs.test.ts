@@ -17,6 +17,7 @@
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { Rollup, ViteDevServer } from "vite";
 import { beforeEach, expect, test, vi } from "vitest";
+
 import * as extractWidgetConfigModule from "../../common/extractWidgetConfig.js";
 import * as extractBuildOutputsModule from "../extractBuildOutputs.js";
 import { getWidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
@@ -35,21 +36,23 @@ beforeEach(() => {
 
 test("getWidgetBuildOutputs successfully matches widget build outputs", async () => {
   const mockBuildOutputs = {
-    scripts: [{
-      type: "script" as const,
-      scriptType: "module" as const,
-      src: "/chunk.js",
-    }],
+    scripts: [
+      {
+        type: "script" as const,
+        scriptType: "module" as const,
+        src: "/chunk.js",
+      },
+    ],
     stylesheets: ["/styles.css"],
   };
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue(
-    mockBuildOutputs,
+    mockBuildOutputs
   );
 
   const configFile = "/src/widget.config.js";
   const widgetConfig = mockWidgetConfig(MOCK_WIDGET_ID);
   vi.mocked(extractWidgetConfigModule.extractWidgetConfig).mockResolvedValue(
-    widgetConfig,
+    widgetConfig
   );
 
   const entryChunk = mockChunk({
@@ -63,7 +66,7 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
     { "chunk.js": entryChunk },
     MOCK_INPUT,
     MOCK_BUILD_DIR,
-    MOCK_SERVER,
+    MOCK_SERVER
   );
   expect(result).toEqual({
     ...mockBuildOutputs,
@@ -73,11 +76,13 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
 
 test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async () => {
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue({
-    scripts: [{
-      type: "script" as const,
-      scriptType: "module" as const,
-      src: "/non-existent.js",
-    }],
+    scripts: [
+      {
+        type: "script" as const,
+        scriptType: "module" as const,
+        src: "/non-existent.js",
+      },
+    ],
     stylesheets: [],
   });
 
@@ -93,19 +98,20 @@ test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async
       { "chunk.js": nonEntryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
-  )
-    .rejects.toThrow("Entrypoint chunk not found for input file: index.html");
+  ).rejects.toThrow("Entrypoint chunk not found for input file: index.html");
 });
 
 test("getWidgetBuildOutputs throws error when no config file found", async () => {
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue({
-    scripts: [{
-      type: "script" as const,
-      scriptType: "module" as const,
-      src: "/chunk.js",
-    }],
+    scripts: [
+      {
+        type: "script" as const,
+        scriptType: "module" as const,
+        src: "/chunk.js",
+      },
+    ],
     stylesheets: [],
   });
 
@@ -121,21 +127,22 @@ test("getWidgetBuildOutputs throws error when no config file found", async () =>
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
-  )
-    .rejects.toThrow(
-      "No widget config files found for entrypoint /src/widget.js",
-    );
+  ).rejects.toThrow(
+    "No widget config files found for entrypoint /src/widget.js"
+  );
 });
 
 test("getWidgetBuildOutputs throws error when multiple config files found", async () => {
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue({
-    scripts: [{
-      type: "script" as const,
-      scriptType: "module" as const,
-      src: "/chunk.js",
-    }],
+    scripts: [
+      {
+        type: "script" as const,
+        scriptType: "module" as const,
+        src: "/chunk.js",
+      },
+    ],
     stylesheets: [],
   });
 
@@ -151,21 +158,22 @@ test("getWidgetBuildOutputs throws error when multiple config files found", asyn
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
-  )
-    .rejects.toThrow(
-      "Multiple widget config files found for entrypoint /src/widget.js",
-    );
+  ).rejects.toThrow(
+    "Multiple widget config files found for entrypoint /src/widget.js"
+  );
 });
 
 test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async () => {
   vi.mocked(extractBuildOutputsModule.extractBuildOutputs).mockReturnValue({
-    scripts: [{
-      type: "script" as const,
-      scriptType: "module" as const,
-      src: "/chunk.js",
-    }],
+    scripts: [
+      {
+        type: "script" as const,
+        scriptType: "module" as const,
+        src: "/chunk.js",
+      },
+    ],
     stylesheets: [],
   });
 
@@ -178,7 +186,7 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
   });
 
   vi.mocked(extractWidgetConfigModule.extractWidgetConfig).mockRejectedValue(
-    new Error("Config extraction failed"),
+    new Error("Config extraction failed")
   );
 
   await expect(() =>
@@ -186,10 +194,9 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
-      MOCK_SERVER,
+      MOCK_SERVER
     )
-  )
-    .rejects.toThrow("Config extraction failed");
+  ).rejects.toThrow("Config extraction failed");
 });
 
 function mockChunk(props: Partial<Rollup.OutputChunk>): Rollup.OutputChunk {

@@ -365,6 +365,18 @@
               "type": "experimental"
             },
             "visibility": "NORMAL"
+          },
+          "stockOptions": {
+            "displayName": "Stock Options",
+            "dataType": {
+              "type": "long"
+            },
+            "rid": "ri.ontology.main.property.cd208b3b-1f94-45ba-b894-f24167e03718",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
           }
         },
         "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
@@ -583,6 +595,14 @@
             "type": "string"
           },
           "required": false
+        },
+        "stockOptions": {
+          "displayName": "Stock Options",
+          "dataType": {
+            "type": "long"
+          },
+          "required": false,
+          "typeClasses": []
         }
       },
       "rid": "ri.actions.main.action-type.1e59bc2b-4f3a-47d1-82d2-7d0516c7c4ee",

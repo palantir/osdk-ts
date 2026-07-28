@@ -20,6 +20,7 @@ import type {
   InterfacePropertyTypeRid,
   InterfaceType,
 } from "@osdk/foundry.ontologies";
+
 import { fooSpt } from "./spts.js";
 
 const idp: InterfaceDefinedPropertyType = {
@@ -34,6 +35,22 @@ const idp: InterfaceDefinedPropertyType = {
   typeClasses: [],
 };
 
+const arrayIdp: InterfaceDefinedPropertyType = {
+  rid: "ri.interfacePropertyType.main.interfacePropertyType.2",
+  apiName: "fooArray",
+  displayName: "Foo Array",
+  description: "An array-valued Foo property",
+  dataType: {
+    type: "array",
+    subType: {
+      type: "string",
+    },
+    reducers: [],
+  },
+  requireImplementation: false,
+  typeClasses: [],
+};
+
 export const BarInterface: InterfaceType = {
   apiName: "BarInterface",
   description: "Interface for Bar",
@@ -45,7 +62,7 @@ export const BarInterface: InterfaceType = {
   propertiesV2: {},
   allPropertiesV2: {},
   links: {
-    "toFoo": {
+    toFoo: {
       rid: "ri.interface.link.main.1",
       apiName: "toFoo",
       linkedEntityApiName: {
@@ -60,7 +77,7 @@ export const BarInterface: InterfaceType = {
   implementedByObjectTypes: [],
   allExtendsInterfaces: [],
   allLinks: {
-    "toFoo": {
+    toFoo: {
       rid: "ri.interface.link.main.1",
       apiName: "toFoo",
       linkedEntityApiName: {
@@ -96,9 +113,13 @@ export const FooInterface: InterfaceType = {
       ...idp,
       type: "interfaceDefinedPropertyType",
     },
+    fooArray: {
+      ...arrayIdp,
+      type: "interfaceDefinedPropertyType",
+    },
   },
   links: {
-    "toBar": {
+    toBar: {
       rid: "ri.interface.link.main.2",
       apiName: "toBar",
       linkedEntityApiName: {
@@ -127,10 +148,13 @@ export const FooInterface: InterfaceType = {
     fooIdp: {
       ...idp,
     },
+    fooArray: {
+      ...arrayIdp,
+    },
   },
   allExtendsInterfaces: [],
   allLinks: {
-    "toBar": {
+    toBar: {
       rid: "ri.interface.link.main.2",
       apiName: "toBar",
       linkedEntityApiName: {

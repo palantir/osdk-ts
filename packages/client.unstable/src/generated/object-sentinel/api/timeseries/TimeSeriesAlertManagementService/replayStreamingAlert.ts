@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ReplayStreamingAlertRequest as _api_timeseries_ReplayStreamingAlertRequest,
   ReplayStreamingAlertResponse as _api_timeseries_ReplayStreamingAlertResponse,
@@ -27,12 +28,12 @@ import type {
  */
 export async function replayStreamingAlert(
   ctx: ConjureContext,
-  request: _api_timeseries_ReplayStreamingAlertRequest,
+  request: _api_timeseries_ReplayStreamingAlertRequest
 ): Promise<_api_timeseries_ReplayStreamingAlertResponse> {
   return conjureFetch(
     ctx,
     `/time-series/alert/v0/streaming/replay`,
     "POST",
-    request,
+    request
   );
 }

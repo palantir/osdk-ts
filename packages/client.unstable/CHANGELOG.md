@@ -1,5 +1,126 @@
 # @osdk/client.unstable
 
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.0
+
+## 2.48.0
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+## 2.43.0
+
+## 2.42.0
+
+### Minor Changes
+
+- 0021ee4: Migrate @osdk/client, @osdk/client.unstable, and @osdk/client.unstable.tpsa to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eighth and ninth increments of the repo-wide oxc migration). The conjure-generated src/generated trees in @osdk/client.unstable and @osdk/client.unstable.tpsa are re-included (linted and oxfmt-formatted, matching the prior ESLint + dprint coverage) via per-package nested oxlint configs; @osdk/client's newly-surfaced error-level lint rules are turned off in its nested config to keep the change behavior-preserving.
+
+## 2.41.0
+
+## 2.40.0
+
+## 2.39.0
+
+### Minor Changes
+
+- 397ce96: support interface action type constraint in maker experimental
+
+## 2.38.0
+
+## 2.37.0
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+## 2.33.0
+
+## 2.32.0
+
+### Minor Changes
+
+- b5d0a61: transitive OAC imports
+- 833f47a: add support for interface action type constraint in ontology as code
+
+## 2.31.0
+
+## 2.30.0
+
+## 2.29.0
+
+## 2.28.0
+
+## 2.27.0
+
+## 2.26.0
+
+## 2.25.0
+
+## 2.24.0
+
+## 2.23.0
+
+## 2.22.0
+
+## 2.21.0
+
+## 2.20.0
+
+## 2.19.0
+
+## 2.18.0
+
+## 2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+## 2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+- 2f40eee: Support edits history
+
+## 2.13.0
+
+## 2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

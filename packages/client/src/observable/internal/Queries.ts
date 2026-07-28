@@ -20,20 +20,17 @@ import type { Query } from "./Query.js";
 export class Queries {
   // we can use a regular Map here because the refCounting will
   // handle cleanup.
-  map: Map<
-    KnownCacheKey,
-    Query<any, any, any>
-  > = new Map();
+  map: Map<KnownCacheKey, Query<any, any, any>> = new Map();
 
   peek<K extends KnownCacheKey>(
-    cacheKey: K,
+    cacheKey: K
   ): K["__cacheKey"]["query"] | undefined {
     return this.map.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
   }
 
   get<K extends KnownCacheKey>(
     cacheKey: K,
-    createQuery: () => K["__cacheKey"]["query"],
+    createQuery: () => K["__cacheKey"]["query"]
   ): K["__cacheKey"]["query"] {
     let query = this.peek(cacheKey);
     if (!query) {

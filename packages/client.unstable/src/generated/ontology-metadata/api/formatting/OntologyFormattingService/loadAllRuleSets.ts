@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest,
   LoadRuleSetsResponse as _api_formatting_LoadRuleSetsResponse,
@@ -29,12 +30,12 @@ import type {
  */
 export async function loadAllRuleSets(
   ctx: ConjureContext,
-  request: _api_formatting_LoadAllRuleSetsRequest,
+  request: _api_formatting_LoadAllRuleSetsRequest
 ): Promise<_api_formatting_LoadRuleSetsResponse> {
   return conjureFetch(
     ctx,
     `/formatting/rulesets/loadAllRuleSets`,
     "POST",
-    request,
+    request
   );
 }

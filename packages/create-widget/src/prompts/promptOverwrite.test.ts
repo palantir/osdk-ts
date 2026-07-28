@@ -15,7 +15,9 @@
  */
 
 import fs from "node:fs";
+
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptOverwrite } from "./promptOverwrite.js";
 

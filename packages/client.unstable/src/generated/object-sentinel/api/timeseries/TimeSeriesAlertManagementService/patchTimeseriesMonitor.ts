@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  PatchTimeseriesMonitorRequest
-    as _api_timeseries_PatchTimeseriesMonitorRequest,
-  PatchTimeseriesMonitorResponse
-    as _api_timeseries_PatchTimeseriesMonitorResponse,
+  PatchTimeseriesMonitorRequest as _api_timeseries_PatchTimeseriesMonitorRequest,
+  PatchTimeseriesMonitorResponse as _api_timeseries_PatchTimeseriesMonitorResponse,
 } from "../__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function patchTimeseriesMonitor(
   ctx: ConjureContext,
-  request: _api_timeseries_PatchTimeseriesMonitorRequest,
+  request: _api_timeseries_PatchTimeseriesMonitorRequest
 ): Promise<_api_timeseries_PatchTimeseriesMonitorResponse> {
   return conjureFetch(
     ctx,
     `/time-series/alert/v0/monitor/patch`,
     "POST",
-    request,
+    request
   );
 }

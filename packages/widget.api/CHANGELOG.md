@@ -1,5 +1,312 @@
 # @osdk/widget.api
 
+## 3.49.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+
+## 3.48.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+
+## 3.46.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+
+## 3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+
+## 3.41.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/api@2.44.0
+
+## 3.40.0
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/api@2.43.0
+
+## 3.39.0
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+  - @osdk/api@2.42.0
+
+## 3.38.0
+
+### Minor Changes
+
+- 2f91c0e: Migrate @osdk/widget.api and @osdk/widget.client to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (fourth increment of the repo-wide oxc migration)
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+
+## 3.37.0
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/api@2.40.0
+
+## 3.36.0
+
+### Patch Changes
+
+- @osdk/api@2.39.0
+
+## 3.35.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+
+## 3.34.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+
+## 3.33.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+
+## 3.32.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+
+## 3.31.0
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/api@2.34.0
+
+## 3.30.0
+
+### Patch Changes
+
+- @osdk/api@2.33.0
+
+## 3.29.0
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+
+## 3.28.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+
+## 3.27.0
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+
+## 3.26.0
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+
+## 3.25.0
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+
+## 3.24.0
+
+### Patch Changes
+
+- @osdk/api@2.27.0
+
+## 3.23.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+
+## 3.22.0
+
+### Patch Changes
+
+- Updated dependencies [bd90dba]
+  - @osdk/api@2.25.0
+
+## 3.21.0
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+  - @osdk/api@2.24.0
+
+## 3.20.0
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+
+## 3.19.0
+
+### Minor Changes
+
+- 2f3aa7b: Support reloading widget on vite HMR full reload
+
+### Patch Changes
+
+- @osdk/api@2.22.0
+
+## 3.18.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+
+## 3.17.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+
+## 3.16.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+
+## 3.15.0
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+
+## 3.14.0
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+
+## 3.13.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+
+## 3.12.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+
+## 3.11.0
+
+### Patch Changes
+
+- Updated dependencies [20e9678]
+  - @osdk/api@2.14.0
+
+## 3.10.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+
+## 3.9.0
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/api@2.11.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/api@2.10.0
+
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+
 ## 3.5.0
 
 ### Minor Changes

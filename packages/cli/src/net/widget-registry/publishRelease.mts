@@ -23,21 +23,23 @@ export async function publishRelease(
   ctx: InternalClientContext,
   repositoryRid: WidgetSetRid | StemmaRepositoryRid,
   repositoryVersion: string,
-  zipFile: ReadableStream | Blob | BufferSource,
+  zipFile: ReadableStream | Blob | BufferSource
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/repositories/${repositoryRid}/publish?preview=true&repositoryVersion=${repositoryVersion}`;
-
-  await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
+  const urlObj = new URL(
+    `api/v2/widgets/repositories/${repositoryRid}/publish`,
+    ctx.foundryUrl
   );
+  urlObj.searchParams.set("preview", "true");
+  urlObj.searchParams.set("repositoryVersion", repositoryVersion);
+  const url = urlObj.toString();
+
+  await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
 }

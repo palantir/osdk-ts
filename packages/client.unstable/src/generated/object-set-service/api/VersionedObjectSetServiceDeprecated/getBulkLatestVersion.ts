@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
   GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
@@ -25,12 +26,12 @@ import type {
  */
 export async function getBulkLatestVersion(
   ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest,
+  request: _api_GetBulkLatestVersionRequest
 ): Promise<_api_GetBulkLatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/latestVersion`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace StructPersonOpisTeam {
-  export type PropertyKeys = 'id' | 'age' | 'address';
+  export type PropertyKeys = 'address' | 'age' | 'id';
 
   export type Links = {};
 

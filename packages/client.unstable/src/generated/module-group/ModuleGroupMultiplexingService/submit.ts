@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   Job as _Job,
   SubmitJobRequest as _SubmitJobRequest,
@@ -27,7 +28,7 @@ import type {
  */
 export async function submit(
   ctx: ConjureContext,
-  request: _SubmitJobRequest,
+  request: _SubmitJobRequest
 ): Promise<_Job> {
   return conjureFetch(ctx, `/module-group-multiplexer/jobs`, "POST", request);
 }

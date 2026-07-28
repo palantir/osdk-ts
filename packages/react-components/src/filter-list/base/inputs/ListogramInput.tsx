@@ -17,13 +17,17 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { filterValuesBySearch } from "../../utils/filterValues.js";
-import styles from "./ListogramInput.module.css";
+import { filterValuesBySearch, isNoValue } from "../../utils/filterValues.js";
+import { formatCompactCount } from "./formatCompactCount.js";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
-import sharedStyles from "./shared.module.css";
+import { OptionLabel } from "./OptionLabel.js";
 import { useStableData } from "./useStableData.js";
+
+import styles from "./ListogramInput.module.css";
+import sharedStyles from "./shared.module.css";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -36,11 +40,14 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  showCount?: boolean;
   isExcluding?: boolean;
+  showFilteredOutValues?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramInputInner({
@@ -52,13 +59,18 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  showCount = true,
   isExcluding,
+  showFilteredOutValues = true,
   className,
   style,
   maxVisibleItems,
   searchQuery,
+  renderValue,
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpanded = useCallback(() => setIsExpanded((v) => !v), []);
 
   const stableValues = useStableData(values, isLoading);
 
@@ -72,29 +84,37 @@ function ListogramInputInner({
         onChange([...selectedValues, value]);
       }
     },
-    [selectedValues, selectedSet, onChange],
+    [selectedValues, selectedSet, onChange]
   );
 
   const filteredValues = useMemo(() => {
     if (searchQuery) {
-      return filterValuesBySearch(stableValues, searchQuery, (v) => v.value);
+      return filterValuesBySearch(stableValues, searchQuery, (v) => {
+        const rendered = renderValue?.(v.value);
+        return typeof rendered === "string" ? rendered : v.value;
+      });
     }
     return stableValues;
-  }, [stableValues, searchQuery]);
+  }, [stableValues, searchQuery, renderValue]);
 
-  const sortedValues = useMemo(() => {
-    const selected = filteredValues.filter(v => selectedSet.has(v.value));
-    const unselected = filteredValues.filter(v => !selectedSet.has(v.value));
-    return [...selected, ...unselected];
-  }, [filteredValues, selectedSet]);
-
+  // Render in natural count/value order regardless of selection — toggling a
+  // checkbox must never reorder rows. In the collapsed view we still keep
+  // below-fold selected values visible by appending them at the tail (matching
+  // Foundry Workshop's listogram), without hoisting them or displacing the
+  // head. Unchecking a below-fold row drops it from the tail; the "View all"
+  // toggle reveals every value, and clicking it again ("View less") collapses
+  // back to the head.
   const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return sortedValues;
-    return sortedValues.slice(0, maxVisibleItems);
-  }, [sortedValues, maxVisibleItems, isExpanded]);
+    if (isExpanded || maxVisibleItems == null) return filteredValues;
+    const head = filteredValues.slice(0, maxVisibleItems);
+    const belowFoldSelected = filteredValues
+      .slice(maxVisibleItems)
+      .filter(({ value }) => selectedSet.has(value));
+    return [...head, ...belowFoldSelected];
+  }, [filteredValues, maxVisibleItems, isExpanded, selectedSet]);
 
-  const hasMore = maxVisibleItems != null
-    && sortedValues.length > maxVisibleItems;
+  const hasMore =
+    maxVisibleItems != null && filteredValues.length > maxVisibleItems;
 
   return (
     <div
@@ -112,9 +132,7 @@ function ListogramInputInner({
         <ListogramSkeleton />
       )}
       {!error && filteredValues.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>
-          No values available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No values available</div>
       )}
 
       {filteredValues.length > 0 && (
@@ -122,23 +140,33 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
+            const isEmpty = isNoValue(value) || value === "";
 
+            const isFilteredOut =
+              showFilteredOutValues && count === 0 && !selectedSet.has(value);
             return (
               <Button
                 key={value}
                 className={styles.row}
+                data-empty={isEmpty || undefined}
+                data-filtered-out={isFilteredOut || undefined}
+                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
-                style={perRowColor || percentage > 0
-                  ? {
-                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
-                    ...(perRowColor
-                      ? {
-                        "--osdk-filter-listogram-row-bar-color": perRowColor,
-                      }
-                      : undefined),
-                  } as React.CSSProperties
-                  : undefined}
+                style={
+                  perRowColor || percentage > 0
+                    ? ({
+                        "--osdk-filter-listogram-bar-fill-scale":
+                          percentage / 100,
+                        ...(perRowColor
+                          ? {
+                              "--osdk-filter-listogram-row-bar-color":
+                                perRowColor,
+                            }
+                          : undefined),
+                      } as React.CSSProperties)
+                    : undefined
+                }
               >
                 <span
                   className={styles.checkbox}
@@ -146,20 +174,26 @@ function ListogramInputInner({
                 >
                   <Checkbox
                     checked={selectedSet.has(value)}
+                    // eslint-disable-next-line react/jsx-no-bind
                     onCheckedChange={() => toggleValue(value)}
                     isExcluding={isExcluding}
                   />
                 </span>
                 <span
                   className={styles.label}
-                  data-excluding={(isExcluding && selectedSet.has(value))
-                    || undefined}
+                  data-excluding={
+                    (isExcluding && selectedSet.has(value)) || undefined
+                  }
                 >
-                  {value}
+                  <OptionLabel
+                    value={value}
+                    renderValue={renderValue}
+                    className={styles.noValueLabel}
+                  />
                 </span>
-                {displayMode !== "minimal" && (
-                  <span className={styles.count}>
-                    {count.toLocaleString()}
+                {showCount && displayMode !== "minimal" && (
+                  <span className={styles.count} title={count.toLocaleString()}>
+                    {formatCompactCount(count)}
                   </span>
                 )}
                 {displayMode === "full" && (
@@ -171,13 +205,14 @@ function ListogramInputInner({
             );
           })}
 
-          {hasMore && !isExpanded && (
+          {hasMore && (
             <Button
               type="button"
               className={styles.viewAllButton}
-              onClick={() => setIsExpanded(true)}
+              aria-expanded={isExpanded}
+              onClick={toggleExpanded}
             >
-              View all ({sortedValues.length})
+              {isExpanded ? "View less" : `View all (${filteredValues.length})`}
             </Button>
           )}
         </div>
@@ -187,5 +222,5 @@ function ListogramInputInner({
 }
 
 export const ListogramInput = memo(
-  ListogramInputInner,
+  ListogramInputInner
 ) as typeof ListogramInputInner;

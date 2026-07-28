@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetObjectsInitialScrollRequest as _api_GetObjectsInitialScrollRequest,
   GetObjectsScrollResponse as _api_GetObjectsScrollResponse,
@@ -27,7 +28,7 @@ import type {
  */
 export async function getObjectsInitialScroll(
   ctx: ConjureContext,
-  request: _api_GetObjectsInitialScrollRequest,
+  request: _api_GetObjectsInitialScrollRequest
 ): Promise<_api_GetObjectsScrollResponse> {
   return conjureFetch(ctx, `/scroll/initial`, "POST", request);
 }

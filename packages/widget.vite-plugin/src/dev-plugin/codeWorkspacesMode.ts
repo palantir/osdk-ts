@@ -15,6 +15,7 @@
  */
 
 import fs from "fs";
+
 import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 
 const CODE_WORKSPACES = "code-workspaces";
@@ -30,25 +31,23 @@ export function isCodeWorkspacesMode(mode: string | undefined): boolean {
 }
 
 export function getCodeWorkspacesFoundryUrl(): string {
-  return `https://${
-    safeGetEnvVar(
-      process.env,
-      FOUNDRY_PROXY_URL,
-      "This value is required when running dev mode in Code Workspaces mode.",
-    )
-  }`;
+  return `https://${safeGetEnvVar(
+    process.env,
+    FOUNDRY_PROXY_URL,
+    "This value is required when running dev mode in Code Workspaces mode."
+  )}`;
 }
 
 export function getCodeWorkspacesBaseHref(): string {
   const devServerDomain = safeGetEnvVar(
     process.env,
     DEV_SERVER_DOMAIN,
-    "This value is required when running dev mode in Code Workspaces mode.",
+    "This value is required when running dev mode in Code Workspaces mode."
   );
   const devServerPath = safeGetEnvVar(
     process.env,
     DEV_SERVER_BASE_PATH,
-    "This value is required when running dev mode in Code Workspaces mode.",
+    "This value is required when running dev mode in Code Workspaces mode."
   );
   return `https://${devServerDomain}${devServerPath}`;
 }
@@ -61,7 +60,7 @@ export function getCodeWorkspacesFoundryToken(): string {
   const tokenFilePath = safeGetEnvVar(
     process.env,
     CODE_WORKSPACES_TOKEN_PATH,
-    "This value is required when running dev mode in Code Workspaces mode.",
+    "This value is required when running dev mode in Code Workspaces mode."
   );
   try {
     return fs.readFileSync(tokenFilePath, "utf8");
@@ -69,7 +68,7 @@ export function getCodeWorkspacesFoundryToken(): string {
     throw new Error(
       `Failed to read Foundry token from '${tokenFilePath}': ${
         (err as Error).message
-      }`,
+      }`
     );
   }
 }

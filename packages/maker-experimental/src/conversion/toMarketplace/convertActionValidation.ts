@@ -22,6 +22,7 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
 } from "@osdk/maker";
+
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import {
@@ -35,7 +36,7 @@ import { convertSectionConditionalOverride } from "./convertSectionConditionalOv
 // Helper function to recursively scan conditions and register groups
 function registerGroupsFromCondition(
   condition: any,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): void {
   if (!condition) return;
 
@@ -43,10 +44,9 @@ function registerGroupsFromCondition(
     case "group":
       // Original format (parameter/section conditional overrides)
       if (condition.name) {
-        ridGenerator.getGroupIds().put(
-          ReadableIdGenerator.getForGroup(condition.name),
-          condition.name,
-        );
+        ridGenerator
+          .getGroupIds()
+          .put(ReadableIdGenerator.getForGroup(condition.name), condition.name);
       }
       break;
 
@@ -54,19 +54,18 @@ function registerGroupsFromCondition(
       // Converted format (action-level validations)
       // Check if this is a group comparison by looking at the left side
       if (
-        condition.comparison?.left?.type === "userProperty"
-        && condition.comparison?.left?.userProperty?.propertyValue?.type
-          === "groupIds"
+        condition.comparison?.left?.type === "userProperty" &&
+        condition.comparison?.left?.userProperty?.propertyValue?.type ===
+          "groupIds"
       ) {
         // Extract group names from the right side
-        const strings = condition.comparison?.right?.staticValue?.stringList
-          ?.strings;
+        const strings =
+          condition.comparison?.right?.staticValue?.stringList?.strings;
         if (Array.isArray(strings)) {
           strings.forEach((groupName: string) => {
-            ridGenerator.getGroupIds().put(
-              ReadableIdGenerator.getForGroup(groupName),
-              groupName,
-            );
+            ridGenerator
+              .getGroupIds()
+              .put(ReadableIdGenerator.getForGroup(groupName), groupName);
           });
         }
       }
@@ -93,39 +92,40 @@ function registerGroupsFromCondition(
       }
       break;
 
-      // Other condition types don't have groups
+    // Other condition types don't have groups
   }
 }
 
 export function convertActionValidation(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): ActionValidation {
-  const validationRules = action.validation
-    ?? [{
+  const validationRules = action.validation ?? [
+    {
       condition: { type: "true", true: {} },
       displayMetadata: { failureMessage: "", typeClasses: [] },
-    }];
+    },
+  ];
 
   const ruleRids = validationRules.map((_, idx) =>
     ridGenerator.generateValidationRuleRid(action.apiName, idx)
   );
 
   // Register groups from action-level validation conditions
-  validationRules.forEach(rule => {
+  validationRules.forEach((rule) => {
     registerGroupsFromCondition(rule.condition, ridGenerator);
   });
 
   // Register groups from parameter conditional overrides
-  (action.parameters ?? []).forEach(p => {
-    p.validation.conditionalOverrides?.forEach(override => {
+  (action.parameters ?? []).forEach((p) => {
+    p.validation.conditionalOverrides?.forEach((override) => {
       registerGroupsFromCondition(override.condition, ridGenerator);
     });
   });
 
   // Register groups from section conditional overrides
-  Object.values(action.sections ?? {}).forEach(section => {
-    section.conditionalOverrides?.forEach(override => {
+  Object.values(action.sections ?? {}).forEach((section) => {
+    section.conditionalOverrides?.forEach((override) => {
       registerGroupsFromCondition(override.condition, ridGenerator);
     });
   });
@@ -135,85 +135,83 @@ export function convertActionValidation(
       // TODO: Add proper ordering of validation rule RIDs
       ordering: ruleRids,
       rules: Object.fromEntries(
-        validationRules.map((rule, idx) => [ruleRids[idx], rule]),
+        validationRules.map((rule, idx) => [ruleRids[idx], rule])
       ),
     },
     parameterValidations: Object.fromEntries(
-      (action.parameters ?? []).map(p => {
+      (action.parameters ?? []).map((p) => {
         return [
           p.id,
           {
             defaultValidation: {
               display: {
-                renderHint: p.renderHint
-                  ?? renderHintFromBaseType(p, p.validation),
+                renderHint:
+                  p.renderHint ?? renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
-                  p.validation.defaultVisibility,
+                  p.validation.defaultVisibility
                 ),
-                ...p.defaultValue
-                  && { prefill: p.defaultValue },
+                ...(p.defaultValue && { prefill: p.defaultValue }),
               },
               validation: {
                 allowedValues: extractAllowedValues(
                   p.validation.allowedValues!,
-                  ridGenerator,
+                  ridGenerator
                 ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required!,
+                  p.validation.required!
                 ),
               },
             },
-            conditionalOverrides: p.validation.conditionalOverrides?.map(
-              (override) =>
+            conditionalOverrides:
+              p.validation.conditionalOverrides?.map((override) =>
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
                   ridGenerator,
-                  action.parameters,
-                ),
-            ) ?? [],
+                  action.parameters
+                )
+              ) ?? [],
             structFieldValidations: {},
           },
         ];
-      }),
+      })
     ),
     sectionValidations: {
       ...Object.fromEntries(
-        Object.entries(action.sections ?? {}).map((
-          [sectionId, section],
-        ) => [
+        Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
           section.id,
           {
-            defaultDisplayMetadata: section.defaultVisibility === "hidden"
-              ? {
-                visibility: {
-                  type: "hidden",
-                  hidden: {},
-                },
-              }
-              : {
-                visibility: {
-                  type: "visible",
-                  visible: {},
-                },
-              },
-            conditionalOverrides: section.conditionalOverrides?.map(
-              (override) =>
+            defaultDisplayMetadata:
+              section.defaultVisibility === "hidden"
+                ? {
+                    visibility: {
+                      type: "hidden",
+                      hidden: {},
+                    },
+                  }
+                : {
+                    visibility: {
+                      type: "visible",
+                      visible: {},
+                    },
+                  },
+            conditionalOverrides:
+              section.conditionalOverrides?.map((override) =>
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
-                  action.parameters,
-                ),
-            ) ?? [],
+                  action.parameters
+                )
+              ) ?? [],
           },
-        ]),
+        ])
       ),
     },
   };
 }
 
 function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint,
+  required: ActionParameterRequirementConstraint
 ): ParameterRequiredConfiguration {
   if (typeof required === "boolean") {
     return required

@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   BulkGetMonitorVersionsRequest as _api_registry_BulkGetMonitorVersionsRequest,
-  BulkGetMonitorVersionsResponse
-    as _api_registry_BulkGetMonitorVersionsResponse,
+  BulkGetMonitorVersionsResponse as _api_registry_BulkGetMonitorVersionsResponse,
 } from "../__components.js";
 
 /**
@@ -30,7 +30,7 @@ import type {
  */
 export async function bulkGetMonitorVersions(
   ctx: ConjureContext,
-  request: _api_registry_BulkGetMonitorVersionsRequest,
+  request: _api_registry_BulkGetMonitorVersionsRequest
 ): Promise<_api_registry_BulkGetMonitorVersionsResponse> {
   return conjureFetch(ctx, `/registry/v0/monitors-getVersions`, "PUT", request);
 }

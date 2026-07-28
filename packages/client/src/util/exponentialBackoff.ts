@@ -42,7 +42,7 @@ export class ExponentialBackoff {
 
     const baseDelay = Math.min(
       initialDelayMs * Math.pow(multiplier, this.attempt),
-      maxDelayMs,
+      maxDelayMs
     );
 
     const jitter = baseDelay * jitterFactor * (Math.random() * 2 - 1);

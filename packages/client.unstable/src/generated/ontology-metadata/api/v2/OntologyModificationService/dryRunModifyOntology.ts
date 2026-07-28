@@ -15,18 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  OntologyModificationDryRunRequest
-    as _api_modification_OntologyModificationDryRunRequest,
-  OntologyModificationDryRunResponse
-    as _api_modification_OntologyModificationDryRunResponse,
+  OntologyModificationDryRunRequest as _api_modification_OntologyModificationDryRunRequest,
+  OntologyModificationDryRunResponse as _api_modification_OntologyModificationDryRunResponse,
 } from "../../modification/__components.js";
 export async function dryRunModifyOntology(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_OntologyModificationDryRunRequest,
+  request: _api_modification_OntologyModificationDryRunRequest
 ): Promise<_api_modification_OntologyModificationDryRunResponse> {
   return conjureFetch(ctx, `/ontology/v2/modify/dry-run`, "POST", request, {
     ontologyRid,

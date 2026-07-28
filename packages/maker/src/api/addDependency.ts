@@ -16,13 +16,14 @@
 
 import * as fs from "fs";
 import * as path from "path";
+
 import { dependencies } from "./defineOntology.js";
 
 const MAX_SEARCH_DEPTH = 5;
 
 export function addDependency(
   namespaceNoDot: string,
-  fileInPackage: string,
+  fileInPackage: string
 ): void {
   let dir = path.dirname(fileInPackage);
   let packageJsonPath = null;
@@ -40,7 +41,7 @@ export function addDependency(
 
   if (!packageJsonPath) {
     throw new Error(
-      `Could not find a package.json within ${MAX_SEARCH_DEPTH} parent directories of ${fileInPackage}`,
+      `Could not find a package.json within ${MAX_SEARCH_DEPTH} parent directories of ${fileInPackage}`
     );
   }
 

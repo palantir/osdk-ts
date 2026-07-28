@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetSecurityProvenanceRequest
-    as _api_objectstorage_GetSecurityProvenanceRequest,
-  GetSecurityProvenanceResponse
-    as _api_objectstorage_GetSecurityProvenanceResponse,
+  GetSecurityProvenanceRequest as _api_objectstorage_GetSecurityProvenanceRequest,
+  GetSecurityProvenanceResponse as _api_objectstorage_GetSecurityProvenanceResponse,
 } from "../objectstorage/__components.js";
 
 /**
@@ -28,12 +27,12 @@ import type {
  */
 export async function getSecurityProvenanceInformation(
   ctx: ConjureContext,
-  request: _api_objectstorage_GetSecurityProvenanceRequest,
+  request: _api_objectstorage_GetSecurityProvenanceRequest
 ): Promise<_api_objectstorage_GetSecurityProvenanceResponse> {
   return conjureFetch(
     ctx,
     `/object-storage-security-provenance/get-security-provenance`,
     "POST",
-    request,
+    request
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { CreateApplicationRequest } from "../CreateApplicationRequest.js";
 import type { VersionedApplication } from "../VersionedApplication.js";
 
@@ -26,7 +27,7 @@ import type { VersionedApplication } from "../VersionedApplication.js";
  */
 export async function createApplication(
   ctx: ConjureContext,
-  request: CreateApplicationRequest,
+  request: CreateApplicationRequest
 ): Promise<VersionedApplication> {
   return conjureFetch(ctx, `/applications`, "POST", request);
 }

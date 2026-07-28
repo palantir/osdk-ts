@@ -23,21 +23,22 @@ import type { Website } from "./Website.mjs";
 export async function deployWebsite(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  request: DeployWebsiteRequest,
+  request: DeployWebsiteRequest
 ): Promise<Website> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy?preview=true`;
-
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: JSON.stringify(request),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy`,
+    ctx.foundryUrl
   );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
+
+  const result = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   return result.json();
 }

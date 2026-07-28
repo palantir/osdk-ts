@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["src/**/*.scss", "vite.config.ts"],
+      "outputs": ["build/scss-types/**"]
+    }
+  }
+}

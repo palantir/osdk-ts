@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   LatestVersionResponse as _api_LatestVersionResponse,
   UpdateLatestVersionRequest as _api_UpdateLatestVersionRequest,
@@ -27,12 +28,12 @@ import type {
 export async function putLatestVersion(
   ctx: ConjureContext,
   versionedObjectSetRid: _api_VersionedObjectSetRid,
-  request: _api_UpdateLatestVersionRequest,
+  request: _api_UpdateLatestVersionRequest
 ): Promise<_api_LatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/versionedObjectSets/${versionedObjectSetRid}/latestVersion`,
     "PUT",
-    request,
+    request
   );
 }

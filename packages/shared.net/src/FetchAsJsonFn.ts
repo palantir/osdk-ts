@@ -21,5 +21,5 @@
 /** @deprecated */
 export type FetchAsJsonFn = (
   url: URL,
-  requestInit: Omit<RequestInit, "body"> & { body?: object | undefined },
+  requestInit: Omit<RequestInit, "body"> & { body?: object | undefined }
 ) => Promise<any>;

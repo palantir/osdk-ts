@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyRuntimeMetadata } from "../../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
+import { compareNumericStrings } from "../compareNumericStrings.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { PK_IDX } from "../object/ObjectCacheKey.js";
+import {
+  isStringEncodedNumericType,
+  resolvePropertyType,
+} from "../resolvePropertyType.js";
 
 /**
  * Strategy interface for collection sorting
@@ -33,7 +39,7 @@ export interface SortingStrategy {
    */
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
+    batch: BatchContext
   ): ObjectCacheKey[];
 }
 
@@ -43,7 +49,7 @@ export interface SortingStrategy {
 export class NoOpSortingStrategy implements SortingStrategy {
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    _batch: BatchContext,
+    _batch: BatchContext
   ): ObjectCacheKey[] {
     return objectCacheKeys;
   }
@@ -52,6 +58,7 @@ export class NoOpSortingStrategy implements SortingStrategy {
 type ObjectInterfaceComparer = (
   a: ObjectHolder | InterfaceHolder | undefined,
   b: ObjectHolder | InterfaceHolder | undefined,
+  derivedPropertyMetadata?: DerivedPropertyRuntimeMetadata
 ) => number;
 
 /**
@@ -65,13 +72,14 @@ export class OrderBySortingStrategy implements SortingStrategy {
     private readonly orderBy: Canonical<
       Record<string, "asc" | "desc" | undefined>
     >,
+    public readonly derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
   ) {
     this.sortFns = createOrderBySortFns(orderBy);
   }
 
   sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
+    batch: BatchContext
   ): ObjectCacheKey[] {
     if (Object.keys(this.orderBy).length === 0) {
       return objectCacheKeys;
@@ -82,6 +90,7 @@ export class OrderBySortingStrategy implements SortingStrategy {
         const ret = sortFn(
           batch.read(a)?.value?.$as(this.apiName),
           batch.read(b)?.value?.$as(this.apiName),
+          this.derivedPropertyMetadata
         );
         if (ret !== 0) {
           return ret;
@@ -100,12 +109,13 @@ export class OrderBySortingStrategy implements SortingStrategy {
  * @returns Array of sort functions
  */
 export function createOrderBySortFns(
-  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>
 ): ObjectInterfaceComparer[] {
   return Object.entries(orderBy).map(([key, order]) => {
     return (
       a: ObjectHolder | InterfaceHolder | undefined,
       b: ObjectHolder | InterfaceHolder | undefined,
+      derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
     ): number => {
       const aValue = a?.[key];
       const bValue = b?.[key];
@@ -120,6 +130,24 @@ export function createOrderBySortFns(
         return -1;
       }
       const m = order === "asc" ? -1 : 1;
+
+      // `decimal`/`long` are wire-encoded as strings; comparing them with
+      // `<` / `>` sorts them lexicographically ("10" < "9"), so compare them by
+      // value when the declared type says they're numeric. The type comes from
+      // the object/interface metadata on the holder, or -- for derived
+      // properties -- from the runtime metadata passed alongside. The `?? b`
+      // covers heterogeneous holders (e.g. an interface list backed by
+      // different object types).
+      if (
+        typeof aValue === "string" &&
+        typeof bValue === "string" &&
+        isStringEncodedNumericType(
+          resolvePropertyType(a, key, derivedPropertyMetadata) ??
+            resolvePropertyType(b, key, derivedPropertyMetadata)
+        )
+      ) {
+        return -m * compareNumericStrings(aValue, bValue);
+      }
       return aValue < bValue ? m : aValue > bValue ? -m : 0;
     };
   });

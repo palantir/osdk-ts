@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { RadioButtonsField } from "../fields/RadioButtonsField.js";
 
 const STRING_OPTIONS = [
@@ -33,7 +34,7 @@ describe("RadioButtonsField", () => {
 
       expect(screen.getAllByRole("radio")).toHaveLength(3);
       for (const option of STRING_OPTIONS) {
-        expect(screen.getByText(option.label)).toBeDefined();
+        expect(screen.getByRole("radio", { name: option.label })).toBeDefined();
       }
     });
   });
@@ -42,7 +43,8 @@ describe("RadioButtonsField", () => {
     it("marks the matching radio as checked when value is provided", () => {
       render(<RadioButtonsField value="green" options={STRING_OPTIONS} />);
 
-      const greenRadio = screen.getByText("Green")
+      const greenRadio = screen
+        .getByText("Green")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(greenRadio.getAttribute("aria-checked")).toBe("true");
@@ -55,13 +57,35 @@ describe("RadioButtonsField", () => {
           value="red"
           options={STRING_OPTIONS}
           onChange={onChange}
-        />,
+        />
       );
 
       const radios = screen.getAllByRole("radio");
       fireEvent.click(radios[2]);
 
       expect(onChange).toHaveBeenCalledWith("blue");
+    });
+
+    it("marks radios disabled and blocks selection when disabled", () => {
+      const onChange = vi.fn();
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          onChange={onChange}
+          disabled={true}
+        />
+      );
+
+      const radios = screen.getAllByRole("radio");
+      for (const radio of radios) {
+        expect(radio.getAttribute("aria-disabled")).toBe("true");
+        expect(radio.getAttribute("tabindex")).toBe("-1");
+      }
+
+      fireEvent.click(radios[2]);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 
@@ -73,6 +97,28 @@ describe("RadioButtonsField", () => {
       for (const radio of radios) {
         expect(radio.getAttribute("aria-checked")).toBe("false");
       }
+    });
+  });
+
+  describe("orientation", () => {
+    it("sets horizontal orientation when specified", () => {
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          orientation="horizontal"
+        />
+      );
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("horizontal");
+    });
+
+    it("defaults to vertical orientation", () => {
+      render(<RadioButtonsField value="red" options={STRING_OPTIONS} />);
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("vertical");
     });
   });
 
@@ -90,10 +136,11 @@ describe("RadioButtonsField", () => {
           value={appleValue}
           options={options}
           onChange={onChange}
-        />,
+        />
       );
 
-      const appleRadio = screen.getByText("Apple")
+      const appleRadio = screen
+        .getByText("Apple")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(appleRadio.getAttribute("aria-checked")).toBe("true");

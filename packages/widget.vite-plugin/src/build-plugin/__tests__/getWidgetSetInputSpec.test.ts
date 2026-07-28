@@ -15,7 +15,9 @@
  */
 
 import { resolve } from "path";
+
 import { expect, test, vi } from "vitest";
+
 import type { PackageJson } from "../../common/PackageJson.js";
 import { visitNpmPackages } from "../../common/visitNpmPackages.js";
 import { getWidgetSetInputSpec } from "../getWidgetSetInputSpec.js";
@@ -27,16 +29,16 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
     name: "package1",
     version: "0.1.0",
     dependencies: {
-      "package2": "0.2.0",
-      "package3": "0.3.0",
+      package2: "0.2.0",
+      package3: "0.3.0",
     },
   };
   const packageJson2: PackageJson = {
     name: "package2",
     version: "0.2.0",
     dependencies: {
-      "package3": "0.3.0",
-      "package4": "0.4.0",
+      package3: "0.3.0",
+      package4: "0.4.0",
     },
     osdk: {
       packageRid: "ridPackage2",
@@ -46,7 +48,7 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
     name: "package3",
     version: "0.3.0",
     dependencies: {
-      "package4": "0.4.1",
+      package4: "0.4.1",
     },
     osdk: {
       packageRid: "ridPackage3",
@@ -67,36 +69,34 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
     },
   };
 
-  vi.mocked(visitNpmPackages).mockImplementation(
-    (packageJsonPath, onVisit) => {
-      onVisit(packageJsonPath, packageJson1);
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package2@0.2.0/package.json"),
-        packageJson2,
-      );
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package3@0.3.0/package.json"),
-        packageJson3,
-      );
-      // Handle multiple versions of same OSDK package
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.0/package.json"),
-        packageJson4,
-      );
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
-        packageJson4_1,
-      );
-      // Handle multiple occurrences of same version of OSDK package
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
-        packageJson4_1,
-      );
-      return Promise.resolve();
-    },
-  );
+  vi.mocked(visitNpmPackages).mockImplementation((packageJsonPath, onVisit) => {
+    onVisit(packageJsonPath, packageJson1);
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package2@0.2.0/package.json"),
+      packageJson2
+    );
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package3@0.3.0/package.json"),
+      packageJson3
+    );
+    // Handle multiple versions of same OSDK package
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.0/package.json"),
+      packageJson4
+    );
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
+      packageJson4_1
+    );
+    // Handle multiple occurrences of same version of OSDK package
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
+      packageJson4_1
+    );
+    return Promise.resolve();
+  });
   const widgetSetInputSpec = await getWidgetSetInputSpec(
-    "/path/to/package.json",
+    "/path/to/package.json"
   );
 
   expect(widgetSetInputSpec).toEqual({

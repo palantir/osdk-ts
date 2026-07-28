@@ -17,8 +17,10 @@
 import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
@@ -28,8 +30,8 @@ beforeAll(() => {
   createWidgetVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8",
-    ),
+      "utf-8"
+    )
   ).version;
 });
 
@@ -95,17 +97,17 @@ async function runTest({
   await cli(options);
 
   expect(
-    fs.readdirSync(path.join(process.cwd(), project)).length,
+    fs.readdirSync(path.join(process.cwd(), project)).length
   ).toBeGreaterThan(0);
   expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
-    true,
+    true
   );
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
-    true,
+    true
   );
   const packageJsonContents = fs.readFileSync(
     path.join(process.cwd(), project, "package.json"),
-    "utf-8",
+    "utf-8"
   );
   expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }

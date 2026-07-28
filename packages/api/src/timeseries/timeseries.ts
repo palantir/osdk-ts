@@ -18,33 +18,33 @@ import { TimeDurationMapping } from "../mapping/DurationMapping.js";
 
 export type TimeSeriesQuery =
   | {
-    $before: number;
-    $unit: keyof typeof TimeseriesDurationMapping;
-    $after?: never;
-    $startTime?: never;
-    $endTime?: never;
-  }
+      $before: number;
+      $unit: keyof typeof TimeseriesDurationMapping;
+      $after?: never;
+      $startTime?: never;
+      $endTime?: never;
+    }
   | {
-    $after: number;
-    $unit: keyof typeof TimeseriesDurationMapping;
-    $before?: never;
-    $startTime?: never;
-    $endTime?: never;
-  }
+      $after: number;
+      $unit: keyof typeof TimeseriesDurationMapping;
+      $before?: never;
+      $startTime?: never;
+      $endTime?: never;
+    }
   | {
-    $startTime: string;
-    $endTime?: string;
-    $before?: never;
-    $after?: never;
-    $unit?: never;
-  }
+      $startTime: string;
+      $endTime?: string;
+      $before?: never;
+      $after?: never;
+      $unit?: never;
+    }
   | {
-    $startTime?: string;
-    $endTime: string;
-    $before?: never;
-    $after?: never;
-    $unit?: never;
-  };
+      $startTime?: string;
+      $endTime: string;
+      $before?: never;
+      $after?: never;
+      $unit?: never;
+    };
 
 export type TimeseriesDurationUnits =
   | "YEARS"
@@ -80,8 +80,8 @@ export const TimeseriesDurationMapping: {
   ms: "MILLISECONDS";
   milliseconds: "MILLISECONDS";
 } = {
-  "ms": "MILLISECONDS",
-  "milliseconds": "MILLISECONDS",
+  ms: "MILLISECONDS",
+  milliseconds: "MILLISECONDS",
   ...TimeDurationMapping,
 } satisfies Record<string, TimeseriesDurationUnits>;
 
@@ -93,74 +93,97 @@ export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
 export interface TimeSeriesProperty<T extends number | string> {
   /**
    * Queries the first point of the Timeseries
+   * @example
+   * ```ts
+   * const firstPoint = await employee.employeeStatus?.getFirstPoint();
+   * ```
+   * @returns the first point of the Timeseries
    */
   readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
    * Queries the last point of the Timeseries
+   * @example
+   * ```ts
+   * const lastPoint = await employee.employeeStatus?.getLastPoint();
+   * ```
+   * @returns the last point of the Timeseries
    */
   readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
-     * Loads all points, within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const points = await employee.employeeStatus?.getAllPoints({
-        $after: 1,
-        $unit: "month",
-      });
-     */
+   * Loads all points, within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const points = await employee.employeeStatus?.getAllPoints({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * ```
+   */
   readonly getAllPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
-     * Returns an async iterator to load all points
-     * within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const iterator = employee.employeeStatus?.asyncIter({
-        $after: 1,
-        $unit: "month",
-      });
-      for await (const point of iterator) {
-          // Handle time series point
-      }
-     */
+   * Returns an async iterator to load all points
+   * within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const iterator = employee.employeeStatus?.asyncIter({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * for await (const point of iterator) {
+   *   // Handle time series point
+   * }
+   * ```
+   */
   readonly asyncIterPoints: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 }
 
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
   /**
    * Queries the last point of the Geotime series
+   * @example
+   * ```ts
+   * const latestValue = await employee.travelHistory?.getLatestValue();
+   * ```
+   * @returns the last point of the Geotime series, or undefined if there are no points
    */
   readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
   /**
-     * Loads all points, within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const points = await employee.employeeStatus?.getAllPoints({
-        $after: 1,
-        $unit: "month",
-      });
-     */
+   * Loads all points, within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const points = await employee.employeeStatus?.getAllPoints({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * ```
+   */
   readonly getAllValues: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
-     * Returns an async iterator to load all points
-     * within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const iterator = employee.employeeStatus?.asyncIter({
-        $after: 1,
-        $unit: "month",
-      });
-      for await (const point of iterator) {
-          // Handle time series point
-      }
-     */
+   * Returns an async iterator to load all points
+   * within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const iterator = employee.employeeStatus?.asyncIter({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * for await (const point of iterator) {
+   *   // Handle time series point
+   * }
+   * ```
+   */
   readonly asyncIterValues: (
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQuery
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
   /**

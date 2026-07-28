@@ -22,6 +22,7 @@ import {
   type ObjectType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+
 import type { ImportObjectDefinition } from "./types.js";
 
 /*
@@ -30,10 +31,10 @@ import type { ImportObjectDefinition } from "./types.js";
  * then converts it to an OntologyIrImportedObjectType that is safe to use elsewhere.
  */
 export function defineImportObject(
-  objectDef: ImportObjectDefinition,
+  objectDef: ImportObjectDefinition
 ): ObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
-    objectDef.properties ?? {},
+    objectDef.properties ?? {}
   ).map(([apiName, type]) => ({
     apiName: apiName,
     displayName: convertToDisplayName(apiName),
@@ -45,8 +46,8 @@ export function defineImportObject(
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
 
     // the rest don't matter for now
-    displayName: objectDef.displayName
-      ?? convertToDisplayName(objectDef.apiName),
+    displayName:
+      objectDef.displayName ?? convertToDisplayName(objectDef.apiName),
     pluralDisplayName: convertToPluralDisplayName(objectDef.apiName),
     primaryKeyPropertyApiName: properties[0]?.apiName,
     titlePropertyApiName: properties[0]?.apiName,

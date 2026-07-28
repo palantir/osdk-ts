@@ -17,47 +17,90 @@
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 
-interface IOptionalDataType extends IDataType {
+export interface IOptionalDataType extends IDataType {
   type: "optionalType";
   optionalType: { wrappedType: IDataType };
 }
 
-interface ISetDataType extends IDataType {
+export interface ISetDataType extends IDataType {
   type: "set";
   set: { elementsType: IDataType };
 }
 
-interface IObjectSetDataType extends IDataType {
+export interface IObjectSetDataType extends IDataType {
   type: "objectSet";
   objectSet: { objectTypeId: string };
 }
 
-interface IListDataType extends IDataType {
+export interface IListDataType extends IDataType {
   type: "list";
   list: { elementsType: IDataType };
 }
 
-interface IFunctionCustomDataType extends IDataType {
+export interface IFunctionCustomDataType extends IDataType {
   type: "functionCustomType";
   functionCustomType: string;
 }
 
-interface IObjectDataType extends IDataType {
+export interface IObjectDataType extends IDataType {
   type: "object";
   object: { objectTypeId: string };
+}
+
+export interface IInterfaceObjectSetDataType extends IDataType {
+  type: "interfaceObjectSet";
+  interfaceObjectSet: { interfaceTypeRid: string };
+}
+
+export interface IInterfaceDataType extends IDataType {
+  type: "interface";
+  interface: { interfaceTypeRid: string };
+}
+
+export interface IAnonymousCustomDataType extends IDataType {
+  type: "anonymousCustomType";
+  anonymousCustomType: {
+    fields: Record<string, IDataType>;
+  };
+}
+
+function isInjectedRuntimeDataType(dataType: IDataType): boolean {
+  return dataType.type === "client" || dataType.type === "durableContext";
+}
+
+function isInjectedRuntimeContext(dataType: IDataType): boolean {
+  if (dataType.type !== "anonymousCustomType") {
+    return false;
+  }
+
+  const fields = (dataType as IAnonymousCustomDataType).anonymousCustomType
+    ?.fields;
+  const fieldTypes = fields != null ? Object.values(fields) : [];
+
+  return fieldTypes.length > 0
+    && fieldTypes.every(isInjectedRuntimeDataType);
+}
+
+export function isInjectedRuntimeInput(dataType: IDataType): boolean {
+  return isInjectedRuntimeDataType(dataType)
+    || isInjectedRuntimeContext(dataType);
 }
 
 export function convertDataType(
   dataType: IDataType,
   customTypes: Record<string, unknown>,
+  interfaceRidToApiName: Record<string, string>,
   required?: boolean,
 ): Ontologies.QueryDataType {
   if (required === false && dataType.type !== "optionalType") {
     return {
       type: "union",
-      unionTypes: [convertDataType(dataType, customTypes), {
-        type: "null",
-      }],
+      unionTypes: [
+        convertDataType(dataType, customTypes, interfaceRidToApiName),
+        {
+          type: "null",
+        },
+      ],
     };
   }
   switch (dataType.type) {
@@ -87,6 +130,7 @@ export function convertDataType(
           convertDataType(
             optionalData.optionalType.wrappedType,
             customTypes,
+            interfaceRidToApiName,
           ),
           { type: "null" },
         ],
@@ -96,7 +140,11 @@ export function convertDataType(
       const setData = dataType as ISetDataType;
       return {
         type: "set",
-        subType: convertDataType(setData.set.elementsType, customTypes),
+        subType: convertDataType(
+          setData.set.elementsType,
+          customTypes,
+          interfaceRidToApiName,
+        ),
       };
     }
     case "objectSet": {
@@ -114,6 +162,7 @@ export function convertDataType(
         subType: convertDataType(
           listData.list.elementsType,
           customTypes,
+          interfaceRidToApiName,
         ),
       };
     }
@@ -132,6 +181,24 @@ export function convertDataType(
         objectTypeApiName: objectData.object.objectTypeId,
       };
     }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceObject",
+        interfaceTypeApiName:
+          interfaceRidToApiName[interfaceData.interface.interfaceTypeRid],
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceObjectSet",
+        interfaceTypeApiName: interfaceRidToApiName[
+          interfaceData.interfaceObjectSet.interfaceTypeRid
+        ],
+      };
+    }
+    case "client":
     case "ontologyEdit": {
       // ontologyEdit represents a function's side-effect declaration (e.g. edits to
       // objects). There is no QueryDataType equivalent, so we map it to string as a
@@ -181,6 +248,7 @@ function convertFunctionCustomType(
       fieldType: convertDataType(
         fields[key],
         customTypes,
+        {},
         fieldMetadata[key].required ?? true,
       ),
     };

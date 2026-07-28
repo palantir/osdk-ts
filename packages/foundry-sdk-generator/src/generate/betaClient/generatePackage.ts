@@ -22,6 +22,7 @@ import path from "node:path";
 import { normalize } from "node:path/posix";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join } from "path";
+import type { SlsLogger } from "../../logging/index.js";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
@@ -42,9 +43,10 @@ export async function generatePackage(
     beta: boolean;
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
+    branch: string | undefined;
   },
+  logger: SlsLogger,
 ): Promise<void> {
-  const { consola } = await import("consola");
   let success = true;
 
   if (options.ontologyJsonOnly) {
@@ -100,6 +102,7 @@ export async function generatePackage(
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
     packageRid: options.packageRid,
+    branch: options.branch,
   });
 
   const compilerOutput: Record<
@@ -119,7 +122,15 @@ export async function generatePackage(
 
     compilerOutput[type] = compileInMemory(inMemoryFileSystem, type);
     compilerOutput[type].diagnostics.forEach(d => {
-      consola.error(`Error compiling file`, d.file?.fileName, d.messageText);
+      logger.error("Error compiling generated file", {
+        params: { moduleType: type },
+        unsafeParams: {
+          fileName: d.file?.fileName,
+          messageText: typeof d.messageText === "string"
+            ? d.messageText
+            : JSON.stringify(d.messageText),
+        },
+      });
       success = false;
     });
 
@@ -157,15 +168,19 @@ export async function generatePackage(
       bundleDts = await bundleDependencies(
         [],
         options.packageName,
-        compilerOutput["esm"].files,
+        compilerOutput.esm.files,
         undefined,
       );
     } catch (e) {
-      consola.error("Failed bundling DTS", e);
+      logger.error(
+        "Failed bundling DTS",
+        undefined,
+        e instanceof Error ? e : undefined,
+      );
       success = false;
     }
   } else {
-    consola.error(
+    logger.error(
       "Could not find node_modules directory, skipping DTS bundling",
     );
     success = false;
@@ -183,7 +198,11 @@ export async function generatePackage(
   try {
     await generateBundles(absolutePackagePath, options.packageName);
   } catch (e) {
-    consola.error(e);
+    logger.error(
+      "Failed generating bundles",
+      undefined,
+      e instanceof Error ? e : undefined,
+    );
     success = false;
   }
 

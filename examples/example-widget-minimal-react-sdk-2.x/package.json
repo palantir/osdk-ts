@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^6.10.0",
+    "@osdk/react": "workspace:*",
     "@osdk/widget.client": "workspace:*",
     "@osdk/widget.client-react": "workspace:*",
     "clsx": "^2.1.1",

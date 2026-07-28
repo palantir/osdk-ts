@@ -40,6 +40,7 @@ export function getModifiedEntityTypes(
       case "createInterfaceObject":
       case "modifyInterfaceObject":
       case "deleteInterfaceObject":
+      case "applyScenario":
         break;
       default:
         const _: never = operation;

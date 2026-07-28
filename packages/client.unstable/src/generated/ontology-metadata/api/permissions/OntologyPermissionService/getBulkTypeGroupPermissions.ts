@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  GetBulkTypeGroupPermissionsRequest
-    as _api_permissions_GetBulkTypeGroupPermissionsRequest,
-  GetBulkTypeGroupPermissionsResponse
-    as _api_permissions_GetBulkTypeGroupPermissionsResponse,
+  GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest,
+  GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse,
 } from "../__components.js";
 
 /**
@@ -28,7 +27,7 @@ import type {
  */
 export async function getBulkTypeGroupPermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkTypeGroupPermissionsRequest,
+  request: _api_permissions_GetBulkTypeGroupPermissionsRequest
 ): Promise<_api_permissions_GetBulkTypeGroupPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/typeGroups`, "PUT", request);
 }

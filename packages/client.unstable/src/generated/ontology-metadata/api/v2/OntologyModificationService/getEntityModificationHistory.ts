@@ -15,12 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  GetEntityModificationHistoryRequest
-    as _api_modification_GetEntityModificationHistoryRequest,
-  GetEntityModificationHistoryResponse
-    as _api_modification_GetEntityModificationHistoryResponse,
+  GetEntityModificationHistoryRequest as _api_modification_GetEntityModificationHistoryRequest,
+  GetEntityModificationHistoryResponse as _api_modification_GetEntityModificationHistoryResponse,
 } from "../../modification/__components.js";
 
 /**
@@ -37,12 +36,12 @@ import type {
 export async function getEntityModificationHistory(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_GetEntityModificationHistoryRequest,
+  request: _api_modification_GetEntityModificationHistoryRequest
 ): Promise<_api_modification_GetEntityModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/history/entity`,
     "POST",
-    request,
+    request
   );
 }

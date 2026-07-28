@@ -31,7 +31,7 @@ export async function promptSdkVersion({
 
   if (template.files[sdkVersion as SdkVersion] == null) {
     consola.fail(
-      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`,
+      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`
     );
     sdkVersion = await consola.prompt(
       `Please choose which version of the OSDK you'd like to use for the ${template.label} template:`,
@@ -43,7 +43,7 @@ export async function promptSdkVersion({
             label: sdkVersion,
             value: sdkVersion,
           })),
-      },
+      }
     );
   }
 

@@ -16,12 +16,13 @@
 
 import type { OntologyIrSectionConditionalOverride } from "@osdk/client.unstable";
 import type { ActionParameter, SectionConditionalOverride } from "@osdk/maker";
+
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
 
 export function convertSectionConditionalOverride(
   override: SectionConditionalOverride,
   defaultVisibility: "visible" | "hidden",
-  actionParameters?: ActionParameter[],
+  actionParameters?: ActionParameter[]
 ): OntologyIrSectionConditionalOverride {
   return {
     condition: convertConditionDefinition(override.condition, actionParameters),
@@ -29,15 +30,16 @@ export function convertSectionConditionalOverride(
       {
         type: "visibility",
         visibility: {
-          visibility: defaultVisibility === "visible"
-            ? {
-              type: "hidden",
-              hidden: {},
-            }
-            : {
-              type: "visible",
-              visible: {},
-            },
+          visibility:
+            defaultVisibility === "visible"
+              ? {
+                  type: "hidden",
+                  hidden: {},
+                }
+              : {
+                  type: "visible",
+                  visible: {},
+                },
         },
       },
     ],

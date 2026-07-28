@@ -21,7 +21,7 @@
 
 import type { DerivedProperty } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function TestComponent() {
   const withProps: DerivedProperty.Clause<typeof Employee> = {

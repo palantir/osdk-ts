@@ -24,29 +24,29 @@ export type ConnectionCollection = FeatureCollection<
 >;
 
 const connectionColors: Record<ConnectionProperties["type"], string> = {
-  "manager": "#FFD700",
+  manager: "#FFD700",
   "skip-level": "#9333EA",
-  "peer": "#10B981",
-  "colleague": "#10B981",
-  "report": "#14B8A6",
+  peer: "#10B981",
+  colleague: "#10B981",
+  report: "#14B8A6",
   "cross-office": "#F97316",
 };
 
 const connectionWidths: Record<ConnectionProperties["type"], number> = {
-  "manager": 3,
+  manager: 3,
   "skip-level": 2,
-  "peer": 2,
-  "colleague": 1.5,
-  "report": 2.5,
+  peer: 2,
+  colleague: 1.5,
+  report: 2.5,
   "cross-office": 2.5,
 };
 
 const connectionDashArrays: Record<ConnectionProperties["type"], number[]> = {
-  "manager": [],
+  manager: [],
   "skip-level": [4, 4],
-  "peer": [2, 2],
-  "colleague": [2, 2],
-  "report": [],
+  peer: [2, 2],
+  colleague: [2, 2],
+  report: [],
   "cross-office": [6, 3],
 };
 
@@ -64,9 +64,10 @@ const connectionTypes: ConnectionProperties["type"][] = [
   "cross-office",
 ];
 
-export function ConnectionLayer(
-  { connections, visible = true }: ConnectionLayerProps,
-) {
+export function ConnectionLayer({
+  connections,
+  visible = true,
+}: ConnectionLayerProps) {
   if (!visible || connections.features.length === 0) {
     return null;
   }
@@ -75,13 +76,13 @@ export function ConnectionLayer(
     (acc, type) => {
       acc[type] = {
         type: "FeatureCollection" as const,
-        features: connections.features.filter((f) =>
-          f.properties.type === type
+        features: connections.features.filter(
+          (f) => f.properties.type === type
         ),
       };
       return acc;
     },
-    {} as Record<ConnectionProperties["type"], ConnectionCollection>,
+    {} as Record<ConnectionProperties["type"], ConnectionCollection>
   );
 
   return (
@@ -127,7 +128,7 @@ export function createConnection(
   type: ConnectionProperties["type"],
   sourceId: string,
   targetId: string,
-  label?: string,
+  label?: string
 ): ConnectionFeature {
   return {
     type: "Feature",
@@ -145,7 +146,7 @@ export function createConnection(
 }
 
 export function createConnectionCollection(
-  features: ConnectionFeature[],
+  features: ConnectionFeature[]
 ): ConnectionCollection {
   return {
     type: "FeatureCollection",

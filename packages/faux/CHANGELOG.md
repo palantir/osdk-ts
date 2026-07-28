@@ -1,5 +1,343 @@
 # @osdk/shared.test
 
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/generator-converters@2.48.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters@2.47.0
+
+## 0.36.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters@2.46.0
+
+## 0.35.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+  - @osdk/generator-converters@2.45.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 3c48f5a: Set the `name` property on custom error classes so thrown errors report their own class name
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [566ecd3]
+  - @osdk/api@2.43.0
+  - @osdk/generator-converters@2.43.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 6010d45: Migrate @osdk/aip-core, @osdk/foundry-config-json, @osdk/seed-compiler, @osdk/seed-helpers, @osdk/oauth, @osdk/faux, and @osdk/osdk-docs-context to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (eleventh increment of the repo-wide oxc migration; the standard libraries). Each package is reformatted with oxfmt, with its newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+  - @osdk/api@2.42.0
+  - @osdk/generator-converters@2.42.0
+
+## 0.32.0
+
+### Minor Changes
+
+- 15a35f2: Add CipherText support for codegen and implement decryption interface
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/generator-converters@2.41.0
+
+## 0.31.0
+
+### Minor Changes
+
+- 3e915ee: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [3e915ee]
+  - @osdk/generator-converters@2.40.0
+  - @osdk/api@2.40.0
+
+## 0.30.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/generator-converters@2.38.0
+
+## 0.29.0
+
+### Patch Changes
+
+- @osdk/api@2.37.0
+- @osdk/generator-converters@2.37.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/api@2.35.0
+- @osdk/generator-converters@2.35.0
+
+## 0.27.0
+
+### Minor Changes
+
+- ab19740: Add `Media.fetchFullMetadata()` returning a `MediaFullMetadata` wrapper around the type-specific `MediaItemMetadata` discriminated union (parity with python-osdk's `get_media_full_metadata`).
+
+### Patch Changes
+
+- Updated dependencies [db028a0]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters@2.34.0
+  - @osdk/api@2.34.0
+
+## 0.26.0
+
+### Minor Changes
+
+- 79f8a6e: Stop serializing GeoJSON `Point` geometries into a `"lat,lon"` string when sending object property/parameter values. This broke geoshape values that are Points (the transaction edits and action endpoints rejected `"lat,lon"` with `InvalidTransactionEditPropertyValue` / invalid parameter for `GeoShape`). GeoJSON values are now passed through as objects, which the server accepts for both geoshape and geopoint/geohash targets. The FauxFoundry geohash action-parameter validator now also accepts GeoJSON objects, matching the real server.
+
+### Patch Changes
+
+- Updated dependencies [06adca1]
+  - @osdk/api@2.32.0
+  - @osdk/generator-converters@2.32.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/generator-converters@2.31.0
+
+## 0.24.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/generator-converters@2.29.0
+
+## 0.23.0
+
+### Minor Changes
+
+- 58922c1: Adds support for object set references in faux
+
+### Patch Changes
+
+- @osdk/api@2.28.0
+- @osdk/generator-converters@2.28.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/generator-converters@2.27.0
+  - @osdk/api@2.27.0
+
+## 0.21.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/generator-converters@2.25.0
+  - @osdk/api@2.25.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+  - @osdk/api@2.24.0
+  - @osdk/generator-converters@2.24.0
+
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [9fb5afb]
+- Updated dependencies [198f219]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/generator-converters@2.23.0
+  - @osdk/api@2.23.0
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+  - @osdk/api@2.21.0
+  - @osdk/generator-converters@2.21.0
+
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- ecc5b36: Adds support for object aggregations in faux foundry
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/api@2.19.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 2f3271b: Camelizes action type api names
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+- @osdk/generator-converters@2.18.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+  - @osdk/generator-converters@2.17.0
+
+## 0.13.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/generator-converters@2.16.0
+
+## 0.12.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/generator-converters@2.15.0
+
+## 0.11.0
+
+### Patch Changes
+
+- Updated dependencies [20e9678]
+  - @osdk/api@2.14.0
+  - @osdk/generator-converters@2.14.0
+
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/generator-converters@2.13.0
+
+## 0.9.0
+
+### Minor Changes
+
+- df1a4f8: Build the multipass mock URL via the URL constructor for consistency with the other handlers.
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters@2.12.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters@2.10.0
+  - @osdk/api@2.10.0
+
+## 0.7.0
+
+### Minor Changes
+
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 2394ca7: Adding regex matching for string filters.
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

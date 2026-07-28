@@ -740,11 +740,10 @@ export class OntologyMetadataResolver {
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
+      case "typeReference":
       case "null":
       case "void":
         return Result.ok({});
-      case "mediaReference":
-      case "typeReference":
       case "unsupported":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
@@ -833,6 +832,7 @@ export class OntologyMetadataResolver {
       case "marking":
       case "geohash":
       case "geoshape":
+      case "scenarioReference":
         return Result.ok({});
 
       case "vector":

@@ -17,24 +17,26 @@
 import type { AttachmentUpload } from "@osdk/api";
 
 export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return typeof o === "object"
-    && o != null
-    && "name" in o
-    && typeof o.name === "string"
-    && "data" in o
-    && o.data instanceof Blob
-    && !("fileName" in o);
+  return (
+    typeof o === "object" &&
+    o != null &&
+    "name" in o &&
+    typeof o.name === "string" &&
+    "data" in o &&
+    o.data instanceof Blob &&
+    !("fileName" in o)
+  );
 }
 
 export function isAttachmentFile(
-  o: any,
+  o: any
 ): o is Blob & { readonly name: string } {
   return typeof o === "object" && o instanceof Blob && "name" in o;
 }
 
 export function createAttachmentUpload(
   data: Blob,
-  name: string,
+  name: string
 ): AttachmentUpload {
   return { data, name };
 }

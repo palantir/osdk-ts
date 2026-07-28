@@ -15,6 +15,7 @@
  */
 
 import { afterEach, expect, test, vi } from "vitest";
+
 import { consola } from "../consola.js";
 import { promptOsdkRegistryUrl } from "./promptOsdkRegistryUrl.js";
 
@@ -43,7 +44,7 @@ test("it prompts again if answered value is invalid", async () => {
 
 test("it accepts valid initial value without prompt", async () => {
   expect(await promptOsdkRegistryUrl({ osdkRegistryUrl: valid })).toEqual(
-    valid,
+    valid
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
@@ -51,7 +52,7 @@ test("it accepts valid initial value without prompt", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(await promptOsdkRegistryUrl({ osdkRegistryUrl: "invalid" })).toEqual(
-    valid,
+    valid
   );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

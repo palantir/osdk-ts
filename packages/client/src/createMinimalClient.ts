@@ -16,15 +16,13 @@
 
 import type { Logger } from "@osdk/api";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+
 import type {
   ClientCacheKey,
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
-import {
-  convertWireToOsdkObjects,
-  convertWireToOsdkObjects2,
-} from "./object/convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
@@ -32,6 +30,7 @@ import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
 } from "./ontology/StandardOntologyProvider.js";
+import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 /** @internal */
@@ -43,18 +42,21 @@ export function createMinimalClient(
     logger?: Logger;
     transactionId?: string;
     flushEdits?: () => Promise<void>;
+    scenarioRid?: string;
     branch?: string;
     headers?: Record<string, string>;
+    createSubscriptionConnection?: CreateSubscriptionConnectionFn;
   } = {},
   fetchFn: (
     input: Request | URL | string,
-    init?: RequestInit | undefined,
+    init?: RequestInit | undefined
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
   createOntologyProviderFactory: (
-    a: OntologyCachingOptions & { logger?: Logger },
-  ) => (minimalClient: MinimalClient) => OntologyProvider =
-    createStandardOntologyProviderFactory,
+    a: OntologyCachingOptions & { logger?: Logger }
+  ) => (
+    minimalClient: MinimalClient
+  ) => OntologyProvider = createStandardOntologyProviderFactory
 ) {
   if (process.env.NODE_ENV !== "production") {
     try {
@@ -67,36 +69,31 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
-  const processedBaseUrl = new URL(baseUrl);
-  processedBaseUrl.pathname += processedBaseUrl.pathname.endsWith("/")
-    ? ""
-    : "/";
   const minimalClient: MinimalClient = {
     ...createSharedClientContext(
-      processedBaseUrl.toString(),
+      baseUrl,
       tokenProvider,
       USER_AGENT,
       fetchFn,
-      options.headers,
+      options.headers
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
-    objectFactory2: convertWireToOsdkObjects2,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     transactionId: options.transactionId,
+    flushEdits: options.flushEdits,
+    scenarioRid: options.scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
-  } satisfies Omit<
-    MinimalClient,
-    "ontologyProvider"
-  > as any;
+    createSubscriptionConnection: options.createSubscriptionConnection,
+  } satisfies Omit<MinimalClient, "ontologyProvider"> as any;
 
-  return Object.freeze(Object.assign(minimalClient, {
-    ontologyProvider: createOntologyProviderFactory(
-      options,
-    )(minimalClient),
-  }));
+  return Object.freeze(
+    Object.assign(minimalClient, {
+      ontologyProvider: createOntologyProviderFactory(options)(minimalClient),
+    })
+  );
 }

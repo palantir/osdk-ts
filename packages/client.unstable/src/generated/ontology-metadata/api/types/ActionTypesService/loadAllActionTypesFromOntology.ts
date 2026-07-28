@@ -15,10 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   ActionTypeLoadResponse as _api_ActionTypeLoadResponse,
-  LoadAllActionTypesFromOntologyRequest
-    as _api_LoadAllActionTypesFromOntologyRequest,
+  LoadAllActionTypesFromOntologyRequest as _api_LoadAllActionTypesFromOntologyRequest,
   OntologyRid as _api_OntologyRid,
 } from "../../__components.js";
 
@@ -29,12 +29,12 @@ import type {
 export async function loadAllActionTypesFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_LoadAllActionTypesFromOntologyRequest,
+  request: _api_LoadAllActionTypesFromOntologyRequest
 ): Promise<_api_ActionTypeLoadResponse> {
   return conjureFetch(
     ctx,
     `/actions/types/load/all/${ontologyRid}`,
     "POST",
-    request,
+    request
   );
 }

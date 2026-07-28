@@ -15,23 +15,17 @@
  */
 
 import type { CommandModule } from "yargs";
+
 import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
 import deleteCmd from "./delete/index.js";
 import info from "./info/index.js";
 import list from "./list/index.js";
 
-const command: CommandModule<
-  CommonWidgetSetArgs,
-  CommonWidgetSetArgs
-> = {
+const command: CommandModule<CommonWidgetSetArgs, CommonWidgetSetArgs> = {
   command: "version",
   describe: "Manage widget set versions",
   builder: (argv) => {
-    return argv
-      .command(list)
-      .command(info)
-      .command(deleteCmd)
-      .demandCommand();
+    return argv.command(list).command(info).command(deleteCmd).demandCommand();
   },
   handler: async (args) => {},
 };

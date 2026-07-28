@@ -15,43 +15,44 @@
  */
 
 import type { OntologyIrObjectType, Visibility } from "@osdk/client.unstable";
+
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
 import type { ObjectPropertyType } from "./ObjectPropertyType.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
-export type ObjectType =
-  & OntologyEntityBase
-  & RequiredFields<
+export type ObjectType = OntologyEntityBase &
+  RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
     | "primaryKeyPropertyApiName"
     | "displayName"
     | "pluralDisplayName"
     | "titlePropertyApiName"
-  >
-  & {
+  > & {
     datasources?: Array<ObjectTypeDatasourceDefinition>;
     includeEmptyBackingDatasource?: boolean;
+    permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 
-export interface ObjectTypeInner extends
-  Omit<
-    OntologyIrObjectType,
-    | "titlePropertyTypeRid"
-    | "propertyTypes"
-    | "allImplementsInterfaces"
-    | "implementsInterfaces2"
-    | "displayMetadata"
-    | "primaryKeys"
-    | "status"
-  >
-{
+export interface ObjectTypeInner extends Omit<
+  OntologyIrObjectType,
+  | "titlePropertyTypeRid"
+  | "propertyTypes"
+  | "allImplementsInterfaces"
+  | "implementsInterfaces2"
+  | "displayMetadata"
+  | "primaryKeys"
+  | "status"
+> {
+  ridHint: string | undefined; // This is a hint for maker-experimental to enable moving
   primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;
@@ -62,6 +63,7 @@ export interface ObjectTypeInner extends
   pluralDisplayName: string;
   visibility: Visibility;
   editsEnabled: boolean;
+  editsHistoryConfig?: EditsHistoryConfig;
   status?: ObjectTypeStatus;
   aliases?: Array<string>;
 }

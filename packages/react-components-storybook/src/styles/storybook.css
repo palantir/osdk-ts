@@ -1,4 +1,66 @@
 /* Global styles for Storybook */
+html,
+body,
+#storybook-root {
+  height: 100%;
+}
+
+/* Default docs tables (including live component tables rendered inside a
+ * Canvas, e.g. a wide ObjectTable) may scroll horizontally when they exceed the
+ * page width. */
+.sbdocs-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Markdown reference tables (props, Style API, Advanced) rendered by
+ * ComponentDoc: fit the page width with every column visible instead of
+ * scrolling horizontally. A fixed layout plus wrapping lets long type strings
+ * break onto multiple lines rather than forcing the table wider than the page.
+ * Scoped to the ComponentDoc wrapper so live component tables in a Canvas keep
+ * the scrolling behavior above. */
+.osdkMarkdownDoc table {
+  display: table;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+  table-layout: fixed;
+}
+
+.osdkMarkdownDoc table :is(th, td) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  vertical-align: top;
+}
+
+/* Type values are rendered as inline code, which Storybook styles with
+ * `white-space: nowrap`; force wrapping (via !important to beat that default)
+ * so long types break instead of forcing the column — and table — wider than
+ * the page. */
+.osdkMarkdownDoc table :is(th, td) code {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Three-column reference tables (e.g. Name / Type / Description): keep the
+ * leading name and type columns compact and give the trailing description
+ * column the most room. Scoped with :has() so two-column tables keep their own
+ * sizing. */
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(1) {
+  width: 20%;
+}
+
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(2) {
+  width: 25%;
+}
+
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(3) {
+  width: 55%;
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
@@ -7,9 +69,19 @@ body {
   padding: 0;
 }
 
+/* Full-height chain so fullscreen stories can fill the canvas with
+ * height: 100% instead of viewport units (vh is unreliable across displays). */
+html,
+body,
+#storybook-root {
+  height: 100%;
+}
+
 /* Needed for BaseUI popover - creates stacking context */
 .root {
+  height: 100%;
   isolation: isolate;
+  height: 100%;
 }
 
 /* Status tag styles */
@@ -41,4 +113,98 @@ body {
 
 .header-link:hover {
   color: #2563eb;
+}
+
+.osdkFormCard {
+  --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
+  max-width: 480px;
+  width: 100%;
+  background: var(--osdk-background-primary);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.osdkFormStorySpacing {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkBlueprintDialogForm {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
+  width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+}
+
+.osdkCustomChoiceGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.osdkCustomChoiceButton {
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-surface-background-color-default-rest);
+  color: var(--osdk-typography-color-default-rest);
+  font: inherit;
+}
+
+.osdkCustomChoiceButtonSelected {
+  background: var(--osdk-background-secondary);
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.osdkCustomChoiceButton:disabled {
+  cursor: not-allowed;
+  opacity: var(--osdk-disabled-opacity);
+}
+
+/* Row highlight for RowAttributesForStyling story */
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+
+/* Dark-mode highlight values for the same rows. Activated by the
+   `data-bp-color-scheme="dark"` attribute that `<OsdkThemeProvider>`
+   writes onto the document root. */
+[data-bp-color-scheme="dark"] .customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #1c2a3a;
+    --osdk-table-row-bg-alternate: #182230;
+    --osdk-table-row-bg-hover: #213548;
+  }
+}
+
+.osdkCodeOutput {
+  margin: 0;
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-secondary);
+  color: var(--osdk-typography-color-default-rest);
+  overflow: auto;
+  font-size: var(--osdk-typography-size-body-small);
+  max-height: 300px;
+}
+
+.osdkRichDropdownLabel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.osdkRichDropdownDescription {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
 }

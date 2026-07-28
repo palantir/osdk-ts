@@ -8,7 +8,6 @@
   overflow: hidden;
 }
 
-
 .scrollContainer {
   flex: 1;
   overflow-y: auto;
@@ -24,7 +23,7 @@
   cursor: pointer;
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-default);
+  color: var(--osdk-typography-color-default-rest);
   text-decoration: none;
   border: none;
   background: none;
@@ -36,7 +35,10 @@
 }
 
 .outlineItem:hover {
-  background-color: var(--osdk-pdf-viewer-outline-item-hover-bg, rgba(0, 0, 0, 0.06));
+  background-color: var(
+    --osdk-pdf-viewer-outline-item-hover-bg,
+    rgba(0, 0, 0, 0.06)
+  );
 }
 
 .outlineItem:focus-visible {
@@ -45,9 +47,15 @@
 }
 
 .outlineItemActive {
-  background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
-  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
-  font-weight: var(--osdk-typography-weight-semibold);
+  background-color: var(
+    --osdk-pdf-viewer-outline-item-active-bg,
+    rgba(45, 114, 210, 0.1)
+  );
+  color: var(
+    --osdk-pdf-viewer-outline-item-active-color,
+    var(--osdk-intent-primary-rest)
+  );
+  font-weight: var(--osdk-typography-weight-bold);
 }
 
 .outlineItemBold {
@@ -86,4 +94,3 @@
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
 }
-

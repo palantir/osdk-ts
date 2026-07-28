@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+
 import { remapLinksPage, remapObjectLocator } from "./fetchLinksPage.js";
 
 describe("remapObjectLocator", () => {
@@ -24,7 +25,7 @@ describe("remapObjectLocator", () => {
         __apiName: "Foo",
         __primaryKey: "bar",
         prop: "BAZ",
-      }),
+      })
     ).toEqual({ $apiName: "Foo", $primaryKey: "bar" });
   });
 });
@@ -58,7 +59,7 @@ describe("remapLinksPage", () => {
             ],
           },
         ],
-      }),
+      })
     ).toEqual({
       nextPageToken: "foo",
       data: [

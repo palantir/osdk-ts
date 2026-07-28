@@ -16,6 +16,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { TextAreaField } from "../fields/TextAreaField.js";
 
 afterEach(cleanup);
@@ -41,7 +42,7 @@ describe("TextAreaField", () => {
           value={null}
           onChange={vi.fn()}
           placeholder="Enter description"
-        />,
+        />
       );
       const textarea = screen.getByPlaceholderText("Enter description");
       expect(textarea).toBeDefined();
@@ -49,11 +50,20 @@ describe("TextAreaField", () => {
 
     it("sets the id attribute", () => {
       render(
-        <TextAreaField id="my-textarea" value={null} onChange={vi.fn()} />,
+        <TextAreaField id="my-textarea" value={null} onChange={vi.fn()} />
       );
       const textarea = document.getElementById("my-textarea");
       expect(textarea).not.toBeNull();
       expect(textarea?.tagName).toBe("TEXTAREA");
+    });
+
+    it("marks the textarea as disabled", () => {
+      render(
+        <TextAreaField value="locked" onChange={vi.fn()} disabled={true} />
+      );
+
+      const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+      expect(textarea.disabled).toBe(true);
     });
   });
 
@@ -82,7 +92,7 @@ describe("TextAreaField", () => {
           onChange={vi.fn()}
           minLength={3}
           maxLength={100}
-        />,
+        />
       );
       const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
       expect(textarea.minLength).toBe(3);

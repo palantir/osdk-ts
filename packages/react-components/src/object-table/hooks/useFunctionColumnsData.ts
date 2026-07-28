@@ -16,7 +16,6 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -24,10 +23,12 @@ import type {
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
+  useOsdkClient,
   useOsdkFunctions,
-} from "@osdk/react/experimental";
+  type UseOsdkFunctionsResult,
+} from "@osdk/react";
+import { useMemo, useRef } from "react";
 
-import { useMemo } from "react";
 import type {
   ColumnDefinition,
   FunctionColumnLocator,
@@ -36,7 +37,16 @@ import {
   type AsyncCellData,
   createAsyncCellData,
 } from "../utils/AsyncCellData.js";
-import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
+import {
+  DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+  DEFAULT_MAX_CONCURRENT_REQUESTS,
+  DEFAULT_PAGE_SIZE,
+} from "../utils/constants.js";
+import {
+  buildPagedObjectSets,
+  extractFunctionLocators,
+  type PagedObjects,
+} from "../utils/functionColumns.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -44,27 +54,21 @@ export interface FunctionColumnData {
   };
 }
 
-type FunctionColumnConfig<
+export interface UseFunctionColumnsDataProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> = {
-  queryDefinition: QueryDefinition<unknown>;
-  getParams: (
-    objectSet: ObjectSet<Q, RDPs>,
-  ) => unknown;
-  columnIds: Array<{
-    columnId: string;
-    getValue?: (cellData: unknown) => unknown;
-    getKey: (
-      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    ) => string;
-  }>;
-  dedupeIntervalMs?: number;
-};
-
-// Function column data is readOnly and can be cached aggressively,
-// so we set a longer dedupe interval to maximize cache hits
-export const DEFAULT_DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  objectOrInterfaceType: Q;
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined;
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  pageSize?: number;
+}
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -73,108 +77,106 @@ export function useFunctionColumnsData<
     string,
     never
   >,
->(
-  objectSet: ObjectSet<Q, RDPs> | undefined,
-  objects:
-    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-    | undefined,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): FunctionColumnData {
-  // Function column configurations grouped by unique query definition
-  const functionColumnConfigs = useMemo(
-    () => getFunctionColumnConfigs(columnDefinitions),
-    [columnDefinitions],
-  );
+>({
+  objectOrInterfaceType,
+  objects,
+  columnDefinitions,
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseFunctionColumnsDataProps<Q, RDPs, FunctionColumns>): FunctionColumnData {
+  const client = useOsdkClient();
+  const prevDataRef = useRef<FunctionColumnData>({});
 
   const stableObjects = useStableObjects(objects);
 
-  // TODO: replace with useDeepEqual when it's added
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
-
-  const disabled = !stableObjectSet || !stableObjects?.length
-    || functionColumnConfigs.length === 0;
-
-  // Prepare queries for useOsdkFunctions
-  const queries = useMemo(
-    () => {
-      if (disabled) {
-        return [];
-      }
-
-      return functionColumnConfigs.map(
-        (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
-          queryDefinition: config.queryDefinition,
-          options: {
-            params: stripDerivedPropertiesFromParams(
-              config.getParams(stableObjectSet),
-            ),
-            dedupeIntervalMs: config.dedupeIntervalMs
-              ?? DEFAULT_DEDUPE_INTERVAL_MS,
-          } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
-        }),
-      );
-    },
-    [disabled, functionColumnConfigs, stableObjectSet],
+  const functionColDefs = useMemo(
+    () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
+    [columnDefinitions]
   );
 
-  const results = useOsdkFunctions(
-    {
-      queries,
-      enabled: !disabled,
-    },
+  // Construct an object set per page (base set filtered to each page's
+  // primary keys). `buildPagedObjectSets` returns `[]` for interfaces and
+  // when there's no work to do, which short-circuits the downstream queries.
+  //
+  // When a new page loads, only that page's queries fire — old pages hit the
+  // dedupeIntervalMs cache since their params are unchanged.
+  const pagedObjectSets = useMemo(() => {
+    if (!stableObjects?.length) return [];
+    return buildPagedObjectSets<Q, RDPs>(
+      client,
+      objectOrInterfaceType,
+      stableObjects,
+      pageSize
+    );
+  }, [client, objectOrInterfaceType, stableObjects, pageSize]);
+
+  const disabled = pagedObjectSets.length === 0 || functionColDefs.length === 0;
+
+  const queryGrid = useMemo(() => {
+    if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
+      return EMPTY_QUERY_GRID;
+    }
+    return buildQueryGrid<Q, RDPs, FunctionColumns>(
+      pagedObjectSets,
+      functionColDefs
+    );
+  }, [pagedObjectSets, functionColDefs]);
+
+  const results = useOsdkFunctions({
+    queries: queryGrid.queries,
+    enabled: !disabled,
+    maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+  });
+
+  const mergedResults = useMemo(
+    () => mergePagedResults(results, queryGrid.numColumns),
+    [results, queryGrid.numColumns]
   );
 
   const data = useMemo(() => {
-    const columnData: FunctionColumnData = {};
-
-    if (disabled || !stableObjects) return columnData;
-
-    results.forEach((result, index) => {
-      const config = functionColumnConfigs[index];
-      if (!config) return;
-
-      const functionsMap = result.data as Record<string, unknown> | undefined;
-
-      config.columnIds.forEach(
-        ({ columnId, getValue, getKey: columnGetKey }) => {
-          if (!columnData[columnId]) {
-            columnData[columnId] = {};
-          }
-
-          stableObjects.forEach(obj => {
-            const key = String(obj.$primaryKey);
-
-            if (result.isLoading) {
-              columnData[columnId][key] = createAsyncCellData({
-                isLoading: true,
-              });
-            } else if (result.error) {
-              columnData[columnId][key] = createAsyncCellData({
-                error: result.error,
-                isLoading: false,
-              });
-            } else if (functionsMap) {
-              const customKey = columnGetKey(obj);
-              const rawData = functionsMap[customKey];
-              const cellData = getValue ? getValue(rawData) : rawData;
-              columnData[columnId][key] = createAsyncCellData({
-                data: cellData,
-                isLoading: false,
-              });
-            }
-          });
-        },
-      );
-    });
-
+    const columnData = buildFunctionColumnData(
+      mergedResults,
+      functionColDefs,
+      stableObjects,
+      disabled,
+      prevDataRef.current
+    );
+    prevDataRef.current = columnData;
     return columnData;
-  }, [results, functionColumnConfigs, stableObjects, disabled]);
+  }, [mergedResults, functionColDefs, stableObjects, disabled]);
 
   return data;
 }
 
-function getFunctionColumnConfigs<
+/**
+ * Pairs a flat queries array with the layout metadata needed to recover per-column
+ * results back into per-column groups. The numColumns value is produced by
+ * the same function that builds the queries, so the two are always in sync.
+ */
+interface QueryGrid {
+  queries: FunctionQueryParams<QueryDefinition<unknown>>[];
+  numColumns: number;
+}
+
+interface MergedResult {
+  isLoading: boolean;
+  error: unknown;
+  functionsMap: Record<string, unknown>;
+}
+
+const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
+
+/**
+ * Builds a flat query array and the layout metadata needed to recover per-column results.
+ *
+ * Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
+ * Page-first ordering ensures first concurrent queries prioritizes the first page,
+ * so visible rows get all their columns populated before later pages.
+ *
+ * Each query carries `dependsOnObjects` (the page's row instances) so that
+ * editing any of those rows fans out to invalidate this function query, and
+ * `dependsOn` from the locator so that linked-type edits also invalidate.
+ */
+function buildQueryGrid<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -182,61 +184,136 @@ function getFunctionColumnConfigs<
     never
   >,
 >(
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): Array<FunctionColumnConfig<Q, RDPs>> {
-  if (!columnDefinitions) return [];
+  pagedObjects: PagedObjects<Q, RDPs>[],
+  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[]
+): QueryGrid {
+  const queries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
 
-  // Group columns by their query definition apiName
-  const configsByApiName = new Map<
-    string,
-    FunctionColumnConfig<Q, RDPs>
-  >();
+  for (const {
+    objectSet: pagedObjectSet,
+    objects: pageObjects,
+  } of pagedObjects) {
+    for (const locator of functionColDefs) {
+      queries.push({
+        queryDefinition: locator.queryDefinition,
+        options: {
+          params: locator.getFunctionParams(pagedObjectSet),
+          dedupeIntervalMs:
+            locator.dedupeIntervalMs ??
+            DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+          dependsOn: locator.dependsOn,
+          dependsOnObjects: pageObjects,
+        } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
+      });
+    }
+  }
 
-  columnDefinitions.forEach((colDef) => {
-    if (colDef.locator.type === "function") {
-      const locator = colDef.locator as FunctionColumnLocator<
-        Q,
-        RDPs,
-        FunctionColumns
-      >;
+  return { queries, numColumns: functionColDefs.length };
+}
 
-      const apiName = locator.queryDefinition.apiName;
-      const existingConfig = configsByApiName.get(apiName);
+/**
+ * Merges paged results into one merged result per column.
+ * Each column has results spread across pages — this combines their
+ * functionsMaps so buildFunctionColumnData can look up any object by key.
+ *
+ * Relies on QueryGrid layout: results[i] belongs to column (i % numColumns).
+ * i.e. the first N results are the first page of each column, the next N results are the second page, etc.
+ */
+function mergePagedResults(
+  results: UseOsdkFunctionsResult,
+  numColumns: number
+): MergedResult[] {
+  if (numColumns === 0) return [];
 
-      if (existingConfig) {
-        // Add this column to the existing config
-        existingConfig.columnIds.push({
-          columnId: String(locator.id),
-          getValue: locator.getValue,
-          getKey: locator.getKey,
-        });
-        // When multiple columns share a query, use the shortest dedupe interval
-        if (locator.dedupeIntervalMs != null) {
-          existingConfig.dedupeIntervalMs = existingConfig.dedupeIntervalMs
-              != null
-            ? Math.min(
-              existingConfig.dedupeIntervalMs,
-              locator.dedupeIntervalMs,
-            )
-            : locator.dedupeIntervalMs;
-        }
-      } else {
-        // Create new config
-        configsByApiName.set(apiName, {
-          queryDefinition: locator.queryDefinition,
-          getParams: locator.getFunctionParams,
-          columnIds: [{
-            columnId: String(locator.id),
-            getValue: locator.getValue,
-            getKey: locator.getKey,
-          }],
-          dedupeIntervalMs: locator.dedupeIntervalMs,
-        });
-      }
+  const merged: MergedResult[] = Array.from({ length: numColumns }, () => ({
+    isLoading: false,
+    error: undefined,
+    functionsMap: {},
+  }));
+
+  results.forEach((result, index) => {
+    const columnIndex = index % numColumns;
+    const entry = merged[columnIndex];
+
+    if (result.isLoading) {
+      entry.isLoading = true;
+    }
+    if (result.error) {
+      entry.error = result.error;
+    }
+    const pageData = result.data as Record<string, unknown> | undefined;
+    if (pageData) {
+      Object.assign(entry.functionsMap, pageData);
     }
   });
 
-  return Array.from(configsByApiName.values());
+  return merged;
+}
+
+function buildFunctionColumnData<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  results: MergedResult[],
+  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[],
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined,
+  disabled: boolean,
+  prevColumnData: FunctionColumnData
+): FunctionColumnData {
+  const columnData: FunctionColumnData = {};
+
+  if (disabled || !objects) return columnData;
+
+  results.forEach((result, index) => {
+    const locator = functionColDefs[index];
+    if (!locator) return;
+
+    const columnId = String(locator.id);
+
+    columnData[columnId] = {};
+
+    objects.forEach((obj) => {
+      const key = String(obj.$primaryKey);
+      const prevData = prevColumnData[columnId]?.[key]?.data;
+
+      columnData[columnId][key] = createAsyncCellData(
+        resolveCell(result, locator.getKey(obj), locator.getValue, prevData)
+      );
+    });
+  });
+
+  return columnData;
+}
+
+/** Resolves the cell state: error, loaded, or loading with previous data. */
+function resolveCell(
+  result: MergedResult,
+  objectKey: string,
+  getValue: ((cellData: unknown) => unknown) | undefined,
+  prevData: unknown
+): Omit<AsyncCellData, "__asyncCell"> {
+  if (result.error) {
+    return { isLoading: false, error: result.error };
+  }
+  if (objectKey in result.functionsMap) {
+    const rawData = result.functionsMap[objectKey];
+    return { isLoading: false, data: getValue ? getValue(rawData) : rawData };
+  }
+  // Key not in results. While the query is still loading, keep showing the
+  // previous data so the cell doesn't flash empty during a refetch. Once the
+  // query has resolved without an entry for this object, its value is gone —
+  // clear the cell instead of retaining the stale previous value (otherwise a
+  // cell whose derived value became null keeps displaying the old value).
+  return {
+    isLoading: result.isLoading,
+    data: result.isLoading ? prevData : undefined,
+  };
 }
 
 const useStableObjects = <
@@ -245,24 +322,28 @@ const useStableObjects = <
 >(
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-    | undefined,
+    | undefined
 ):
   | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-  | undefined =>
-{
+  | undefined => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => objects, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    JSON.stringify(
-      (objects ?? []).map(item => ({
-        $apiName: item.$apiName,
-        $primaryKey: item.$primaryKey,
-      })).sort((a, b) => {
-        if (a.$apiName !== b.$apiName) {
-          return a.$apiName.localeCompare(b.$apiName);
-        }
-        return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
-      }),
-    ),
-  ]);
+  return useMemo(
+    () => objects,
+    [
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(
+        (objects ?? [])
+          .map((item) => ({
+            $apiName: item.$apiName,
+            $primaryKey: item.$primaryKey,
+          }))
+          .sort((a, b) => {
+            if (a.$apiName !== b.$apiName) {
+              return a.$apiName.localeCompare(b.$apiName);
+            }
+            return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
+          })
+      ),
+    ]
+  );
 };

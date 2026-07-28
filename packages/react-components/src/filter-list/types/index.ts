@@ -17,3 +17,4 @@
 export * from "./CustomRendererTypes.js";
 export * from "./KeywordSearchTypes.js";
 export * from "./LinkedFilterTypes.js";
+export * from "./StaticValuesTypes.js";

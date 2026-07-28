@@ -16,7 +16,6 @@
 
 import type {
   ActionTypeBlockDataV2,
-  ActionTypeStatus,
   MarketplaceActionTypeMetadata,
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
@@ -28,16 +27,38 @@ import type {
   SectionId,
 } from "@osdk/client.unstable";
 import type {
+  IDataType,
+  IInterfaceDataType,
+  IInterfaceObjectSetDataType,
+  IListDataType,
+  IObjectDataType,
+  IObjectSetDataType,
+  IOptionalDataType,
+  ISetDataType,
+} from "@osdk/generator-converters.ontologyir";
+import type {
   ActionParameter,
   ActionParameterAllowedValues,
   ActionParameterValidation,
   ActionType,
   InterfaceType,
 } from "@osdk/maker";
-import { getOntologyDefinition } from "@osdk/maker";
+import {
+  extractAllowedValuesFromActionParameterType,
+  getOntologyDefinition,
+  isActionParameterTypePrimitive,
+  uppercaseFirstLetter,
+} from "@osdk/maker";
+import consola from "consola";
+import invariant from "tiny-invariant";
+
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
-import { convertActionParameters } from "./convertActionParameters.js";
+import {
+  convertActionParameters,
+  resolveInterfaceTypeRid,
+} from "./convertActionParameters.js";
 import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
@@ -48,56 +69,67 @@ export function buildDatasource(
   definition: ObjectTypeDatasourceDefinition,
   ridGenerator: OntologyRidGenerator,
   classificationMarkingGroupName?: string,
-  mandatoryMarkingGroupName?: string,
+  mandatoryMarkingGroupName?: string
 ): ObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markings: [classificationMarkingGroupName],
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingIds: [mandatoryMarkingGroupName],
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markings: [classificationMarkingGroupName],
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingIds: [mandatoryMarkingGroupName],
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     rid: ridGenerator.generateDatasourceRid(apiName),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
 }
 
 export function convertAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
-): ActionTypeBlockDataV2 {
+  functionsIr?: FunctionsIr
+): ActionTypeBlockDataV2 | undefined {
+  if (action.rules.map((rule) => rule.type === "functionRule").some((v) => v)) {
+    if (!functionsIr) {
+      consola.info(
+        "No functions IR file found, skipping some function-backed actions"
+      );
+      return undefined;
+    }
+    return convertFunctionBackedAction(action, ridGenerator, functionsIr);
+  }
   const actionValidation = convertActionValidation(action, ridGenerator);
   const actionParameters: Record<ParameterId, Parameter> =
     convertActionParameters(action, ridGenerator);
   const actionSections: Record<SectionId, Section> = convertActionSections(
     action,
-    ridGenerator,
+    ridGenerator
   );
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
 
   // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
   const parameterIds: Record<string, ParameterId> = {};
-  (action.parameters ?? []).forEach(p => {
+  (action.parameters ?? []).forEach((p) => {
     const readableId = ReadableIdGenerator.getForParameter(
       action.apiName,
-      p.id,
+      p.id
     );
     const uuid = ridGenerator.toBlockInternalId(readableId);
     parameterIds[uuid] = p.id;
@@ -108,25 +140,44 @@ export function convertAction(
   // Helper function to convert interface property values from API names to RIDs
   const convertInterfacePropertyValuesToRids = (
     interfacePropertyValues: Record<string, any>,
-    allParentInterfaces: Array<InterfaceType>,
+    allParentInterfaces: Array<InterfaceType>
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      const parentInterface = allParentInterfaces.find(maybeSourceParent =>
-        maybeSourceParent.propertiesV3[apiName] !== undefined
-      )!;
-      const rid = ridGenerator.generateInterfacePropertyTypeRid(
-        apiName,
-        parentInterface.apiName,
+      const parentInterface = allParentInterfaces.find(
+        (maybeSourceParent) =>
+          maybeSourceParent.propertiesV3[apiName] !== undefined
       );
-      result[rid] = value;
+      if (parentInterface) {
+        // check for IDP first
+        const rid = ridGenerator.generateInterfacePropertyTypeRid(
+          apiName,
+          parentInterface.apiName
+        );
+        result[rid] = value;
+      } else {
+        // fall back to SPT
+        const sptReadableId = ReadableIdGenerator.getForSpt(apiName);
+        const sptRid = ridGenerator
+          .getSharedPropertyTypeRids()
+          .get(sptReadableId);
+        invariant(
+          sptRid,
+          `Could not find SPT RID for property "${apiName}" used in action logic rule`
+        );
+        const iptRid = sptRid.replace(
+          "shared-property-type",
+          "interface-property-type"
+        );
+        result[iptRid] = value;
+      }
     }
     return result;
   };
 
   // Helper function to convert shared property values from API names to RIDs
   const convertSharedPropertyValuesToRids = (
-    sharedPropertyValues: Record<string, any>,
+    sharedPropertyValues: Record<string, any>
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(sharedPropertyValues)) {
@@ -140,26 +191,27 @@ export function convertAction(
       actionTypeLogic: {
         logic: {
           // Convert logic rules with proper RID mappings
-          rules: action.rules.map(rule => {
+          rules: action.rules.map((rule) => {
             if (rule.type === "addInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName],
-                new Set(),
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.addInterfaceRule.interfaceApiName
+                ],
+                new Set()
               );
               return {
                 type: "addInterfaceRule",
                 addInterfaceRule: {
                   interfaceTypeRid: ridGenerator.generateRidForInterface(
-                    rule.addInterfaceRule.interfaceApiName,
+                    rule.addInterfaceRule.interfaceApiName
                   ),
                   objectType: rule.addInterfaceRule.objectTypeParameter,
                   interfacePropertyValues: convertInterfacePropertyValuesToRids(
                     rule.addInterfaceRule.interfacePropertyValues,
-                    interfaceAndParents,
+                    interfaceAndParents
                   ),
                   sharedPropertyValues: convertSharedPropertyValuesToRids(
-                    rule.addInterfaceRule.sharedPropertyValues,
+                    rule.addInterfaceRule.sharedPropertyValues
                   ),
                   structFieldValues: {},
                   logicRuleRid: rule.addInterfaceRule.logicRuleRid,
@@ -167,9 +219,10 @@ export function convertAction(
               };
             } else if (rule.type === "modifyInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName],
-                new Set(),
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.modifyInterfaceRule.interfaceApiName
+                ],
+                new Set()
               );
 
               return {
@@ -179,10 +232,10 @@ export function convertAction(
                     rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
                   interfacePropertyValues: convertInterfacePropertyValuesToRids(
                     rule.modifyInterfaceRule.interfacePropertyValues,
-                    interfaceAndParents,
+                    interfaceAndParents
                   ),
                   sharedPropertyValues: convertSharedPropertyValuesToRids(
-                    rule.modifyInterfaceRule.sharedPropertyValues,
+                    rule.modifyInterfaceRule.sharedPropertyValues
                   ),
                   structFieldValues: {},
                 },
@@ -192,11 +245,43 @@ export function convertAction(
                 type: "addObjectRule",
                 addObjectRule: {
                   objectTypeId: ridGenerator.generateObjectTypeId(
-                    rule.addObjectRule.objectTypeId,
+                    rule.addObjectRule.objectTypeId
                   ),
                   propertyValues: rule.addObjectRule.propertyValues,
                   structFieldValues: rule.addObjectRule.structFieldValues,
                   logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "addInterfaceLinkRuleV2") {
+              return {
+                type: "addInterfaceLinkRuleV2",
+                addInterfaceLinkRuleV2: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.addInterfaceLinkRuleV2.interfaceTypeRid
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid,
+                      rule.addInterfaceLinkRuleV2.interfaceTypeRid
+                    ),
+                  sourceObjects: rule.addInterfaceLinkRuleV2.sourceObjects,
+                  targetObjects: rule.addInterfaceLinkRuleV2.targetObjects,
+                },
+              };
+            } else if (rule.type === "deleteInterfaceLinkRule") {
+              return {
+                type: "deleteInterfaceLinkRule",
+                deleteInterfaceLinkRule: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.deleteInterfaceLinkRule.interfaceTypeRid
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
+                      rule.deleteInterfaceLinkRule.interfaceTypeRid
+                    ),
+                  sourceObject: rule.deleteInterfaceLinkRule.sourceObject,
+                  targetObject: rule.deleteInterfaceLinkRule.targetObject,
                 },
               };
             }
@@ -212,11 +297,254 @@ export function convertAction(
         ridGenerator,
         parameterOrdering,
         actionParameters,
-        actionSections,
+        actionSections
       ),
     },
     parameterIds,
   };
+}
+
+function convertFunctionBackedAction(
+  actionInput: ActionType,
+  ridGenerator: OntologyRidGenerator,
+  functionsIr: FunctionsIr
+): ActionTypeBlockDataV2 {
+  let action: ActionType = actionInput;
+
+  // The placeholder functionRid holds the function's API name
+  const rule = action.rules[0];
+  invariant(
+    rule.type === "functionRule",
+    "Function-backed action must have a functionRule"
+  );
+  const functionName = rule.functionRule.functionRid;
+
+  const discoveredFunction = functionsIr.discoveredFunctions.find(
+    (f) => f.locator.typescript?.functionName === functionName
+  );
+  invariant(
+    discoveredFunction != null,
+    `Function "${functionName}" not found in functions IR`
+  );
+
+  const functionInputValues: Record<
+    string,
+    { type: "parameterId"; parameterId: string }
+  > = {};
+  const parameterOrdering: string[] = [];
+  const syntheticParameters: ActionParameter[] = [];
+
+  for (const input of discoveredFunction.inputs) {
+    if (
+      input.dataType.type === "ontologyEdit" ||
+      input.dataType.type === "client"
+    )
+      continue;
+
+    const paramId = input.name;
+    parameterOrdering.push(paramId);
+    functionInputValues[paramId] = {
+      type: "parameterId",
+      parameterId: paramId,
+    };
+
+    const paramType = dataTypeToActionParameterType(input.dataType);
+    const listTypes = [
+      ...Object.values(PRIMITIVE_LIST_TYPES),
+      "objectReferenceList",
+      "interfaceReferenceList",
+      "structList",
+    ];
+
+    syntheticParameters.push({
+      id: paramId,
+      displayName: uppercaseFirstLetter(paramId),
+      type: paramType,
+      validation: {
+        required:
+          typeof paramType === "object" && listTypes.includes(paramType.type)
+            ? {
+                listLength: {},
+              }
+            : input.required,
+        defaultVisibility: "editable",
+        allowedValues: extractAllowedValuesFromActionParameterType(paramType),
+      },
+    });
+  }
+
+  action = {
+    ...action,
+    parameters: syntheticParameters,
+    entities: {
+      affectedObjectTypes: Object.keys(
+        discoveredFunction.ontologyProvenance?.editedObjects ?? {}
+      ),
+      affectedLinkTypes: [],
+      affectedInterfaceTypes: Object.keys(
+        discoveredFunction.ontologyProvenance?.editedInterfaces ?? {}
+      ),
+      typeGroups: [],
+    },
+  };
+
+  const actionParameters = convertActionParameters(action, ridGenerator);
+  const functionRid = `ri.function-registry.main.function.${functionName}`;
+
+  return {
+    actionType: {
+      actionTypeLogic: {
+        logic: {
+          rules: [
+            {
+              type: "functionRule",
+              functionRule: {
+                functionRid,
+                functionVersion: "0.1.0",
+                functionInputValues,
+                customExecutionMode: null,
+                experimentalDeclarativeEditInformation: null,
+              },
+            },
+          ],
+          actionLogRule: null,
+        },
+        validation: convertActionValidation(action, ridGenerator),
+        revert: {
+          enabledFor: [
+            {
+              type: "actionApplier",
+              actionApplier: {
+                withinDuration: { value: 24, unit: "HOUR" },
+              },
+            },
+          ],
+        },
+        webhooks: null,
+        notifications: [],
+        effects: null,
+      },
+      metadata: buildActionMetadata(
+        action,
+        ridGenerator,
+        parameterOrdering,
+        actionParameters,
+        {}
+      ),
+    },
+    parameterIds: {},
+  };
+}
+
+function dataTypeToActionParameterType(
+  dataType: IDataType
+): ActionParameter["type"] {
+  switch (dataType.type) {
+    case "object": {
+      const objectData = dataType as IObjectDataType;
+      return {
+        type: "objectReference",
+        objectReference: {
+          objectTypeId: objectData.object.objectTypeId,
+          maybeCreateObjectOption: null,
+        },
+      };
+    }
+    case "objectSet": {
+      const objectSetData = dataType as IObjectSetDataType;
+      return {
+        type: "objectSetRid",
+        objectSetRid: {
+          objectTypeId: objectSetData.objectSet.objectTypeId,
+        },
+      };
+    }
+    case "interface": {
+      const interfaceData = dataType as IInterfaceDataType;
+      return {
+        type: "interfaceReference",
+        interfaceReference: {
+          interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+        },
+      };
+    }
+    case "interfaceObjectSet": {
+      const interfaceData = dataType as IInterfaceObjectSetDataType;
+      return {
+        type: "interfaceReferenceList",
+        interfaceReferenceList: {
+          interfaceTypeRid: interfaceData.interfaceObjectSet.interfaceTypeRid,
+        },
+      };
+    }
+    case "list": {
+      const listData = dataType as IListDataType;
+      return dataTypeToActionParameterListType(listData.list.elementsType);
+    }
+    case "set": {
+      const setData = dataType as ISetDataType;
+      return dataTypeToActionParameterListType(setData.set.elementsType);
+    }
+    case "optionalType": {
+      const optionalData = dataType as IOptionalDataType;
+      return dataTypeToActionParameterType(
+        optionalData.optionalType.wrappedType
+      );
+    }
+    default: {
+      if (isActionParameterTypePrimitive(dataType.type)) {
+        return dataType.type;
+      }
+      throw new Error(
+        `Unsupported function input data type for action parameter: ${dataType.type}`
+      );
+    }
+  }
+}
+
+const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
+  string: "stringList",
+  boolean: "booleanList",
+  integer: "integerList",
+  long: "longList",
+  double: "doubleList",
+  date: "dateList",
+  timestamp: "timestampList",
+  attachment: "attachmentList",
+  decimal: "decimalList",
+  geoshape: "geoshapeList",
+  mediaReference: "mediaReferenceList",
+  marking: "markingList",
+};
+
+function dataTypeToActionParameterListType(
+  elementType: IDataType
+): ActionParameter["type"] {
+  if (elementType.type === "object") {
+    const objectData = elementType as IObjectDataType;
+    return {
+      type: "objectReferenceList",
+      objectReferenceList: {
+        objectTypeId: objectData.object.objectTypeId,
+      },
+    };
+  }
+  if (elementType.type === "interface") {
+    const interfaceData = elementType as IInterfaceDataType;
+    return {
+      type: "interfaceReferenceList",
+      interfaceReferenceList: {
+        interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+      },
+    };
+  }
+  const listType = PRIMITIVE_LIST_TYPES[elementType.type];
+  if (listType != null) {
+    return listType;
+  }
+  throw new Error(
+    `Unsupported list element data type for action parameter: ${elementType.type}`
+  );
 }
 
 /**
@@ -229,7 +557,7 @@ function buildActionMetadata(
   ridGenerator: OntologyRidGenerator,
   parameterOrdering: string[],
   actionParameters: Record<ParameterId, Parameter>,
-  actionSections: Record<SectionId, Section>,
+  actionSections: Record<SectionId, Section>
 ): MarketplaceActionTypeMetadata {
   const displayMetadata = {
     configuration: {
@@ -247,28 +575,24 @@ function buildActionMetadata(
     },
     description: action.description ?? "",
     displayName: action.displayName,
-    icon: {
-      type: "blueprint" as const,
-      blueprint: action.icon ?? { locator: "edit", color: "#000000" },
-    },
     applyingMessage: [] as Array<{ type: string; message: string }>,
     successMessage: action.submissionMetadata?.successMessage
-      ? [{
-        type: "message" as const,
-        message: action.submissionMetadata.successMessage,
-      }]
+      ? [
+          {
+            type: "message" as const,
+            message: action.submissionMetadata.successMessage,
+          },
+        ]
       : [],
     typeClasses: action.typeClasses ?? [],
-    ...(action.submissionMetadata?.submitButtonDisplayMetadata
-      && {
-        submitButtonDisplayMetadata:
-          action.submissionMetadata.submitButtonDisplayMetadata,
-      }),
-    ...(action.submissionMetadata?.undoButtonConfiguration
-      && {
-        undoButtonConfiguration:
-          action.submissionMetadata.undoButtonConfiguration,
-      }),
+    ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+      submitButtonDisplayMetadata:
+        action.submissionMetadata.submitButtonDisplayMetadata,
+    }),
+    ...(action.submissionMetadata?.undoButtonConfiguration && {
+      undoButtonConfiguration:
+        action.submissionMetadata.undoButtonConfiguration,
+    }),
   };
 
   const metadata = {
@@ -283,33 +607,37 @@ function buildActionMetadata(
       redactionOverride: null,
     },
     displayMetadata,
-    parameterOrdering: parameterOrdering,
+    parameterOrdering,
     formContentOrdering: getFormContentOrdering(action, parameterOrdering),
     parameters: actionParameters,
     sections: actionSections,
-    status: typeof action.status === "string"
-      ? {
-        type: action.status,
-        [action.status]: {},
-      } as unknown as ActionTypeStatus
-      : action.status,
+    status:
+      typeof action.status === "string"
+        ? {
+            type: action.status,
+            [action.status]: {},
+          }
+        : action.status,
     entities: action.entities
       ? {
-        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-          apiName => ridGenerator.generateRidForInterface(apiName),
-        ),
-        affectedLinkTypes: action.entities.affectedLinkTypes,
-        affectedObjectTypes: action.entities.affectedObjectTypes.map(
-          apiName => ridGenerator.generateObjectTypeId(apiName),
-        ),
-        typeGroups: action.entities.typeGroups,
-      }
+          // affectedInterfaceTypes may hold either API names (interface-link
+          // actions) or already-resolved RIDs (function-backed actions)
+          affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+            (apiNameOrRid) =>
+              resolveInterfaceTypeRid(apiNameOrRid, ridGenerator)
+          ),
+          affectedLinkTypes: action.entities.affectedLinkTypes,
+          affectedObjectTypes: action.entities.affectedObjectTypes.map(
+            (apiName) => ridGenerator.generateObjectTypeId(apiName)
+          ),
+          typeGroups: action.entities.typeGroups,
+        }
       : {
-        affectedInterfaceTypes: [],
-        affectedLinkTypes: [],
-        affectedObjectTypes: [],
-        typeGroups: [],
-      },
+          affectedInterfaceTypes: [],
+          affectedLinkTypes: [],
+          affectedObjectTypes: [],
+          typeGroups: [],
+        },
   };
   return metadata as MarketplaceActionTypeMetadata;
 }
@@ -317,14 +645,14 @@ function buildActionMetadata(
 // Helper function to convert allowed value option values with ObjectTypeId conversion
 function convertAllowedValueOptionValue(
   value: any,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): any {
   if (value?.type === "objectType") {
     return {
       type: "objectType",
       objectType: {
         objectTypeId: ridGenerator.generateObjectTypeId(
-          value.objectType.objectTypeId,
+          value.objectType.objectTypeId
         ),
       },
     };
@@ -335,7 +663,7 @@ function convertAllowedValueOptionValue(
 
 export function extractAllowedValues(
   allowedValues: ActionParameterAllowedValues,
-  ridGenerator: OntologyRidGenerator,
+  ridGenerator: OntologyRidGenerator
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
     case "oneOf":
@@ -344,13 +672,12 @@ export function extractAllowedValues(
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: allowedValues.oneOf.map(option => ({
+            labelledValues: allowedValues.oneOf.map((option) => ({
               ...option,
               value: convertAllowedValueOptionValue(option.value, ridGenerator),
             })),
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -378,15 +705,11 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength: minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength: maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
@@ -408,7 +731,9 @@ export function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids: allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes.map((apiName) =>
+              ridGenerator.generateRidForInterface(apiName)
+            ),
           },
         },
       };
@@ -431,30 +756,30 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               // Register static group IDs with ridGenerator
               if (group.type === "static") {
-                ridGenerator.getGroupIds().put(
-                  ReadableIdGenerator.getForGroup(group.name),
-                  group.name,
-                );
+                ridGenerator
+                  .getGroupIds()
+                  .put(ReadableIdGenerator.getForGroup(group.name), group.name);
               }
 
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -484,11 +809,10 @@ export function extractAllowedValues(
 
 export function renderHintFromBaseType(
   parameter: ActionParameter,
-  validation?: ActionParameterValidation,
+  validation?: ActionParameterValidation
 ): ParameterRenderHint {
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -504,8 +828,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        validation?.allowedValues?.type === "user" ||
+        validation?.allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -532,7 +856,7 @@ export function renderHintFromBaseType(
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`
         );
       }
     case "timeSeriesReference":

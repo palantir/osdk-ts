@@ -1,5 +1,289 @@
 # @osdk/widget.client
 
+## 3.49.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 3.48.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 3.47.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
+## 3.46.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.46.0
+
+## 3.45.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.45.0
+
+## 3.44.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.44.0
+
+## 3.43.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.43.0
+
+## 3.42.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.42.0
+
+## 3.41.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.41.0
+
+## 3.40.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.40.0
+
+## 3.39.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.39.0
+
+## 3.38.0
+
+### Minor Changes
+
+- 2f91c0e: Migrate @osdk/widget.api and @osdk/widget.client to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (fourth increment of the repo-wide oxc migration)
+
+### Patch Changes
+
+- Updated dependencies [2f91c0e]
+  - @osdk/widget.api@3.38.0
+
+## 3.37.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.37.0
+
+## 3.36.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.36.0
+
+## 3.35.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.35.0
+
+## 3.34.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.34.0
+
+## 3.33.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.33.0
+
+## 3.32.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.32.0
+
+## 3.31.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.31.0
+
+## 3.30.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.30.0
+
+## 3.29.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.29.0
+
+## 3.28.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.28.0
+
+## 3.27.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.27.0
+
+## 3.26.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.26.0
+
+## 3.25.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.25.0
+
+## 3.24.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.24.0
+
+## 3.23.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.23.0
+
+## 3.22.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.22.0
+
+## 3.21.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.21.0
+
+## 3.20.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.20.0
+
+## 3.19.0
+
+### Minor Changes
+
+- 2f3aa7b: Support reloading widget on vite HMR full reload
+
+### Patch Changes
+
+- Updated dependencies [2f3aa7b]
+  - @osdk/widget.api@3.19.0
+
+## 3.18.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.18.0
+
+## 3.17.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.17.0
+
+## 3.16.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.16.0
+
+## 3.15.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.15.0
+
+## 3.14.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.14.0
+
+## 3.13.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/widget.api@3.13.0
+
+## 3.12.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.12.0
+
+## 3.11.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.11.0
+
+## 3.10.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 3.9.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/widget.api@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 3.5.0
 
 ### Minor Changes

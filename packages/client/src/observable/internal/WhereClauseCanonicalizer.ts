@@ -22,6 +22,7 @@ import type {
 import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+
 import type { Canonical } from "./Canonical.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
@@ -36,9 +37,9 @@ export class WhereClauseCanonicalizer {
    */
   #cache = new WeakMap<
     | WhereClause<
-      ObjectOrInterfaceDefinition,
-      Record<string, SimplePropertyDef>
-    >
+        ObjectOrInterfaceDefinition,
+        Record<string, SimplePropertyDef>
+      >
     | SimpleWhereClause,
     Canonical<SimpleWhereClause>
   >();
@@ -54,24 +55,27 @@ export class WhereClauseCanonicalizer {
    * This is a cache from the cacheKey provided by `this.#trie` to the potential
    * canonicalized options.
    */
-  #existingOptions: Map<object, {
-    options: WeakRef<Canonical<SimpleWhereClause>>[];
-  }> = new Map();
+  #existingOptions: Map<
+    object,
+    {
+      options: WeakRef<Canonical<SimpleWhereClause>>[];
+    }
+  > = new Map();
 
   public canonicalize<
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T, RDPs> | SimpleWhereClause,
+    where: WhereClause<T, RDPs> | SimpleWhereClause
   ): Canonical<SimpleWhereClause>;
   public canonicalize(
-    where: object | undefined,
+    where: object | undefined
   ): Canonical<SimpleWhereClause> | undefined;
   public canonicalize<
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T, RDPs> | SimpleWhereClause | undefined,
+    where: WhereClause<T, RDPs> | SimpleWhereClause | undefined
   ): Canonical<SimpleWhereClause> | undefined {
     if (where == null) {
       return undefined;
@@ -84,14 +88,15 @@ export class WhereClauseCanonicalizer {
     const keysSet = new Set<string>();
     const calculatedCanon = this.#toCanon(where, keysSet);
     const cacheKey = this.#trie.lookupArray(Array.from(keysSet).sort());
-    const lookupEntry = this.#existingOptions.get(cacheKey)
-      ?? { options: [] as WeakRef<Canonical<SimpleWhereClause>>[] };
+    const lookupEntry = this.#existingOptions.get(cacheKey) ?? {
+      options: [] as WeakRef<Canonical<SimpleWhereClause>>[],
+    };
     this.#existingOptions.set(cacheKey, lookupEntry);
 
     const canon =
-      lookupEntry.options.find((ref) => deepEqual(ref.deref(), calculatedCanon))
-        ?.deref()
-        ?? calculatedCanon;
+      lookupEntry.options
+        .find((ref) => deepEqual(ref.deref(), calculatedCanon))
+        ?.deref() ?? calculatedCanon;
 
     if (canon === calculatedCanon) {
       // This means no existing options were found
@@ -107,14 +112,14 @@ export class WhereClauseCanonicalizer {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs> | SimpleWhereClause,
-    set: Set<string> = new Set<string>(),
+    set: Set<string> = new Set<string>()
   ): Canonical<SimpleWhereClause> => {
     if ("$and" in where) {
       if (process.env.NODE_ENV !== "production") {
         invariant(Array.isArray(where.$and), "expected $and to be an array");
         invariant(
           Object.keys(where).length === 1,
-          "expected only $and to be present",
+          "expected only $and to be present"
         );
       }
       if ((where as { $and: SimpleWhereClause[] }).$and.length === 0) {
@@ -124,7 +129,7 @@ export class WhereClauseCanonicalizer {
       if ((where as { $and: SimpleWhereClause[] }).$and.length === 1) {
         return this.#toCanon(
           (where as { $and: SimpleWhereClause[] }).$and[0],
-          set,
+          set
         );
       }
     }
@@ -138,16 +143,19 @@ export class WhereClauseCanonicalizer {
           if (k === "$and" || k === "$or") {
             return [
               k,
-              (v as Array<SimpleWhereClause>).map(x => this.#toCanon(x, set)),
+              (v as Array<SimpleWhereClause>).map((x) => this.#toCanon(x, set)),
             ];
           }
           if (
-            k !== "$not" && typeof v === "object" && v != null && "$eq" in v
+            k !== "$not" &&
+            typeof v === "object" &&
+            v != null &&
+            "$eq" in v
           ) {
             return [k, v.$eq];
           }
           return [k, v];
-        }),
+        })
     ) as Canonical<SimpleWhereClause>;
   };
 }

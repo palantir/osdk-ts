@@ -1,5 +1,586 @@
 # @osdk/vite-plugin-oac
 
+## 0.50.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/cli@0.76.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters.ontologyir@2.51.0
+
+## 0.49.0
+
+### Patch Changes
+
+- Updated dependencies [bce917e]
+- Updated dependencies [9d75f4e]
+  - @osdk/maker@0.51.0
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+  - @osdk/cli@0.75.0
+
+## 0.48.0
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+- Updated dependencies [a7ff4d3]
+  - @osdk/maker@0.50.0
+  - @osdk/cli@0.74.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/maker@0.49.0
+  - @osdk/api@2.48.0
+  - @osdk/client.unstable@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+  - @osdk/faux@0.38.0
+  - @osdk/cli@0.73.0
+
+## 0.46.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/client.unstable@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+- @osdk/faux@0.37.0
+- @osdk/maker@0.48.0
+- @osdk/cli@0.72.0
+
+## 0.45.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/client.unstable@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+- @osdk/faux@0.36.0
+- @osdk/maker@0.47.0
+- @osdk/cli@0.71.0
+
+## 0.44.0
+
+### Patch Changes
+
+- Updated dependencies [2d4ad2d]
+  - @osdk/cli@0.70.0
+
+## 0.43.0
+
+### Patch Changes
+
+- Updated dependencies [93958d7]
+- Updated dependencies [db2bfa2]
+  - @osdk/generator-converters.ontologyir@2.45.0
+  - @osdk/faux@0.35.0
+  - @osdk/api@2.45.0
+  - @osdk/cli@0.69.0
+  - @osdk/client.unstable@2.45.0
+
+## 0.42.0
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+  - @osdk/client.unstable@2.44.0
+  - @osdk/cli@0.68.0
+  - @osdk/api@2.44.0
+  - @osdk/generator-converters.ontologyir@2.44.0
+
+## 0.41.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+### Patch Changes
+
+- Updated dependencies [da96711]
+- Updated dependencies [3c48f5a]
+- Updated dependencies [566ecd3]
+  - @osdk/generator-converters.ontologyir@2.43.0
+  - @osdk/faux@0.34.0
+  - @osdk/maker@0.46.0
+  - @osdk/cli@0.67.0
+  - @osdk/api@2.43.0
+  - @osdk/client.unstable@2.43.0
+
+## 0.40.0
+
+### Minor Changes
+
+- 255154c: Migrate the remaining low-risk tail packages (the CLIs, create-app/create-widget and their template packages, vite plugins, e2e sandboxes and generated fixtures, tools, and internal test libraries) to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (twelfth increment of the repo-wide oxc migration). Each package is reformatted with oxfmt, with any newly-surfaced error-level lint rules turned off in a nested oxlint config to keep the change behavior-preserving. Only the generator packages remain on ESLint.
+
+### Patch Changes
+
+- Updated dependencies [830d791]
+- Updated dependencies [0021ee4]
+- Updated dependencies [cbcdce1]
+- Updated dependencies [f49b4af]
+- Updated dependencies [6010d45]
+- Updated dependencies [255154c]
+  - @osdk/api@2.42.0
+  - @osdk/client.unstable@2.42.0
+  - @osdk/cli@0.66.0
+  - @osdk/maker@0.45.0
+  - @osdk/faux@0.33.0
+  - @osdk/generator-converters.ontologyir@2.42.0
+
+## 0.39.0
+
+### Patch Changes
+
+- Updated dependencies [9b150d7]
+- Updated dependencies [15a35f2]
+  - @osdk/api@2.41.0
+  - @osdk/faux@0.32.0
+  - @osdk/maker@0.44.0
+  - @osdk/cli@0.65.0
+  - @osdk/client.unstable@2.41.0
+  - @osdk/generator-converters.ontologyir@2.41.0
+
+## 0.38.0
+
+### Patch Changes
+
+- Updated dependencies [fcde4c0]
+- Updated dependencies [3e915ee]
+  - @osdk/maker@0.43.0
+  - @osdk/faux@0.31.0
+  - @osdk/api@2.40.0
+  - @osdk/cli@0.64.0
+  - @osdk/client.unstable@2.40.0
+  - @osdk/generator-converters.ontologyir@2.40.0
+
+## 0.37.0
+
+### Patch Changes
+
+- Updated dependencies [397ce96]
+- Updated dependencies [1796140]
+  - @osdk/client.unstable@2.39.0
+  - @osdk/maker@0.42.0
+  - @osdk/api@2.39.0
+  - @osdk/generator-converters.ontologyir@2.39.0
+  - @osdk/cli@0.63.0
+
+## 0.36.0
+
+### Patch Changes
+
+- @osdk/api@2.38.0
+- @osdk/client.unstable@2.38.0
+- @osdk/generator-converters.ontologyir@2.38.0
+- @osdk/faux@0.30.0
+- @osdk/maker@0.41.0
+- @osdk/cli@0.62.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/cli@0.61.0
+- @osdk/api@2.37.0
+- @osdk/client.unstable@2.37.0
+- @osdk/generator-converters.ontologyir@2.37.0
+- @osdk/faux@0.29.0
+- @osdk/maker@0.40.0
+
+## 0.34.0
+
+### Patch Changes
+
+- @osdk/api@2.36.0
+- @osdk/client.unstable@2.36.0
+- @osdk/generator-converters.ontologyir@2.36.0
+- @osdk/cli@0.60.0
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [59115b1]
+  - @osdk/maker@0.39.0
+  - @osdk/api@2.35.0
+  - @osdk/client.unstable@2.35.0
+  - @osdk/generator-converters.ontologyir@2.35.0
+  - @osdk/cli@0.59.0
+  - @osdk/faux@0.28.0
+
+## 0.32.0
+
+### Patch Changes
+
+- Updated dependencies [07eaaff]
+- Updated dependencies [4a25731]
+- Updated dependencies [db028a0]
+- Updated dependencies [48eb46e]
+- Updated dependencies [ab19740]
+  - @osdk/generator-converters.ontologyir@2.34.0
+  - @osdk/maker@0.37.0
+  - @osdk/api@2.34.0
+  - @osdk/faux@0.27.0
+  - @osdk/cli@0.58.0
+  - @osdk/client.unstable@2.34.0
+
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [cae84bd]
+- Updated dependencies [9e602f2]
+- Updated dependencies [0032d94]
+- Updated dependencies [a9de941]
+  - @osdk/maker@0.36.0
+  - @osdk/generator-converters.ontologyir@2.33.0
+  - @osdk/api@2.33.0
+  - @osdk/client.unstable@2.33.0
+  - @osdk/cli@0.57.0
+
+## 0.30.0
+
+### Patch Changes
+
+- Updated dependencies [b5d0a61]
+- Updated dependencies [06adca1]
+- Updated dependencies [833f47a]
+- Updated dependencies [79f8a6e]
+  - @osdk/generator-converters.ontologyir@2.32.0
+  - @osdk/client.unstable@2.32.0
+  - @osdk/maker@0.35.0
+  - @osdk/api@2.32.0
+  - @osdk/faux@0.26.0
+  - @osdk/cli@0.56.0
+
+## 0.29.0
+
+### Patch Changes
+
+- Updated dependencies [57cbc6d]
+  - @osdk/api@2.31.0
+  - @osdk/cli@0.55.0
+  - @osdk/client.unstable@2.31.0
+  - @osdk/generator-converters.ontologyir@2.31.0
+  - @osdk/faux@0.25.0
+  - @osdk/maker@0.34.0
+
+## 0.28.0
+
+### Patch Changes
+
+- @osdk/api@2.30.0
+- @osdk/client.unstable@2.30.0
+- @osdk/generator-converters.ontologyir@2.30.0
+- @osdk/cli@0.54.0
+
+## 0.27.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+
+### Patch Changes
+
+- Updated dependencies [08e921c]
+  - @osdk/api@2.29.0
+  - @osdk/faux@0.24.0
+  - @osdk/generator-converters.ontologyir@2.29.0
+  - @osdk/maker@0.33.0
+  - @osdk/cli@0.53.0
+  - @osdk/client.unstable@2.29.0
+
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [58922c1]
+- Updated dependencies [1bc01d1]
+  - @osdk/faux@0.23.0
+  - @osdk/maker@0.32.0
+  - @osdk/api@2.28.0
+  - @osdk/client.unstable@2.28.0
+  - @osdk/generator-converters.ontologyir@2.28.0
+  - @osdk/cli@0.52.0
+
+## 0.25.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+### Patch Changes
+
+- Updated dependencies [5ff7aa5]
+  - @osdk/faux@0.22.0
+  - @osdk/generator-converters.ontologyir@2.27.0
+  - @osdk/api@2.27.0
+  - @osdk/client.unstable@2.27.0
+  - @osdk/cli@0.51.0
+
+## 0.24.0
+
+### Patch Changes
+
+- @osdk/api@2.26.0
+- @osdk/client.unstable@2.26.0
+- @osdk/generator-converters.ontologyir@2.26.0
+- @osdk/cli@0.50.0
+
+## 0.23.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [8965bdf]
+- Updated dependencies [bd90dba]
+  - @osdk/faux@0.21.0
+  - @osdk/generator-converters.ontologyir@2.25.0
+  - @osdk/api@2.25.0
+  - @osdk/maker@0.31.0
+  - @osdk/cli@0.49.0
+  - @osdk/client.unstable@2.25.0
+
+## 0.22.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+### Patch Changes
+
+- Updated dependencies [a492285]
+- Updated dependencies [60aff19]
+- Updated dependencies [d087189]
+  - @osdk/api@2.24.0
+  - @osdk/faux@0.20.0
+  - @osdk/generator-converters.ontologyir@2.24.0
+  - @osdk/maker@0.30.0
+  - @osdk/cli@0.48.0
+  - @osdk/client.unstable@2.24.0
+
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [198f219]
+- Updated dependencies [56c2c9f]
+- Updated dependencies [ef156b6]
+- Updated dependencies [8290dd7]
+  - @osdk/api@2.23.0
+  - @osdk/maker@0.29.0
+  - @osdk/cli@0.47.0
+  - @osdk/client.unstable@2.23.0
+  - @osdk/generator-converters.ontologyir@2.23.0
+  - @osdk/faux@0.19.0
+
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [dea392c]
+- Updated dependencies [d8f3dfd]
+  - @osdk/generator-converters.ontologyir@2.22.0
+  - @osdk/maker@0.28.0
+  - @osdk/cli@0.46.0
+  - @osdk/api@2.22.0
+  - @osdk/client.unstable@2.22.0
+
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [1a07c91]
+- Updated dependencies [6bca4fd]
+- Updated dependencies [5b89f25]
+- Updated dependencies [b98e084]
+  - @osdk/api@2.21.0
+  - @osdk/maker@0.27.0
+  - @osdk/generator-converters.ontologyir@2.21.0
+  - @osdk/faux@0.18.0
+  - @osdk/cli@0.45.0
+  - @osdk/client.unstable@2.21.0
+
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/faux@0.17.0
+  - @osdk/maker@0.26.0
+  - @osdk/cli@0.44.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [ecc5b36]
+- Updated dependencies [d962309]
+  - @osdk/faux@0.16.0
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/maker@0.25.0
+  - @osdk/cli@0.43.0
+  - @osdk/client.unstable@2.19.0
+
+## 0.16.0
+
+### Patch Changes
+
+- Updated dependencies [2f3271b]
+  - @osdk/faux@0.15.0
+  - @osdk/api@2.18.0
+  - @osdk/client.unstable@2.18.0
+  - @osdk/generator-converters.ontologyir@2.18.0
+  - @osdk/cli@0.42.0
+
+## 0.15.0
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+- Updated dependencies [9be8339]
+  - @osdk/api@2.17.0
+  - @osdk/faux@0.14.0
+  - @osdk/cli@0.41.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters.ontologyir@2.17.0
+
+## 0.14.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/cli@0.40.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/faux@0.13.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/maker@0.24.0
+
+## 0.13.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/client.unstable@2.15.0
+- @osdk/generator-converters.ontologyir@2.15.0
+- @osdk/faux@0.12.0
+- @osdk/maker@0.23.0
+- @osdk/cli@0.39.0
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/maker@0.22.0
+  - @osdk/client.unstable@2.14.0
+  - @osdk/cli@0.38.0
+  - @osdk/api@2.14.0
+  - @osdk/faux@0.11.0
+
+## 0.11.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/generator-converters.ontologyir@2.13.0
+- @osdk/faux@0.10.0
+- @osdk/maker@0.21.0
+- @osdk/cli@0.37.0
+
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [9225ee3]
+- Updated dependencies [91f34a9]
+  - @osdk/cli@0.36.0
+  - @osdk/faux@0.9.0
+  - @osdk/maker@0.20.0
+  - @osdk/api@2.12.0
+  - @osdk/client.unstable@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/client.unstable@2.11.0
+  - @osdk/maker@0.19.0
+  - @osdk/api@2.11.0
+  - @osdk/cli@0.35.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [151d258]
+- Updated dependencies [1a0f772]
+- Updated dependencies [b1b8a8b]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/maker@0.18.0
+  - @osdk/faux@0.8.0
+  - @osdk/api@2.10.0
+  - @osdk/cli@0.34.0
+
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/faux@0.7.0
+  - @osdk/cli@0.33.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+  - @osdk/client.unstable@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

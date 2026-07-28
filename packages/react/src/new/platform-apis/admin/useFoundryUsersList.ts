@@ -17,8 +17,9 @@
 import { type ListUsersResponse, Users } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
+
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseFoundryUsersListOptions {
   /**
@@ -76,23 +77,23 @@ export interface UseFoundryUsersListResult {
  * Lists all Users. This is a paged endpoint. Each page may be smaller or larger than the requested page size.
  * @param options Options to control the query.
  */
-export function useFoundryUsersList(
-  { enabled = true, include = "ACTIVE", pageSize = 1000, pageToken }:
-    UseFoundryUsersListOptions = {},
-): UseFoundryUsersListResult {
-  const { client } = React.useContext(OsdkContext2);
+export function useFoundryUsersList({
+  enabled = true,
+  include = "ACTIVE",
+  pageSize = 1000,
+  pageToken,
+}: UseFoundryUsersListOptions = {}): UseFoundryUsersListResult {
+  const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
     return Users.list(client, { include, pageSize, pageToken });
   }, [client, include, pageSize, pageToken]);
 
-  const query = usePlatformQuery(
-    {
-      query: handleQuery,
-      enabled,
-      queryName: "foundry-users-list",
-    },
-  );
+  const query = usePlatformQuery({
+    query: handleQuery,
+    enabled,
+    queryName: "foundry-users-list",
+  });
 
   return {
     users: query.data?.data,

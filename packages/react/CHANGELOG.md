@@ -1,5 +1,277 @@
 # @osdkkit/react
 
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.0
+
+## 2.48.0
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+## 2.43.0
+
+### Minor Changes
+
+- 566ecd3: Add the `u` (unicode) flag to regular expressions to satisfy the require-unicode-regexp lint rule
+
+## 2.42.0
+
+### Minor Changes
+
+- 6600566: Migrate @osdk/react, @osdk/react-devtools, and @osdk/react-components-storybook to lint with oxlint and format with oxfmt (configured via Ultracite) instead of ESLint and dprint (sixth increment of the repo-wide oxc migration; the React family ahead of @osdk/react-components)
+
+## 2.41.0
+
+### Minor Changes
+
+- d24cc61: Pin the `@osdk/aip-core` peerDependency range to `>=0.5.0 <1.0.0` instead of `workspace:^` so a minor bump of `@osdk/aip-core` (e.g. 0.5.0 -> 0.6.0) no longer falls out of the caret range and triggers a major-bump cascade across the release plan.
+- afc63a7: Restore the AIP chat entry points (`@osdk/react/experimental/aip` and `@osdk/react-components/experimental/aip-agent-chat`) and publish `@osdk/aip-core` so the optional peer dependency resolves from the registry.
+
+## 2.40.0
+
+### Minor Changes
+
+- 70839ec: add an `enabled` option to `useOsdkAggregation` to conditionally defer the aggregation
+- 742fe69: Add dev-mode observable client debugging knobs. `devMode.logLevel` raises the client's log level so its `debug` tracing is visible, and `devMode.debug.refCounts` / `devMode.debug.cacheKeys` turn on cache-internals logging. They are exposed through `createObservableClient`'s `devMode` option and the `OsdkProvider` `devMode` prop, and are stripped from production builds.
+
+## 2.39.0
+
+## 2.38.0
+
+## 2.37.0
+
+### Minor Changes
+
+- b174a28: Make the dev-mode action delay smart, configurable, and discoverable. The delay now only applies to actions with an optimistic update (function-backed actions stay fast), is tunable via `OsdkProvider`'s `devMode={{ actionDelayMs }}` prop and the `createObservableClient` `devMode.actionDelayMs` option (0 disables), and logs a one-time message explaining it.
+
+## 2.36.0
+
+## 2.35.0
+
+## 2.34.0
+
+## 2.33.0
+
+## 2.32.0
+
+## 2.31.0
+
+### Minor Changes
+
+- 57cbc6d: Stop shipping Node-only test infrastructure in the browser builds of `@osdk/api` and `@osdk/client`.
+  - `@osdk/api`: the `__quickinfo_snapshot__/` test harness (formerly `probeUtils.ts` + `probes/*.ts`) is renamed under the existing `testUtils.` prefix convention so the transpile tool drops it from every build target. Pure test infrastructure; no runtime surface change.
+  - `@osdk/client`: the `./internal-node` subpath export is removed. The TypeScript-language-server harness it pointed at (`tsserver.ts`) has moved to a new private workspace package, `@osdk/shared.test.intellisense`, which both `@osdk/client` and `@osdk/react` consume as a dev dependency. This eliminates the `node:events` / `node:fs/promises` / `node:path` imports from the browser build and removes the project-internal subpath from the published client API.
+
+## 2.30.0
+
+## 2.29.0
+
+### Minor Changes
+
+- 08e921c: Bump `foundry-platform-typescript` catalog to 2.63.0 and surface the new CBAC/MANDATORY marking subtype on `ObjectMetadata.Property` via a new `typeMetadata` discriminated-union field. For marking properties, `typeMetadata` is `{ type: "marking"; subtype?: "CBAC" | "MANDATORY" }`, letting consumers distinguish classification-based markings from mandatory markings on object property columns. Future per-`type` metadata should be added as additional variants of `typeMetadata` rather than as new top-level optionals on `Property`.
+- 4b38963: extend resolveToObjectType support to useLinks for interface link targets
+
+## 2.28.0
+
+### Minor Changes
+
+- a5066b5: add resolveToObjectType option to useOsdkObjects so interface queries return full concrete object-type instances
+
+## 2.27.0
+
+### Minor Changes
+
+- 5ff7aa5: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.61.0` to `2.63.0`. The OntologyScenarios endpoints now expose a `preview` query-param slot, so `createScenario` and the `EXPERIMENTAL_ScenarioClient` read methods pass `{ preview: true }` directly instead of relying on a fetch-level URL rewrite.
+
+## 2.26.0
+
+### Minor Changes
+
+- 90f7fb6: Fix useOsdkFunction objectSet param not serialized correctly. Updated useStableObjectSet and useOsdkFunctions to use the same stableSerialize function
+- c3752ce: Temporarily remove the AIP chat entry points and AIP dependencies.
+
+## 2.25.0
+
+### Minor Changes
+
+- 8965bdf: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+## 2.24.0
+
+### Minor Changes
+
+- 60aff19: Bump `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries from `2.57.0` to `2.61.0`. Includes type-fixups for the new `applyScenario` / `scenarioReference` discriminated-union variants and the now-required `QueryParameterV2.required` field.
+
+## 2.23.0
+
+## 2.22.0
+
+## 2.21.0
+
+## 2.20.0
+
+## 2.19.0
+
+## 2.18.0
+
+## 2.17.0
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 53d9368: Fixed function column not reloaded when where clause changes by updating the stable queries key to get wire object set.
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/aip-core@0.4.0
+
+## 2.15.0
+
+### Minor Changes
+
+- 3889ff8: add `useObservableClient` hook so consumers can call cache invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from inside the React tree below `OsdkProvider`. Replaces the use case the removed `observableClient` prop served.
+- 7a92156: pin @osdk/react into the @osdk/client fixed group so it releases in lockstep
+- 203331e: GA: promote modern hooks from `@osdk/react/experimental` to the main entry, rename `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`, consolidate to a single `OsdkProvider`. Promote `ObservableClient` and supporting types out of `@osdk/client/unstable-do-not-use` to a new stable `@osdk/client/observable` entry so the GA hooks no longer depend on a "do not use" entry point. The previous import paths and symbol names are kept as `@deprecated` shims so 0.x consumers can upgrade without code changes.
+
+  #### `@osdk/client` (minor)
+  - new stable entry point `@osdk/client/observable` exposes `createObservableClient`, `ObservableClient` (and its `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable` types), and the supporting `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType` types
+  - these symbols are still re-exported from `@osdk/client/unstable-do-not-use` as `@deprecated` shims; new code should import from `@osdk/client/observable`
+
+  #### `@osdk/react` (minor)
+  - `OsdkProvider`, `useOsdkObjects`, `useOsdkObject`, `useOsdkAction`, `useLinks`, `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, `useOsdkFunctions`, `useStableObjectSet`, `useRegisterUserAgent`, `useDebouncedCallback`, devtools registry re-exports are now exported directly from `@osdk/react`
+  - admin / CBAC platform hooks (`useFoundryUser`, `useCurrentFoundryUser`, `useFoundryUsersList`, `useMarkings`, `useMarkingCategories`, `useUserViewMarkings`, `useCbacBanner`, `useCbacMarkingRestrictions`) now live at `@osdk/react/platform-apis` and still require the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers
+  - the previous `OsdkProvider2` is now just `OsdkProvider`. The legacy `OsdkProvider` body is gone, but `useOsdkClient` and `useOsdkMetadata` keep working since the new provider supplies the same `client` shape
+  - `<OsdkProvider>` no longer accepts an `observableClient` prop. The provider always derives its `ObservableClient` from `client` so the two cannot diverge. Tests that need to stub the observable layer should import `TestOsdkProvider` from `@osdk/react/testing`. `OsdkProvider2` (the deprecated alias) inherits this — it also no longer accepts `observableClient`
+  - `useOsdkClient2` is unified into `useOsdkClient`; the unified hook now reads from the modern context (same `client` shape)
+  - `peerDependencies` on `@osdk/api` and `@osdk/client` resolve to `^2.15.0` so `@osdk/react@2.15` cannot install against a `@osdk/client` that lacks the new `./observable` entry
+
+  #### `@osdk/react-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+  - update `QueryParameterType` import from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+  - bump `@osdk/react` peer range to `^2.15.0`
+
+  #### `@osdk/react-devtools` (patch)
+  - update observable-related imports from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+
+  #### `@osdk/cbac-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+
+  #### Compatibility shims
+
+  These keep working in `@osdk/react@2.15` and `@osdk/client@2.15`, marked `@deprecated` so editors surface a strikethrough:
+  - `import { ... } from "@osdk/react/experimental"` re-exports everything now exported from `@osdk/react`, plus `OsdkProvider as OsdkProvider2` and `useOsdkClient as useOsdkClient2`
+  - `import { ... } from "@osdk/react/experimental/admin"` re-exports everything now exported from `@osdk/react/platform-apis`
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` re-exports the symbols now in `@osdk/client/observable`
+  - `import { ... } from "@osdk/react/experimental/aip"` is unchanged — AIP is still in beta
+
+  These shims will be removed in a future major.
+
+  #### Migration
+
+  For consumers upgrading from `@osdk/react@0.x`:
+  - `import { ... } from "@osdk/react/experimental"` → `import { ... } from "@osdk/react"`
+  - `import { ... } from "@osdk/react/experimental/admin"` → `import { ... } from "@osdk/react/platform-apis"` (still requires the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers)
+  - `<OsdkProvider2 ...>` → `<OsdkProvider ...>` (the modern provider takes the bare name)
+  - if you were passing `observableClient={...}` to `<OsdkProvider>` or `<OsdkProvider2>` (in tests), import `TestOsdkProvider` from `@osdk/react/testing` and use that instead — production code does not need to change
+  - `useOsdkClient2()` → `useOsdkClient()` (the unified hook reads from the modern context — same `client` shape, no API change at the call site)
+  - bump `@osdk/client` and `@osdk/api` to `^2.15.0` to satisfy the new peer ranges
+
+  For consumers reaching directly into `@osdk/client/unstable-do-not-use` for observable APIs:
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` → `import { ... } from "@osdk/client/observable"`
+  - the symbols moved: `createObservableClient`, `ObservableClient`, `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable`, `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType`
+
+### Patch Changes
+
+- Updated dependencies [72fcb52]
+- Updated dependencies [203331e]
+  - @osdk/aip-core@0.3.0
+  - @osdk/client@2.15.0
+  - @osdk/api@2.15.0
+
+## 0.17.0
+
+### Minor Changes
+
+- f747fa3: Add `@osdk/aip-core` — the AIP SDK's chat completion primitives, backed by the Foundry Language Model Service's OpenAI-compatible proxy. Construct a model via `foundryModel({ client, model })` and call `generateText` for non-streaming completions or `streamText` for streaming. `LmsChatTransport` plugs into UI hooks; `useChat` is exposed from `@osdk/react/experimental/aip` and returns `messages`, `status`, `sendMessage`, `regenerate`, `stop`, `clearError`, and accepts a `transport` override. v0 is text-only and single-step — tool round-trips, multi-step loops, image/file content, Zod tool schemas, and stream resume are deferred.
+- d892397: expose `$includeAllBaseObjectProperties` on `useLinks` and on the underlying `ObservableClient.observeLinks`. When set against a link whose target is an interface, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped at fetch time when the link target is an object type and does not narrow the returned `Osdk.Instance` type.
+- c5a6047: expose `$includeAllBaseObjectProperties` on `useOsdkObject` and on the underlying `ObservableClient.observeObject`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 45be476: expose `$includeAllBaseObjectProperties` on `useOsdkObjects` and on the underlying `ObservableClient.observeList`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- b355bc3: Add CONTRIBUTING.md for @osdk/react and @osdk/react-components
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+### Patch Changes
+
+- Updated dependencies [86cc68c]
+- Updated dependencies [f747fa3]
+  - @osdk/aip-core@0.2.0
+
+## 0.16.0
+
+### Minor Changes
+
+- aa78c78: surface fetch errors through useOsdkObject's `error` and clear `isLoading`
+
+  When the underlying fetch fails (e.g. `PalantirApiError: Object not found`), `useOsdkObject` now returns the error through `error` and exits the loading state so consumers can render their error UI instead of waiting forever.
+
+- 7b457a5: Fix function column with derived properties
+
+## 0.15.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- d8842f4: add react shape stores, result types, and entry point boilerplate
+
+## 0.14.0
+
+### Minor Changes
+
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
+## 0.13.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+## 0.12.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+
+## 0.11.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- 12f9b36: add devtools interfaces and hook metadata for react-devtools integration
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- f871d5c: Paginate objects for function queries and configure max concurrent requests to handle large dataset
+- ec06b26: revert build improvements from #2987
+
 ## 0.10.0
 
 ### Minor Changes

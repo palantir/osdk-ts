@@ -30,27 +30,21 @@ export async function testConfidentialClientNode(): Promise<void> {
 
   invariant(
     FOUNDRY_CLIENT_ID != null,
-    `${prefix}FOUNDRY_CLIENT_ID is required`,
+    `${prefix}FOUNDRY_CLIENT_ID is required`
   );
-  invariant(
-    FOUNDRY_URL != null,
-    `${prefix}FOUNDRY_URL is required`,
-  );
-  invariant(
-    FOUNDRY_CLIENT_SECRET != null,
-    `${prefix}FOUNDRY_URL is required`,
-  );
+  invariant(FOUNDRY_URL != null, `${prefix}FOUNDRY_URL is required`);
+  invariant(FOUNDRY_CLIENT_SECRET != null, `${prefix}FOUNDRY_URL is required`);
 
   const auth = createConfidentialOauthClient(
     FOUNDRY_CLIENT_ID,
     FOUNDRY_CLIENT_SECRET,
-    FOUNDRY_URL,
+    FOUNDRY_URL
   );
 
   const token = await auth();
   invariant(
     token != null && token.length > 0,
-    "token should have been received",
+    "token should have been received"
   );
   consola.log(token);
 }

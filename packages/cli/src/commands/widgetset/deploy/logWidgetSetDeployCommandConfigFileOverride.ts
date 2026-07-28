@@ -17,24 +17,22 @@
 import type { WidgetSetConfig } from "@osdk/foundry-config-json";
 import { consola } from "consola";
 import type { Arguments } from "yargs";
+
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
 export function logWidgetSetDeployCommandConfigFileOverride(
   args: Arguments<WidgetSetDeployArgs>,
-  config: WidgetSetConfig | undefined,
+  config: WidgetSetConfig | undefined
 ): void {
   if (config?.directory != null && args.directory !== config.directory) {
     consola.debug(
-      `Overriding "directory" from config file with ${args.directory}`,
+      `Overriding "directory" from config file with ${args.directory}`
     );
   }
 
-  if (
-    config?.repository != null
-    && args.repository !== config.repository
-  ) {
+  if (config?.repository != null && args.repository !== config.repository) {
     consola.debug(
-      `Overriding "repository" from config file with ${args.repository}`,
+      `Overriding "repository" from config file with ${args.repository}`
     );
   }
 }

@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaFullMetadata,
+  MediaMetadata,
+  MediaReference,
+} from "@osdk/api";
 import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
+import { MediaSets } from "@osdk/foundry.mediasets";
 import * as MediaReferenceProperties from "@osdk/foundry.ontologies/MediaReferenceProperty";
+
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 export class MediaReferencePropertyImpl implements Media {
   #mediaReference: MediaReference;
@@ -31,13 +39,8 @@ export class MediaReferencePropertyImpl implements Media {
     propertyName: string;
     mediaReference: CoreMediaReference;
   }) {
-    const {
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      mediaReference,
-    } = args;
+    const { client, objectApiName, primaryKey, propertyName, mediaReference } =
+      args;
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
     this.#mediaReference = mediaReference;
@@ -50,7 +53,7 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      },
+      }
     );
   }
 
@@ -61,13 +64,31 @@ export class MediaReferencePropertyImpl implements Media {
       ...this.#triplet,
       {
         preview: true, // TODO: Can turn this back off when backend is no longer in beta.
-      },
+      }
     );
     return {
       path: r.path as string,
       sizeBytes: Number(r.sizeBytes),
       mediaType: r.mediaType,
     };
+  }
+
+  /**
+   * Fetches type-specific metadata via `MediaSets.metadata`. There is no Ontologies-backed
+   * full-metadata endpoint, so this routes through the media set view using the embedded media
+   * reference.
+   */
+  public async fetchFullMetadata(): Promise<MediaFullMetadata> {
+    const { mediaSetRid, mediaItemRid, token } =
+      this.#mediaReference.reference.mediaSetViewItem;
+    const raw = await MediaSets.metadata(
+      this.#client,
+      mediaSetRid,
+      mediaItemRid,
+      { preview: true },
+      token ? { ReadToken: token } : undefined
+    );
+    return { itemMetadata: validateMediaItemMetadata(raw) };
   }
 
   public getMediaReference(): MediaReference {

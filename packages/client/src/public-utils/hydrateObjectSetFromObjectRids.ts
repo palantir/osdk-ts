@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
+
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -35,9 +36,9 @@ export function hydrateObjectSetFromObjectRids<
       definition.type === "interface"
         ? { type: "interfaceBase", interfaceType: definition.apiName }
         : {
-          type: "base",
-          objectType: definition.apiName,
-        },
+            type: "base",
+            objectType: definition.apiName,
+          },
       {
         type: "static",
         objects: asMutableArray(rids),

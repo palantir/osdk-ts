@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import path from "path";
+
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { Rollup, ViteDevServer } from "vite";
+
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import type { BuildOutputs } from "./extractBuildOutputs.js";
 import { extractBuildOutputs } from "./extractBuildOutputs.js";
@@ -30,21 +32,19 @@ export async function getWidgetBuildOutputs(
   bundle: Rollup.OutputBundle,
   input: string,
   buildDir: string,
-  server: ViteDevServer,
+  server: ViteDevServer
 ): Promise<WidgetBuildOutputs> {
   const inputHtmlFilePath = path.resolve(
     buildDir,
-    path.relative(process.cwd(), input),
+    path.relative(process.cwd(), input)
   );
   const buildOutputs = extractBuildOutputs(inputHtmlFilePath);
   const scriptPaths = new Set(
-    buildOutputs.scripts.map((script) => script.src.slice(1)),
+    buildOutputs.scripts.map((script) => script.src.slice(1))
   );
-  const entrypointChunk = Object.values(bundle).find((
-    chunk,
-  ): chunk is Rollup.OutputChunk =>
-    chunk.type === "chunk" && chunk.isEntry
-    && scriptPaths.has(chunk.fileName)
+  const entrypointChunk = Object.values(bundle).find(
+    (chunk): chunk is Rollup.OutputChunk =>
+      chunk.type === "chunk" && chunk.isEntry && scriptPaths.has(chunk.fileName)
   );
   if (entrypointChunk == null) {
     throw new Error(`Entrypoint chunk not found for input file: ${input}`);
@@ -54,18 +54,16 @@ export async function getWidgetBuildOutputs(
   return { ...buildOutputs, widgetConfig };
 }
 
-function getChunkConfigModuleId(
-  chunk: Rollup.OutputChunk,
-): string {
+function getChunkConfigModuleId(chunk: Rollup.OutputChunk): string {
   const configModuleIds = chunk.moduleIds.filter(isConfigFile);
   if (configModuleIds.length === 0) {
     throw new Error(
-      `No widget config files found for entrypoint ${chunk.facadeModuleId}`,
+      `No widget config files found for entrypoint ${chunk.facadeModuleId}`
     );
   }
   if (configModuleIds.length > 1) {
     throw new Error(
-      `Multiple widget config files found for entrypoint ${chunk.facadeModuleId}`,
+      `Multiple widget config files found for entrypoint ${chunk.facadeModuleId}`
     );
   }
 

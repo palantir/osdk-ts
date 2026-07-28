@@ -26,16 +26,16 @@ let widgetSetConfigPromise:
   | undefined = undefined;
 
 function getConfig(
-  type: "site",
+  type: "site"
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 function getConfig(
-  type: "widgetSet",
+  type: "widgetSet"
 ): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 function getConfig(
-  type: "site" | "widgetSet",
+  type: "site" | "widgetSet"
 ): Promise<LoadedFoundryConfig<"site" | "widgetSet"> | undefined>;
 function getConfig(
-  type: "site" | "widgetSet",
+  type: "site" | "widgetSet"
 ): Promise<LoadedFoundryConfig<"site" | "widgetSet"> | undefined> {
   if (type === "site") {
     return getSiteConfig();

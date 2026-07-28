@@ -27,6 +27,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+
 import styles from "./ContainsTextInput.module.css";
 
 interface ContainsTextInputProps {
@@ -60,7 +61,7 @@ function ContainsTextInputInner({
       debounce((newValue: string) => {
         onChangeRef.current(newValue.length > 0 ? newValue : undefined);
       }, debounceMs),
-    [debounceMs],
+    [debounceMs]
   );
 
   useEffect(() => {
@@ -79,7 +80,7 @@ function ContainsTextInputInner({
       setLocalValue(e.target.value);
       debouncedOnChange(e.target.value);
     },
-    [debouncedOnChange],
+    [debouncedOnChange]
   );
 
   const handleClear = useCallback(() => {
@@ -95,13 +96,13 @@ function ContainsTextInputInner({
       data-has-value={!!localValue}
     >
       <div className={styles.inputGroup}>
-        {renderSearchIcon
-          ? renderSearchIcon()
-          : (
-            <span className={styles.searchIcon}>
-              <Search />
-            </span>
-          )}
+        {renderSearchIcon ? (
+          renderSearchIcon()
+        ) : (
+          <span className={styles.searchIcon}>
+            <Search />
+          </span>
+        )}
         <Input
           type="text"
           className={styles.input}
@@ -110,23 +111,20 @@ function ContainsTextInputInner({
           placeholder={placeholder}
           aria-label={placeholder}
         />
-        {localValue && (
-          <Button
-            type="button"
-            className={styles.clearButton}
-            onClick={handleClear}
-            aria-label="Clear search"
-          >
-            {renderClearIcon
-              ? renderClearIcon()
-              : <Cross />}
-          </Button>
-        )}
+        <Button
+          type="button"
+          className={styles.clearButton}
+          data-active={!!localValue || undefined}
+          onClick={handleClear}
+          disabled={!localValue}
+          aria-label="Clear search"
+        >
+          {renderClearIcon ? renderClearIcon() : <Cross />}
+        </Button>
       </div>
     </div>
   );
 }
 
-export const ContainsTextInput: React.NamedExoticComponent<
-  ContainsTextInputProps
-> = memo(ContainsTextInputInner);
+export const ContainsTextInput: React.NamedExoticComponent<ContainsTextInputProps> =
+  memo(ContainsTextInputInner);

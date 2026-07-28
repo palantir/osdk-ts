@@ -19,11 +19,12 @@ import {
   McAirportStruct,
   OsdkTestObject,
 } from "@osdk/e2e.generated.catchall";
+
 import { client, dsClient } from "./client.js";
 
 export async function runStructsTest(): Promise<void> {
   const player = await dsClient(BgaoNflPlayer).fetchOne(
-    "50A409AB-C909-453A-A61A-31B51324C8E3",
+    "50A409AB-C909-453A-A61A-31B51324C8E3"
   );
 
   // Making sure things work when struct values are not set, like with this object
@@ -32,7 +33,7 @@ export async function runStructsTest(): Promise<void> {
   console.log(player.address?.addressLine1);
 
   const airport = await dsClient(McAirportStruct).fetchOne(
-    "Ronald Reagan Washington National Airport",
+    "Ronald Reagan Washington National Airport"
   );
 
   console.log(airport.airportStruct);
@@ -40,38 +41,54 @@ export async function runStructsTest(): Promise<void> {
 
   const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
     .where({
-      $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
-        airportStruct: { timestamp: { $startsWith: "173" } },
-      }, { airportName: { $containsAnyTerm: "Reagan" } }],
-    }).fetchPage();
+      $and: [
+        { airportStruct: { code: { $startsWith: "D" } } },
+        {
+          airportStruct: { timestamp: { $startsWith: "173" } },
+        },
+        { airportName: { $containsAnyTerm: "Reagan" } },
+      ],
+    })
+    .fetchPage();
   const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
     .where({
-      $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
-        airportStruct: { timestamp: { $startsWith: "173" } },
-      }],
-    }).fetchPage();
+      $and: [
+        { airportStruct: { code: { $startsWith: "B" } } },
+        {
+          airportStruct: { timestamp: { $startsWith: "173" } },
+        },
+      ],
+    })
+    .fetchPage();
   console.log("Full With Data :", airportFilteredShouldHaveData);
   console.log(airportFilteredShouldHaveData.data[0].airportStruct);
   console.log("Full Without Data :", airportFilteredShouldNotHaveData);
   console.log(airportFilteredShouldNotHaveData.data[0]);
 
-  const filteredArrayOfStruct = await client(OsdkTestObject).where({
-    structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
-  }).fetchPage();
+  const filteredArrayOfStruct = await client(OsdkTestObject)
+    .where({
+      structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
+    })
+    .fetchPage();
 
-  const filteredArrayOfStructWith2 = await client(OsdkTestObject).where({
-    $or: [{ structArray: { $contains: { string1: { $eq: "Nope" } } } }, {
-      structArray: { $contains: { number: { $gt: 5 } } },
-    }],
-  }).fetchPage();
+  const filteredArrayOfStructWith2 = await client(OsdkTestObject)
+    .where({
+      $or: [
+        { structArray: { $contains: { string1: { $eq: "Nope" } } } },
+        {
+          structArray: { $contains: { number: { $gt: 5 } } },
+        },
+      ],
+    })
+    .fetchPage();
 
   console.log(
     "Filtered Array of Structs: ",
-    filteredArrayOfStruct.data[0].structArray,
+    filteredArrayOfStruct.data[0].structArray
   );
   console.log(
     "Filtered Array of Structs With Or (should have two value): ",
-    filteredArrayOfStructWith2.data,
+    filteredArrayOfStructWith2.data
   );
 }
 

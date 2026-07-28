@@ -17,6 +17,7 @@
 import type { WhereClause } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 describe(WhereClauseCanonicalizer, () => {

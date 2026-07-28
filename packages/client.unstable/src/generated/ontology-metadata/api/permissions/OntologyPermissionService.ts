@@ -28,6 +28,7 @@ export { getBulkSharedPropertyTypePermissions } from "./OntologyPermissionServic
 export { getBulkTypeGroupPermissions } from "./OntologyPermissionService/getBulkTypeGroupPermissions.js";
 export { getCreateOntologyPermissions } from "./OntologyPermissionService/getCreateOntologyPermissions.js";
 export { getEditorsForObjectType } from "./OntologyPermissionService/getEditorsForObjectType.js";
+export { getEntityProjectsMigrationStatus } from "./OntologyPermissionService/getEntityProjectsMigrationStatus.js";
 export { getInterfaceTypePermissions } from "./OntologyPermissionService/getInterfaceTypePermissions.js";
 export { getLinkTypePermissions } from "./OntologyPermissionService/getLinkTypePermissions.js";
 export { getObjectTypePermissions } from "./OntologyPermissionService/getObjectTypePermissions.js";
@@ -41,6 +42,7 @@ export { getSuggestedRolesForObjectType } from "./OntologyPermissionService/getS
 export { getSuggestedRolesForObjectTypeDatasource } from "./OntologyPermissionService/getSuggestedRolesForObjectTypeDatasource.js";
 export { getWorkflowPermissions } from "./OntologyPermissionService/getWorkflowPermissions.js";
 export { migrateEntitiesToProjects } from "./OntologyPermissionService/migrateEntitiesToProjects.js";
+export { revertPublicProjectEntity } from "./OntologyPermissionService/revertPublicProjectEntity.js";
 export { updateEntitiesInPackage } from "./OntologyPermissionService/updateEntitiesInPackage.js";
 export { updateEntityRoles } from "./OntologyPermissionService/updateEntityRoles.js";
 export { updatePackageRoles } from "./OntologyPermissionService/updatePackageRoles.js";

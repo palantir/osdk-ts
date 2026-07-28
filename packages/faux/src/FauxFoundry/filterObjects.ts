@@ -18,11 +18,12 @@
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+
 import type { BaseServerObject } from "./BaseServerObject.js";
 
 export function filterObjects(
   objects: BaseServerObject[],
-  where: OntologiesV2.SearchJsonQueryV2,
+  where: OntologiesV2.SearchJsonQueryV2
 ): BaseServerObject[] {
   switch (where.type) {
     case "eq": {
@@ -149,7 +150,10 @@ export function filterObjects(
       }
       invariant(field);
       return objects.filter((obj) => {
-        return value ? obj[field] == null : obj[field] != null;
+        // Empty strings are also considered null to match the behavior of the backend
+        const v = obj[field];
+        const isEmpty = v == null || v === "";
+        return value ? isEmpty : !isEmpty;
       });
     }
 
@@ -160,12 +164,12 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.some(term => lowerFieldValue.includes(term));
+          return searchTerms.some((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -178,12 +182,12 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.every(term => lowerFieldValue.includes(term));
+          return searchTerms.every((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -196,13 +200,13 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
           let lastIndex = -1;
-          return searchTerms.every(term => {
+          return searchTerms.every((term) => {
             const index = lowerFieldValue.indexOf(term, lastIndex + 1);
             if (index > lastIndex) {
               lastIndex = index;
@@ -223,7 +227,7 @@ export function filterObjects(
         throw new Error("propertyIdentifier not supported");
       }
       invariant(field);
-      const searchTerms = where.value.toLowerCase().split(/\s+/);
+      const searchTerms = where.value.toLowerCase().split(/\s+/u);
       return objects.filter((obj) => {
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
@@ -234,7 +238,7 @@ export function filterObjects(
           for (let i = 0; i < searchTerms.length - 1; i++) {
             const index = lowerFieldValue.indexOf(
               searchTerms[i],
-              lastIndex + 1,
+              lastIndex + 1
             );
             if (index <= lastIndex) return false;
             lastIndex = index;
@@ -242,13 +246,32 @@ export function filterObjects(
 
           const lastTerm = searchTerms[searchTerms.length - 1];
           const remainingText = lowerFieldValue.substring(lastIndex + 1);
-          return remainingText.includes(lastTerm)
-            || remainingText.startsWith(lastTerm);
+          return (
+            remainingText.includes(lastTerm) ||
+            remainingText.startsWith(lastTerm)
+          );
         }
         return false;
       });
     }
-    case "regex":
+    case "regex": {
+      const { propertyIdentifier, field } = where;
+      if (propertyIdentifier) {
+        console.error("propertyIdentifier not supported", where);
+        throw new Error("propertyIdentifier not supported");
+      }
+      invariant(field);
+      // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
+      const pattern = new RegExp(where.value);
+      return objects.filter((obj) => {
+        const fieldValue = obj[field];
+        if (typeof fieldValue === "string") {
+          return pattern.test(fieldValue);
+        }
+        return false;
+      });
+    }
+
     case "wildcard":
     case "interval":
     case "relativeDateRange":
@@ -262,16 +285,14 @@ export function filterObjects(
     case "withinDistanceOf":
     case "geoShapeV2":
       throw new Error(
-        `Unhandled where type: ${where.type} in ${JSON.stringify(where)}`,
+        `Unhandled where type: ${where.type} in ${JSON.stringify(where)}`
       );
     default:
       where satisfies never;
   }
   console.error(
-    "-=-=-=-=-=-= Unhandled where type: \n"
-      + `Unhandled where type: ${JSON.stringify(where)}`,
+    "-=-=-=-=-=-= Unhandled where type: \n" +
+      `Unhandled where type: ${JSON.stringify(where)}`
   );
-  throw new Error(
-    `Unhandled where type: ${JSON.stringify(where)}`,
-  );
+  throw new Error(`Unhandled where type: ${JSON.stringify(where)}`);
 }

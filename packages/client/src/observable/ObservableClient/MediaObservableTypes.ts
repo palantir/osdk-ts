@@ -15,6 +15,7 @@
  */
 
 import type { MediaMetadata } from "@osdk/api";
+
 import type { Status } from "./common.js";
 
 export interface MediaMetadataPayload {

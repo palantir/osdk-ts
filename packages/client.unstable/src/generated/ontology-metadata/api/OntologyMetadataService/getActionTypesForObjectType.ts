@@ -15,25 +15,27 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
-  GetActionTypesForObjectTypeResponse
-    as _api_GetActionTypesForObjectTypeResponse,
+  GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse,
 } from "../__components.js";
 
 /**
  * Gets all the action types that the object type is associated with. E.g. actions that create an object, edit
  * an object, or use the object as a parameter. Also returns actions that are associated with an interface type
  * that the object type implements.
+ *
+ * This endpoint is deprecated and the bulk endpoint is preferred.
  */
 export async function getActionTypesForObjectType(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForObjectTypeRequest,
+  request: _api_GetActionTypesForObjectTypeRequest
 ): Promise<_api_GetActionTypesForObjectTypeResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForObjectType`,
     "PUT",
-    request,
+    request
   );
 }

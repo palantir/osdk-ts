@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import * as crypto from "node:crypto";
+
 import type { ActionParameterV2, ParameterId } from "@osdk/foundry.ontologies";
 import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
-import * as crypto from "node:crypto";
 import type { Merge } from "type-fest";
+
 import type {
   TH_ActionDefinition,
   TH_ActionMetadata,
@@ -76,7 +78,7 @@ export class ActionTypeBuilder<
   >(
     paramId: K,
     parameter: V,
-    required: R | false = false,
+    required: R | false = false
   ): ActionTypeBuilder<
     NEW_P<
       P,
@@ -84,9 +86,10 @@ export class ActionTypeBuilder<
       V extends SimpleActionParamTypes ? TH_ActionParameterV2<V, R> : never
     >
   > {
-    const v = (typeof parameter === "string")
-      ? createActionParameterV2(parameter, required)
-      : parameter;
+    const v =
+      typeof parameter === "string"
+        ? createActionParameterV2(parameter, required)
+        : parameter;
 
     return new ActionTypeBuilder({
       ...this.action,
@@ -100,7 +103,7 @@ export class ActionTypeBuilder<
   build(): ActionTypeBuilderResult<P> {
     const actionTypeV2 = this.action;
     const actionMetadata = wireActionTypeV2ToSdkActionMetadata(
-      actionTypeV2,
+      actionTypeV2
       // cast below is needed because the compile time type also needs `signatures`
       // which we don't create in the conversion.
     ) as TH_ActionMetadata<TH_ActionTypeV2<P>>;

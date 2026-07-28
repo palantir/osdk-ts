@@ -14,6 +14,7 @@ import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
+import { CipherText } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
@@ -25,6 +26,10 @@ import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
+import { Media } from '@osdk/api';
+import { MediaFullMetadata } from '@osdk/api';
+import { MediaItemMetadata } from '@osdk/api';
+import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
@@ -58,6 +63,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import { UnknownMediaItemMetadata } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
@@ -88,14 +94,15 @@ export { ApplyBatchActionOptions }
 
 export { Attachment }
 
+export { CipherText }
+
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export interface Client extends SharedClient, OldSharedClient {
+    	<Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     	// (undocumented)
-    <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
-    	// (undocumented)
-    <Q extends (InterfaceDefinition)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends InterfaceDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     	// Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -105,9 +112,8 @@ export interface Client extends SharedClient, OldSharedClient {
     // (undocumented)
     <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
     	// (undocumented)
-    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0">>(experiment: Q): ExperimentFns<Q>;
-    	// (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
+    <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
+    	fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
 export { CompileTimeMetadata }
@@ -115,7 +121,7 @@ export { CompileTimeMetadata }
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
-// @public (undocumented)
+// @public
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
@@ -125,33 +131,20 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 // @public
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
 export { DerivedProperty }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDate: (dateTime: string) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDateInLocalTime: (date: Date) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDateInUTC: (date: Date) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
 
@@ -168,6 +161,14 @@ export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefiniti
 export { isOk }
 
 export { Logger }
+
+export { Media }
+
+export { MediaFullMetadata }
+
+export { MediaItemMetadata }
+
+export { MediaMetadata_2 as MediaMetadata }
 
 export { MediaReference }
 
@@ -227,6 +228,8 @@ export { SingleLinkAccessor }
 export { ThreeDimensionalAggregation }
 
 export { TwoDimensionalAggregation }
+
+export { UnknownMediaItemMetadata }
 
 export { VersionBound }
 

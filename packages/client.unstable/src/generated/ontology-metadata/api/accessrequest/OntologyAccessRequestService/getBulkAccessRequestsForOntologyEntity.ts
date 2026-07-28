@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BulkGetAccessRequestForOntologyEntityRequest
-    as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
-  BulkGetAccessRequestsForOntologyEntityResponse
-    as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
+  BulkGetAccessRequestForOntologyEntityRequest as _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
+  BulkGetAccessRequestsForOntologyEntityResponse as _api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse,
 } from "../__components.js";
 
 /**
@@ -27,12 +26,12 @@ import type {
  */
 export async function getBulkAccessRequestsForOntologyEntity(
   ctx: ConjureContext,
-  request: _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
+  request: _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest
 ): Promise<_api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/getAccessRequestsForOntologyEntity`,
     "POST",
-    request,
+    request
   );
 }

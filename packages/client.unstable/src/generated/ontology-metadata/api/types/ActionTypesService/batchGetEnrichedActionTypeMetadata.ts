@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  BatchGetEnrichedActionTypeMetadataRequest
-    as _api_BatchGetEnrichedActionTypeMetadataRequest,
-  BatchGetEnrichedActionTypeMetadataResponse
-    as _api_BatchGetEnrichedActionTypeMetadataResponse,
+  BatchGetEnrichedActionTypeMetadataRequest as _api_BatchGetEnrichedActionTypeMetadataRequest,
+  BatchGetEnrichedActionTypeMetadataResponse as _api_BatchGetEnrichedActionTypeMetadataResponse,
 } from "../../__components.js";
 
 /**
@@ -31,12 +30,12 @@ import type {
  */
 export async function batchGetEnrichedActionTypeMetadata(
   ctx: ConjureContext,
-  request: _api_BatchGetEnrichedActionTypeMetadataRequest,
+  request: _api_BatchGetEnrichedActionTypeMetadataRequest
 ): Promise<_api_BatchGetEnrichedActionTypeMetadataResponse> {
   return conjureFetch(
     ctx,
     `/actions/types/load/enriched/metadata`,
     "PUT",
-    request,
+    request
   );
 }

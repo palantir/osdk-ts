@@ -19,10 +19,11 @@ import type {
   PropertyTypeDataConstraintsWrapper,
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
+
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertValueTypeDataConstraints(
-  dataConstraints: ValueTypeDataConstraint[],
+  dataConstraints: ValueTypeDataConstraint[]
 ): DataConstraints | undefined {
   if (dataConstraints.length === 0) {
     return undefined;
@@ -32,10 +33,10 @@ export function convertValueTypeDataConstraints(
     dataConstraints.map(
       (constraint): PropertyTypeDataConstraintsWrapper => ({
         constraints: dataConstraintToPropertyTypeDataConstraint(
-          constraint.constraint.constraint,
+          constraint.constraint.constraint
         ),
         failureMessage: constraint.constraint.failureMessage,
-      }),
+      })
     );
 
   return {

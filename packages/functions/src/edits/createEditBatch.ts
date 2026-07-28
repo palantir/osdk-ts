@@ -15,6 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
+
 import type {
   AddLinkApiNames,
   AddLinkSources,
@@ -35,13 +36,10 @@ import { isInterfaceLocator } from "./types.js";
 class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   private edits: X[] = [];
 
-  public link<
-    SOL extends AddLinkSources<X>,
-    A extends AddLinkApiNames<X, SOL>,
-  >(
+  public link<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
     source: SOL,
     apiName: A,
-    target: AddLinkTargets<X, SOL, A>,
+    target: AddLinkTargets<X, SOL, A>
   ): void {
     if (!Array.isArray(target)) {
       this.edits.push({
@@ -66,11 +64,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   public unlink<
     SOL extends RemoveLinkSources<X>,
     A extends RemoveLinkApiNames<X, SOL>,
-  >(
-    source: SOL,
-    apiName: A,
-    target: RemoveLinkTargets<X, SOL, A>,
-  ): void {
+  >(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>): void {
     if (!Array.isArray(target)) {
       this.edits.push({
         type: "removeLink",
@@ -93,7 +87,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
   public create<OI extends CreatableObjectOrInterfaceTypes<X>>(
     objectOrInterfaceType: OI,
-    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>
   ): void {
     if (objectOrInterfaceType.type === "interface") {
       this.edits.push({
@@ -112,7 +106,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   }
 
   public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(
-    obj: OL,
+    obj: OL
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
@@ -131,7 +125,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
   public update<OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
@@ -156,7 +150,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 }
 
 export function createEditBatch<T extends AnyEdit = never>(
-  _client: Client,
+  _client: Client
 ): EditBatch<T> {
   return new InMemoryEditBatch<T>();
 }

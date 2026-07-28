@@ -15,11 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
-  OntologyBulkLoadEntitiesByDatasourcesRequest
-    as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
-  OntologyBulkLoadEntitiesByDatasourcesResponse
-    as _api_OntologyBulkLoadEntitiesByDatasourcesResponse,
+  OntologyBulkLoadEntitiesByDatasourcesRequest as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
+  OntologyBulkLoadEntitiesByDatasourcesResponse as _api_OntologyBulkLoadEntitiesByDatasourcesResponse,
 } from "../__components.js";
 
 /**
@@ -34,12 +33,12 @@ import type {
  */
 export async function bulkLoadOntologyEntitiesByDatasources(
   ctx: ConjureContext,
-  request: _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
+  request: _api_OntologyBulkLoadEntitiesByDatasourcesRequest
 ): Promise<_api_OntologyBulkLoadEntitiesByDatasourcesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/bulkLoadEntitiesByDatasources`,
     "POST",
-    request,
+    request
   );
 }

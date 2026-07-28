@@ -17,6 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import type { OutlineItem } from "../../types.js";
 import { PdfViewerOutlineSidebar } from "../PdfViewerOutlineSidebar.js";
 
@@ -24,9 +25,7 @@ afterEach(() => {
   cleanup();
 });
 
-function createOutlineItem(
-  overrides: Partial<OutlineItem> = {},
-): OutlineItem {
+function createOutlineItem(overrides: Partial<OutlineItem> = {}): OutlineItem {
   return {
     title: "Chapter 1",
     depth: 0,
@@ -48,12 +47,7 @@ describe("PdfViewerOutlineSidebar", () => {
   // --- Empty state ---
 
   it("should render empty state when there are no outline items", () => {
-    render(
-      <PdfViewerOutlineSidebar
-        {...defaultProps}
-        outlineItems={[]}
-      />,
-    );
+    render(<PdfViewerOutlineSidebar {...defaultProps} outlineItems={[]} />);
 
     expect(screen.getByText("No outline available")).toBeTruthy();
   });
@@ -67,12 +61,7 @@ describe("PdfViewerOutlineSidebar", () => {
       createOutlineItem({ title: "Conclusion", pageNumber: 10 }),
     ];
 
-    render(
-      <PdfViewerOutlineSidebar
-        {...defaultProps}
-        outlineItems={items}
-      />,
-    );
+    render(<PdfViewerOutlineSidebar {...defaultProps} outlineItems={items} />);
 
     expect(screen.getByText("Introduction")).toBeTruthy();
     expect(screen.getByText("Background")).toBeTruthy();
@@ -80,16 +69,9 @@ describe("PdfViewerOutlineSidebar", () => {
   });
 
   it("should set aria-label on each item", () => {
-    const items = [
-      createOutlineItem({ title: "Chapter 1" }),
-    ];
+    const items = [createOutlineItem({ title: "Chapter 1" })];
 
-    render(
-      <PdfViewerOutlineSidebar
-        {...defaultProps}
-        outlineItems={items}
-      />,
-    );
+    render(<PdfViewerOutlineSidebar {...defaultProps} outlineItems={items} />);
 
     expect(screen.getByLabelText("Chapter 1")).toBeTruthy();
   });
@@ -98,16 +80,14 @@ describe("PdfViewerOutlineSidebar", () => {
 
   it("should call onItemClick with page number when item is clicked", () => {
     const onItemClick = vi.fn();
-    const items = [
-      createOutlineItem({ title: "Section A", pageNumber: 7 }),
-    ];
+    const items = [createOutlineItem({ title: "Section A", pageNumber: 7 })];
 
     render(
       <PdfViewerOutlineSidebar
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />,
+      />
     );
 
     fireEvent.click(screen.getByLabelText("Section A"));
@@ -116,16 +96,14 @@ describe("PdfViewerOutlineSidebar", () => {
 
   it("should call onItemClick on Enter key", () => {
     const onItemClick = vi.fn();
-    const items = [
-      createOutlineItem({ title: "Section B", pageNumber: 3 }),
-    ];
+    const items = [createOutlineItem({ title: "Section B", pageNumber: 3 })];
 
     render(
       <PdfViewerOutlineSidebar
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />,
+      />
     );
 
     fireEvent.keyDown(screen.getByLabelText("Section B"), { key: "Enter" });
@@ -134,16 +112,14 @@ describe("PdfViewerOutlineSidebar", () => {
 
   it("should call onItemClick on Space key", () => {
     const onItemClick = vi.fn();
-    const items = [
-      createOutlineItem({ title: "Section C", pageNumber: 4 }),
-    ];
+    const items = [createOutlineItem({ title: "Section C", pageNumber: 4 })];
 
     render(
       <PdfViewerOutlineSidebar
         {...defaultProps}
         outlineItems={items}
         onItemClick={onItemClick}
-      />,
+      />
     );
 
     fireEvent.keyDown(screen.getByLabelText("Section C"), { key: " " });
@@ -164,16 +140,19 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         currentPage={7}
-      />,
+      />
     );
 
     // Current page 7 is between page 5 and 10, so "Page 5 Item" should be active
-    expect(screen.getByLabelText("Page 5 Item").getAttribute("aria-current"))
-      .toBe("location");
-    expect(screen.getByLabelText("Page 1 Item").getAttribute("aria-current"))
-      .toBeNull();
-    expect(screen.getByLabelText("Page 10 Item").getAttribute("aria-current"))
-      .toBeNull();
+    expect(
+      screen.getByLabelText("Page 5 Item").getAttribute("aria-current")
+    ).toBe("location");
+    expect(
+      screen.getByLabelText("Page 1 Item").getAttribute("aria-current")
+    ).toBeNull();
+    expect(
+      screen.getByLabelText("Page 10 Item").getAttribute("aria-current")
+    ).toBeNull();
   });
 
   it("should mark the last item as active when on the last page", () => {
@@ -187,11 +166,12 @@ describe("PdfViewerOutlineSidebar", () => {
         {...defaultProps}
         outlineItems={items}
         currentPage={15}
-      />,
+      />
     );
 
-    expect(screen.getByLabelText("End").getAttribute("aria-current"))
-      .toBe("location");
+    expect(screen.getByLabelText("End").getAttribute("aria-current")).toBe(
+      "location"
+    );
   });
 
   // --- Indentation ---
@@ -203,12 +183,7 @@ describe("PdfViewerOutlineSidebar", () => {
       createOutlineItem({ title: "Deeply Nested", depth: 2 }),
     ];
 
-    render(
-      <PdfViewerOutlineSidebar
-        {...defaultProps}
-        outlineItems={items}
-      />,
-    );
+    render(<PdfViewerOutlineSidebar {...defaultProps} outlineItems={items} />);
 
     // INDENT_PER_DEPTH = 16, base padding = 12
     const topLevel = screen.getByLabelText("Top Level");
@@ -227,16 +202,14 @@ describe("PdfViewerOutlineSidebar", () => {
       return <span data-testid="test-icon">icon</span>;
     }
 
-    const items = [
-      createOutlineItem({ title: "With Icon", depth: 0 }),
-    ];
+    const items = [createOutlineItem({ title: "With Icon", depth: 0 })];
 
     render(
       <PdfViewerOutlineSidebar
         {...defaultProps}
         outlineItems={items}
         outlineIcons={{ 0: TestIcon }}
-      />,
+      />
     );
 
     expect(screen.getByTestId("test-icon")).toBeTruthy();
@@ -247,16 +220,14 @@ describe("PdfViewerOutlineSidebar", () => {
       return <span data-testid="test-icon">icon</span>;
     }
 
-    const items = [
-      createOutlineItem({ title: "No Icon", depth: 1 }),
-    ];
+    const items = [createOutlineItem({ title: "No Icon", depth: 1 })];
 
     render(
       <PdfViewerOutlineSidebar
         {...defaultProps}
         outlineItems={items}
         outlineIcons={{ 0: TestIcon }}
-      />,
+      />
     );
 
     expect(screen.queryByTestId("test-icon")).toBeNull();

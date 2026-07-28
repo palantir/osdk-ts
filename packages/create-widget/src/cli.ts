@@ -87,7 +87,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("osdkRegistryUrl", {
             type: "string",
             describe: "URL for NPM registry to install OSDK package",
-          }),
+          })
     );
 
   const parsed: CliArgs = base.parseSync();

@@ -28,6 +28,7 @@ import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runMediaTest } from "./runMediaTest.js";
 import { runQueriesTest } from "./runQueriesTest.js";
+import { runScenariosTest } from "./runScenariosTest.js";
 import { runStructsTest } from "./runStructsTest.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
 import { runTimeseriesTest } from "./runTimeseriesTest.js";
@@ -35,6 +36,7 @@ import { typeChecks } from "./typeChecks.js";
 
 const runOld = false;
 const testSubscriptions = false;
+const testScenarios = false;
 
 async function runTests() {
   try {
@@ -44,7 +46,7 @@ async function runTests() {
       await runLegacyExamples();
     }
     if (testSubscriptions) {
-      runSubscriptionsTest();
+      await runSubscriptionsTest();
 
       // we don't need the console flooded with additional things
       return;
@@ -79,6 +81,10 @@ async function runTests() {
     await runFetchByRidTest();
 
     await runApplyFormatterTest();
+
+    if (testScenarios) {
+      await runScenariosTest();
+    }
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);

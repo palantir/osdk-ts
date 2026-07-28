@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetLinksRequest as _api_GetLinksRequest,
   GetLinksResponse as _api_GetLinksResponse,
@@ -25,7 +26,7 @@ import type {
  */
 export async function getLinks(
   ctx: ConjureContext,
-  request: _api_GetLinksRequest,
+  request: _api_GetLinksRequest
 ): Promise<_api_GetLinksResponse> {
   return conjureFetch(ctx, `/links`, "POST", request);
 }

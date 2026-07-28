@@ -19,45 +19,46 @@ import { colorize } from "consola/utils";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+
 import type { CliCommonArgs } from "./CliCommonArgs.js";
 import { ExitProcessError } from "./ExitProcessError.js";
 import { logLevelMiddleware } from "./yargs/logLevelMiddleware.js";
 import { YargsCheckError } from "./YargsCheckError.js";
 
 export function getYargsBase(args: string[]): Argv<CliCommonArgs> {
-  return yargs(hideBin(args))
-    .wrap(Math.min(150, yargs().terminalWidth()))
-    .env("OSDK")
-    .version(false)
-    .option(
-      "verbose",
-      {
+  return (
+    yargs(hideBin(args))
+      .wrap(Math.min(150, yargs().terminalWidth()))
+      .env("OSDK")
+      .version(false)
+      .option("verbose", {
         alias: "v",
         type: "boolean",
         description: "Enable verbose logging",
         count: true,
-      },
-    )
-    .demandCommand()
-    .middleware(logLevelMiddleware, true)
-    .strict()
-    .fail(async (msg, err, argv) => {
-      if (err instanceof ExitProcessError) {
-        consola.error(err.message);
-        if (err.tip != null) {
-          consola.log(colorize("bold", `💡 Tip: ${err.tip}`));
-          consola.log("");
-        }
-        consola.debug(err.stack);
-      } else {
-        if (err && !(err instanceof YargsCheckError)) {
-          throw err;
+      })
+      .demandCommand()
+      .middleware(logLevelMiddleware, true)
+      .strict()
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+      .fail(async (msg, err, argv) => {
+        if (err instanceof ExitProcessError) {
+          consola.error(err.message);
+          if (err.tip != null) {
+            consola.log(colorize("bold", `💡 Tip: ${err.tip}`));
+            consola.log("");
+          }
+          consola.debug(err.stack);
         } else {
-          argv.showHelp();
-          consola.log("");
-          consola.error(msg);
+          if (err && !(err instanceof YargsCheckError)) {
+            throw err;
+          } else {
+            argv.showHelp();
+            consola.log("");
+            consola.error(msg);
+          }
         }
-      }
-      process.exit(1);
-    });
+        process.exit(1);
+      })
+  );
 }

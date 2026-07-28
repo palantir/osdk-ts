@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type { GetTopRowsRequest as _api_dataframe_GetTopRowsRequest } from "../__components.js";
 
 /**
@@ -27,7 +28,7 @@ import type { GetTopRowsRequest as _api_dataframe_GetTopRowsRequest } from "../_
  */
 export async function getTopRows(
   ctx: ConjureContext,
-  request: _api_dataframe_GetTopRowsRequest,
+  request: _api_dataframe_GetTopRowsRequest
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -36,6 +37,6 @@ export async function getTopRows(
     request,
     undefined,
     undefined,
-    "application/octet-stream",
+    "application/octet-stream"
   );
 }

@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -37,7 +38,7 @@ import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
-  ObserveListOptions<ObjectOrInterfaceDefinition>
+  ObserveListOptions<ObjectOrInterfaceDefinition, {}>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -56,7 +57,7 @@ export class ListsHelper extends AbstractHelper<
     intersectCanonicalizer: IntersectCanonicalizer,
     pivotCanonicalizer: PivotCanonicalizer,
     ridListCanonicalizer: RidListCanonicalizer,
-    selectCanonicalizer: SelectCanonicalizer,
+    selectCanonicalizer: SelectCanonicalizer
   ) {
     super(store, cacheKeys);
 
@@ -70,19 +71,39 @@ export class ListsHelper extends AbstractHelper<
   }
 
   observe<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
+    options: ObserveListOptions<T, {}>,
+    subFn: Observer<ListPayload>
   ): QuerySubscription<ListQuery> {
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
+      if (options.pivotTo) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with pivotTo. " +
+              "The server does not support websocket subscriptions for " +
+              "link-traversal queries. Ignoring streamUpdates."
+          );
+        }
+      } else if (options.withProperties) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. " +
+              "The server does not support websocket subscriptions for " +
+              "object sets that include derived properties. Ignoring streamUpdates."
+          );
+        }
+      } else {
+        ret.query.registerStreamUpdates(ret.subscription);
+      }
     }
     return ret;
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
+    options: ObserveListOptions<T, {}>
   ): ListQuery {
     const {
       type: typeDefinition,
@@ -94,8 +115,17 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
+      resolveToObjectType,
     } = options;
     const { apiName, type } = typeDefinition;
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties =
+      type === "interface" && options.$includeAllBaseObjectProperties
+        ? true
+        : undefined;
+    const canonResolveToObjectType =
+      type === "interface" && resolveToObjectType ? true : undefined;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
@@ -103,21 +133,22 @@ export class ListsHelper extends AbstractHelper<
       ? this.rdpCanonicalizer.canonicalize(withProperties)
       : undefined;
 
-    const canonIntersect = intersectWith && intersectWith.length > 0
-      ? this.intersectCanonicalizer.canonicalize(intersectWith)
-      : undefined;
+    const canonIntersect =
+      intersectWith && intersectWith.length > 0
+        ? this.intersectCanonicalizer.canonicalize(intersectWith)
+        : undefined;
 
     const canonPivot = pivotTo
       ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
       : undefined;
 
-    const canonRids = rids != null
-      ? this.ridListCanonicalizer.canonicalize(rids)
-      : undefined;
+    const canonRids =
+      rids != null ? this.ridListCanonicalizer.canonicalize(rids) : undefined;
 
-    const canonSelect = select && select.length > 0
-      ? this.selectCanonicalizer.canonicalize(select)
-      : undefined;
+    const canonSelect =
+      select && select.length > 0
+        ? this.selectCanonicalizer.canonicalize(select)
+        : undefined;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
@@ -131,18 +162,19 @@ export class ListsHelper extends AbstractHelper<
       canonRids,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
+      $includeAllBaseObjectProperties,
+      canonResolveToObjectType
     );
 
     return this.store.queries.get(listCacheKey, () => {
-      const QueryClass = type === "object"
-        ? ObjectListQuery
-        : InterfaceListQuery;
+      const QueryClass =
+        type === "object" ? ObjectListQuery : InterfaceListQuery;
       return new QueryClass(
         this.store,
         this.store.subjects.get(listCacheKey),
         apiName,
         listCacheKey,
-        options,
+        options
       );
     });
   }

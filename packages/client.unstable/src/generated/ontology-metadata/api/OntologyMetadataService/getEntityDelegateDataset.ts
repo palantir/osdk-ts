@@ -15,6 +15,7 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
 import type {
   GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
   GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
@@ -25,7 +26,7 @@ import type {
  */
 export async function getEntityDelegateDataset(
   ctx: ConjureContext,
-  request: _api_GetEntityDelegateDatasetRequest,
+  request: _api_GetEntityDelegateDatasetRequest
 ): Promise<_api_GetEntityDelegateDatasetResponse> {
   return conjureFetch(ctx, `/ontology/entityDelegateDataset`, "POST", request);
 }

@@ -1,0 +1,10 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "dependsOn": ["^transpileEsm", "^transpileBrowser", "^transpileTypes"],
+      "inputs": ["./src/**/*.ts", "./webpack.config.cjs"],
+      "outputs": ["./dist/**"]
+    }
+  }
+}
