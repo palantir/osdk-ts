@@ -39,7 +39,8 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
       /**
        * Current form values (controlled mode). Provide together with
-       * `onFormStateChange`; omit both for uncontrolled mode.
+       * `onFormStateChange`. For uncontrolled mode, omit `formState`
+       * (`onFormStateChange` stays optional).
        */
       formState: FormState<Q>;
       /**
@@ -157,7 +158,8 @@ export interface FormSectionDefinition {
  * OSDK data fetching.
  *
  * Uses a discriminated union so that controlled mode (`formState` provided)
- * always requires `onFieldValueChange`, and uncontrolled mode omits both.
+ * always requires `onFieldValueChange`; uncontrolled mode omits `formState`
+ * (`onFieldValueChange` stays optional).
  * `onSubmit` receives the current form state so callers can access values
  * even in uncontrolled mode.
  */
