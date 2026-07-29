@@ -58,9 +58,10 @@ export function TableCell<TData extends RowData>({
     !!popoverPosition &&
     !!renderCellContextMenu;
 
-  const { columnStyles } = getColumnPinningStyles(cell.column);
+  const table = cell.getContext().table;
+  const { columnStyles } = getColumnPinningStyles(cell.column, table);
 
-  const tableMeta = cell.getContext().table.options.meta;
+  const tableMeta = table.options.meta;
   const columnMeta = cell.column.columnDef.meta;
   const isEditable = shouldShowEditableCell(
     isCellEditable(columnMeta?.editable, cell.row.original),

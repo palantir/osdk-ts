@@ -141,6 +141,11 @@ function getColumnsFromColumnDefinitions<
         markingType,
         validateEdit,
       },
+      // Assigned unconditionally, unlike minSize/maxSize below: leaving `size`
+      // undefined is what marks the column as free to stretch to fill the
+      // container. A conditional spread here would let TanStack merge in its
+      // own 150px default and pin the column to a fixed width. See
+      // getColumnFlexGrow.
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
       ...(maxWidth ? { maxSize: maxWidth } : {}),
@@ -190,6 +195,10 @@ function getDefaultColumns<
     > = {
       accessorKey: key,
       header: property.displayName ?? key,
+      // No caller-supplied width, so leave `size` unset rather than letting
+      // TanStack merge in its 150px default — that keeps these columns free to
+      // stretch and fill the container. See getColumnFlexGrow.
+      size: undefined,
     };
     return colDef;
   });

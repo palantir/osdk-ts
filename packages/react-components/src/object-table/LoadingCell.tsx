@@ -30,9 +30,15 @@ export function LoadingCellContent(): React.ReactElement {
   );
 }
 
-export function LoadingCell({ width }: { width: number }): React.ReactElement {
+export function LoadingCell({
+  width,
+  flexGrow,
+}: {
+  width: number;
+  flexGrow?: number;
+}): React.ReactElement {
   return (
-    <td className={cellStyles.osdkTableCell} style={{ width }}>
+    <td className={cellStyles.osdkTableCell} style={{ width, flexGrow }}>
       <LoadingCellContent />
     </td>
   );
