@@ -192,7 +192,7 @@ src/my-component/
   }
   ```
 
-  This is a cascade override, not a token declaration — it introduces no new public token, so it does not belong in `src/tokens/`. Existing examples: `object-table/EditableCell.module.css`, `object-table/LoadingCell.module.css`, `object-table/ColumnConfigDialog.module.css`, `action-form/fields/FilePickerField.module.css`, `action-form/fields/DropdownField.module.css`, `shared/calendar/DatePickerCommon.module.css`.
+  This is a cascade override, not a token declaration — it introduces no new public token, so it does not belong in `src/tokens/`.
 
 - **Every token you reference must be declared — except when its default is a CSS-wide keyword.** Don't lean on `var(--osdk-x, <fallback>)` to stand in for a token you simply forgot to declare. But a token whose default is `inherit` / `initial` / `unset` **cannot** be declared: `--osdk-x: inherit` at `:root` has no parent to inherit from, so it resolves to the guaranteed-invalid value and `var(--osdk-x)` silently computes to the property's initial value. Such defaults must live in the `var()` fallback; leave a comment in the token file saying so. Canonical case: `--osdk-table-cell-bg` (see `component-tokens/table.css`), where declaring it turned sticky pinned table cells transparent.
 - **Use CSS modules** (`.module.css`) for component-scoped styles.
