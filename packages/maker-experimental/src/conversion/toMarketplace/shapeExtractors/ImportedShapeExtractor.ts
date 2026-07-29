@@ -56,6 +56,8 @@ interface ImportedBlockShapes extends BlockShapes {
   inputPresets: Map<ReadableId, InputPreset>;
 }
 
+export type LinkTypeIdsByApiName = Readonly<Record<string, string>>;
+
 function createLocalizedAbout(
   fallbackTitle: string,
   fallbackDescription: string = ""
@@ -75,7 +77,8 @@ function createLocalizedAbout(
  */
 export function getImportedShapes(
   importedBlockData: OntologyBlockDataV2,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
+  linkTypeIdsByApiName: LinkTypeIdsByApiName = {}
 ): ImportedBlockShapes {
   const blockShapes: ImportedBlockShapes = {
     inputShapes: new Map(),
@@ -86,7 +89,12 @@ export function getImportedShapes(
   };
 
   extractImportedObjectTypes(importedBlockData, ridGenerator, blockShapes);
-  extractImportedLinkTypes(importedBlockData, ridGenerator, blockShapes);
+  extractImportedLinkTypes(
+    importedBlockData,
+    ridGenerator,
+    blockShapes,
+    linkTypeIdsByApiName
+  );
   extractImportedInterfaceTypes(importedBlockData, ridGenerator, blockShapes);
   extractImportedSharedPropertyTypes(
     importedBlockData,
@@ -195,7 +203,8 @@ function extractImportedObjectTypes(
 function extractImportedLinkTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: ImportedBlockShapes
+  blockShapes: ImportedBlockShapes,
+  linkTypeIdsByApiName: LinkTypeIdsByApiName
 ): void {
   const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
 
@@ -303,12 +312,15 @@ function extractImportedLinkTypes(
       type: "linkType",
       linkType: linkInputShape,
     });
-    addPreset(blockShapes, readableId, {
-      type: "linkTypeIdResolver",
-      linkTypeIdResolver: {
-        linkTypeIdWithoutOntologyPrefix: linkType.linkType.id,
-      },
-    });
+    const linkTypeId = linkTypeIdsByApiName[linkType.linkType.id];
+    if (linkTypeId !== undefined) {
+      addPreset(blockShapes, readableId, {
+        type: "linkTypeIdResolver",
+        linkTypeIdResolver: {
+          linkTypeIdWithoutOntologyPrefix: linkTypeId,
+        },
+      });
+    }
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -730,7 +742,7 @@ function addPreset(
     },
     exportCompatibility: "COMPATIBLE",
     enforcement: "SUGGESTED",
-    isDefault: true,
+    isDefault: false,
   });
 }
 

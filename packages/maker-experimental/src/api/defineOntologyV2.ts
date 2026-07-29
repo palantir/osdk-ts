@@ -30,7 +30,10 @@ import {
 } from "@osdk/maker";
 
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import {
+  getImportedShapes,
+  type LinkTypeIdsByApiName,
+} from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
@@ -53,7 +56,8 @@ export async function defineOntologyV2(
   outputDir?: string,
   dependencyFile?: string,
   functionsIrFile?: string,
-  randomnessKey?: string
+  randomnessKey?: string,
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -96,7 +100,8 @@ export async function defineOntologyV2(
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
     ontDef.importedOntology,
-    ridGenerator
+    ridGenerator,
+    importedLinkTypeIdsByApiName
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);

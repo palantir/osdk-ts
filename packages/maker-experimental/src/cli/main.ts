@@ -22,6 +22,7 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import {
   OntologyBlockDataToFullMetadataConverter,
   OntologyIrToFullMetadataConverter,
@@ -35,6 +36,7 @@ import { hideBin } from "yargs/helpers";
 
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
+import type { LinkTypeIdsByApiName } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -69,6 +71,7 @@ export default async function main(
     nodeModulesDir?: string;
     functionsIrOutputFile?: string;
     randomnessKey?: string;
+    importJson?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -136,6 +139,12 @@ export default async function main(
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
+      },
+      "import-json": {
+        describe:
+          "Path to imported ontology metadata produced by 'foundry import ontology'",
+        type: "string",
+        coerce: path.resolve,
       },
     })
     .parseAsync();
@@ -214,6 +223,14 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
+  const importedLinkTypeIdsByApiName = commandLineOpts.importJson
+    ? getImportedLinkTypeIdsByApiName(
+        JSON.parse(
+          await fs.promises.readFile(commandLineOpts.importJson, "utf-8")
+        ) as ImportedOntologyMetadata
+      )
+    : undefined;
+
   const {
     ontologyIr,
     shapes,
@@ -226,7 +243,8 @@ export default async function main(
     codegenDir,
     dependencyFile,
     functionsIrFile,
-    commandLineOpts.randomnessKey
+    commandLineOpts.randomnessKey,
+    importedLinkTypeIdsByApiName
   );
 
   // Create temp directory for block data
@@ -460,7 +478,8 @@ async function loadOntology(
   outputDir?: string,
   dependencyFile?: string,
   functionsIrFile?: string,
-  randomnessKey?: string
+  randomnessKey?: string,
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -468,8 +487,28 @@ async function loadOntology(
     outputDir,
     dependencyFile,
     functionsIrFile,
-    randomnessKey
+    randomnessKey,
+    importedLinkTypeIdsByApiName
   );
+  return result;
+}
+
+type ImportedOntologyMetadata = OntologyFullMetadata & {
+  linkTypeIdsByRid?: Record<string, string>;
+};
+
+function getImportedLinkTypeIdsByApiName(
+  metadata: ImportedOntologyMetadata
+): LinkTypeIdsByApiName {
+  const result: Record<string, string> = {};
+  for (const objectType of Object.values(metadata.objectTypes)) {
+    for (const linkType of objectType.linkTypes) {
+      const linkTypeId = metadata.linkTypeIdsByRid?.[linkType.linkTypeRid];
+      if (linkTypeId !== undefined) {
+        result[cleanAndValidateLinkTypeId(linkType.apiName)] = linkTypeId;
+      }
+    }
+  }
   return result;
 }
 
