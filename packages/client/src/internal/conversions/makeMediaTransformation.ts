@@ -62,18 +62,8 @@ import type {
 } from "@osdk/foundry.mediasets";
 import type { IsEqual } from "type-fest";
 
-// `@osdk/api` depends on no `@osdk/foundry.*` package (see the note in api's
-// `actions/ActionResults.ts`), so the language enums it declares in
-// `experimental/MediaTransformationLanguages.ts` are hand-copied from the generated ones. They are
-// closed unions, so a value the platform adds is a type error for callers until we copy it across.
-//
-// These aliases are how you find out. A platform SDK bump that changes any of the three unions fails
-// `pnpm turbo typecheck --filter=@osdk/client` here. Fix it by syncing
-// `MediaTransformationLanguages.ts` with the generated union, not by relaxing the assertion.
-//
-// This lives in a plain source file rather than a test because `tsconfig.typecheck.json` excludes
-// `*.test.ts` and vitest does not run with `typecheck` enabled, so a type-level assertion in a test
-// file would never be evaluated.
+// hand-copied into `@osdk/api`, which cannot depend on `@osdk/foundry.*`. a narrower copy stays
+// assignable to the wire type, so only an equality check catches a value the platform adds
 type AssertPlatformParity<T extends true> = T;
 
 type _OcrLanguageMatchesPlatform = AssertPlatformParity<
