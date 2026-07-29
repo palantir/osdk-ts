@@ -803,6 +803,63 @@ describe(useColumnDefs, () => {
     });
   });
 
+  describe("column width", () => {
+    // `size` left unset is what marks a column as free to stretch and fill the
+    // container width — see getColumnFlexGrow. TanStack merges in its own 150px
+    // default for any column def that omits the key, so these columns have to
+    // carry `size: undefined` explicitly.
+    it("leaves size unset on default columns so they can fill the container", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper: createWrapper(fakeClient),
+      });
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns).not.toHaveLength(0);
+      for (const column of result.current.columns) {
+        expect(column).toHaveProperty("size", undefined);
+      }
+    });
+
+    it("leaves size unset for a columnDefinition with no width", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        { locator: { type: "property", id: "name" as TestObjectKeys } },
+        {
+          locator: { type: "property", id: "email" as TestObjectKeys },
+          width: 200,
+        },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper: createWrapper(fakeClient) }
+      );
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]).toHaveProperty("size", undefined);
+      expect(result.current.columns[1]?.size).toBe(200);
+    });
+  });
+
   it("memoizes columns based on metadata properties", async () => {
     const deferred = pDefer();
     const fakeClient = {

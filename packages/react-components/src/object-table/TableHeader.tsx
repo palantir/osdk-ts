@@ -67,6 +67,48 @@ const getHeaderName = <TData,>(
   return meta?.columnName ?? id;
 };
 
+/**
+ * Records a stretched column's painted width as its size, so that starting a
+ * resize on it doesn't collapse it.
+ *
+ * Columns that stretch to fill the container are painted wider than
+ * `column.getSize()` — the extra width comes from flex-grow, see
+ * `getColumnFlexGrow`. TanStack takes the start width for a drag from
+ * `getSize()`, so without this the column would snap back to that stored width
+ * on the first pointer move.
+ *
+ * `pointerdown` fires ahead of both `mousedown` and `touchstart`, which is what
+ * makes this work: React commits the new sizing state before the resize handler
+ * runs and reads it.
+ *
+ * Nothing moves on screen as a result. The share of leftover width this column
+ * stops claiming is exactly the growth it keeps, leaving every other column's
+ * painted width unchanged.
+ */
+function pinPaintedColumnWidth<TData extends RowData>(
+  table: Table<TData>,
+  header: Header<TData, unknown>,
+  resizer: HTMLElement
+): void {
+  const headerCell = resizer.closest("th");
+  if (headerCell == null) {
+    return;
+  }
+
+  const paintedWidth = Math.round(headerCell.getBoundingClientRect().width);
+
+  // A column that was never stretched needs no adjusting; the tolerance keeps
+  // sub-pixel rounding from being reported as a resize.
+  if (paintedWidth <= 0 || Math.abs(paintedWidth - header.getSize()) <= 1) {
+    return;
+  }
+
+  table.setColumnSizing((prev) => ({
+    ...prev,
+    [header.column.id]: paintedWidth,
+  }));
+}
+
 export function TableHeader<TData extends RowData>({
   table,
   headerMenuFeatureFlags,
@@ -79,6 +121,7 @@ export function TableHeader<TData extends RowData>({
   const currentSorting = table.getState().sorting;
   const currentVisibility = table.getState().columnVisibility;
   const currentColumnOrder = table.getState().columnOrder;
+  const currentColumnSizing = table.getState().columnSizing;
 
   const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
 
@@ -145,7 +188,10 @@ export function TableHeader<TData extends RowData>({
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className={styles.osdkTableHeaderRow}>
             {headerGroup.headers.map((header) => {
-              const { columnStyles } = getColumnPinningStyles(header.column);
+              const { columnStyles } = getColumnPinningStyles(
+                header.column,
+                currentColumnSizing
+              );
               const isColumnPinned = header.column.getIsPinned();
               const isSelectColumn = header.id === SELECTION_COLUMN_ID;
               return (
@@ -176,6 +222,13 @@ export function TableHeader<TData extends RowData>({
                       <div
                         className={styles.osdkTableHeaderResizer}
                         onDoubleClick={() => header.column.resetSize()}
+                        onPointerDown={(event) =>
+                          pinPaintedColumnWidth(
+                            table,
+                            header,
+                            event.currentTarget
+                          )
+                        }
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
                       />

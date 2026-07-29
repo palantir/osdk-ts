@@ -19,6 +19,7 @@ import React from "react";
 
 import { LoadingCell } from "./LoadingCell.js";
 import { DEFAULT_COLUMN_WIDTH, DEFAULT_ROW_HEIGHT } from "./utils/constants.js";
+import { getColumnFlexGrow } from "./utils/getColumnPinningStyles.js";
 
 import rowStyles from "./TableRow.module.css";
 
@@ -48,9 +49,19 @@ export function LoadingRow<TData extends RowData>({
       {
         <>
           {Array.from({ length: columnCount }).map((_, index) => {
-            const width =
-              headers.length > index ? headers[index].getSize() : columnWidth;
-            return <LoadingCell key={`loading-cell-${index}`} width={width} />;
+            const header = headers.length > index ? headers[index] : undefined;
+            return (
+              <LoadingCell
+                key={`loading-cell-${index}`}
+                width={header?.getSize() ?? columnWidth}
+                // Stretch alongside the real header cells above, which are laid
+                // out by getColumnPinningStyles, so the skeleton columns stay
+                // lined up with them.
+                flexGrow={
+                  header != null ? getColumnFlexGrow(header.column) : undefined
+                }
+              />
+            );
           })}
         </>
       }
