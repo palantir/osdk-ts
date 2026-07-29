@@ -232,6 +232,7 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 test("it generates .env.development", () => {
   expect(
     generateEnvDevelopment({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       clientId: "123",
@@ -244,6 +245,7 @@ test("it generates .env.development", () => {
 test("it generates .env.development without ontology rid", () => {
   expect(
     generateEnvDevelopment({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       clientId: "123",
@@ -256,6 +258,7 @@ test("it generates .env.development without ontology rid", () => {
 test("it generates .env.development assuming CORS proxy", () => {
   expect(
     generateEnvDevelopment({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       clientId: "123",
@@ -268,6 +271,7 @@ test("it generates .env.development assuming CORS proxy", () => {
 test("it generates .env.production", () => {
   expect(
     generateEnvProduction({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       applicationUrl: "https://app.com",
@@ -280,6 +284,7 @@ test("it generates .env.production", () => {
 test("it generates .env.production without app url", () => {
   expect(
     generateEnvProduction({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       applicationUrl: undefined,
@@ -292,6 +297,7 @@ test("it generates .env.production without app url", () => {
 test("it generates .env.production without ontology rid", () => {
   expect(
     generateEnvProduction({
+      authless: false,
       envPrefix: "PUBLIC_",
       foundryUrl: "https://example.palantirfoundry.com",
       applicationUrl: "https://app.com",
@@ -299,4 +305,127 @@ test("it generates .env.production without ontology rid", () => {
       ontology: undefined,
     })
   ).toEqual(expectedEnvProductionNoOntologyRid);
+});
+
+const expectedEnvDevelopmentAuthless = `
+# This env file is intended for developing on your local computer.
+# To deploy your application to production, see .env.production.
+
+
+# This URL is the local proxy that forwards requests to Foundry.
+# The Vite dev server proxies requests through /api-proxy to avoid CORS issues.
+
+PUBLIC_FOUNDRY_API_URL=http://localhost:8080/api-proxy
+
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
+`.trimStart();
+
+const expectedEnvDevelopmentAuthlessNoOntology = `
+# This env file is intended for developing on your local computer.
+# To deploy your application to production, see .env.production.
+
+
+# This URL is the local proxy that forwards requests to Foundry.
+# The Vite dev server proxies requests through /api-proxy to avoid CORS issues.
+
+PUBLIC_FOUNDRY_API_URL=http://localhost:8080/api-proxy
+`.trimStart();
+
+const expectedEnvProductionAuthless = `
+# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+
+
+# This URL is the Foundry proxy URL for your application.
+PUBLIC_FOUNDRY_API_URL=https://myapp.example.palantirfoundry.com/proxy
+
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
+`.trimStart();
+
+const expectedEnvProductionAuthlessNoAppUrl = `
+# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+
+
+# This URL is the Foundry proxy URL for your application.
+# PUBLIC_FOUNDRY_API_URL=<Fill in your application's subdomain URL>/proxy
+
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
+# It typically does not need to be changed.
+
+PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
+`.trimStart();
+
+const expectedEnvProductionAuthlessNoOntology = `
+# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+
+
+# This URL is the Foundry proxy URL for your application.
+PUBLIC_FOUNDRY_API_URL=https://myapp.example.palantirfoundry.com/proxy
+`.trimStart();
+
+test("it generates .env.development for authless", () => {
+  expect(
+    generateEnvDevelopment({
+      authless: true,
+      envPrefix: "PUBLIC_",
+      ontology: "ri.ontology.main.ontology.fake",
+    })
+  ).toEqual(expectedEnvDevelopmentAuthless);
+});
+
+test("it generates .env.development for authless without ontology rid", () => {
+  expect(
+    generateEnvDevelopment({
+      authless: true,
+      envPrefix: "PUBLIC_",
+      ontology: undefined,
+    })
+  ).toEqual(expectedEnvDevelopmentAuthlessNoOntology);
+});
+
+test("it generates .env.production for authless", () => {
+  expect(
+    generateEnvProduction({
+      authless: true,
+      envPrefix: "PUBLIC_",
+      applicationUrl: "https://myapp.example.palantirfoundry.com",
+      ontology: "ri.ontology.main.ontology.fake",
+    })
+  ).toEqual(expectedEnvProductionAuthless);
+});
+
+test("it generates .env.production for authless without application url", () => {
+  expect(
+    generateEnvProduction({
+      authless: true,
+      envPrefix: "PUBLIC_",
+      applicationUrl: undefined,
+      ontology: "ri.ontology.main.ontology.fake",
+    })
+  ).toEqual(expectedEnvProductionAuthlessNoAppUrl);
+});
+
+test("it generates .env.production for authless without ontology rid", () => {
+  expect(
+    generateEnvProduction({
+      authless: true,
+      envPrefix: "PUBLIC_",
+      applicationUrl: "https://myapp.example.palantirfoundry.com",
+      ontology: undefined,
+    })
+  ).toEqual(expectedEnvProductionAuthlessNoOntology);
 });

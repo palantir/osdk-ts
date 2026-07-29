@@ -154,17 +154,35 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     ...parsed,
     template,
   });
+  const authless: boolean = template.authless ?? false;
+  if (authless && sdkVersion !== "2.x") {
+    throw new Error(
+      `The ${template.label} template only supports sdkVersion 2.x.`
+    );
+  }
+  if (authless && parsed.clientId != null) {
+    throw new Error(
+      `The ${template.label} template does not accept --clientId.`
+    );
+  }
+  if (authless && parsed.scopes != null) {
+    throw new Error(`The ${template.label} template does not accept --scopes.`);
+  }
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
-  const clientId: string = await promptClientId(parsed);
+  const clientId: string | undefined = authless
+    ? undefined
+    : await promptClientId(parsed);
   const { osdkPackage, ontology, osdkRegistryUrl } =
     await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
       ...parsed,
       sdkVersion,
     });
-  const corsProxy: boolean = await promptCorsProxy(parsed);
-  const scopes: string[] | undefined = await promptScopes(parsed);
+  const corsProxy: boolean = authless ? true : await promptCorsProxy(parsed);
+  const scopes: string[] | undefined = authless
+    ? undefined
+    : await promptScopes(parsed);
 
   await run({
     project,
