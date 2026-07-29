@@ -36,6 +36,8 @@ import { PortalContainerProvider } from "../../shared/PortalContainerContext.js"
 import { ObjectTableLabelsProvider } from "../ObjectTableLabels.js";
 import { TableHeaderWithPopover } from "../TableHeaderWithPopover.js";
 
+import styles from "../TableHeaderWithPopover.module.css";
+
 interface TestRow {
   name: string;
   age: number;
@@ -118,6 +120,42 @@ describe(TableHeaderWithPopover, () => {
     });
   });
 
+  describe("active menu item styling for pinning", () => {
+    it("marks the unpin item active while the column is pinned", async () => {
+      render(
+        <PortalContainerProvider container={createRef<HTMLDivElement>()}>
+          <TableHeaderWithPopover
+            table={createTable()}
+            header={createHeader()}
+            isColumnPinned="left"
+            featureFlags={{ showPinningItems: true }}
+          />
+        </PortalContainerProvider>
+      );
+
+      await openHeaderMenu("name");
+
+      expect(activeStateByMenuItem()).toEqual({ "Unpin Column": true });
+    });
+
+    it("does not mark the pin item active while the column is unpinned", async () => {
+      render(
+        <PortalContainerProvider container={createRef<HTMLDivElement>()}>
+          <TableHeaderWithPopover
+            table={createTable()}
+            header={createHeader()}
+            isColumnPinned={false}
+            featureFlags={{ showPinningItems: true }}
+          />
+        </PortalContainerProvider>
+      );
+
+      await openHeaderMenu("name");
+
+      expect(activeStateByMenuItem()).toEqual({ "Pin column": false });
+    });
+  });
+
   describe("sort menu item toggling", () => {
     it("removes the column's sort when the already-active ascending item is clicked", async () => {
       const onSortingChanged = vi.fn();
@@ -188,6 +226,59 @@ describe(TableHeaderWithPopover, () => {
       expect(latestSorting(onSortingChanged)).toEqual([
         { id: "name", desc: true },
       ]);
+    });
+
+    it("marks the matching direction item active while leaving the other inactive", async () => {
+      render(
+        <SortMenuHarness
+          columnId="name"
+          initialSorting={[{ id: "name", desc: false }]}
+          onSortingChanged={vi.fn()}
+        />
+      );
+
+      await openHeaderMenu("name");
+
+      expect(activeStateByMenuItem()).toEqual({
+        "Sort ascending": true,
+        "Sort descending": false,
+        "Clear all sorts": false,
+      });
+    });
+
+    it("moves the active marker to the descending item when sorted descending", async () => {
+      render(
+        <SortMenuHarness
+          columnId="name"
+          initialSorting={[{ id: "name", desc: true }]}
+          onSortingChanged={vi.fn()}
+        />
+      );
+
+      await openHeaderMenu("name");
+
+      expect(activeStateByMenuItem()).toEqual({
+        "Sort ascending": false,
+        "Sort descending": true,
+        "Clear all sorts": false,
+      });
+    });
+
+    it("marks no direction item active while the column is unsorted", async () => {
+      render(
+        <SortMenuHarness
+          columnId="name"
+          initialSorting={EMPTY_SORTING}
+          onSortingChanged={vi.fn()}
+        />
+      );
+
+      await openHeaderMenu("name");
+
+      expect(activeStateByMenuItem()).toEqual({
+        "Sort ascending": false,
+        "Sort descending": false,
+      });
     });
 
     it("sorts an unsorted column ascending", async () => {
@@ -279,21 +370,38 @@ function SortMenuHarness({
   );
 }
 
-async function clickSortMenuItem(
-  columnId: string,
-  itemLabel: string
-): Promise<void> {
+async function openHeaderMenu(columnId: string): Promise<void> {
   fireEvent.click(
     screen.getByRole("button", {
       name: `Open header menu for column with id=${columnId}`,
     })
   );
 
-  const item = await waitFor(() =>
-    screen.getByRole("menuitem", { name: itemLabel })
-  );
+  await waitFor(() => screen.getAllByRole("menuitem"));
+}
 
-  fireEvent.click(item);
+async function clickSortMenuItem(
+  columnId: string,
+  itemLabel: string
+): Promise<void> {
+  await openHeaderMenu(columnId);
+  fireEvent.click(screen.getByRole("menuitem", { name: itemLabel }));
+}
+
+/**
+ * Whether each open menu item carries the active-styling class, keyed by
+ * label. Vitest stubs CSS modules, so this asserts the class is applied to
+ * the right item — not that the stylesheet renders it.
+ */
+function activeStateByMenuItem(): Record<string, boolean> {
+  return Object.fromEntries(
+    screen
+      .getAllByRole("menuitem")
+      .map((item) => [
+        item.textContent?.trim() ?? "",
+        item.classList.contains(styles.osdkHeaderActiveMenuItem),
+      ])
+  );
 }
 
 /**
