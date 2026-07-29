@@ -5,6 +5,28 @@ import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
+    icon: "group-item",
+    title: (
+      <span>
+        Develop with OSDK React components{" "}
+        <span className={css.muted}>(Optional)</span>
+      </span>
+    ),
+    subtitle: (
+      <span>
+        Use <Link
+          href="https://palantir.github.io/osdk-ts/storybook/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          OSDK React components
+        </Link>{" "}
+        (@osdk/react-components){" "}
+        to build your app with ready-made Ontology SDK components.
+      </span>
+    ),
+  },
+  {
     icon: "rocket-slant",
     title: "Deploy your application",
     subtitle: (
@@ -28,9 +50,9 @@ function NextSteps(): React.ReactElement {
   return (
     <div className={css.nextSteps}>
       <H5 className={css.nextStepsHeader}>Next steps</H5>
-      {STEPS.map((step) => (
+      {STEPS.map((step, index) => (
         <NextStep
-          key={step.title}
+          key={index}
           icon={step.icon}
           title={step.title}
           subtitle={step.subtitle}
@@ -42,7 +64,7 @@ function NextSteps(): React.ReactElement {
 
 interface INextStep {
   icon: IconName;
-  title: string;
+  title: React.ReactNode;
   subtitle: React.ReactElement;
 }
 
