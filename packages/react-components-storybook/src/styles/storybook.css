@@ -5,10 +5,60 @@ body,
   height: 100%;
 }
 
+/* Default docs tables (including live component tables rendered inside a
+ * Canvas, e.g. a wide ObjectTable) may scroll horizontally when they exceed the
+ * page width. */
 .sbdocs-content table {
   display: block;
   max-width: 100%;
   overflow-x: auto;
+}
+
+/* Markdown reference tables (props, Style API, Advanced) rendered by
+ * ComponentDoc: fit the page width with every column visible instead of
+ * scrolling horizontally. A fixed layout plus wrapping lets long type strings
+ * break onto multiple lines rather than forcing the table wider than the page.
+ * Scoped to the ComponentDoc wrapper so live component tables in a Canvas keep
+ * the scrolling behavior above. */
+.osdkMarkdownDoc table {
+  display: table;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+  table-layout: fixed;
+}
+
+.osdkMarkdownDoc table :is(th, td) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  vertical-align: top;
+}
+
+/* Type values are rendered as inline code, which Storybook styles with
+ * `white-space: nowrap`; force wrapping (via !important to beat that default)
+ * so long types break instead of forcing the column — and table — wider than
+ * the page. */
+.osdkMarkdownDoc table :is(th, td) code {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Three-column reference tables (e.g. Name / Type / Description): keep the
+ * leading name and type columns compact and give the trailing description
+ * column the most room. Scoped with :has() so two-column tables keep their own
+ * sizing. */
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(1) {
+  width: 20%;
+}
+
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(2) {
+  width: 25%;
+}
+
+.osdkMarkdownDoc table:has(th:nth-child(3)) :is(th, td):nth-child(3) {
+  width: 55%;
 }
 
 body {
