@@ -126,12 +126,8 @@ export const WithDefaultColumnPinning: Story = {
       expect(fullNameHeader).toHaveAttribute("data-pinned", "left")
     );
 
-    // Pinned body cells are `position: sticky`, so they must paint an opaque
-    // background or the columns scrolling underneath bleed through their text.
-    // The background comes from the `var(--osdk-table-cell-bg, inherit)`
-    // fallback in TableCell.module.css; declaring that token at `:root`
-    // instead resolves guaranteed-invalid and silently computes to
-    // `transparent`, which shipped as a bug in v0.18.0 (fixed in 64652ed).
+    // Assert that pinned cells have an opaque background 
+    // and matches its row background color.
     const pinnedCell = await waitFor(() => {
       const cell = canvasElement.querySelector<HTMLElement>(
         '[data-row-parity] [data-pinned="left"]'
