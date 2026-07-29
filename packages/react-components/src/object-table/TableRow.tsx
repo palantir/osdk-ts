@@ -51,12 +51,9 @@ export function TableRow<TData extends RowData>({
   // stopPropagation on the click event (e.g. DatePicker's input).
   const handleClickCapture = useCallback(
     (event: React.MouseEvent<HTMLTableRowElement>) => {
-      // Toggling the selection checkbox is not a row interaction, so it must
-      // not focus the row: focus and selection share the same highlight, so a
-      // lingering focus would leave the row looking selected after it was
-      // unselected. `SelectionCell` calls stopPropagation for the same reason,
-      // but that runs in the bubble phase — too late to stop this handler.
       const target = event.target as Element | null;
+      // Do not set row as focused on checkbox selection
+      // The row will be highlighted when it is selected
       if (
         target?.closest?.(`[data-column-id="${SELECTION_COLUMN_ID}"]`) != null
       ) {

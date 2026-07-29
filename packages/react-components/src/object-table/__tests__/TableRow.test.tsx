@@ -44,15 +44,13 @@ const virtualRow = (index: number): VirtualItem => ({
   lane: 0,
 });
 
-/**
- * Stand-in for `useSelectionColumn`: holds the handler in a ref so the column
- * defs stay referentially stable across selection changes. Recreating them
- * would remount the checkbox between clicks.
- */
 function useTestColumns(
   onToggleRow: (rowId: string) => void
 ): ColumnDef<TestRow>[] {
+  // Ref-held handler keeps the column defs stable; recreating them would remount
+  // the checkbox between clicks.
   const onToggleRowRef = useRef(onToggleRow);
+
   onToggleRowRef.current = onToggleRow;
 
   return useMemo(
@@ -69,19 +67,13 @@ function useTestColumns(
   );
 }
 
-/**
- * Mirrors the real table wiring: the selection column toggles selection
- * state (as `useRowSelection` does) while `TableRow` owns focus via its
- * capture-phase click handler (as `BaseTable` + `useFocusedRow` do).
- */
 function TestTable(): React.ReactElement {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
-  // Computes from the current render's snapshot rather than `prev`, matching
-  // `useRowSelection`. That makes the toggle idempotent, which matters because
-  // base-ui's checkbox dispatches two clicks per interaction (the visible
-  // element plus the hidden input it forwards to).
+  // Toggling off the render snapshot rather than `prev` keeps this idempotent,
+  // as `useRowSelection` is: base-ui's checkbox dispatches two clicks per
+  // interaction (the visible element plus the hidden input it forwards to).
   const onToggleRow = useCallback(
     (rowId: string) => {
       setRowSelection(rowSelection[rowId] ? {} : { [rowId]: true });
@@ -131,8 +123,6 @@ describe("TableRow", () => {
       expect(firstRow().getAttribute("data-selected")).toBe("true");
 
       fireEvent.click(checkbox());
-      // Neither attribute may linger — both render the identical
-      // `--osdk-table-row-bg-active` highlight.
       expect(firstRow().getAttribute("data-selected")).toBe("false");
       expect(firstRow().getAttribute("data-focused")).toBe("false");
     });
