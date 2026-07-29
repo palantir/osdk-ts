@@ -88,14 +88,15 @@ const DIRECTIONAL_SORT_ICONS: SortIcons = {
  * function-backed columns), which fall back to the directional icons.
  */
 export function getSortIcons(dataType: string | undefined): SortIcons {
-  if (dataType == null) {
-    return DIRECTIONAL_SORT_ICONS;
-  }
-  if (ALPHABETICAL_TYPES.has(dataType)) {
-    return ALPHABETICAL_SORT_ICONS;
-  }
-  if (NUMERICAL_TYPES.has(dataType)) {
-    return NUMERICAL_SORT_ICONS;
+  // The null check only narrows for the `Set<string>.has` calls; an unknown
+  // type takes the same directional fallback as any unrecognized one.
+  if (dataType != null) {
+    if (ALPHABETICAL_TYPES.has(dataType)) {
+      return ALPHABETICAL_SORT_ICONS;
+    }
+    if (NUMERICAL_TYPES.has(dataType)) {
+      return NUMERICAL_SORT_ICONS;
+    }
   }
   return DIRECTIONAL_SORT_ICONS;
 }
