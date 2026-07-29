@@ -1,0 +1,1 @@
+function e(){throw new Error("Streaming query execution is not supported: the `streamingExecute` callable was dropped from the generated `@osdk/foundry.functions` SDK.")}export{e as applyStreamingQuery};

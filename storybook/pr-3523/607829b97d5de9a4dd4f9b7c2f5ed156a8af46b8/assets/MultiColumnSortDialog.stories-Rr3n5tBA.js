@@ -1,0 +1,43 @@
+import{M as a}from"./MultiColumnSortDialog-DnvRHefW.js";import"./DraggableList-BVwXeQ9F.js";import"./iframe-DW5haiqE.js";import"./preload-helper-DVKA9px6.js";import"./svgIconContainer-CEP856Ty.js";import"./index-xjAgWE80.js";import"./Input-BldVSmgU.js";import"./useBaseUiId-CvU9jtB4.js";import"./useControlled-klrfy2e5.js";import"./index-_rIVvBJF.js";import"./index-BisFlCA8.js";import"./Button-Dl8_S-nu.js";import"./small-cross-CwE1VUWN.js";import"./ActionButton-DWOH-1EL.js";import"./Dialog-yqI1PCjD.js";import"./cross-Ce5L2vs3.js";import"./InternalBackdrop-D8Nl1wTF.js";import"./composite-CbaFILzo.js";import"./index-CilzRk4R.js";import"./MenuTrigger-D0OMDS-3.js";import"./CompositeItem-BTy4FVkA.js";import"./ToolbarRootContext-DxbxBlN-.js";import"./getDisabledMountTransitionStyles-Dbwf1Coz.js";import"./getPseudoElementBounds-BoSxbcSn.js";import"./caret-down-CisoYFST.js";const{fn:t}=__STORYBOOK_MODULE_TEST__,i=[{id:"fullName",name:"Full Name",canSort:!0},{id:"email",name:"Email",canSort:!0},{id:"jobTitle",name:"Job Title",canSort:!0},{id:"department",name:"Department",canSort:!0},{id:"startDate",name:"Start Date",canSort:!0},{id:"location",name:"Location",canSort:!1}],x={title:"Components/ObjectTable/Building Blocks/MultiColumnSortDialog",component:a,tags:["beta"],args:{isOpen:!0,onClose:t(),onApply:t(),columnOptions:i,currentSorting:[{id:"fullName",desc:!1},{id:"department",desc:!0}]},argTypes:{isOpen:{description:"Whether the dialog is open",control:"boolean"},onClose:{description:"Called when the dialog is closed",control:!1,table:{category:"Events"}},onApply:{description:"Called with the new sorting state when the user clicks Apply",control:!1,table:{category:"Events"}},columnOptions:{description:"Available columns to sort by. Only columns with `canSort: true` appear in the add menu.",control:!1},currentSorting:{description:"Current sorting state from TanStack Table",control:!1}},parameters:{docs:{description:{component:"A dialog for configuring multi-column sorting. Users can add sort columns, toggle between ascending/descending, and drag to reorder sort priority."}}}},e={parameters:{docs:{source:{code:`import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
+
+const [isOpen, setIsOpen] = useState(false);
+
+<MultiColumnSortDialog
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  columnOptions={[
+    { id: "fullName", name: "Full Name", canSort: true },
+    { id: "email", name: "Email", canSort: true },
+    { id: "department", name: "Department", canSort: true },
+  ]}
+  currentSorting={[
+    { id: "fullName", desc: false },
+    { id: "department", desc: true },
+  ]}
+  onApply={(sorting) => console.log("Applied:", sorting)}
+/>`}}}};var o,n,r;e.parameters={...e.parameters,docs:{...(o=e.parameters)==null?void 0:o.docs,source:{originalSource:`{
+  parameters: {
+    docs: {
+      source: {
+        code: \`import { MultiColumnSortDialog } from "@osdk/react-components/experimental/object-table";
+
+const [isOpen, setIsOpen] = useState(false);
+
+<MultiColumnSortDialog
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  columnOptions={[
+    { id: "fullName", name: "Full Name", canSort: true },
+    { id: "email", name: "Email", canSort: true },
+    { id: "department", name: "Department", canSort: true },
+  ]}
+  currentSorting={[
+    { id: "fullName", desc: false },
+    { id: "department", desc: true },
+  ]}
+  onApply={(sorting) => console.log("Applied:", sorting)}
+/>\`
+      }
+    }
+  }
+}`,...(r=(n=e.parameters)==null?void 0:n.docs)==null?void 0:r.source}}};const I=["Default"];export{e as Default,I as __namedExportsOrder,x as default};
