@@ -30,6 +30,7 @@ import {
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from "../../mocks/fauxFoundry.js";
+import { CenteredFormLayout } from "./CenteredFormLayout.js";
 import {
   FormStoryLayout,
   type StorySubmissionSnapshot,
@@ -332,27 +333,19 @@ function UpdateEmployeeActionFormStory({
 }
 
 function DefaultActionFormStory(): React.ReactElement {
-  const { handleStoryError, handleStorySubmit, submission } =
-    useActionFormSubmission({
-      applyStoryAction: applyGeneratedFieldsStoryAction,
-    });
+  const { handleStoryError, handleStorySubmit } = useActionFormSubmission({
+    applyStoryAction: applyGeneratedFieldsStoryAction,
+  });
 
   return (
-    <FormStoryLayout
-      output={
-        <SubmissionOutputPanel
-          idleMessage="Submit the form to see the action response."
-          snapshot={submission}
-        />
-      }
-    >
+    <CenteredFormLayout>
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={true}
       />
-    </FormStoryLayout>
+    </CenteredFormLayout>
   );
 }
 
