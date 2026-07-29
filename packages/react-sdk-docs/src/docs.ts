@@ -183,6 +183,7 @@ function renderType(
     case "string": {
       return `"${type.value ?? "value"}"`;
     }
+    case "unknown":
     default: {
       return `"value"`;
     }
