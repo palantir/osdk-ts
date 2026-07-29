@@ -30,7 +30,6 @@ import {
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from "../../mocks/fauxFoundry.js";
-import { CenteredFormLayout } from "./CenteredFormLayout.js";
 import {
   FormStoryLayout,
   type StorySubmissionSnapshot,
@@ -338,14 +337,14 @@ function DefaultActionFormStory(): React.ReactElement {
   });
 
   return (
-    <CenteredFormLayout>
+    <div className="osdkFormCard">
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={true}
       />
-    </CenteredFormLayout>
+    </div>
   );
 }
 
@@ -424,6 +423,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => <DefaultActionFormStory />,
   parameters: {
+    layout: "centered",
     docs: {
       description: {
         story:
