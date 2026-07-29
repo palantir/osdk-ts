@@ -324,15 +324,18 @@ const archetypeRules = archetypes(
   // checkApi (API Extractor reports). These are the core published API-surface
   // packages (@osdk/api is the core SDK type surface) that previously lived in
   // the checkApiPackages archetype before being migrated to the oxc toolchain.
-  // Each is hand-written and first surfaces error-level Ultracite rules the
-  // prior ESLint config did not enforce, so each carries a nested oxlint config
-  // (oxcConfig) turning them off to keep the migration a reformat, not a
-  // rewrite.
+  // The pre-existing members are hand-written and first surface error-level
+  // Ultracite rules the prior ESLint config did not enforce, so each carries a
+  // nested oxlint config (oxcConfig) turning them off to keep the migration a
+  // reformat, not a rewrite. @osdk/integration-testing is instead new code
+  // authored against oxc, so its nested config carries no carve-outs; the file
+  // exists only because this archetype points `lint` at a per-package config.
   .addArchetype(
     "oxc migrated libraries with check-api",
     [
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/integration-testing",
       "@osdk/unit-testing",
     ],
     {
