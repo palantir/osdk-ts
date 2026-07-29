@@ -35,7 +35,10 @@ import {
   mergeObjectFields,
   mergeSelectFields,
 } from "../utils/rdpFieldOperations.js";
-import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
+  type ObjectCacheKey,
+} from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
 function isSuperset(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
@@ -105,8 +108,10 @@ export class ObjectsHelper extends AbstractHelper<
           defType,
           select,
           $loadPropertySecurityMetadata,
-          objectKeyIncludeAllBaseObjectProperties ??
-            $includeAllBaseObjectProperties
+          // Only send $includeAllBaseObjectProperties for interface queries.
+          // The cache key may carry it to keep entries separate, but sending it
+          // on a concrete object fetch is invalid.
+          $includeAllBaseObjectProperties
         )
     );
   }
@@ -133,11 +138,13 @@ export class ObjectsHelper extends AbstractHelper<
     return holders.map((v) => {
       const concreteHolder = isInterfaceHolder(v) ? v[UnderlyingOsdkObject] : v;
 
+      // These are concrete objects, so the interface-only flag in `options` is
+      // ignored. Pass it via the dedicated arg instead, so the cache key still
+      // keeps with-flag and without-flag entries separate.
       return this.getQuery(
         {
           apiName: v.$objectType ?? v.$apiName,
           pk: v.$primaryKey,
-          $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
         },
         rdpConfig,
         includeAllBaseObjectProperties ? true : undefined
@@ -222,20 +229,30 @@ export class ObjectsHelper extends AbstractHelper<
       this.store.objectCacheKeyRegistry.getMetadata(sourceCacheKey);
 
     const relatedKeys = metadata
-      ? value === tombstone
-        ? this.store.objectCacheKeyRegistry.getAllVariants(
-            metadata.apiName,
-            metadata.primaryKey
-          )
-        : this.store.objectCacheKeyRegistry.getVariants(
-            metadata.apiName,
-            metadata.primaryKey,
-            metadata.includeAllBaseObjectProperties
-          )
+      ? this.store.objectCacheKeyRegistry.getVariants(
+          metadata.apiName,
+          metadata.primaryKey
+        )
       : new Set([sourceCacheKey]);
+
+    const sourceIncludesAllBaseProps =
+      sourceCacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
 
     for (const targetKey of relatedKeys) {
       if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
+        continue;
+      }
+
+      // A delete hits every variant. A normal write only updates variants with
+      // the same $includeAllBaseObjectProperties value: an object fetched
+      // without the flag has fewer properties and would overwrite one fetched
+      // with it. (Variants differing only by RDP config are safe and merge.)
+      const isDeletion = value === tombstone;
+      if (
+        !isDeletion &&
+        (targetKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true) !==
+          sourceIncludesAllBaseProps
+      ) {
         continue;
       }
 

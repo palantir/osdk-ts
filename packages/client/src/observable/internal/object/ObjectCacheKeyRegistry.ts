@@ -17,17 +17,13 @@
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { extractRdpFieldNames } from "../utils/rdpFieldOperations.js";
-import {
-  INCLUDE_ALL_BASE_PROPERTIES_IDX,
-  type ObjectCacheKey,
-} from "./ObjectCacheKey.js";
+import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 
 interface CacheKeyMetadata {
   apiName: string;
   primaryKey: string;
   rdpConfig?: Canonical<Rdp>;
   rdpFieldSet?: ReadonlySet<string>;
-  includeAllBaseObjectProperties?: true;
 }
 
 interface BaseKeyEntry {
@@ -37,9 +33,14 @@ interface BaseKeyEntry {
 }
 
 /**
- * Registry that tracks relationships between compatible object cache-key
- * variants. Full-base-property interface results remain isolated from narrowed
- * results, while compatible RDP variants still propagate updates.
+ * Tracks every object cache-key variant for a given (apiName, primaryKey) in
+ * one bucket, so invalidation and deletion reach them all and writes can
+ * propagate between compatible variants (e.g. different RDP configs).
+ *
+ * Variants with different property shapes (e.g. different
+ * `$includeAllBaseObjectProperties` values) share the bucket too. Stopping a
+ * write to one shape from overwriting another is done in
+ * `ObjectsHelper.propagateWrite`, not here.
  */
 export class ObjectCacheKeyRegistry {
   /**
@@ -61,13 +62,7 @@ export class ObjectCacheKeyRegistry {
     primaryKey: string | number | boolean,
     rdpConfig?: Canonical<Rdp>
   ): void {
-    const includeAllBaseObjectProperties =
-      cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX];
-    const baseKey = this.makeBaseKey(
-      apiName,
-      primaryKey,
-      includeAllBaseObjectProperties
-    );
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
     const primaryKeyStr = String(primaryKey);
 
     this.keyMetadata.set(cacheKey, {
@@ -75,7 +70,6 @@ export class ObjectCacheKeyRegistry {
       primaryKey: primaryKeyStr,
       rdpConfig,
       rdpFieldSet: rdpConfig ? extractRdpFieldNames(rdpConfig) : undefined,
-      includeAllBaseObjectProperties,
     });
 
     let entry = this.baseToVariants.get(baseKey);
@@ -95,14 +89,9 @@ export class ObjectCacheKeyRegistry {
    */
   getVariants(
     apiName: string,
-    primaryKey: string | number | boolean,
-    includeAllBaseObjectProperties?: true
+    primaryKey: string | number | boolean
   ): Set<ObjectCacheKey> {
-    const baseKey = this.makeBaseKey(
-      apiName,
-      primaryKey,
-      includeAllBaseObjectProperties
-    );
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
     const entry = this.baseToVariants.get(baseKey);
     return new Set(entry?.variants ?? []);
   }
@@ -114,11 +103,7 @@ export class ObjectCacheKeyRegistry {
     const metadata = this.keyMetadata.get(cacheKey);
     if (!metadata) return;
 
-    const baseKey = this.makeBaseKey(
-      metadata.apiName,
-      metadata.primaryKey,
-      metadata.includeAllBaseObjectProperties
-    );
+    const baseKey = this.makeBaseKey(metadata.apiName, metadata.primaryKey);
     const entry = this.baseToVariants.get(baseKey);
 
     if (entry) {
@@ -143,25 +128,10 @@ export class ObjectCacheKeyRegistry {
    */
   getVariantCount(
     apiName: string,
-    primaryKey: string | number | boolean,
-    includeAllBaseObjectProperties?: true
-  ): number {
-    const baseKey = this.makeBaseKey(
-      apiName,
-      primaryKey,
-      includeAllBaseObjectProperties
-    );
-    return this.baseToVariants.get(baseKey)?.variants.size ?? 0;
-  }
-
-  getAllVariants(
-    apiName: string,
     primaryKey: string | number | boolean
-  ): Set<ObjectCacheKey> {
-    return new Set([
-      ...this.getVariants(apiName, primaryKey),
-      ...this.getVariants(apiName, primaryKey, true),
-    ]);
+  ): number {
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
+    return this.baseToVariants.get(baseKey)?.variants.size ?? 0;
   }
 
   /**
@@ -169,10 +139,9 @@ export class ObjectCacheKeyRegistry {
    */
   private makeBaseKey(
     apiName: string,
-    primaryKey: string | number | boolean,
-    includeAllBaseObjectProperties?: true
+    primaryKey: string | number | boolean
   ): string {
-    return `${apiName}:${primaryKey}:${includeAllBaseObjectProperties === true}`;
+    return `${apiName}:${primaryKey}`;
   }
 
   /**

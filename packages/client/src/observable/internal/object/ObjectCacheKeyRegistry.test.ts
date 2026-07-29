@@ -80,7 +80,7 @@ function createMockObjectCacheKey(
 }
 
 describe("ObjectCacheKeyRegistry", () => {
-  it("isolates variants with different base-property shapes", () => {
+  it("groups all base-property shapes under one object bucket", () => {
     const registry = new ObjectCacheKeyRegistry();
     const narrowed = createMockObjectCacheKey("Employee", "emp1");
     const full = createMockObjectCacheKey("Employee", "emp1", undefined, true);
@@ -88,15 +88,13 @@ describe("ObjectCacheKeyRegistry", () => {
     registry.register(narrowed, "Employee", "emp1");
     registry.register(full, "Employee", "emp1");
 
+    // Both shapes share one bucket so invalidation and deletion reach both.
+    // Stopping one shape's write from overwriting the other happens in
+    // propagateWrite, not here.
     expect(registry.getVariants("Employee", "emp1")).toEqual(
-      new Set([narrowed])
-    );
-    expect(registry.getVariants("Employee", "emp1", true)).toEqual(
-      new Set([full])
-    );
-    expect(registry.getAllVariants("Employee", "emp1")).toEqual(
       new Set([narrowed, full])
     );
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
   });
 
   it("registers and retrieves variant cache keys", () => {

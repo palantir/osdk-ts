@@ -972,16 +972,17 @@ describe("ObjectsHelper.getQuery derived-property revalidation", () => {
     expect(capturedOptions?.$includeAllBaseObjectProperties).toBeUndefined();
   });
 
-  it("keeps the derived-property variant partitioned under the flag-on family", async () => {
-    const query = getConcreteRdpFlagOnQuery();
-    mockWithPropertiesFetchOne();
+  it("keeps the derived-property variant on its own flag-on entry", () => {
+    const rdp = createFakeRdpConfig("derivedThing");
+    const flagOn = store.objects.getQuery(
+      { apiName: Employee, pk: 1, $includeAllBaseObjectProperties: true },
+      rdp,
+      /* objectKeyIncludeAllBaseObjectProperties */ true
+    );
+    // Same object and RDP but without forcing the flag gives a distinct cache
+    // key, so with-flag and without-flag results never share an entry.
+    const flagOff = store.objects.getQuery({ apiName: Employee, pk: 1 }, rdp);
 
-    await query.revalidate(true);
-
-    const registry = store.objectCacheKeyRegistry;
-    // Guard: the flag-on partition must still hold this variant so the
-    // Finding-2 fix drops only the wire flag, not the cache-key partition.
-    expect(registry.getVariants("Employee", 1, true)).toContain(query.cacheKey);
-    expect(registry.getVariants("Employee", 1)).not.toContain(query.cacheKey);
+    expect(flagOn.cacheKey).not.toBe(flagOff.cacheKey);
   });
 });

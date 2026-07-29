@@ -628,9 +628,9 @@ describe("ActionApplication edits and $includeAllBaseObjectProperties families",
         newCompensation: 0,
       });
 
-      // The per-object pass reaches only the flag-off family and the per-type
-      // pass skips object queries on the edits branch, so the flag-on entry
-      // stays stale today.
+      // The per-type pass skips object queries on the edits branch, so the
+      // per-object invalidate is the only refresh path — and it now reaches
+      // every variant, so the flag-on entry refreshes too.
       expect(store.getValue(flagOnObjectKey)?.value?.fullName).toBe("Zelda");
     });
   });
@@ -686,8 +686,8 @@ describe("ActionApplication edits and $includeAllBaseObjectProperties families",
         newCompensation: 0,
       });
 
-      // The delete pass only tombstones the flag-off variants, so the
-      // flag-on-only entry is never removed today.
+      // The delete pass tombstones every variant, so even a flag-on-only entry
+      // is removed.
       expect(store.getValue(flagOnObjectKey)?.value).toBeUndefined();
     });
   });

@@ -902,8 +902,8 @@ describe("invalidateObject and $includeAllBaseObjectProperties families", () => 
       "Kris Kringle"
     );
 
-    // The flag-on family must also refresh; today invalidateObject only reaches
-    // the flag-off variants so this entry stays stale.
+    // The flag-on family must also refresh: invalidateObject reaches every
+    // variant of the object, not just the flag-off ones.
     expect(store.getValue(flagOnObjectKey)?.value?.fullName).toBe(
       "Kris Kringle"
     );
@@ -929,20 +929,13 @@ describe("invalidateObject and $includeAllBaseObjectProperties families", () => 
     expect(store.getValue(baseKey)?.value).toMatchObject({
       $primaryKey: INVALIDATE_EMPLOYEE_ID,
     });
-    expect(
-      store.objectCacheKeyRegistry.getVariants(
-        Employee.apiName,
-        INVALIDATE_EMPLOYEE_ID
-      ).size
-    ).toBe(1);
-    // The fallback must not fabricate a flag-on variant.
-    expect(
-      store.objectCacheKeyRegistry.getVariants(
-        Employee.apiName,
-        INVALIDATE_EMPLOYEE_ID,
-        true
-      ).size
-    ).toBe(0);
+    const variants = store.objectCacheKeyRegistry.getVariants(
+      Employee.apiName,
+      INVALIDATE_EMPLOYEE_ID
+    );
+    expect(variants.size).toBe(1);
+    // The fallback created only the flag-off base variant, not a flag-on one.
+    expect(variants).toContain(baseKey);
   });
 
   it("deletes both base-property families when the object streams out", async () => {
@@ -982,8 +975,8 @@ describe("invalidateObject and $includeAllBaseObjectProperties families", () => 
 
     // Regression guard: the flag-off family entry is removed.
     expect(store.getValue(flagOffObjectKey)?.value).toBeUndefined();
-    // The flag-on family entry must also be removed; today onOswRemoved only
-    // reaches the flag-off variants so this entry survives.
+    // The flag-on family entry must also be removed: onOswRemoved deletes every
+    // variant of the object, not just the flag-off ones.
     expect(store.getValue(flagOnObjectKey)?.value).toBeUndefined();
   });
 });
