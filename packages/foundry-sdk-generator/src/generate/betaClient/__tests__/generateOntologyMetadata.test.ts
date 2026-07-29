@@ -51,6 +51,8 @@ const ontologyMetadataWithObjectType: OntologyFullMetadata = {
         apiName: "Employee",
         displayName: "Employee",
         pluralDisplayName: "Employees",
+        aliases: [],
+        datasources: [],
         status: "ACTIVE",
         icon: { type: "blueprint", color: "#00B3A4", name: "person" },
         primaryKey: "employeeId",
