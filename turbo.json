@@ -269,16 +269,26 @@
     },
 
     "//#check-mrl": {
+      // Keep in sync with .monorepolint.config.mjs
       "inputs": [
         "package.json",
         ".monorepolint.config.mjs",
+        "dprint.json",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
-        "packages/*/src/public/*",
-        "examples/*/*/package.json",
-        "examples/*/*/tsconfig.json",
-        "examples-extra/*/*/package.json",
-        "examples-extra/*/*/tsconfig.json",
+        "packages/*/tsconfig.cjs.json",
+        "packages/*/vitest.config.mts",
+        "packages/*/tsup.config.js",
+        "packages/*/turbo.json",
+        "packages/*/api-extractor.json",
+        "packages/*/README.md",
+        "packages/*/src/public/**",
+        "examples/*/package.json",
+        "examples-extra/*/package.json",
+        "examples-extra/basic/*/package.json",
+        "tests/*/package.json",
+        "benchmarks/*/*/package.json",
+        "docs/package.json",
         "templates/*"
       ]
     },
