@@ -21,8 +21,6 @@ import type { ServiceName, ServiceStatus } from "../generated/cli/index.js";
 
 export interface StubStatusServer {
   url: string;
-  /** Replace the lifecycle published for a service. */
-  setStatus: (status: ServiceStatus) => void;
   /** Toggle what `/api/health` answers. */
   setHealthy: (healthy: boolean) => void;
   close: () => Promise<void>;
@@ -69,7 +67,6 @@ export const startStubStatusServer = async (
 
   return {
     url: `http://127.0.0.1:${port}`,
-    setStatus: (status) => statuses.set(status.service, status),
     setHealthy: (next) => {
       healthy = next;
     },

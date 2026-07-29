@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { setTimeout as delay } from "node:timers/promises";
+import path from "node:path";
+import { setTimeout } from "node:timers/promises";
 
 import invariant from "tiny-invariant";
 
-import type { FoundryService, ServiceHealth } from "./FoundryService.js";
+import type { FoundryCliService, ServiceHealth } from "./FoundryCliService.js";
 import type { ServiceName } from "./generated/cli/index.js";
 import { ServiceDiscoverer } from "./ServiceDiscoverer.js";
 import { StatusServer } from "./StatusServer.js";
 
 const HEALTH_POLL_INTERVAL_MS = 200;
 
-export interface ServiceOrchestratorConfig {
+export interface CliServiceLauncherConfig {
   /** Directory the services run in; `.palantir/` hangs off it. */
   projectDir?: string;
   /** Path to the `foundry` binary. */
@@ -34,7 +35,7 @@ export interface ServiceOrchestratorConfig {
   statusServer?: StatusServer;
 }
 
-const formatDetail = (service: FoundryService): string => {
+const formatDetail = (service: FoundryCliService): string => {
   const parts: string[] = [];
   const exit = service.exitInfo;
   if (exit !== undefined) {
@@ -47,73 +48,41 @@ const formatDetail = (service: FoundryService): string => {
   return parts.length === 0 ? "" : `: ${parts.join("; ")}`;
 };
 
-/** Why a service that will not reach `READY` is being given up on. */
-const notReady = (
-  service: FoundryService,
-  health: ServiceHealth,
-  detail: string
-): string => `${service.name} did not become ready (${health.state})${detail}`;
-
 /**
- * Brings a set of Foundry services up in dependency order and keeps the two
- * halves of "is it up?" wired together.
- *
- * The two collaborators answer different questions and neither is sufficient:
- * {@link ServiceDiscoverer} knows *where* a service is listening, and
- * {@link StatusServer} knows whether it is *serving*. This owns both, hands
- * them to every registered service, and drives them — resolving the dependency
- * graph, starting each service only once everything it depends on is ready, and
- * polling health until it is ready, has failed, or has run out of time.
- *
- * Dependencies are whatever a service declares, so the ontology's dependency on
- * the status server is nothing special — it is one edge in a general graph.
+ * Brings a set of Foundry services. Includes a status server by default.
  */
-export class ServiceOrchestrator {
+export class CliServiceLauncher {
   #discoverer: ServiceDiscoverer;
   #statusServer: StatusServer;
-  #services = new Map<ServiceName, FoundryService>();
+  #services = new Map<ServiceName, FoundryCliService>();
+
   /** Memoized in-flight starts, so a shared dependency is started once. */
   #starts = new Map<ServiceName, Promise<void>>();
   #started = false;
 
-  constructor(config: ServiceOrchestratorConfig = {}) {
+  constructor(config: CliServiceLauncherConfig = {}) {
     const projectDir = config.projectDir ?? process.cwd();
-    this.#discoverer = new ServiceDiscoverer({ basePath: projectDir });
+    this.#discoverer = new ServiceDiscoverer({
+      basePath: path.resolve(projectDir, ".palantir"),
+    });
     this.#statusServer =
       config.statusServer ??
       new StatusServer({
         projectDir,
-        ...(config.foundryCliPath != null
-          ? { foundryCliPath: config.foundryCliPath }
-          : {}),
+        foundryCliPath: config.foundryCliPath,
       });
     this.register(this.#statusServer);
   }
 
-  get discoverer(): ServiceDiscoverer {
-    return this.#discoverer;
-  }
-
-  get statusServer(): StatusServer {
-    return this.#statusServer;
-  }
-
-  /** Every registered service, in registration order. */
-  get services(): readonly FoundryService[] {
+  get services(): readonly FoundryCliService[] {
     return [...this.#services.values()];
   }
 
-  get(name: ServiceName): FoundryService | undefined {
+  get(name: ServiceName): FoundryCliService | undefined {
     return this.#services.get(name);
   }
 
-  /**
-   * Register a service and give it the shared discoverer and status server.
-   *
-   * Dependencies are registered transitively, so registering the ontology also
-   * registers whatever it declared a dependency on.
-   */
-  register<T extends FoundryService>(service: T): T {
+  register<T extends FoundryCliService>(service: T): T {
     const existing = this.#services.get(service.name);
     if (existing === service) {
       return service;
@@ -133,12 +102,6 @@ export class ServiceOrchestrator {
     return service;
   }
 
-  /**
-   * Start every registered service, dependencies first.
-   *
-   * Independent branches of the graph come up concurrently; each service waits
-   * only on what it actually declared.
-   */
   async start(): Promise<void> {
     await this.#ensureDiscovering();
     this.#assertAcyclic();
@@ -147,7 +110,7 @@ export class ServiceOrchestrator {
     );
   }
 
-  async startService(service: FoundryService): Promise<void> {
+  async startService(service: FoundryCliService): Promise<void> {
     this.register(service);
     await this.#ensureDiscovering();
     this.#assertAcyclic();
@@ -161,9 +124,9 @@ export class ServiceOrchestrator {
     }
   }
 
-  async #start(service: FoundryService): Promise<void> {
+  async #start(service: FoundryCliService): Promise<void> {
     const runningPromise = this.#starts.get(service.name);
-    if (runningPromise) {
+    if (typeof runningPromise !== "undefined") {
       return runningPromise;
     }
     const started = this.#startImmediate(service);
@@ -176,7 +139,7 @@ export class ServiceOrchestrator {
     }
   }
 
-  async #startImmediate(service: FoundryService): Promise<void> {
+  async #startImmediate(service: FoundryCliService): Promise<void> {
     await Promise.all(
       service.dependencies.map((dependency) => this.#start(dependency))
     );
@@ -187,45 +150,32 @@ export class ServiceOrchestrator {
   /**
    * Poll a service's health until it is ready, reaches a terminal state, or
    * exceeds its timeout.
-   *
-   * Each round refreshes discovery first, so a service that publishes its file
-   * between watch events is still seen promptly.
    */
-  async waitUntilReady(service: FoundryService): Promise<ServiceHealth> {
+  async waitUntilReady(service: FoundryCliService): Promise<ServiceHealth> {
     const deadline = Date.now() + service.readyTimeoutMs;
     let health = await service.checkHealth();
     while (!health.ready) {
-      // Aliased so the message thunks below do not close over the `let`.
-      const current = health;
-      invariant(!current.terminal, () =>
-        notReady(
-          service,
-          current,
-          current.message != null
-            ? `: ${current.message}`
-            : formatDetail(service)
-        )
+      invariant(
+        !health.terminal,
+        `${service.name} is not ready (${health.state})`
       );
-      // A crash before anything is published would otherwise burn the whole
-      // timeout waiting on a process that is already gone.
-      invariant(service.exitInfo === undefined, () =>
-        notReady(service, current, formatDetail(service))
+      invariant(
+        service.exitInfo === undefined,
+        `${service.name} is not ready (${health.state}) ${formatDetail(
+          service
+        )}`
       );
-      invariant(Date.now() < deadline, () =>
-        notReady(
-          service,
-          current,
-          ` within ${service.readyTimeoutMs}ms${formatDetail(service)}`
-        )
+      invariant(
+        Date.now() < deadline,
+        `${service.name} is not ready (${health.state}) within ${service.readyTimeoutMs}ms`
       );
-      await delay(HEALTH_POLL_INTERVAL_MS);
+      await setTimeout(HEALTH_POLL_INTERVAL_MS);
       await this.#discoverer.refresh();
       health = await service.checkHealth();
     }
     return health;
   }
 
-  /** Current health of every registered service. */
   async checkHealth(): Promise<ServiceHealth[]> {
     await this.#discoverer.refresh();
     return Promise.all(
@@ -233,30 +183,20 @@ export class ServiceOrchestrator {
     );
   }
 
-  /**
-   * Health of the services a given service depends on.
-   *
-   * Answers "is everything this needs actually up?" — useful both before
-   * starting a service and when diagnosing one that came up unhappy.
-   */
-  async checkDependencies(service: FoundryService): Promise<ServiceHealth[]> {
+  async checkDependencies(
+    service: FoundryCliService
+  ): Promise<ServiceHealth[]> {
     await this.#discoverer.refresh();
     return Promise.all(
       service.dependencies.map((dependency) => dependency.checkHealth())
     );
   }
 
-  /** Whether every dependency of a service is ready. */
-  async dependenciesReady(service: FoundryService): Promise<boolean> {
+  async dependenciesReady(service: FoundryCliService): Promise<boolean> {
     const healths = await this.checkDependencies(service);
     return healths.every(({ ready }) => ready);
   }
 
-  /**
-   * Stop every service, dependents before dependencies, then stop watching.
-   *
-   * Adopted services are left running — see {@link FoundryService.stop}.
-   */
   stop(): void {
     for (const service of this.#startupOrder().reverse()) {
       service.stop();
@@ -270,10 +210,10 @@ export class ServiceOrchestrator {
    * Registered services in a valid startup order: every service appears after
    * everything it depends on.
    */
-  #startupOrder(): FoundryService[] {
-    const ordered: FoundryService[] = [];
+  #startupOrder(): FoundryCliService[] {
+    const ordered: FoundryCliService[] = [];
     const seen = new Set<ServiceName>();
-    const visit = (service: FoundryService): void => {
+    const visit = (service: FoundryCliService): void => {
       if (seen.has(service.name)) {
         return;
       }
@@ -289,24 +229,19 @@ export class ServiceOrchestrator {
     return ordered;
   }
 
-  /**
-   * Reject a dependency cycle up front, rather than deadlocking on two starts
-   * that each await the other.
-   */
   #assertAcyclic(): void {
     const settled = new Set<ServiceName>();
-    const visit = (service: FoundryService, path: ServiceName[]): void => {
+    const visit = (service: FoundryCliService, path: ServiceName[]): void => {
       if (settled.has(service.name)) {
         return;
       }
       const cycleStart = path.indexOf(service.name);
       invariant(
         cycleStart === -1,
-        () =>
-          `Dependency cycle between services: ${[
-            ...path.slice(cycleStart),
-            service.name,
-          ].join(" -> ")}`
+        `Dependency cycle between services: ${[
+          ...path.slice(cycleStart),
+          service.name,
+        ].join(" -> ")}`
       );
       for (const dependency of service.dependencies) {
         visit(dependency, [...path, service.name]);

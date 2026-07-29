@@ -21,7 +21,7 @@ import type {
   ComponentDiscovery,
   ServiceName,
 } from "../generated/cli/index.js";
-import { discoveryFileName } from "../ServiceDiscoverer.js";
+import { discoveryFileName } from "../utils/service.js";
 
 /**
  * Write a discovery file the way a running service would.

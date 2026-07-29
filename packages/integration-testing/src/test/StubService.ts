@@ -15,11 +15,11 @@
  */
 
 import {
-  FoundryService,
+  FoundryCliService,
   type FoundryServiceConfig,
   type ServiceHealth,
   type ServiceState,
-} from "../FoundryService.js";
+} from "../FoundryCliService.js";
 import type { ServiceName } from "../generated/cli/index.js";
 
 export interface StubServiceConfig extends FoundryServiceConfig {
@@ -30,10 +30,10 @@ export interface StubServiceConfig extends FoundryServiceConfig {
 }
 
 /**
- * A {@link FoundryService} that reports its own health and never spawns
+ * A {@link FoundryCliService} that reports its own health and never spawns
  * anything, so orchestration can be tested without the Foundry CLI.
  */
-export class StubService extends FoundryService {
+export class StubService extends FoundryCliService {
   #startLog: ServiceName[] | undefined;
   #stateWhenStarted: ServiceState;
   #started = false;
@@ -44,7 +44,7 @@ export class StubService extends FoundryService {
     this.#stateWhenStarted = config.stateWhenStarted ?? "READY";
   }
 
-  protected override get spawnArgs(): readonly string[] {
+  protected override get args(): readonly string[] {
     return [];
   }
 

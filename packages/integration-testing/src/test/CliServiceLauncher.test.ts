@@ -20,10 +20,12 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ServiceState } from "../FoundryService.js";
+import { CliServiceLauncher } from "../CliServiceLauncher.js";
+import type { FoundryCliService, ServiceState } from "../FoundryCliService.js";
 import type { ServiceName } from "../generated/cli/index.js";
 import { OntologyServer } from "../OntologyServer.js";
-import { ServiceOrchestrator } from "../ServiceOrchestrator.js";
+import { StatusServer } from "../StatusServer.js";
+import { NoSpawnStatusServer } from "./NoSpawnStatusServer.js";
 import { StubService } from "./StubService.js";
 import {
   startStubStatusServer,
@@ -31,40 +33,44 @@ import {
 } from "./stubStatusServer.js";
 import { writeDiscoveryFile } from "./writeDiscoveryFile.js";
 
-describe("ServiceOrchestrator", () => {
+describe("CliServiceLauncher", () => {
   let projectDir: string;
   let stub: StubStatusServer | undefined;
-  let orchestrator: ServiceOrchestrator | undefined;
+  let launcher: CliServiceLauncher | undefined;
 
   beforeEach(async () => {
-    projectDir = await mkdtemp(join(tmpdir(), "osdk-orchestrator-"));
+    projectDir = await mkdtemp(join(tmpdir(), "osdk-launcher-"));
   });
 
   afterEach(async () => {
-    orchestrator?.stop();
-    orchestrator = undefined;
+    launcher?.stop();
+    launcher = undefined;
     await stub?.close();
     stub = undefined;
     await rm(projectDir, { recursive: true, force: true });
   });
 
   /**
-   * An orchestrator whose status server is already up, so it adopts rather than
-   * spawning the real CLI.
+   * A launcher backed by a stub status server, so the rest of the graph can be
+   * started without the real CLI. Its status server does not spawn, and so does
+   * not trip the refusal to start alongside the discoverable stub.
    */
-  const orchestratorWithRunningStatusServer =
-    async (): Promise<ServiceOrchestrator> => {
+  const launcherWithStubStatusServer =
+    async (): Promise<CliServiceLauncher> => {
       stub = await startStubStatusServer();
       await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
-      orchestrator = new ServiceOrchestrator({ projectDir });
-      return orchestrator;
+      launcher = new CliServiceLauncher({
+        projectDir,
+        statusServer: new NoSpawnStatusServer({ projectDir }),
+      });
+      return launcher;
     };
 
   const stubService = (
     name: ServiceName,
     options: {
       startLog?: ServiceName[];
-      dependencies?: readonly StubService[];
+      dependencies?: readonly FoundryCliService[];
       stateWhenStarted?: ServiceState;
       readyTimeoutMs?: number;
     } = {}
@@ -83,37 +89,41 @@ describe("ServiceOrchestrator", () => {
         : {}),
     });
 
-  it("registers the status server up front", () => {
-    orchestrator = new ServiceOrchestrator({ projectDir });
-
-    expect(orchestrator.get("STATUS_SERVER")).toBe(orchestrator.statusServer);
-  });
-
-  it("registers declared dependencies transitively", () => {
-    orchestrator = new ServiceOrchestrator({ projectDir });
+  it("registers the status server, and dependencies transitively", () => {
+    const statusServer = new NoSpawnStatusServer({ projectDir });
+    launcher = new CliServiceLauncher({ projectDir, statusServer });
     const ontology = new OntologyServer({
       projectDir,
       metadataPath: "metadata.json",
-      statusServer: orchestrator.statusServer,
+      dependencies: [statusServer],
     });
+    // Only APP is registered; ONTOLOGY comes along as its dependency.
+    const app = stubService("APP", { dependencies: [ontology] });
 
-    orchestrator.register(ontology);
+    launcher.register(app);
 
-    expect(orchestrator.get("ONTOLOGY")).toBe(ontology);
-    expect(ontology.dependencies).toContain(orchestrator.statusServer);
+    expect(launcher.get("STATUS_SERVER")).toBe(statusServer);
+    expect(launcher.get("ONTOLOGY")).toBe(ontology);
+    expect(launcher.get("APP")).toBe(app);
   });
 
-  it("adopts a status server that is already running", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+  it("refuses to start a service that is already running", async () => {
+    stub = await startStubStatusServer();
+    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    // A real status server, which would have to spawn a second CLI process
+    // alongside the one already answering on the discovered port.
+    launcher = new CliServiceLauncher({
+      projectDir,
+      statusServer: new StatusServer({ projectDir }),
+    });
 
-    await orch.start();
-
-    expect(orch.statusServer.adopted).toBe(true);
-    expect(orch.statusServer.url).toBe(stub?.url);
+    await expect(launcher.start()).rejects.toThrow(
+      /STATUS_SERVER is already running/u
+    );
   });
 
   it("starts dependencies before their dependents", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
     const startLog: ServiceName[] = [];
 
     const proxy = stubService("PLATFORM_API_PROXY", { startLog });
@@ -121,25 +131,24 @@ describe("ServiceOrchestrator", () => {
       startLog,
       dependencies: [proxy],
     });
-    const app = stubService("APP", { startLog, dependencies: [ontology] });
-    orch.register(app);
+    launch.register(stubService("APP", { startLog, dependencies: [ontology] }));
 
-    await orch.start();
+    await launch.start();
 
     expect(startLog).toEqual(["PLATFORM_API_PROXY", "ONTOLOGY", "APP"]);
   });
 
   it("starts a shared dependency exactly once", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
     const startLog: ServiceName[] = [];
 
     const shared = stubService("PLATFORM_API_PROXY", { startLog });
-    orch.register(
+    launch.register(
       stubService("ONTOLOGY", { startLog, dependencies: [shared] })
     );
-    orch.register(stubService("APP", { startLog, dependencies: [shared] }));
+    launch.register(stubService("APP", { startLog, dependencies: [shared] }));
 
-    await orch.start();
+    await launch.start();
 
     expect(
       startLog.filter((name) => name === "PLATFORM_API_PROXY")
@@ -148,59 +157,64 @@ describe("ServiceOrchestrator", () => {
   });
 
   it("fails fast when a dependency will not come up", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
 
     const broken = stubService("PLATFORM_API_PROXY", {
       stateWhenStarted: "FAILED",
     });
     const dependent = stubService("ONTOLOGY", { dependencies: [broken] });
-    orch.register(dependent);
+    launch.register(dependent);
 
-    await expect(orch.start()).rejects.toThrow(/did not become ready/u);
+    await expect(launch.start()).rejects.toThrow(
+      /PLATFORM_API_PROXY is not ready \(FAILED\)/u
+    );
     // The dependent is never started once its dependency failed.
     expect(dependent.started).toBe(false);
   });
 
   it("gives up on a service that never reaches READY", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
 
-    orch.register(
-      stubService("APP", { stateWhenStarted: "PREPARING", readyTimeoutMs: 300 })
+    launch.register(
+      stubService("APP", {
+        stateWhenStarted: "PREPARING",
+        readyTimeoutMs: 300,
+      })
     );
 
-    await expect(orch.start()).rejects.toThrow(/did not become ready/u);
+    await expect(launch.start()).rejects.toThrow(/within 300ms/u);
   });
 
   it("rejects a dependency cycle instead of deadlocking", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
 
     const first = stubService("ONTOLOGY");
     const second = stubService("APP", { dependencies: [first] });
     // Closes the loop: ONTOLOGY -> APP -> ONTOLOGY.
     (first.dependencies as StubService[]).push(second);
-    orch.register(second);
+    launch.register(second);
 
-    await expect(orch.start()).rejects.toThrow(
+    await expect(launch.start()).rejects.toThrow(
       /Dependency cycle between services/u
     );
   });
 
   it("reports dependency health separately from overall health", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
 
     const dependency = stubService("PLATFORM_API_PROXY");
     const dependent = stubService("ONTOLOGY", { dependencies: [dependency] });
-    orch.register(dependent);
+    launch.register(dependent);
 
-    expect(await orch.dependenciesReady(dependent)).toBe(false);
+    expect(await launch.dependenciesReady(dependent)).toBe(false);
 
-    await orch.start();
+    await launch.start();
 
-    expect(await orch.dependenciesReady(dependent)).toBe(true);
-    expect(await orch.checkDependencies(dependent)).toEqual([
+    expect(await launch.dependenciesReady(dependent)).toBe(true);
+    expect(await launch.checkDependencies(dependent)).toEqual([
       expect.objectContaining({ service: "PLATFORM_API_PROXY", ready: true }),
     ]);
-    expect(await orch.checkHealth()).toEqual(
+    expect(await launch.checkHealth()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ service: "STATUS_SERVER", ready: true }),
         expect.objectContaining({ service: "ONTOLOGY", ready: true }),
@@ -209,29 +223,16 @@ describe("ServiceOrchestrator", () => {
   });
 
   it("stops every service it started", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
+    const launch = await launcherWithStubStatusServer();
 
     const dependency = stubService("PLATFORM_API_PROXY");
     const dependent = stubService("ONTOLOGY", { dependencies: [dependency] });
-    orch.register(dependent);
-    await orch.start();
+    launch.register(dependent);
+    await launch.start();
 
-    orch.stop();
+    launch.stop();
 
     expect(dependent.started).toBe(false);
     expect(dependency.started).toBe(false);
-  });
-
-  it("leaves an adopted service running when it stops", async () => {
-    const orch = await orchestratorWithRunningStatusServer();
-    await orch.start();
-    expect(orch.statusServer.adopted).toBe(true);
-
-    orch.stop();
-
-    // This process did not start it, so something else may still need it.
-    expect(await orch.statusServer.checkHealth()).toMatchObject({
-      ready: true,
-    });
   });
 });

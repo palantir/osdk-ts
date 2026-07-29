@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ServiceName } from "../generated/cli/index.js";
-import { discoveryFileName, ServiceDiscoverer } from "../ServiceDiscoverer.js";
+import { ServiceDiscoverer } from "../ServiceDiscoverer.js";
+import {
+  discoveryFileName,
+  serviceNameFromFileName,
+} from "../utils/service.js";
 import { writeDiscoveryFile } from "./writeDiscoveryFile.js";
 
 /** A pid that is not in use, so the discovery record reads as stale. */
@@ -29,11 +32,13 @@ const DEAD_PID = 0x7ffffffe;
 
 describe("ServiceDiscoverer", () => {
   let projectDir: string;
+  let discoveryDir: string;
   let discoverer: ServiceDiscoverer;
 
   beforeEach(async () => {
     projectDir = await mkdtemp(join(tmpdir(), "osdk-discovery-"));
-    discoverer = new ServiceDiscoverer({ basePath: projectDir });
+    discoveryDir = join(projectDir, ".palantir");
+    discoverer = new ServiceDiscoverer({ basePath: discoveryDir });
   });
 
   afterEach(async () => {
@@ -45,15 +50,18 @@ describe("ServiceDiscoverer", () => {
     expect(discoveryFileName("STATUS_SERVER")).toBe(
       ".status-server-discovery.json"
     );
-    expect(discoveryFileName("ONTOLOGY")).toBe(".ontology-discovery.json");
     expect(discoveryFileName("PLATFORM_API_PROXY")).toBe(
       ".platform-api-proxy-discovery.json"
     );
+    expect(serviceNameFromFileName(".ontology-discovery.json")).toBe(
+      "ONTOLOGY"
+    );
   });
 
-  it("watches a directory that does not exist yet", async () => {
-    await expect(discoverer.start()).resolves.toBeUndefined();
-    expect(discoverer.discoveryDir).toBe(join(projectDir, ".palantir"));
+  it("creates the discovery directory if it does not exist yet", async () => {
+    await discoverer.start();
+
+    expect((await stat(discoveryDir)).isDirectory()).toBe(true);
   });
 
   it("picks up services that were already running before it started", async () => {
@@ -63,7 +71,7 @@ describe("ServiceDiscoverer", () => {
 
     await discoverer.start();
 
-    expect(discoverer.getUrl("STATUS_SERVER")).toBe("http://127.0.0.1:27312");
+    expect(discoverer.get("STATUS_SERVER")?.url).toBe("http://127.0.0.1:27312");
     expect(discoverer.isDiscovered("STATUS_SERVER")).toBe(true);
   });
 
@@ -75,8 +83,8 @@ describe("ServiceDiscoverer", () => {
       url: "https://127.0.0.1:38860",
       caCertPath: "/tmp/ca.cer",
     });
-    // refresh() is the backstop the orchestrator's poll relies on, so it is
-    // what gets asserted here rather than watch-event timing.
+    // refresh() is the backstop the launcher's poll relies on, so it is what
+    // gets asserted here rather than watch-event timing.
     await discoverer.refresh();
 
     expect(discoverer.get("ONTOLOGY")).toMatchObject({
@@ -94,29 +102,35 @@ describe("ServiceDiscoverer", () => {
     await discoverer.start();
 
     expect(discoverer.get("ONTOLOGY")).toBeUndefined();
-    expect(discoverer.getUrl("ONTOLOGY")).toBeUndefined();
     expect(discoverer.all().has("ONTOLOGY")).toBe(false);
   });
 
-  it("ignores unrelated and malformed files", async () => {
+  it("ignores files that are not discovery records", async () => {
+    await mkdir(discoveryDir, { recursive: true });
+    // The services share this directory, and macOS shares it uninvited.
+    await writeFile(join(discoveryDir, ".DS_Store"), "", "utf-8");
     await writeDiscoveryFile(projectDir, "ONTOLOGY", {
       url: "https://127.0.0.1:38860",
     });
-    await writeDiscoveryFile(projectDir, "APP", { url: "" });
 
     await discoverer.start();
 
-    expect(discoverer.isDiscovered("ONTOLOGY")).toBe(true);
-    expect(discoverer.isDiscovered("APP")).toBe(false);
+    expect([...discoverer.all().keys()]).toEqual(["ONTOLOGY"]);
+  });
+
+  it("rejects a discovery record with no url", async () => {
+    await writeDiscoveryFile(projectDir, "APP", { url: "" });
+
+    await expect(discoverer.start()).rejects.toThrow(/Service URL not found/u);
   });
 
   it("reports every live service", async () => {
-    const names: ServiceName[] = ["STATUS_SERVER", "ONTOLOGY"];
-    for (const name of names) {
-      await writeDiscoveryFile(projectDir, name, {
-        url: `http://127.0.0.1:1000`,
-      });
-    }
+    await writeDiscoveryFile(projectDir, "STATUS_SERVER", {
+      url: "http://127.0.0.1:1000",
+    });
+    await writeDiscoveryFile(projectDir, "ONTOLOGY", {
+      url: "http://127.0.0.1:1001",
+    });
 
     await discoverer.start();
 

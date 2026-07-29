@@ -43,7 +43,9 @@ describe("StatusServer", () => {
 
   beforeEach(async () => {
     projectDir = await mkdtemp(join(tmpdir(), "osdk-status-"));
-    discoverer = new ServiceDiscoverer({ basePath: projectDir });
+    discoverer = new ServiceDiscoverer({
+      basePath: join(projectDir, ".palantir"),
+    });
   });
 
   afterEach(async () => {
@@ -61,7 +63,7 @@ describe("StatusServer", () => {
     return statusServer;
   };
 
-  it("is UNDISCOVERED before it publishes a discovery file", async () => {
+  it("is UNDISCOVERED, and refuses to be read, before it publishes a discovery file", async () => {
     const statusServer = await attachedStatusServer();
 
     expect(await statusServer.checkHealth()).toMatchObject({
@@ -69,6 +71,9 @@ describe("StatusServer", () => {
       state: "UNDISCOVERED",
       ready: false,
     });
+    await expect(statusServer.getServiceStatuses()).rejects.toThrow(
+      /not discovered yet/u
+    );
   });
 
   it("reports its own health from /api/health, not from /status", async () => {
@@ -134,13 +139,5 @@ describe("StatusServer", () => {
 
     expect(await statusServer.getServiceStatuses()).toEqual([]);
     expect(await statusServer.checkHealth()).toMatchObject({ ready: false });
-  });
-
-  it("refuses to publish before the server is discovered", async () => {
-    const statusServer = await attachedStatusServer();
-
-    await expect(
-      statusServer.publishServiceStatus(readyStatus())
-    ).rejects.toThrow(/before the status server is discovered/u);
   });
 });

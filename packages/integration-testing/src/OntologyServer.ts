@@ -16,34 +16,21 @@
 
 import { isAbsolute, resolve } from "node:path";
 
-import { FoundryService, type FoundryServiceConfig } from "./FoundryService.js";
-import type { StatusServer } from "./StatusServer.js";
+import {
+  FoundryCliService,
+  type FoundryServiceConfig,
+} from "./FoundryCliService.js";
 
 export interface OntologyServerConfig extends FoundryServiceConfig {
-  /**
-   * Path to a prebuilt ontology metadata JSON, passed to `--metadata`.
-   *
-   * Resolved against {@link FoundryServiceConfig.projectDir}: the CLI rejects a
-   * relative path with a "Failed to watch metadata directory" error.
-   */
   metadataPath: string;
-
-  /**
-   * The status server this ontology reports its lifecycle to.
-   */
-  statusServer: StatusServer;
 }
 
-/**
- * The local preview ontology server.
- */
-export class OntologyServer extends FoundryService {
+export class OntologyServer extends FoundryCliService {
   #metadataPath: string;
 
   constructor(config: OntologyServerConfig) {
     super("ONTOLOGY", {
       ...config,
-      dependencies: [...(config.dependencies ?? []), config.statusServer],
     });
     this.#metadataPath = isAbsolute(config.metadataPath)
       ? config.metadataPath
@@ -54,7 +41,7 @@ export class OntologyServer extends FoundryService {
     return this.#metadataPath;
   }
 
-  protected override get spawnArgs(): readonly string[] {
+  protected override get args(): readonly string[] {
     return [
       "start",
       "ontology",

@@ -18,6 +18,7 @@ import type * as Ontology from "@osdk/foundry.ontologies";
 import {
   SeedBuilder,
   type SeedClient,
+  type SeedFunction,
   type SeedOutput,
 } from "@osdk/seed-helpers";
 
@@ -26,9 +27,8 @@ import { OntologySeedingService } from "./generated/cli/index.js";
 export type IntegrationClientConfig = {
   baseUrl: string;
   metadata: Ontology.OntologyFullMetadata;
+  fetchFn?: typeof fetch;
 };
-
-export type SeedFunction<T> = (seed: SeedBuilder) => T;
 
 export class IntegrationClient {
   #baseUrl: string;
@@ -38,7 +38,7 @@ export class IntegrationClient {
   constructor(args: IntegrationClientConfig) {
     this.#baseUrl = args.baseUrl;
     this.#metadata = args.metadata;
-    this.#seed = createSeedClient(this.#baseUrl, this.#metadata);
+    this.#seed = createSeedClient(this.#baseUrl, this.#metadata, args.fetchFn);
   }
 
   get seed(): SeedClient {
@@ -48,7 +48,8 @@ export class IntegrationClient {
 
 const createSeedClient = (
   baseUrl: string,
-  metadata: Ontology.OntologyFullMetadata
+  metadata: Ontology.OntologyFullMetadata,
+  fetchFn?: typeof fetch
 ): SeedClient => {
   const builder = new SeedBuilder(metadata);
   const applySeed = async (seed: SeedOutput) => {
@@ -56,6 +57,7 @@ const createSeedClient = (
       {
         baseUrl,
         servicePath: "/api",
+        fetchFn,
       },
       seed
     );
@@ -76,8 +78,8 @@ const createSeedClient = (
   const seedClient = seedClientFunction as SeedClient;
 
   seedClient.ref = (o, pk) => builder.ref(o, pk);
-  seedClient.merge = async (output) => {
-    builder.merge(output);
+  seedClient.addAll = async (output) => {
+    builder.addAll(output);
     await applySeed(builder.build());
   };
   seedClient.create = async (o, props) => {
@@ -98,16 +100,9 @@ const createSeedClient = (
     builder.link(source, apiName, target);
     await applySeed(builder.build());
   };
-
   seedClient.unlink = async (source, apiName, target) => {
     builder.unlink(source, apiName, target);
     await applySeed(builder.build());
   };
-
   return seedClient;
 };
-
-/**
- *
- * How to mock a function returning an object set?
- */

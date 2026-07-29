@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { StatusServer } from "../StatusServer.js";
 
-import { packageName } from "./index.js";
+/**
+ * A {@link StatusServer} that never spawns the Foundry CLI, for tests that put
+ * a stub server behind it: health and status reads still go over HTTP to
+ * whatever the discoverer found, but starting is a no-op rather than a spawn —
+ * or, since a discoverable stub is already answering, a refusal to start.
+ */
+export class NoSpawnStatusServer extends StatusServer {
+  override start(): Promise<void> {
+    return Promise.resolve();
+  }
 
-describe("@osdk/integration-testing", () => {
-  it("exposes the package name", () => {
-    expect(packageName).toBe("@osdk/integration-testing");
-  });
-});
+  override stop(): void {}
+}

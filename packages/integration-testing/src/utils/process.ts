@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
-
-import { packageName } from "../index.js";
-
-describe("@osdk/integration-testing", () => {
-  it("exposes the package name", () => {
-    expect(packageName).toBe("@osdk/integration-testing");
-  });
-});
+export const isProcessAlive = (pid: number): boolean => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    // EPERM means the process exists but is owned by another user.
+    return (err as NodeJS.ErrnoException).code === "EPERM";
+  }
+};

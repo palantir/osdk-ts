@@ -24,34 +24,22 @@ import type { StatusServer } from "./StatusServer.js";
 
 const MAX_CAPTURED_STDERR_CHUNKS = 32;
 
-export const DEFAULT_READY_TIMEOUT_MS = 90_000;
+export const DEFAULT_READY_TIMEOUT_MS = 30_000;
 
-/**
- * Coarse state of a service, widening {@link ServiceLifecycle} with the two
- * cases that exist before a service can report a lifecycle at all.
- *
- * - `UNDISCOVERED` — no live discovery file; nothing is listening.
- * - `DISCOVERED` — a process claimed a port but has published no lifecycle.
- */
 export type ServiceState = ServiceLifecycle | "UNDISCOVERED" | "DISCOVERED";
 
-/** A point-in-time health reading for one service. */
 export interface ServiceHealth {
   service: ServiceName;
   state: ServiceState;
-  /** Whether the service is up and serving. */
   ready: boolean;
-  /** Whether `state` is terminal, so waiting for readiness is futile. */
-  terminal: boolean;
-  /** Base URL, once discovered. */
+  terminal: boolean; // Whether `state` is terminal, so waiting for readiness is unnecessary.
   url?: string;
-  /** Detail published alongside a failure. */
   message?: string;
 }
 
 /**
  * The shared collaborators a service needs to answer questions about itself.
- * Injected by the orchestrator via {@link FoundryService.attach} so services do
+ * Injected by the launcher via {@link FoundryCliService.attach} so services do
  * not have to construct — or know how to reach — either one.
  */
 export interface ServiceContext {
@@ -64,10 +52,10 @@ export interface FoundryServiceConfig {
   foundryCliPath?: string;
   /** Working directory the CLI runs in; the `.palantir/` dir hangs off it. */
   projectDir: string;
-  /** How long {@link FoundryService} may take to reach `READY`. */
+  /** How long {@link FoundryCliService} may take to reach `READY`. */
   readyTimeoutMs?: number;
   /** Services that must be ready before this one may be started. */
-  dependencies?: readonly FoundryService[];
+  dependencies?: readonly FoundryCliService[];
 }
 
 /** States from which a service will not recover on its own. */
@@ -80,16 +68,14 @@ const TERMINAL_STATES: ReadonlySet<ServiceState> = new Set<ServiceState>([
  * One Foundry CLI service subprocess.
  *
  * Subclasses supply the `foundry` subcommand to run and, where the default is
- * wrong, how to tell that the service is up. Everything else — spawning,
- * adopting an already-running instance, capturing stderr for error messages,
- * teardown — is shared.
+ * wrong, how to tell that the service is up.
  *
- * Dependencies are declared, not enforced here: a service names what it needs
- * and {@link ServiceOrchestrator} is what orders and awaits them.
+ * Dependencies are declared but not enforced here: a service names what it needs
+ * and {@link CliServiceLauncher} is what orders and awaits them.
  */
-export abstract class FoundryService {
+export abstract class FoundryCliService {
   readonly name: ServiceName;
-  readonly dependencies: readonly FoundryService[];
+  readonly dependencies: readonly FoundryCliService[];
 
   #foundryCliPath: string;
   #projectDir: string;
@@ -98,8 +84,6 @@ export abstract class FoundryService {
   #context: ServiceContext | undefined;
   #stderr: string[] = [];
   #exit: { code: number | null; signal: NodeJS.Signals | null } | undefined;
-  /** True when an already-running instance was adopted rather than spawned. */
-  #adopted = false;
 
   protected constructor(name: ServiceName, config: FoundryServiceConfig) {
     this.name = name;
@@ -109,8 +93,7 @@ export abstract class FoundryService {
     this.#readyTimeoutMs = config.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS;
   }
 
-  /** Arguments passed to the `foundry` binary, e.g. `["start", "ontology"]`. */
-  protected abstract get spawnArgs(): readonly string[];
+  protected abstract get args(): readonly string[];
 
   get readyTimeoutMs(): number {
     return this.#readyTimeoutMs;
@@ -120,79 +103,68 @@ export abstract class FoundryService {
     return this.#projectDir;
   }
 
-  /** Whether this service was already running and got adopted. */
-  get adopted(): boolean {
-    return this.#adopted;
-  }
-
-  /** Base URL, once the service has published a discovery file. */
-  get url(): string | undefined {
-    return this.#context?.discoverer.getUrl(this.name);
-  }
-
-  /**
-   * Path to the CA certificate for services that serve over TLS with a private
-   * CA (the ontology server does); `undefined` otherwise.
-   */
   get caCertPath(): string | undefined {
     return this.#context?.discoverer.get(this.name)?.caCertPath ?? undefined;
   }
 
-  /** Injects the shared discoverer and status server. Called on registration. */
-  attach(context: ServiceContext): void {
-    this.#context = context;
+  get url(): string | undefined {
+    return this.#context?.discoverer.get(this.name)?.url;
+  }
+
+  get exitInfo(): string | undefined {
+    if (this.#exit === undefined) {
+      return undefined;
+    }
+    const { code, signal } = this.#exit;
+    return signal ?? `code ${code}`;
+  }
+
+  get capturedStderr(): string {
+    return this.#stderr.join("").trim();
   }
 
   protected get context(): ServiceContext {
     const context = this.#context;
     invariant(
       context !== undefined,
-      `${this.name} is not registered with a ServiceOrchestrator, so it has ` +
+      `${this.name} is not registered with a CliServiceLauncher, so it has ` +
         `no discoverer or status server to consult`
     );
     return context;
   }
 
-  /**
-   * Start the service, or adopt one that is already running.
-   *
-   * Returns without waiting for readiness — the orchestrator polls
-   * {@link FoundryService.checkHealth} for that, so that a service failing to
-   * come up surfaces as a health state rather than a hung promise.
-   */
-  async start(): Promise<void> {
-    if (this.#child !== undefined || this.#adopted) {
-      return;
-    }
-    // A status server left over from an earlier run is the common case, and
-    // starting a second one on a new port would strand every service that
-    // already published to the first.
-    await this.context.discoverer.refresh();
-    if ((await this.checkHealth()).ready) {
-      this.#adopted = true;
-      return;
-    }
+  attach(context: ServiceContext): void {
+    this.#context = context;
+  }
 
+  async start(): Promise<void> {
+    if (this.#child !== undefined) {
+      return;
+    }
+    await this.context.discoverer.refresh();
+    invariant(
+      !(await this.checkHealth()).ready,
+      `${this.name} is already running; stop it before starting a new one`
+    );
+    await this.#spawn();
+  }
+
+  async #spawn(): Promise<void> {
     this.#exit = undefined;
     this.#stderr = [];
-
-    const child = spawn(this.#foundryCliPath, [...this.spawnArgs], {
+    const child = spawn(this.#foundryCliPath, [...this.args], {
       cwd: this.#projectDir,
     });
     this.#child = child;
-
     child.stderr.setEncoding("utf-8");
     child.stderr.on("data", (chunk: string) => {
       if (this.#stderr.push(chunk) > MAX_CAPTURED_STDERR_CHUNKS) {
         this.#stderr.shift();
       }
     });
-    // Drained so a chatty service cannot block on a full stdout pipe.
-    child.stdout.resume();
     child.on("exit", (code, signal) => {
       this.#exit = { code, signal };
     });
-
     await new Promise<void>((resolve, reject) => {
       child.once("spawn", resolve);
       child.once("error", (error) =>
@@ -208,13 +180,10 @@ export abstract class FoundryService {
     });
   }
 
-  /**
-   * Current health of this service.
-   */
   async checkHealth(): Promise<ServiceHealth> {
     const { discoverer, statusServer } = this.context;
     const discovery = discoverer.get(this.name);
-    if (discovery === undefined) {
+    if (typeof discovery === "undefined") {
       return {
         service: this.name,
         state: "UNDISCOVERED",
@@ -234,32 +203,10 @@ export abstract class FoundryService {
     };
   }
 
-  /**
-   * How the child process exited, if it has. Lets the orchestrator fail fast on
-   * a service that died instead of waiting out the whole readiness timeout.
-   */
-  get exitInfo(): string | undefined {
-    if (this.#exit === undefined) {
-      return undefined;
-    }
-    const { code, signal } = this.#exit;
-    return signal ?? `code ${code}`;
-  }
-
-  /** The tail of the service's stderr, for error messages. */
-  get capturedStderr(): string {
-    return this.#stderr.join("").trim();
-  }
-
-  /**
-   * Terminate the subprocess. Adopted services are left alone: this process did
-   * not start them and something else may still depend on them.
-   */
   stop(): void {
     if (this.#child !== undefined && this.#child.exitCode == null) {
-      this.#child.kill("SIGTERM");
+      this.#child.kill("SIGINT");
     }
     this.#child = undefined;
-    this.#adopted = false;
   }
 }

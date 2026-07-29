@@ -14,71 +14,69 @@
  * limitations under the License.
  */
 
-import type { ServiceHealth } from "./FoundryService.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+
+import invariant from "tiny-invariant";
+
+import { CliServiceLauncher } from "./CliServiceLauncher.js";
+import type { ServiceHealth } from "./FoundryCliService.js";
 import { OntologyServer } from "./OntologyServer.js";
-import { ServiceOrchestrator } from "./ServiceOrchestrator.js";
 
 export type IntegrationServerConfig = {
   /** Path to a prebuilt ontology metadata JSON. */
   metadataPath: string;
   /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
   foundryCliPath?: string;
-  /** Directory the services run in. Defaults to the current directory. */
+  /** Directory the services run in. Defaults to './.test' */
   projectDir?: string;
-  /** How long each service may take to become ready. */
+  /** How long each service may take to become ready. Defaults to 30_000ms. */
   readyTimeoutMs?: number;
 };
 
 /**
  * A local ontology stack, ready to test against.
- *
- * A thin front for {@link ServiceOrchestrator} holding the pair of services an
- * integration test needs: the ontology server, and the status server it depends
- * on. Reach for the orchestrator directly to register anything further.
  */
 export class IntegrationServer {
-  #orchestrator: ServiceOrchestrator;
+  #serviceLauncher: CliServiceLauncher;
+  #projectDir: string;
   #ontology: OntologyServer;
-
   constructor(args: IntegrationServerConfig) {
-    const projectDir = args.projectDir ?? process.cwd();
+    this.#projectDir =
+      args.projectDir ?? path.resolve(process.cwd(), "./.tests");
     const foundryCliPath = args.foundryCliPath;
     const readyTimeoutMs = args.readyTimeoutMs;
-
-    this.#orchestrator = new ServiceOrchestrator({
-      projectDir,
-      ...(foundryCliPath != null ? { foundryCliPath } : {}),
+    this.#serviceLauncher = new CliServiceLauncher({
+      projectDir: this.#projectDir,
+      foundryCliPath,
     });
-
-    this.#ontology = this.#orchestrator.register(
+    const statusServer = this.#serviceLauncher.get("STATUS_SERVER");
+    invariant(statusServer, "Status server is not registered");
+    this.#ontology = this.#serviceLauncher.register(
       new OntologyServer({
-        projectDir,
+        projectDir: this.#projectDir,
         metadataPath: args.metadataPath,
-        statusServer: this.#orchestrator.statusServer,
-        ...(foundryCliPath != null ? { foundryCliPath } : {}),
-        ...(readyTimeoutMs != null ? { readyTimeoutMs } : {}),
+        dependencies: [statusServer],
+        readyTimeoutMs,
+        foundryCliPath,
       })
     );
   }
-
-  /** Base URL of the ontology server, once it is up. HTTPS, private CA. */
   get ontologyUrl(): string | undefined {
     return this.#ontology.url;
   }
-  /**
-   * Bring the stack up: status server first, then the ontology once the status
-   * server is answering. Resolves when the ontology reports `READY`.
-   */
+  get ontologyCaCertPath(): string | undefined {
+    return this.#ontology.caCertPath;
+  }
   async start(): Promise<void> {
-    await this.#orchestrator.start();
+    await this.#serviceLauncher.start();
   }
-
-  /** Current health of every service in the stack. */
   async checkHealth(): Promise<ServiceHealth[]> {
-    return this.#orchestrator.checkHealth();
+    return this.#serviceLauncher.checkHealth();
   }
 
-  stop(): void {
-    this.#orchestrator.stop();
+  async stop(): Promise<void> {
+    this.#serviceLauncher.stop();
+    await fs.rm(this.#projectDir, { recursive: true, force: true });
   }
 }

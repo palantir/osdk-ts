@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -65,8 +65,7 @@ describe.skipIf(foundryVersion === undefined)(
     }, TEST_TIMEOUT_MS);
 
     afterAll(async () => {
-      server?.stop();
-      await rm(projectDir, { recursive: true, force: true });
+      await server?.stop();
     });
 
     it("reports both services ready", async () => {
