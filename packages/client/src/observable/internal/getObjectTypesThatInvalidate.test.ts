@@ -17,7 +17,12 @@
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import {
+  FauxFoundry,
+  ontologies,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -26,11 +31,14 @@ import { additionalContext } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { objectSetDefinitions } from "../../objectSet/createObjectSet.js";
+import { hydrateObjectSetFromRid } from "../../public-utils/hydrateObjectSetFromRid.js";
 import { getObjectTypesThatInvalidate } from "./getObjectTypesThatInvalidate.js";
 
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
+  // FooInterface links to BarInterface, so the pivot tests need it registered.
+  fauxOntology.registerInterfaceType(stubData.BarInterface);
 }
 
 describe(getObjectTypesThatInvalidate, () => {
@@ -238,12 +246,39 @@ describe(getObjectTypesThatInvalidate, () => {
     expect(Object.keys(counts).length).toBeGreaterThan(0);
   });
 
-  it.skip("supports interface link search around", async () => {
-    // FIXME, we don't have a good interface link example right now
-    // Assuming FooInterface has links - skip if not available
-    // const osdkObjectSet = client(FooInterface).pivotTo("someLink");
-    // const { resultType, invalidationSet } = await helper(osdkObjectSet);
-    // Verify it handles interface pivots correctly
+  it("supports interface link search around", async () => {
+    const osdkObjectSet = client(FooInterface).pivotTo("toBar");
+
+    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    expect(resultType).toEqual("BarInterface");
+    // FooInterface's implementing types feed the pivot, so they invalidate us.
+    expect([...invalidationSet].sort()).toEqual(["Employee", "Person"]);
+  });
+
+  it("supports interface link search around on a reference-scoped set", async () => {
+    // A hydrated (reference-scoped) interface set is intersect([interfaceBase,
+    // reference]). Pivoting it emits an `asType` cast, because the backend
+    // requires an interface-link search around to be cast to the interface
+    // first.
+    const osdkObjectSet = hydrateObjectSetFromRid(
+      client,
+      FooInterface,
+      "ri.object-set.main.temporary-object-set.e085bca0-f124-4147-bf56-5eb2b8b14200"
+    ).pivotTo("toBar");
+
+    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    expect(resultType).toEqual("BarInterface");
+    // Must match the non-hydrated pivot above: the `asType` wrapper is a type
+    // assertion and should not change which types invalidate us.
+    expect([...invalidationSet].sort()).toEqual(["Employee", "Person"]);
+  });
+
+  it("supports narrowToType", async () => {
+    const osdkObjectSet = client(Employee).narrowToType(FooInterface);
+
+    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    expect(resultType).toEqual("FooInterface");
+    expect([...invalidationSet].sort()).toEqual(["Employee", "Person"]);
   });
 
   // Complex RDP Tests
