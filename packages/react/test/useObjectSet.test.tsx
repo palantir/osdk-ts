@@ -440,6 +440,36 @@ describe(useObjectSet, () => {
     });
   });
 
+  describe("$includeAllBaseObjectProperties", () => {
+    it("should forward $includeAllBaseObjectProperties to observeObjectSet when set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(
+        () =>
+          useObjectSet(mockObjectSet, {
+            $includeAllBaseObjectProperties: true,
+          }),
+        { wrapper }
+      );
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+      expect(mockObserveObjectSet.mock.calls[0][1]).toMatchObject({
+        $includeAllBaseObjectProperties: true,
+      });
+    });
+
+    it("should forward undefined when $includeAllBaseObjectProperties is not set", () => {
+      const wrapper = createWrapper();
+
+      renderHook(() => useObjectSet(mockObjectSet), { wrapper });
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+      expect(
+        mockObserveObjectSet.mock.calls[0][1].$includeAllBaseObjectProperties
+      ).toBeUndefined();
+    });
+  });
+
   describe("undefined objectSet", () => {
     it("should not call observeObjectSet when objectSet is undefined", () => {
       const wrapper = createWrapper();
