@@ -1584,10 +1584,11 @@ You can also attach custom `data-*` attributes per row with the `getRowAttribute
 
 **Data attributes**
 
-| Attribute       | Values                       | Meaning                                                |
-| --------------- | ---------------------------- | ------------------------------------------------------ |
-| `data-pinned`   | `left` \| `right` \| `false` | Mirrors the column's pinning state.                    |
-| `data-editable` | `true` \| (absent)           | Present when the cell is editable in the current mode. |
+| Attribute        | Values                       | Meaning                                                |
+| ---------------- | ---------------------------- | ------------------------------------------------------ |
+| `data-column-id` | Column id                    | The id of the column the cell belongs to.              |
+| `data-pinned`    | `left` \| `right` \| `false` | Mirrors the column's pinning state.                    |
+| `data-editable`  | `true` \| (absent)           | Present when the cell is editable in the current mode. |
 
 **CSS variables**
 
