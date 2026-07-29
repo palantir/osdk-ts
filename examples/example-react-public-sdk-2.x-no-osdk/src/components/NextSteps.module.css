@@ -21,7 +21,6 @@
 .nextStepContent {
   display: flex;
   flex-direction: column;
-  gap: var(--bp-surface-spacing);
   text-align: left;
 }
 
@@ -34,12 +33,20 @@
   color: var(--bp-typography-color-muted);
 }
 
+.muted {
+  color: var(--bp-typography-color-muted);
+}
+
 .icon {
+  align-items: center;
   background-color: oklch(from var(--bp-intent-default-rest) l c h / 15%);
   border: var(--bp-surface-border-width) solid
     var(--bp-surface-border-color-default);
   border-radius: 30px;
   color: var(--bp-intent-default-rest);
+  display: flex;
   height: 34px;
+  justify-content: center;
   padding: calc(var(--bp-surface-spacing) * 2);
+  width: 34px;
 }
