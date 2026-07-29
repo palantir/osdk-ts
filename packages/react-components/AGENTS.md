@@ -86,7 +86,7 @@ Components are imported from their individual entry points under `@osdk/react-co
 Before using any component, read the relevant doc from this package:
 
 - **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
-- **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
+- **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, troubleshooting, and hooks to build custom tables
 - **ActionForm**: Read [docs/ActionForm.md](./docs/ActionForm.md) for generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
 - **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
 - **TiffRenderer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage
