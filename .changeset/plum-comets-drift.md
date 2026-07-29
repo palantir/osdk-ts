@@ -16,4 +16,4 @@
 "@osdk/vite-plugin-oac": patch
 ---
 
-Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. Streaming query execution (`executeStreamingFunction`) is no longer supported: the `Functions.streamingExecute` endpoint was removed from the platform SDK at `2.67.0`, so the experimental streaming-query helper now throws instead of calling it.
+Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. Streaming query execution (`executeStreamingFunction`) is no longer supported so the experimental streaming-query helper now throws instead of calling it.
