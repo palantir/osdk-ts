@@ -34,6 +34,15 @@
   --osdk-table-row-border-color-active: var(--osdk-intent-primary-rest);
 
   /* Table Cell */
+  /* `--osdk-table-cell-bg` is intentionally NOT declared here. Its default is
+     `inherit` (paint the row's background), and that can only be expressed as
+     the var() fallback in TableCell.module.css: a custom property declared
+     `inherit` at `:root` has no parent to inherit from, so it resolves to the
+     guaranteed-invalid value and `var(--osdk-table-cell-bg)` computes to
+     `transparent` — which makes sticky pinned cells bleed through the columns
+     scrolling underneath them. That shipped once as a bug (v0.18.0) and was
+     fixed in 64652ed; do not "fix" the missing declaration. Consumer overrides
+     with a real color work normally. */
   --osdk-table-cell-padding: 0 calc(var(--osdk-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--osdk-typography-size-body-medium);
   --osdk-table-cell-color: var(--osdk-typography-color-default-rest);

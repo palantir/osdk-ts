@@ -182,7 +182,19 @@ src/my-component/
 
 - **Never hardcode colors or pixel values.** Use CSS variables for all visual properties.
 - **Use `--bp` design tokens first.** Any `--bp` token used must be mapped from an `--osdk` token.
-- **Add default styles** to src/tokens
+- **Declare defaults for your own tokens in `src/tokens/`.** A component's own `--osdk-<name>-*` tokens must be declared in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or inline in a `.tsx`. Document each one in [`docs/CSSVariables.md`](./docs/CSSVariables.md).
+- **Exception — nested-primitive scoping.** A `.module.css` **may** assign to a token _owned by another primitive_, scoped to a local class, to restyle that primitive where your component embeds it. Feed the value from one of your own tokens wherever a sensible one exists, so the override stays themeable:
+
+  ```css
+  .osdkEditableCellDropdown {
+    /* re-point Select's own token at the table's cell-input background */
+    --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg);
+  }
+  ```
+
+  This is a cascade override, not a token declaration — it introduces no new public token, so it does not belong in `src/tokens/`. Existing examples: `object-table/EditableCell.module.css`, `object-table/LoadingCell.module.css`, `object-table/ColumnConfigDialog.module.css`, `action-form/fields/FilePickerField.module.css`, `action-form/fields/DropdownField.module.css`, `shared/calendar/DatePickerCommon.module.css`.
+
+- **Every token you reference must be declared — except when its default is a CSS-wide keyword.** Don't lean on `var(--osdk-x, <fallback>)` to stand in for a token you simply forgot to declare. But a token whose default is `inherit` / `initial` / `unset` **cannot** be declared: `--osdk-x: inherit` at `:root` has no parent to inherit from, so it resolves to the guaranteed-invalid value and `var(--osdk-x)` silently computes to the property's initial value. Such defaults must live in the `var()` fallback; leave a comment in the token file saying so. Canonical case: `--osdk-table-cell-bg` (see `component-tokens/table.css`), where declaring it turned sticky pinned table cells transparent.
 - **Use CSS modules** (`.module.css`) for component-scoped styles.
 - **Combine class names** with the `classnames` utility. Never use template literals for class names.
 - **Respect CSS layers.** See the [README CSS Setup section](./README.md#css-setup)
