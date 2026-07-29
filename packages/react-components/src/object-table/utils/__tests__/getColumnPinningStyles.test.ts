@@ -81,7 +81,7 @@ describe(getColumnPinningStyles, () => {
 
       const { columnStyles } = getColumnPinningStyles(
         getColumn(table, "name"),
-        table.getState().columnSizing
+        table
       );
 
       // Leftover container width is shared out via flex-grow, weighted by the
@@ -95,7 +95,7 @@ describe(getColumnPinningStyles, () => {
 
       const { columnStyles } = getColumnPinningStyles(
         getColumn(table, "age"),
-        table.getState().columnSizing
+        table
       );
 
       expect(columnStyles.width).toBe(200);
@@ -107,7 +107,7 @@ describe(getColumnPinningStyles, () => {
 
       const { columnStyles } = getColumnPinningStyles(
         getColumn(table, "email"),
-        table.getState().columnSizing
+        table
       );
 
       expect(columnStyles.width).toBe(300);
@@ -116,20 +116,17 @@ describe(getColumnPinningStyles, () => {
 
     it("keeps pinned columns fixed so their sticky offsets stay aligned", () => {
       const table = renderTestTable();
-      const columnSizing = table.getState().columnSizing;
 
       // getStart("left") / getAfter("right") derive sticky offsets from
       // getSize(), so a pinned column that grew past getSize() would push the
       // columns pinned beside it out of alignment.
       expect(
-        getColumnPinningStyles(
-          getColumn(table, SELECTION_COLUMN_ID),
-          columnSizing
-        ).columnStyles.flexGrow
+        getColumnPinningStyles(getColumn(table, SELECTION_COLUMN_ID), table)
+          .columnStyles.flexGrow
       ).toBe(0);
       expect(
-        getColumnPinningStyles(getColumn(table, "notes"), columnSizing)
-          .columnStyles.flexGrow
+        getColumnPinningStyles(getColumn(table, "notes"), table).columnStyles
+          .flexGrow
       ).toBe(0);
     });
 
@@ -138,7 +135,7 @@ describe(getColumnPinningStyles, () => {
 
       const { columnStyles } = getColumnPinningStyles(
         getColumn(table, "notes"),
-        table.getState().columnSizing
+        table
       );
 
       expect(columnStyles.maxWidth).toBe(220);
@@ -149,7 +146,7 @@ describe(getColumnPinningStyles, () => {
 
       const { columnStyles } = getColumnPinningStyles(
         getColumn(table, "name"),
-        table.getState().columnSizing
+        table
       );
 
       // tanstack defaults maxSize to Number.MAX_SAFE_INTEGER; that must not
@@ -158,24 +155,67 @@ describe(getColumnPinningStyles, () => {
     });
   });
 
+  describe("absorbing width released by a resize", () => {
+    // A resize only takes width from, or gives it to, the columns right of the
+    // drag handle. When those all have explicit widths the released width has
+    // nowhere to go, so the rightmost unpinned column gives up its explicit
+    // width once the table has been resized.
+    it("lets the last unpinned column grow once a column has been resized", () => {
+      const table = renderTestTable({ email: 300 });
+
+      const { columnStyles } = getColumnPinningStyles(
+        getColumn(table, "age"),
+        table
+      );
+
+      expect(columnStyles.flexGrow).toBe(200);
+    });
+
+    it("keeps explicit widths exact until something is resized", () => {
+      const table = renderTestTable();
+
+      expect(
+        getColumnPinningStyles(getColumn(table, "age"), table).columnStyles
+          .flexGrow
+      ).toBe(0);
+    });
+
+    it("does not let the last unpinned column override its own resized width", () => {
+      const table = renderTestTable({ age: 260 });
+
+      const { columnStyles } = getColumnPinningStyles(
+        getColumn(table, "age"),
+        table
+      );
+
+      expect(columnStyles.width).toBe(260);
+      expect(columnStyles.flexGrow).toBe(0);
+    });
+
+    it("treats the table as un-resized when no table is supplied", () => {
+      const table = renderTestTable({ email: 300 });
+
+      expect(
+        getColumnPinningStyles(getColumn(table, "age")).columnStyles.flexGrow
+      ).toBe(0);
+    });
+  });
+
   describe("pinning offsets", () => {
     it("still positions pinned columns", () => {
       const table = renderTestTable();
-      const columnSizing = table.getState().columnSizing;
 
       expect(
-        getColumnPinningStyles(
-          getColumn(table, SELECTION_COLUMN_ID),
-          columnSizing
-        ).columnStyles.left
-      ).toBe("0px");
-      expect(
-        getColumnPinningStyles(getColumn(table, "notes"), columnSizing)
-          .columnStyles.right
-      ).toBe("0px");
-      expect(
-        getColumnPinningStyles(getColumn(table, "name"), columnSizing)
+        getColumnPinningStyles(getColumn(table, SELECTION_COLUMN_ID), table)
           .columnStyles.left
+      ).toBe("0px");
+      expect(
+        getColumnPinningStyles(getColumn(table, "notes"), table).columnStyles
+          .right
+      ).toBe("0px");
+      expect(
+        getColumnPinningStyles(getColumn(table, "name"), table).columnStyles
+          .left
       ).toBeUndefined();
     });
   });

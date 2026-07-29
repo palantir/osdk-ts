@@ -59,10 +59,7 @@ export function TableCell<TData extends RowData>({
     !!renderCellContextMenu;
 
   const table = cell.getContext().table;
-  const { columnStyles } = getColumnPinningStyles(
-    cell.column,
-    table.getState().columnSizing
-  );
+  const { columnStyles } = getColumnPinningStyles(cell.column, table);
 
   const tableMeta = table.options.meta;
   const columnMeta = cell.column.columnDef.meta;

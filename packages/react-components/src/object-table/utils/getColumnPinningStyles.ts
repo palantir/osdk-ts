@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Column, ColumnSizingState } from "@tanstack/react-table";
+import type { Column, Table } from "@tanstack/react-table";
 import type React from "react";
 
 interface PinningStyles {
@@ -40,22 +40,64 @@ interface PinningStyles {
  *   its own 150px default via `defaultColumnSizing`, so `columnDef.size` is
  *   only set when a width was actually supplied (see `useColumnDefs`).
  * - columns the user has resized, which is what `columnSizing` records.
+ *
+ * The one exception is the rightmost unpinned column once the user has resized
+ * anything: see {@link absorbsLeftoverWidth}.
+ *
+ * Omitting `table` treats the table as never resized and disables that
+ * exception, which is what the loading skeleton wants.
  */
 export function getColumnFlexGrow<TData>(
   column: Column<TData, unknown>,
-  columnSizing?: ColumnSizingState
+  table?: Table<TData>
 ): number {
-  const hasFixedWidth =
-    column.getIsPinned() !== false ||
-    column.columnDef.size != null ||
-    columnSizing?.[column.id] != null;
+  const columnSizing = table?.getState().columnSizing;
 
-  return hasFixedWidth ? 0 : column.getSize();
+  if (column.getIsPinned() !== false || columnSizing?.[column.id] != null) {
+    return 0;
+  }
+
+  if (column.columnDef.size == null) {
+    return column.getSize();
+  }
+
+  return table != null && absorbsLeftoverWidth(column, table)
+    ? column.getSize()
+    : 0;
+}
+
+/**
+ * Whether `column` should take up leftover width despite having been given an
+ * explicit `width`.
+ *
+ * Resizing a column only ever takes width from, or gives width to, the columns
+ * to its right — `pinPaintedColumnWidths` pins everything from the drag handle
+ * leftwards so that the divider follows the pointer. That leaves the width the
+ * dragged column releases with nowhere to go when the columns to its right all
+ * have explicit widths, so a gap opens at the right edge mid-drag.
+ *
+ * Treating an explicit `width` as the column's *initial* width rather than a
+ * hard cap closes that gap: the rightmost unpinned column absorbs the slack.
+ * This deliberately only applies once `columnSizing` records a resize, so a
+ * table the user has not touched still lays out exactly at the widths its
+ * `columnDefinitions` asked for.
+ */
+function absorbsLeftoverWidth<TData>(
+  column: Column<TData, unknown>,
+  table: Table<TData>
+): boolean {
+  const columnSizing = table.getState().columnSizing;
+  if (Object.keys(columnSizing).length === 0) {
+    return false;
+  }
+
+  const unpinnedColumns = table.getCenterVisibleLeafColumns();
+  return unpinnedColumns[unpinnedColumns.length - 1]?.id === column.id;
 }
 
 export function getColumnPinningStyles<TData>(
   column: Column<TData, unknown>,
-  columnSizing?: ColumnSizingState
+  table?: Table<TData>
 ): PinningStyles {
   const isPinned = column.getIsPinned();
   const { maxSize } = column.columnDef;
@@ -65,7 +107,7 @@ export function getColumnPinningStyles<TData>(
       left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
       right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
       width: column.getSize(),
-      flexGrow: getColumnFlexGrow(column, columnSizing),
+      flexGrow: getColumnFlexGrow(column, table),
       // Growth stops at the column's maxWidth. TanStack defaults maxSize to
       // Number.MAX_SAFE_INTEGER, which must not reach the DOM as a max-width.
       maxWidth:
