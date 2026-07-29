@@ -183,6 +183,28 @@ const columns = [
   { accessorKey: "startDate", header: "Start Date" },
 ];
 
+/** Wide enough that the table scrolls horizontally in a narrow container. */
+const wideColumns = [
+  { accessorKey: "name", header: "Name", size: 240 },
+  { accessorKey: "email", header: "Email Address", size: 320 },
+  { accessorKey: "department", header: "Department", size: 240 },
+  { accessorKey: "startDate", header: "Start Date", size: 200 },
+];
+
+/** Generates `count` synthetic rows starting at `start`, for paginated stories. */
+function makePeople(start: number, count: number): Person[] {
+  return Array.from({ length: count }, (_, i) => {
+    const n = start + i + 1;
+    return {
+      id: n,
+      name: `Person ${n}`,
+      email: `person${n}@example.com`,
+      department: ["Engineering", "Product", "Design", "Sales"][n % 4],
+      startDate: `20${10 + (n % 15)}-0${(n % 9) + 1}-1${n % 10}`,
+    };
+  });
+}
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
@@ -600,6 +622,61 @@ export const ErrorState: Story = {
     return (
       <div style={{ height: "400px" }}>
         <BaseTable {...args} table={table} />
+      </div>
+    );
+  },
+};
+
+/**
+ * Infinite scroll. `fetchNextPage` is provided while more rows exist, which
+ * renders a trailing loading row that doubles as the pagination sentinel:
+ * scrolling it into view loads the next page. The columns are deliberately
+ * wide enough to scroll horizontally — scrolling sideways must never paginate.
+ */
+export const InfiniteScroll: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseTable table={table} fetchNextPage={fetchNextPage} isLoading={isLoading} />`,
+      },
+    },
+  },
+  render: (args) => {
+    const PAGE_SIZE = 25;
+    const TOTAL = 100;
+    const [data, setData] = useState<Person[]>(() => makePeople(0, PAGE_SIZE));
+    const [isLoading, setIsLoading] = useState(false);
+    const [fetchCount, setFetchCount] = useState(0);
+
+    const hasMore = data.length < TOTAL;
+
+    const fetchNextPage = async () => {
+      setFetchCount((c) => c + 1);
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      setData((prev) => [...prev, ...makePeople(prev.length, PAGE_SIZE)]);
+      setIsLoading(false);
+    };
+
+    const table = useReactTable({
+      data,
+      columns: wideColumns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      <div style={{ height: "400px", width: "600px" }}>
+        <div data-testid="fetch-count" style={{ marginBottom: 8 }}>
+          {`rows: ${data.length} / fetches: ${fetchCount}`}
+        </div>
+        <div style={{ height: "340px" }}>
+          <BaseTable
+            {...args}
+            table={table}
+            isLoading={isLoading}
+            fetchNextPage={hasMore ? fetchNextPage : undefined}
+          />
+        </div>
       </div>
     );
   },

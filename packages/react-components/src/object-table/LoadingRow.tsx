@@ -28,6 +28,11 @@ interface LoadingRowProps<TData extends RowData> {
   translateY: number;
   rowHeight?: number;
   columnWidth?: number;
+  /**
+   * Attached to the underlying `<tr>`. Used when this row doubles as the
+   * infinite-scroll sentinel, so scrolling it into view loads the next page.
+   */
+  rowRef?: React.Ref<HTMLTableRowElement>;
 }
 
 export function LoadingRow<TData extends RowData>({
@@ -36,9 +41,11 @@ export function LoadingRow<TData extends RowData>({
   translateY,
   rowHeight = DEFAULT_ROW_HEIGHT,
   columnWidth = DEFAULT_COLUMN_WIDTH,
+  rowRef,
 }: LoadingRowProps<TData>): React.ReactElement {
   return (
     <tr
+      ref={rowRef}
       className={rowStyles.osdkTableRow}
       style={{
         height: `${rowHeight}px`,

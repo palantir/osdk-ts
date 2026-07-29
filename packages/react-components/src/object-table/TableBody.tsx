@@ -33,7 +33,13 @@ interface TableBodyProps<TData extends RowData> {
     row: TData,
     cell: Cell<TData, unknown>
   ) => React.ReactNode;
-  isLoadingMore?: boolean;
+  /**
+   * Whether another page can be loaded. When true a trailing loading row is
+   * rendered, which doubles as the infinite-scroll sentinel.
+   */
+  hasMore?: boolean;
+  /** Attached to the trailing loading row when {@link hasMore} is true. */
+  sentinelRef?: React.Ref<HTMLTableRowElement>;
   headerGroups?: Array<HeaderGroup<TData>>;
   focusedRowId?: string | null;
   setFocusedRowId?: (id: string | null) => void;
@@ -47,7 +53,8 @@ export function TableBody<TData extends RowData>({
   onRowClick,
   renderCellContextMenu,
   rowHeight = DEFAULT_ROW_HEIGHT,
-  isLoadingMore = false,
+  hasMore = false,
+  sentinelRef,
   headerGroups = [],
   focusedRowId,
   setFocusedRowId,
@@ -68,7 +75,9 @@ export function TableBody<TData extends RowData>({
   }, [rowVirtualizer, rows.length]);
 
   const totalSize = rowVirtualizer.getTotalSize();
-  const bodyHeight = isLoadingMore ? totalSize + rowHeight : totalSize;
+  // Reserve room for the trailing loading row so it can actually be scrolled
+  // into view — that visibility is what triggers the next page.
+  const bodyHeight = hasMore ? totalSize + rowHeight : totalSize;
 
   const headers = headerGroups[0]?.headers ?? [];
 
@@ -96,8 +105,9 @@ export function TableBody<TData extends RowData>({
           />
         );
       })}
-      {isLoadingMore && (
+      {hasMore && (
         <LoadingRow
+          rowRef={sentinelRef}
           headers={headers}
           translateY={totalSize}
           rowHeight={rowHeight}

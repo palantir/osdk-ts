@@ -24,7 +24,7 @@ import React, {
 } from "react";
 
 import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
-import { useFetchMoreOnScroll } from "./hooks/useFetchMoreOnScroll.js";
+import { useFetchMoreSentinel } from "./hooks/useFetchMoreSentinel.js";
 import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
@@ -156,10 +156,6 @@ function BaseTableInner<TData extends RowData>({
 }: BaseTableProps<TData>): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
-  const { handleScroll, isLoadingMore } = useFetchMoreOnScroll({
-    isLoading,
-    fetchNextPage,
-  });
   const labels = useObjectTableLabels();
 
   const getRowById = useCallback(
@@ -195,6 +191,12 @@ function BaseTableInner<TData extends RowData>({
   const rows = table.getRowModel().rows;
   const headerGroups = table.getHeaderGroups();
   const hasData = rows.length > 0;
+
+  const { sentinelRef, hasMore } = useFetchMoreSentinel({
+    isLoading,
+    fetchNextPage,
+    loadedCount: rows.length,
+  });
 
   const hasEditableColumns = table
     .getAllColumns()
@@ -233,11 +235,7 @@ function BaseTableInner<TData extends RowData>({
         ref={objectTablePortalRef}
         className={classNames(styles.osdkTableWrapper, className)}
       >
-        <div
-          ref={tableContainerRef}
-          className={styles.osdkTableContainer}
-          onScroll={handleScroll}
-        >
+        <div ref={tableContainerRef} className={styles.osdkTableContainer}>
           <table>
             {isLoading && !hasData ? (
               <LoadingStateTable
@@ -259,7 +257,8 @@ function BaseTableInner<TData extends RowData>({
                   onRowClick={onRowClick}
                   rowHeight={rowHeight}
                   renderCellContextMenu={renderCellContextMenu}
-                  isLoadingMore={isLoadingMore}
+                  hasMore={hasMore}
+                  sentinelRef={sentinelRef}
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}

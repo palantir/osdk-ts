@@ -15,15 +15,12 @@
  */
 
 import { throttle } from "lodash-es";
-import type { LegacyRef } from "react";
+import type { RefCallback } from "react";
 import { useCallback, useEffect, useRef } from "react";
 
 import { useEventCallback } from "./useEventCallback.js";
 
 const THRESHOLD = 0.5;
-const OPTIONS = {
-  threshold: THRESHOLD,
-};
 
 export interface UseInfiniteScrollOptions {
   /**
@@ -36,6 +33,20 @@ export interface UseInfiniteScrollOptions {
    * loaded pages without making the target element scroll out of the viewport.
    */
   loadedCount: number;
+  /**
+   * Fraction of the target element that must be visible before `callback` fires.
+   *
+   * Pass `0` when the target can be wider (or taller) than the scroll
+   * container's visible area — a target that is only ever partially exposed
+   * never reaches a non-zero ratio, so the observer would stop notifying after
+   * the initial observation. A full-width row inside a horizontally scrollable
+   * container is the usual case.
+   *
+   * Read once, when the observer is created; later changes have no effect.
+   *
+   * @default 0.5
+   */
+  threshold?: number;
 }
 
 /**
@@ -43,10 +54,11 @@ export interface UseInfiniteScrollOptions {
  * It returns a callback that must be set as the ref of the target element at the bottom of the
  * scroll container.
  */
-export function useInfiniteScroll({
+export function useInfiniteScroll<TElement extends Element = HTMLDivElement>({
   callback,
   loadedCount,
-}: UseInfiniteScrollOptions): LegacyRef<HTMLDivElement> {
+  threshold = THRESHOLD,
+}: UseInfiniteScrollOptions): RefCallback<TElement> {
   const observer = useRef<IntersectionObserver>();
   const targetRef = useRef<Element | undefined>();
 
@@ -85,14 +97,13 @@ export function useInfiniteScroll({
     };
   }, [loadedCount]);
 
-  const setRef = (node: HTMLDivElement) => {
+  const setRef = (node: TElement) => {
     if (node != null) {
       targetRef.current = node;
       if (observer.current == null) {
-        observer.current = new IntersectionObserver(
-          handleObserverUpdate,
-          OPTIONS
-        );
+        observer.current = new IntersectionObserver(handleObserverUpdate, {
+          threshold,
+        });
       }
       observer.current.observe(node);
     } else if (targetRef.current != null) {
