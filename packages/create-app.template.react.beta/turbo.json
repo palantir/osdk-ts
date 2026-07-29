@@ -5,7 +5,10 @@
     "codegen": {
       "inputs": ["templates/**/*"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/create-app.template-packager#transpileEsm"]
+      "dependsOn": [
+        "@osdk/create-app.template-packager#transpileEsm",
+        "@osdk/create-app.react.beta.common#transpileEsm"
+      ]
     }
   }
 }
