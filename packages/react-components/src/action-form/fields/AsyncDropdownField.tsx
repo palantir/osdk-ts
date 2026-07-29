@@ -102,6 +102,11 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
         ) : null
       }
       disableClientSideFiltering={dropdownProps.onQueryChange != null}
+      createNewItemFromQuery={
+        isLoading || isSearching
+          ? undefined
+          : dropdownProps.createNewItemFromQuery
+      }
     />
   );
 });

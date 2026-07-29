@@ -60,6 +60,7 @@ function renderAsyncDropdown(
     hasMore?: boolean;
     onFetchMore?: () => void;
     fetchError?: Error;
+    createNewItemFromQuery?: (query: string) => string | undefined;
   } = {}
 ) {
   return render(
@@ -214,6 +215,50 @@ describe("AsyncDropdownField", () => {
       expect(document.querySelector("[role='alert']")).toBeNull();
       const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
       expect(skeletonBars?.length ?? 0).toBe(0);
+    });
+  });
+
+  describe("creatable", () => {
+    it.each([
+      { status: "loading", isLoading: true, isSearching: false },
+      { status: "searching", isLoading: false, isSearching: true },
+    ])(
+      "does not offer creation while results are $status",
+      async ({ isLoading, isSearching }) => {
+        renderAsyncDropdown({
+          items: [],
+          isLoading,
+          isSearching,
+          createNewItemFromQuery: (query) => query,
+        });
+        await openCombobox();
+
+        fireEvent.change(screen.getByPlaceholderText("Search…"), {
+          target: { value: "Delta" },
+        });
+
+        expect(
+          screen.queryByRole("option", { name: 'Create "Delta"' })
+        ).toBeNull();
+      }
+    );
+
+    it("offers creation after results resolve", async () => {
+      renderAsyncDropdown({
+        items: [],
+        createNewItemFromQuery: (query) => query,
+      });
+      await openCombobox();
+
+      fireEvent.change(screen.getByPlaceholderText("Search…"), {
+        target: { value: "Delta" },
+      });
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: 'Create "Delta"' })
+        ).toBeDefined();
+      });
     });
   });
 });

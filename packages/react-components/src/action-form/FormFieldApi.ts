@@ -244,6 +244,33 @@ export interface DropdownFieldProps<
   disableClientSideFiltering?: boolean;
 
   /**
+   * If provided, allows new items to be created from the current search query.
+   * When the trimmed query is non-empty and matches no existing item, a
+   * "create" option is offered; selecting it — by click or by pressing Enter
+   * while it is highlighted — commits the value returned here through
+   * `onChange`.
+   *
+   * Coerce/convert the raw query into an item value here (e.g. via
+   * `coerceFieldValue`). Return `undefined` to reject the query, in which case
+   * no create option is shown.
+   *
+   * Providing this callback implies a searchable dropdown. Works for both
+   * single-select and multi-select — multi-select behaves like a creatable tag
+   * input, appending each created value to the selection.
+   */
+  createNewItemFromQuery?: (query: string) => V | undefined;
+
+  /**
+   * Overrides the rendered content of the synthetic "Create …" item shown in
+   * creatable mode (see {@link createNewItemFromQuery}). Receives the trimmed
+   * query the item would create.
+   *
+   * Defaults to text reading `Create "<query>"`. The item's accessible name
+   * stays `Create "<query>"` regardless, so an override only changes visuals.
+   */
+  createNewItemRenderer?: (query: string) => React.ReactNode;
+
+  /**
    * Status message rendered below the search input and above the item list
    * inside the popup. Use for loading/error/empty messages.
    */
@@ -450,6 +477,7 @@ export type ObjectSelectFieldProps<
   | "onQueryChange"
   | "disableClientSideFiltering"
   | "renderItemList"
+  | "createNewItemFromQuery"
 > &
   ObjectSelectDataSource<Q>;
 
