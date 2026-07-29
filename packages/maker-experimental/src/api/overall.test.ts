@@ -53,7 +53,7 @@ function apiNamePreset(apiName: string) {
     },
     exportCompatibility: "COMPATIBLE",
     enforcement: "SUGGESTED",
-    isDefault: true,
+    isDefault: false,
   };
 }
 
