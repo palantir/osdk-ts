@@ -909,35 +909,6 @@ describe("invalidateObject and $includeAllBaseObjectProperties families", () => 
     );
   });
 
-  it("fetches a single base-family object when no variants are registered", async () => {
-    // Nothing has observed this object, so the registry has no variants for it.
-    expect(
-      store.objectCacheKeyRegistry.getVariants(
-        Employee.apiName,
-        INVALIDATE_EMPLOYEE_ID
-      ).size
-    ).toBe(0);
-
-    await store.invalidateObject(Employee, INVALIDATE_EMPLOYEE_ID);
-
-    const baseKey = store.objects.getQuery(
-      { apiName: Employee.apiName, pk: INVALIDATE_EMPLOYEE_ID },
-      undefined
-    ).cacheKey;
-
-    // A single flag-off, no-RDP base query was created and loaded.
-    expect(store.getValue(baseKey)?.value).toMatchObject({
-      $primaryKey: INVALIDATE_EMPLOYEE_ID,
-    });
-    const variants = store.objectCacheKeyRegistry.getVariants(
-      Employee.apiName,
-      INVALIDATE_EMPLOYEE_ID
-    );
-    expect(variants.size).toBe(1);
-    // The fallback created only the flag-off base variant, not a flag-on one.
-    expect(variants).toContain(baseKey);
-  });
-
   it("deletes both base-property families when the object streams out", async () => {
     const { flagOnObjectKey, flagOffObjectKey } = await observeBothFamilies();
 

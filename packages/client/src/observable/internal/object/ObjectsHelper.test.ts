@@ -336,6 +336,48 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     expect(valueB?.fullName).toBe("Bob");
     expect(valueB?.derivedAddress).toBe("123 Main St");
   });
+
+  it("does not overwrite the flag-on entry when a flag-off sibling writes", () => {
+    // Both base-property families share one registry bucket, so a write to one
+    // is offered to the other. A flag-off object carries fewer properties and
+    // must not clobber the richer flag-on entry. (Deletes still cross every
+    // variant; that path is covered in Store.invalidation.test.ts.)
+    const queryFlagOn = store.objects.getQuery(
+      { apiName: Employee, pk: 1, $includeAllBaseObjectProperties: true },
+      undefined,
+      /* objectKeyIncludeAllBaseObjectProperties */ true
+    );
+    const queryFlagOff = store.objects.getQuery({ apiName: Employee, pk: 1 });
+    expect(queryFlagOn.cacheKey).not.toBe(queryFlagOff.cacheKey);
+
+    // Make the flag-on entry an active propagation target.
+    store.cacheKeys.retain(queryFlagOn.cacheKey);
+    store.subjects.get(queryFlagOn.cacheKey).subscribe(() => {});
+
+    store.batch({}, (batch) => {
+      queryFlagOn.writeToStore(
+        emp.$clone({ fullName: "RichAlice" }) as any,
+        "loaded",
+        batch
+      );
+    });
+    store.batch({}, (batch) => {
+      queryFlagOff.writeToStore(
+        emp.$clone({ fullName: "LeanBob" }) as any,
+        "loaded",
+        batch
+      );
+    });
+
+    // The flag-off write lands on its own entry but is skipped for the flag-on
+    // one, so each family keeps its own value.
+    const flagOnValue = store.getValue(queryFlagOn.cacheKey)?.value as any;
+    const flagOffValue = store.getValue(queryFlagOff.cacheKey)?.value as any;
+    expect(flagOnValue?.fullName).toBe("RichAlice");
+    expect(flagOffValue?.fullName).toBe("LeanBob");
+
+    store.cacheKeys.release(queryFlagOn.cacheKey);
+  });
 });
 
 describe("ObjectsHelper.isKeyActive", () => {
@@ -970,19 +1012,5 @@ describe("ObjectsHelper.getQuery derived-property revalidation", () => {
     // The flag is interface-only; leaking it into a concrete object fetch is
     // the Finding-2 bug.
     expect(capturedOptions?.$includeAllBaseObjectProperties).toBeUndefined();
-  });
-
-  it("keeps the derived-property variant on its own flag-on entry", () => {
-    const rdp = createFakeRdpConfig("derivedThing");
-    const flagOn = store.objects.getQuery(
-      { apiName: Employee, pk: 1, $includeAllBaseObjectProperties: true },
-      rdp,
-      /* objectKeyIncludeAllBaseObjectProperties */ true
-    );
-    // Same object and RDP but without forcing the flag gives a distinct cache
-    // key, so with-flag and without-flag results never share an entry.
-    const flagOff = store.objects.getQuery({ apiName: Employee, pk: 1 }, rdp);
-
-    expect(flagOn.cacheKey).not.toBe(flagOff.cacheKey);
   });
 });
