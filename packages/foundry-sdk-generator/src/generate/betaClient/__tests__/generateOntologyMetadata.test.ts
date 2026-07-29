@@ -140,6 +140,8 @@ describe("generateOntologyMetadata", () => {
               "apiName": "Employee",
               "displayName": "Employee",
               "pluralDisplayName": "Employees",
+              "aliases": [],
+              "datasources": [],
               "status": "ACTIVE",
               "icon": {
                 "type": "blueprint",
