@@ -24,14 +24,14 @@ import { EMPTY_ANNOTATION_ARRAY } from "../constants.js";
 import { usePdfAnnotationsByPage } from "../hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "../hooks/usePdfFormFields.js";
 import { usePdfViewerCore } from "../hooks/usePdfViewerCore.js";
-import type { PdfAnnotation, PdfFormFieldValue } from "../types.js";
+import type { PdfAnnotation, PdfFormFieldValue, PdfSource } from "../types.js";
 import { PdfAnnotationOverlay } from "./PdfAnnotationOverlay.js";
 
 import styles from "../PdfViewer.module.css";
 
 export interface PdfViewerContentProps {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */

@@ -14,6 +14,7 @@ export namespace deleteOffice {
   export type ParamsDefinition = {
     Office: {
       description: undefined;
+      displayName: 'Office';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Office>;

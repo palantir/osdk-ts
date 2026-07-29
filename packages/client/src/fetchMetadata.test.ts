@@ -272,6 +272,16 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooArray": {
+            "description": "An array-valued Foo property",
+            "displayName": "Foo Array",
+            "hasReducers": false,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooIdp": {
             "description": "A Foo IDP",
             "displayName": "Foo IDP",
@@ -316,24 +326,28 @@ describe("FetchMetadata", () => {
         "parameters": {
           "newAddress": {
             "description": "The office's new physical address (not necessarily shipping address)",
+            "displayName": "New Address",
             "multiplicity": false,
             "nullable": true,
             "type": "string",
           },
           "newCapacity": {
             "description": "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
+            "displayName": "New Capacity",
             "multiplicity": false,
             "nullable": true,
             "type": "integer",
           },
           "officeId": {
             "description": undefined,
+            "displayName": "Office ID",
             "multiplicity": false,
             "nullable": false,
             "type": "string",
           },
           "officeNames": {
             "description": "A list of all office names",
+            "displayName": "Office Names",
             "multiplicity": true,
             "nullable": true,
             "type": "integer",

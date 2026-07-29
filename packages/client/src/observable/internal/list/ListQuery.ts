@@ -389,6 +389,7 @@ export abstract class ListQuery extends BaseListQuery<
    * Subclasses override to add type-specific logic (e.g. interface
    * implementation checks).
    */
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async revalidateObjectType(objectType: string): Promise<boolean> {
     return (
       this.apiName === objectType ||

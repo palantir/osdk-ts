@@ -269,7 +269,7 @@ describe("useEditableTable", () => {
     expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
-  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
+  it("when submit edits is undefined, onSubmitEdits is undefined", () => {
     const { result } = renderHook(() =>
       useEditableTable({
         editMode: "always",

@@ -46,7 +46,7 @@ const describeIfConfigured = baseUrl && token ? describe : describe.skip;
 const E2E_TIMEOUT_MS = 30_000;
 
 function makeClient(baseUrlIn: string, tokenIn: string): PlatformClient {
-  const fetchFn: typeof globalThis.fetch = async (input, init) => {
+  const fetchFn: typeof globalThis.fetch = (input, init) => {
     const headers = new Headers(init?.headers);
     headers.set("Authorization", `Bearer ${tokenIn}`);
     return fetch(input, { ...init, headers });

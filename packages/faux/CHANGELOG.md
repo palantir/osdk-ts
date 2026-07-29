@@ -1,5 +1,38 @@
 # @osdk/shared.test
 
+## 0.38.0
+
+### Patch Changes
+
+- @osdk/api@2.48.0
+- @osdk/generator-converters@2.48.0
+
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters@2.47.0
+
+## 0.36.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters@2.46.0
+
+## 0.35.0
+
+### Minor Changes
+
+- db2bfa2: Add ability to pass null for struct action parameters.
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+  - @osdk/api@2.45.0
+  - @osdk/generator-converters@2.45.0
+
 ## 0.34.0
 
 ### Minor Changes

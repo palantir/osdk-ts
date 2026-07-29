@@ -54,7 +54,7 @@ export interface FunctionColumnData {
   };
 }
 
-export interface UseFunctionColumnsDataOptions<
+export interface UseFunctionColumnsDataProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -82,11 +82,7 @@ export function useFunctionColumnsData<
   objects,
   columnDefinitions,
   pageSize = DEFAULT_PAGE_SIZE,
-}: UseFunctionColumnsDataOptions<
-  Q,
-  RDPs,
-  FunctionColumns
->): FunctionColumnData {
+}: UseFunctionColumnsDataProps<Q, RDPs, FunctionColumns>): FunctionColumnData {
   const client = useOsdkClient();
   const prevDataRef = useRef<FunctionColumnData>({});
 

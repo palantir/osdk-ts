@@ -55,6 +55,7 @@ class TsServerImpl extends EventEmitter<{
     return this.#subprocess;
   }
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async start(): Promise<this> {
     this.#subprocess = execaNode({
       ipc: true,

@@ -28,6 +28,11 @@ import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
+import {
+  generateOntologyMetadata,
+  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "./generateOntologyMetadata.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
@@ -43,6 +48,7 @@ export async function generatePackage(
     beta: boolean;
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
+    branch: string | undefined;
   },
   logger: SlsLogger,
 ): Promise<void> {
@@ -92,6 +98,12 @@ export async function generatePackage(
     ontologyInfo.fixedVersionQueryTypes,
   );
 
+  await generateOntologyMetadata({
+    metadata: ontologyInfo.requestedMetadata,
+    path: join(packagePath, ONTOLOGY_METADATA_JSON_PATH),
+    typePath: join(packagePath, ONTOLOGY_METADATA_DTS_PATH),
+  });
+
   // actually write file plus save contents
   const contents = await generatePackageJson({
     packageName: options.packageName,
@@ -101,6 +113,7 @@ export async function generatePackage(
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
     packageRid: options.packageRid,
+    branch: options.branch,
   });
 
   const compilerOutput: Record<

@@ -63,10 +63,12 @@ function createMockClient(args: MockClientArgs = {}): {
   fetch: ReturnType<typeof vi.fn>;
 } {
   const fetchMock = vi.fn<typeof globalThis.fetch>(
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     async () => args.response ?? sseResponse(args)
   );
   const client: PlatformClient = {
     baseUrl: args.baseUrl ?? "https://example.palantirfoundry.com",
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     tokenProvider: async () => "test-token",
     fetch: fetchMock,
   };

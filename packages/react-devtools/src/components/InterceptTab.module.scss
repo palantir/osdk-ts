@@ -1,5 +1,5 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
+@use "tokens" as t;
+@use "mixins" as m;
 
 .interceptTab {
   display: flex;
@@ -100,7 +100,9 @@
   cursor: pointer;
   text-align: center;
   color: t.$text-primary;
-  transition: border-color t.$transition-fast, background-color t.$transition-fast;
+  transition:
+    border-color t.$transition-fast,
+    background-color t.$transition-fast;
 
   &:hover {
     border-color: t.$blue;

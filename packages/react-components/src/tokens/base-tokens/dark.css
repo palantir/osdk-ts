@@ -70,7 +70,9 @@
      set --osdk-* tokens that have no --bp-* counterpart or that
      intentionally diverge from Blueprint's value. */
   --osdk-surface-shadow-2: var(--osdk-dark-surface-shadow-2);
-  --osdk-surface-border-color-default: var(--osdk-dark-bp-surface-border-color-default);
+  --osdk-surface-border-color-default: var(
+    --osdk-dark-bp-surface-border-color-default
+  );
   --osdk-background-primary: var(--osdk-dark-background-primary);
   --osdk-background-secondary: var(--osdk-dark-background-secondary);
   --osdk-background-tertiary: var(--osdk-dark-background-tertiary);

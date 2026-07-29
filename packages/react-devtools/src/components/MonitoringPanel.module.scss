@@ -1,6 +1,6 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
-@use 'theme' as theme;
+@use "tokens" as t;
+@use "mixins" as m;
+@use "theme" as theme;
 
 .panel {
   @include theme.dt-dark-theme;
@@ -23,6 +23,15 @@
   min-width: 320px;
   min-height: 200px;
   pointer-events: none;
+
+  // Blueprint overlays (tooltips, popover menus) portal into this element via
+  // PortalProvider (portalContainer={panelEl}), so they mount as siblings of
+  // .content — outside the children that re-enable pointer events. Without this
+  // they inherit the panel's pointer-events:none and render visible but dead:
+  // no hover, and clicks fall through to the content behind.
+  :global(.bp6-portal) {
+    pointer-events: auto;
+  }
 
   &.collapsed {
     min-width: auto;
@@ -128,7 +137,7 @@
   justify-content: space-between;
   padding: 6px 12px;
   border-bottom: 1px solid t.$border-default;
-  background: t.$bg-raised;
+  background: t.$bg-elevated;
   cursor: move;
   user-select: none;
   pointer-events: auto;
@@ -145,7 +154,6 @@
   gap: 8px;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-semi;
-  text-transform: uppercase;
   letter-spacing: 1px;
   color: t.$text-secondary;
   margin: 0;
@@ -181,7 +189,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color t.$transition-fast, color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;
@@ -195,33 +205,51 @@
 
 .content {
   flex: 1;
-  overflow: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   pointer-events: auto;
 }
 
+.notice {
+  // Blueprint's Callout is width: 100%; combined with its inline margin that
+  // overflows the panel on the right. Let it size to the padded width instead.
+  width: auto;
+}
+
 .tabs {
-  @include m.dt-tabs;
-  padding: 0 12px;
-  flex-shrink: 0;
-  pointer-events: auto;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  // Panel chrome surface. The tab-list strip and tab panels are transparent,
+  // so this is the single source for the tabs-region background — no per-child
+  // overrides needed. Theme-aware
+  background: t.$bg-elevated;
+
+  // Blueprint v6 exposes no className prop for the tab-list strip so using :global
+  :global(.bp6-tab-list) {
+    flex-shrink: 0;
+    padding: 4px 12px 0;
+    border-bottom: 1px solid t.$border-default;
+    overflow-x: auto;
+    overflow-y: hidden;
+    // Scroll without a visible bar (trackpad / shift-wheel / drag still work).
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
-.tabButton {
-  @include m.dt-tab-button;
-}
-
-.tabButtonActive {
-  @include m.dt-tab-active;
-}
-
-.tabContentVisible {
-  display: contents;
-}
-
-.tabContentHidden {
-  display: none;
+.tabPanel {
+  flex: 1;
+  min-height: 0;
+  margin-top: 0;
+  overflow: auto;
+  @include m.dt-scrollbar;
 }
 
 .metricsGrid {
@@ -447,7 +475,10 @@
   cursor: pointer;
   box-shadow: t.$shadow-panel;
   z-index: t.$z-panel;
-  transition: opacity t.$transition-normal, border-color t.$transition-normal, box-shadow t.$transition-normal;
+  transition:
+    opacity t.$transition-normal,
+    border-color t.$transition-normal,
+    box-shadow t.$transition-normal;
   opacity: 0.7;
   pointer-events: auto;
 
@@ -583,6 +614,19 @@
 
         &:hover {
           background: t.$blue-hover;
+        }
+
+        // Outlined primary buttons mirror the soft tint the other intents use
+        // instead of the solid fill, so their label stays readable on the
+        // panel surface.
+        &.bp6-outlined {
+          background: t.$blue-bg;
+          border-color: var(--dt-blue-border);
+          color: t.$blue;
+
+          &:hover {
+            background: var(--dt-blue-hover-bg);
+          }
         }
       }
 

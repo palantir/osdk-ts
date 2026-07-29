@@ -31,6 +31,7 @@ import classNames from "classnames";
 import React, { useCallback, useState } from "react";
 
 import { usePortalContainer } from "../shared/PortalContainerContext.js";
+import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import type { ColumnOption } from "./utils/types.js";
 
@@ -113,6 +114,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
   onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const portalContainer = usePortalContainer();
+  const labels = useObjectTableLabels();
   const {
     showSortingItems = false,
     showPinningItems = false,
@@ -241,7 +243,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
             )}
             {hasAnyMenuItems && (
               <Menu.Trigger
-                aria-label={`Open header menu for column with id=${header.column.id}`}
+                aria-label={labels.headerMenuAriaLabel(header.column.id)}
                 className={classNames(
                   styles.osdkCenterContainer,
                   styles.osdkHeaderPopoverTrigger
@@ -258,7 +260,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handlePinLeft}
                     icon={Pin}
-                    label="Pin column"
+                    label={labels.headerMenuPinColumn}
                   />
                 )}
 
@@ -266,7 +268,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handleUnpin}
                     icon={Unpin}
-                    label="Unpin Column"
+                    label={labels.headerMenuUnpinColumn}
                     active={true}
                   />
                 )}
@@ -275,20 +277,20 @@ export function TableHeaderWithPopover<TData extends RowData>({
                     <HeaderMenuItem
                       onClick={handleSortAscending}
                       icon={SortAlphabetical}
-                      label="Sort ascending"
+                      label={labels.headerMenuSortAscending}
                       active={isSorted === "asc"}
                     />
                     <HeaderMenuItem
                       onClick={handleSortDescending}
                       icon={SortAlphabeticalDesc}
-                      label="Sort descending"
+                      label={labels.headerMenuSortDescending}
                       active={isSorted === "desc"}
                     />
                     {columnOptions?.some((col) => col.canSort) && (
                       <HeaderMenuItem
                         onClick={handleOpenMultiSort}
                         icon={Sort}
-                        label="Sort on multiple columns"
+                        label={labels.headerMenuSortOnMultipleColumns}
                       />
                     )}
                   </>
@@ -297,21 +299,21 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <HeaderMenuItem
                     onClick={handleClearAllSorts}
                     icon={Remove}
-                    label="Clear all sorts"
+                    label={labels.headerMenuClearAllSorts}
                   />
                 )}
                 {showResizeItem && (
                   <HeaderMenuItem
                     onClick={handleResetSize}
                     icon={VerticalDistribution}
-                    label="Reset Column Size"
+                    label={labels.headerMenuResetColumnSize}
                   />
                 )}
                 {showConfigItem && (
                   <HeaderMenuItem
                     onClick={handleOpenColumnConfig}
                     icon={Settings}
-                    label="Configure Columns"
+                    label={labels.headerMenuConfigureColumns}
                   />
                 )}
               </Menu.Popup>

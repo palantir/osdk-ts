@@ -779,7 +779,7 @@ function getEntityTypeName(type: string): string {
   }[type]!;
 }
 
-function writeDependencyFile(dependencyFile: string): void {
+export function writeDependencyFile(dependencyFile: string): void {
   fs.writeFileSync(dependencyFile, JSON.stringify(dependencies, null, 2));
 }
 

@@ -4,6 +4,7 @@
 
 ```ts
 
+import type { ActionDefinition } from '@osdk/client';
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
@@ -41,6 +42,12 @@ declare namespace Aliases {
         Source
     }
 }
+
+// @public (undocumented)
+export type Annotated<
+	T,
+	A extends Record<string, string>
+> = T;
 
 export { Attachment }
 

@@ -21,6 +21,7 @@ import { consola } from "consola";
 import type { Argv } from "yargs";
 
 import auth from "./commands/auth/index.js";
+import branch from "./commands/branch/index.js";
 import site from "./commands/site/index.js";
 import widgetSet from "./commands/widgetset/index.js";
 
@@ -41,7 +42,11 @@ export async function cli(
         aliases: ["experimental"],
         describe: "Unstable commands",
         builder: (argv) => {
-          return argv.command(typescript).command(auth).demandCommand();
+          return argv
+            .command(typescript)
+            .command(auth)
+            .command(branch)
+            .demandCommand();
         },
         handler: (_args) => {},
       })

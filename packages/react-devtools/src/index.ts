@@ -33,8 +33,12 @@ export {
   useComputeRecording,
   useComputeRequests,
 } from "./hooks/useComputeSelectors.js";
+export { useClientMetrics } from "./hooks/useClientMetrics.js";
 export { useMetrics } from "./hooks/useMetrics.js";
 export { usePersistedState } from "./hooks/usePersistedState.js";
+
+export { getClientMetrics, MIN_SAMPLES } from "./metrics/clientMetrics.js";
+export type { ClientMetrics, Metric } from "./metrics/clientMetrics.js";
 
 export type { Fiber } from "./fiber/types.js";
 export { ComputeStore } from "./store/ComputeStore.js";

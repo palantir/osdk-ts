@@ -1,5 +1,44 @@
 # @osdk/unit-testing
 
+## 0.20.0
+
+### Minor Changes
+
+- 27d7469: Export `MockClient`, `StubClient`, and `MockOsdkObjectOptions` types from the `@osdk/unit-testing/experimental` entry point so callers can annotate the value returned by `createMockClient` directly instead of `ReturnType<typeof createMockClient>`.
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client@2.49.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 765ae4e: Re-registering a mock client stub with the same pattern now overrides the previous stub (latest registered wins) instead of being shadowed by it.
+
+### Patch Changes
+
+- Updated dependencies [db2bfa2]
+- Updated dependencies [cbf692b]
+  - @osdk/client@2.45.0
+  - @osdk/api@2.45.0
+
+## 0.18.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
+### Patch Changes
+
+- Updated dependencies [1b33456]
+- Updated dependencies [ffa3daa]
+- Updated dependencies [f733ceb]
+  - @osdk/functions@1.17.0
+  - @osdk/client@2.44.0
+  - @osdk/api@2.44.0
+
 ## 0.17.0
 
 ### Minor Changes

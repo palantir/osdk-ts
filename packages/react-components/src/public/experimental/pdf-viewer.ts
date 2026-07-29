@@ -24,6 +24,7 @@ export type {
   PdfDownloadResult,
   PdfFormFieldValue,
   PdfRect,
+  PdfSource,
   PdfTextHighlightEvent,
   PdfViewerProps,
   SidebarMode,

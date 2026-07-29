@@ -423,7 +423,9 @@ function renderType(
     case "attachment": {
       return type.hasAttachments ? "attachment" : "{}";
     }
-    case "interface":
+    case "interface": {
+      return `{ $objectType: "objectTypeApiName", $primaryKey: "primaryKeyValue" }`;
+    }
     case "marking": {
       return "{}";
     }

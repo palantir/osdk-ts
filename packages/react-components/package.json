@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.36.0",
+  "version": "0.43.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -182,9 +182,11 @@
   },
   "scripts": {
     "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
+    "check-gen-props": "node scripts/gen-props.mjs --check",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "gen-props": "node scripts/gen-props.mjs",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "LANG=en_US.UTF-8 vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
@@ -195,7 +197,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
+    "@base-ui/react": ">=1.0.0 <1.4.0",
     "@blueprintjs/icons": "^6.7.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",

@@ -14,13 +14,15 @@
   --osdk-aip-agent-chat-bubble-border-radius: var(--osdk-surface-border-radius);
   --osdk-aip-agent-chat-bubble-max-width: 80%;
 
-  --osdk-aip-agent-chat-user-bubble-background: var(--osdk-background-secondary);
+  --osdk-aip-agent-chat-user-bubble-background: var(
+    --osdk-background-secondary
+  );
   --osdk-aip-agent-chat-user-bubble-color: var(
     --osdk-typography-color-default-rest
   );
   --osdk-aip-agent-chat-user-bubble-border-radius: var(
-    --osdk-surface-border-radius
-  )
+      --osdk-surface-border-radius
+    )
     var(--osdk-surface-border-radius) 0 var(--osdk-surface-border-radius);
 
   --osdk-aip-agent-chat-assistant-bubble-color: var(

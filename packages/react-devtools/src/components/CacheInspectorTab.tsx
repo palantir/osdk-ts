@@ -16,7 +16,6 @@
 
 import {
   Button,
-  ButtonGroup,
   Card,
   Collapse,
   Icon,
@@ -31,23 +30,10 @@ import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
 import { CopyableCodeBlock } from "./CopyableCodeBlock.js";
+import { Metric } from "./Metric.js";
+import { Metrics } from "./Metrics.js";
 
 import styles from "./CacheInspectorTab.module.scss";
-
-function getTypeColor(type: string) {
-  switch (type) {
-    case "object":
-      return "primary";
-    case "list":
-      return "success";
-    case "link":
-      return "warning";
-    case "objectSet":
-      return "danger";
-    default:
-      return undefined;
-  }
-}
 
 function getStatusIcon(status: string) {
   switch (status) {
@@ -61,21 +47,6 @@ function getStatusIcon(status: string) {
       return "time";
     default:
       return "help";
-  }
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "loaded":
-      return "success";
-    case "loading":
-      return "primary";
-    case "error":
-      return "danger";
-    case "init":
-      return "none";
-    default:
-      return undefined;
   }
 }
 
@@ -191,58 +162,41 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
   return (
     <div className={styles.cacheInspector}>
       <div className={styles.toolbar}>
-        <h3 className={styles.title}>Cache Inspector</h3>
-
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Entries</span>
-            <span className={styles.statValue}>
-              {snapshot.stats.totalEntries}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Size</span>
-            <span className={styles.statValue}>
-              {formatBytes(snapshot.stats.totalSize)}
-            </span>
-          </div>
-
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Total Hits</span>
-            <span className={styles.statValue}>{snapshot.stats.totalHits}</span>
-          </div>
-        </div>
+        <Metrics columns={2}>
+          <Metric title="Size" value={formatBytes(snapshot.stats.totalSize)} />
+          <Metric title="Entries" value={snapshot.stats.totalEntries} />
+        </Metrics>
       </div>
 
       <div className={styles.toolbarActions}>
         <div className={styles.search}>
           <InputGroup
             leftIcon="search"
-            placeholder="Search cache entries..."
+            placeholder="Search cache"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             fill={true}
           />
         </div>
 
-        <ButtonGroup>
-          <Button
-            icon="refresh"
-            onClick={() => snapshotStore.forceRefresh()}
-            size="small"
-          >
-            Refresh
-          </Button>
-          <Button
-            icon="trash"
-            intent="danger"
-            onClick={() => void handleClearAll()}
-            size="small"
-          >
-            Clear All
-          </Button>
-        </ButtonGroup>
+        <Button
+          icon="refresh"
+          onClick={() => snapshotStore.forceRefresh()}
+          size="small"
+          className={styles.toolbarButton}
+        >
+          Refresh
+        </Button>
+        <Button
+          icon="trash"
+          intent="danger"
+          variant="outlined"
+          onClick={() => void handleClearAll()}
+          size="small"
+          className={styles.toolbarButtonDanger}
+        >
+          Clear cache
+        </Button>
       </div>
 
       {invalidateError && (
@@ -307,28 +261,19 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                     size={14}
                     className={styles.expandIcon}
                   />
-                  <Tag
-                    minimal={true}
-                    intent={getTypeColor(entry.type)}
-                    className={styles.typeTag}
-                  >
+                  <Tag minimal={true} className={styles.typeTag}>
                     {entry.type}
                   </Tag>
                   <span className={styles.objectType}>{entry.objectType}</span>
-                  {entry.metadata.isOptimistic && (
-                    <Tooltip content="Has optimistic updates">
-                      <Tag minimal={true} intent="warning" icon="time">
-                        Optimistic
-                      </Tag>
-                    </Tooltip>
-                  )}
                 </div>
 
                 <div className={styles.entryHeaderRight}>
                   <Tooltip content={`Status: ${entry.metadata.status}`}>
                     <Tag
                       minimal={true}
-                      intent={getStatusColor(entry.metadata.status)}
+                      intent={
+                        entry.metadata.status === "error" ? "danger" : undefined
+                      }
                       icon={getStatusIcon(entry.metadata.status)}
                     >
                       {entry.metadata.status}
@@ -352,6 +297,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                     icon="refresh"
                     variant="minimal"
                     size="small"
+                    className={styles.iconButton}
                     onClick={(e) => {
                       e.stopPropagation();
                       void handleInvalidate(entry);

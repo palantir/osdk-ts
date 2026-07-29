@@ -278,7 +278,7 @@ describe(modernToLegacyWhereClause, () => {
 
   describe("single checks", () => {
     describe("$within", () => {
-      it("properly generates bbox shortcut", async () => {
+      it("properly generates bbox shortcut", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -312,7 +312,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates bbox long form", async () => {
+      it("properly generates bbox long form", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -348,7 +348,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates within radius", async () => {
+      it("properly generates within radius", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -379,7 +379,7 @@ describe(modernToLegacyWhereClause, () => {
       `);
       });
 
-      it("properly generates within radius of geopoint", async () => {
+      it("properly generates within radius of geopoint", () => {
         // suppose you loaded an object with a geopoint field
         // and you want to find all objects within 5 km of that point
         const pointAsGeoJsonPoint: Point = {
@@ -416,7 +416,7 @@ describe(modernToLegacyWhereClause, () => {
       `);
       });
 
-      it("properly generates within polygon", async () => {
+      it("properly generates within polygon", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -461,7 +461,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates within polygon geojson", async () => {
+      it("properly generates within polygon geojson", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(
             {
@@ -506,7 +506,7 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-      it("check types", async () => {
+      it("check types", () => {
         expectType<WhereClause<ObjAllProps>>({
           geoPoint: {
             $within: [-5, 5, -10, 10],
@@ -582,7 +582,7 @@ describe(modernToLegacyWhereClause, () => {
         });
       });
       describe("$intersects", () => {
-        it("properly generates bbox shortcut", async () => {
+        it("properly generates bbox shortcut", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -615,7 +615,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
         });
-        it("properly generates bbox long form", async () => {
+        it("properly generates bbox long form", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -651,7 +651,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
         });
 
-        it("properly generates intersects polygon", async () => {
+        it("properly generates intersects polygon", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {
@@ -696,7 +696,7 @@ describe(modernToLegacyWhereClause, () => {
           `);
         });
 
-        it("properly generates within polygon geojson", async () => {
+        it("properly generates within polygon geojson", () => {
           expect(
             modernToLegacyWhereClause<ObjAllProps>(
               {

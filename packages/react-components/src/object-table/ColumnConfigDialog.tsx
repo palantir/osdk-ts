@@ -26,6 +26,11 @@ import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
 import { SearchBar } from "../base-components/search-bar/SearchBar.js";
+import type { ObjectTableLabels } from "./ObjectTableLabels.js";
+import {
+  useObjectTableLabels,
+  withObjectTableLabels,
+} from "./ObjectTableLabels.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./ColumnConfigDialog.module.css";
@@ -45,6 +50,14 @@ export interface ColumnConfigDialogProps {
   currentColumnOrder?: ColumnOrderState;
   onApply: (columns: ColumnConfig[]) => void;
   isValidConfig?: (columns: ColumnConfig[]) => boolean;
+  /**
+   * Overrides for the dialog's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. When this dialog is
+   * rendered inside a `BaseTable`/`ObjectTable`, it inherits that table's
+   * `labels` and this prop is only needed to override further. See
+   * {@link ObjectTableLabels}.
+   */
+  labels?: Partial<ObjectTableLabels>;
 }
 
 interface ColumnItem {
@@ -53,7 +66,10 @@ interface ColumnItem {
   isVisible: boolean;
 }
 
-export function ColumnConfigDialog({
+export const ColumnConfigDialog: React.FC<ColumnConfigDialogProps> =
+  withObjectTableLabels(ColumnConfigDialogInner);
+
+function ColumnConfigDialogInner({
   isOpen,
   onClose,
   columnOptions,
@@ -61,7 +77,8 @@ export function ColumnConfigDialog({
   currentColumnOrder,
   onApply,
   isValidConfig,
-}: ColumnConfigDialogProps): React.ReactElement | null {
+}: Omit<ColumnConfigDialogProps, "labels">): React.ReactElement {
+  const labels = useObjectTableLabels();
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -173,24 +190,36 @@ export function ColumnConfigDialog({
   const footer = useMemo(
     () => (
       <>
-        <ActionButton onClick={onClose}>Cancel</ActionButton>
+        <ActionButton onClick={onClose}>
+          {labels.columnConfigCancel}
+        </ActionButton>
         <ActionButton
           variant="primary"
           onClick={handleApply}
           disabled={isApplyDisabled}
         >
-          Apply
+          {labels.columnConfigApply}
         </ActionButton>
       </>
     ),
-    [onClose, handleApply, isApplyDisabled]
+    [onClose, handleApply, isApplyDisabled, labels]
+  );
+
+  const dialogTitle = useMemo(
+    () => (
+      <div className={styles.title}>
+        <Cog />
+        {labels.columnConfigTitle}
+      </div>
+    ),
+    [labels]
   );
 
   return (
     <Dialog
       isOpen={isOpen}
       onOpenChange={onClose}
-      title={DialogTitle}
+      title={dialogTitle}
       footer={footer}
       className={styles.columnConfigDialog}
     >
@@ -212,13 +241,6 @@ export function ColumnConfigDialog({
     </Dialog>
   );
 }
-
-const DialogTitle = (
-  <div className={styles.title}>
-    <Cog />
-    Configure Table Columns
-  </div>
-);
 
 const getColumnConfig = (
   allColumns: ColumnItem[],
@@ -245,21 +267,24 @@ function VisibleColumnsList({
   onReorder,
   onRemove,
 }: VisibleColumnsListProps): React.ReactElement {
+  const labels = useObjectTableLabels();
   return (
     <div className={styles.visibleColumnsContainer}>
       <div className={styles.sectionHeader}>
         <div className={styles.sectionTitle}>
-          <span>Visible Columns</span>
+          <span>{labels.columnConfigVisibleColumns}</span>
           <span className={styles.countTag}>{columns.length}</span>
         </div>
-        <div className={styles.sectionHint}>Drag to reorder</div>
+        <div className={styles.sectionHint}>
+          {labels.columnConfigDragToReorder}
+        </div>
       </div>
       <DraggableList
         items={columns}
         onReorder={onReorder}
         onRemove={onRemove}
         removeIconVariant="trash"
-        emptyMessage="No visible columns"
+        emptyMessage={labels.columnConfigNoVisibleColumns}
         className={styles.columnList}
       />
     </div>
@@ -292,6 +317,8 @@ function AvailableColumnsList({
     visibleColumns.some((v) => v.id === col.id)
   );
 
+  const labels = useObjectTableLabels();
+
   const handleSelectAllClick = useCallback(() => {
     onSelectAll(filteredColumns);
   }, [filteredColumns, onSelectAll]);
@@ -299,13 +326,13 @@ function AvailableColumnsList({
   return (
     <div className={styles.availableColumnsContainer}>
       <div className={classNames(styles.sectionHeader, styles.sectionTitle)}>
-        Add or Remove Columns
+        {labels.columnConfigAddOrRemoveColumns}
       </div>
       <SearchBar
         value={searchQuery}
         onChange={onSearchChange}
-        placeholder="Search..."
-        aria-label="Search available columns"
+        placeholder={labels.columnConfigSearchPlaceholder}
+        aria-label={labels.columnConfigSearchAriaLabel}
         className={styles.searchContainer}
       />
       <Collapsible.Root defaultOpen={true} className={styles.propertiesList}>
@@ -317,7 +344,7 @@ function AvailableColumnsList({
               onCheckedChange={handleSelectAllClick}
               className={styles.checkbox}
             />
-            All Columns
+            {labels.columnConfigAllColumns}
           </label>
           <Collapsible.Trigger className={styles.categoryTrigger}>
             <span className={styles.categoryCount}>
@@ -328,7 +355,9 @@ function AvailableColumnsList({
         </div>
         <Collapsible.Panel className={styles.propertyList}>
           {filteredColumns.length === 0 ? (
-            <div className={styles.emptyState}>No matching columns found</div>
+            <div className={styles.emptyState}>
+              {labels.columnConfigNoMatchingColumns}
+            </div>
           ) : (
             filteredColumns.map((column) => (
               <PropertyItem

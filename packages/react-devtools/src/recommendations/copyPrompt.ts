@@ -25,14 +25,21 @@ const INTRO =
  * with no data are omitted cleanly so the output stays reproducible.
  */
 export function buildCopyPrompt(rec: Recommendation): string {
-  const sections: string[] = [
-    INTRO,
-    [
-      `ISSUE: ${rec.title} (${rec.category}, severity: ${rec.level})`,
-      `WHY IT MATTERS: ${rec.description}`,
-      `EXPECTED IMPACT: ${rec.impact}`,
-    ].join("\n"),
+  const sections: string[] = [INTRO];
+
+  // Only fields that carry data go into the prompt — an absent field is dropped
+  // rather than rendered as the literal string "undefined", which is noise that
+  // misleads the model instead of helping it.
+  const issue: string[] = [
+    `ISSUE: ${rec.title} (${rec.category}, severity: ${rec.level})`,
   ];
+  if (rec.description) {
+    issue.push(`WHY IT MATTERS: ${rec.description}`);
+  }
+  if (rec.impact) {
+    issue.push(`EXPECTED IMPACT: ${rec.impact}`);
+  }
+  sections.push(issue.join("\n"));
 
   if (rec.filePath) {
     const location =
@@ -46,22 +53,29 @@ export function buildCopyPrompt(rec: Recommendation): string {
     sections.push(`CURRENT CODE:\n\`\`\`tsx\n${rec.currentCode}\n\`\`\``);
   }
 
-  sections.push(
-    rec.code
-      ? `SUGGESTED FIX:\n${rec.suggestion}\n\`\`\`tsx\n${rec.code}\n\`\`\``
-      : `SUGGESTED FIX:\n${rec.suggestion}`
-  );
+  if (rec.suggestion || rec.code) {
+    const fix: string[] = [];
+    if (rec.suggestion) {
+      fix.push(rec.suggestion);
+    }
+    if (rec.code) {
+      fix.push(`\`\`\`tsx\n${rec.code}\n\`\`\``);
+    }
+    sections.push(`SUGGESTED FIX:\n${fix.join("\n")}`);
+  }
 
   const guidance = rec.osdkGuidance ?? OSDK_GUIDANCE_BY_CATEGORY[rec.category];
-  sections.push(`OSDK GUIDANCE:\n${guidance}`);
+  if (guidance) {
+    sections.push(`OSDK GUIDANCE:\n${guidance}`);
+  }
 
   // The location is only known when a binding could be resolved. Without it,
-  // point back at the issue and fix, which name the component or query to look
-  // for, rather than a location that was never included.
+  // lean on the issue text, which names the component, query, and object type,
+  // rather than pointing at a location that was never included.
   const task =
     rec.filePath != null
       ? "TASK: Apply the suggested fix at the location above, keeping behavior identical except for the optimization."
-      : "TASK: Apply the suggested fix. Use the issue and suggested fix above to find the component or query it refers to, keeping behavior identical except for the optimization.";
+      : "TASK: Apply the suggested fix. Use the issue above — it names the component, query, and object type involved — to find the code it refers to, keeping behavior identical except for the optimization.";
   sections.push(task);
 
   return sections.join("\n\n");

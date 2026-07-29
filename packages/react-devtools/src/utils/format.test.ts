@@ -16,7 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { formatMilliseconds } from "./format.js";
+import { formatBytes, formatMilliseconds } from "./format.js";
 
 describe("formatMilliseconds", () => {
   it("formats sub-second values as ms", () => {
@@ -67,5 +67,23 @@ describe("formatMilliseconds", () => {
 
   it("boundary: 60000ms becomes 1m", () => {
     expect(formatMilliseconds(60000, true)).toBe("1 m");
+  });
+});
+
+describe("formatBytes", () => {
+  it("formats sub-kilobyte values in bytes", () => {
+    expect(formatBytes(0)).toBe("0 b");
+    expect(formatBytes(512)).toBe("512 b");
+    expect(formatBytes(1023)).toBe("1023 b");
+  });
+
+  it("formats kilobyte values with one decimal", () => {
+    expect(formatBytes(1024)).toBe("1.0 kb");
+    expect(formatBytes(1536)).toBe("1.5 kb");
+  });
+
+  it("formats megabyte values with one decimal", () => {
+    expect(formatBytes(1024 * 1024)).toBe("1.0 mb");
+    expect(formatBytes(4.2 * 1024 * 1024)).toBe("4.2 mb");
   });
 });

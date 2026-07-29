@@ -211,7 +211,7 @@ describe.each([
     type InferredParamType = Parameters<typeof clientBoundActionTakesStruct>[0];
     expectTypeOf<{
       name: string;
-      address: { city: string; state: string; zipcode?: number | undefined };
+      address: { city: string; state: string; zipcode?: number | null };
     }>().toMatchTypeOf<InferredParamType>();
 
     const result = void (await client(createStructPerson).applyAction({
@@ -220,6 +220,19 @@ describe.each([
     }));
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+
+    // Nullable struct fields accept null (to clear the value), undefined, or omission.
+    const nullFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY", zipcode: null },
+    });
+    expect(nullFieldResult).toBeUndefined();
+
+    const omittedFieldResult = await client(createStructPerson).applyAction({
+      name: "testMan",
+      address: { city: "NYC", state: "NY" },
+    });
+    expect(omittedFieldResult).toBeUndefined();
   });
 
   it("Accepts attachments", async () => {
@@ -407,7 +420,7 @@ describe.each([
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
-  it("Accepts interfaces if implementing object types unknown", async () => {
+  it("Accepts interfaces if implementing object types unknown", () => {
     const clientBoundTakesInterface = client(deleteBarInterface).applyAction;
 
     type InferredParamType = Parameters<typeof clientBoundTakesInterface>[0];
@@ -697,7 +710,7 @@ describe("ActionResponse remapping", () => {
       }
     `);
   });
-  it("actions are enumerable", async () => {
+  it("actions are enumerable", () => {
     const actions = Object.keys($Actions);
     expect(actions).toStrictEqual([
       "actionTakesAttachment",
@@ -723,5 +736,5 @@ function wrapper<R>(fn: () => R): typeof fn {
 }
 
 async function example() {
-  await wrapper(async () => Promise.resolve("hi"))();
+  await wrapper(() => Promise.resolve("hi"))();
 }

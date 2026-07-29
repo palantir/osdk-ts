@@ -105,9 +105,10 @@
   top: auto;
   bottom: calc(
     (
-        var(--osdk-filter-popover-trigger-min-height)
-          - var(--osdk-filter-popover-remove-size)
-      ) / 2
+        var(--osdk-filter-popover-trigger-min-height) -
+          var(--osdk-filter-popover-remove-size)
+      ) /
+      2
   );
   transform: none;
 }

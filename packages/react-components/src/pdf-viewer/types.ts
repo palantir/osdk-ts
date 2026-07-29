@@ -120,8 +120,8 @@ export interface PdfViewerHandle {
  * Equivalent to {@link PdfViewerProps} minus the `className` rendering concern.
  */
 export interface PdfViewerInstanceOptions {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /** Callback fired when an annotation is clicked */
@@ -162,10 +162,20 @@ export interface PdfViewerInstanceOptions {
   outlineIcons?: Partial<Record<number, React.ComponentType>>;
 }
 
+/**
+ * PDF source input.
+ *
+ * - `string` — a URL the PDF is fetched from
+ * - `ArrayBuffer` / `Uint8Array` — raw PDF bytes already in memory (a Node
+ *   `Buffer` satisfies `Uint8Array` and is accepted as-is)
+ * - `Blob` — read into an `ArrayBuffer` before rendering
+ */
+export type PdfSource = string | ArrayBuffer | Uint8Array | Blob;
+
 /** Props for the {@link PdfViewer} component. */
 export interface PdfViewerProps {
-  /** PDF source — URL string or ArrayBuffer */
-  src: string | ArrayBuffer;
+  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
+  src: PdfSource;
   /** Annotations to overlay on the PDF */
   annotations?: PdfAnnotation[];
   /**

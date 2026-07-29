@@ -17,6 +17,7 @@
 import React from "react";
 
 import { LoadingCellContent } from "../LoadingCell.js";
+import { useObjectTableLabels } from "../ObjectTableLabels.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 
 interface AsyncValueCellProps extends AsyncCellData {}
@@ -26,8 +27,9 @@ export function AsyncValueCell({
   isLoading,
   error,
 }: AsyncValueCellProps): React.ReactNode {
+  const labels = useObjectTableLabels();
   if (error != null) {
-    return "Error";
+    return labels.cellError;
   }
   if (data != null) {
     return <>{data}</>;
@@ -35,5 +37,5 @@ export function AsyncValueCell({
   if (isLoading) {
     return <LoadingCellContent />;
   }
-  return "No value";
+  return labels.cellNoValue;
 }

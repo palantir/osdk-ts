@@ -15,6 +15,7 @@
  */
 
 import { Button } from "@blueprintjs/core";
+import type { Intent } from "@blueprintjs/core";
 import React from "react";
 
 import { useCopyToClipboard } from "../hooks/useCopyToClipboard.js";
@@ -25,8 +26,18 @@ import {
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 
 export type CopyPromptButtonProps =
-  | { recommendation: Recommendation; label?: string }
-  | { recommendations: Recommendation[]; label?: string };
+  | {
+      recommendation: Recommendation;
+      label?: string;
+      variant?: "minimal" | "outlined";
+      intent?: Intent;
+    }
+  | {
+      recommendations: Recommendation[];
+      label?: string;
+      variant?: "minimal" | "outlined";
+      intent?: Intent;
+    };
 
 export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
   const { copied, copy } = useCopyToClipboard();
@@ -39,9 +50,10 @@ export const CopyPromptButton: React.FC<CopyPromptButtonProps> = (props) => {
 
   return (
     <Button
-      variant="minimal"
+      variant={props.variant ?? "minimal"}
+      intent={props.intent}
       size="small"
-      icon={copied ? "tick" : "clipboard"}
+      icon={copied ? "tick" : "duplicate"}
       onClick={() => void copy(prompt)}
     >
       {label}

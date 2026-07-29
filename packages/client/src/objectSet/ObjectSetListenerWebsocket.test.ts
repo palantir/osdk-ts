@@ -103,7 +103,7 @@ vi.mock("isomorphic-ws", async (importOriginal) => {
 
 let currentSubscriptionId = 0;
 
-describe("ObjectSetListenerWebsocket", async () => {
+describe("ObjectSetListenerWebsocket", () => {
   let apiServer: SetupServer;
   beforeAll(() => {
     const testSetup = startNodeApiServer(
@@ -142,7 +142,7 @@ describe("ObjectSetListenerWebsocket", async () => {
       minimalClient = createMinimalClient(
         { ontologyRid: $ontologyRid },
         STACK,
-        async () => "myAccessToken",
+        () => "myAccessToken",
         { logger: rootLogger }
       );
       client = new ObjectSetListenerWebsocket(
@@ -220,7 +220,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         expectEqualRemoveAndAddListeners(ws);
       });
 
-      it("only sends a single request", async () => {
+      it("only sends a single request", () => {
         respondSuccessToSubscribe(ws, subReq1);
         // actually this is broken FIXME
         unsubscribe();
@@ -254,7 +254,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           expectEqualRemoveAndAddListeners(ws);
         });
 
-        describe("reconnect", async () => {
+        describe("reconnect", () => {
           beforeEach(async () => {
             [ws] = await Promise.all([
               expectWebSocketConstructed(),
@@ -289,7 +289,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           listener.onSuccessfulSubscription.mockReset();
         });
 
-        it("should call onError", async () => {
+        it("should call onError", () => {
           expect(listener.onError).toHaveBeenCalled();
           expect(listener.onError.mock.calls[0][0].subscriptionClosed).toBe(
             false
@@ -362,7 +362,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           `);
         });
 
-        describe("additional subscription", async () => {
+        describe("additional subscription", () => {
           let unsubscribe2: () => void;
           let subReq2: ObjectSetStreamSubscribeRequests;
           beforeEach(async () => {
@@ -404,7 +404,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             expectEqualRemoveAndAddListeners(ws);
           });
 
-          describe("reconnect, resubscribe successfully", async () => {
+          describe("reconnect, resubscribe successfully", () => {
             beforeEach(async () => {
               [ws] = await Promise.all([
                 expectWebSocketConstructed(),
@@ -452,7 +452,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         minimalClient = createMinimalClient(
           { ontologyRid: $ontologyRid },
           STACK,
-          async () => "myAccessToken",
+          () => "myAccessToken",
           { logger: rootLogger }
         );
         client = new ObjectSetListenerWebsocket(
@@ -520,7 +520,7 @@ describe("ObjectSetListenerWebsocket", async () => {
   });
 
   describe("types", () => {
-    it("does not return rid on object type if requested and object has a GTSR", async () => {
+    it("does not return rid on object type if requested and object has a GTSR", () => {
       const client: Client = ((a: any) => ({
         subscribe: (a: any, b: any) => {},
       })) as Client;
@@ -538,7 +538,7 @@ describe("ObjectSetListenerWebsocket", async () => {
       );
     });
 
-    it("does not return rid on object type if not requested", async () => {
+    it("does not return rid on object type if not requested", () => {
       const client: Client = ((a: any) => ({
         subscribe: (a: any, b: any) => {},
       })) as Client;
@@ -551,7 +551,7 @@ describe("ObjectSetListenerWebsocket", async () => {
       });
     });
 
-    it("does return rid on object type if requested and object does not have a GTSR", async () => {
+    it("does return rid on object type if requested and object does not have a GTSR", () => {
       const client: Client = ((a: any) => ({
         subscribe: (a: any, b: any) => {},
       })) as Client;

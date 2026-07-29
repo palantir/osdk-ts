@@ -60,7 +60,32 @@ describe("buildCopyPrompt", () => {
     expect(prompt).not.toContain("LOCATION:");
     expect(prompt).not.toContain("the location above");
     expect(prompt).toContain(
-      "Use the issue and suggested fix above to find the component or query"
+      "Use the issue above — it names the component, query, and object type involved"
+    );
+  });
+
+  it("never renders 'undefined' and omits sections whose data is missing", () => {
+    // Mirrors a partially-populated recommendation (e.g. from a source that
+    // can't fill every field): the prompt must not leak the literal "undefined".
+    const sparse = {
+      id: "sparse",
+      level: "high",
+      title: "Query waterfall on Employee",
+      description: "ParcelList reads Shipment after Parcel resolves",
+      category: "network",
+    } as unknown as Recommendation;
+
+    const prompt = buildCopyPrompt(sparse);
+
+    expect(prompt).not.toContain("undefined");
+    expect(prompt).not.toContain("EXPECTED IMPACT:");
+    expect(prompt).not.toContain("SUGGESTED FIX:");
+    expect(prompt).not.toContain("OSDK GUIDANCE:");
+    expect(prompt).toContain(
+      "ISSUE: Query waterfall on Employee (network, severity: high)"
+    );
+    expect(prompt).toContain(
+      "WHY IT MATTERS: ParcelList reads Shipment after Parcel resolves"
     );
   });
 

@@ -110,6 +110,8 @@ export namespace ActionMetadata {
         		// (undocumented)
         description?: string;
         		// (undocumented)
+        displayName?: string;
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;
@@ -155,7 +157,7 @@ export namespace ActionParam {
             	} ? R extends true ? K : never : never]? : T[K] extends {
             		type: infer U
             		nullable: infer R
-            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | undefined : never : never : never };
+            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | null : never : never : never };
 }
 
 // @public (undocumented)
@@ -1794,7 +1796,7 @@ export namespace Osdk {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: [Q] extends [InterfaceDefinition] ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata

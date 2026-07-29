@@ -9,13 +9,13 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "check": "eslint . --report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest run",
     "dev": "vite",
     "format": "prettier --write src/",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@blueprintjs/core": "^6.10.0",

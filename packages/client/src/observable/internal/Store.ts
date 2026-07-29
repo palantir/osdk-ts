@@ -672,6 +672,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateAll(): Promise<void> {
     const promises: Array<Promise<unknown>> = [];
     for (const cacheKey of this.queries.keys()) {
@@ -684,6 +686,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateObjects(
     objects:
       | Osdk.Instance<ObjectOrInterfaceDefinition>
@@ -700,6 +704,8 @@ export class Store {
     return Promise.allSettled(promises).then(() => void 0);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: Record<string, unknown>
@@ -707,6 +713,8 @@ export class Store {
     return this.functions.invalidateFunction(apiName, params);
   }
 
+  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateFunctionsByObject(
     apiName: string,
     primaryKey: string | number

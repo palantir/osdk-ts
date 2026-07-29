@@ -1,5 +1,55 @@
 # @osdk/maker
 
+## 0.51.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [9d75f4e]
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+
+## 0.50.0
+
+### Minor Changes
+
+- 3a1c5a2: Fix inherited optional property being required
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/generator-converters.ontologyir@2.49.0
+
+## 0.49.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
+### Patch Changes
+
+- Updated dependencies [62f9714]
+  - @osdk/typescript-sdk-docs@0.18.0
+  - @osdk/api@2.48.0
+  - @osdk/generator-converters.ontologyir@2.48.0
+
+## 0.48.0
+
+### Patch Changes
+
+- @osdk/api@2.47.0
+- @osdk/generator-converters.ontologyir@2.47.0
+
+## 0.47.0
+
+### Patch Changes
+
+- @osdk/api@2.46.0
+- @osdk/generator-converters.ontologyir@2.46.0
+
 ## 0.46.0
 
 ### Minor Changes

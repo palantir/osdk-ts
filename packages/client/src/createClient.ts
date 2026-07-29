@@ -65,7 +65,7 @@ import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
-import type { SubscribeFn } from "./SubscribeFn.js";
+import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
 // value of `symbolClientContext` directly, then we would have to a dynamic import
@@ -108,7 +108,7 @@ export function createClientInternal(
   transactionRid: string | undefined,
   flushEdits: (() => Promise<void>) | undefined,
   scenarioRid: string | undefined,
-  subscribeFn: SubscribeFn | undefined,
+  subscribeConnectionFn: CreateSubscriptionConnectionFn | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -146,7 +146,7 @@ export function createClientInternal(
       flushEdits,
       scenarioRid,
       branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
-      subscribeFn,
+      createSubscriptionConnection: subscribeConnectionFn,
     },
     fetchFn,
     objectSetFactory
@@ -473,25 +473,26 @@ export const createClientWithTransaction: (
 
 /**
  * Creates a {@link Client} whose `objectSet.subscribe()` calls are routed through a caller-supplied
- * `subscribeFn` instead of the default WebSocket implementation. This is the subscribe analogue of
- * the `fetchFn` parameter on {@link createClient}: it lets an embedder (e.g. an embedded backend)
- * capture the original subscribe request — `objectType`, the wire `objectSet`, the requested
- * `properties`, and `shouldLoadRids` — rather than the resulting WebSocket traffic.
+ * connection factory instead of the default `WebSocket`. This lets an embedder (e.g. an embedded
+ * backend) supply an alternate transport that speaks the same `StreamMessage` wire protocol — the
+ * OSDK subscription machinery (wire→OSDK conversion, multiplexing, reconnection, heartbeats) is
+ * unchanged; only the underlying connection is swapped.
  *
- * @param subscribeFn - The subscribe implementation to use for all `objectSet.subscribe()` calls.
+ * @param createSubscriptionConnection - A zero-arg factory returning a {@link SubscriptionConnection}
+ *   (or a promise of one), used for every subscription connection.
  * @param args - The remaining {@link createClient} arguments (`baseUrl`, `ontologyRid`,
  *   `tokenProvider`, `options`, `fetchFn`).
  */
-export const createClientWithSubscribe: (
-  subscribeFn: SubscribeFn,
+export const createClientWithSubscriptionConnection: (
+  createSubscriptionConnection: CreateSubscriptionConnectionFn,
   ...args: Parameters<typeof createClient>
-) => Client = (subscribeFn, ...args) =>
+) => Client = (createSubscriptionConnection, ...args) =>
   createClientInternal(
     createObjectSet,
     undefined,
     undefined,
     undefined,
-    subscribeFn,
+    createSubscriptionConnection,
     ...args
   ) as Client;
 

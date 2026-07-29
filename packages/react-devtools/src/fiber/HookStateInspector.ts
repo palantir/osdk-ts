@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getComponentId, getComponentName } from "./FiberInspection.js";
+import {
+  getComponentId,
+  getComponentName,
+  getProps,
+} from "./FiberInspection.js";
 import { safeFiberOperation } from "./SafeFiberOperation.js";
 import { traverseAllFibers, walkFiberTree } from "./traverseFiber.js";
 import type {
@@ -324,6 +328,22 @@ function isValidHookType(value: string): value is OsdkHookMetadata["hookType"] {
   return VALID_HOOK_TYPES.has(value as OsdkHookMetadata["hookType"]);
 }
 
+/**
+ * The lightweight `useDevToolsMetadata` (useRef) marker stores a hook's
+ * identifying name under `key`, not the typed name fields. `useOsdkAction` uses
+ * this path with `key === actionDef.apiName`, so map it onto `actionName`;
+ * otherwise downstream consumers see `undefined` → "Unknown" and drop it.
+ */
+function normalizeRefMetadata(meta: OsdkHookMetadata): OsdkHookMetadata {
+  if (meta.hookType === "useOsdkAction" && meta.actionName == null) {
+    const key = (meta as { key?: unknown }).key;
+    if (typeof key === "string") {
+      return { ...meta, [OSDK_HOOK_METADATA]: true, actionName: key };
+    }
+  }
+  return meta;
+}
+
 export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
   return safeFiberOperation(
     () => {
@@ -335,7 +355,7 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
 
         // useRef check: state is { current: OsdkHookMetadata }
         if (isRefStorage(state) && isOsdkHookMetadata(state.current)) {
-          results.push(state.current);
+          results.push(normalizeRefMetadata(state.current));
         }
 
         // useMemo check: state is [memoizedValue, deps]
@@ -412,6 +432,65 @@ export interface DiscoveredComponent {
   componentName: string;
   hooks: OsdkHookMetadata[];
   sourceLocation: { fileName?: string; lineNumber?: number } | null;
+  props?: Record<string, string>;
+}
+
+const MAX_PROP_KEYS = 12;
+// Longest a prop-value preview may be before it's truncated, in characters.
+// TODO: preserve the untruncated value alongside this preview so the inspector
+// can show the full value in a tooltip on hover.
+const MAX_PROP_VALUE_LEN = 80;
+
+function summarizePropValue(value: unknown): string {
+  if (value == null) {
+    return "null";
+  }
+  switch (typeof value) {
+    case "undefined": {
+      return "undefined";
+    }
+    case "string": {
+      const text =
+        value.length > MAX_PROP_VALUE_LEN
+          ? `${value.slice(0, MAX_PROP_VALUE_LEN)}…`
+          : value;
+      return JSON.stringify(text);
+    }
+    case "number":
+    case "boolean":
+    case "bigint": {
+      return String(value);
+    }
+    case "function": {
+      return "ƒ";
+    }
+    case "object": {
+      if (Array.isArray(value)) {
+        return `Array(${value.length})`;
+      }
+      const record = value as Record<string, unknown>;
+      if (typeof record.$apiName === "string") {
+        return `<${record.$apiName}>`;
+      }
+      return "{…}";
+    }
+    default: {
+      return String(value);
+    }
+  }
+}
+
+function summarizeProps(fiber: Fiber): Record<string, string> | undefined {
+  const raw = getProps(fiber);
+  const keys = Object.keys(raw).filter((key) => key !== "children");
+  if (keys.length === 0) {
+    return undefined;
+  }
+  const summary: Record<string, string> = {};
+  for (const key of keys.slice(0, MAX_PROP_KEYS)) {
+    summary[key] = summarizePropValue(raw[key]);
+  }
+  return summary;
 }
 
 export function discoverOsdkComponentsFromRoot(
@@ -442,6 +521,7 @@ export function discoverOsdkComponentsFromRoot(
             componentName,
             hooks: metadata,
             sourceLocation,
+            props: summarizeProps(fiber),
           });
         }
       });

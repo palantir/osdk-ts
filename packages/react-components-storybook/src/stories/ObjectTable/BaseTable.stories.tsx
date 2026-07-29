@@ -457,13 +457,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type {
-  SortingState,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 const headerMenuFeatureFlags = {
-  showSortingItems: true,
+  showConfigItem: true,
 };
-const [sorting, setSorting] = useState<SortingState>();
+const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+  columns.reduce((acc, col) => ({ ...acc, [col.accessorKey]: true }), {})
+);
 
 const table = useReactTable({
   data: mockData,
@@ -471,10 +473,9 @@ const table = useReactTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   state: {
-    sorting,
+    columnVisibility,
   },
-  enableSorting: true,
-  onSortingChange: setSorting,
+  onColumnVisibilityChange: setColumnVisibility,
 });
 
 

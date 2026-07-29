@@ -1,5 +1,25 @@
 # @osdk/client.unstable
 
+## 2.51.0
+
+## 2.50.0
+
+## 2.49.0
+
+## 2.48.0
+
+## 2.47.0
+
+## 2.46.0
+
+## 2.45.0
+
+## 2.44.0
+
+### Minor Changes
+
+- 1b33456: Enable the require-await lint rule: drop the redundant `async` keyword from test callbacks that never await, and keep intentionally-async (Promise-returning) functions as-is
+
 ## 2.43.0
 
 ## 2.42.0

@@ -49,6 +49,7 @@ function createMockTransport(): MockTransport {
   }> = [];
 
   const sendMessages = vi.fn(
+    // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
     async (args: {
       trigger: "submit-message" | "regenerate-message";
       chatId: string;
@@ -70,6 +71,7 @@ function createMockTransport(): MockTransport {
       });
     }
   );
+  // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
   const reconnect = vi.fn(async () => null);
 
   const transport: ChatTransport<UIMessage> = {

@@ -75,7 +75,8 @@ export function createMockClient(): MockClient {
     );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
-    for (const stub of queryStubs) {
+    for (let i = queryStubs.length - 1; i >= 0; i--) {
+      const stub = queryStubs[i];
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
         if (stub.error !== undefined) {
@@ -193,6 +194,7 @@ export function createMockClient(): MockClient {
     queryStubs.length = 0;
   };
 
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   mockClient.fetchMetadata = async () => {
     invariant(false, "fetchMetadata is not supported in mocks");
   };
@@ -204,6 +206,7 @@ export function createMockClient(): MockClient {
   Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
     value: createPlatformClient(
       "https://mock.invalid/",
+      // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async () => "mock-token"
     ),
     enumerable: false,

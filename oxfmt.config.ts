@@ -26,9 +26,13 @@ export default defineConfig({
     ),
     "**/package.json",
     "**/tsconfig.json",
-    // YAML is not formatted by dprint either (no yaml plugin); some packages keep
-    // significant-whitespace data here (e.g. mustache templates in
-    // typescript-sdk-docs/src/documentation.yml) that reformatting would corrupt.
+    // YAML stays excluded. The only .yml/.yaml inside oxc-migrated packages are
+    // the mustache-template docs (react-sdk-docs / typescript-sdk-docs
+    // src/documentation.yml) and historical changelog entries (**/changelog/,
+    // excluded below). oxfmt's YAML formatter changes the indentation of the
+    // `{{#isUnary}}` / `{{/isUnary}}` mustache sections inside the `|-` scalars,
+    // which corrupts the templates (verified). There is nothing else to gain, so
+    // leave the whole type to its authors.
     "**/*.yml",
     "**/*.yaml",
     // JSON / JSONC ARE formatted by oxfmt (parity with dprint, which formatted
@@ -44,17 +48,14 @@ export default defineConfig({
     // embedded JSX expressions (e.g. the `{/* license */}` block), breaking
     // Storybook's mdx indexer.
     "**/*.mdx",
-    // CSS / SCSS are not formatted by dprint either (no css plugin); component
-    // packages hand-maintain these stylesheets (e.g. @osdk/cbac-components and,
-    // ahead, @osdk/react-components). Leave them to their authors so the tooling
-    // migration touches only .ts/.tsx.
-    "**/*.css",
-    "**/*.scss",
-    // HTML is not formatted by dprint either (no html plugin); the vite sandbox
-    // apps hand-maintain their index.html entry points. Leave them to their
-    // authors so the tooling migration touches only .ts/.tsx (and the json/md
-    // dprint already formatted).
-    "**/*.html",
+    // CSS / SCSS / HTML ARE formatted by oxfmt (these types were never covered by
+    // dprint, which had no css/html plugin). oxfmt only runs inside oxc-migrated
+    // packages (each invokes `oxfmt -c ../../oxfmt.config.ts .`), so enabling
+    // these types here formats the migrated component packages' stylesheets
+    // (@osdk/react-components, @osdk/cbac-components, @osdk/react-devtools, …) and
+    // the vite sandbox apps' index.html entry points, while packages still on the
+    // dprint/eslint path are untouched. `.hbs`/mustache stays out via the
+    // **/templates/ exclusion below; YAML stays out above.
     // Shipped scaffolding under create-app/create-widget template packages'
     // templates/ dirs is not part of this repo's own source: it carries its own
     // (soon-to-be-oxc) tooling config, uses .hbs mustache templates oxfmt would

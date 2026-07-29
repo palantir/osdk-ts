@@ -38,7 +38,12 @@ describe("Generate Package Command", () => {
 
       const packageJson = JSON.parse(await fs.readFile(packagePath, "utf-8"));
 
-      const scriptsExport = packageJson["exports"]?.["."]?.["script"];
+      expect(packageJson.osdk).toEqual({
+        packageRid: "ri.third-party-applications.main.sdk-package.123",
+        branch: "ri.ontologies.main.sdk-ontology.123",
+      });
+
+      const scriptsExport = packageJson.exports?.["."]?.script;
       expect(scriptsExport).toEqual({
         types: "./dist/bundle/index.d.mts",
         default: "./dist/bundle/index.mjs",

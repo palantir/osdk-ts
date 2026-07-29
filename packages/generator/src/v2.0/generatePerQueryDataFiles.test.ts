@@ -226,6 +226,76 @@ describe("generatePerQueryDataFiles", () => {
     ts.createDocumentRegistry();
   });
 
+  it("escapes comment terminators in parameter descriptions", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology({
+          sanitized: {
+            actionTypes: {},
+            interfaceTypes: {},
+            objectTypes: {},
+            ontology: {
+              apiName: "foo",
+              description: "foo",
+              displayName: "foo",
+              rid: "ri.foo",
+            },
+            queryTypes: {
+              sampleQuery: {
+                rid: "rid.query.sample",
+                version: "0",
+                apiName: "sampleQuery",
+                parameters: {
+                  flag: {
+                    description:
+                      "Preview changes for glob patterns such as a/*/b before writing.",
+                    dataType: { type: "boolean" },
+                    required: false,
+                  },
+                },
+                output: { type: "boolean" },
+                typeReferences: {},
+              },
+            },
+            sharedPropertyTypes: {},
+            valueTypes: {},
+          },
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+        outDir: BASE_PATH,
+        importExt: ".js",
+        forInternalUse: true,
+        fixedVersionQueryTypes: [],
+      },
+      true,
+    );
+
+    const generated = helper.getFiles()["/foo/ontology/queries/sampleQuery.ts"];
+
+    // The description must not prematurely close the JSDoc block comment.
+    expect(generated).toContain("a/*\\/b");
+
+    // The generated file must be syntactically valid TypeScript. Before the
+    // fix, the unescaped `*/` closed the comment early and left invalid code.
+    const sourceFile = ts.createSourceFile(
+      "sampleQuery.ts",
+      generated,
+      ts.ScriptTarget.Latest,
+      /* setParentNodes */ true,
+    );
+    const parseDiagnostics =
+      (sourceFile as unknown as { parseDiagnostics: ts.Diagnostic[] })
+        .parseDiagnostics;
+    expect(parseDiagnostics).toHaveLength(0);
+  });
+
   it("generates structs for queries", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";

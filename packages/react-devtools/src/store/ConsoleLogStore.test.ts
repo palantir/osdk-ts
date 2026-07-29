@@ -328,12 +328,11 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       expect(entries).toHaveLength(1);
-      expect(entries[0].source).toBeDefined();
-      // The source must skip frames internal to ConsoleLogStore. We can't
-      // assert the exact caller path because happy-dom and Vitest layer their
-      // own frames between the test and the wrapper, but the captured source
-      // must never resolve back into our own module.
-      expect(entries[0].source).not.toContain("ConsoleLogStore");
+      // The source must resolve to this test file (the real caller), not to
+      // ConsoleLogStore's own wrapper or the callerLocation utility it
+      // delegates to for the capture.
+      expect(entries[0].source).toContain("ConsoleLogStore.test.ts");
+      expect(entries[0].source).not.toContain("callerLocation.ts");
     });
   });
 

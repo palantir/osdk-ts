@@ -18,7 +18,10 @@ import { describe, expectTypeOf, it } from "vitest";
 
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
-import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "./ontology/ObjectOrInterface.js";
 import type {
   ApplyModifiersToProps,
   MainValueTypeOf,
@@ -484,7 +487,7 @@ describe("ExtractOptions", () => {
   });
 
   describe("Interface casting works as intended", () => {
-    it("mapping as with fqn property names works", async () => {
+    it("mapping as with fqn property names works", () => {
       expectTypeOf<
         MapPropNamesToInterface<
           quickerAndDirtier,
@@ -874,6 +877,16 @@ describe("ExtractOptions", () => {
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
+    });
+  });
+
+  describe("$as with base union type", () => {
+    it("can cast base union type without failing type check", async () => {
+      const ifaceObj = (
+        await createMockObjectSet<ObjectOrInterfaceDefinition>().fetchPage()
+      ).data[0];
+
+      const result = ifaceObj.$as({} as ObjectOrInterfaceDefinition);
     });
   });
 });

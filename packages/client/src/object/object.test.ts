@@ -57,7 +57,7 @@ describe.each([
   let client: Client;
   let apiServer: SetupServer;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     ({ client, apiServer } = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
       createClient
@@ -205,7 +205,7 @@ describe.each([
         "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61"
       );
     });
-    it("objects are enumerable in an sdk", async () => {
+    it("objects are enumerable in an sdk", () => {
       const objects = Object.keys($Objects);
       expect(objects.sort()).toStrictEqual(
         [
@@ -251,7 +251,7 @@ describe.each([
       });
     });
 
-    it("clones and updates an object with another osdk object", async () => {
+    it("clones and updates an object with another osdk object", () => {
       const updatedEmployee = createOsdkObject(
         client[additionalContext],
         {
@@ -304,7 +304,7 @@ describe.each([
       });
     });
 
-    it("correctly scopes up with another OSDK object", async () => {
+    it("correctly scopes up with another OSDK object", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
@@ -315,7 +315,7 @@ describe.each([
       >();
     });
 
-    it("Correctly preserves keys from original and new with distinct property key sets", async () => {
+    it("Correctly preserves keys from original and new with distinct property key sets", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
@@ -326,7 +326,7 @@ describe.each([
       ).toMatchTypeOf<Osdk.Instance<Employee, never, "class" | "office">>();
     });
 
-    it("clones and updates an object with a record", async () => {
+    it("clones and updates an object with a record", () => {
       const mergedEmployee = employee.$clone({
         class: "Green",
         employeeId: 50031,
@@ -354,7 +354,7 @@ describe.each([
       });
     });
 
-    it("correctly scopes up with a record", async () => {
+    it("correctly scopes up with a record", () => {
       const firstEmployee = { $clone: () => {} } as unknown as Osdk.Instance<
         Employee,
         never,
@@ -377,7 +377,7 @@ describe.each([
       >();
     });
 
-    it("correctly sets title", async () => {
+    it("correctly sets title", () => {
       const mergedEmployee = employee.$clone({
         fullName: "Brad Pitt",
       });
@@ -401,7 +401,7 @@ describe.each([
       });
     });
 
-    it("is able to clone with nothing passed in", async () => {
+    it("is able to clone with nothing passed in", () => {
       expect(employee.$clone()).toMatchObject({
         $apiName: "Employee",
         $objectType: "Employee",
@@ -415,7 +415,7 @@ describe.each([
       });
     });
 
-    it("throws when merging objects with different primary keys", async () => {
+    it("throws when merging objects with different primary keys", () => {
       expect(() =>
         employee.$clone({
           class: "Green",
@@ -886,23 +886,21 @@ describe.each([
   });
 });
 
-export async function shouldError(client: Client): Promise<Osdk<Employee>> {
+export function shouldError(client: Client): Promise<Osdk<Employee>> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldError2(
-  client: Client
-): Promise<Employee.OsdkObject> {
+export function shouldError2(client: Client): Promise<Employee.OsdkObject> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-export async function shouldCompile_client_fetchOne_old_select(
+export function shouldCompile_client_fetchOne_old_select(
   client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
@@ -910,7 +908,7 @@ export async function shouldCompile_client_fetchOne_old_select(
   });
 }
 
-export async function shouldCompile_unstableClient_fetchOne_old_select(
+export function shouldCompile_unstableClient_fetchOne_old_select(
   client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
@@ -918,7 +916,7 @@ export async function shouldCompile_unstableClient_fetchOne_old_select(
   });
 }
 
-export async function shouldCompile_client_fetchOne_new_select(
+export function shouldCompile_client_fetchOne_new_select(
   client: Client
 ): Promise<Employee.OsdkObject<never, "employeeId">> {
   return client(Employee).fetchOne(1, {
@@ -926,7 +924,7 @@ export async function shouldCompile_client_fetchOne_new_select(
   });
 }
 
-export async function shouldCompile_unstableClient_fetchOne_new_select(
+export function shouldCompile_unstableClient_fetchOne_new_select(
   client: Client
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
@@ -934,13 +932,13 @@ export async function shouldCompile_unstableClient_fetchOne_new_select(
   });
 }
 
-export async function shouldCompile_client_fetchOne_old_noArgs(
+export function shouldCompile_client_fetchOne_old_noArgs(
   client: Client
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }
 
-export async function shouldCompile_unstableClient_fetchOne_noArgs(
+export function shouldCompile_unstableClient_fetchOne_noArgs(
   client: Client
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);

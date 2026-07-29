@@ -172,3 +172,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   return <BaseForm {...commonProps} formState={controlledFormState} />;
 });
+
+// The inner render fn is anonymous in the published build, so set a displayName
+// on the memo wrapper for React DevTools and the OSDK devtools component tree.
+(ActionForm as { displayName?: string }).displayName = "ActionForm";

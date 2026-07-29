@@ -13,12 +13,14 @@ export namespace createTodo {
   export type ParamsDefinition = {
     is_complete: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'boolean';
     };
     Todo: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

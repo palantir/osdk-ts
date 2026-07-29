@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.18.0
+
+### Minor Changes
+
+- 62f9714: Re-enable the `unicorn/no-useless-switch-case` oxlint rule and drop the redundant empty `case` labels that fell straight through to `default`. Behavior-preserving with no runtime or API changes.
+
 ## 0.17.0
 
 ### Minor Changes
