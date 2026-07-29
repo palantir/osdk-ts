@@ -1,5 +1,13 @@
 # @osdk/widget.client-react
 
+## 3.50.0
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+  - @osdk/widget.client@3.50.0
+
 ## 3.49.0
 
 ### Patch Changes

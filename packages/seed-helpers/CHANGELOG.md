@@ -1,5 +1,19 @@
 # @osdk/seed-helpers
 
+## 0.23.0
+
+### Minor Changes
+
+- fc3e4b9: Implement new seed builder with built-in validation
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+
 ## 0.22.0
 
 ### Patch Changes
