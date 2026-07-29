@@ -56,5 +56,12 @@ export default defineConfig({
     // oxfmt owns import spacing in this migration; the generated files do not
     // carry a blank line after their import block. Not enforced by prior ESLint.
     "import/newline-after-import": "off",
+    // The conjure generator emits every service method as `async`, and many have
+    // no `await` (they just build and return a request). This is generated code
+    // (regenerated on codegen, not hand-editable), and the `async` is load-bearing
+    // for the methods' `Promise`-returning signatures, so require-await is disabled
+    // here rather than rewriting the generated tree. Not enforced by prior ESLint.
+    "require-await": "off",
+    "typescript/require-await": "off",
   },
 });

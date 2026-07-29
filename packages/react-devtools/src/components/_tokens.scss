@@ -36,8 +36,15 @@ $orange-bg: var(--dt-orange-bg);
 $gray: var(--dt-gray);
 
 // Typography
-$font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-$font-mono: "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas", monospace;
+$font-sans:
+  "Inter",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  sans-serif;
+$font-mono:
+  "JetBrains Mono", "SF Mono", "Monaco", "Menlo", "Consolas", monospace;
 
 // Font sizes
 $font-size-xs: 10px;

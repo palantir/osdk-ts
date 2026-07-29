@@ -30,7 +30,7 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -330,6 +330,21 @@ export const IntegerNumberRangeRounding: Story = {
           "Click any bar in the histogram. The Min/Max boxes must show whole " +
           "integers (e.g. `657495073`), not fractional values " +
           "(e.g. `657495073.4`).",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "employeeNumber",
+      label: "Employee Number",
+      filterComponent: "NUMBER_RANGE",
+      filterState: { type: "NUMBER_RANGE" },
+      clickToFilter: true,
+    },
+  ]}
+/>`,
       },
     },
   },
@@ -1119,15 +1134,47 @@ export const WithListogramDisplayModes: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// "full" (default): label + colored bar + count number
-// "count": label + count number (no bar)
-// "minimal": label only (no bar, no count)
+        code: `// listogramConfig.displayMode controls what each bucket row renders:
+//   "full" (default): label + colored bar + count number
+//   "count":          label + count number (no bar)
+//   "minimal":        label only (no bar, no count)
+// One FilterList per mode, shown side by side.
 
-const filterDefinitions = [
-  { ..., listogramConfig: { displayMode: "full" } },
-  { ..., listogramConfig: { displayMode: "count" } },
-  { ..., listogramConfig: { displayMode: "minimal" } },
-];`,
+<div style={{ display: "flex", gap: 16 }}>
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "full: label + bar + count",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "full" },
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "count: label + count (no bar)",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "count" },
+    }]}
+  />
+  <FilterList
+    objectType={Employee}
+    filterDefinitions={[{
+      type: "PROPERTY",
+      key: "department",
+      label: "minimal: label only",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+      listogramConfig: { displayMode: "minimal" },
+    }]}
+  />
+</div>`,
       },
     },
   },
@@ -1278,6 +1325,193 @@ export const WithCheckbox: Story = {
     },
   },
   render: (args) => <WithCheckboxStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const expectedDepartmentOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    const visibleDepartmentOrder = () =>
+      canvas
+        .getAllByRole("button", {
+          name: /^(Engineering|Marketing|Design|Data|Finance)\s+\d+/u,
+        })
+        .map((row) => {
+          const label = expectedDepartmentOrder.find((name) =>
+            row.textContent?.includes(name)
+          );
+          if (label == null) {
+            throw new Error(
+              `Unable to identify department row from "${row.textContent}"`
+            );
+          }
+          return label;
+        });
+
+    await canvas.findByRole("button", { name: "Marketing 4" });
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "true")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("button", { name: "Marketing 4" })
+      ).toHaveAttribute("aria-pressed", "false")
+    );
+    await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
+  },
+};
+
+function WithBelowFoldSelectionStory(args: Partial<EmployeeFilterListProps>) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-below-fold",
+        key: "department",
+        label: "Department",
+        filterComponent: "LISTOGRAM",
+        // "Sales" sorts below the collapsed fold, so seeding it as selected
+        // exercises the tail-append path: it stays visible, appended after the
+        // head rows, without being hoisted above the fold.
+        filterState: { type: "EXACT_MATCH", values: ["Sales"] },
+      },
+    ],
+    []
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithBelowFoldSelection: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A selected value that sorts below the collapsed fold stays visible, " +
+          "appended at the tail of the collapsed view rather than hoisted to " +
+          'the top. The "View all" toggle reveals the rest, and "View less" ' +
+          "collapses back to this state.",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: ["Sales"] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithBelowFoldSelectionStory {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Every distinct department bucket, used to read the rendered row order
+    // regardless of which are currently visible.
+    const allDepartments = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+      "Operations",
+      "People",
+      "Sales",
+      "Customer Success",
+      "Legal",
+      "Product",
+    ];
+    const departmentRowName =
+      /^(Engineering|Marketing|Design|Data|Finance|Operations|People|Sales|Customer Success|Legal|Product)\s+\d+/u;
+
+    const renderedDepartments = () =>
+      canvas.getAllByRole("button", { name: departmentRowName }).map((row) => {
+        const label = allDepartments.find((name) =>
+          row.textContent?.includes(name)
+        );
+        if (label == null) {
+          throw new Error(
+            `Unable to identify department row from "${row.textContent}"`
+          );
+        }
+        return label;
+      });
+
+    // Collapsed initial state: the five highest-count departments form the
+    // head, plus the below-fold selected "Sales" appended at the tail.
+    const initialCollapsedOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+      "Sales",
+    ];
+    // With no below-fold selection the collapsed view is just the head.
+    const headOnlyOrder = [
+      "Engineering",
+      "Marketing",
+      "Design",
+      "Data",
+      "Finance",
+    ];
+
+    await canvas.findByRole("button", { name: "Marketing 4" });
+    await expect(renderedDepartments()).toEqual(initialCollapsedOrder);
+    await expect(
+      canvas.getByRole("button", { name: "Sales 2" })
+    ).toHaveAttribute("aria-pressed", "true");
+
+    // Unselect the below-fold "Sales": it is no longer selected, so it drops
+    // out of the collapsed view and the list falls back to the head alone.
+    await userEvent.click(canvas.getByRole("button", { name: "Sales 2" }));
+    await waitFor(() => expect(renderedDepartments()).toEqual(headOnlyOrder));
+    await expect(canvas.queryByRole("button", { name: "Sales 2" })).toBeNull();
+
+    // Expand with "View all (N)" to reach "Sales" again, then re-select it.
+    await userEvent.click(
+      canvas.getByRole("button", { name: /^View all \(\d+\)/u })
+    );
+    await canvas.findByRole("button", { name: "View less" });
+    await userEvent.click(canvas.getByRole("button", { name: "Sales 2" }));
+    await waitFor(() =>
+      expect(canvas.getByRole("button", { name: "Sales 2" })).toHaveAttribute(
+        "aria-pressed",
+        "true"
+      )
+    );
+
+    // "View less" collapses back to the initial state: the head plus the
+    // re-selected below-fold "Sales" appended at the tail.
+    await userEvent.click(canvas.getByRole("button", { name: "View less" }));
+    await canvas.findByRole("button", { name: /^View all \(\d+\)/u });
+    await expect(
+      canvas.queryByRole("button", { name: "View less" })
+    ).toBeNull();
+    await waitFor(() =>
+      expect(renderedDepartments()).toEqual(initialCollapsedOrder)
+    );
+  },
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
@@ -2168,6 +2402,43 @@ export const NoValueRendering: Story = {
           "listogram buckets, single-select dropdown options, multi-select dropdown " +
           "options, and multi-select chips. The mock dataset includes one Employee " +
           'with `department: ""` so the No value row is visible in the listogram.',
+      },
+      source: {
+        code: `// Empty/null values render via <NoValueLabel /> across every filter type.
+<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department",
+      filterComponent: "LISTOGRAM",
+      filterState: { type: "EXACT_MATCH", values: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department",
+      filterComponent: "MULTI_SELECT",
+      filterState: { type: "SELECT", selectedValues: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "department",
+      label: "Department (single)",
+      filterComponent: "SINGLE_SELECT",
+      filterState: { type: "SELECT", selectedValues: [] },
+    },
+    {
+      type: "PROPERTY",
+      key: "employeeNumber",
+      label: "Employee Number",
+      filterComponent: "NUMBER_RANGE",
+      filterState: { type: "NUMBER_RANGE" },
+      clickToFilter: true,
+    },
+  ]}
+/>`,
       },
     },
   },

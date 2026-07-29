@@ -30,7 +30,7 @@ import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
-interface UseColumnDefsResult<
+export interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
@@ -101,7 +101,6 @@ function getColumnsFromColumnDefinitions<
       maxWidth,
       resizable,
       orderable,
-      filterable,
       editable,
       renderCell,
       renderHeader,
@@ -148,7 +147,6 @@ function getColumnsFromColumnDefinitions<
       enableResizing: resizable,
       // Function-backed columns must be sorted on the frontend, so disable sorting for now
       enableSorting: locator.type === "function" ? false : orderable,
-      enableColumnFilter: filterable,
       cell: (cellContext) => {
         const object: Osdk.Instance<
           Q,

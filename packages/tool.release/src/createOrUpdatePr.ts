@@ -20,6 +20,8 @@ import { consola } from "consola";
 import type { GithubContext } from "./runVersion.js";
 import { getExistingPr } from "./runVersion.js";
 
+const MERGE_WHEN_READY_LABEL = "merge when ready";
+
 export async function createOrUpdatePr(
   context: GithubContext,
   title: string,
@@ -48,6 +50,8 @@ export async function createOrUpdatePr(
       base,
       "--head",
       head,
+      "--label",
+      MERGE_WHEN_READY_LABEL,
     ]);
   } else {
     consola.info(`updating found pull request #${pullRequest.number}`);
@@ -60,6 +64,8 @@ export async function createOrUpdatePr(
       title,
       "--body",
       body,
+      "--add-label",
+      MERGE_WHEN_READY_LABEL,
     ]);
   }
 }

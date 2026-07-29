@@ -562,7 +562,10 @@
   }
 
   &[aria-disabled="true"]:hover {
-    color: var(--osdk-combobox-clear-color, var(--osdk-iconography-color-muted));
+    color: var(
+      --osdk-combobox-clear-color,
+      var(--osdk-iconography-color-muted)
+    );
     background-color: transparent;
   }
 }

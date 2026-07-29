@@ -47,9 +47,7 @@
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-table-header-menu-icon-color: var(
-    --osdk-table-header-menu-color
-  );
+  --osdk-table-header-menu-icon-color: var(--osdk-table-header-menu-color);
   --osdk-table-header-menu-bg-hover: var(
     --osdk-surface-background-color-default-hover
   );

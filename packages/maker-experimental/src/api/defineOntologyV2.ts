@@ -24,6 +24,7 @@ import {
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
 
@@ -48,6 +49,7 @@ export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
   outputDir?: string,
+  dependencyFile?: string,
   functionsIrFile?: string,
   randomnessKey?: string
 ): Promise<OntologyV2Result> {
@@ -125,6 +127,9 @@ export async function defineOntologyV2(
 
   if (outputDir) {
     writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
   }
 
   return {

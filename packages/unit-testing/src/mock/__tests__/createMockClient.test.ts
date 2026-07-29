@@ -110,6 +110,32 @@ describe("createMockClient", () => {
       ).rejects.toThrow();
     });
 
+    it("re-registering the same pattern overrides the previous stub", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage()
+        )
+        .thenReturnObjects([]);
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage()
+        )
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee)
+        .where({ office: { $eq: "NYC" } })
+        .fetchPage();
+
+      expect(result.data).toHaveLength(1);
+    });
+
     it("types: when((c) => c(T).fetchPage()) → FetchPageStubBuilder", () => {
       const mockClient = createMockClient();
       const builder = mockClient.when((c) => c(Employee).fetchPage());

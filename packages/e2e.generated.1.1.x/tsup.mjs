@@ -53,7 +53,7 @@ export default async function makeTsupOptions(options, ourOptions) {
     splitting: true,
     shims: true, // so we can use __dirname in both esm and cjs
     minify: false, // !options.watch,
-    onSuccess: async () => {
+    onSuccess: () => {
       // eslint-disable-next-line no-console
       console.log("👍");
     },

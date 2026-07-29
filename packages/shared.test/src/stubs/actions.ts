@@ -129,6 +129,22 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
   },
 };
 
+export const actionRequestWithStructAcceptNull: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY", zipcode: null },
+  },
+};
+
+export const actionRequestWithStructAcceptUndefined: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    name: "testMan",
+    address: { city: "NYC", state: "NY" },
+  },
+};
+
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
@@ -274,7 +290,11 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
 
   fauxOntology.registerActionType(
     ActionTakesStruct,
-    createLazyDoNothingActionImpl([[actionRequestWithStruct, actionResponse]])
+    createLazyDoNothingActionImpl([
+      [actionRequestWithStruct, actionResponse],
+      [actionRequestWithStructAcceptNull, actionResponse],
+      [actionRequestWithStructAcceptUndefined, actionResponse],
+    ])
   );
 
   fauxOntology.registerActionType(

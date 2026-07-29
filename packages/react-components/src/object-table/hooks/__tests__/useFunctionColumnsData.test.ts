@@ -215,7 +215,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should fetch data for function columns", async () => {
+  it("should fetch data for function columns", () => {
     const mockResult = {
       "TestObject:obj1": { value: "result1" },
       "TestObject:obj2": { value: "result2" },
@@ -310,7 +310,7 @@ describe("useFunctionColumnsData", () => {
     );
   });
 
-  it("should extract value using getValue function when specified", async () => {
+  it("should extract value using getValue function when specified", () => {
     const mockResult = {
       "TestObject:obj1": {
         status: "active",
@@ -372,7 +372,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should handle multiple queries", async () => {
+  it("should handle multiple queries", () => {
     const mockObjects = [
       {
         $objectType: "TestObject",
@@ -504,7 +504,7 @@ describe("useFunctionColumnsData", () => {
     );
   });
 
-  it("should handle missing object in the result", async () => {
+  it("should handle missing object in the result", () => {
     // 2 objects
     const mockObjects = [
       {
@@ -612,7 +612,7 @@ describe("useFunctionColumnsData", () => {
     expect(result.current.testColumn.obj1.data).toBeUndefined();
   });
 
-  it("should handle errors gracefully", async () => {
+  it("should handle errors gracefully", () => {
     const mockError = new Error("Query failed");
 
     vi.mocked(useOsdkFunctions).mockReturnValue([

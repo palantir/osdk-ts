@@ -13,6 +13,7 @@ export namespace scenarioOsdkTestAction {
   export type ParamsDefinition = {
     scenario: {
       description: undefined;
+      displayName: 'Scenario';
       multiplicity: false;
       nullable: false;
       type: 'scenarioReference';

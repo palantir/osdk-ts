@@ -30,15 +30,6 @@ export function convertOntologyDefinition(
   randomnessKey?: string
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
-
-  // Convert imported ontology FIRST so that all imported entity RIDs and IDs
-  // are registered in the ridGenerator before the main ontology's
-  // knownIdentifiers is built.
-  const importedOntology = convertOntologyDefinitionToWireBlockData(
-    importedTypes,
-    ridGenerator
-  );
-
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
@@ -47,35 +38,42 @@ export function convertOntologyDefinition(
     functionsIr
   );
 
+  const importedOntology = convertOntologyDefinitionToWireBlockData(
+    importedTypes,
+    ridGenerator
+  );
+
   const importedInterfaceApiNames = new Set(
     Object.keys(importedTypes.INTERFACE_TYPE)
   );
-  const transitiveInterfaces: OntologyDefinition["INTERFACE_TYPE"] = {};
 
-  function collectTransitive(iface: InterfaceType): void {
-    for (const linked of iface.linkedInterfaces ?? []) {
-      if (typeof linked === "string") continue;
-      if (
-        !importedInterfaceApiNames.has(linked.apiName) &&
-        !(linked.apiName in transitiveInterfaces)
-      ) {
-        transitiveInterfaces[linked.apiName] = linked;
-        collectTransitive(linked);
-      }
-    }
-    for (const parent of iface.extendsInterfaces) {
-      if (
-        !importedInterfaceApiNames.has(parent.apiName) &&
-        !(parent.apiName in transitiveInterfaces)
-      ) {
-        transitiveInterfaces[parent.apiName] = parent;
-        collectTransitive(parent);
-      }
+  const relatedInterfaces = (iface: InterfaceType): InterfaceType[] =>
+    [...(iface.linkedInterfaces ?? []), ...iface.extendsInterfaces].filter(
+      (related): related is InterfaceType => typeof related !== "string"
+    );
+
+  const fullImportedInterfaces = new Map<string, InterfaceType>();
+  const queue: InterfaceType[] = Object.values(importedTypes.INTERFACE_TYPE);
+  while (queue.length > 0) {
+    const iface = queue.pop();
+    if (iface === undefined) continue;
+    const related = relatedInterfaces(iface);
+    const existing = fullImportedInterfaces.get(iface.apiName);
+    // Register on first sight, or replace a truncated stub with a full copy
+    if (
+      existing === undefined ||
+      (relatedInterfaces(existing).length === 0 && related.length > 0)
+    ) {
+      fullImportedInterfaces.set(iface.apiName, iface);
+      queue.push(...related);
     }
   }
 
-  for (const iface of Object.values(importedTypes.INTERFACE_TYPE)) {
-    collectTransitive(iface);
+  const transitiveInterfaces: OntologyDefinition["INTERFACE_TYPE"] = {};
+  for (const [apiName, iface] of fullImportedInterfaces) {
+    if (!importedInterfaceApiNames.has(apiName)) {
+      transitiveInterfaces[apiName] = iface;
+    }
   }
   const transitiveOntology: OntologyDefinition = {
     INTERFACE_TYPE: transitiveInterfaces,

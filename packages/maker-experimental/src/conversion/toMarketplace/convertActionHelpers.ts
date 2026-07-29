@@ -55,7 +55,10 @@ import invariant from "tiny-invariant";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
-import { convertActionParameters } from "./convertActionParameters.js";
+import {
+  convertActionParameters,
+  resolveInterfaceTypeRid,
+} from "./convertActionParameters.js";
 import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
@@ -247,6 +250,38 @@ export function convertAction(
                   propertyValues: rule.addObjectRule.propertyValues,
                   structFieldValues: rule.addObjectRule.structFieldValues,
                   logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "addInterfaceLinkRuleV2") {
+              return {
+                type: "addInterfaceLinkRuleV2",
+                addInterfaceLinkRuleV2: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.addInterfaceLinkRuleV2.interfaceTypeRid
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid,
+                      rule.addInterfaceLinkRuleV2.interfaceTypeRid
+                    ),
+                  sourceObjects: rule.addInterfaceLinkRuleV2.sourceObjects,
+                  targetObjects: rule.addInterfaceLinkRuleV2.targetObjects,
+                },
+              };
+            } else if (rule.type === "deleteInterfaceLinkRule") {
+              return {
+                type: "deleteInterfaceLinkRule",
+                deleteInterfaceLinkRule: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.deleteInterfaceLinkRule.interfaceTypeRid
+                  ),
+                  interfaceLinkTypeRid:
+                    ridGenerator.generateRidForInterfaceLinkType(
+                      rule.deleteInterfaceLinkRule.interfaceLinkTypeRid,
+                      rule.deleteInterfaceLinkRule.interfaceTypeRid
+                    ),
+                  sourceObject: rule.deleteInterfaceLinkRule.sourceObject,
+                  targetObject: rule.deleteInterfaceLinkRule.targetObject,
                 },
               };
             }
@@ -585,7 +620,12 @@ function buildActionMetadata(
         : action.status,
     entities: action.entities
       ? {
-          affectedInterfaceTypes: action.entities.affectedInterfaceTypes,
+          // affectedInterfaceTypes may hold either API names (interface-link
+          // actions) or already-resolved RIDs (function-backed actions)
+          affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+            (apiNameOrRid) =>
+              resolveInterfaceTypeRid(apiNameOrRid, ridGenerator)
+          ),
           affectedLinkTypes: action.entities.affectedLinkTypes,
           affectedObjectTypes: action.entities.affectedObjectTypes.map(
             (apiName) => ridGenerator.generateObjectTypeId(apiName)

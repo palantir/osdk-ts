@@ -220,10 +220,16 @@ export function defineObject(
         }));
 
     const interfaceToObjectProperties = Object.fromEntries(
-      interfaceImpl.propertyMapping.map((mapping) => [
-        mapping.interfaceProperty,
-        mapping.mapsTo,
-      ])
+      interfaceImpl.propertyMapping.map((mapping) => {
+        const namespacedInterfaceProperty = addNamespaceIfNone(
+          mapping.interfaceProperty
+        );
+        const interfaceProperty =
+          allInterfaceProperties[namespacedInterfaceProperty] !== undefined
+            ? namespacedInterfaceProperty
+            : withoutNamespace(mapping.interfaceProperty);
+        return [interfaceProperty, mapping.mapsTo];
+      })
     );
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType]
@@ -235,9 +241,12 @@ export function defineObject(
         return validateInterfaceImplProperty(
           interfaceProp[1],
           apiName,
-          interfaceToObjectProperties[interfaceProp[0]],
+          interfaceToObjectProperties[apiName],
           objectDef
         );
+      }
+      if (interfaceProp[1].required === false) {
+        return { type: "valid" };
       }
       return {
         type: "invalid",

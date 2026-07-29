@@ -132,7 +132,7 @@ export function convertActionParameters(
   );
 }
 
-function resolveInterfaceTypeRid(
+export function resolveInterfaceTypeRid(
   interfaceTypeRidOrApiName: string,
   ridGenerator: OntologyRidGenerator
 ): string {

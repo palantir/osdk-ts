@@ -96,7 +96,7 @@ describe("intellisense", () => {
     await tsServer.sendOpenRequest({ file: intellisenseFilePath });
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     tsServer.stop();
     tsServer = undefined as any;
   });

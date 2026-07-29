@@ -1,6 +1,6 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
-@use 'theme' as theme;
+@use "tokens" as t;
+@use "mixins" as m;
+@use "theme" as theme;
 
 .panel {
   @include theme.dt-dark-theme;
@@ -189,7 +189,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color t.$transition-fast, color t.$transition-fast;
+  transition:
+    background-color t.$transition-fast,
+    color t.$transition-fast;
 
   &:hover {
     background: t.$bg-hover;
@@ -473,7 +475,10 @@
   cursor: pointer;
   box-shadow: t.$shadow-panel;
   z-index: t.$z-panel;
-  transition: opacity t.$transition-normal, border-color t.$transition-normal, box-shadow t.$transition-normal;
+  transition:
+    opacity t.$transition-normal,
+    border-color t.$transition-normal,
+    box-shadow t.$transition-normal;
   opacity: 0.7;
   pointer-events: auto;
 

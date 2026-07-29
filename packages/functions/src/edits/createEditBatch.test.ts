@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import type { Attachment, Client, Osdk } from "@osdk/client";
+import type {
+  Attachment,
+  Client,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+  PropertyDef,
+} from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
 import {
   FooInterface,
@@ -112,7 +119,10 @@ describe(createEditBatch, () => {
       $objectType: "Task",
       fooSpt: "created interface",
     });
-    editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
+    editBatch.update(fooInterfaceInstance, {
+      fooSpt: "fooSpt",
+      fooArray: ["a", "b"],
+    });
     editBatch.update(
       {
         $apiName: "FooInterface",
@@ -239,7 +249,7 @@ describe(createEditBatch, () => {
           $primaryKey: 21,
           $objectType: "FooObjectType",
         },
-        properties: { fooSpt: "fooSpt" },
+        properties: { fooSpt: "fooSpt", fooArray: ["a", "b"] },
       },
       {
         type: "updateObjectForInterface",
@@ -410,5 +420,84 @@ describe(createEditBatch, () => {
 
     // @ts-expect-error
     editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
+  });
+
+  it("disambiguates an object and interface that share an apiName", () => {
+    interface SharedObj extends ObjectTypeDefinition {
+      type: "object";
+      apiName: "Shared";
+      __DefinitionMetadata?: {
+        apiName: "Shared";
+        displayName: "x";
+        pluralDisplayName: "x";
+        description: "x";
+        rid: "ri.o";
+        type: "object";
+        primaryKeyApiName: "id";
+        primaryKeyType: "integer";
+        titleProperty: "id";
+        status: "ACTIVE";
+        icon: undefined;
+        visibility: undefined;
+        implements: [];
+        interfaceMap: {};
+        inverseInterfaceMap: {};
+        links: {};
+        properties: {
+          id: PropertyDef<"integer", "non-nullable", "single">;
+          objOnly: PropertyDef<"string", "nullable", "single">;
+        };
+        objectSet: any;
+        props: any;
+        strictProps: any;
+        linksType: any;
+      };
+    }
+    interface SharedInt extends InterfaceDefinition {
+      type: "interface";
+      apiName: "Shared";
+      __DefinitionMetadata?: {
+        apiName: "Shared";
+        displayName: "x";
+        description: "x";
+        rid: "ri.i";
+        type: "interface";
+        implementedBy: [];
+        implements: [];
+        links: {};
+        properties: { intOnly: PropertyDef<"boolean", "nullable", "single"> };
+        objectSet: any;
+        props: any;
+        strictProps: any;
+        linksType: any;
+      };
+    }
+
+    function _typeCheck(
+      batch: EditBatch<Edits.Object<SharedObj> | Edits.Interface<SharedInt>>,
+      sharedObjDef: SharedObj,
+      sharedIntDef: SharedInt
+    ) {
+      batch.update({ $apiName: "Shared", $primaryKey: 1 }, { objOnly: "x" });
+      // @ts-expect-error
+      batch.update({ $apiName: "Shared", $primaryKey: 1 }, { intOnly: true });
+      batch.update(
+        { $apiName: "Shared", $objectType: "Impl", $primaryKey: 1 },
+        { intOnly: true }
+      );
+
+      batch.create(sharedObjDef, { id: 1, objOnly: "x" });
+      // @ts-expect-error
+      batch.create(sharedObjDef, { intOnly: true });
+      batch.create(sharedIntDef, { $objectType: "Impl", intOnly: true });
+      // @ts-expect-error
+      batch.create(sharedIntDef, { objOnly: "x" });
+
+      batch.delete({ $apiName: "Shared", $primaryKey: 1 });
+      batch.delete({ $apiName: "Shared", $objectType: "Impl", $primaryKey: 1 });
+      // @ts-expect-error
+      batch.delete({ $apiName: "Nope", $primaryKey: 1 });
+    }
+    expect(_typeCheck).toBeDefined();
   });
 });

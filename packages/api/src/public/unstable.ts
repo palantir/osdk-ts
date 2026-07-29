@@ -25,9 +25,14 @@ export {
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
 export type {
+  AnnotateGeometry,
+  Annotation,
   AudioEncoding,
   AudioOperation,
   AudioToTextOperation,
+  BoundingBox,
+  Color,
+  ContrastType,
   DicomToImageOperation,
   DocumentTextExtractionConfig,
   DocumentToDocumentOperation,
@@ -36,6 +41,8 @@ export type {
   EmailToAttachmentOperation,
   EmailToTextOperation,
   ImageOperation,
+  ImagePixelCoordinate,
+  ImageRegionPolygon,
   ImageSpec,
   ImageToDocumentOperation,
   ImageToEmbeddingOperation,

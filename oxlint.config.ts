@@ -71,8 +71,8 @@ export default defineConfig({
     "no-eq-null": "off",
     "unicorn/custom-error-definition": "error",
     "default-param-last": "error",
-    "require-await": "off",
-    "typescript/require-await": "off",
+    "require-await": "error",
+    "typescript/require-await": "error",
     "require-unicode-regexp": "error",
 
     // --- Repo-wide cosmetic / high-churn policy ---

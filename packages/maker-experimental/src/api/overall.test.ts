@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import type { ActionType, InterfaceType } from "@osdk/maker";
 import {
+  addDependency,
   defineCreateObjectAction,
   defineInterface,
   defineInterfaceActionTypeConstraint,
@@ -36,6 +42,38 @@ import { defineImportObject } from "./importObjectType.js";
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
+  });
+
+  describe("Dependencies", () => {
+    it("writes dependencies to the configured file", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "maker-experimental-dependencies-")
+      );
+      const dependencyFile = path.join(outputDir, "dependencies.json");
+
+      try {
+        await defineOntologyV2(
+          "com.palantir.",
+          () => {
+            addDependency("com.palantir", fileURLToPath(import.meta.url));
+          },
+          undefined,
+          dependencyFile
+        );
+
+        const packageJson = JSON.parse(
+          fs.readFileSync(
+            new URL("../../package.json", import.meta.url),
+            "utf8"
+          )
+        );
+        expect(JSON.parse(fs.readFileSync(dependencyFile, "utf8"))).toEqual({
+          "com.palantir": packageJson.version,
+        });
+      } finally {
+        fs.rmSync(outputDir, { recursive: true, force: true });
+      }
+    });
   });
 
   describe("Imports", () => {

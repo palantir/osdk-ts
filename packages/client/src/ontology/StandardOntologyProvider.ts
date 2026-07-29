@@ -71,6 +71,8 @@ export const createStandardOntologyProviderFactory: (
       return deepFreeze(await loadInterfaceMetadata(client, key));
     }
 
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async function loadQuery(client: MinimalClient, key: string) {
       return loadQueryMetadata(client, key);
     }

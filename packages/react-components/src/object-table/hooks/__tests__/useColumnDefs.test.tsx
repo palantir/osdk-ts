@@ -212,7 +212,6 @@ describe(useColumnDefs, () => {
           maxWidth: 400,
           resizable: true,
           orderable: true,
-          filterable: false,
         },
         {
           locator: { type: "property", id: "email" as TestObjectKeys },
@@ -244,7 +243,6 @@ describe(useColumnDefs, () => {
       expect(nameColumn.maxSize).toBe(400);
       expect(nameColumn.enableResizing).toBe(true);
       expect(nameColumn.enableSorting).toBe(true);
-      expect(nameColumn.enableColumnFilter).toBe(false);
 
       const emailColumn = result.current.columns[1];
       expect(emailColumn.id).toBe("email");
@@ -267,7 +265,6 @@ describe(useColumnDefs, () => {
           maxWidth: 400,
           resizable: true,
           orderable: true,
-          filterable: false,
         },
         {
           locator: { type: "property", id: "email" as TestObjectKeys },

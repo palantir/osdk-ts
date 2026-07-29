@@ -37,7 +37,8 @@ export const fetchLinksPage = async <
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  links: LINK_TYPES[]
+  links: LINK_TYPES[],
+  pageToken: string | undefined
 ): Promise<FetchLinksPageResult<Q, LINK_TYPES>> => {
   if (objectType.type === "interface") {
     throw new Error("Interface object sets are not supported yet.");
@@ -53,6 +54,7 @@ export const fetchLinksPage = async <
     {
       objectSet,
       links,
+      pageToken,
     },
     { branch: client.branch, preview: true }
   );

@@ -251,10 +251,19 @@ function validateActionParameterType(
 
       for (const { name, fieldType, required } of dataType.fields) {
         const fieldValue = (value as Record<string, unknown>)[name];
-        if (
-          (required && fieldValue == null) ||
-          !matchesOntologyDataType(fieldType, fieldValue)
-        ) {
+        // A non-required field may be omitted or explicitly null; only run the
+        // type check when a value is actually present.
+        if (fieldValue == null) {
+          if (required) {
+            ret.result = "INVALID";
+            ret.parameters[paramKey] = {
+              ...baseParam,
+            };
+            return;
+          }
+          continue;
+        }
+        if (!matchesOntologyDataType(fieldType, fieldValue)) {
           ret.result = "INVALID";
           ret.parameters[paramKey] = {
             ...baseParam,

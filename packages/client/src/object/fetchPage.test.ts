@@ -129,7 +129,7 @@ describe(fetchPage, () => {
   });
 
   it("converts interface objectsets to search properly part 2", () => {
-    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const client = createMinimalClient(metadata, "https://foo", () => "");
     const objectSet = createObjectSet(Todo, client)
       .where({
         text: "hello",
@@ -158,7 +158,7 @@ describe(fetchPage, () => {
   });
 
   it("converts interface object set for new API correctly", () => {
-    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const client = createMinimalClient(metadata, "https://foo", () => "");
     const objectSet = createObjectSet(FooInterface, client).where({
       fooSpt: "hello",
     });
@@ -216,7 +216,7 @@ describe(fetchPage, () => {
   });
 
   it("where clause keys correctly typed", () => {
-    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const client = createMinimalClient(metadata, "https://foo", () => "");
     const objectSet = createObjectSet(Todo, client);
     const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
 
@@ -258,7 +258,7 @@ describe(fetchPage, () => {
   });
 
   it("supports string comparison filters (gt, gte, lt, lte) on string properties", () => {
-    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const client = createMinimalClient(metadata, "https://foo", () => "");
     const objectSet = createObjectSet(Todo, client);
 
     // String properties should support all comparison operators
@@ -288,7 +288,7 @@ describe(fetchPage, () => {
   });
 
   it("does not expose string comparison filters on non-string properties", () => {
-    const client = createMinimalClient(metadata, "https://foo", async () => "");
+    const client = createMinimalClient(metadata, "https://foo", () => "");
     const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
 
     // geotimeSeriesReference should NOT support string comparison operators

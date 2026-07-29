@@ -85,6 +85,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   });
   const ctx = createSharedClientContext(
     args.foundryUrl!,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     async () => token.access_token,
     USER_AGENT
   );
@@ -382,6 +383,8 @@ function createNormalFs(): MinimalFs {
     mkdir: async (path: string, options?: { recursive: boolean }) => {
       await fs.promises.mkdir(path, options);
     },
+    // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     readdir: async (path: string) => fs.promises.readdir(path),
   };
 }

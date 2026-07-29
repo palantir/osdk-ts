@@ -372,16 +372,17 @@ Styling for classification-based access control picker components.
 
 #### Banner
 
-| Variable                               | Default Value                                                                 | Description                   |
-| -------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------- |
-| `--osdk-cbac-banner-padding`           | `calc(var(--osdk-surface-spacing) * 1) calc(var(--osdk-surface-spacing) * 2)` | Banner padding                |
-| `--osdk-cbac-banner-font-size`         | `var(--osdk-typography-size-body-small)`                                      | Banner font size              |
-| `--osdk-cbac-banner-font-weight`       | `var(--osdk-typography-weight-bold)`                                          | Banner font weight            |
-| `--osdk-cbac-banner-text-align`        | `center`                                                                      | Banner text alignment         |
-| `--osdk-cbac-banner-border-radius`     | `var(--osdk-surface-border-radius)`                                           | Banner border radius          |
-| `--osdk-cbac-banner-border-color`      | `var(--osdk-surface-border-color-default)`                                    | Banner border color           |
-| `--osdk-cbac-banner-placeholder-bg`    | `var(--osdk-intent-default-disabled)`                                         | Placeholder banner background |
-| `--osdk-cbac-banner-placeholder-color` | `var(--osdk-typography-color-default-rest)`                                   | Placeholder banner text color |
+| Variable                               | Default Value                                                                     | Description                   |
+| -------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------- |
+| `--osdk-cbac-banner-padding`           | `calc(var(--osdk-surface-spacing) * 1) calc(var(--osdk-surface-spacing) * 2)`     | Banner padding                |
+| `--osdk-cbac-banner-font-size`         | `var(--osdk-typography-size-body-small)`                                          | Banner font size              |
+| `--osdk-cbac-banner-font-weight`       | `var(--osdk-typography-weight-bold)`                                              | Banner font weight            |
+| `--osdk-cbac-banner-text-align`        | `center`                                                                          | Banner text alignment         |
+| `--osdk-cbac-banner-border-radius`     | `var(--osdk-surface-border-radius)`                                               | Banner border radius          |
+| `--osdk-cbac-banner-border-color`      | `var(--osdk-surface-border-color-default)`                                        | Banner border color           |
+| `--osdk-cbac-banner-placeholder-bg`    | `var(--osdk-intent-default-disabled)`                                             | Placeholder banner background |
+| `--osdk-cbac-banner-placeholder-color` | `var(--osdk-typography-color-default-rest)`                                       | Placeholder banner text color |
+| `--osdk-cbac-banner-skeleton-height`   | `calc(var(--osdk-cbac-banner-font-size) * 1.5 + var(--osdk-surface-spacing) * 2)` | Loading skeleton height       |
 
 #### Marking Button
 

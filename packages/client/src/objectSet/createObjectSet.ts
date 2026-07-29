@@ -263,12 +263,15 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
     subscribe: (listener, opts) => {
-      const pendingSubscribe = clientCtx.subscribeFn(
-        objectType,
-        objectSet,
-        listener as ObjectSetSubscription.Listener<Q, any>,
-        opts?.properties,
-        opts?.includeRid
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then(
+        ({ ObjectSetListenerWebsocket }) =>
+          ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
+            objectType,
+            objectSet,
+            listener as ObjectSetSubscription.Listener<Q, any>,
+            opts?.properties,
+            opts?.includeRid
+          )
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
@@ -331,7 +334,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           })),
           objectType,
           objectSet,
-          links
+          links,
+          $nextPageToken
         );
         $nextPageToken = result.nextPageToken;
 

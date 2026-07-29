@@ -49,7 +49,7 @@ describe("TiffRenderer", () => {
 
     const content = new Uint8Array(100);
     let container: HTMLElement;
-    await act(async () => {
+    await act(() => {
       ({ container } = render(<TiffRenderer content={content} />));
     });
 
@@ -62,7 +62,7 @@ describe("TiffRenderer", () => {
   it("should show error when TIFF exceeds max size", async () => {
     const largeContent = new Uint8Array(26_000_000);
 
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={largeContent} />);
     });
 
@@ -76,7 +76,7 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
@@ -88,7 +88,7 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
@@ -107,7 +107,7 @@ describe("TiffRenderer", () => {
 
     const onError = vi.fn();
     const content = new Uint8Array(100);
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={content} onError={onError} />);
     });
 
@@ -118,7 +118,7 @@ describe("TiffRenderer", () => {
     const largeContent = new Uint8Array(26_000_000);
     const onError = vi.fn();
 
-    await act(async () => {
+    await act(() => {
       render(<TiffRenderer content={largeContent} onError={onError} />);
     });
 

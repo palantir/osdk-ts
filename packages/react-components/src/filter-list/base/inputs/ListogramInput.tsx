@@ -70,6 +70,8 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const toggleExpanded = useCallback(() => setIsExpanded((v) => !v), []);
+
   const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
@@ -95,19 +97,24 @@ function ListogramInputInner({
     return stableValues;
   }, [stableValues, searchQuery, renderValue]);
 
-  const sortedValues = useMemo(() => {
-    const selected = filteredValues.filter((v) => selectedSet.has(v.value));
-    const unselected = filteredValues.filter((v) => !selectedSet.has(v.value));
-    return [...selected, ...unselected];
-  }, [filteredValues, selectedSet]);
-
+  // Render in natural count/value order regardless of selection — toggling a
+  // checkbox must never reorder rows. In the collapsed view we still keep
+  // below-fold selected values visible by appending them at the tail (matching
+  // Foundry Workshop's listogram), without hoisting them or displacing the
+  // head. Unchecking a below-fold row drops it from the tail; the "View all"
+  // toggle reveals every value, and clicking it again ("View less") collapses
+  // back to the head.
   const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return sortedValues;
-    return sortedValues.slice(0, maxVisibleItems);
-  }, [sortedValues, maxVisibleItems, isExpanded]);
+    if (isExpanded || maxVisibleItems == null) return filteredValues;
+    const head = filteredValues.slice(0, maxVisibleItems);
+    const belowFoldSelected = filteredValues
+      .slice(maxVisibleItems)
+      .filter(({ value }) => selectedSet.has(value));
+    return [...head, ...belowFoldSelected];
+  }, [filteredValues, maxVisibleItems, isExpanded, selectedSet]);
 
   const hasMore =
-    maxVisibleItems != null && sortedValues.length > maxVisibleItems;
+    maxVisibleItems != null && filteredValues.length > maxVisibleItems;
 
   return (
     <div
@@ -198,14 +205,14 @@ function ListogramInputInner({
             );
           })}
 
-          {hasMore && !isExpanded && (
+          {hasMore && (
             <Button
               type="button"
               className={styles.viewAllButton}
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => setIsExpanded(true)}
+              aria-expanded={isExpanded}
+              onClick={toggleExpanded}
             >
-              View all ({sortedValues.length})
+              {isExpanded ? "View less" : `View all (${filteredValues.length})`}
             </Button>
           )}
         </div>

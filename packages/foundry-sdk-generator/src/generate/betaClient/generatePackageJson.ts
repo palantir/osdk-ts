@@ -16,6 +16,10 @@
 
 import { writeFile } from "fs/promises";
 import { join } from "path";
+import {
+  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "./generateOntologyMetadata.js";
 
 export async function generatePackageJson(options: {
   packageName: string;
@@ -27,6 +31,7 @@ export async function generatePackageJson(options: {
   >;
   beta: boolean;
   packageRid?: string;
+  branch?: string;
 }): Promise<
   {
     name: string;
@@ -45,7 +50,7 @@ export async function generatePackageJson(options: {
     version: options.packageVersion,
     main: "./cjs/index.js",
     types: "./cjs/index.d.ts",
-    osdk: { packageRid: options.packageRid },
+    osdk: { packageRid: options.packageRid, branch: options.branch },
     exports: {
       ".": {
         script: {
@@ -62,6 +67,10 @@ export async function generatePackageJson(options: {
         },
         types: "./cjs/index.d.ts",
         default: "./cjs/index.js",
+      },
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        types: `./${ONTOLOGY_METADATA_DTS_PATH}`,
+        default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
       },
     },
     dependencies: packageDeps,

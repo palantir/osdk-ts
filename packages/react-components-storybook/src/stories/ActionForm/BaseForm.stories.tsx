@@ -1002,6 +1002,7 @@ const customValidateFormContent: ReadonlyArray<FormContentItem> = [
     fieldComponent: "TEXT_INPUT",
     label: "Email",
     isRequired: true,
+    // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
     validate: async (value: unknown) => {
       if (typeof value !== "string" || value.length === 0) {
         return undefined;

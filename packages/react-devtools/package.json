@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-devtools",
-  "version": "0.14.0",
+  "version": "0.17.0",
   "description": "Developer tools and debugging utilities for OSDK React Toolkit",
   "license": "Apache-2.0",
   "repository": {
@@ -90,7 +90,7 @@
     "sass-embedded": "^1.89.2",
     "typescript": "~5.5.4",
     "vite": "^6.3.5",
-    "vitest": "^2.0.0"
+    "vitest": "^3.2.4"
   },
   "publishConfig": {
     "access": "public"

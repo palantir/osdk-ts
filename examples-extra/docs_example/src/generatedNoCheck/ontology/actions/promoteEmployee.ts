@@ -13,18 +13,21 @@ export namespace promoteEmployee {
   export type ParamsDefinition = {
     employeeId: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     newCompensation: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'double';
     };
     newTitle: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

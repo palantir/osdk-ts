@@ -21,6 +21,8 @@ import resolvePackagePath from "resolve-package-path";
 
 import type { PackageJson } from "./PackageJson.js";
 
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function visitNpmPackages(
   rootPackageJsonPath: string,
   onVisit: (packageJsonPath: string, packageJson: PackageJson) => void
