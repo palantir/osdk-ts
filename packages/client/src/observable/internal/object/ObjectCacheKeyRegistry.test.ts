@@ -51,20 +51,52 @@ function createMockRdp(...fields: string[]): Canonical<Rdp> {
 function createMockObjectCacheKey(
   apiName: string,
   pk: string,
-  rdpConfig?: Canonical<Rdp>
+  rdpConfig?: Canonical<Rdp>,
+  includeAllBaseObjectProperties?: true
 ): ObjectCacheKey {
   return {
     type: "object" as const,
-    otherKeys: [apiName, pk, rdpConfig],
+    otherKeys: [
+      apiName,
+      pk,
+      rdpConfig,
+      undefined,
+      undefined,
+      includeAllBaseObjectProperties,
+    ],
     __cacheKey: {
       value: {} as ObjectHolder,
       query: {} as ObjectQuery,
-      args: [apiName, pk, rdpConfig],
+      args: [
+        apiName,
+        pk,
+        rdpConfig,
+        undefined,
+        undefined,
+        includeAllBaseObjectProperties,
+      ],
     },
   };
 }
 
 describe("ObjectCacheKeyRegistry", () => {
+  it("groups all base-property shapes under one object bucket", () => {
+    const registry = new ObjectCacheKeyRegistry();
+    const narrowed = createMockObjectCacheKey("Employee", "emp1");
+    const full = createMockObjectCacheKey("Employee", "emp1", undefined, true);
+
+    registry.register(narrowed, "Employee", "emp1");
+    registry.register(full, "Employee", "emp1");
+
+    // Both shapes share one bucket so invalidation and deletion reach both.
+    // Stopping one shape's write from overwriting the other happens in
+    // propagateWrite, not here.
+    expect(registry.getVariants("Employee", "emp1")).toEqual(
+      new Set([narrowed, full])
+    );
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
+  });
+
   it("registers and retrieves variant cache keys", () => {
     const registry = new ObjectCacheKeyRegistry();
 

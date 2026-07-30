@@ -27,12 +27,16 @@ describe("ObjectCacheKey", () => {
       "object",
       "Employee",
       1,
+      undefined,
+      undefined,
       undefined
     );
     const keyWithFlag = cacheKeys.get<ObjectCacheKey>(
       "object",
       "Employee",
       1,
+      undefined,
+      undefined,
       undefined,
       true
     );
@@ -47,12 +51,16 @@ describe("ObjectCacheKey", () => {
       "object",
       "Employee",
       1,
+      undefined,
+      undefined,
       undefined
     );
     const keyExplicitUndefined = cacheKeys.get<ObjectCacheKey>(
       "object",
       "Employee",
       1,
+      undefined,
+      undefined,
       undefined,
       undefined
     );

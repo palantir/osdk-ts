@@ -33,8 +33,14 @@ interface BaseKeyEntry {
 }
 
 /**
- * Registry that tracks relationships between object cache keys with different RDP configurations.
- * This ensures we propagate updates across all "variants" of the same object.
+ * Tracks every object cache-key variant for a given (apiName, primaryKey) in
+ * one bucket, so invalidation and deletion reach them all and writes can
+ * propagate between compatible variants (e.g. different RDP configs).
+ *
+ * Variants with different property shapes (e.g. different
+ * `$includeAllBaseObjectProperties` values) share the bucket too. Stopping a
+ * write to one shape from overwriting another is done in
+ * `ObjectsHelper.propagateWrite`, not here.
  */
 export class ObjectCacheKeyRegistry {
   /**
