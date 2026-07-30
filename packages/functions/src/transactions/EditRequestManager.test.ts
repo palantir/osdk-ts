@@ -43,7 +43,7 @@ describe("EditRequestManager", () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(),
-      createWriteableClient.bind(null, "transaction")
+      createWriteableClient.bind(null, "transaction"),
     );
     ({ client, apiServer } = testSetup);
     baseUrl = testSetup.fauxFoundry.baseUrl;
@@ -62,8 +62,8 @@ describe("EditRequestManager", () => {
     apiServer.use(
       MockOntologiesV2.OntologyTransactions.postEdits(
         baseUrl,
-        mockedRequestHandler
-      )
+        mockedRequestHandler,
+      ),
     );
 
     return () => {
@@ -95,7 +95,7 @@ describe("EditRequestManager", () => {
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
     expect(
-      await mockedRequestHandler.mock.calls[0][0].request.json()
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
     ).toMatchInlineSnapshot(
       `
         {
@@ -109,14 +109,14 @@ describe("EditRequestManager", () => {
             },
           ],
         }
-      `
+      `,
     );
 
     await editRequestManager.postEdit(addObjectEdit);
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
     expect(
-      await mockedRequestHandler.mock.calls[1][0].request.json()
+      await mockedRequestHandler.mock.calls[1][0].request.json(),
     ).toMatchInlineSnapshot(
       `
         {
@@ -128,7 +128,7 @@ describe("EditRequestManager", () => {
             },
           ],
         }
-      `
+      `,
     );
   });
 
@@ -139,7 +139,7 @@ describe("EditRequestManager", () => {
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
     expect(
-      await mockedRequestHandler.mock.calls[0][0].request.json()
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
     ).toMatchInlineSnapshot(
       `
         {
@@ -163,7 +163,7 @@ describe("EditRequestManager", () => {
             },
           ],
         }
-      `
+      `,
     );
 
     await editRequestManager.postEdit(addLinkEdit);
@@ -197,7 +197,7 @@ describe("EditRequestManager", () => {
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
     expect(
-      await mockedRequestHandler.mock.calls[0][0].request.json()
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
     ).toMatchInlineSnapshot(
       `
         {
@@ -211,7 +211,7 @@ describe("EditRequestManager", () => {
             },
           ],
         }
-      `
+      `,
     );
     expect(await mockedRequestHandler.mock.calls[1][0].request.json())
       .toMatchInlineSnapshot(`

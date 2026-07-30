@@ -31,11 +31,11 @@ import type {
  */
 export async function getAvailableSparkModules(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName
+  moduleGroupName: _ModuleGroupName,
 ): Promise<_AvailableModulesResponse> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}/available-modules`,
-    "GET"
+    "GET",
   );
 }

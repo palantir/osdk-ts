@@ -135,7 +135,7 @@ export function ObjectTable<
         objectSet: deriveSelectionObjectSet(resultingObjectSet, change),
       });
     },
-    [onRowSelectionChanged, resultingObjectSet]
+    [onRowSelectionChanged, resultingObjectSet],
   );
 
   const {
@@ -246,11 +246,11 @@ export function ObjectTable<
       cell: Cell<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >
+      >,
     ) => {
       return renderCellContextMenu?.(row, cell.getValue());
     },
-    [renderCellContextMenu]
+    [renderCellContextMenu],
   );
 
   const handleColumnHeaderClick = useMemo(
@@ -258,10 +258,10 @@ export function ObjectTable<
       onColumnHeaderClick
         ? (columnId: string) =>
             onColumnHeaderClick(
-              columnId as PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+              columnId as PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
             )
         : undefined,
-    [onColumnHeaderClick]
+    [onColumnHeaderClick],
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
@@ -278,7 +278,7 @@ export function ObjectTable<
       enableColumnPinning,
       enableColumnResizing,
       enableColumnConfig,
-    ]
+    ],
   );
 
   return (

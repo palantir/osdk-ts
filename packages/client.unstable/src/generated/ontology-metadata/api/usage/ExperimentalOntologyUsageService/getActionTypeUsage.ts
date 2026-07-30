@@ -29,7 +29,7 @@ import type {
  */
 export async function getActionTypeUsage(
   ctx: ConjureContext,
-  request: _api_usage_GetActionTypeUsageRequest
+  request: _api_usage_GetActionTypeUsageRequest,
 ): Promise<_api_usage_GetActionTypeUsageResponse> {
   return conjureFetch(ctx, `/usage/search`, "PUT", request);
 }

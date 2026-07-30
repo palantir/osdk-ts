@@ -30,12 +30,12 @@ import type {
  */
 export async function manageExistingInstallation(
   ctx: ConjureContext,
-  request: _installmanager_api_ManageExistingInstallationRequest
+  request: _installmanager_api_ManageExistingInstallationRequest,
 ): Promise<_installmanager_api_ManageExistingInstallationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/manage-existing-this-endpoint-will-be-removed-again`,
     "POST",
-    request
+    request,
   );
 }

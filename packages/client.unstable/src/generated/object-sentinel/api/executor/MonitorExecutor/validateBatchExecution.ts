@@ -26,12 +26,12 @@ import type {
  */
 export async function validateBatchExecution(
   ctx: ConjureContext,
-  request: _api_executor_ValidateBatchExecutionRequest
+  request: _api_executor_ValidateBatchExecutionRequest,
 ): Promise<_api_executor_ValidatedBatchExecutionResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/validateRun`,
     "POST",
-    request
+    request,
   );
 }

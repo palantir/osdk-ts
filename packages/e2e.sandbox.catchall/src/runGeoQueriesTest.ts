@@ -23,7 +23,7 @@ import {
 import { client } from "./client.js";
 
 export async function runGeoQueriesTest(
-  runAction: boolean = false
+  runAction: boolean = false,
 ): Promise<void> {
   const result = await client(WeatherStation)
     .where({

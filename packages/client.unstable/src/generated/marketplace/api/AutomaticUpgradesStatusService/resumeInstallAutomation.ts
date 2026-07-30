@@ -27,11 +27,11 @@ import type {
  */
 export async function resumeInstallAutomation(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid
+  blockSetInstallationRid: _api_BlockSetInstallationRid,
 ): Promise<_api_Void> {
   return conjureFetch(
     ctx,
     `/automation/status/block-set-installations/${blockSetInstallationRid}/resume`,
-    "POST"
+    "POST",
   );
 }

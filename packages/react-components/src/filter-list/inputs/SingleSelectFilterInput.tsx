@@ -64,7 +64,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "SELECT"
         ? coerceToString(filterState.selectedValues[0])
         : undefined,
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -84,12 +84,12 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const selectedValues = useMemo(
     () => (selectedValue != null ? [selectedValue] : []),
-    [selectedValue]
+    [selectedValue],
   );
 
   const { data, isLoading, error } = useFilterPropertyAggregation(
@@ -98,7 +98,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     objectSet,
     whereClause,
     linkedFilters,
-    { selectedValues, showFilteredOutValues }
+    { selectedValues, showFilteredOutValues },
   );
 
   return (

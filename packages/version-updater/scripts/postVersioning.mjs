@@ -53,7 +53,7 @@ const clientPackageVersion = getClientPackageVersion();
 updateConstVariable(
   path.join(workspaceDirPath, "packages", "client", "src", "Client.ts"),
   "MaxOsdkVersion",
-  clientPackageVersion
+  clientPackageVersion,
 );
 
 updateConstVariable(
@@ -63,10 +63,10 @@ updateConstVariable(
     "generator",
     "src",
     "v2.0",
-    "generateMetadata.ts"
+    "generateMetadata.ts",
   ),
   "ExpectedOsdkVersion",
-  clientPackageVersion
+  clientPackageVersion,
 );
 
 for (const pkg of PEER_DEP_PACKAGES) {
@@ -83,12 +83,12 @@ function applyLoosePeerDep(packageDir, peerName, range) {
     workspaceDirPath,
     "packages",
     packageDir,
-    "package.json"
+    "package.json",
   );
 
   if (!fs.existsSync(packageJsonPath)) {
     consola.warn(
-      `packages/${packageDir}/package.json not found, skipping loose peer dep`
+      `packages/${packageDir}/package.json not found, skipping loose peer dep`,
     );
     return;
   }
@@ -100,7 +100,7 @@ function applyLoosePeerDep(packageDir, peerName, range) {
 
   if (packageJson.peerDependencies[peerName] === range) {
     consola.info(
-      `No changes needed for ${packageDir} ${peerName} peer dep (already ${range})`
+      `No changes needed for ${packageDir} ${peerName} peer dep (already ${range})`,
     );
     return;
   }
@@ -108,10 +108,10 @@ function applyLoosePeerDep(packageDir, peerName, range) {
   packageJson.peerDependencies[peerName] = range;
   fs.writeFileSync(
     packageJsonPath,
-    `${JSON.stringify(packageJson, null, 2)}\n`
+    `${JSON.stringify(packageJson, null, 2)}\n`,
   );
   consola.info(
-    `Updated ${packageDir} ${peerName} peer dep to "${range}" (loose)`
+    `Updated ${packageDir} ${peerName} peer dep to "${range}" (loose)`,
   );
 }
 
@@ -129,27 +129,27 @@ function updateConstVariable(filePath, variableName, value) {
     consola.error(
       `Variable ${variableName} not found in ${path.relative(
         workspaceDirPath,
-        filePath
-      )}`
+        filePath,
+      )}`,
     );
     process.exit(30);
   }
 
   const newContents = fileContents.replace(
     regexp,
-    `const ${variableName} = "${value}";`
+    `const ${variableName} = "${value}";`,
   );
   if (newContents === fileContents) {
     consola.info(
-      `No changes needed in ${path.relative(workspaceDirPath, filePath)}`
+      `No changes needed in ${path.relative(workspaceDirPath, filePath)}`,
     );
   } else {
     fs.writeFileSync(filePath, newContents);
     consola.info(
       `Updated ${variableName} in ${path.relative(
         workspaceDirPath,
-        filePath
-      )} to ${value}`
+        filePath,
+      )} to ${value}`,
     );
   }
 }
@@ -170,11 +170,11 @@ function getClientPackageVersion() {
     workspaceDirPath,
     "packages",
     "client",
-    "package.json"
+    "package.json",
   );
 
   const packageJsonContents = JSON.parse(
-    fs.readFileSync(clientPackageJsonPath, "utf-8")
+    fs.readFileSync(clientPackageJsonPath, "utf-8"),
   );
 
   const currentVersion = packageJsonContents.version;
@@ -183,8 +183,8 @@ function getClientPackageVersion() {
     consola.error(
       `Invalid version ${currentVersion} in ${path.relative(
         workspaceDirPath,
-        clientPackageJsonPath
-      )} )}`
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(20);
   }
@@ -194,8 +194,8 @@ function getClientPackageVersion() {
     consola.error(
       `Invalid version ${currentVersion} in ${path.relative(
         workspaceDirPath,
-        clientPackageJsonPath
-      )} )}`
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(21);
   }
@@ -213,7 +213,7 @@ function getPeerPackageVersion(packageName) {
     workspaceDirPath,
     "packages",
     dirName,
-    "package.json"
+    "package.json",
   );
   if (!fs.existsSync(pkgJsonPath)) {
     return undefined;
@@ -227,7 +227,7 @@ function getPeerPackageVersion(packageName) {
  */
 function updatePeerDependencies(packageDir, peersConfig) {
   const loosePeers = Object.entries(peersConfig).filter(
-    ([, cfg]) => cfg.strategy === "loose"
+    ([, cfg]) => cfg.strategy === "loose",
   );
   const changelogPeers = Object.entries(peersConfig)
     .filter(([, cfg]) => cfg.strategy === "changelog")
@@ -248,25 +248,25 @@ function updatePeerDependencies(packageDir, peersConfig) {
     workspaceDirPath,
     "packages",
     packageDir,
-    "package.json"
+    "package.json",
   );
   const changelogPath = path.join(
     workspaceDirPath,
     "packages",
     packageDir,
-    "CHANGELOG.md"
+    "CHANGELOG.md",
   );
 
   if (!fs.existsSync(packageJsonPath)) {
     consola.warn(
-      `packages/${packageDir}/package.json not found, skipping peer dependency update`
+      `packages/${packageDir}/package.json not found, skipping peer dependency update`,
     );
     return;
   }
 
   if (!fs.existsSync(changelogPath)) {
     consola.warn(
-      `packages/${packageDir}/CHANGELOG.md not found, skipping peer dependency update`
+      `packages/${packageDir}/CHANGELOG.md not found, skipping peer dependency update`,
     );
     return;
   }
@@ -276,7 +276,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
 
   if (versionMappings.length === 0) {
     consola.warn(
-      `No version mappings found in packages/${packageDir}/CHANGELOG.md`
+      `No version mappings found in packages/${packageDir}/CHANGELOG.md`,
     );
     return;
   }
@@ -293,12 +293,12 @@ function updatePeerDependencies(packageDir, peersConfig) {
     const minVersion = determineMinVersion(
       versionMappings,
       currentPackageVersion,
-      peerName
+      peerName,
     );
 
     if (!minVersion) {
       consola.warn(
-        `Could not determine minimum ${peerName} version for ${packageDir}@${currentPackageVersion}`
+        `Could not determine minimum ${peerName} version for ${packageDir}@${currentPackageVersion}`,
       );
       continue;
     }
@@ -314,13 +314,13 @@ function updatePeerDependencies(packageDir, peersConfig) {
 
     if (currentPeerDep === peerRange) {
       consola.info(
-        `No changes needed for ${packageDir} ${peerName} peer dep (already ${peerRange})`
+        `No changes needed for ${packageDir} ${peerName} peer dep (already ${peerRange})`,
       );
     } else {
       packageJson.peerDependencies[peerName] = peerRange;
       changed = true;
       consola.info(
-        `Updated ${packageDir} ${peerName} peer dep to "${peerRange}" (min: ${minVersion})`
+        `Updated ${packageDir} ${peerName} peer dep to "${peerRange}" (min: ${minVersion})`,
       );
     }
   }
@@ -328,7 +328,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
   if (changed) {
     fs.writeFileSync(
       packageJsonPath,
-      `${JSON.stringify(packageJson, null, 2)}\n`
+      `${JSON.stringify(packageJson, null, 2)}\n`,
     );
   }
 }

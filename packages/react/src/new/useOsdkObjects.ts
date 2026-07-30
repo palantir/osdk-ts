@@ -243,7 +243,7 @@ export function useOsdkObjects<
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
-  }
+  },
 ): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
 
 export function useOsdkObjects<
@@ -254,7 +254,7 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     streamUpdates?: never;
-  }
+  },
 ): UseOsdkListResult<LinkedType<Q, L>, {}>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
@@ -267,7 +267,7 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q, RDPs> & {
     rids: readonly string[];
     pivotTo?: never;
-  }
+  },
 ): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
@@ -275,7 +275,7 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never }
+  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
@@ -283,7 +283,7 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
@@ -326,7 +326,7 @@ export function useOsdkObjects<
         devToolsMetadata({
           hookType: "useOsdkObjects",
           objectType: type.apiName,
-        })
+        }),
       );
     }
 
@@ -354,7 +354,7 @@ export function useOsdkObjects<
               : {}),
             ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
           },
-          observer
+          observer,
         ),
       devToolsMetadata({
         hookType: "useOsdkObjects",
@@ -362,7 +362,7 @@ export function useOsdkObjects<
         where: canonOptions.where,
         orderBy: canonOptions.orderBy,
         pageSize,
-      })
+      }),
     );
   }, [
     enabled,
@@ -403,6 +403,6 @@ export function useOsdkObjects<
       objectSet: listPayload?.objectSet,
       refetch,
     }),
-    [listPayload, enabled, refetch]
+    [listPayload, enabled, refetch],
   );
 }

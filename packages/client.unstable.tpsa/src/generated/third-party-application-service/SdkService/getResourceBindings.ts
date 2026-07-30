@@ -33,11 +33,11 @@ import type { ResourceBindings } from "../ResourceBindings.js";
 export async function getResourceBindings(
   ctx: ConjureContext,
   repositoryRid: ArtifactsRepositoryRid,
-  packageName: PackageName
+  packageName: PackageName,
 ): Promise<ResourceBindings> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/bindings`,
-    "GET"
+    "GET",
   );
 }

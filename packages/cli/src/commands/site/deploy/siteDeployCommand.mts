@@ -69,7 +69,7 @@ export default async function siteDeployCommand({
   if (!stat.isDirectory()) {
     throw new ExitProcessError(
       2,
-      "Specified path exists but is not a directory"
+      "Specified path exists but is not a directory",
     );
   }
 
@@ -83,7 +83,7 @@ export default async function siteDeployCommand({
       application,
       siteVersion,
       snapshotId ?? "",
-      archive
+      archive,
     );
     consola.info("Snapshot mode enabled, skipping deployment");
     return;
@@ -96,7 +96,7 @@ export default async function siteDeployCommand({
     const website = await thirdPartyApplications.deployWebsite(
       clientCtx,
       application,
-      { version: siteVersion }
+      { version: siteVersion },
     );
     consola.success(`Deployed ${siteVersion} successfully`);
     const domain = website.subdomains[0];
@@ -107,7 +107,7 @@ export default async function siteDeployCommand({
   } else {
     const website = await thirdPartyApplications.getWebsite(
       clientCtx,
-      application
+      application,
     );
     const domain = website?.subdomains[0];
     consola.info("Upload only mode enabled, skipping deployment");
@@ -130,7 +130,7 @@ async function findAutoVersion(config: AutoVersionConfig): Promise<string> {
     throw new ExitProcessError(
       2,
       e instanceof Error ? e.message : undefined,
-      e instanceof AutoVersionError ? e.tip : undefined
+      e instanceof AutoVersionError ? e.tip : undefined,
     );
   }
 }
@@ -140,7 +140,7 @@ async function uploadSnapshot(
   application: ThirdPartyAppRid,
   siteVersion: string,
   snapshotId: string,
-  archive: archiver.Archiver
+  archive: archiver.Archiver,
 ): Promise<void> {
   consola.start("Uploading snapshot site files");
   await Promise.all([
@@ -149,7 +149,7 @@ async function uploadSnapshot(
       application,
       siteVersion,
       snapshotId,
-      Readable.toWeb(archive) as ReadableStream<any> // This cast is because the dom fetch doesn't align type wise with streams
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),
   ]);
@@ -160,7 +160,7 @@ async function upload(
   clientCtx: InternalClientContext,
   application: ThirdPartyAppRid,
   siteVersion: string,
-  archive: archiver.Archiver
+  archive: archiver.Archiver,
 ): Promise<void> {
   consola.start("Uploading site files");
   await Promise.all([
@@ -168,7 +168,7 @@ async function upload(
       clientCtx,
       application,
       siteVersion,
-      Readable.toWeb(archive) as ReadableStream<any> // This cast is because the dom fetch doesn't align type wise with streams
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),
   ]);
@@ -187,7 +187,7 @@ function logArchiveStats(archive: archiver.Archiver): void {
     consola.info(
       `Zipped ${prettyBytes(archiveStats.bytes, {
         binary: true,
-      })} total over ${archiveStats.fileCount} files`
+      })} total over ${archiveStats.fileCount} files`,
     );
   });
 }

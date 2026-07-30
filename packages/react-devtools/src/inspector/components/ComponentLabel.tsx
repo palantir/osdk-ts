@@ -36,7 +36,7 @@ interface SizeSnapshot {
 const EMPTY_SIZE: SizeSnapshot = { width: 0, height: 0 };
 
 function useElementSize(
-  ref: React.RefObject<HTMLDivElement | null>
+  ref: React.RefObject<HTMLDivElement | null>,
 ): SizeSnapshot {
   const sizeRef = useRef<SizeSnapshot>(EMPTY_SIZE);
 
@@ -65,7 +65,7 @@ function useElementSize(
       observer.observe(el);
       return () => observer.disconnect();
     },
-    [ref]
+    [ref],
   );
 
   const getSnapshot = React.useCallback(() => sizeRef.current, []);
@@ -96,7 +96,7 @@ export function ComponentLabel({
       bounds,
       measuredSize.width,
       measuredSize.height,
-      mouseX
+      mouseX,
     );
   }, [bounds, measuredSize.width, measuredSize.height, mouseX]);
 

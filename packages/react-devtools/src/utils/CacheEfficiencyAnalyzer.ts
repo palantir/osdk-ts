@@ -56,7 +56,7 @@ export interface CacheEfficiencyMetrics {
 export class CacheEfficiencyAnalyzer {
   constructor(
     private metricsStore: MetricsStore,
-    private coldThresholdMs: number = 5 * 60 * 1000 // 5 minutes
+    private coldThresholdMs: number = 5 * 60 * 1000, // 5 minutes
   ) {}
 
   analyze(cacheSnapshot: CacheSnapshot): CacheEfficiencyMetrics {
@@ -77,16 +77,16 @@ export class CacheEfficiencyAnalyzer {
 
     const entries = cacheSnapshot.entries || [];
     const sortedByAccess = [...entries].sort(
-      (a, b) => (b.metadata.hitCount || 0) - (a.metadata.hitCount || 0)
+      (a, b) => (b.metadata.hitCount || 0) - (a.metadata.hitCount || 0),
     );
     const hotEntries = sortedByAccess.slice(0, 10);
     const coldEntries = entries.filter(
-      (e) => Date.now() - (e.metadata.timestamp || 0) > this.coldThresholdMs
+      (e) => Date.now() - (e.metadata.timestamp || 0) > this.coldThresholdMs,
     );
 
     const totalSize = entries.reduce(
       (sum, e) => sum + (e.metadata.size || 0),
-      0
+      0,
     );
     const avgSize = entries.length > 0 ? totalSize / entries.length : 0;
 
@@ -102,7 +102,7 @@ export class CacheEfficiencyAnalyzer {
         revalidations: metrics.revalidations,
         deduplications: metrics.deduplications,
       },
-      cacheSnapshot
+      cacheSnapshot,
     );
 
     const score = this.calculateEfficiencyScore({
@@ -111,7 +111,7 @@ export class CacheEfficiencyAnalyzer {
         entries.length > 0 ? coldEntries.length / entries.length : 0,
       totalSizeBytes: totalSize,
       recommendationCount: recommendations.filter(
-        (r) => r.level === "warning" || r.level === "critical"
+        (r) => r.level === "warning" || r.level === "critical",
       ).length,
     });
 
@@ -163,7 +163,7 @@ export class CacheEfficiencyAnalyzer {
       revalidations: number;
       deduplications: number;
     },
-    cacheSnapshot: CacheSnapshot
+    cacheSnapshot: CacheSnapshot,
   ): CacheRecommendation[] {
     const recommendations: CacheRecommendation[] = [];
 
@@ -175,7 +175,7 @@ export class CacheEfficiencyAnalyzer {
         level: "critical",
         title: "Very low cache hit rate",
         message: `Only ${(metrics.hitRate * 100).toFixed(
-          1
+          1,
         )}% of queries are served from cache`,
         suggestion:
           "Consider increasing cache TTL, prefetching related data, or memoizing components",
@@ -188,7 +188,7 @@ export class CacheEfficiencyAnalyzer {
         level: "warning",
         title: "Low cache hit rate",
         message: `Only ${(metrics.hitRate * 100).toFixed(
-          1
+          1,
         )}% of queries are served from cache`,
         suggestion:
           "Enable prefetching or increase cache TTL for frequently accessed data",
@@ -258,7 +258,7 @@ export class CacheEfficiencyAnalyzer {
         level: "success",
         title: "Excellent cache hit rate",
         message: `${(metrics.hitRate * 100).toFixed(
-          1
+          1,
         )}% of queries served from cache`,
         suggestion: "Cache configuration is optimal for your app",
       });

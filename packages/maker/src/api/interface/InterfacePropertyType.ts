@@ -38,13 +38,13 @@ export interface InterfaceSharedPropertyType {
 }
 
 export function isInterfaceSharedPropertyType(
-  interfacePropertyType: InterfacePropertyType
+  interfacePropertyType: InterfacePropertyType,
 ): interfacePropertyType is InterfaceSharedPropertyType {
   return "sharedPropertyType" in interfacePropertyType;
 }
 
 export function getInterfacePropertyTypeType(
-  interfacePropertyType: InterfacePropertyType
+  interfacePropertyType: InterfacePropertyType,
 ): PropertyTypeType {
   return isInterfaceSharedPropertyType(interfacePropertyType)
     ? interfacePropertyType.sharedPropertyType.type

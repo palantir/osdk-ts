@@ -38,7 +38,7 @@ export const Default: Story = {
   render: () => {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
-      MEDIA_EMPLOYEE_PK
+      MEDIA_EMPLOYEE_PK,
     );
 
     if (isLoading || !employee?.employeeDocuments) {

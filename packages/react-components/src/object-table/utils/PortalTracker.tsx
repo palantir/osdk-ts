@@ -88,6 +88,6 @@ export function useRegisterPortal(): (element: HTMLElement | null) => void {
         cleanupRef.current = tracker.register(element);
       }
     },
-    [tracker]
+    [tracker],
   );
 }

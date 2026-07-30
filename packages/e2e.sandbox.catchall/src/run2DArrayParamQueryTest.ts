@@ -29,7 +29,7 @@ const client = createClient(
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
-  loggingFetch
+  loggingFetch,
 );
 
 console.log(
@@ -38,7 +38,7 @@ console.log(
       [0, 1],
       [2, 3],
     ],
-  })
+  }),
 ); // should be 1
 
 const res = await client(identity2DArray).executeFunction({

@@ -44,7 +44,7 @@ const logger = new TestLogger(
   {},
   {
     // level: "debug",
-  }
+  },
 );
 
 // Constants for test objects
@@ -127,7 +127,7 @@ describe("Store Invalidation Type Isolation", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/"),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, fauxFoundry } = testSetup);
 
@@ -299,8 +299,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             mode: "offline",
           },
-          empListSubFn
-        )
+          empListSubFn,
+        ),
       );
 
       const officeListSubFn = mockListSubCallback();
@@ -312,8 +312,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             mode: "offline",
           },
-          officeListSubFn
-        )
+          officeListSubFn,
+        ),
       );
 
       // Wait for the initial calls and clear them
@@ -426,8 +426,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             mode: "offline",
           },
-          empListSubFn
-        )
+          empListSubFn,
+        ),
       );
 
       const officeListSubFn = mockListSubCallback();
@@ -439,8 +439,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             mode: "offline",
           },
-          officeListSubFn
-        )
+          officeListSubFn,
+        ),
       );
 
       const todoListSubFn = mockListSubCallback();
@@ -452,8 +452,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             mode: "offline",
           },
-          todoListSubFn
-        )
+          todoListSubFn,
+        ),
       );
 
       // Set up link observations
@@ -547,8 +547,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             pageSize: 10,
           },
-          empListSubFn
-        )
+          empListSubFn,
+        ),
       );
 
       const officeListSubFn = mockListSubCallback();
@@ -560,8 +560,8 @@ describe("Store Invalidation Type Isolation", () => {
             orderBy: {},
             pageSize: 10,
           },
-          officeListSubFn
-        )
+          officeListSubFn,
+        ),
       );
 
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -711,7 +711,7 @@ describe("Store Invalidation Type Isolation", () => {
       const emp1AsFoo = foos.find(
         (foo) =>
           foo.$objectType === Employee.apiName &&
-          foo.$primaryKey === EMPLOYEE_1_ID
+          foo.$primaryKey === EMPLOYEE_1_ID,
       );
       invariant(emp1AsFoo);
       expect(emp1AsFoo.$apiName).toBe(FooInterface.apiName);

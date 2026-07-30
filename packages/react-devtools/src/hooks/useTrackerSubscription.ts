@@ -30,7 +30,7 @@ export function useTrackerSubscription<TTracker extends Subscribable, TData>(
   tracker: TTracker | null,
   getData: (tracker: TTracker, limit: number) => TData,
   emptyData: TData,
-  options: TrackerSubscriptionOptions = {}
+  options: TrackerSubscriptionOptions = {},
 ): { data: TData; refresh: () => void } {
   const { autoRefresh = true, refreshInterval = 1000, limit = 10 } = options;
 
@@ -93,7 +93,7 @@ export function useTrackerSubscription<TTracker extends Subscribable, TData>(
         }
       };
     },
-    [tracker, autoRefresh, refreshInterval, limit]
+    [tracker, autoRefresh, refreshInterval, limit],
   );
 
   const getSnapshot = React.useCallback((): TData => {

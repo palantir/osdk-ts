@@ -41,5 +41,5 @@ function EmptyStringLabelInner({
 }
 
 export const EmptyStringLabel = memo(
-  EmptyStringLabelInner
+  EmptyStringLabelInner,
 ) as typeof EmptyStringLabelInner;

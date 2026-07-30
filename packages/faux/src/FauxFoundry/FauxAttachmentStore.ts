@@ -29,7 +29,7 @@ export class FauxAttachmentStore {
   #attachments = new Map<string, FauxAttachmentInfo>();
 
   registerAttachment(
-    attachment: FauxAttachmentInfo
+    attachment: FauxAttachmentInfo,
   ): OntologiesV2.AttachmentV2 {
     this.#attachments.set(attachment.rid, attachment);
     return this.getAttachmentMetadataByRid(attachment.rid);

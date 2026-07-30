@@ -152,7 +152,7 @@ export function useOsdkAggregation<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptions<Q, A, RDPs>
+  options: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
@@ -160,7 +160,7 @@ export function useOsdkAggregation<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
@@ -170,7 +170,7 @@ export function useOsdkAggregation<
   type: Q,
   options:
     | UseOsdkAggregationOptions<Q, A, RDPs>
-    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>
+    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const {
     where,
@@ -205,7 +205,7 @@ export function useOsdkAggregation<
         devToolsMetadata({
           hookType: "useOsdkAggregation",
           objectType: type.apiName,
-        })
+        }),
       );
     }
 
@@ -223,14 +223,14 @@ export function useOsdkAggregation<
               aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
-            observer
+            observer,
           ),
         devToolsMetadata({
           hookType: "useOsdkAggregation",
           objectType: type.apiName,
           where: canonOptions.where,
           aggregate: canonOptions.aggregate,
-        })
+        }),
       );
     }
     return makeExternalStore<ObserveAggregationArgs<Q, A>>(
@@ -245,14 +245,14 @@ export function useOsdkAggregation<
             aggregate: canonOptions.aggregate,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
           },
-          observer
+          observer,
         ),
       devToolsMetadata({
         hookType: "useOsdkAggregation",
         objectType: type.apiName,
         where: canonOptions.where,
         aggregate: canonOptions.aggregate,
-      })
+      }),
     );
   }, [
     enabled,
@@ -283,6 +283,6 @@ export function useOsdkAggregation<
       error: extractPayloadError(payload, "Failed to execute aggregation"),
       refetch,
     }),
-    [payload, enabled, refetch]
+    [payload, enabled, refetch],
   );
 }

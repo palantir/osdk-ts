@@ -30,19 +30,19 @@ export interface SimpleCache<K, V> {
 
 export function createSimpleCache<K, V>(
   map: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
-  fn: (k: K) => V
+  fn: (k: K) => V,
 ): SimpleCache<K, V>;
 /**
  * Create a new cache without a factory function.
  */
 export function createSimpleCache<K, V>(
-  map?: Map<K, V> | (K extends object ? WeakMap<K, V> : never)
+  map?: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
 ): SimpleCache<K, V | undefined>;
 export function createSimpleCache<K, V>(
   map:
     | Map<K, V>
     | (K extends object ? WeakMap<K, V> : never) = new Map() as any,
-  fn?: undefined | ((k: K) => V)
+  fn?: undefined | ((k: K) => V),
 ): typeof fn extends undefined
   ? SimpleCache<K, V | undefined>
   : SimpleCache<K, V> {
@@ -92,13 +92,13 @@ export interface WeakAsyncCache<K, V> {
 export function createSimpleAsyncCache<K, V>(
   type: "weak" | "strong",
   fn: (key: K) => Promise<V>,
-  createCacheLocal: typeof createSimpleCache = createSimpleCache
+  createCacheLocal: typeof createSimpleCache = createSimpleCache,
 ): WeakAsyncCache<K, V> {
   const cache = createCacheLocal<K, V>(
-    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>
+    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>,
   );
   const inProgress = createCacheLocal<K, Promise<V> | V>(
-    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>
+    (type === "weak" ? new WeakMap() : new Map()) as Map<K, V>,
   );
 
   const ret = {

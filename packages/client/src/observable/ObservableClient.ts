@@ -410,7 +410,7 @@ export interface ObservableClient extends ObserveLinks {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
-    subFn: Observer<ObserveObjectCallbackArgs<T>>
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
   /**
@@ -431,7 +431,7 @@ export interface ObservableClient extends ObserveLinks {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
@@ -458,7 +458,7 @@ export interface ObservableClient extends ObserveLinks {
   >(
     baseObjectSet: ObjectSet<T>,
     options: ObserveObjectSetOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
@@ -471,7 +471,7 @@ export interface ObservableClient extends ObserveLinks {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
   ): Unsubscribable;
 
   /**
@@ -503,7 +503,7 @@ export interface ObservableClient extends ObserveLinks {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
   ): Promise<Unsubscribable>;
 
   /**
@@ -525,7 +525,7 @@ export interface ObservableClient extends ObserveLinks {
     queryDef: Q,
     params: Record<string, unknown> | undefined,
     options: ObserveFunctionOptions,
-    subFn: Observer<ObserveFunctionCallbackArgs<Q>>
+    subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
   ): Unsubscribable;
 
   /**
@@ -547,7 +547,7 @@ export interface ObservableClient extends ObserveLinks {
     args:
       | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
-    opts?: ObservableClient.ApplyActionOptions
+    opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<ActionEditResponse>;
 
   /**
@@ -564,7 +564,7 @@ export interface ObservableClient extends ObserveLinks {
    */
   validateAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
   /**
@@ -582,7 +582,7 @@ export interface ObservableClient extends ObserveLinks {
   invalidateObjects(
     objects:
       | Osdk.Instance<ObjectOrInterfaceDefinition>
-      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>
+      | ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   ): Promise<void>;
 
   /**
@@ -596,7 +596,7 @@ export interface ObservableClient extends ObserveLinks {
    * @returns Promise that resolves when invalidation is complete
    */
   invalidateObjectType<T extends ObjectTypeDefinition>(
-    type: T | T["apiName"]
+    type: T | T["apiName"],
   ): Promise<void>;
 
   /**
@@ -609,7 +609,7 @@ export interface ObservableClient extends ObserveLinks {
    */
   invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
-    params?: Record<string, unknown>
+    params?: Record<string, unknown>,
   ): Promise<void>;
 
   /**
@@ -620,7 +620,7 @@ export interface ObservableClient extends ObserveLinks {
    */
   invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: string | number
+    primaryKey: string | number,
   ): Promise<void>;
 
   getCacheSnapshot(): Promise<CacheSnapshot>;
@@ -629,17 +629,17 @@ export interface ObservableClient extends ObserveLinks {
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T, RDPs>
+    where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
 
   canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
-    options: T
+    options: T,
   ) => CanonicalizedOptions<T>;
 
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
-    observer: Observer<MediaMetadataPayload>
+    observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
 }
 
@@ -718,7 +718,7 @@ export type ObservableClientLogLevel =
 export function createObservableClient(
   client: Client,
   extraUserAgents?: () => string[],
-  options?: ObservableClientOptions
+  options?: ObservableClientOptions,
 ): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
@@ -736,10 +736,10 @@ export function createObservableClient(
             ...(extraUserAgents?.() ?? []),
           ]
             .filter((x) => x && x?.length > 0)
-            .join(" ")
+            .join(" "),
         );
         return headers;
-      }
+      },
     ),
   });
 

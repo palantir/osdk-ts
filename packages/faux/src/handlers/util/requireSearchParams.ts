@@ -21,7 +21,7 @@ import { OpenApiCallError } from "./handleOpenApiCall.js";
 
 export function requireSearchParams<T extends string>(
   names: T[],
-  req: StrictRequest<any>
+  req: StrictRequest<any>,
 ): Record<T, string> {
   const url = new URL(req.url);
   return Object.fromEntries(
@@ -31,6 +31,6 @@ export function requireSearchParams<T extends string>(
         throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
       }
       return [name, value];
-    })
+    }),
   ) as Record<T, string>;
 }

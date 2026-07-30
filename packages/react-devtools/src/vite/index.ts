@@ -83,7 +83,7 @@ export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
         } else if (verbose) {
           // eslint-disable-next-line no-console
           console.log(
-            `[${PLUGIN_NAME}] Warning: Could not find </head> or </body> tag for injection`
+            `[${PLUGIN_NAME}] Warning: Could not find </head> or </body> tag for injection`,
           );
         }
 

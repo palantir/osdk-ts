@@ -59,12 +59,12 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />
+        />,
       );
 
       // The stored selectedValues should reach renderInput, not the empty fallback.
       expect(screen.getByTestId("filter-input").textContent).toContain(
-        "Engineering"
+        "Engineering",
       );
     });
 
@@ -83,12 +83,12 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />
+        />,
       );
 
       // The fallback for MULTI_SELECT is { type: "SELECT", selectedValues: [] }.
       expect(screen.getByTestId("filter-input").textContent).toEqual(
-        JSON.stringify({ type: "SELECT", selectedValues: [] })
+        JSON.stringify({ type: "SELECT", selectedValues: [] }),
       );
     });
 
@@ -107,11 +107,11 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 
@@ -129,12 +129,12 @@ describe("FilterListContent", () => {
           renderInput={stubRenderInput}
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
-        />
+        />,
       );
 
       // No stored state + no fallback → no capability-driven controls.
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
     });
 
@@ -154,7 +154,7 @@ describe("FilterListContent", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
-        />
+        />,
       );
 
       // NUMBER_RANGE has no more-action controls — fallback returns undefined.
@@ -177,15 +177,15 @@ describe("FilterListContent", () => {
           getFilterLabel={getFilterLabel}
           getEmptyDisplayState={getEmptyDisplayState}
           enableSorting={true}
-        />
+        />,
       );
 
       // Sortable branch should also pass the empty fallback state through.
       expect(screen.getByTestId("filter-input").textContent).toEqual(
-        JSON.stringify({ type: "SELECT", selectedValues: [] })
+        JSON.stringify({ type: "SELECT", selectedValues: [] }),
       );
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
   });

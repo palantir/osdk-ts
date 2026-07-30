@@ -48,7 +48,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 function createMockImageMedia(
   dataUrl: string,
   mimeType: string,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: async () => {

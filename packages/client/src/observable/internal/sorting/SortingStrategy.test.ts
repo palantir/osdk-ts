@@ -33,7 +33,7 @@ type Holder = ObjectHolder | InterfaceHolder;
 describe("createOrderBySortFns", () => {
   it("sorts decimal properties numerically", () => {
     const holders = ["10", "9", "100", "2"].map((amount) =>
-      objectHolder({ amount }, { amount: "decimal" })
+      objectHolder({ amount }, { amount: "decimal" }),
     );
 
     expect(sort({ amount: "asc" }, holders).map((h) => h.amount)).toEqual([
@@ -54,7 +54,7 @@ describe("createOrderBySortFns", () => {
     // The value-level precision/edge cases live in compareNumericStrings.test;
     // here we just assert the `long` type routes through numeric comparison.
     const holders = ["10", "9", "100"].map((id) =>
-      objectHolder({ id }, { id: "long" })
+      objectHolder({ id }, { id: "long" }),
     );
 
     expect(sort({ id: "asc" }, holders).map((h) => h.id)).toEqual([
@@ -71,7 +71,7 @@ describe("createOrderBySortFns", () => {
 
   it("keeps real string properties lexicographic", () => {
     const holders = ["10", "9", "100"].map((name) =>
-      objectHolder({ name }, { name: "string" })
+      objectHolder({ name }, { name: "string" }),
     );
 
     expect(sort({ name: "asc" }, holders).map((h) => h.name)).toEqual([
@@ -96,12 +96,12 @@ describe("createOrderBySortFns", () => {
     // min/max preserve the aggregated property's type, so a max over a `long`
     // column is captured as `long` and must sort by value, not lexically.
     const holders = ["10", "9", "100"].map((maxScore) =>
-      objectHolder({ maxScore })
+      objectHolder({ maxScore }),
     );
     const md = derivedMetadata({ maxScore: { type: "long" } });
 
     expect(
-      sort({ maxScore: "asc" }, holders, md).map((h) => h.maxScore)
+      sort({ maxScore: "asc" }, holders, md).map((h) => h.maxScore),
     ).toEqual(["9", "10", "100"]);
   });
 
@@ -132,7 +132,7 @@ describe("createOrderBySortFns", () => {
 
   it("sorts numbers numerically", () => {
     const holders = [10, 9, 100, 2].map((value) =>
-      objectHolder({ value }, { value: "integer" })
+      objectHolder({ value }, { value: "integer" }),
     );
 
     expect(sort({ value: "asc" }, holders).map((h) => h.value)).toEqual([
@@ -164,7 +164,7 @@ describe("createOrderBySortFns", () => {
     // smallest value, so it leads ascending and trails descending -- matching
     // what Workshop shows for a blank cell on a numeric column.
     const holders = ["10", "", "9"].map((amount) =>
-      objectHolder({ amount }, { amount: "decimal" })
+      objectHolder({ amount }, { amount: "decimal" }),
     );
 
     expect(sort({ amount: "asc" }, holders).map((h) => h.amount)).toEqual([
@@ -181,7 +181,7 @@ describe("createOrderBySortFns", () => {
 
   it("sorts interface lists by a regular decimal property numerically", () => {
     const holders = ["10", "9", "100"].map((amount) =>
-      interfaceHolder({ amount }, { amount: "decimal" })
+      interfaceHolder({ amount }, { amount: "decimal" }),
     );
 
     expect(sort({ amount: "asc" }, holders).map((h) => h.amount)).toEqual([
@@ -196,7 +196,7 @@ describe("createOrderBySortFns", () => {
     // while interfaceDef.properties is keyed "a.amount"; type resolution must
     // re-qualify so numeric (not lexicographic) comparison still engages.
     const holders = ["10", "9", "100"].map((amount) =>
-      interfaceHolder({ amount }, { "a.amount": "decimal" }, "a.IFoo")
+      interfaceHolder({ amount }, { "a.amount": "decimal" }, "a.IFoo"),
     );
 
     expect(sort({ amount: "asc" }, holders).map((h) => h.amount)).toEqual([
@@ -214,13 +214,13 @@ describe("createOrderBySortFns", () => {
  */
 function objectHolder(
   values: Record<string, unknown>,
-  propertyTypes: Record<string, string> = {}
+  propertyTypes: Record<string, string> = {},
 ): ObjectHolder {
   const holder: { [k: string]: unknown } & { [ObjectDefRef]?: unknown } = {
     ...values,
     [ObjectDefRef]: {
       properties: Object.fromEntries(
-        Object.entries(propertyTypes).map(([name, type]) => [name, { type }])
+        Object.entries(propertyTypes).map(([name, type]) => [name, { type }]),
       ),
     },
   };
@@ -236,7 +236,7 @@ function objectHolder(
 function interfaceHolder(
   values: Record<string, unknown>,
   interfaceProperties: Record<string, string>,
-  apiName: string = "IFoo"
+  apiName: string = "IFoo",
 ): InterfaceHolder {
   const holder: { [k: string]: unknown } & { [InterfaceDefRef]?: unknown } = {
     ...values,
@@ -246,7 +246,7 @@ function interfaceHolder(
         Object.entries(interfaceProperties).map(([name, type]) => [
           name,
           { type },
-        ])
+        ]),
       ),
     },
   };
@@ -259,7 +259,7 @@ function interfaceHolder(
  * aggregation, which is delivered as a JS number anyway).
  */
 function derivedMetadata(
-  types: Record<string, ObjectMetadata.Property | undefined>
+  types: Record<string, ObjectMetadata.Property | undefined>,
 ): DerivedPropertyRuntimeMetadata {
   return Object.fromEntries(
     Object.entries(types).map(([name, selectedOrCollectedPropertyType]) => [
@@ -268,17 +268,17 @@ function derivedMetadata(
         selectedOrCollectedPropertyType,
         definition: { type: "selection" } as DerivedPropertyDefinition,
       },
-    ])
+    ]),
   );
 }
 
 function sort(
   orderBy: Record<string, "asc" | "desc">,
   holders: Holder[],
-  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
+  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
 ): Holder[] {
   const sortFns = createOrderBySortFns(
-    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>
+    orderBy as Canonical<Record<string, "asc" | "desc" | undefined>>,
   );
   return [...holders].sort((a, b) => {
     for (const fn of sortFns) {

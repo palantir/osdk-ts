@@ -32,7 +32,7 @@ export function useClientMetrics(monitorStore: MonitorStore): ClientMetrics {
   const store = monitorStore.getMetricsStore();
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

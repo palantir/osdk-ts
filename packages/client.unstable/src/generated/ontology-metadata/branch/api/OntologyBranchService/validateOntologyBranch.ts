@@ -31,12 +31,12 @@ import type {
 export async function validateOntologyBranch(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_ValidateOntologyBranchRequest
+  request: _branch_api_ValidateOntologyBranchRequest,
 ): Promise<_branch_api_ValidateOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/validate`,
     "POST",
-    request
+    request,
   );
 }

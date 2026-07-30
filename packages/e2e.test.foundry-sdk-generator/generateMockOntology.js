@@ -26,7 +26,7 @@ import { $ } from "execa";
 
 async function setup() {
   const dir = await fs.mkdtemp(
-    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-")
+    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
   );
 
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), undefined);
@@ -113,7 +113,7 @@ async function setup() {
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "build",
-    "codegen"
+    "codegen",
   );
 
   await fs.rm(finalOutDir, { recursive: true, force: true });

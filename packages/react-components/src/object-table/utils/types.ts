@@ -179,7 +179,7 @@ export type EditFieldConfig<TData = unknown> = {
     fieldComponent: K;
     getFieldComponentProps: (
       object: TData,
-      edits?: Record<string, CellEditInfo<TData, unknown>>
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
     ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

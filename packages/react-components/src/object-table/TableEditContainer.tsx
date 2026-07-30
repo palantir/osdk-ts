@@ -84,7 +84,7 @@ export function TableEditContainer<TData extends RowData>({
           {hasEdits && (
             <div className={styles.modificationCount}>
               {labels.editFooterModificationCount(
-                cellEdits ? Object.keys(cellEdits).length : 0
+                cellEdits ? Object.keys(cellEdits).length : 0,
               )}
             </div>
           )}

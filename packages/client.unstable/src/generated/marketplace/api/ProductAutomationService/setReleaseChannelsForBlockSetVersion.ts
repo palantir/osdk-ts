@@ -32,12 +32,12 @@ export async function setReleaseChannelsForBlockSetVersion(
   marketplaceRid: _api_MarketplaceRid,
   blockSetId: _api_BlockSetId,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_SetReleaseChannelsForBlockSetVersionRequest
+  request: _api_SetReleaseChannelsForBlockSetVersionRequest,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/automation/product/${marketplaceRid}/${blockSetId}/release/channels/${blockSetVersionId}`,
     "POST",
-    request
+    request,
   );
 }

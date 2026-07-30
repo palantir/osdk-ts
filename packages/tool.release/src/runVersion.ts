@@ -110,7 +110,7 @@ export async function runVersion({
 
   if (branch.startsWith("changeset-release/")) {
     throw new FailedWithUserMessage(
-      "This branch is already a version branch, aborting"
+      "This branch is already a version branch, aborting",
     );
   }
 
@@ -125,7 +125,7 @@ export async function runVersion({
 
   if (!isMainBranch && !isReleaseBranch) {
     throw new FailedWithUserMessage(
-      "You must use a main or release branch.\n\n(You can fake it by setting the env variable PRETEND_BRANCH"
+      "You must use a main or release branch.\n\n(You can fake it by setting the env variable PRETEND_BRANCH",
     );
   }
 
@@ -171,7 +171,7 @@ export async function runVersion({
             ? await getCurrentCommitId({ cwd })
             : undefined,
         }
-      : undefined
+      : undefined,
   );
 
   mutateReleasePlan(cwd, releasePlan, isMainBranch ? "main" : "release branch");
@@ -180,7 +180,7 @@ export async function runVersion({
     const versions = await packageVersionsOrEmptySet(release.name);
     if (versions.has(release.newVersion) && release.type !== "none") {
       throw new FailedWithUserMessage(
-        `The version ${release.newVersion} of ${release.name} is already published on npm`
+        `The version ${release.newVersion} of ${release.name} is already published on npm`,
       );
     }
   }
@@ -189,7 +189,7 @@ export async function runVersion({
     releasePlan,
     packages,
     releaseConfig,
-    snapshot
+    snapshot,
   );
 
   if (touchedFiles.length === 0) {
@@ -200,7 +200,7 @@ export async function runVersion({
 
   const changedPackagesInfo = await getSortedChangedPackagesInfo(
     cwd,
-    originalVersionsByDirectory
+    originalVersionsByDirectory,
   );
 
   const mainPackageVersion = getMainPackageVersion(releasePlan.releases);
@@ -238,30 +238,30 @@ export async function runVersion({
       finalPrTitle,
       prBody,
       branch,
-      versionBranch
+      versionBranch,
     );
   }
 }
 
 async function getSortedChangedPackagesInfo(
   cwd: string,
-  oldVersionsByDirectory: Map<string, string>
+  oldVersionsByDirectory: Map<string, string>,
 ) {
   const changedPackages = await getChangedPackages(cwd, oldVersionsByDirectory);
   const changedPackagesInfo = await Promise.all(
     changedPackages.map(async (pkg) => {
       const changelogContents = await fs.promises.readFile(
         path.join(pkg.dir, "CHANGELOG.md"),
-        "utf8"
+        "utf8",
       );
 
       const entry = getChangelogEntry(
         changelogContents,
-        pkg.packageJson.version
+        pkg.packageJson.version,
       );
       if (!entry) {
         throw new Error(
-          "Some how we bumped versions without the version matching"
+          "Some how we bumped versions without the version matching",
         );
       }
       return {
@@ -270,7 +270,7 @@ async function getSortedChangedPackagesInfo(
         content: entry.content,
         header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
       };
-    })
+    }),
   );
 
   return changedPackagesInfo.filter((x) => x).sort(sortChangelogEntries);
@@ -279,7 +279,7 @@ async function getSortedChangedPackagesInfo(
 const MAIN_PACKAGES = ["@osdk/client", "@osdk/api"] as const;
 
 function getMainPackageVersion(
-  releases: ReadonlyArray<ComprehensiveRelease>
+  releases: ReadonlyArray<ComprehensiveRelease>,
 ): string | undefined {
   for (const name of MAIN_PACKAGES) {
     const release = releases.find((r) => r.name === name && r.type !== "none");
@@ -294,7 +294,7 @@ export async function getExistingPr(
   repo: string,
   versionBranch: string,
   branch: string,
-  octokit: Octokit
+  octokit: Octokit,
 ): Promise<
   Awaited<
     ReturnType<Octokit["rest"]["search"]["issuesAndPullRequests"]>

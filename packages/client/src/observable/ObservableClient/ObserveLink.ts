@@ -98,6 +98,6 @@ export interface ObserveLinks {
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]
       >
-    >
+    >,
   ): Unsubscribable;
 }

@@ -290,7 +290,7 @@ function AnnotationSidebarItem({
 
   const handleMouseEnter = useCallback(
     () => onHover(annotation.id),
-    [onHover, annotation.id]
+    [onHover, annotation.id],
   );
 
   const handleMouseLeave = useCallback(() => onHover(null), [onHover]);
@@ -302,7 +302,7 @@ function AnnotationSidebarItem({
         ? "var(--osdk-palette-blue-100, #e3f2fd)"
         : "transparent",
     }),
-    [isHovered]
+    [isHovered],
   );
 
   return (
@@ -348,7 +348,7 @@ function AnnotationSidebar({
 
 function AnnotationExplorerDemo({ src }: { src: string }): React.ReactElement {
   const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
-    null
+    null,
   );
 
   const visibleAnnotations = useMemo(() => {

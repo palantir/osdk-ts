@@ -44,12 +44,12 @@ import type {
 export async function setBlockSetInstallationImmutability(
   ctx: ConjureContext,
   blockSetInstallationRid: _api_BlockSetInstallationRid,
-  request: _api_SetBlockSetInstallationImmutabilityRequest
+  request: _api_SetBlockSetInstallationImmutabilityRequest,
 ): Promise<_api_SetBlockSetInstallationImmutabilityResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/block-set-installations/${blockSetInstallationRid}/set-immutability`,
     "POST",
-    request
+    request,
   );
 }

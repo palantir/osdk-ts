@@ -61,7 +61,7 @@ function ContainsTextInputInner({
       debounce((newValue: string) => {
         onChangeRef.current(newValue.length > 0 ? newValue : undefined);
       }, debounceMs),
-    [debounceMs]
+    [debounceMs],
   );
 
   useEffect(() => {
@@ -80,7 +80,7 @@ function ContainsTextInputInner({
       setLocalValue(e.target.value);
       debouncedOnChange(e.target.value);
     },
-    [debouncedOnChange]
+    [debouncedOnChange],
   );
 
   const handleClear = useCallback(() => {

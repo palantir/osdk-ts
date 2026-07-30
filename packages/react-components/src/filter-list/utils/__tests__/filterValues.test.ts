@@ -157,7 +157,7 @@ describe("filterValues", () => {
           type: "SELECT",
           selectedValues: ["a", "b"],
           isExcluding: true,
-        })
+        }),
       ).toEqual({
         type: "SELECT",
         selectedValues: [],
@@ -171,7 +171,7 @@ describe("filterValues", () => {
           type: "EXACT_MATCH",
           values: ["x"],
           isExcluding: false,
-        })
+        }),
       ).toEqual({
         type: "EXACT_MATCH",
         values: [],
@@ -185,7 +185,7 @@ describe("filterValues", () => {
           type: "CONTAINS_TEXT",
           value: "foo",
           isExcluding: true,
-        })
+        }),
       ).toEqual({
         type: "CONTAINS_TEXT",
         value: undefined,
@@ -214,7 +214,7 @@ describe("filterValues", () => {
           minValue: 1,
           maxValue: 10,
           includeNull: true,
-        })
+        }),
       ).toEqual({
         type: "NUMBER_RANGE",
         minValue: undefined,
@@ -231,7 +231,7 @@ describe("filterValues", () => {
           type: "DATE_RANGE",
           minValue: min,
           maxValue: max,
-        })
+        }),
       ).toEqual({
         type: "DATE_RANGE",
         minValue: undefined,
@@ -247,7 +247,7 @@ describe("filterValues", () => {
           startDate: new Date("2020-01-01"),
           endDate: new Date("2020-12-31"),
           isExcluding: true,
-        })
+        }),
       ).toEqual({
         type: "TIMELINE",
         startDate: undefined,
@@ -281,7 +281,7 @@ describe("filterValues", () => {
           type: "keywordSearch",
           searchTerm: "foo",
           operator: "OR",
-        })
+        }),
       ).toEqual({
         type: "keywordSearch",
         searchTerm: "",
@@ -291,7 +291,7 @@ describe("filterValues", () => {
 
     it("returns undefined for custom state (no generic cleared form)", () => {
       expect(
-        clearFilterState({ type: "custom", customState: { foo: "bar" } })
+        clearFilterState({ type: "custom", customState: { foo: "bar" } }),
       ).toBeUndefined();
     });
 
@@ -300,7 +300,7 @@ describe("filterValues", () => {
         clearFilterState({
           type: "linkedProperty",
           linkedFilterState: { type: "custom", customState: {} },
-        })
+        }),
       ).toBeUndefined();
     });
   });
@@ -312,7 +312,7 @@ describe("filterValues", () => {
           type: "SELECT",
           selectedValues: ["a"],
           isExcluding: false,
-        })
+        }),
       ).toEqual({
         type: "SELECT",
         selectedValues: ["a"],
@@ -326,7 +326,7 @@ describe("filterValues", () => {
           type: "EXACT_MATCH",
           values: ["x"],
           isExcluding: true,
-        })
+        }),
       ).toEqual({
         type: "EXACT_MATCH",
         values: ["x"],
@@ -343,7 +343,7 @@ describe("filterValues", () => {
             selectedValues: ["a"],
             isExcluding: false,
           },
-        })
+        }),
       ).toEqual({
         type: "linkedProperty",
         linkedFilterState: {
@@ -356,10 +356,10 @@ describe("filterValues", () => {
 
     it("returns undefined for state shapes that do not support excluding", () => {
       expect(
-        toggleIsExcluding({ type: "NUMBER_RANGE", minValue: 1, maxValue: 5 })
+        toggleIsExcluding({ type: "NUMBER_RANGE", minValue: 1, maxValue: 5 }),
       ).toBeUndefined();
       expect(
-        toggleIsExcluding({ type: "TOGGLE", enabled: true })
+        toggleIsExcluding({ type: "TOGGLE", enabled: true }),
       ).toBeUndefined();
     });
 
@@ -382,19 +382,19 @@ describe("filterValues", () => {
         getSelectedCount({
           type: "SELECT",
           selectedValues: ["a", "b", "c"],
-        })
+        }),
       ).toBe(3);
     });
 
     it("returns the length of EXACT_MATCH.values", () => {
       expect(
-        getSelectedCount({ type: "EXACT_MATCH", values: ["x", "y"] })
+        getSelectedCount({ type: "EXACT_MATCH", values: ["x", "y"] }),
       ).toBe(2);
     });
 
     it("returns 0 for state shapes without a discrete selection list", () => {
       expect(
-        getSelectedCount({ type: "NUMBER_RANGE", minValue: 1, maxValue: 10 })
+        getSelectedCount({ type: "NUMBER_RANGE", minValue: 1, maxValue: 10 }),
       ).toBe(0);
       expect(getSelectedCount({ type: "CONTAINS_TEXT", value: "foo" })).toBe(0);
       expect(getSelectedCount({ type: "TOGGLE", enabled: true })).toBe(0);

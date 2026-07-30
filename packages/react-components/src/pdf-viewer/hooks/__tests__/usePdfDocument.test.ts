@@ -225,7 +225,7 @@ describe("usePdfDocument", () => {
 
     const { result, rerender } = renderHook(
       ({ src }: { src: string }) => usePdfDocument(src),
-      { initialProps: { src: "first.pdf" } }
+      { initialProps: { src: "first.pdf" } },
     );
 
     await waitFor(() => {

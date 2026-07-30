@@ -33,7 +33,7 @@ export interface FieldBridgeProps {
   portalContainer?: PortalContainer;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
-  ["RADIO_BUTTONS", "SWITCH"]
+  ["RADIO_BUTTONS", "SWITCH"],
 );
 
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
@@ -73,7 +73,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
           onBlur();
         }
       },
-      [onChange, onBlur, onExternalChange, fieldDef.fieldKey, isSelectLike]
+      [onChange, onBlur, onExternalChange, fieldDef.fieldKey, isSelectLike],
     );
 
     // Ignore blur events where focus stays within the field container
@@ -86,7 +86,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         }
         onBlur();
       },
-      [onBlur]
+      [onBlur],
     );
 
     return (
@@ -104,5 +104,5 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         portalContainer={portalContainer}
       />
     );
-  }
+  },
 );

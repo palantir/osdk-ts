@@ -31,9 +31,9 @@ export async function promptWidgetSetRid({
     }
     widgetSet = await consola.prompt(
       `Enter the resource identifier (rid) for your widget set:\n${italic(
-        "(Example: ri.widgetregistry..widget-set.1c66b352-4e00-40d2-995d-061c9d533ace)"
+        "(Example: ri.widgetregistry..widget-set.1c66b352-4e00-40d2-995d-061c9d533ace)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
   return widgetSet;

@@ -66,7 +66,7 @@ export function useCbacMarkingRestrictions({
 
   const stableMarkingIds = React.useMemo(
     () => markingIds,
-    [JSON.stringify(markingIds)]
+    [JSON.stringify(markingIds)],
   );
 
   const enabled = stableMarkingIds.length > 0 && externalEnabled;
@@ -94,7 +94,7 @@ export function useCbacMarkingRestrictions({
       disallowedMarkings: query.data.disallowedMarkings.map(String),
       impliedMarkings: query.data.impliedMarkings.map(String),
       requiredMarkings: query.data.requiredMarkings.map((group) =>
-        group.map(String)
+        group.map(String),
       ),
       userSatisfiesMarkings: query.data.userSatisfiesMarkings,
       isValid: query.data.isValid,

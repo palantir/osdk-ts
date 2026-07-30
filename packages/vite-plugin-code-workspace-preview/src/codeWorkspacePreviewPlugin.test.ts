@@ -28,7 +28,7 @@ import { installReporter, REPORTER_SCRIPT } from "./reporterScript.js";
 
 function runTransform(
   plugin: Plugin,
-  mode: string | undefined
+  mode: string | undefined,
 ): IndexHtmlTransformResult | undefined {
   const hook = plugin.transformIndexHtml;
   if (typeof hook !== "function") {
@@ -155,7 +155,7 @@ describe("installReporter", () => {
         kind: "error",
         message: "boom",
         stack: "trace",
-      })
+      }),
     );
   });
 
@@ -172,7 +172,7 @@ describe("installReporter", () => {
         source: "osdk-preview",
         kind: "error",
         message: "Failed to load script: /assets/chunk.js",
-      })
+      }),
     );
   });
 
@@ -202,7 +202,7 @@ describe("installReporter", () => {
         kind: "unhandledrejection",
         message: "nope",
         stack: "trace",
-      })
+      }),
     );
   });
 });

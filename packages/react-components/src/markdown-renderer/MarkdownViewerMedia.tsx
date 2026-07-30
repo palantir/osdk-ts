@@ -51,7 +51,7 @@ export function MarkdownViewerMedia({
 
   const rootClassName = classnames(
     styles.container,
-    markdownRendererProps.className
+    markdownRendererProps.className,
   );
 
   return (

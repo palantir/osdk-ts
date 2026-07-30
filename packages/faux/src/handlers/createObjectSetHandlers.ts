@@ -23,7 +23,7 @@ import { OntologiesV2 } from "../mock/index.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
-  fauxFoundry: FauxFoundry
+  fauxFoundry: FauxFoundry,
 ): Array<RequestHandler> => [
   /**
    * Load ObjectSet Objects
@@ -46,7 +46,7 @@ export const createObjectSetHandlers = (
       const objects = getObjectsFromSet(ds, body.objectSet, undefined);
 
       return aggregateObjects(objects, body.aggregation, body.groupBy);
-    }
+    },
   ),
 
   /**
@@ -60,7 +60,7 @@ export const createObjectSetHandlers = (
         .getObjectsFromObjectSet(await request.json());
 
       const objectApiNames = new Set(
-        pagedResponse.data.map((o) => o.__apiName)
+        pagedResponse.data.map((o) => o.__apiName),
       );
 
       return {
@@ -71,6 +71,6 @@ export const createObjectSetHandlers = (
         ...pagedResponse,
         propertySecurities: [],
       };
-    }
+    },
   ),
 ];

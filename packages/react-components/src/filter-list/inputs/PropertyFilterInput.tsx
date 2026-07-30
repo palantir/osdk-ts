@@ -226,5 +226,5 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const PropertyFilterInput: typeof PropertyFilterInputInner = memo(
-  PropertyFilterInputInner
+  PropertyFilterInputInner,
 ) as typeof PropertyFilterInputInner;

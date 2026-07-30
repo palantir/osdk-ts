@@ -28,7 +28,7 @@ describe("OsdkContext", () => {
     });
 
     expect(() =>
-      result.current.canonicalizeWhereClause({} as never)
+      result.current.canonicalizeWhereClause({} as never),
     ).toThrowError(MISSING_PROVIDER_MESSAGE);
   });
 
@@ -39,7 +39,7 @@ describe("OsdkContext", () => {
     });
 
     expect(() => result.current({} as never)).toThrowError(
-      MISSING_PROVIDER_MESSAGE
+      MISSING_PROVIDER_MESSAGE,
     );
   });
 });

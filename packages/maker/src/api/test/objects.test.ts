@@ -40,7 +40,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`
+      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^[a-zA-Z][a-zA-Z0-9]{0,99}$/u.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -64,7 +64,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Title property fizz is not defined on object foo]`
+      `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
     );
 
     expect(() => {
@@ -77,7 +77,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`
+      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
     );
 
     expect(() => {
@@ -101,7 +101,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`
+      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
     );
 
     expect(() => {
@@ -129,7 +129,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`
+      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
     );
   });
 
@@ -170,7 +170,7 @@ describe("Object Types", () => {
             propertyMapping: [],
           },
         ],
-      })
+      }),
     ).not.toThrow();
   });
 
@@ -220,9 +220,9 @@ describe("Object Types", () => {
             ],
           },
         ],
-      })
+      }),
     ).toThrowError(
-      /Object Property Mapped: missingSpt[\s\S]*Object Property Mapped: missingIdp/u
+      /Object Property Mapped: missingSpt[\s\S]*Object Property Mapped: missingIdp/u,
     );
   });
 
@@ -1452,7 +1452,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string", editOnly: true } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`
+      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
     );
   });
 
@@ -1471,9 +1471,9 @@ describe("Object Types", () => {
             retentionPeriod: "bad retention period string",
           },
         ],
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`
+      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
     );
   });
 
@@ -1734,7 +1734,7 @@ describe("Object Types", () => {
       },
     });
     expect(() => dumpOntologyFullMetadata()).toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
     );
   });
   it("Derived datasources are properly defined", () => {
@@ -1809,7 +1809,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`
+      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
     );
     const flight = defineObject({
       displayName: "Flight",
@@ -4677,7 +4677,7 @@ describe("Object Types", () => {
             "ri.ontology-package.main.ontology-package.abc-123",
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 

@@ -106,7 +106,7 @@ export interface ReactRenderer {
     fiber: Fiber,
     id: string,
     path: string[],
-    value: unknown
+    value: unknown,
   ) => void;
   overrideProps?: (fiber: Fiber, path: string[], value: unknown) => void;
   reconcilerVersion: string;
@@ -124,7 +124,7 @@ export interface ReactDevToolsGlobalHook {
   onCommitFiberRoot: (
     rendererID: number,
     root: FiberRoot,
-    priority: number | void
+    priority: number | void,
   ) => void;
   onCommitFiberUnmount: (rendererID: number, fiber: Fiber) => void;
   onPostCommitFiberRoot: (rendererID: number, root: FiberRoot) => void;

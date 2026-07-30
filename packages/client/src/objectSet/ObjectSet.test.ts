@@ -167,10 +167,10 @@ describe("ObjectSet", () => {
 
     expect(objectSet2Results.data).toHaveLength(1);
     expect(subtractedObjectSetResults.data).toHaveLength(
-      objectSetResults.data.length - objectSet2Results.data.length
+      objectSetResults.data.length - objectSet2Results.data.length,
     );
     expect(
-      subtractedObjectSetResults.data.find((x) => x.$primaryKey === 50030)
+      subtractedObjectSetResults.data.find((x) => x.$primaryKey === 50030),
     ).toBeUndefined();
   });
 
@@ -215,7 +215,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
-      stubData.employee1.employeeId
+      stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
@@ -225,7 +225,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(Employee, stubData.employee1.__rid);
     expectTypeOf<typeof employee>().toExtend<
       Osdk<Employee, PropertyKeys<Employee>>
@@ -235,11 +235,11 @@ describe("ObjectSet", () => {
 
   it("allows fetching page of rids with experimental function", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(
       Employee,
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {}
+      {},
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
@@ -250,10 +250,10 @@ describe("ObjectSet", () => {
 
   it("allows fetching a page of rids without a type specifier", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRidNoType(
       [stubData.employee1.__rid, stubData.employee2.__rid],
-      {}
+      {},
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<
@@ -270,7 +270,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
     ).fetchOneByRid(Employee, stubData.employee2.__rid, {
       $select: ["fullName"],
     });
@@ -280,11 +280,11 @@ describe("ObjectSet", () => {
 
   it("allows fetching by rid with experimental function, with select 2", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(
       Employee,
       [stubData.employee2.__rid, stubData.employee3.__rid],
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employees>().toExtend<
       FetchPageResult<Employee, "fullName", boolean, any, any>
@@ -295,7 +295,7 @@ describe("ObjectSet", () => {
 
   it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
     const employees = await client(
-      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
     ).fetchPageByRid(Employee, [stubData.unsecuredEmployee.__rid], {
       $loadPropertySecurityMetadata: true,
     });
@@ -320,11 +320,11 @@ describe("ObjectSet", () => {
     >();
 
     expectTypeOf(
-      employees.data[0].$propertySecurities.favoriteRestaurants
+      employees.data[0].$propertySecurities.favoriteRestaurants,
     ).toExtend<PropertySecurity[][]>();
 
     expect(employees.data[0].$primaryKey).toBe(
-      stubData.unsecuredEmployee.__primaryKey
+      stubData.unsecuredEmployee.__primaryKey,
     );
   });
 
@@ -370,7 +370,7 @@ describe("ObjectSet", () => {
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
     const employeeResult = await client(Employee).fetchOneWithErrors(
-      stubData.employee1.employeeId
+      stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employeeResult>().toExtend<
       Result<Osdk<Employee, PropertyKeys<Employee>>>
@@ -385,7 +385,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
     const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employee>().branded.toEqualTypeOf<
       Osdk<Employee, "fullName">
@@ -396,7 +396,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
     const employeeResult = await client(Employee).fetchOneWithErrors(
       stubData.employee1.employeeId,
-      { $select: ["fullName"] }
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>
@@ -983,7 +983,7 @@ describe("ObjectSet", () => {
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
       expect(objectWithRdp.derivedPropertyName).toBe(
-        stubData.employee2.__primaryKey
+        stubData.employee2.__primaryKey,
       );
 
       const objectWithUndefinedRdp = await client(Employee)
@@ -1022,7 +1022,7 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `
+      `,
       );
 
       expectTypeOf(objectWithRdp.geoSelectDp).toEqualTypeOf<
@@ -1117,7 +1117,7 @@ describe("ObjectSet", () => {
           "fetchMetadata": [Function],
           "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
         }
-      `
+      `,
       );
     });
     it("correctly deserializes count", async () => {
@@ -1149,7 +1149,7 @@ describe("ObjectSet", () => {
       const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
         "textQuery",
         7,
-        "skillSetEmbedding"
+        "skillSetEmbedding",
       );
 
       const filteredObjectSet = await nearestNeighborsObjectSet
@@ -1335,21 +1335,21 @@ describe("ObjectSet", () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, {});
       expect(
-        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
       ).toBe(false);
     });
     it("properly generates fetch request when $snapshot is true", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, { $snapshot: true });
       expect(
-        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot
+        (getLastObjectSetRequest(fetchFn) as { snapshot: boolean }).snapshot,
       ).toBe(true);
     });
     it("strips $snapshot from the wire request body", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, Employee, { $snapshot: true });
       expect(
-        getLastObjectSetRequest(fetchFn) as { snapshot: boolean }
+        getLastObjectSetRequest(fetchFn) as { snapshot: boolean },
       ).not.toHaveProperty("$snapshot");
     });
   });
@@ -1362,7 +1362,7 @@ describe("ObjectSet", () => {
           stubData.employee1,
           "officeLink",
           stubData.nycOffice,
-          "occupants"
+          "occupants",
         );
     });
 

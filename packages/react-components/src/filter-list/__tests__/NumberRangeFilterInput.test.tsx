@@ -51,12 +51,12 @@ describe("NumberRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />
+      />,
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     const histogramCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy != null
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy != null,
     );
     expect(histogramCall).toBeDefined();
     expect(histogramCall![1]).toHaveProperty("where", whereClause);
@@ -74,12 +74,12 @@ describe("NumberRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />
+      />,
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     const nullCountCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null,
     );
     expect(nullCountCall).toBeDefined();
     const nullCountWhere = nullCountCall![1].where;
@@ -100,12 +100,12 @@ describe("NumberRangeFilterInput", () => {
         filterState={undefined}
         onFilterStateChanged={vi.fn()}
         whereClause={whereClause}
-      />
+      />,
     );
 
     const calls = vi.mocked(useOsdkAggregation).mock.calls;
     const nullCountCall = calls.find(
-      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null
+      (c) => (c[1].aggregate as Record<string, unknown>).$groupBy == null,
     );
     expect(nullCountCall).toBeDefined();
     // An empty {} inside $and is rejected by the aggregation API, so the

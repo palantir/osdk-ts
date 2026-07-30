@@ -150,22 +150,22 @@ const whereClauses = {
 
 whereClauses.stringStartsWithHiAndBye.$and.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.stringStartsWithBye
+  whereClauses.stringStartsWithBye,
 );
 
 whereClauses.stringStartsWithHiOrBye.$or.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.stringStartsWithBye
+  whereClauses.stringStartsWithBye,
 );
 
 whereClauses.whereStrictAndNot.$and.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.geopointIntersects
+  whereClauses.geopointIntersects,
 );
 
 whereClauses.whereStrictOrNot.$or.push(
   whereClauses.stringStartsWithHi,
-  whereClauses.geopointIntersects
+  whereClauses.geopointIntersects,
 );
 
 const cases = [
@@ -198,7 +198,7 @@ expectTypeOf<never>().toEqualTypeOf<unusedWhereClauses>;
 
 describe(objectSortaMatchesWhereClause, () => {
   it.each<[keyof typeof objects, keyof typeof whereClauses, boolean, boolean]>(
-    cases
+    cases,
   )(
     "%s | %s ==> { strict: %s, loose: %s }",
     (instanceName, whereClauseName, strictExpected, nonStrictExpected) => {
@@ -211,12 +211,12 @@ describe(objectSortaMatchesWhereClause, () => {
       expect(instance).toBeDefined();
       expect(whereClause).toBeDefined();
       expect(objectSortaMatchesWhereClause(instance, whereClause, true)).toBe(
-        strictExpected
+        strictExpected,
       );
 
       expect(objectSortaMatchesWhereClause(instance, whereClause, false)).toBe(
-        nonStrictExpected
+        nonStrictExpected,
       );
-    }
+    },
   );
 });

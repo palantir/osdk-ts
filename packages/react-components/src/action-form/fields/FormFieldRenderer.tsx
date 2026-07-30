@@ -85,11 +85,11 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           onFieldValueChange,
           error,
           portalContainer,
-          onFieldBlur
+          onFieldBlur,
         )}
       </FormField>
     );
-  }
+  },
 );
 
 function renderFieldComponent(
@@ -98,7 +98,7 @@ function renderFieldComponent(
   onChange: (value: unknown) => void,
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
-  onFieldBlur: (() => void) | undefined
+  onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
   const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
@@ -113,7 +113,7 @@ function renderFieldComponent(
           disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
-            portalContainer
+            portalContainer,
           )}
         />
       );
@@ -163,7 +163,7 @@ function renderFieldComponent(
           disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
-            portalContainer
+            portalContainer,
           )}
           onBlur={onFieldBlur}
         />
@@ -182,7 +182,7 @@ function renderFieldComponent(
           disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
-            portalContainer
+            portalContainer,
           )}
         />
       );
@@ -256,7 +256,7 @@ function renderFieldComponent(
           disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
-            portalContainer
+            portalContainer,
           )}
         />
       );
@@ -275,7 +275,7 @@ function renderFieldComponent(
 
 function resolvePortalContainer(
   fieldComponentProps: { portalContainer?: PortalContainer },
-  formPortalContainer: PortalContainer | undefined
+  formPortalContainer: PortalContainer | undefined,
 ): PortalContainer | undefined {
   // A field-level value, including null, is an explicit override. That lets a
   // single field opt out of a form-level dialog portal when needed.
@@ -309,7 +309,7 @@ function coerceToFileValue(value: unknown): File | File[] | null {
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
 function narrowToOsdkObject(
-  value: unknown
+  value: unknown,
 ): Osdk.Instance<ObjectTypeDefinition> | null {
   if (value != null && typeof value === "object" && "$primaryKey" in value) {
     return value as Osdk.Instance<ObjectTypeDefinition>;

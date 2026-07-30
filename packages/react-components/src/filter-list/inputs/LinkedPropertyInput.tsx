@@ -106,11 +106,11 @@ function LinkedPropertyInputInner<
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
   const scoped = useMemo(
     () => narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters]
+    [objectSet, whereClause, linkedFilters],
   );
   const linkedObjectSet = useMemo(
     () => scoped.pivotTo(definition.linkName),
-    [scoped, definition.linkName]
+    [scoped, definition.linkName],
   );
   // Filtered-out rows on a linked facet compare against the raw source so
   // direct filters surface as count=0 entries on the linked side.
@@ -119,7 +119,7 @@ function LinkedPropertyInputInner<
       showFilteredOutValues
         ? objectSet.pivotTo(definition.linkName)
         : undefined,
-    [showFilteredOutValues, objectSet, definition.linkName]
+    [showFilteredOutValues, objectSet, definition.linkName],
   );
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;
@@ -143,7 +143,7 @@ function LinkedPropertyInputInner<
         linkedFilterState: innerFilterState,
       });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   const handleClearAll = useCallback(() => {
@@ -161,7 +161,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding]
+    [wrappedOnChange, isExcluding],
   );
 
   const onSingleSelectChange = useCallback(
@@ -172,21 +172,21 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding]
+    [wrappedOnChange, isExcluding],
   );
 
   const onContainsTextChange = useCallback(
     (value: string | undefined) => {
       wrappedOnChange({ type: "CONTAINS_TEXT", value });
     },
-    [wrappedOnChange]
+    [wrappedOnChange],
   );
 
   const onToggleChange = useCallback(
     (enabled: boolean) => {
       wrappedOnChange({ type: "TOGGLE", enabled });
     },
-    [wrappedOnChange]
+    [wrappedOnChange],
   );
 
   const onNumberRangeChange = useCallback(
@@ -198,7 +198,7 @@ function LinkedPropertyInputInner<
         includeNull,
       });
     },
-    [wrappedOnChange, includeNull]
+    [wrappedOnChange, includeNull],
   );
 
   const onDateRangeChange = useCallback(
@@ -210,7 +210,7 @@ function LinkedPropertyInputInner<
         includeNull,
       });
     },
-    [wrappedOnChange, includeNull]
+    [wrappedOnChange, includeNull],
   );
 
   const onExactMatchChange = useCallback(
@@ -221,7 +221,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding]
+    [wrappedOnChange, isExcluding],
   );
 
   const onDateSelectChange = useCallback(
@@ -232,7 +232,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding]
+    [wrappedOnChange, isExcluding],
   );
 
   const onMultiDateChange = useCallback(
@@ -242,7 +242,7 @@ function LinkedPropertyInputInner<
         selectedValues: dates,
       });
     },
-    [wrappedOnChange]
+    [wrappedOnChange],
   );
 
   const onTimelineChange = useCallback(
@@ -254,7 +254,7 @@ function LinkedPropertyInputInner<
         isExcluding,
       });
     },
-    [wrappedOnChange, isExcluding]
+    [wrappedOnChange, isExcluding],
   );
 
   const onNullChange = useCallback(
@@ -272,7 +272,7 @@ function LinkedPropertyInputInner<
         });
       }
     },
-    [wrappedOnChange, innerState]
+    [wrappedOnChange, innerState],
   );
 
   const content = (() => {
@@ -422,7 +422,7 @@ function LinkedPropertyInputInner<
         const selectedDates =
           innerState?.type === "SELECT"
             ? innerState.selectedValues.filter(
-                (v): v is Date => v instanceof Date
+                (v): v is Date => v instanceof Date,
               )
             : [];
         return (
@@ -468,7 +468,7 @@ function LinkedPropertyInputInner<
 }
 
 export const LinkedPropertyInput: typeof LinkedPropertyInputInner = memo(
-  LinkedPropertyInputInner
+  LinkedPropertyInputInner,
 ) as typeof LinkedPropertyInputInner;
 
 interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
@@ -504,7 +504,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues }
+    { selectedValues },
   );
 
   return (
@@ -542,14 +542,14 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () => (selectedValue != null ? [selectedValue] : []),
-    [selectedValue]
+    [selectedValue],
   );
   const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues }
+    { selectedValues },
   );
 
   return (
@@ -592,7 +592,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
     propertyKey,
     objectSet,
     emptySourceObjectSet,
-    { selectedValues }
+    { selectedValues },
   );
 
   return (
@@ -630,7 +630,7 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
     objectType,
     propertyKey,
     objectSet,
-    TEXT_TAGS_OPTIONS
+    TEXT_TAGS_OPTIONS,
   );
   return (
     <TextTagsInput
@@ -654,30 +654,30 @@ interface LinkedRangeInputProps<
 function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   objectType: Q,
   propertyKey: PropertyKeys<Q>,
-  objectSet: ObjectSet<Q>
+  objectSet: ObjectSet<Q>,
 ) {
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey as string),
-    [propertyKey]
+    [propertyKey],
   );
 
   const histogramArgs = useMemo(
     () => ({ aggregate: aggregateOptions, objectSet }),
-    [aggregateOptions, objectSet]
+    [aggregateOptions, objectSet],
   );
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    histogramArgs
+    histogramArgs,
   );
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
-    []
+    [],
   );
 
   const nullWhereClause = useMemo(
     () => createNullWhereClause<Q>(propertyKey as string),
-    [propertyKey]
+    [propertyKey],
   );
 
   const nullCountArgs = useMemo(
@@ -686,11 +686,11 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullWhereClause, nullCountAggregateOptions, objectSet]
+    [nullWhereClause, nullCountAggregateOptions, objectSet],
   );
   const { data: nullCountData, isLoading: nullLoading } = useOsdkAggregation(
     objectType,
-    nullCountArgs
+    nullCountArgs,
   );
 
   const nullCount = useMemo(() => {

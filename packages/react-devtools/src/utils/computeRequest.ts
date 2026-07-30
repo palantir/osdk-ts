@@ -31,7 +31,7 @@ export const visitComputeRequest = <T>(
     failed: (request: FailedComputeRequest) => T;
     fulfilled: (request: FulfilledComputeRequest) => T;
     fulfilledWithoutUsage: (request: FulfilledWithoutUsageComputeRequest) => T;
-  }
+  },
 ): T => {
   if (request.type === "pending") {
     return visitor.pending(request);

@@ -36,7 +36,7 @@ import {
 import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateOrModifyObjectAction(
-  defInput: ActionTypeUserDefinition
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
@@ -50,17 +50,17 @@ export function defineCreateOrModifyObjectAction(
       !def.excludedProperties?.includes(id) &&
       !isStruct(getProperty(def.objectType, id)?.type!) &&
       id !== def.objectType.primaryKeyPropertyApiName &&
-      !propertiesWithDerivedDatasources.includes(id)
+      !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
-    parameterNames.add(param)
+    parameterNames.add(param),
   );
   parameterNames.add(CREATE_OR_MODIFY_OBJECT_PARAMETER);
   const actionApiName =
     def.apiName ??
     `create-or-modify-${kebab(
-      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+      def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
     )}`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
@@ -69,13 +69,13 @@ export function defineCreateOrModifyObjectAction(
     validateParameterOrdering(
       def.parameterOrdering,
       parameterNames,
-      actionApiName
+      actionApiName,
     );
   }
   const parameters = createParameters(
     def,
     toPropertyMap(def.objectType),
-    parameterNames
+    parameterNames,
   );
   parameters.forEach((p) => {
     // create prefilled parameters for object type properties unless overridden
@@ -93,7 +93,7 @@ export function defineCreateOrModifyObjectAction(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
       id,
       convertMappingValue(value),
-    ])
+    ]),
   );
 
   return defineAction({
@@ -112,7 +112,7 @@ export function defineCreateOrModifyObjectAction(
               propertyParameters.map((p) => [
                 p,
                 { type: "parameterId", parameterId: p },
-              ])
+              ]),
             ),
             ...mappings,
           },
@@ -132,13 +132,13 @@ export function defineCreateOrModifyObjectAction(
         def,
         propertyKeys,
         parameters,
-        CREATE_OR_MODIFY_OBJECT_PARAMETER
+        CREATE_OR_MODIFY_OBJECT_PARAMETER,
       ),
     ...(def.actionLevelValidation
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),
@@ -153,7 +153,7 @@ export function defineCreateOrModifyObjectAction(
     }),
     ...(def.sections && {
       sections: Object.fromEntries(
-        def.sections.map((section) => [section.id, section])
+        def.sections.map((section) => [section.id, section]),
       ),
     }),
     ...(def.submissionMetadata && {

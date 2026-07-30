@@ -97,19 +97,19 @@ export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.EmitEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>
+  event: WidgetMessage<C>,
 ): event is WidgetMessage.Ready {
   return event.type === "widget.ready";
 }
 
 export function isWidgetReloadMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>
+  event: WidgetMessage<C>,
 ): event is WidgetMessage.Reload {
   return event.type === "widget.reload";
 }
 
 export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(
-  event: WidgetMessage<C>
+  event: WidgetMessage<C>,
 ): event is WidgetMessage.Resize {
   return event.type === "widget.resize";
 }
@@ -126,7 +126,7 @@ type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
       payload: infer P;
     }
       ? P
-      : never
+      : never,
   ) => void;
 } & {
   _unknown: (type: string) => void;
@@ -134,7 +134,7 @@ type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
 
 export function visitWidgetMessage<C extends WidgetConfig<C["parameters"]>>(
   message: WidgetMessage<C>,
-  visitor: WidgetMessageVisitor<C>
+  visitor: WidgetMessageVisitor<C>,
 ): void {
   const { type, payload } = message;
   const handler = visitor[type];

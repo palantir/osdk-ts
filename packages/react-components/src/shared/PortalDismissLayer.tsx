@@ -46,7 +46,7 @@ export const PortalDismissLayer: React.NamedExoticComponent<PortalDismissLayerPr
         event.preventDefault();
         onDismiss();
       },
-      [onDismiss]
+      [onDismiss],
     );
 
     return (

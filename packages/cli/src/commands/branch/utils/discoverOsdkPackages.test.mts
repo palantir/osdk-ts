@@ -33,7 +33,7 @@ const PATHS: Record<string, string> = {
 
 function deps(files: Record<string, unknown>): DiscoverDeps {
   vi.mocked(resolvePackagePath).mockImplementation(
-    (name: string) => PATHS[name] ?? null
+    (name: string) => PATHS[name] ?? null,
   );
   return {
     cwd: "/repo",
@@ -60,7 +60,7 @@ describe("discoverOsdkPackages", () => {
           name: "react",
           version: "18.0.0",
         },
-      })
+      }),
     );
     expect(found).toEqual([
       {
@@ -81,7 +81,7 @@ describe("discoverOsdkPackages", () => {
           version: "0.3.0-x",
           osdk: { branch: "ri.branch..branch.abc" },
         },
-      })
+      }),
     );
     expect(found[0].branch).toBe("ri.branch..branch.abc");
   });
@@ -108,7 +108,7 @@ describe("discoverOsdkPackages", () => {
     expect(found.map((f) => f.name)).toEqual(["@my/sdk"]);
     expect(resolvePackagePath).not.toHaveBeenCalledWith(
       "@other/sdk",
-      expect.anything()
+      expect.anything(),
     );
   });
 });

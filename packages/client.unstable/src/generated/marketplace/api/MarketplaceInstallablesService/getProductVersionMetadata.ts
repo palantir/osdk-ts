@@ -28,11 +28,11 @@ import type {
 export async function getProductVersionMetadata(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  productVersionId: _api_ProductVersionId
+  productVersionId: _api_ProductVersionId,
 ): Promise<_api_GetProductVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/product/version/${productVersionId}/productMetadata`,
-    "GET"
+    "GET",
   );
 }

@@ -94,13 +94,13 @@ export function foundryModel(options: FoundryModelOptions): LanguageModel {
  * @internal
  */
 export function _getFoundryInternal(
-  model: LanguageModel
+  model: LanguageModel,
 ): FoundryInternalHandle {
   const handle = internals.get(model);
   if (handle == null) {
     throw new Error(
       `LanguageModel(modelId=${model.modelId}, provider=${model.provider}) ` +
-        `was not constructed via foundryModel(). Only foundry-lms models are supported in v0.`
+        `was not constructed via foundryModel(). Only foundry-lms models are supported in v0.`,
     );
   }
   return handle;

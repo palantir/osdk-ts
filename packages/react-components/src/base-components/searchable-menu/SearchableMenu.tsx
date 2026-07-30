@@ -64,7 +64,7 @@ function SearchableMenuInner({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     },
-    []
+    [],
   );
 
   const handleMenuOpenChange = useCallback((open: boolean) => {
@@ -77,7 +77,7 @@ function SearchableMenuInner({
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       event.stopPropagation();
     },
-    []
+    [],
   );
 
   return (
@@ -130,7 +130,7 @@ function SearchableMenuItemRowInner({
 }): React.ReactElement {
   const handleClick = useCallback(
     () => onItemSelected(item.key),
-    [onItemSelected, item.key]
+    [onItemSelected, item.key],
   );
 
   return (

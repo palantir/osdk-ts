@@ -31,12 +31,12 @@ import { createTimeseriesAndGeotimeHandlers } from "./createTimeseriesAndGeotime
 
 export type FauxFoundryHandlersFactory = (
   baseUrl: string,
-  fauxFoundry: FauxFoundry
+  fauxFoundry: FauxFoundry,
 ) => Array<RequestHandler>;
 
 export function createFauxFoundryHandlers(
   baseUrl: string,
-  fauxFoundry: FauxFoundry
+  fauxFoundry: FauxFoundry,
 ): Array<RequestHandler> {
   return [
     createMultipassServerHandlers,

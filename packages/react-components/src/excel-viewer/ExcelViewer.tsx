@@ -39,7 +39,7 @@ export function ExcelViewer({
     error,
   } = useMediaContents<ParsedSpreadsheet>(
     media,
-    useCallback(parseSpreadsheetFromResponse, [])
+    useCallback(parseSpreadsheetFromResponse, []),
   );
 
   const rootClassName = classnames(styles.container, className);

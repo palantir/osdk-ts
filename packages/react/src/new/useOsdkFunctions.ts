@@ -89,7 +89,7 @@ export function useOsdkFunctions({
     queries.map((q) => ({
       apiName: q.queryDefinition.apiName,
       ...q.options,
-    }))
+    })),
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,9 +102,9 @@ export function useOsdkFunctions({
         : createCompositeExternalStore(
             stableQueries,
             observableClient,
-            maxConcurrent
+            maxConcurrent,
           ),
-    [enabled, maxConcurrent, observableClient, stableQueries]
+    [enabled, maxConcurrent, observableClient, stableQueries],
   );
 
   const payloads = React.useSyncExternalStore(subscribe, getSnapshot);
@@ -114,10 +114,10 @@ export function useOsdkFunctions({
       stableQueries.map((query) => async () => {
         await observableClient.invalidateFunction(
           query.queryDefinition,
-          query.options?.params as Record<string, unknown> | undefined
+          query.options?.params as Record<string, unknown> | undefined,
         );
       }),
-    [stableQueries, observableClient]
+    [stableQueries, observableClient],
   );
 
   return React.useMemo(
@@ -140,8 +140,8 @@ export function useOsdkFunctions({
             lastUpdated: payload?.lastUpdated ?? 0,
             refetch: refetches[index],
           };
-        }
+        },
       ),
-    [stableQueries, payloads, refetches]
+    [stableQueries, payloads, refetches],
   );
 }

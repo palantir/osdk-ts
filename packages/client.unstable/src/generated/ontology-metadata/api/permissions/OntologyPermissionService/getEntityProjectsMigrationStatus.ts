@@ -27,12 +27,12 @@ import type {
  */
 export async function getEntityProjectsMigrationStatus(
   ctx: ConjureContext,
-  request: _api_permissions_GetEntityProjectsMigrationStatusRequest
+  request: _api_permissions_GetEntityProjectsMigrationStatusRequest,
 ): Promise<_api_permissions_GetEntityProjectsMigrationStatusResponse> {
   return conjureFetch(
     ctx,
     `/permissions/entityProjectsMigrationStatus`,
     "PUT",
-    request
+    request,
   );
 }

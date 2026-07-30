@@ -53,7 +53,7 @@ export class ObjectSetHelper extends AbstractHelper<
     orderByCanonicalizer: OrderByCanonicalizer,
     rdpCanonicalizer: RdpCanonicalizer,
     selectCanonicalizer: SelectCanonicalizer,
-    objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer
+    objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer,
   ) {
     super(store, cacheKeys);
 
@@ -66,7 +66,7 @@ export class ObjectSetHelper extends AbstractHelper<
 
   observe(
     options: ObjectSetQueryOptions,
-    subFn: Observer<ObjectSetPayload>
+    subFn: Observer<ObjectSetPayload>,
   ): QuerySubscription<ObjectSetQuery> {
     const ret = super.observe(options, subFn);
 
@@ -77,7 +77,7 @@ export class ObjectSetHelper extends AbstractHelper<
           console.warn(
             "[@osdk/client] streamUpdates is not supported with pivotTo. " +
               "The server does not support websocket subscriptions for " +
-              "link-traversal queries. Ignoring streamUpdates."
+              "link-traversal queries. Ignoring streamUpdates.",
           );
         }
       } else if (
@@ -89,7 +89,7 @@ export class ObjectSetHelper extends AbstractHelper<
           console.warn(
             "[@osdk/client] streamUpdates is not supported with withProperties. " +
               "The server does not support websocket subscriptions for " +
-              "object sets that include derived properties. Ignoring streamUpdates."
+              "object sets that include derived properties. Ignoring streamUpdates.",
           );
         }
       } else {
@@ -107,7 +107,7 @@ export class ObjectSetHelper extends AbstractHelper<
     const objectSetCacheKey = this.cacheKeys.get<ObjectSetCacheKey>(
       "objectSet",
       baseObjectSetWire,
-      operations
+      operations,
     );
 
     return this.store.queries.get(objectSetCacheKey, () => {
@@ -117,13 +117,13 @@ export class ObjectSetHelper extends AbstractHelper<
         baseObjectSetWire,
         operations,
         objectSetCacheKey,
-        options
+        options,
       );
     });
   }
 
   private buildCanonicalizedOperations(
-    options: ObjectSetQueryOptions
+    options: ObjectSetQueryOptions,
   ): Canonical<ObjectSetOperations> {
     const operations: ObjectSetOperations = {};
 
@@ -133,27 +133,27 @@ export class ObjectSetHelper extends AbstractHelper<
 
     if (options.withProperties) {
       operations.withProperties = this.rdpCanonicalizer.canonicalize(
-        options.withProperties
+        options.withProperties,
       );
     }
 
     if (options.union && options.union.length > 0) {
       operations.union = this.objectSetArrayCanonicalizer.canonicalizeUnion(
-        options.union.map((os) => JSON.stringify(getWireObjectSet(os)))
+        options.union.map((os) => JSON.stringify(getWireObjectSet(os))),
       );
     }
 
     if (options.intersect && options.intersect.length > 0) {
       operations.intersect =
         this.objectSetArrayCanonicalizer.canonicalizeIntersect(
-          options.intersect.map((os) => JSON.stringify(getWireObjectSet(os)))
+          options.intersect.map((os) => JSON.stringify(getWireObjectSet(os))),
         );
     }
 
     if (options.subtract && options.subtract.length > 0) {
       operations.subtract =
         this.objectSetArrayCanonicalizer.canonicalizeSubtract(
-          options.subtract.map((os) => JSON.stringify(getWireObjectSet(os)))
+          options.subtract.map((os) => JSON.stringify(getWireObjectSet(os))),
         );
     }
 
@@ -163,7 +163,7 @@ export class ObjectSetHelper extends AbstractHelper<
 
     if (options.orderBy) {
       operations.orderBy = this.orderByCanonicalizer.canonicalize(
-        options.orderBy
+        options.orderBy,
       );
     }
 

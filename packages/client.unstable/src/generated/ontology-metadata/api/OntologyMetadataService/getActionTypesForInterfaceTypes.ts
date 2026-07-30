@@ -32,12 +32,12 @@ import type {
  */
 export async function getActionTypesForInterfaceTypes(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForInterfaceTypesRequest
+  request: _api_GetActionTypesForInterfaceTypesRequest,
 ): Promise<_api_GetActionTypesForInterfaceTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForInterfaceTypes`,
     "PUT",
-    request
+    request,
   );
 }

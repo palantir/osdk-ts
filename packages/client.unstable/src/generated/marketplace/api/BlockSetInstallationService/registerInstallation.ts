@@ -35,7 +35,7 @@ import type {
  */
 export async function registerInstallation(
   ctx: ConjureContext,
-  request: _api_RegisterInstallationRequest
+  request: _api_RegisterInstallationRequest,
 ): Promise<_api_RegisterInstallationResponse> {
   return conjureFetch(ctx, `/block-set-installation/register`, "POST", request);
 }

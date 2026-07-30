@@ -35,13 +35,13 @@ import type { DeleteReleaseMetadataForBlockSetResponse as _release_api_DeleteRel
 export async function deleteReleaseMetadataForBlockSet(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetId: _api_BlockSetId
+  blockSetId: _api_BlockSetId,
 ): Promise<_release_api_DeleteReleaseMetadataForBlockSetResponse> {
   return conjureFetch(
     ctx,
     `/releases/deleteReleaseMetadataForBlockSet`,
     "DELETE",
     undefined,
-    { marketplaceRid, blockSetId }
+    { marketplaceRid, blockSetId },
   );
 }

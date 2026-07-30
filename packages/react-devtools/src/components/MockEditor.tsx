@@ -359,7 +359,7 @@ export function createMatcherFromPrimitive(primitive: SelectedPrimitive): {
 
 export function createResponseFromConfig(
   primitive: SelectedPrimitive,
-  mockData: unknown
+  mockData: unknown,
 ):
   | {
       type: "action";
@@ -459,7 +459,7 @@ export const MockItem: React.FC<MockItemProps> = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 MockItem.displayName = "MockItem";

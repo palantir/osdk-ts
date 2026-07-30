@@ -28,12 +28,12 @@ import type { VersionedApplication } from "../VersionedApplication.js";
 export async function updateApplicationV3(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: UpdateApplicationRequestV3
+  request: UpdateApplicationRequestV3,
 ): Promise<VersionedApplication> {
   return conjureFetch(
     ctx,
     `/applications/v3/${applicationRid}`,
     "PUT",
-    request
+    request,
   );
 }

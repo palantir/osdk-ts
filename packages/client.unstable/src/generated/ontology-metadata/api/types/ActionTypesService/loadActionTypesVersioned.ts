@@ -28,7 +28,7 @@ import type {
  */
 export async function loadActionTypesVersioned(
   ctx: ConjureContext,
-  request: _api_ActionTypeLoadVersionedRequest
+  request: _api_ActionTypeLoadVersionedRequest,
 ): Promise<_api_ActionTypeLoadVersionedResponse> {
   return conjureFetch(ctx, `/actions/types/load/versioned`, "POST", request);
 }

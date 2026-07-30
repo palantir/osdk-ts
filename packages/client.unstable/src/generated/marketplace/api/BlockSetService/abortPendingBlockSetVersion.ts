@@ -31,11 +31,11 @@ import type {
 export async function abortPendingBlockSetVersion(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/version/${blockSetVersionId}/abort`,
-    "POST"
+    "POST",
   );
 }

@@ -26,12 +26,12 @@ import type {
  */
 export async function batchGetTaggedDependentsForOntologyEntityIdentifier(
   ctx: ConjureContext,
-  request: _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest
+  request: _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
 ): Promise<_api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse> {
   return conjureFetch(
     ctx,
     `/provenance/batchGetTaggedDependentsForOntologyEntityIdentifier`,
     "PUT",
-    request
+    request,
   );
 }

@@ -46,7 +46,7 @@ export interface BaseHolder {
   readonly $propertySecurities: PropertySecurity[];
 
   readonly $as: (
-    newDef: string | ObjectOrInterfaceDefinition
+    newDef: string | ObjectOrInterfaceDefinition,
   ) => ObjectHolder | InterfaceHolder;
 
   readonly $clone: (newProps?: Record<string, any>) => this;
@@ -59,7 +59,7 @@ export interface BaseHolder {
     PropertyApiName extends string,
   >(
     propertyApiName: PropertyApiName,
-    options?: FormatPropertyOptions
+    options?: FormatPropertyOptions,
   ) => string | undefined;
 
   // [key: `$$${string}`]: any;

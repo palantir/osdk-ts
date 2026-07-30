@@ -28,7 +28,7 @@ import type {
  */
 export async function bulkGetMonitors(
   ctx: ConjureContext,
-  request: _api_registry_BulkGetMonitorsRequest
+  request: _api_registry_BulkGetMonitorsRequest,
 ): Promise<_api_registry_BulkGetMonitorsResponse> {
   return conjureFetch(ctx, `/registry/v0/monitors-getMonitors`, "PUT", request);
 }

@@ -19,13 +19,13 @@
 
 // Example: uploadMedia
 
+import type { MediaReference } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import type { MediaReference } from "@osdk/api";
 import { client } from "./client.js";
 // To upload media with 2.x, it has to be linked to an Action call
 async function createMediaReference() {

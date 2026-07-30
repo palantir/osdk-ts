@@ -35,7 +35,7 @@ describe("useFocusedRow", () => {
   describe("uncontrolled mode", () => {
     it("starts with no focused row", () => {
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ getRowById: () => null })
+        useFocusedRow<TestRow>({ getRowById: () => null }),
       );
       expect(result.current.focusedRowId).toBeNull();
       expect(result.current.isControlled).toBe(false);
@@ -43,7 +43,7 @@ describe("useFocusedRow", () => {
 
     it("updates internal state when setFocusedRowId is called", () => {
       const { result } = renderHook(() =>
-        useFocusedRow<TestRow>({ getRowById: () => null })
+        useFocusedRow<TestRow>({ getRowById: () => null }),
       );
       act(() => result.current.setFocusedRowId("row-1"));
       expect(result.current.focusedRowId).toBe("row-1");
@@ -56,7 +56,7 @@ describe("useFocusedRow", () => {
         useFocusedRow<TestRow>({
           onFocusedRowChanged: onChanged,
           getRowById: makeGetRowById([r1]),
-        })
+        }),
       );
       act(() => result.current.setFocusedRowId("row-1"));
       expect(onChanged).toHaveBeenCalledWith(r1);
@@ -68,7 +68,7 @@ describe("useFocusedRow", () => {
         useFocusedRow<TestRow>({
           onFocusedRowChanged: onChanged,
           getRowById: makeGetRowById([row("row-1")]),
-        })
+        }),
       );
       act(() => result.current.setFocusedRowId("row-1"));
       // Same id again — should not fire.
@@ -82,7 +82,7 @@ describe("useFocusedRow", () => {
         useFocusedRow<TestRow>({
           onFocusedRowChanged: onChanged,
           getRowById: makeGetRowById([row("row-1")]),
-        })
+        }),
       );
       act(() => result.current.setFocusedRowId("row-1"));
       act(() => result.current.setFocusedRowId(null));
@@ -98,7 +98,7 @@ describe("useFocusedRow", () => {
         useFocusedRow<TestRow>({
           focusedRowId: "row-2",
           getRowById: makeGetRowById([r2]),
-        })
+        }),
       );
       expect(result.current.focusedRowId).toBe("row-2");
       expect(result.current.isControlled).toBe(true);
@@ -109,7 +109,7 @@ describe("useFocusedRow", () => {
         useFocusedRow<TestRow>({
           focusedRowId: null,
           getRowById: () => null,
-        })
+        }),
       );
       expect(result.current.focusedRowId).toBeNull();
       expect(result.current.isControlled).toBe(true);
@@ -124,7 +124,7 @@ describe("useFocusedRow", () => {
             focusedRowId,
             getRowById: makeGetRowById([r1, r3, row("row-2")]),
           }),
-        { initialProps: { focusedRowId: "row-1" } }
+        { initialProps: { focusedRowId: "row-1" } },
       );
       act(() => result.current.setFocusedRowId("row-2"));
       // Effective id still reflects controlled prop, not internal state
@@ -142,7 +142,7 @@ describe("useFocusedRow", () => {
           focusedRowId: "row-1",
           onFocusedRowChanged: onChanged,
           getRowById: makeGetRowById([r1, r2]),
-        })
+        }),
       );
       act(() => result.current.setFocusedRowId("row-2"));
       expect(onChanged).toHaveBeenCalledWith(r2);

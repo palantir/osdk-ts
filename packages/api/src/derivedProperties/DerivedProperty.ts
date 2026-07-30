@@ -59,7 +59,7 @@ export namespace DerivedProperty {
     Q extends ObjectOrInterfaceDefinition,
     T extends SimplePropertyDef,
   > = (
-    baseObjectSet: Builder<Q, false>
+    baseObjectSet: Builder<Q, false>,
   ) =>
     | Definition<T, Q>
     | NumericPropertyDefinition<T, Q>
@@ -126,7 +126,7 @@ type Filterable<
    * @returns the builder, narrowed to objects matching the clause
    */
   readonly where: (
-    clause: WhereClause<Q>
+    clause: WhereClause<Q>,
   ) => BuilderTypeFromConstraint<Q, CONSTRAINED>;
 };
 
@@ -147,7 +147,7 @@ type Pivotable<
    * @returns a builder over the linked object type
    */
   readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L
+    type: L,
   ) => CONSTRAINED extends true
     ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
     : NonNullable<
@@ -160,33 +160,33 @@ type Pivotable<
 type Constant<Q extends ObjectOrInterfaceDefinition> = {
   readonly constant: {
     readonly double: (
-      value: number
+      value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"double", "non-nullable", "single">,
       Q
     >;
 
     readonly integer: (
-      value: number
+      value: number,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"integer", "non-nullable", "single">,
       Q
     >;
     readonly long: (
-      value: string
+      value: string,
     ) => DerivedProperty.NumericPropertyDefinition<
       SimplePropertyDef.Make<"long", "non-nullable", "single">,
       Q
     >;
 
     readonly datetime: (
-      value: string
+      value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
       Q
     >;
     readonly timestamp: (
-      value: string
+      value: string,
     ) => DerivedProperty.DatetimePropertyDefinition<
       SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
       Q
@@ -223,7 +223,7 @@ type Aggregatable<Q extends ObjectOrInterfaceDefinition> = {
         : P extends "approximatePercentile"
           ? { percentile: number }
           : never
-      : never
+      : never,
   ) => DefinitionForType<
     Q,
     V extends `${infer N}:${infer P}`
@@ -262,7 +262,7 @@ type Selectable<Q extends ObjectOrInterfaceDefinition> = {
    * @returns a derived property definition holding the property value
    */
   readonly selectProperty: <R extends PropertyKeys<Q>>(
-    propertyName: R
+    propertyName: R,
   ) => DefinitionForType<
     Q,
     SimplePropertyDef.Make<

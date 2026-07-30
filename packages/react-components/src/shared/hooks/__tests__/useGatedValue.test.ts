@@ -33,7 +33,7 @@ describe("useGatedValue", () => {
       ({ value }) => useInverseGatedValue(value, isEqual),
       {
         initialProps: { value: arr1 },
-      }
+      },
     );
 
     expect(result.current).toBe(arr1);
@@ -51,7 +51,7 @@ describe("useGatedValue", () => {
       ({ value }) => useGatedValue(value, isGateOpen),
       {
         initialProps: { value: 0 },
-      }
+      },
     );
 
     expect(result.current).toBe(0);
@@ -74,7 +74,7 @@ describe("useGatedValue", () => {
       ({ value }) => useGatedValue(value, isGateOpen),
       {
         initialProps: { value: arr1 },
-      }
+      },
     );
 
     expect(result.current).toBe(arr1);
@@ -94,7 +94,7 @@ describe("useGatedValue", () => {
       ({ value, isGateOpen }) => useGatedValue(value, isGateOpen),
       {
         initialProps: { value: 1, isGateOpen: gateOpen },
-      }
+      },
     );
 
     expect(result.current).toBe(1);

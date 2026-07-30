@@ -38,7 +38,7 @@ describe("SPTs", () => {
         type: "string",
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`
+      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
     );
   });
 
@@ -789,7 +789,7 @@ describe("SPTs", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 });

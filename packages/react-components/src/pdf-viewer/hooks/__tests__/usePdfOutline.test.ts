@@ -45,7 +45,7 @@ function createMockDocument(
       }>;
     }>;
     numPages?: number;
-  } = {}
+  } = {},
 ): PDFDocumentProxy {
   const { outline = null, pages = [], numPages = pages.length } = options;
 
@@ -68,7 +68,7 @@ function createMockDocument(
       const page = pages[pageNum - 1];
       return Promise.resolve({
         getTextContent: vi.fn(() =>
-          Promise.resolve({ items: page?.items ?? [] })
+          Promise.resolve({ items: page?.items ?? [] }),
         ),
       });
     }),
@@ -101,7 +101,7 @@ describe("usePdfOutline", () => {
             dest: [mockRef],
             items: [],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),
@@ -151,7 +151,7 @@ describe("usePdfOutline", () => {
               },
             ],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),
@@ -183,7 +183,7 @@ describe("usePdfOutline", () => {
             dest: "named-destination-1",
             items: [],
           },
-        ])
+        ]),
       ),
       getDestination: vi.fn(() => Promise.resolve([destRef])),
       getPageIndex: vi.fn(() => Promise.resolve(3)),
@@ -299,7 +299,7 @@ describe("usePdfOutline", () => {
             dest: [mockRef],
             items: [],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),
@@ -313,7 +313,7 @@ describe("usePdfOutline", () => {
         initialProps: { document: doc } as {
           document: PDFDocumentProxy | undefined;
         },
-      }
+      },
     );
 
     await waitFor(() => {

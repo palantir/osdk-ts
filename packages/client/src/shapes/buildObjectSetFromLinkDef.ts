@@ -42,14 +42,14 @@ interface LinkQueryOptions {
 export function getLinkQueryOptions(
   linkDef: ShapeLinkObjectSetDef,
   sourceObject: Osdk.Instance<ObjectOrInterfaceDefinition>,
-  pageSize?: number
+  pageSize?: number,
 ): LinkQueryOptions {
   const options: LinkQueryOptions = {};
 
   if (linkDef.where) {
     options.where = resolveSymbolBindings(
       linkDef.where,
-      sourceObject.$primaryKey
+      sourceObject.$primaryKey,
     ) as WhereClause<ObjectOrInterfaceDefinition>;
   }
 
@@ -81,7 +81,7 @@ export async function buildObjectSetFromLinkDefByType(
   client: Client,
   sourceType: ObjectOrInterfaceDefinition,
   sourcePrimaryKey: unknown,
-  linkDef: ShapeLinkObjectSetDef
+  linkDef: ShapeLinkObjectSetDef,
 ): Promise<ObjectSet<ObjectOrInterfaceDefinition>> {
   const metadata = await client[
     additionalContext
@@ -89,7 +89,7 @@ export async function buildObjectSetFromLinkDefByType(
   const pkFieldName = metadata.primaryKeyApiName;
 
   let objectSet: ObjectSet<ObjectOrInterfaceDefinition> = client(
-    sourceType as ObjectTypeDefinition
+    sourceType as ObjectTypeDefinition,
   ).where({
     [pkFieldName]: sourcePrimaryKey,
   } as WhereClause<ObjectTypeDefinition>);
@@ -107,9 +107,9 @@ export async function buildObjectSetFromLinkDefByType(
           client,
           sourceType,
           sourcePrimaryKey,
-          setOp.other
-        )
-      )
+          setOp.other,
+        ),
+      ),
     );
     for (let i = 0; i < linkDef.setOperations.length; i++) {
       const setOp = linkDef.setOperations[i];
@@ -135,7 +135,7 @@ export async function buildObjectSetFromLinkDefByType(
 }
 
 function orderByToMap(
-  orderBy: readonly ShapeLinkOrderBy[]
+  orderBy: readonly ShapeLinkOrderBy[],
 ): Record<string, "asc" | "desc"> {
   const result: Record<string, "asc" | "desc"> = {};
   for (const entry of orderBy) {
@@ -146,7 +146,7 @@ function orderByToMap(
 
 function resolveSymbolBindings(
   value: unknown,
-  sourcePrimaryKey: unknown
+  sourcePrimaryKey: unknown,
 ): unknown {
   if (isSourcePkSymbol(value)) {
     return sourcePrimaryKey;

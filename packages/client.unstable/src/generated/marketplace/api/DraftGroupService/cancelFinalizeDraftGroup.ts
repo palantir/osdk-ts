@@ -38,12 +38,12 @@ import type {
 export async function cancelFinalizeDraftGroup(
   ctx: ConjureContext,
   draftGroupRid: _api_DraftGroupRid,
-  request: _api_CancelFinalizeDraftGroupRequest
+  request: _api_CancelFinalizeDraftGroupRequest,
 ): Promise<_api_CancelFinalizeDraftGroupResponse> {
   return conjureFetch(
     ctx,
     `/draft-groups/${draftGroupRid}/finalize/cancel`,
     "POST",
-    request
+    request,
   );
 }

@@ -32,12 +32,12 @@ export async function createPackage(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
   ontologyRid: _api_OntologyRid,
-  request: _api_packages_CreatePackageRequest
+  request: _api_packages_CreatePackageRequest,
 ): Promise<_api_packages_CreatePackageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/${ontologyRid}/create`,
     "PUT",
-    request
+    request,
   );
 }

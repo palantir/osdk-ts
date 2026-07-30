@@ -26,7 +26,7 @@ import type { SdkPackageRid } from "../SdkPackageRid.js";
  */
 export async function getSdkPackage(
   ctx: ConjureContext,
-  sdkPackageRid: SdkPackageRid
+  sdkPackageRid: SdkPackageRid,
 ): Promise<SdkPackage> {
   return conjureFetch(ctx, `/sdks/packages/${sdkPackageRid}`, "GET");
 }

@@ -425,7 +425,7 @@ const headerMenuName = (columnId: string): string =>
 /** Resolve a column's `<th>` via its header-menu trigger button. */
 export async function getColumnHeader(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): Promise<HTMLElement> {
   const trigger = await root.findByRole("button", {
     name: headerMenuName(columnId),
@@ -439,10 +439,10 @@ export async function getColumnHeader(
 
 export async function openHeaderMenu(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): Promise<void> {
   await userEvent.click(
-    await root.findByRole("button", { name: headerMenuName(columnId) })
+    await root.findByRole("button", { name: headerMenuName(columnId) }),
   );
 }
 
@@ -482,7 +482,7 @@ function getSortDirection(th: HTMLElement): "asc" | "desc" | "none" {
 
 export function sortDirectionOf(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): "asc" | "desc" | "none" {
   const trigger = root.queryByRole("button", {
     name: headerMenuName(columnId),
@@ -508,7 +508,7 @@ export function getResizeHandle(th: HTMLElement): HTMLElement {
  */
 export async function dragResizeHandle(
   th: HTMLElement,
-  deltaX: number
+  deltaX: number,
 ): Promise<void> {
   const handle = getResizeHandle(th);
   const rect = handle.getBoundingClientRect();

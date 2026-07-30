@@ -27,7 +27,7 @@ function makeInput(
     baseTypeApiName?: string;
     props?: Record<string, ShapePropertyConfig>;
     derivedLinks?: readonly ShapeDerivedLinkDef[];
-  } = {}
+  } = {},
 ) {
   return {
     baseTypeApiName: overrides.baseTypeApiName ?? "Employee",
@@ -53,12 +53,12 @@ describe("computeShapeId", () => {
     const a = computeShapeId(
       makeInput({
         props: { name: { nullabilityOp: { type: "select" } } },
-      })
+      }),
     );
     const b = computeShapeId(
       makeInput({
         props: { age: { nullabilityOp: { type: "select" } } },
-      })
+      }),
     );
     expect(a).not.toBe(b);
   });
@@ -67,12 +67,12 @@ describe("computeShapeId", () => {
     const a = computeShapeId(
       makeInput({
         props: { name: { nullabilityOp: { type: "select" } } },
-      })
+      }),
     );
     const b = computeShapeId(
       makeInput({
         props: { name: { nullabilityOp: { type: "require" } } },
-      })
+      }),
     );
     expect(a).not.toBe(b);
   });
@@ -83,14 +83,14 @@ describe("computeShapeId", () => {
         props: {
           age: { nullabilityOp: { type: "withDefault", defaultValue: 0 } },
         },
-      })
+      }),
     );
     const b = computeShapeId(
       makeInput({
         props: {
           age: { nullabilityOp: { type: "withDefault", defaultValue: 18 } },
         },
-      })
+      }),
     );
     expect(a).not.toBe(b);
   });
@@ -102,7 +102,7 @@ describe("computeShapeId", () => {
           name: { nullabilityOp: { type: "select" } },
           age: { nullabilityOp: { type: "require" } },
         },
-      })
+      }),
     );
     const b = computeShapeId(
       makeInput({
@@ -110,7 +110,7 @@ describe("computeShapeId", () => {
           age: { nullabilityOp: { type: "require" } },
           name: { nullabilityOp: { type: "select" } },
         },
-      })
+      }),
     );
     expect(a).toBe(b);
   });

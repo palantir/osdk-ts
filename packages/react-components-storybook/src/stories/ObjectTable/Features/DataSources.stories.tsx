@@ -75,7 +75,7 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
     // Wait for the (MSW-mocked) rows to load.
     await canvas.findAllByText("Marketing Manager");
     await expect(
-      canvas.getAllByText("Marketing Manager").length
+      canvas.getAllByText("Marketing Manager").length,
     ).toBeGreaterThan(1);
     await expect(canvas.queryByText("Content Manager")).not.toBeInTheDocument();
   },

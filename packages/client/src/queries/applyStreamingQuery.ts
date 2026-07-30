@@ -41,7 +41,7 @@ export async function* applyStreamingQuery<
 >(
   client: MinimalClient,
   query: QD,
-  params?: P
+  params?: P,
 ): AsyncGenerator<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>,
   void,
@@ -49,7 +49,7 @@ export async function* applyStreamingQuery<
 > {
   const qd: QueryMetadata = await client.ontologyProvider.getQueryDefinition(
     query.apiName,
-    query.isFixedVersion ? query.version : undefined
+    query.isFixedVersion ? query.version : undefined,
   );
 
   if (client.flushEdits != null) {
@@ -61,7 +61,7 @@ export async function* applyStreamingQuery<
       augmentRequestContext(client, (_) => ({
         finalMethodCall: "applyStreamingQuery",
       })),
-      query
+      query,
     ),
     query.apiName,
     {
@@ -70,7 +70,7 @@ export async function* applyStreamingQuery<
         ? await remapQueryParams(
             params as { [parameterId: string]: any },
             client,
-            qd.parameters
+            qd.parameters,
           )
         : {},
       version: query.isFixedVersion ? query.version : undefined,
@@ -79,7 +79,7 @@ export async function* applyStreamingQuery<
     {
       transactionId: client.transactionId,
       preview: true,
-    }
+    },
   );
 
   if (response.body == null) {
@@ -93,7 +93,7 @@ export async function* applyStreamingQuery<
       const err = new Error(
         `${line.errorName} (${line.errorCode}) [${line.errorInstanceId}]: ${
           line.errorDescription ?? ""
-        }`
+        }`,
       );
       Object.assign(err, line);
       throw err;
@@ -102,7 +102,7 @@ export async function* applyStreamingQuery<
       client,
       qd.output,
       line.value,
-      definitions
+      definitions,
     );
     if (qd.output.type === "array" && Array.isArray(remapped)) {
       for (const item of remapped) {

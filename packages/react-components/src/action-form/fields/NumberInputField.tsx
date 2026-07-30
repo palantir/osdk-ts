@@ -52,7 +52,7 @@ export function NumberInputField({
   disabled,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
-    formatNumberForDisplay(value)
+    formatNumberForDisplay(value),
   );
 
   const prevValueRef = useRef(value);
@@ -76,7 +76,7 @@ export function NumberInputField({
       setDisplayValue(newValue);
       onChange?.(parseNumericValue(newValue));
     },
-    [onChange]
+    [onChange],
   );
 
   const applyStep = useCallback(
@@ -88,7 +88,7 @@ export function NumberInputField({
       setDisplayValue(formatted);
       onChange?.(next);
     },
-    [displayValue, onChange, step, min, max]
+    [displayValue, onChange, step, min, max],
   );
 
   const handleKeyDown = useCallback(
@@ -99,7 +99,7 @@ export function NumberInputField({
       e.preventDefault();
       applyStep(e.key === "ArrowUp" ? 1 : -1);
     },
-    [applyStep]
+    [applyStep],
   );
 
   const handleStepUp = useCallback(() => {
@@ -169,7 +169,7 @@ function formatNumberForDisplay(value: number | null): string {
 function clamp(
   value: number,
   min: number | undefined,
-  max: number | undefined
+  max: number | undefined,
 ): number {
   if (min != null && value < min) return min;
   if (max != null && value > max) return max;

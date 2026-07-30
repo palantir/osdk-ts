@@ -75,7 +75,7 @@ export function CbacBannerPopover({
 
   const appliedMarkings = React.useMemo(
     () => groupMarkingsByCategory(markingIds, categories, markings),
-    [markingIds, categories, markings]
+    [markingIds, categories, markings],
   );
 
   const resolved = resolveBannerDisplay(banner);
@@ -94,7 +94,7 @@ export function CbacBannerPopover({
       onChange(newMarkingIds);
       setIsDialogOpen(false);
     },
-    [onChange]
+    [onChange],
   );
 
   return (

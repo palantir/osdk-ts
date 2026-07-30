@@ -26,7 +26,7 @@ import type {
  */
 export async function modifyOntology(
   ctx: ConjureContext,
-  request: _api_OntologyModifyRequest
+  request: _api_OntologyModifyRequest,
 ): Promise<_api_OntologyModifyResponse> {
   return conjureFetch(ctx, `/ontology/ontology/modify`, "POST", request);
 }

@@ -35,7 +35,7 @@ function TimelineFilterInputInner({
       filterState?.type === "TIMELINE"
         ? { startDate: filterState.startDate, endDate: filterState.endDate }
         : { startDate: undefined, endDate: undefined },
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -48,7 +48,7 @@ function TimelineFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   return (

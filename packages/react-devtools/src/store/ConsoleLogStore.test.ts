@@ -107,7 +107,7 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       const reentrantEntries = entries.filter((e) =>
-        e.args.some((a) => a === "reentrant")
+        e.args.some((a) => a === "reentrant"),
       );
       expect(reentrantEntries).toHaveLength(0);
       expect(entries).toHaveLength(1);
@@ -347,7 +347,7 @@ describe("ConsoleLogStore", () => {
 
       const entries = store.getEntries();
       const hasLongTruncated = entries[0].args.some(
-        (a) => a.includes("...truncated") && a.includes("bytes")
+        (a) => a.includes("...truncated") && a.includes("bytes"),
       );
       expect(hasLongTruncated).toBe(true);
     });

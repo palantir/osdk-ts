@@ -31,7 +31,7 @@ export async function generateWithMockOntology(): Promise<void> {
 
   try {
     const dir = await fs.mkdtemp(
-      path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-")
+      path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
     );
 
     const testApp2Dir = path.join(dir, "@test-app2");
@@ -94,7 +94,7 @@ export async function generateWithMockOntology(): Promise<void> {
       stderr: "inherit",
     })`attw --pack ${path.join(
       testApp2Dir,
-      "osdk"
+      "osdk",
     )} --ignore-rules internal-resolution-error`;
 
     const finalOutDir = path.join(process.cwd(), "osdk");

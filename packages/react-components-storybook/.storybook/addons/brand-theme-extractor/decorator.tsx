@@ -88,7 +88,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       "  --osdk-input-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
       "  --osdk-input-focus-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
       "  --osdk-input-focus-shadow-error: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-intent-danger-rest);",
-      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);"
+      "  --osdk-button-shadow: inset 0 0 0 var(--osdk-surface-border-width) var(--osdk-surface-border-color-default);",
     );
 
     // Use :root:root (doubled specificity) to override theme layers.
@@ -114,7 +114,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
         if (styleEl) styleEl.remove();
       };
     },
-    [cssText]
+    [cssText],
   );
 
   useEffect(
@@ -130,7 +130,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
         root.removeAttribute("data-bp-color-scheme");
       };
     },
-    [brandTheme.colorMode]
+    [brandTheme.colorMode],
   );
 
   return <Story />;

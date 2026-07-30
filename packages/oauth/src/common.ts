@@ -113,21 +113,21 @@ export function getStorage(storageType: TokenStorageType): Storage | undefined {
 export function saveLocal(
   client: Client,
   x: LocalStorageState,
-  storage: Storage | undefined
+  storage: Storage | undefined,
 ): void {
   storage?.setItem(localStorageKey(client), JSON.stringify(x));
 }
 
 export function removeLocal(
   client: Client,
-  storage: Storage | undefined
+  storage: Storage | undefined,
 ): void {
   storage?.removeItem(localStorageKey(client));
 }
 
 export function readLocal(
   client: Client,
-  storage: Storage | undefined
+  storage: Storage | undefined,
 ): LocalStorageState {
   return JSON.parse(storage?.getItem(localStorageKey(client)) ?? "{}");
 }
@@ -136,7 +136,7 @@ export function saveSession(client: Client, x: SessionStorageState): void {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
   globalThis.sessionStorage?.setItem(
     localStorageKey(client),
-    JSON.stringify(x)
+    JSON.stringify(x),
   );
 }
 
@@ -148,7 +148,7 @@ export function removeSession(client: Client): void {
 export function readSession(client: Client): SessionStorageState {
   return JSON.parse(
     // MUST `sessionStorage?` as nodejs does not have sessionStorage
-    globalThis.sessionStorage?.getItem(localStorageKey(client)) ?? "{}"
+    globalThis.sessionStorage?.getItem(localStorageKey(client)) ?? "{}",
   );
 }
 
@@ -162,12 +162,12 @@ export function common<
   refresh: R,
   refreshTokenMarker: string | undefined,
   scopes: string,
-  storage: Storage | undefined
+  storage: Storage | undefined,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
     resp: OAuth2TokenEndpointResponse,
-    type: "signIn" | "refresh"
+    type: "signIn" | "refresh",
   ) => Token;
 } {
   let token: Token | undefined;
@@ -175,7 +175,7 @@ export function common<
 
   function makeTokenAndSaveRefresh(
     resp: OAuth2TokenEndpointResponse,
-    type: "signIn" | "refresh"
+    type: "signIn" | "refresh",
   ): Token {
     const { refresh_token, expires_in, access_token } = resp;
     invariant(expires_in != null);
@@ -186,7 +186,7 @@ export function common<
         refreshTokenMarker,
         requestedScopes: scopes,
       },
-      storage
+      storage,
     );
     token = {
       refresh_token,
@@ -197,7 +197,7 @@ export function common<
 
     eventTarget.dispatchTypedEvent(
       type,
-      new CustomEvent(type, { detail: token })
+      new CustomEvent(type, { detail: token }),
     );
     return token;
   }
@@ -211,7 +211,7 @@ export function common<
       rmTimeout();
       refreshTimeout = setTimeout(
         refresh,
-        evt.detail.expires_in * 1000 - 60 * 1000
+        evt.detail.expires_in * 1000 - 60 * 1000,
       );
     }
   }
@@ -220,7 +220,7 @@ export function common<
     invariant(token, "not signed in");
 
     const result = await processRevocationResponse(
-      await revocationRequest(as, client, token.access_token, oauthHttpOptions)
+      await revocationRequest(as, client, token.access_token, oauthHttpOptions),
     );
 
     rmTimeout();
@@ -269,12 +269,12 @@ export function common<
       rmTimeout,
       getTokenOrUndefined,
       addEventListener: eventTarget.addEventListener.bind(
-        eventTarget
+        eventTarget,
       ) as typeof eventTarget.addEventListener,
       removeEventListener: eventTarget.removeEventListener.bind(
-        eventTarget
+        eventTarget,
       ) as typeof eventTarget.removeEventListener,
-    }
+    },
   );
 
   return { getToken, makeTokenAndSaveRefresh };
@@ -282,7 +282,7 @@ export function common<
 
 export function createAuthorizationServer(
   ctxPath: string,
-  url: string
+  url: string,
 ): Required<
   Pick<
     AuthorizationServer,

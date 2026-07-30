@@ -1217,7 +1217,7 @@ function EmployeesTable() {
       "data-status": employee.status,
       "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
     }),
-    []
+    [],
   );
 
   return (
@@ -1412,7 +1412,7 @@ function CustomEmployeeTable() {
               >
                 {flexRender(
                   header.column.columnDef.header,
-                  header.getContext()
+                  header.getContext(),
                 )}
               </th>
             ))}
@@ -1681,7 +1681,7 @@ const getRowAttributes = useCallback(
     "data-status": employee.status,
     "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
   }),
-  []
+  [],
 );
 
 <ObjectTable

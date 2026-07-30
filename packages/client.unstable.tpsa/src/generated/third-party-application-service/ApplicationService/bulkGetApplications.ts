@@ -28,7 +28,7 @@ import type { BulkGetApplicationsResponse } from "../BulkGetApplicationsResponse
  */
 export async function bulkGetApplications(
   ctx: ConjureContext,
-  request: BulkGetApplicationsRequest
+  request: BulkGetApplicationsRequest,
 ): Promise<BulkGetApplicationsResponse> {
   return conjureFetch(ctx, `/applications/bulk`, "PUT", request);
 }

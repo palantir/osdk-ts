@@ -28,12 +28,12 @@ import type {
  */
 export async function loadAccessRequestDetails(
   ctx: ConjureContext,
-  request: _api_accessrequest_LoadAccessRequestDetailsRequest
+  request: _api_accessrequest_LoadAccessRequestDetailsRequest,
 ): Promise<_api_accessrequest_LoadAccessRequestDetailsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/loadAccessRequestDetails`,
     "POST",
-    request
+    request,
   );
 }

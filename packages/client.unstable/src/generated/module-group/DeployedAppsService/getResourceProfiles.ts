@@ -25,11 +25,11 @@ import type { ResourceProfile as _ResourceProfile } from "../__components.js";
  */
 export async function getResourceProfiles(
   ctx: ConjureContext,
-  deployedAppRid: string
+  deployedAppRid: string,
 ): Promise<Array<_ResourceProfile>> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${deployedAppRid}/resource-profiles`,
-    "GET"
+    "GET",
   );
 }

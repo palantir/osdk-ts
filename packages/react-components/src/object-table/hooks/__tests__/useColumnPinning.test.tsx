@@ -34,7 +34,7 @@ type TestObject = typeof TestObjectType;
 
 function createColumnDef(
   id: string,
-  pinned?: "left" | "right" | "none"
+  pinned?: "left" | "right" | "none",
 ): ColumnDefinition<TestObject> {
   return {
     locator: { type: "property", id: id as PropertyKeys<TestObject> },
@@ -48,7 +48,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -63,7 +63,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -83,7 +83,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -99,7 +99,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions,
           hasSelectionColumn: true,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -115,7 +115,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions,
           hasSelectionColumn: false,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -130,7 +130,7 @@ describe("useColumnPinning", () => {
       const { result } = renderHook(() =>
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
-        })
+        }),
       );
 
       expect(result.current.columnPinning).toEqual({
@@ -157,7 +157,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -180,7 +180,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -202,7 +202,7 @@ describe("useColumnPinning", () => {
         useColumnPinning<TestObject>({
           columnDefinitions: undefined,
           onColumnsPinnedChanged,
-        })
+        }),
       );
 
       // Set initial pinning
@@ -270,7 +270,7 @@ describe("useColumnPinning", () => {
           }),
         {
           initialProps: { columnDefinitions: initialColumnDefinitions },
-        }
+        },
       );
 
       expect(result.current.columnPinning).toEqual({

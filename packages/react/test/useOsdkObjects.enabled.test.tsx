@@ -69,7 +69,7 @@ describe("useOsdkObjects enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockObserveList).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("useOsdkObjects enabled option", () => {
           pageSize: 50,
           enabled: true,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe("useOsdkObjects enabled option", () => {
         where: { id: "123" },
         pageSize: 50,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 });

@@ -38,13 +38,13 @@ interface InfoItem {
 }
 
 export function AssignmentDrawer(
-  props: AssignmentDrawerProps
+  props: AssignmentDrawerProps,
 ): React.JSX.Element {
   const { assignmentId, onClose } = props;
   const { object, isLoading, error } = useOsdkObject(
     Assignment,
     assignmentId ?? "",
-    assignmentId != null
+    assignmentId != null,
   );
 
   const title = object?.title ?? assignmentId ?? "Assignment";

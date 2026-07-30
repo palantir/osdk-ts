@@ -84,7 +84,7 @@ function ListogramInputInner({
         onChange([...selectedValues, value]);
       }
     },
-    [selectedValues, selectedSet, onChange]
+    [selectedValues, selectedSet, onChange],
   );
 
   const filteredValues = useMemo(() => {
@@ -222,5 +222,5 @@ function ListogramInputInner({
 }
 
 export const ListogramInput = memo(
-  ListogramInputInner
+  ListogramInputInner,
 ) as typeof ListogramInputInner;

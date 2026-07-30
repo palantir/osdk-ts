@@ -33,12 +33,12 @@ import type {
  */
 export async function bulkLoadOntologyEntitiesByDatasources(
   ctx: ConjureContext,
-  request: _api_OntologyBulkLoadEntitiesByDatasourcesRequest
+  request: _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
 ): Promise<_api_OntologyBulkLoadEntitiesByDatasourcesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/bulkLoadEntitiesByDatasources`,
     "POST",
-    request
+    request,
   );
 }

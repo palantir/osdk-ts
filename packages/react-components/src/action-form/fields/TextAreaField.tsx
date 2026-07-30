@@ -39,7 +39,7 @@ export function TextAreaField({
     (props: React.ComponentPropsWithRef<"textarea">) => (
       <textarea {...props} rows={rows} wrap={wrap} style={TEXTAREA_STYLE} />
     ),
-    [rows, wrap]
+    [rows, wrap],
   );
 
   return (

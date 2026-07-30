@@ -31,11 +31,11 @@ import type { GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesRes
  */
 export async function getSuggestedRolesForObjectType(
   ctx: ConjureContext,
-  objectTypeRid: _api_ObjectTypeRid
+  objectTypeRid: _api_ObjectTypeRid,
 ): Promise<_api_permissions_GetSuggestedRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/suggestRoles/objectType/${objectTypeRid}`,
-    "GET"
+    "GET",
   );
 }

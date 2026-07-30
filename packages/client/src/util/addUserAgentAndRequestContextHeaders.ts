@@ -22,13 +22,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export const addUserAgentAndRequestContextHeaders = (
   client: MinimalClient,
-  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">
+  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
 ): MinimalClient => ({
   ...client,
   fetch: createFetchHeaderMutator(client.fetch, (headers) => {
     headers.set(
       "X-OSDK-Request-Context",
-      JSON.stringify(client.requestContext)
+      JSON.stringify(client.requestContext),
     );
 
     if (withMetadata.osdkMetadata) {
@@ -39,7 +39,7 @@ export const addUserAgentAndRequestContextHeaders = (
           withMetadata.osdkMetadata.extraUserAgent,
         ]
           .filter((x) => x && x?.length > 0)
-          .join(" ")
+          .join(" "),
       );
     }
     return headers;

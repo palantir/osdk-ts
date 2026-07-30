@@ -23,7 +23,7 @@ import serialize from "serialize-javascript";
 type Entry = { type: "base64"; body: string } | { type: "raw"; body: string };
 
 export async function cli(
-  argv: string[] = process.argv.slice(2)
+  argv: string[] = process.argv.slice(2),
 ): Promise<void> {
   const extsToString = new Set([".html", ".cjs", ".hbs", ".gitignore", ".tsx"]);
 
@@ -36,7 +36,7 @@ export async function cli(
   if (!sourcePackageJsonPath) throw new Error("package.json is missing");
 
   const sourcePackageJson = JSON.parse(
-    await fs.readFile(sourcePackageJsonPath, "utf-8")
+    await fs.readFile(sourcePackageJsonPath, "utf-8"),
   );
 
   const entries = new Map<string, Entry>();
@@ -44,7 +44,7 @@ export async function cli(
   for (const pkgName of sharedPackages) {
     const sharedDir = await resolveSharedTemplatesDir(
       pkgName,
-      sourcePackageJsonPath
+      sourcePackageJsonPath,
     );
     await collectFiles(sharedDir, sharedDir, entries, sourcePackageJson);
   }
@@ -71,7 +71,7 @@ export async function cli(
     dir: string,
     baseDir: string,
     sink: Map<string, Entry>,
-    sourcePkg: Record<string, unknown>
+    sourcePkg: Record<string, unknown>,
   ): Promise<void> {
     for (const filename of await fs.readdir(dir)) {
       const file = dir + "/" + filename;
@@ -149,7 +149,7 @@ function parseSharedFlags(argv: string[]): string[] {
 
 async function resolveSharedTemplatesDir(
   pkgName: string,
-  sourcePackageJsonPath: string
+  sourcePackageJsonPath: string,
 ): Promise<string> {
   let dir = path.dirname(sourcePackageJsonPath);
   while (true) {
@@ -163,7 +163,7 @@ async function resolveSharedTemplatesDir(
     const parent = path.dirname(dir);
     if (parent === dir) {
       throw new Error(
-        `Could not resolve shared template package "${pkgName}" from ${sourcePackageJsonPath}`
+        `Could not resolve shared template package "${pkgName}" from ${sourcePackageJsonPath}`,
       );
     }
     dir = parent;
