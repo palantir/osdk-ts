@@ -60,7 +60,7 @@ export class FunctionParamsCanonicalizer {
   >();
 
   public canonicalize(
-    params: Record<string, unknown> | undefined | null
+    params: Record<string, unknown> | undefined | null,
   ): Canonical<CanonicalFunctionParams> | undefined {
     if (params == null) {
       return undefined;
@@ -75,7 +75,7 @@ export class FunctionParamsCanonicalizer {
     const canonicalValue = this.#encodeAndBuild(
       params,
       path,
-      seen
+      seen,
     ) as CanonicalFunctionParams;
 
     const marker = this.#trie.lookupArray(path);
@@ -92,7 +92,7 @@ export class FunctionParamsCanonicalizer {
   #encodeAndBuild(
     value: unknown,
     path: PathElement[],
-    seen: WeakSet<object>
+    seen: WeakSet<object>,
   ): CanonicalValue {
     if (value == null) {
       path.push(value);

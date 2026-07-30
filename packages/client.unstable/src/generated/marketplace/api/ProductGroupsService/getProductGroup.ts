@@ -26,7 +26,7 @@ import type {
  */
 export async function getProductGroup(
   ctx: ConjureContext,
-  productGroupRid: _api_ProductGroupRid
+  productGroupRid: _api_ProductGroupRid,
 ): Promise<_api_GetProductGroupResponse> {
   return conjureFetch(ctx, `/product-groups/${productGroupRid}`, "GET");
 }

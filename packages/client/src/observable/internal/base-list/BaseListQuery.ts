@@ -146,14 +146,14 @@ export abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
     mode: ListUpdateMode = { type: "clientOrdered" },
-    totalCount?: string
+    totalCount?: string,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "updateList" })
         .debug(
           `{status: ${status}, mode: ${JSON.stringify(mode)}}`,
-          JSON.stringify(items, null, 2)
+          JSON.stringify(items, null, 2),
         );
     }
 
@@ -168,7 +168,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
-        this.includeAllBaseObjectProperties
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -185,7 +185,7 @@ export abstract class BaseListQuery<
     return this.writeToStore(
       { data: objectCacheKeys, totalCount },
       status,
-      batch
+      batch,
     );
   }
 
@@ -198,7 +198,7 @@ export abstract class BaseListQuery<
   writeToStore(
     data: CollectionStorageData,
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<KEY> {
     const entry = batch.read(this.cacheKey);
 
@@ -209,7 +209,7 @@ export abstract class BaseListQuery<
           this.logger
             ?.child({ methodName: "writeToStore" })
             .debug(
-              `Collection data was deep equal and status unchanged (${status}), skipping update`
+              `Collection data was deep equal and status unchanged (${status}), skipping update`,
             );
         }
         // Return the existing entry without writing to avoid unnecessary notifications
@@ -220,7 +220,7 @@ export abstract class BaseListQuery<
         this.logger
           ?.child({ methodName: "writeToStore" })
           .debug(
-            `Collection data was deep equal, just updating status from ${entry.status} to ${status}`
+            `Collection data was deep equal, just updating status from ${entry.status} to ${status}`,
           );
       }
       // Keep the same value but update status and lastUpdated
@@ -232,7 +232,7 @@ export abstract class BaseListQuery<
         ?.child({ methodName: "writeToStore" })
         .debug(
           `{status: ${status}},`,
-          DEBUG_ONLY__cacheKeysToString(data.data)
+          DEBUG_ONLY__cacheKeysToString(data.data),
         );
     }
 
@@ -259,7 +259,7 @@ export abstract class BaseListQuery<
   #retainReleaseAppend(
     batch: BatchContext,
     append: boolean,
-    objectCacheKeys: ObjectCacheKey[]
+    objectCacheKeys: ObjectCacheKey[],
   ): ObjectCacheKey[] {
     const existingList = batch.read(this.cacheKey);
 
@@ -327,12 +327,12 @@ export abstract class BaseListQuery<
    * @returns A connectable observable of the collection's payload type
    */
   protected _createConnectable(
-    subject: Observable<SubjectPayload<KEY>>
+    subject: Observable<SubjectPayload<KEY>>,
   ): Connectable<PAYLOAD> {
     return createCollectionConnectable<KEY, PAYLOAD>(
       subject,
       this.store.subjects,
-      (params) => this.createPayload(params)
+      (params) => this.createPayload(params),
     );
   }
 
@@ -371,7 +371,7 @@ export abstract class BaseListQuery<
 
     this.pendingFetch = this.fetchPageAndUpdate(
       "loaded",
-      this.abortController?.signal
+      this.abortController?.signal,
     )
       .then(() => void 0)
       .finally(() => {
@@ -456,7 +456,7 @@ export abstract class BaseListQuery<
     while (true) {
       const entry = await this.fetchPageAndUpdate(
         "loading",
-        this.abortController?.signal
+        this.abortController?.signal,
       );
 
       if (!entry) {
@@ -481,7 +481,7 @@ export abstract class BaseListQuery<
    */
   protected async fetchPageAndUpdate(
     status: Status,
-    signal: AbortSignal | undefined
+    signal: AbortSignal | undefined,
   ): Promise<Entry<KEY> | undefined> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -528,7 +528,7 @@ export abstract class BaseListQuery<
           batch,
           this.rdpConfig,
           this.selectFieldSet,
-          this.includeAllBaseObjectProperties
+          this.includeAllBaseObjectProperties,
         );
 
         return this._updateList(
@@ -536,7 +536,7 @@ export abstract class BaseListQuery<
           finalStatus,
           batch,
           { type: "serverOrdered", append },
-          this.currentTotalCount
+          this.currentTotalCount,
         );
       });
 
@@ -569,7 +569,7 @@ export abstract class BaseListQuery<
    * @returns A promise that resolves to the fetched data
    */
   protected abstract fetchPageData(
-    signal: AbortSignal | undefined
+    signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>>;
 
   /**
@@ -584,13 +584,13 @@ export abstract class BaseListQuery<
   protected handleFetchError(
     _error: unknown,
     _status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<KEY> {
     const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
     return this.writeToStore(
       { data: [], totalCount: existingTotalCount },
       "error",
-      batch
+      batch,
     );
   }
 
@@ -602,7 +602,7 @@ export abstract class BaseListQuery<
    */
   protected _sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext
+    batch: BatchContext,
   ): ObjectCacheKey[] {
     return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
   }
@@ -622,7 +622,7 @@ export abstract class BaseListQuery<
       append?: boolean;
       status: Status;
     },
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       const logger =
@@ -632,7 +632,7 @@ export abstract class BaseListQuery<
 
       logger?.debug(
         `{status: ${options.status}, append: ${options.append}}`,
-        JSON.stringify(items, null, 2)
+        JSON.stringify(items, null, 2),
       );
     }
 
@@ -648,7 +648,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
-        this.includeAllBaseObjectProperties
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -659,7 +659,7 @@ export abstract class BaseListQuery<
     objectCacheKeys = this.#retainReleaseAppend(
       batch,
       options.append ?? false,
-      objectCacheKeys
+      objectCacheKeys,
     );
 
     // Step 3: Sort using the configured sorting strategy
@@ -673,7 +673,7 @@ export abstract class BaseListQuery<
     return this.writeToStore(
       { data: objectCacheKeys, totalCount: existingTotalCount },
       options.status,
-      batch
+      batch,
     );
   }
 
@@ -692,7 +692,7 @@ export abstract class BaseListQuery<
   protected createWebsocketSubscription(
     objectSet: ObjectSet<any>,
     sub: Subscription,
-    methodName: string = "registerStreamUpdates"
+    methodName: string = "registerStreamUpdates",
   ): void {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -789,7 +789,7 @@ export abstract class BaseListQuery<
           this.rdpConfig, // Safe - null for queries without RDPs
           undefined,
           this.includeAllBaseObjectProperties,
-          EMPTY_RDP_SET
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {
@@ -805,7 +805,7 @@ export abstract class BaseListQuery<
    * @param object The removed object
    */
   protected onOswRemoved(
-    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>
+    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
   ): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -816,7 +816,7 @@ export abstract class BaseListQuery<
     this.store.batch({}, (batch) => {
       for (const objectCacheKey of this.store.objectCacheKeyRegistry.getVariants(
         object.$objectType ?? object.$apiName,
-        object.$primaryKey
+        object.$primaryKey,
       )) {
         batch.delete(objectCacheKey, "loaded");
         batch.changes.deleteObject(objectCacheKey);

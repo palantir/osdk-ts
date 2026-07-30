@@ -51,7 +51,7 @@ function renderItem({
       onFilterRemoved={onFilterRemoved}
       renderInput={renderInputStub}
       searchField={searchField}
-    />
+    />,
   );
 }
 
@@ -64,7 +64,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: [] },
       });
       expect(
-        screen.getByRole("button", { name: /search values/iu })
+        screen.getByRole("button", { name: /search values/iu }),
       ).toBeDefined();
     });
 
@@ -74,7 +74,7 @@ describe("FilterListItem", () => {
         searchField: false,
       });
       expect(
-        screen.queryByRole("button", { name: /search values/iu })
+        screen.queryByRole("button", { name: /search values/iu }),
       ).toBeNull();
     });
 
@@ -83,7 +83,7 @@ describe("FilterListItem", () => {
         filterState: { type: "NUMBER_RANGE", minValue: 1, maxValue: 5 },
       });
       expect(
-        screen.queryByRole("button", { name: /search values/iu })
+        screen.queryByRole("button", { name: /search values/iu }),
       ).toBeNull();
     });
 
@@ -105,7 +105,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: ["a"] },
       });
       expect(
-        screen.queryByRole("button", { name: /remove department filter/iu })
+        screen.queryByRole("button", { name: /remove department filter/iu }),
       ).toBeNull();
     });
 
@@ -114,7 +114,7 @@ describe("FilterListItem", () => {
         filterState: { type: "SELECT", selectedValues: ["a"] },
       });
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 
@@ -123,7 +123,7 @@ describe("FilterListItem", () => {
         filterState: { type: "NUMBER_RANGE", minValue: 1, maxValue: 5 },
       });
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
     });
 
@@ -152,7 +152,7 @@ describe("FilterListItem", () => {
         },
       });
       expect(
-        screen.getByRole("button", { name: /search values/iu })
+        screen.getByRole("button", { name: /search values/iu }),
       ).toBeDefined();
     });
 
@@ -167,7 +167,7 @@ describe("FilterListItem", () => {
         },
       });
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 

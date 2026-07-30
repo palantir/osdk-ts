@@ -28,12 +28,12 @@ import type {
 export async function loadResourceAssociations(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_association_metadata_LoadResourceAssociationsRequest
+  request: _api_association_metadata_LoadResourceAssociationsRequest,
 ): Promise<_api_association_metadata_LoadResourceAssociationsResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/loadAssociatedOntologyEntities`,
     "POST",
-    request
+    request,
   );
 }

@@ -50,7 +50,7 @@ export interface AsyncDropdownFieldProps<
 }
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
-  props: AsyncDropdownFieldProps<V, Multiple>
+  props: AsyncDropdownFieldProps<V, Multiple>,
 ) => React.ReactElement = typedReactMemo(function AsyncDropdownFieldFn<
   V,
   Multiple extends boolean,

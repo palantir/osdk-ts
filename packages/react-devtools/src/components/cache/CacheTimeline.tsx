@@ -45,11 +45,11 @@ export const CacheTimeline: React.FC<CacheTimelineProps> = ({
         const cacheEntries = await monitorStore.loadCacheEntries();
         return { cacheEntries };
       }, 2000),
-    [monitorStore]
+    [monitorStore],
   );
   const enrichmentData = React.useSyncExternalStore(
     enrichmentStore.subscribe,
-    enrichmentStore.getSnapshot
+    enrichmentStore.getSnapshot,
   );
   const cacheEntries = enrichmentData?.cacheEntries ?? [];
 
@@ -93,7 +93,7 @@ export const CacheTimeline: React.FC<CacheTimelineProps> = ({
         .filter((op) => op.type === "cache-hit" || op.type === "cache-miss")
         .slice(-MAX_RECENT_OPERATIONS)
         .reverse(),
-    [metrics.recent]
+    [metrics.recent],
   );
 
   return (

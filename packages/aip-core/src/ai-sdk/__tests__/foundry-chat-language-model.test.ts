@@ -45,7 +45,7 @@ function createModel(opts: {
       {
         status: opts.responseStatus ?? 200,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   });
 
@@ -91,7 +91,7 @@ function simplePrompt(): LanguageModelV3Prompt {
 }
 
 function callOptions(
-  overrides?: Partial<LanguageModelV3CallOptions>
+  overrides?: Partial<LanguageModelV3CallOptions>,
 ): LanguageModelV3CallOptions {
   return {
     prompt: simplePrompt(),
@@ -108,7 +108,7 @@ describe("FoundryChatLanguageModel", () => {
         callOptions({
           temperature: 0.5,
           maxOutputTokens: 100,
-        })
+        }),
       );
 
       // Verify request
@@ -208,7 +208,7 @@ describe("FoundryChatLanguageModel", () => {
       });
 
       await expect(model.doGenerate(callOptions())).rejects.toThrow(
-        "LMS chat/completions request failed: 500"
+        "LMS chat/completions request failed: 500",
       );
     });
 
@@ -220,7 +220,7 @@ describe("FoundryChatLanguageModel", () => {
       expect(result.warnings).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ type: "unsupported", feature: "topK" }),
-        ])
+        ]),
       );
     });
 
@@ -241,7 +241,7 @@ describe("FoundryChatLanguageModel", () => {
             },
           ],
           toolChoice: { type: "auto" },
-        })
+        }),
       );
 
       const body = JSON.parse(fetchMock.mock.calls[0][1]?.body as string);
@@ -337,7 +337,7 @@ describe("FoundryChatLanguageModel", () => {
       });
 
       await expect(model.doStream(callOptions())).rejects.toThrow(
-        "LMS chat/completions request failed: 500"
+        "LMS chat/completions request failed: 500",
       );
     });
   });

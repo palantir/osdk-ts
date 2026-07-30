@@ -28,7 +28,7 @@ import type {
  */
 export async function validateMonitorCreate(
   ctx: ConjureContext,
-  request: _api_validation_ValidateMonitorCreateRequest
+  request: _api_validation_ValidateMonitorCreateRequest,
 ): Promise<_api_validation_ValidateMonitorResponse> {
   return conjureFetch(ctx, `/validation/v0/validate-create`, "POST", request);
 }

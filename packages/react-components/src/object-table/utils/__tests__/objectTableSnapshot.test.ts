@@ -40,7 +40,7 @@ type AnyPagedObjects = PagedObjects<
 
 function makeFunctionLocator(
   id: string,
-  overrides: Partial<AnyFunctionLocator> = {}
+  overrides: Partial<AnyFunctionLocator> = {},
 ): AnyFunctionLocator {
   return {
     type: "function",
@@ -74,7 +74,7 @@ describe("fetchFunctionColumnPage", () => {
     const result = await fetchFunctionColumnPage(
       executeFunction,
       locator,
-      makePage([1, 2])
+      makePage([1, 2]),
     );
 
     expect(Array.from(result.entries())).toEqual([
@@ -96,7 +96,7 @@ describe("fetchFunctionColumnPage", () => {
     const result = await fetchFunctionColumnPage(
       executeFunction,
       locator,
-      makePage([1, 2])
+      makePage([1, 2]),
     );
 
     expect(result.get("1")).toBe(20);
@@ -114,7 +114,7 @@ describe("fetchFunctionColumnPage", () => {
     const result = await fetchFunctionColumnPage(
       executeFunction,
       locator,
-      makePage([1, 2])
+      makePage([1, 2]),
     );
 
     expect(result.get("1")).toBe(failure);
@@ -130,13 +130,13 @@ describe("fetchFunctionColumnValues", () => {
       async (_q: QueryDefinition<{}>, _params: unknown) => {
         const callIndex = executeFunction.mock.calls.length;
         return callIndex === 1 ? { "1": "page1-a" } : { "2": "page2-a" };
-      }
+      },
     );
 
     const values = await fetchFunctionColumnValues(
       [locator],
       [makePage([1]), makePage([2])],
-      executeFunction
+      executeFunction,
     );
 
     const column = values.get("computed");
@@ -153,13 +153,13 @@ describe("fetchFunctionColumnValues", () => {
         const callIndex = executeFunction.mock.calls.length;
         if (callIndex === 1) throw failure;
         return { "2": "ok" };
-      }
+      },
     );
 
     const values = await fetchFunctionColumnValues(
       [locator],
       [makePage([1]), makePage([2])],
-      executeFunction
+      executeFunction,
     );
 
     expect(values.get("computed")?.get("1")).toBe(failure);
@@ -174,7 +174,7 @@ describe("fetchFunctionColumnValues", () => {
       {},
       {
         get: (_target, key) => `val-${String(key)}`,
-      }
+      },
     );
 
     let inFlight = 0;
@@ -193,7 +193,7 @@ describe("fetchFunctionColumnValues", () => {
       [locator],
       pages,
       executeFunction,
-      3
+      3,
     );
 
     expect(executeFunction).toHaveBeenCalledTimes(12);
@@ -215,7 +215,7 @@ describe("fetchFunctionColumnValues", () => {
       {},
       {
         get: (_target, key) => `val-${String(key)}`,
-      }
+      },
     );
 
     let inFlight = 0;

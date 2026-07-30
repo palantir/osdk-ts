@@ -53,14 +53,14 @@ export class ObjectsHelper extends AbstractHelper<
 > {
   observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    subFn: Observer<ObjectPayload>
+    subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    rdpConfig?: Canonical<Rdp> | null
+    rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
     const apiName =
       typeof options.apiName === "string"
@@ -88,7 +88,7 @@ export class ObjectsHelper extends AbstractHelper<
       rdpConfig ?? undefined,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
-      $includeAllBaseObjectProperties
+      $includeAllBaseObjectProperties,
     );
 
     return this.store.queries.get(
@@ -104,8 +104,8 @@ export class ObjectsHelper extends AbstractHelper<
           defType,
           select,
           $loadPropertySecurityMetadata,
-          $includeAllBaseObjectProperties
-        )
+          $includeAllBaseObjectProperties,
+        ),
     );
   }
 
@@ -124,7 +124,7 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
-    computedRdpFields?: ReadonlySet<string>
+    computedRdpFields?: ReadonlySet<string>,
   ): ObjectCacheKey[] {
     const holders: ReadonlyArray<ObjectHolder | InterfaceHolder> =
       values as ReadonlyArray<ObjectHolder | InterfaceHolder>;
@@ -137,13 +137,13 @@ export class ObjectsHelper extends AbstractHelper<
           pk: v.$primaryKey,
           $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
         },
-        rdpConfig
+        rdpConfig,
       ).writeToStore(
         concreteHolder,
         "loaded",
         batch,
         selectFields,
-        computedRdpFields
+        computedRdpFields,
       ).cacheKey;
     });
   }
@@ -158,7 +158,7 @@ export class ObjectsHelper extends AbstractHelper<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
-    computedRdpFields?: ReadonlySet<string>
+    computedRdpFields?: ReadonlySet<string>,
   ): void {
     const existing = batch.read(sourceCacheKey);
     const dataChanged =
@@ -195,14 +195,14 @@ export class ObjectsHelper extends AbstractHelper<
           valueToWrite,
           selectFields,
           existingHolder,
-          sourceRdpFields
+          sourceRdpFields,
         );
       } else if (!isSuperset(sourceRdpFields, trackedRdpFields)) {
         valueToWrite = mergeObjectFields(
           valueToWrite,
           sourceRdpFields,
           trackedRdpFields,
-          existingHolder
+          existingHolder,
         );
       }
     }
@@ -221,7 +221,7 @@ export class ObjectsHelper extends AbstractHelper<
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
           metadata.apiName,
-          metadata.primaryKey
+          metadata.primaryKey,
         )
       : new Set([sourceCacheKey]);
 
@@ -251,14 +251,14 @@ export class ObjectsHelper extends AbstractHelper<
           merged,
           selectFields,
           targetHolder,
-          sourceRdpFields
+          sourceRdpFields,
         );
       }
       merged = this.mergeForTarget(
         merged,
         targetHolder,
         sourceRdpFields,
-        targetKey
+        targetKey,
       );
 
       batch.write(targetKey, merged, status);
@@ -284,7 +284,7 @@ export class ObjectsHelper extends AbstractHelper<
    * Type guard to check if a value is an ObjectHolder
    */
   private isObjectHolder(
-    value: ObjectHolder | undefined
+    value: ObjectHolder | undefined,
   ): value is ObjectHolder {
     return (
       value != null &&
@@ -301,7 +301,7 @@ export class ObjectsHelper extends AbstractHelper<
     sourceValue: ObjectHolder,
     targetCurrentValue: ObjectHolder | undefined,
     sourceRdpFields: ReadonlySet<string>,
-    targetCacheKey: ObjectCacheKey
+    targetCacheKey: ObjectCacheKey,
   ): ObjectHolder {
     const targetRdpFields =
       this.store.objectCacheKeyRegistry.getRdpFieldSet(targetCacheKey);
@@ -310,7 +310,7 @@ export class ObjectsHelper extends AbstractHelper<
       sourceValue,
       sourceRdpFields,
       targetRdpFields,
-      targetCurrentValue
+      targetCurrentValue,
     );
   }
 }

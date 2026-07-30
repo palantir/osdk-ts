@@ -34,17 +34,17 @@ export function createLazyDoNothingActionImpl(
         OntologiesV2.BatchApplyActionRequestV2,
         OntologiesV2.BatchApplyActionResponseV2 | undefined,
       ]
-  >
+  >,
 ): FauxActionImpl {
   const stableToRet = new Map(
-    reqRespPairs.map((pair) => [stableStringify(pair[0]), pair[1]])
+    reqRespPairs.map((pair) => [stableStringify(pair[0]), pair[1]]),
   );
 
   return (
     batch: FauxDataStoreBatch,
     payload:
       | OntologiesV2.ApplyActionRequestV2
-      | OntologiesV2.BatchApplyActionRequestV2
+      | OntologiesV2.BatchApplyActionRequestV2,
   ):
     | OntologiesV2.SyncApplyActionResponseV2
     | OntologiesV2.BatchApplyActionResponseV2 => {
@@ -53,7 +53,7 @@ export function createLazyDoNothingActionImpl(
     // differently if its an unregistered req/resp pair
     invariant(
       stableToRet.has(key),
-      "No response registered for req payload: " + key
+      "No response registered for req payload: " + key,
     );
     const resp = stableToRet.get(key);
     if (resp === undefined) {

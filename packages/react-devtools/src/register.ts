@@ -41,7 +41,7 @@ if (isDev) {
 
     wrapChildren: (
       children: React.ReactNode,
-      _monitoredClient: ObservableClient
+      _monitoredClient: ObservableClient,
     ) => {
       return React.createElement(
         DevToolsContext.Provider,
@@ -49,7 +49,7 @@ if (isDev) {
         children,
         React.createElement(SafeMonitoringPanel, {
           monitorStore: globalMonitorStore,
-        })
+        }),
       );
     },
   });

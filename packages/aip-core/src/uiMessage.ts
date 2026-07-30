@@ -79,11 +79,11 @@ export interface ChatTransportReconnectArgs {
 
 export interface ChatTransport<MSG extends UIMessage = UIMessage> {
   sendMessages(
-    args: ChatTransportSendMessagesArgs<MSG>
+    args: ChatTransportSendMessagesArgs<MSG>,
   ): Promise<ReadableStream<UIMessageChunk>>;
 
   reconnectToStream(
-    args: ChatTransportReconnectArgs
+    args: ChatTransportReconnectArgs,
   ): Promise<ReadableStream<UIMessageChunk> | null>;
 }
 

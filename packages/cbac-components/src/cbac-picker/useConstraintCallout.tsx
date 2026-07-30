@@ -22,7 +22,7 @@ import type { MaxClassificationConstraint } from "./types.js";
 import { EMPTY_ARRAY, resolveBannerDisplay } from "./utils/cbacPickerUtils.js";
 
 export function useConstraintCallout(
-  maxClassificationConstraint: MaxClassificationConstraint | undefined
+  maxClassificationConstraint: MaxClassificationConstraint | undefined,
 ): React.ReactNode {
   const constraintMarkingIds =
     maxClassificationConstraint?.markingIds ?? EMPTY_ARRAY;

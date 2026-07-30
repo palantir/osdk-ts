@@ -95,7 +95,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     const recs = engine.generateRecommendations(emptyCacheSnapshot);
@@ -106,7 +106,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     const score = engine.calculatePerformanceScore(emptyCacheSnapshot);
@@ -123,7 +123,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     engine.dismissRecommendation("some-id");
@@ -136,7 +136,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     engine.dismissRecommendation("x");
@@ -150,7 +150,7 @@ describe("PerformanceRecommendationEngine", () => {
     const engine = new PerformanceRecommendationEngine(
       createMockMetricsStore(),
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     const summary = engine.getSummary(emptyCacheSnapshot);

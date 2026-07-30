@@ -43,7 +43,7 @@ describe("aggregation ObjectSet support", () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
     setupOntology(fauxFoundry);
@@ -69,7 +69,7 @@ describe("aggregation ObjectSet support", () => {
     });
 
     expect(query.cacheKey.otherKeys[WIRE_OBJECT_SET_IDX]).toEqual(
-      JSON.stringify(getWireObjectSet(pivotedSet))
+      JSON.stringify(getWireObjectSet(pivotedSet)),
     );
   });
 

@@ -30,11 +30,11 @@ import type {
  */
 export async function getBlockSetInstallationJob(
   ctx: ConjureContext,
-  jobRid: _api_BlockSetInstallationJobRid
+  jobRid: _api_BlockSetInstallationJobRid,
 ): Promise<_api_BlockSetInstallationJob> {
   return conjureFetch(
     ctx,
     `/block-set-installation/jobs/${jobRid}/details`,
-    "GET"
+    "GET",
   );
 }

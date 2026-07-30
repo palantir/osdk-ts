@@ -26,12 +26,12 @@ import type {
  */
 export async function getAggregateBucketedData(
   ctx: ConjureContext,
-  request: _api_metrics_GetAggregateBucketedDataRequest
+  request: _api_metrics_GetAggregateBucketedDataRequest,
 ): Promise<_api_metrics_GetAggregateBucketedDataResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/telemetry/bucketed`,
     "POST",
-    request
+    request,
   );
 }

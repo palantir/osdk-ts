@@ -28,7 +28,7 @@ import type {
 export async function getTopObjectsNextPage(
   ctx: ConjureContext,
   request: _api_GetTopObjectsNextPageRequest,
-  backend: _api_Backend | null | undefined
+  backend: _api_Backend | null | undefined,
 ): Promise<_api_GetTopObjectsNextPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/top/next`, "POST", request);
 }

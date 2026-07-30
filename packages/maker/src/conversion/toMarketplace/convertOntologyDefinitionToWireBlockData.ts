@@ -46,7 +46,7 @@ import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
 
 function toActionTypeRestrictionStatus(
-  p: EntityPermission
+  p: EntityPermission,
 ): ActionTypeRestrictionStatus {
   return {
     hasRolesApplied: true,
@@ -56,7 +56,7 @@ function toActionTypeRestrictionStatus(
 }
 
 function toObjectTypeRestrictionStatus(
-  p: EntityPermission
+  p: EntityPermission,
 ): ObjectTypeRestrictionStatus {
   return {
     restrictedByDatasources: false,
@@ -67,7 +67,7 @@ function toObjectTypeRestrictionStatus(
 }
 
 function toLinkTypeRestrictionStatus(
-  p: EntityPermission
+  p: EntityPermission,
 ): LinkTypeRestrictionStatus {
   return {
     restrictedByDatasources: false,
@@ -78,7 +78,7 @@ function toLinkTypeRestrictionStatus(
 }
 
 function toInterfaceTypeRestrictionStatus(
-  p: EntityPermission
+  p: EntityPermission,
 ): InterfaceTypeRestrictionStatus {
   return {
     publicProject: p === "publicProject",
@@ -87,7 +87,7 @@ function toInterfaceTypeRestrictionStatus(
 }
 
 function toSharedPropertyTypeRestrictionStatus(
-  p: EntityPermission
+  p: EntityPermission,
 ): SharedPropertyTypeRestrictionStatus {
   return {
     publicProject: p === "publicProject",
@@ -96,7 +96,7 @@ function toSharedPropertyTypeRestrictionStatus(
 }
 
 export function convertOntologyDefinitionToWireBlockData(
-  ontology: OntologyDefinition
+  ontology: OntologyDefinition,
 ): OntologyIrOntologyBlockDataV2 {
   return {
     objectTypes: Object.fromEntries(
@@ -104,12 +104,12 @@ export function convertOntologyDefinitionToWireBlockData(
         [string, OntologyIrObjectTypeBlockDataV2]
       >(([apiName, objectType]) => {
         return [apiName, convertObject(objectType)];
-      })
+      }),
     ),
     sharedPropertyTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]).map<
         [string, OntologyIrSharedPropertyTypeBlockDataV2]
-      >(([apiName, spt]) => [apiName, { sharedPropertyType: convertSpt(spt) }])
+      >(([apiName, spt]) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
     ),
     interfaceTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
@@ -121,21 +121,21 @@ export function convertOntologyDefinitionToWireBlockData(
             interfaceType: convertInterface(interfaceType),
           },
         ];
-      })
+      }),
     ),
     linkTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
         [string, OntologyIrLinkTypeBlockDataV2]
       >(([id, link]) => {
         return [cleanAndValidateLinkTypeId(id), convertLink(link)];
-      })
+      }),
     ),
     actionTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
         [string, OntologyIrActionTypeBlockDataV2]
       >(([apiName, action]) => {
         return [apiName, convertAction(action)];
-      })
+      }),
     ),
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
@@ -147,12 +147,12 @@ export function convertOntologyDefinitionToWireBlockData(
                 apiName,
                 {
                   restrictionStatus: toActionTypeRestrictionStatus(
-                    action.permission ?? "roles"
+                    action.permission ?? "roles",
                   ),
                 },
               ];
-            }
-          )
+            },
+          ),
       ),
       objectTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE])
@@ -163,12 +163,12 @@ export function convertOntologyDefinitionToWireBlockData(
                 apiName,
                 {
                   restrictionStatus: toObjectTypeRestrictionStatus(
-                    objectType.permission!
+                    objectType.permission!,
                   ),
                 },
               ];
-            }
-          )
+            },
+          ),
       ),
       linkTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE])
@@ -178,11 +178,11 @@ export function convertOntologyDefinitionToWireBlockData(
               cleanAndValidateLinkTypeId(id),
               {
                 restrictionStatus: toLinkTypeRestrictionStatus(
-                  link.permission!
+                  link.permission!,
                 ),
               },
             ];
-          })
+          }),
       ),
       interfaceTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
@@ -193,12 +193,12 @@ export function convertOntologyDefinitionToWireBlockData(
                 apiName,
                 {
                   restrictionStatus: toInterfaceTypeRestrictionStatus(
-                    iface.permission!
+                    iface.permission!,
                   ),
                 },
               ];
-            }
-          )
+            },
+          ),
       ),
       sharedPropertyTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE])
@@ -209,12 +209,12 @@ export function convertOntologyDefinitionToWireBlockData(
                 apiName,
                 {
                   restrictionStatus: toSharedPropertyTypeRestrictionStatus(
-                    spt.permission!
+                    spt.permission!,
                   ),
                 },
               ];
-            }
-          )
+            },
+          ),
       ),
     },
   };

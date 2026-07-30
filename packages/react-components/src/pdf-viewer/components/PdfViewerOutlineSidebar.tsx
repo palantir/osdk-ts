@@ -104,14 +104,14 @@ function PdfViewerOutlineItem({
         onClick(item.pageNumber);
       }
     },
-    [onClick, item.pageNumber]
+    [onClick, item.pageNumber],
   );
 
   const itemClassName = classnames(
     styles.outlineItem,
     isActive && styles.outlineItemActive,
     item.bold && styles.outlineItemBold,
-    item.italic && styles.outlineItemItalic
+    item.italic && styles.outlineItemItalic,
   );
 
   const paddingLeft = INDENT_PER_DEPTH * item.depth + 12;

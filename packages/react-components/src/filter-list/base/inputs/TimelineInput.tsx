@@ -62,7 +62,7 @@ function TimelineInputInner({
       const date = parseDateFromInput(e.target.value);
       onChange(date, endDate);
     },
-    [onChange, endDate]
+    [onChange, endDate],
   );
 
   const handleEndChange = useCallback(
@@ -70,7 +70,7 @@ function TimelineInputInner({
       const date = parseDateFromInput(e.target.value);
       onChange(startDate, date);
     },
-    [onChange, startDate]
+    [onChange, startDate],
   );
 
   const handleClear = useCallback(() => {

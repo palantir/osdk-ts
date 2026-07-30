@@ -32,12 +32,12 @@ import type { ReleaseManagementNamespaceSettings as _installmanager_api_ReleaseM
 export async function putNamespaceReleaseManagementSettings(
   ctx: ConjureContext,
   namespaceRid: _api_NamespaceRid,
-  settings: _installmanager_api_ReleaseManagementNamespaceSettings
+  settings: _installmanager_api_ReleaseManagementNamespaceSettings,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/${namespaceRid}/release-management-settings`,
     "PUT",
-    settings
+    settings,
   );
 }

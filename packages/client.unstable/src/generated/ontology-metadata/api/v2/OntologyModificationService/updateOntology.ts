@@ -29,12 +29,12 @@ import type {
 export async function updateOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_OntologyUpdateRequest
+  request: _api_modification_OntologyUpdateRequest,
 ): Promise<_api_modification_OntologyUpdateResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/update/${ontologyRid}`,
     "POST",
-    request
+    request,
   );
 }

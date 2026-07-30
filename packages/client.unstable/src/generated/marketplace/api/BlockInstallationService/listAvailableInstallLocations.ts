@@ -22,7 +22,7 @@ import type { ListAvailableInstallLocationsResponse as _api_ListAvailableInstall
  * Lists the install locations that the user has access to install in.
  */
 export async function listAvailableInstallLocations(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_ListAvailableInstallLocationsResponse> {
   return conjureFetch(ctx, `/block-installation/install-location`, "GET");
 }

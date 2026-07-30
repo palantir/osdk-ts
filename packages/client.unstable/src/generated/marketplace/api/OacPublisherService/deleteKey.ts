@@ -29,12 +29,12 @@ import type {
 export async function deleteKey(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_DeleteKeyRequest
+  request: _api_DeleteKeyRequest,
 ): Promise<_api_DeleteKeyResponse> {
   return conjureFetch(
     ctx,
     `/oac-publisher/${marketplaceRid}/delete-key`,
     "DELETE",
-    request
+    request,
   );
 }

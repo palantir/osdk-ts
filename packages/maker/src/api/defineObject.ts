@@ -60,7 +60,7 @@ const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/u;
 
 export function defineObject(
-  objectDefInput: ObjectTypeDefinition
+  objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
   const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
@@ -72,73 +72,73 @@ export function defineObject(
     undefined
   ) {
     throw new Error(
-      `Object type with apiName ${objectDef.apiName} is already defined`
+      `Object type with apiName ${objectDef.apiName} is already defined`,
     );
   }
   invariant(
     isValidObjectApiName(objectDef.apiName),
-    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`
+    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
   propertyApiNames.forEach((apiName) => {
     invariant(
       isValidApiName(apiName),
-      `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`
+      `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
     );
   });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
-    `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`
+    `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
   );
   invariant(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
-    `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
 
   invariant(
     !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
-    `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
-      (ds) => ds.type !== "dataset"
+      (ds) => ds.type !== "dataset",
     );
     invariant(
       nonDatasetDatasources.length === 0,
       `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
         .map((ds) => ds.type)
         .join(", ")}) and cannot use includeEmptyBackingDatasource. ` +
-        `Empty backing datasources are only supported for object types with dataset datasources.`
+        `Empty backing datasources are only supported for object types with dataset datasources.`,
     );
   }
 
   const retentionPeriods = (
     (objectDef.datasources ?? []).filter(
-      (ds) => ds.type === "stream"
+      (ds) => ds.type === "stream",
     ) as ObjectTypeDatasourceDefinition_stream[]
   ).map((ds) => ds.retentionPeriod);
   retentionPeriods.forEach((retentionPeriod) => {
     invariant(
       retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
-      `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`
+      `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
     );
   });
 
   const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type)
+    ["dataset", "stream", "restrictedView"].includes(ds.type),
   );
   invariant(
     baseDatasources.length <= 1,
     `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
       .map((ds) => ds.type)
-      .join(", ")}])`
+      .join(", ")}])`,
   );
   const derivedDatasources = (objectDef.datasources ?? []).filter(
-    (ds) => ds.type === "derived"
+    (ds) => ds.type === "derived",
   );
   if (derivedDatasources.length > 0) {
     derivedDatasources.forEach((ds) =>
-      validateDerivedDatasource(objectDef, ds)
+      validateDerivedDatasource(objectDef, ds),
     );
   }
 
@@ -162,13 +162,13 @@ export function defineObject(
             mismatchedProperties.push(apiName);
           }
         }
-      }
+      },
     );
     invariant(
       mismatchedProperties.length === 0,
       `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${mismatchedProperties.join(
-        ", "
-      )}`
+        ", ",
+      )}`,
     );
   }
 
@@ -181,7 +181,7 @@ export function defineObject(
     const deadline = objectDef.status.deadline;
     invariant(
       deadline !== undefined && ISO_8601_DATETIME.test(deadline),
-      `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`
+      `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
   const titleProp =
@@ -191,18 +191,18 @@ export function defineObject(
       (isStruct(titleProp) &&
         titleProp.mainValue &&
         !isExotic(titleProp.mainValue.type)),
-    `Title property ${objectDef.titlePropertyApiName} must be a primitive type`
+    `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
     !isExotic(
-      objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type
+      objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
     ),
-    `Primary key property ${objectDef.primaryKeyPropertyApiName} can only be primitive types`
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
   objectDef.implementsInterfaces?.forEach((interfaceImpl) => {
     const allInterfaceProperties = getFlattenedInterfaceProperties(
-      interfaceImpl.implements
+      interfaceImpl.implements,
     );
     const nonExistentInterfaceProperties: ValidationResult[] =
       interfaceImpl.propertyMapping
@@ -212,7 +212,7 @@ export function defineObject(
             allInterfaceProperties[addNamespaceIfNone(interfaceProperty)] ===
               undefined &&
             allInterfaceProperties[withoutNamespace(interfaceProperty)] ===
-              undefined
+              undefined,
         )
         .map((interfaceProp) => ({
           type: "invalid",
@@ -222,17 +222,17 @@ export function defineObject(
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map((mapping) => {
         const namespacedInterfaceProperty = addNamespaceIfNone(
-          mapping.interfaceProperty
+          mapping.interfaceProperty,
         );
         const interfaceProperty =
           allInterfaceProperties[namespacedInterfaceProperty] !== undefined
             ? namespacedInterfaceProperty
             : withoutNamespace(mapping.interfaceProperty);
         return [interfaceProperty, mapping.mapsTo];
-      })
+      }),
     );
     const validateProperty = (
-      interfaceProp: [string, InterfacePropertyType]
+      interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       const apiName = isInterfaceSharedPropertyType(interfaceProp[1])
         ? interfaceProp[1].sharedPropertyType.apiName
@@ -242,7 +242,7 @@ export function defineObject(
           interfaceProp[1],
           apiName,
           interfaceToObjectProperties[apiName],
-          objectDef
+          objectDef,
         );
       }
       if (interfaceProp[1].required === false) {
@@ -254,21 +254,21 @@ export function defineObject(
       };
     };
     const validations = Object.entries(
-      getFlattenedInterfaceProperties(interfaceImpl.implements)
+      getFlattenedInterfaceProperties(interfaceImpl.implements),
     ).map(validateProperty);
     const allFailedValidations = validations
       .concat(nonExistentInterfaceProperties)
       .filter((val) => val.type === "invalid");
     invariant(
       allFailedValidations.length === 0,
-      "\n" + allFailedValidations.map(formatValidationErrors).join("\n")
+      "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
   });
 
   const flattenedProperties: Array<ObjectPropertyType> = Object.entries(
-    objectDef.properties ?? {}
+    objectDef.properties ?? {},
   ).map(([apiName, property]) =>
-    convertUserObjectPropertyType(apiName, property)
+    convertUserObjectPropertyType(apiName, property),
   );
 
   const finalObject: ObjectType = {
@@ -296,7 +296,7 @@ function validateInterfaceImplProperty(
   type: InterfacePropertyType,
   apiName: string,
   mappedObjectProp: string,
-  object: ObjectTypeDefinition
+  object: ObjectTypeDefinition,
 ): ValidationResult {
   const objProp = object.properties?.[mappedObjectProp];
   if (objProp === undefined) {
@@ -324,7 +324,7 @@ export function uppercaseFirstLetter(s: string | undefined | null): string {
 
 // TODO: edge cases
 export function convertToPluralDisplayName(
-  s: string | undefined | null
+  s: string | undefined | null,
 ): string {
   return s === undefined || s == null
     ? ""
@@ -335,7 +335,7 @@ export function convertToPluralDisplayName(
 
 function convertUserObjectPropertyType(
   apiName: string,
-  property: ObjectPropertyTypeUserDefinition
+  property: ObjectPropertyTypeUserDefinition,
 ): ObjectPropertyType {
   // fill in missing fields to be used by actions
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
@@ -348,12 +348,12 @@ function convertUserObjectPropertyType(
 }
 function validateDerivedDatasource(
   objectDef: ObjectTypeDefinition,
-  datasource: ObjectTypeDatasourceDefinition_derived
+  datasource: ObjectTypeDatasourceDefinition_derived,
 ) {
   // there should be at least one link
   invariant(
     datasource.linkDefinition.length > 0,
-    `Derived datasource for object '${objectDef.apiName}' must have at least one link.`
+    `Derived datasource for object '${objectDef.apiName}' must have at least one link.`,
   );
 
   // all of the links references should exist
@@ -364,7 +364,7 @@ function validateDerivedDatasource(
         undefined ||
         importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkApiName] !==
           undefined,
-      `Link type '${linkApiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`
+      `Link type '${linkApiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 
@@ -372,7 +372,7 @@ function validateDerivedDatasource(
   Object.keys(datasource.propertyMapping).forEach((prop) => {
     invariant(
       objectDef.properties?.[prop] !== undefined,
-      `Property '${prop}' used in derived datasource for object '${objectDef.apiName}' is not defined.`
+      `Property '${prop}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 
@@ -391,7 +391,7 @@ function validateDerivedDatasource(
  */
 function getPropertiesForValidation(
   linkObject: string | ObjectTypeDefinition | ObjectType,
-  objectDef: ObjectTypeDefinition
+  objectDef: ObjectTypeDefinition,
 ): { apiName: string; hasProperty: (propName: string) => boolean } {
   const targetApiName =
     typeof linkObject === "string" ? linkObject : linkObject.apiName;
@@ -417,28 +417,28 @@ function getPropertiesForValidation(
 
 function validateLinkedProperties(
   datasource: ObjectTypeDatasourceDefinition_derived,
-  objectDef: ObjectTypeDefinition
+  objectDef: ObjectTypeDefinition,
 ) {
   const foreignProperties = Object.values(
-    datasource.propertyMapping
+    datasource.propertyMapping,
   ) as string[];
   // the foreign property must exist in the final object in the link chain
   const targetObject = datasource.linkDefinition.at(-1)!.linkType.toMany.object;
   const { apiName, hasProperty } = getPropertiesForValidation(
     targetObject,
-    objectDef
+    objectDef,
   );
   foreignProperties.forEach((prop) => {
     invariant(
       hasProperty(prop),
-      `Property '${prop}' on object '${apiName}' is not defined`
+      `Property '${prop}' on object '${apiName}' is not defined`,
     );
   });
 }
 
 function validateAggregations(
   datasource: ObjectTypeDatasourceDefinition_derived,
-  objectDef: ObjectTypeDefinition
+  objectDef: ObjectTypeDefinition,
 ) {
   const props = datasource.propertyMapping as Record<
     string,
@@ -455,12 +455,12 @@ function validateAggregations(
         // property's type is collectible
         invariant(
           isCollectible(property),
-          `Property '${propName}' on object '${objectDef.apiName}' is not collectible`
+          `Property '${propName}' on object '${objectDef.apiName}' is not collectible`,
         );
         // limit <= 100
         invariant(
           agg.limit <= 100,
-          `[Error] Limit for collection '${propName}' on object '${objectDef.apiName}' is greater than 100`
+          `[Error] Limit for collection '${propName}' on object '${objectDef.apiName}' is greater than 100`,
         );
         break;
       case "avg":
@@ -468,7 +468,7 @@ function validateAggregations(
         // property's type is numeric
         invariant(
           isNumeric(property.type),
-          `Property '${propName}' on object '${objectDef.apiName}' is not numeric`
+          `Property '${propName}' on object '${objectDef.apiName}' is not numeric`,
         );
         break;
       case "min":
@@ -478,7 +478,7 @@ function validateAggregations(
         // property's type is primitive
         invariant(
           isPrimitive(property.type),
-          `Property '${propName}' on object '${objectDef.apiName}' is not primitive`
+          `Property '${propName}' on object '${objectDef.apiName}' is not primitive`,
         );
         break;
       default:
@@ -492,11 +492,11 @@ function validateAggregations(
         datasource.linkDefinition.at(-1)!.linkType.toMany.object;
       const { apiName, hasProperty } = getPropertiesForValidation(
         targetObject,
-        objectDef
+        objectDef,
       );
       invariant(
         hasProperty(foreignProperty),
-        `Property '${foreignProperty}' on object '${apiName}' is not defined`
+        `Property '${foreignProperty}' on object '${apiName}' is not defined`,
       );
     }
   });
@@ -529,7 +529,7 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
 function isNumeric(type: PropertyTypeType): boolean {
   const typeType = typeof type === "string" ? type : type.type;
   return ["byte", "double", "float", "integer", "long", "short"].includes(
-    typeType
+    typeType,
   );
 }
 

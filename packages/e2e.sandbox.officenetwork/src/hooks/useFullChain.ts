@@ -17,7 +17,7 @@ interface UseFullChainResult {
 
 function useChainLevel(
   employee: Employee.OsdkInstance | undefined,
-  enabled: boolean
+  enabled: boolean,
 ): { manager: Employee.OsdkInstance | undefined; isLoading: boolean } {
   const { links, isLoading } = useLinks(employee, "lead", {
     enabled,
@@ -33,7 +33,7 @@ function useChainLevel(
 }
 
 export function useFullChain(
-  employee: Employee.OsdkInstance | null
+  employee: Employee.OsdkInstance | null,
 ): UseFullChainResult {
   const [chain, setChain] = React.useState<ChainNode[]>([]);
 
@@ -41,27 +41,27 @@ export function useFullChain(
   const level1 = useChainLevel(
     level0.manager,
     !!level0.manager &&
-      level0.manager.employeeNumber !== employee?.employeeNumber
+      level0.manager.employeeNumber !== employee?.employeeNumber,
   );
   const level2 = useChainLevel(
     level1.manager,
     !!level1.manager &&
-      level1.manager.employeeNumber !== level0.manager?.employeeNumber
+      level1.manager.employeeNumber !== level0.manager?.employeeNumber,
   );
   const level3 = useChainLevel(
     level2.manager,
     !!level2.manager &&
-      level2.manager.employeeNumber !== level1.manager?.employeeNumber
+      level2.manager.employeeNumber !== level1.manager?.employeeNumber,
   );
   const level4 = useChainLevel(
     level3.manager,
     !!level3.manager &&
-      level3.manager.employeeNumber !== level2.manager?.employeeNumber
+      level3.manager.employeeNumber !== level2.manager?.employeeNumber,
   );
   const level5 = useChainLevel(
     level4.manager,
     !!level4.manager &&
-      level4.manager.employeeNumber !== level3.manager?.employeeNumber
+      level4.manager.employeeNumber !== level3.manager?.employeeNumber,
   );
 
   React.useEffect(() => {

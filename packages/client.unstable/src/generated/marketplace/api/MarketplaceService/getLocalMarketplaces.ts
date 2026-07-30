@@ -28,7 +28,7 @@ import type {
  */
 export async function getLocalMarketplaces(
   ctx: ConjureContext,
-  marketplaceBulkRequest: Array<_api_MarketplaceRid>
+  marketplaceBulkRequest: Array<_api_MarketplaceRid>,
 ): Promise<_api_MarketplaceBulkResult> {
   return conjureFetch(ctx, `/marketplaces/bulk`, "GET", undefined, {
     marketplaceBulkRequest,

@@ -29,7 +29,7 @@ import type {
 export async function aggregate(
   ctx: ConjureContext,
   request: _api_AggregateRequest,
-  backend: _api_Backend | null | undefined
+  backend: _api_Backend | null | undefined,
 ): Promise<_api_AggregateResponse> {
   return conjureFetch(ctx, `/aggregate`, "PUT", request);
 }

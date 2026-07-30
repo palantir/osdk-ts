@@ -29,7 +29,7 @@ import type { ArtifactsRepositoryRid } from "../ArtifactsRepositoryRid.js";
  */
 export async function getWebsiteRepository(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<ArtifactsRepositoryRid> {
   return conjureFetch(ctx, `/application-websites/${applicationRid}`, "GET");
 }

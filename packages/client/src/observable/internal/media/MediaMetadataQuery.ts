@@ -64,7 +64,7 @@ export class MediaMetadataQuery extends Query<
     primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
     propertyName: string,
     cacheKey: MediaMetadataCacheKey,
-    opts: MediaMetadataObserveOptions
+    opts: MediaMetadataObserveOptions,
   ) {
     super(
       store,
@@ -76,11 +76,11 @@ export class MediaMetadataQuery extends Query<
             {},
             {
               msgPrefix: `MediaMetadataQuery<${objectType}, ${JSON.stringify(
-                primaryKey
+                primaryKey,
               )}, ${propertyName}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
 
     this.#objectType = objectType;
@@ -90,7 +90,7 @@ export class MediaMetadataQuery extends Query<
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<MediaMetadataCacheKey>>
+    subject: Observable<SubjectPayload<MediaMetadataCacheKey>>,
   ): Connectable<MediaMetadataPayload> {
     return connectable<MediaMetadataPayload>(
       subject.pipe(
@@ -99,7 +99,7 @@ export class MediaMetadataQuery extends Query<
           status: x.status,
           lastUpdated: x.lastUpdated,
           isOptimistic: x.isOptimistic,
-        }))
+        })),
       ),
       {
         connector: () =>
@@ -109,7 +109,7 @@ export class MediaMetadataQuery extends Query<
             lastUpdated: 0,
             isOptimistic: false,
           }),
-      }
+      },
     );
   }
 
@@ -134,7 +134,7 @@ export class MediaMetadataQuery extends Query<
           this.#objectType,
           String(this.#primaryKey),
           this.#propertyName,
-          { preview: this.#preview }
+          { preview: this.#preview },
         );
 
       const metadata: MediaMetadata = {
@@ -164,7 +164,7 @@ export class MediaMetadataQuery extends Query<
   writeToStore(
     metadata: MediaMetadata | undefined,
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<MediaMetadataCacheKey> {
     const entry = batch.read(this.cacheKey);
 
@@ -188,7 +188,7 @@ export class MediaMetadataQuery extends Query<
 
   maybeUpdateAndRevalidate = (
     changes: Changes,
-    optimisticId: OptimisticId | undefined
+    optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
       this.logger

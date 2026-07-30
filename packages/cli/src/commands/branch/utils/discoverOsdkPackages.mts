@@ -46,14 +46,14 @@ export interface DiscoverDeps {
  * an `osdk` object. Non-recursive: only the root package.json's `dependencies` are inspected.
  */
 export async function discoverOsdkPackages(
-  deps: DiscoverDeps
+  deps: DiscoverDeps,
 ): Promise<DiscoveredOsdkPackage[]> {
   const rootPath = await findUp("package.json", { cwd: deps.cwd });
   if (rootPath == null) {
     throw new ExitProcessError(
       1,
       "Could not find a package.json in the current directory or any parent.",
-      "Run `@osdk/cli unstable branch sync` from within your project."
+      "Run `@osdk/cli unstable branch sync` from within your project.",
     );
   }
 
@@ -65,14 +65,14 @@ export async function discoverOsdkPackages(
       1,
       `Could not read ${rootPath}.`,
       "Ensure it is valid JSON.",
-      e instanceof Error ? e : undefined
+      e instanceof Error ? e : undefined,
     );
   }
 
   const baseDir = dirname(rootPath);
   const found: DiscoveredOsdkPackage[] = [];
   for (const [name, declaredVersion] of Object.entries(
-    root.dependencies ?? {}
+    root.dependencies ?? {},
   )) {
     const installedPath = resolvePackageJsonPath(name, baseDir);
     if (installedPath == null) continue;
@@ -80,7 +80,7 @@ export async function discoverOsdkPackages(
     let installed: OsdkPackageJson;
     try {
       installed = JSON.parse(
-        await deps.readFile(installedPath)
+        await deps.readFile(installedPath),
       ) as OsdkPackageJson;
     } catch {
       continue; // unreadable installed package.json — skip
@@ -103,7 +103,7 @@ export async function discoverOsdkPackages(
  */
 function resolvePackageJsonPath(
   name: string,
-  baseDir: string
+  baseDir: string,
 ): string | undefined {
   return resolvePackagePath(name, baseDir) ?? undefined;
 }

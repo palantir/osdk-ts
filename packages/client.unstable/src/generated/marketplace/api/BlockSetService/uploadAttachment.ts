@@ -49,7 +49,7 @@ export async function uploadAttachment(
   filename: _api_Filename,
   mimeType: _api_MimeType,
   isThumbnail: boolean | null | undefined,
-  content: string
+  content: string,
 ): Promise<_api_UploadAttachmentResponse> {
   return conjureFetch(
     ctx,
@@ -57,6 +57,6 @@ export async function uploadAttachment(
     "POST",
     content,
     { filename, mimeType, isThumbnail },
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

@@ -32,7 +32,7 @@ export class Layers {
   #topLayer: Layer;
   #onRevalidate: (
     changes: Changes,
-    optimisticId?: OptimisticId
+    optimisticId?: OptimisticId,
   ) => Promise<void>;
 
   logger?: Logger;
@@ -46,7 +46,7 @@ export class Layers {
     logger?: Logger;
     onRevalidate: (
       changes: Changes,
-      optimisticId?: OptimisticId
+      optimisticId?: OptimisticId,
     ) => Promise<void>;
   }) {
     this.logger = logger;
@@ -66,7 +66,7 @@ export class Layers {
   remove(layerId: OptimisticId): void {
     invariant(
       layerId != null,
-      "undefined is the reserved layerId for the truth layer"
+      "undefined is the reserved layerId for the truth layer",
     );
     // 1. collect all cache keys for a given layerId
     let currentLayer: Layer | undefined = this.#topLayer;
@@ -111,7 +111,7 @@ export class Layers {
       optimisticId?: OptimisticId;
       changes: Changes;
     },
-    batchFn: (batchContext: BatchContext) => X
+    batchFn: (batchContext: BatchContext) => X,
   ): {
     batchResult: BatchContext;
     retVal: X;
@@ -119,7 +119,7 @@ export class Layers {
   } {
     invariant(
       optimisticId === undefined || !!optimisticId,
-      "optimistic must be undefined or not falsy"
+      "optimistic must be undefined or not falsy",
     );
 
     const batchContext: BatchContext = this.#createBatchContext({

@@ -30,7 +30,7 @@ import type {
  */
 export async function bulkGetMonitorVersions(
   ctx: ConjureContext,
-  request: _api_registry_BulkGetMonitorVersionsRequest
+  request: _api_registry_BulkGetMonitorVersionsRequest,
 ): Promise<_api_registry_BulkGetMonitorVersionsResponse> {
   return conjureFetch(ctx, `/registry/v0/monitors-getVersions`, "PUT", request);
 }

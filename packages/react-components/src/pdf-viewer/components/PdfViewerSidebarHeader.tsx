@@ -44,7 +44,7 @@ export function PdfViewerSidebarHeader({
         onSidebarModeChange(newValue[0] as SidebarMode);
       }
     },
-    [onSidebarModeChange]
+    [onSidebarModeChange],
   );
 
   return (

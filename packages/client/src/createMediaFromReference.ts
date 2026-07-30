@@ -30,17 +30,17 @@ import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js
 
 export function createMediaFromReference(
   client: Client,
-  mediaReference: MediaReference
+  mediaReference: MediaReference,
 ): Media {
   return createMediaFromReferenceInternal(
     client[additionalContext],
-    mediaReference
+    mediaReference,
   );
 }
 
 export function createMediaFromReferenceInternal(
   client: MinimalClient,
-  mediaReference: MediaReference
+  mediaReference: MediaReference,
 ): Media {
   const { mediaSetRid, mediaItemRid } =
     mediaReference.reference.mediaSetViewItem;
@@ -54,7 +54,7 @@ export function createMediaFromReferenceInternal(
         mediaSetRid,
         mediaItemRid,
         { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
     },
 
@@ -64,7 +64,7 @@ export function createMediaFromReferenceInternal(
         mediaSetRid,
         mediaItemRid,
         { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
 
       invariant(info.sizeBytes != null, "Expected sizeBytes in media info");
@@ -83,7 +83,7 @@ export function createMediaFromReferenceInternal(
         mediaSetRid,
         mediaItemRid,
         { preview: true },
-        token ? { ReadToken: token } : undefined
+        token ? { ReadToken: token } : undefined,
       );
       return { itemMetadata: validateMediaItemMetadata(raw) };
     },

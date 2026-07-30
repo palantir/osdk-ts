@@ -74,7 +74,7 @@ describe("usePdfViewerSearch", () => {
 
     const mockDocument = {} as PDFDocumentProxy;
     const { result } = renderHook(() =>
-      usePdfViewerSearch(eventBusRef, findControllerRef, mockDocument)
+      usePdfViewerSearch(eventBusRef, findControllerRef, mockDocument),
     );
 
     return { result, eventBus, findController };
@@ -118,7 +118,7 @@ describe("usePdfViewerSearch", () => {
         query: "hello",
         highlightAll: true,
         caseSensitive: false,
-      })
+      }),
     );
   });
 
@@ -140,7 +140,7 @@ describe("usePdfViewerSearch", () => {
       expect.objectContaining({
         type: "again",
         findPrevious: false,
-      })
+      }),
     );
   });
 
@@ -162,7 +162,7 @@ describe("usePdfViewerSearch", () => {
       expect.objectContaining({
         type: "again",
         findPrevious: true,
-      })
+      }),
     );
   });
 
@@ -236,7 +236,7 @@ describe("usePdfViewerSearch", () => {
       "find",
       expect.objectContaining({
         query: "",
-      })
+      }),
     );
   });
 });

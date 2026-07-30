@@ -55,7 +55,7 @@ export const PrimitiveSelectionPanel: React.FC<
   PrimitiveSelectionPanelProps
 > = ({ primitives, onSelectPrimitive, onClose }) => {
   const [openSections, setOpenSections] = useState<Set<PrimitiveType>>(
-    new Set(["action", "objectSet", "object", "link", "query", "aggregation"])
+    new Set(["action", "objectSet", "object", "link", "query", "aggregation"]),
   );
 
   const toggleSection = (section: PrimitiveType) => {

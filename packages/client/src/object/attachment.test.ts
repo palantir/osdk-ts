@@ -34,7 +34,7 @@ describe("attachments", () => {
   beforeAll(() => {
     ({ client, apiServer, fauxFoundry } = startNodeApiServer(
       new LegacyFauxFoundry(),
-      createClient
+      createClient,
     ));
 
     fauxFoundry.attachments.registerAttachment({
@@ -42,7 +42,7 @@ describe("attachments", () => {
       mediaType: "application/json",
       rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
       buffer: new TextEncoder().encode(
-        JSON.stringify({ name: "Hello World" }, null, 2)
+        JSON.stringify({ name: "Hello World" }, null, 2),
       ),
     });
   });
@@ -64,7 +64,7 @@ describe("attachments", () => {
     expect(attachmentMetadata?.mediaType).toEqual("application/json");
     expect(attachmentMetadata?.sizeBytes).toEqual(27);
     expect(attachmentMetadata?.rid).toEqual(
-      stubData.objectWithAllPropertyTypes1.attachment.rid
+      stubData.objectWithAllPropertyTypes1.attachment.rid,
     );
   });
 

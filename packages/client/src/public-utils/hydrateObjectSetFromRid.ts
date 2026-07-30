@@ -30,7 +30,7 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
 export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   client: Client,
   definition: T,
-  rid: string
+  rid: string,
 ): ObjectSet<T> {
   return createObjectSet(definition, client[additionalContext], {
     type: "intersect",

@@ -63,7 +63,7 @@ export class FunctionQuery extends Query<
     params: FunctionParams | undefined,
     cacheKey: FunctionCacheKey,
     opts: FunctionObserveOptions,
-    objectSetTypesPromise?: Promise<string[]>
+    objectSetTypesPromise?: Promise<string[]>,
   ) {
     super(
       store,
@@ -77,9 +77,9 @@ export class FunctionQuery extends Query<
               msgPrefix: `FunctionQuery<${cacheKey.otherKeys
                 .map((x) => JSON.stringify(x))
                 .join(", ")}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
     this.#apiName = queryDef.apiName;
     this.#version = queryDef.isFixedVersion ? queryDef.version : undefined;
@@ -120,7 +120,7 @@ export class FunctionQuery extends Query<
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<FunctionCacheKey>>
+    subject: Observable<SubjectPayload<FunctionCacheKey>>,
   ): Connectable<FunctionPayload> {
     return connectable<FunctionPayload>(
       subject.pipe(
@@ -132,7 +132,7 @@ export class FunctionQuery extends Query<
             lastUpdated: value?.executedAt ?? 0,
             error: value?.error,
           };
-        })
+        }),
       ),
       {
         connector: () =>
@@ -141,7 +141,7 @@ export class FunctionQuery extends Query<
             result: undefined,
             lastUpdated: 0,
           }),
-      }
+      },
     );
   }
 
@@ -160,7 +160,7 @@ export class FunctionQuery extends Query<
         applyQuery as (
           client: MinimalClient,
           query: QueryDefinition<unknown>,
-          params?: Record<string, unknown>
+          params?: Record<string, unknown>,
         ) => Promise<unknown>
       )(this.store.client[additionalContext], this.#queryDef, this.#params);
 
@@ -180,7 +180,7 @@ export class FunctionQuery extends Query<
         this.writeToStore(
           { result: undefined, executedAt: 0, error },
           "error",
-          batch
+          batch,
         );
       });
     }
@@ -189,7 +189,7 @@ export class FunctionQuery extends Query<
   writeToStore(
     data: FunctionCacheValue,
     status: "loading" | "loaded" | "error",
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<FunctionCacheKey> {
     batch.write(this.cacheKey, data, status);
     return batch.read(this.cacheKey)!;
@@ -197,7 +197,7 @@ export class FunctionQuery extends Query<
 
   invalidateObjectType = (
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void> => {
     // Check if this function depends on the given object type
     if (this.#dependsOn?.includes(objectType)) {
@@ -212,7 +212,7 @@ export class FunctionQuery extends Query<
       return false;
     }
     return this.#dependsOnObjects.some(
-      (obj) => obj.$apiName === apiName && obj.$primaryKey === primaryKey
+      (obj) => obj.$apiName === apiName && obj.$primaryKey === primaryKey,
     );
   }
 
@@ -223,7 +223,7 @@ export class FunctionQuery extends Query<
    */
   maybeUpdateAndRevalidate = (
     changes: Changes,
-    _optimisticId: OptimisticId | undefined
+    _optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (!this.#dependsOnObjects?.length) {
       return undefined;

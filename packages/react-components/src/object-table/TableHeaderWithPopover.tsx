@@ -21,18 +21,17 @@ import {
   Remove,
   Settings,
   Sort,
-  SortAlphabetical,
-  SortAlphabeticalDesc,
   Unpin,
   VerticalDistribution,
 } from "@blueprintjs/icons";
 import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { usePortalContainer } from "../shared/PortalContainerContext.js";
 import { useObjectTableLabels } from "./ObjectTableLabels.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
+import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./TableHeaderWithPopover.module.css";
@@ -57,7 +56,7 @@ function HeaderMenuItem({
         styles.osdkCenterContainer,
         styles.osdkContentGap,
         styles.osdkHeaderMenuItem,
-        active && styles.osdkHeaderActiveMenuItem
+        active && styles.osdkHeaderActiveMenuItem,
       )}
       onClick={onClick}
     >
@@ -192,6 +191,13 @@ export function TableHeaderWithPopover<TData extends RowData>({
   const sortIndex =
     currentSorting?.findIndex((s) => s.id === header.column.id) ?? -1;
 
+  // Match the sort glyphs to the column's property type: A→Z for text, 1→9 for
+  // numbers, plain ascending/descending arrows for dates and everything else.
+  const { asc: SortAscendingIcon, desc: SortDescendingIcon } = useMemo(
+    () => getSortIcons(header.column.columnDef.meta?.dataType),
+    [header.column.columnDef.meta?.dataType],
+  );
+
   const hasAnyMenuItems =
     showPinningItems ||
     (showSortingItems && isSortable) ||
@@ -206,7 +212,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
           className={classNames(
             styles.osdkCenterContainer,
             styles.osdkContentGap,
-            styles.osdkHeaderContainer
+            styles.osdkHeaderContainer,
           )}
           onContextMenu={handleInteraction}
         >
@@ -215,7 +221,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
               styles.osdkCenterContainer,
               styles.osdkContentGap,
               styles.osdkHeaderContentLeft,
-              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable
+              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
             )}
             onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
           >
@@ -226,15 +232,15 @@ export function TableHeaderWithPopover<TData extends RowData>({
             className={classNames(
               styles.osdkCenterContainer,
               styles.osdkContentGap,
-              styles.osdkHeaderContentRight
+              styles.osdkHeaderContentRight,
             )}
           >
             {isSorted && (
               <div className={styles.osdkCenterContainer}>
                 {isSorted === "asc" ? (
-                  <SortAlphabetical className={styles.osdkHeaderIcon} />
+                  <SortAscendingIcon className={styles.osdkHeaderIcon} />
                 ) : (
-                  <SortAlphabeticalDesc className={styles.osdkHeaderIcon} />
+                  <SortDescendingIcon className={styles.osdkHeaderIcon} />
                 )}
                 {currentSorting.length > 1 && sortIndex >= 0 && (
                   <span className={styles.sortIndex}>{sortIndex + 1}</span>
@@ -246,7 +252,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                 aria-label={labels.headerMenuAriaLabel(header.column.id)}
                 className={classNames(
                   styles.osdkCenterContainer,
-                  styles.osdkHeaderPopoverTrigger
+                  styles.osdkHeaderPopoverTrigger,
                 )}
               >
                 <ChevronDown className={styles.osdkHeaderIcon} />
@@ -276,13 +282,13 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <>
                     <HeaderMenuItem
                       onClick={handleSortAscending}
-                      icon={SortAlphabetical}
+                      icon={SortAscendingIcon}
                       label={labels.headerMenuSortAscending}
                       active={isSorted === "asc"}
                     />
                     <HeaderMenuItem
                       onClick={handleSortDescending}
-                      icon={SortAlphabeticalDesc}
+                      icon={SortDescendingIcon}
                       label={labels.headerMenuSortDescending}
                       active={isSorted === "desc"}
                     />

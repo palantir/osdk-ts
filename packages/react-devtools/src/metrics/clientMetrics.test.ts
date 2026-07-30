@@ -117,7 +117,7 @@ describe("getClientMetrics", () => {
               didTimeout: false,
               timeRemaining: () => 50,
             }),
-          0
+          0,
         ) as unknown as number;
       }) as typeof globalThis.requestIdleCallback;
       globalThis.cancelIdleCallback = ((id: number) => {
@@ -160,7 +160,7 @@ describe("getClientMetrics", () => {
 
   it("assigns request and millisecond units", () => {
     const metrics = getClientMetrics(
-      makeSnapshot({ cacheHits: 5, revalidations: 3, deduplications: 2 })
+      makeSnapshot({ cacheHits: 5, revalidations: 3, deduplications: 2 }),
     );
 
     expect(metrics.requestsSaved.unit).toBe("requests");
@@ -180,7 +180,7 @@ describe("getClientMetrics", () => {
         cacheHits: 10,
         cacheMisses: 5,
         networkResponseTime: 500,
-      })
+      }),
     );
 
     expect(metrics.avgNetworkMs.value).toBeCloseTo(100);
@@ -193,7 +193,7 @@ describe("getClientMetrics", () => {
     // Requests saved has samples, but with too few misses the network-latency
     // baseline has no value, so the derived estimate must stay undefined.
     const metrics = getClientMetrics(
-      makeSnapshot({ cacheHits: 3, cacheMisses: 2, networkResponseTime: 200 })
+      makeSnapshot({ cacheHits: 3, cacheMisses: 2, networkResponseTime: 200 }),
     );
 
     expect(metrics.requestsSaved.value).toBeDefined();
@@ -213,22 +213,22 @@ describe("getClientMetrics", () => {
 
   it("gates latency metrics at the five-sample threshold", () => {
     const below = getClientMetrics(
-      makeSnapshot({ cacheMisses: 4, networkResponseTime: 400 })
+      makeSnapshot({ cacheMisses: 4, networkResponseTime: 400 }),
     );
     expect(below.avgNetworkMs.value).toBeUndefined();
 
     const atThreshold = getClientMetrics(
-      makeSnapshot({ cacheMisses: 5, networkResponseTime: 500 })
+      makeSnapshot({ cacheMisses: 5, networkResponseTime: 500 }),
     );
     expect(atThreshold.avgNetworkMs.value).toBeCloseTo(100);
   });
 
   it("gates requestsSaved at the single-sample threshold", () => {
     expect(
-      getClientMetrics(makeSnapshot({})).requestsSaved.value
+      getClientMetrics(makeSnapshot({})).requestsSaved.value,
     ).toBeUndefined();
     expect(
-      getClientMetrics(makeSnapshot({ cacheHits: 1 })).requestsSaved.value
+      getClientMetrics(makeSnapshot({ cacheHits: 1 })).requestsSaved.value,
     ).toBeDefined();
   });
 
@@ -238,7 +238,7 @@ describe("getClientMetrics", () => {
         actionCount: 2,
         optimisticActionCount: 1,
         rollbackActionCount: 1,
-      })
+      }),
     );
     expect(below.optimisticCoverage.value).toBeUndefined();
     expect(below.rollbackRate.value).toBeUndefined();
@@ -248,7 +248,7 @@ describe("getClientMetrics", () => {
         actionCount: 3,
         optimisticActionCount: 3,
         rollbackActionCount: 0,
-      })
+      }),
     );
     expect(atThreshold.optimisticCoverage.value).toBeCloseTo(1);
     expect(atThreshold.rollbackRate.value).toBeCloseTo(0);

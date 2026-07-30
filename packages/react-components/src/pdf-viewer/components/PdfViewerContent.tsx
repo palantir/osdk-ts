@@ -89,7 +89,7 @@ export function PdfViewerContent({
       }
       onPageChangeRef.current?.(viewer.currentPage);
     },
-    [viewer.currentPage]
+    [viewer.currentPage],
   );
 
   useEffect(
@@ -99,7 +99,7 @@ export function PdfViewerContent({
       }
       onScaleChangeRef.current?.(viewer.scale);
     },
-    [viewer.scale]
+    [viewer.scale],
   );
 
   useEffect(function clearInitialMount() {

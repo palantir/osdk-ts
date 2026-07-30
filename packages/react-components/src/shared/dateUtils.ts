@@ -44,7 +44,7 @@ export function formatTime(date: Date): string {
 }
 
 export function parseDateFromInput(
-  value: string | undefined | null
+  value: string | undefined | null,
 ): Date | undefined {
   if (!value) return undefined;
   const date = new Date(value + "T00:00:00");
@@ -53,7 +53,7 @@ export function parseDateFromInput(
 
 export function formatDateForDisplay(
   date: Date | undefined | null,
-  fallback: string = ""
+  fallback: string = "",
 ): string {
   if (date == null) return fallback;
   return date.toLocaleDateString(undefined, {
@@ -76,7 +76,7 @@ export function formatDatetimeForInput(date: Date | undefined | null): string {
  * it as a local datetime (e.g. "2024-06-15T14:30").
  */
 export function parseDatetimeFromInput(
-  value: string | undefined | null
+  value: string | undefined | null,
 ): Date | undefined {
   if (!value) return undefined;
   const normalized = value.includes("T") ? value : value.replace(/\s/u, "T");
@@ -88,7 +88,7 @@ export function parseDatetimeFromInput(
 export function isDateInRange(
   date: Date,
   min: Date | undefined,
-  max: Date | undefined
+  max: Date | undefined,
 ): boolean {
   if (min != null && date.getTime() < min.getTime()) return false;
   if (max != null && date.getTime() > max.getTime()) return false;
@@ -96,7 +96,7 @@ export function isDateInRange(
 }
 
 export function parseDateFromISO(
-  value: string | Date | undefined | null
+  value: string | Date | undefined | null,
 ): Date | undefined {
   if (value == null) return undefined;
   if (value instanceof Date) return value;

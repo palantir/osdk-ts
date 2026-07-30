@@ -28,11 +28,11 @@ import type {
  */
 export async function getContainerModuleGroupStatus(
   ctx: ConjureContext,
-  moduleGroupName: _ModuleGroupName
+  moduleGroupName: _ModuleGroupName,
 ): Promise<_ContainerModuleGroupStatusInfoV2> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}/container-module-group-status`,
-    "GET"
+    "GET",
   );
 }

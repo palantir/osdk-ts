@@ -26,12 +26,12 @@ import type {
  */
 export async function getBulkAccessRequestsForOntologyEntity(
   ctx: ConjureContext,
-  request: _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest
+  request: _api_accessrequest_BulkGetAccessRequestForOntologyEntityRequest,
 ): Promise<_api_accessrequest_BulkGetAccessRequestsForOntologyEntityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/getAccessRequestsForOntologyEntity`,
     "POST",
-    request
+    request,
   );
 }

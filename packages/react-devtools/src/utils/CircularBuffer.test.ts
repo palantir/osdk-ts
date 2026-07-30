@@ -29,13 +29,13 @@ describe("CircularBuffer", () => {
 
     it("should throw error for zero capacity", () => {
       expect(() => new CircularBuffer<number>(0)).toThrow(
-        "CircularBuffer capacity must be positive"
+        "CircularBuffer capacity must be positive",
       );
     });
 
     it("should throw error for negative capacity", () => {
       expect(() => new CircularBuffer<number>(-5)).toThrow(
-        "CircularBuffer capacity must be positive"
+        "CircularBuffer capacity must be positive",
       );
     });
   });

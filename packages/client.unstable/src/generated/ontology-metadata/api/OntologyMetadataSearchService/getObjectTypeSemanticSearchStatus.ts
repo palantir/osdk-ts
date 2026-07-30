@@ -23,11 +23,11 @@ import type { GetObjectTypeSemanticSearchStatusResponse as _api_search_GetObject
  * Returns whether it is enabled and, if not, the primary reason why it is disabled.
  */
 export async function getObjectTypeSemanticSearchStatus(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_search_GetObjectTypeSemanticSearchStatusResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/objectTypeSemanticSearchStatus`,
-    "GET"
+    "GET",
   );
 }

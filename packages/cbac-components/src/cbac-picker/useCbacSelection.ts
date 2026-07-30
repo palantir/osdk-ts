@@ -32,10 +32,10 @@ export interface UseCbacSelectionResult extends UseCbacPickerStateResult {
 }
 
 export function useCbacSelection(
-  initialMarkingIds: string[] | undefined
+  initialMarkingIds: string[] | undefined,
 ): UseCbacSelectionResult {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    initialMarkingIds ?? EMPTY_ARRAY
+    initialMarkingIds ?? EMPTY_ARRAY,
   );
 
   const [prevInitialIds, setPrevInitialIds] = React.useState(initialMarkingIds);
@@ -50,13 +50,13 @@ export function useCbacSelection(
   selectedIdsRef.current = selectedIds;
 
   const categoryGroupsRef = React.useRef<CategoryMarkingGroup[]>(
-    pickerState.categoryGroups
+    pickerState.categoryGroups,
   );
   categoryGroupsRef.current = pickerState.categoryGroups;
 
   const toggle = React.useCallback((markingId: string) => {
     setSelectedIds((prev) =>
-      toggleMarking(markingId, prev, categoryGroupsRef.current)
+      toggleMarking(markingId, prev, categoryGroupsRef.current),
     );
   }, []);
 

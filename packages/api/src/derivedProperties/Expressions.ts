@@ -114,7 +114,7 @@ export type NumericExpressions<
 > = {
   /** Adds a numeric value or another numeric derived property. */
   readonly add: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -123,7 +123,7 @@ export type NumericExpressions<
 
   /** Subtracts a numeric value or another numeric derived property. */
   readonly subtract: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -132,7 +132,7 @@ export type NumericExpressions<
 
   /** Multiplies by a numeric value or another numeric derived property. */
   readonly multiply: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -141,7 +141,7 @@ export type NumericExpressions<
 
   /** Divides by a numeric value or another numeric derived property. */
   readonly divide: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -162,7 +162,7 @@ export type NumericExpressions<
 
   /** Takes the larger of this value and another numeric value or derived property. */
   readonly max: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -171,7 +171,7 @@ export type NumericExpressions<
 
   /** Takes the smaller of this value and another numeric value or derived property. */
   readonly min: <A extends NumericExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForNumericMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -210,7 +210,7 @@ export type DatetimeExpressions<
 > = {
   /** Takes the earlier of this datetime and another datetime derived property. */
   readonly min: <A extends DatetimeExpressionArg<Q>>(
-    value: A
+    value: A,
   ) => ReturnTypeForDatetimeMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -218,7 +218,7 @@ export type DatetimeExpressions<
   >;
   /** Takes the later of this datetime and another datetime derived property. */
   readonly max: (
-    value: DatetimeExpressionArg<Q>
+    value: DatetimeExpressionArg<Q>,
   ) => ReturnTypeForDatetimeMethod<
     Q,
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
@@ -237,7 +237,7 @@ export type DatetimeExpressions<
    * @returns a string derived property holding the extracted part
    */
   readonly extractPart: (
-    value: DerivedProperty.ValidParts
+    value: DerivedProperty.ValidParts,
   ) => DerivedProperty.Definition<
     SimplePropertyDef.Make<"string", "non-nullable", "single">,
     Q

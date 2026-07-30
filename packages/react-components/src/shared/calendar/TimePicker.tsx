@@ -44,7 +44,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
     const valueTimestamp = value?.getTime() ?? null;
     const valueSegments = useMemo(
       () => segmentsFromTimestamp(valueTimestamp),
-      [valueTimestamp]
+      [valueTimestamp],
     );
     // draftSegments always holds the displayed text. It is reset to
     // valueSegments whenever the controlled value changes, so the parent
@@ -67,10 +67,10 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
     const handleSegmentChange = useCallback(
       (segment: TimeSegment, nextText: string) => {
         setDraftSegments((prev) =>
-          replaceSegmentText(prev, { segment, nextText })
+          replaceSegmentText(prev, { segment, nextText }),
         );
       },
-      []
+      [],
     );
 
     const emitChange = useCallback(
@@ -79,7 +79,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
         nextDate.setHours(hours, minutes, 0, 0);
         onChange?.(nextDate);
       },
-      [onChange, value]
+      [onChange, value],
     );
 
     const handleSegmentBlur = useCallback(
@@ -97,7 +97,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
           replaceSegmentText(prev, {
             segment,
             nextText: formatSegment(clampedSegment, segment),
-          })
+          }),
         );
 
         const currentHours = Number(valueSegments.hours);
@@ -109,24 +109,24 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
           emitChange(nextHours, nextMinutes);
         }
       },
-      [emitChange, valueSegments]
+      [emitChange, valueSegments],
     );
 
     const handleHourChange = useCallback(
       (nextText: string) => handleSegmentChange("hours", nextText),
-      [handleSegmentChange]
+      [handleSegmentChange],
     );
     const handleMinuteChange = useCallback(
       (nextText: string) => handleSegmentChange("minutes", nextText),
-      [handleSegmentChange]
+      [handleSegmentChange],
     );
     const handleHourBlur = useCallback(
       () => handleSegmentBlur("hours", hourText),
-      [handleSegmentBlur, hourText]
+      [handleSegmentBlur, hourText],
     );
     const handleMinuteBlur = useCallback(
       () => handleSegmentBlur("minutes", minuteText),
-      [handleSegmentBlur, minuteText]
+      [handleSegmentBlur, minuteText],
     );
 
     return (
@@ -172,7 +172,7 @@ function replaceSegmentText(
   }: {
     segment: TimeSegment;
     nextText: string;
-  }
+  },
 ): TimeSegments {
   return {
     ...segments,

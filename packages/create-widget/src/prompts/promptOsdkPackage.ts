@@ -28,9 +28,9 @@ export async function promptOsdkPackage({
     }
     osdkPackage = await consola.prompt(
       `Enter the OSDK package name for your widget set:\n${italic(
-        "(Example: @my-widget/sdk)"
+        "(Example: @my-widget/sdk)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
   return osdkPackage;

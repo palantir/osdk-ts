@@ -92,7 +92,7 @@ describe("convertWireToOsdkObjects", () => {
         "employeeLocation",
         "employeeProfile",
         "performanceScores",
-      ].sort()
+      ].sort(),
     );
 
     expect(Object.keys(employee.$as)).toEqual([]);
@@ -121,20 +121,20 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Senior engineer with expertise in distributed systems","yearsExperience":10},"performanceScores":[95.5,88.2,92.1],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Senior engineer with expertise in distributed systems","yearsExperience":10},"performanceScores":[95.5,88.2,92.1],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooIdp":"NYC","fooSpt":"John Doe"}"`
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooIdp":"NYC","fooSpt":"John Doe"}"`,
     );
 
     // Should have $title
     expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Team lead focused on frontend development","yearsExperience":8},"performanceScores":[91,89.5,94],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Team lead focused on frontend development","yearsExperience":8},"performanceScores":[91,89.5,94],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooIdp":"SEA","fooSpt":"Jane Doe"}"`
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooIdp":"SEA","fooSpt":"Jane Doe"}"`,
     );
   });
 
@@ -144,7 +144,7 @@ describe("convertWireToOsdkObjects", () => {
     const [a, b] = employees.data;
 
     expect(Object.getPrototypeOf(Object.getPrototypeOf(a))).toBe(
-      Object.getPrototypeOf(Object.getPrototypeOf(b))
+      Object.getPrototypeOf(Object.getPrototypeOf(b)),
     );
   });
 
@@ -158,7 +158,7 @@ describe("convertWireToOsdkObjects", () => {
 
     expectTypeOf(attachment).toMatchTypeOf<Attachment | undefined>;
     expect(attachment?.rid).toEqual(
-      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75"
+      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     );
     expect(Array.isArray(attachmentArray)).toBeTruthy();
     expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
@@ -215,12 +215,12 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      () => "myAccessToken"
+      () => "myAccessToken",
     );
     createSharedClientContext(
       "https://stack.palantir.com",
       () => "myAccessToken",
-      "userAgent"
+      "userAgent",
     );
 
     const object = {
@@ -236,7 +236,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       undefined,
       undefined,
-      false
+      false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
 
@@ -247,7 +247,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      () => "myAccessToken"
+      () => "myAccessToken",
     );
 
     const objectFromWire = {
@@ -267,7 +267,7 @@ describe("convertWireToOsdkObjects", () => {
       false,
       undefined,
       false,
-      interfaceToObjectTypeMappings
+      interfaceToObjectTypeMappings,
     )) as unknown as Osdk<FooInterface>[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -304,7 +304,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      () => "myAccessToken"
+      () => "myAccessToken",
     );
 
     const objectFromWire = {
@@ -325,7 +325,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       false,
       interfaceToObjectTypeMappings,
-      interfaceToObjectTypeMappingsV2
+      interfaceToObjectTypeMappingsV2,
     )) as unknown as Osdk<FooInterface>[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -362,7 +362,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      () => "myAccessToken"
+      () => "myAccessToken",
     );
 
     const objectFromWire = {
@@ -384,7 +384,7 @@ describe("convertWireToOsdkObjects", () => {
       false,
       undefined,
       false,
-      interfaceToObjectTypeMappings
+      interfaceToObjectTypeMappings,
     )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -426,7 +426,7 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
-      () => "myAccessToken"
+      () => "myAccessToken",
     );
 
     const objectFromWire = {
@@ -449,7 +449,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       false,
       interfaceToObjectTypeMappings,
-      interfaceToObjectTypeMappingsV2
+      interfaceToObjectTypeMappingsV2,
     )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -503,10 +503,10 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           ["employeeId"],
-          "throw"
-        )
+          "throw",
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Unable to safely convert objects as some non nullable properties are null]`
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
     });
 
@@ -525,8 +525,8 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           ["fullName"],
-          "throw"
-        )
+          "throw",
+        ),
       ).resolves.to.not.toBeUndefined();
     });
 
@@ -544,7 +544,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         ["employeeId"],
-        "drop"
+        "drop",
       );
 
       expect(result.length).toBe(0);
@@ -564,7 +564,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         ["fullName"],
-        "drop"
+        "drop",
       );
 
       expect(result.length).toBe(1);
@@ -587,10 +587,10 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           undefined,
-          "throw"
-        )
+          "throw",
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Unable to safely convert objects as some non nullable properties are null]`
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
     });
 
@@ -610,8 +610,8 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           undefined,
-          "throw"
-        )
+          "throw",
+        ),
       ).resolves.to.not.toBeUndefined();
     });
 
@@ -629,7 +629,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         undefined,
-        "drop"
+        "drop",
       );
 
       expect(result.length).toBe(0);
@@ -650,7 +650,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         undefined,
-        "drop"
+        "drop",
       );
 
       expect(result.length).toBe(1);
@@ -673,7 +673,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       ["fooSpt"],
       "drop",
-      interfaceToObjectTypeMappings
+      interfaceToObjectTypeMappings,
     );
 
     expect(result.length).toBe(1);
@@ -697,7 +697,7 @@ describe("convertWireToOsdkObjects", () => {
       ["fooSpt", "fooIdp"],
       "drop",
       interfaceToObjectTypeMappings,
-      interfaceToObjectTypeMappingsV2
+      interfaceToObjectTypeMappingsV2,
     );
 
     expect(result.length).toBe(1);
@@ -710,10 +710,10 @@ describe("convertWireToOsdkObjects", () => {
           data: [employee],
         } = await client(Employee).fetchPage();
         expect(
-          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
         ).toBeDefined();
         expect(
-          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
         ).toMatchInlineSnapshot(
           `
           {
@@ -965,7 +965,7 @@ describe("convertWireToOsdkObjects", () => {
               },
             },
           }
-        `
+        `,
         );
       });
 
@@ -976,8 +976,8 @@ describe("convertWireToOsdkObjects", () => {
 
         expect(
           employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.propertyIsEnumerable(
-            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata"
-          )
+            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+          ),
         ).toEqual(false);
       });
 
@@ -986,12 +986,13 @@ describe("convertWireToOsdkObjects", () => {
           data: [employee],
         } = await client(Employee).fetchPage();
         expect(
-          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
         ).toBeDefined();
         expect(
           Object.isFrozen(
-            employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata
-          )
+            employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+              .ObjectMetadata,
+          ),
         ).toBe(true);
       });
 
@@ -1003,9 +1004,9 @@ describe("convertWireToOsdkObjects", () => {
           data: [employee2],
         } = await client(Employee).fetchPage();
         expect(
-          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
         ).toBe(
-          employee2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata
+          employee2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
         );
       });
     });
@@ -1017,11 +1018,11 @@ describe("convertWireToOsdkObjects", () => {
         } = await client(Employee).fetchPage();
         const objAsFoo = employee.$as(FooInterface);
         expect(
-          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
         ).toBeDefined();
         expect(
           objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-            .InterfaceMetadata
+            .InterfaceMetadata,
         ).toMatchInlineSnapshot(
           `
           {
@@ -1073,7 +1074,7 @@ describe("convertWireToOsdkObjects", () => {
             "rid": "ri.interface.main.interface.1",
             "type": "interface",
           }
-        `
+        `,
         );
       });
       it("$experimental_metadata is not enumerable", async () => {
@@ -1083,8 +1084,8 @@ describe("convertWireToOsdkObjects", () => {
         const objAsFoo = employee.$as(FooInterface);
         expect(
           objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.propertyIsEnumerable(
-            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata"
-          )
+            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+          ),
         ).toEqual(false);
       });
       it("returns frozen metadata", async () => {
@@ -1093,13 +1094,13 @@ describe("convertWireToOsdkObjects", () => {
         } = await client(Employee).fetchPage();
         const objAsFoo = employee.$as(FooInterface);
         expect(
-          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
         ).toBeDefined();
         expect(
           Object.isFrozen(
             objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-              .InterfaceMetadata
-          )
+              .InterfaceMetadata,
+          ),
         ).toBe(true);
       });
       it("returns the same reference", async () => {
@@ -1113,10 +1114,10 @@ describe("convertWireToOsdkObjects", () => {
         const objAsFoo2 = employee2.$as(FooInterface);
         expect(
           objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-            .InterfaceMetadata
+            .InterfaceMetadata,
         ).toBe(
           objAsFoo2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-            .InterfaceMetadata
+            .InterfaceMetadata,
         );
       });
     });
@@ -1142,7 +1143,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       {},
       wireSecurities,
-      false
+      false,
     )) as unknown as Osdk.Instance<Employee, "$propertySecurities">[];
 
     const asFoo = holder.$as(FooInterface);

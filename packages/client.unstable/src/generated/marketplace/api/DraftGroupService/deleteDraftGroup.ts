@@ -31,7 +31,7 @@ import type {
  */
 export async function deleteDraftGroup(
   ctx: ConjureContext,
-  draftGroupRid: _api_DraftGroupRid
+  draftGroupRid: _api_DraftGroupRid,
 ): Promise<_api_DeleteDraftGroupResponse> {
   return conjureFetch(ctx, `/draft-groups/${draftGroupRid}`, "DELETE");
 }

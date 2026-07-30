@@ -36,12 +36,12 @@ export function importSharedPropertyType(opts: {
   if (packageName !== undefined) {
     invariant(
       !packageName.endsWith("."),
-      "Package name format invalid ends with period"
+      "Package name format invalid ends with period",
     );
 
     invariant(
       packageName.match("[A-Z]") == null,
-      "Package name includes upper case characters"
+      "Package name includes upper case characters",
     );
   }
   const spt: SharedPropertyType = {

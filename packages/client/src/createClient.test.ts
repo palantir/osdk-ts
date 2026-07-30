@@ -27,7 +27,7 @@ import { USER_AGENT } from "./util/UserAgent.js";
 
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
-  response: any
+  response: any,
 ): void {
   fetch.mockResolvedValueOnce({
     json: () => Promise.resolve(response),
@@ -55,7 +55,7 @@ describe(createClient, () => {
       ontologyRid,
       () => "Token",
       undefined,
-      fetchFunction
+      fetchFunction,
     );
 
     mockFetchResponse(fetchFunction, { data: [] });
@@ -90,14 +90,14 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         { headers: { "Fetch-User-Agent": "my-app/1.0" } },
-        customFetch
+        customFetch,
       );
 
       await clientWithHeaders(BarInterface).fetchPage();
       expect(customFetch).toHaveBeenCalledTimes(1);
 
       const userAgent = (customFetch.mock.calls[0][1]?.headers as Headers).get(
-        "Fetch-User-Agent"
+        "Fetch-User-Agent",
       );
       const parts = userAgent?.split(" ") ?? [];
       expect(parts).toEqual([
@@ -116,7 +116,7 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         undefined,
-        fetchFunction
+        fetchFunction,
       );
       expect(spy.mock.results[0].value.baseUrl).toBe("https://mock.com/");
 
@@ -125,7 +125,7 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         undefined,
-        fetchFunction
+        fetchFunction,
       );
       expect(spy.mock.results[1].value.baseUrl).toBe("https://mock1.com/");
 
@@ -134,10 +134,10 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         undefined,
-        fetchFunction
+        fetchFunction,
       );
       expect(spy.mock.results[2].value.baseUrl).toBe(
-        "https://mock2.com/stuff/first/foo/"
+        "https://mock2.com/stuff/first/foo/",
       );
 
       createClient(
@@ -145,15 +145,15 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         undefined,
-        fetchFunction
+        fetchFunction,
       );
       expect(spy.mock.results[3].value.baseUrl).toBe(
-        "https://mock3.com/stuff/first/foo/"
+        "https://mock3.com/stuff/first/foo/",
       );
 
       const conjureContextSpy = vi.spyOn(
         MakeConjureContext,
-        "makeConjureContext"
+        "makeConjureContext",
       );
 
       void metadataCacheClient({
@@ -163,7 +163,7 @@ describe(createClient, () => {
 
       expect(
         conjureContextSpy.mock.results[0].value.baseUrl +
-          conjureContextSpy.mock.results[0].value.servicePath
+          conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });
@@ -178,7 +178,7 @@ describe(createClient, () => {
         ontologyRid,
         () => "Token",
         {},
-        fetchFunction
+        fetchFunction,
       );
 
       mockFetchResponse(fetchFunction, { data: [] });

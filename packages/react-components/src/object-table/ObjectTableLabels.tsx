@@ -186,7 +186,7 @@ export const DEFAULT_OBJECT_TABLE_LABELS: ObjectTableLabels = {
 };
 
 const ObjectTableLabelsContext = createContext<ObjectTableLabels>(
-  DEFAULT_OBJECT_TABLE_LABELS
+  DEFAULT_OBJECT_TABLE_LABELS,
 );
 
 export interface ObjectTableLabelsProviderProps {
@@ -243,10 +243,10 @@ export function useObjectTableLabels(): ObjectTableLabels {
  * type parameter.
  */
 export function withObjectTableLabels<P extends object>(
-  Inner: React.ComponentType<P>
+  Inner: React.ComponentType<P>,
 ): React.FC<P & { labels?: Partial<ObjectTableLabels> }> {
   function LabelledComponent(
-    props: P & { labels?: Partial<ObjectTableLabels> }
+    props: P & { labels?: Partial<ObjectTableLabels> },
   ): ReactElement {
     const { labels, ...rest } = props;
     return (

@@ -33,13 +33,13 @@ export async function getMonitorVersion(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
   monitorVersion: _api_MonitorVersion,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_registry_GetMonitorVersionResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/versions/${monitorVersion}`,
     "GET",
     undefined,
-    { branchRid }
+    { branchRid },
   );
 }

@@ -25,7 +25,7 @@ const FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX =
 
 export function convertActionParameters(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): Record<ParameterId, Parameter> {
   return Object.fromEntries(
     (action.parameters ?? []).map((parameter) => {
@@ -43,7 +43,7 @@ export function convertActionParameters(
               objectReference: {
                 ...parameter.type.objectReference,
                 objectTypeId: ridGenerator.generateObjectTypeId(
-                  parameter.type.objectReference.objectTypeId
+                  parameter.type.objectReference.objectTypeId,
                 ),
               },
             };
@@ -55,7 +55,7 @@ export function convertActionParameters(
               objectReferenceList: {
                 ...parameter.type.objectReferenceList,
                 objectTypeId: ridGenerator.generateObjectTypeId(
-                  parameter.type.objectReferenceList.objectTypeId
+                  parameter.type.objectReferenceList.objectTypeId,
                 ),
               },
             };
@@ -69,7 +69,7 @@ export function convertActionParameters(
                 // interface parameters should be unconverted
                 interfaceTypeRid: resolveInterfaceTypeRid(
                   parameter.type.interfaceReference.interfaceTypeRid,
-                  ridGenerator
+                  ridGenerator,
                 ),
               },
             };
@@ -80,7 +80,7 @@ export function convertActionParameters(
               interfaceReferenceList: {
                 interfaceTypeRid: resolveInterfaceTypeRid(
                   parameter.type.interfaceReferenceList.interfaceTypeRid,
-                  ridGenerator
+                  ridGenerator,
                 ),
               },
             };
@@ -91,7 +91,7 @@ export function convertActionParameters(
               type: "objectSetRid",
               objectSetRid: {
                 objectTypeId: ridGenerator.generateObjectTypeId(
-                  parameter.type.objectSetRid.objectTypeId
+                  parameter.type.objectSetRid.objectTypeId,
                 ),
               },
             };
@@ -116,7 +116,7 @@ export function convertActionParameters(
           id: parameter.id,
           rid: ridGenerator.generateRidForParameter(
             action.apiName,
-            parameter.id
+            parameter.id,
           ),
           type: convertedType,
           displayMetadata: {
@@ -128,13 +128,13 @@ export function convertActionParameters(
           },
         },
       ];
-    })
+    }),
   );
 }
 
 export function resolveInterfaceTypeRid(
   interfaceTypeRidOrApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): string {
   return FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX.test(interfaceTypeRidOrApiName)
     ? interfaceTypeRidOrApiName

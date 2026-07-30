@@ -84,7 +84,7 @@ function isOsdkContextConsumer(fiber: Fiber): boolean {
       }
       return false;
     },
-    { fallback: false, feature: "hook-discovery" }
+    { fallback: false, feature: "hook-discovery" },
   );
 }
 
@@ -128,14 +128,14 @@ function isOsdkFunctionComponent(fiber: Fiber): boolean {
 
 export function findOsdkConsumersInAncestors(
   fiber: Fiber,
-  maxDepth = 50
+  maxDepth = 50,
 ): OsdkConsumerFiber[] {
   return traverseAllFibers(
     fiber,
     (node) => isOsdkFunctionComponent(node),
     /* ascending */ true,
     /* maxResults */ undefined,
-    maxDepth
+    maxDepth,
   ).map(buildConsumerInfo);
 }
 
@@ -194,7 +194,7 @@ const DEFAULT_SEARCH_SCOPE: SearchScope = {
 
 export function findOsdkConsumersInSiblings(
   fiber: Fiber,
-  scope: SearchScope = DEFAULT_SEARCH_SCOPE
+  scope: SearchScope = DEFAULT_SEARCH_SCOPE,
 ): OsdkConsumerFiber[] {
   return safeFiberOperation(
     () => {
@@ -238,7 +238,7 @@ export function findOsdkConsumersInSiblings(
               },
               /* ascending */ false,
               /* maxResults */ remaining,
-              scope.maxChildDepth
+              scope.maxChildDepth,
             );
 
             for (const match of subtreeMatches) {
@@ -256,13 +256,13 @@ export function findOsdkConsumersInSiblings(
 
       return consumers;
     },
-    { fallback: [], feature: "hook-discovery" }
+    { fallback: [], feature: "hook-discovery" },
   );
 }
 
 export function findOsdkConsumersInDescendants(
   fiber: Fiber,
-  scope: SearchScope = DEFAULT_SEARCH_SCOPE
+  scope: SearchScope = DEFAULT_SEARCH_SCOPE,
 ): OsdkConsumerFiber[] {
   return safeFiberOperation(
     () => {
@@ -281,7 +281,7 @@ export function findOsdkConsumersInDescendants(
           (node) => isOsdkFunctionComponent(node),
           /* ascending */ false,
           remaining,
-          scope.maxChildDepth
+          scope.maxChildDepth,
         );
         for (const match of matches) {
           consumers.push(buildConsumerInfo(match));
@@ -292,7 +292,7 @@ export function findOsdkConsumersInDescendants(
 
       return consumers;
     },
-    { fallback: [], feature: "hook-discovery" }
+    { fallback: [], feature: "hook-discovery" },
   );
 }
 
@@ -423,7 +423,7 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
 
       return results;
     },
-    { fallback: [], feature: "metadata-extraction" }
+    { fallback: [], feature: "metadata-extraction" },
   );
 }
 
@@ -494,7 +494,7 @@ function summarizeProps(fiber: Fiber): Record<string, string> | undefined {
 }
 
 export function discoverOsdkComponentsFromRoot(
-  fiberRoot: FiberRoot
+  fiberRoot: FiberRoot,
 ): Map<string, DiscoveredComponent> {
   return safeFiberOperation(
     () => {
@@ -528,6 +528,6 @@ export function discoverOsdkComponentsFromRoot(
 
       return components;
     },
-    { fallback: new Map(), feature: "fiber-discovery" }
+    { fallback: new Map(), feature: "fiber-discovery" },
   );
 }

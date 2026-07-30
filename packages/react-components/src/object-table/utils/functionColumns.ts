@@ -51,7 +51,7 @@ export function extractFunctionLocators<
 >(
   columnDefinitions:
     | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
-    | undefined
+    | undefined,
 ): FunctionColumnLocator<Q, RDPs, FunctionColumns>[] {
   if (!columnDefinitions) return [];
 
@@ -59,7 +59,7 @@ export function extractFunctionLocators<
     .filter((colDef) => colDef.locator.type === "function")
     .map(
       (colDef) =>
-        colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
+        colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>,
     );
 }
 
@@ -79,7 +79,7 @@ export function buildPagedObjectSets<
   client: Client,
   objectOrInterfaceType: Q,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  pageSize: number
+  pageSize: number,
 ): PagedObjects<Q, RDPs>[] {
   const isObjectType = objectOrInterfaceType.type === "object";
 

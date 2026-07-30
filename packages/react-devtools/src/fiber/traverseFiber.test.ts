@@ -62,7 +62,7 @@ function createMockFiber(name: string, overrides: Partial<Fiber> = {}): Fiber {
  */
 function buildTree(
   name: string,
-  children?: Array<string | [string, ...string[]]>
+  children?: Array<string | [string, ...string[]]>,
 ): Fiber {
   const root = createMockFiber(name);
 
@@ -79,7 +79,7 @@ function buildTree(
       const [childName, ...grandchildren] = childDef;
       child = buildTree(
         childName,
-        grandchildren.length > 0 ? grandchildren : undefined
+        grandchildren.length > 0 ? grandchildren : undefined,
       );
     }
     child.return = root;
@@ -177,7 +177,7 @@ describe("traverseAllFibers", () => {
     const root = buildTree("App", ["A", "B", "C"]);
     const results = traverseAllFibers(
       root,
-      (f) => typeof f.type === "string" && f.type !== "App"
+      (f) => typeof f.type === "string" && f.type !== "App",
     );
     expect(results.map((f) => f.type)).toEqual(["A", "B", "C"]);
   });
@@ -188,7 +188,7 @@ describe("traverseAllFibers", () => {
       root,
       (f) => typeof f.type === "string" && f.type !== "App",
       false,
-      2
+      2,
     );
     expect(results).toHaveLength(2);
     expect(results.map((f) => f.type)).toEqual(["A", "B"]);
@@ -234,7 +234,7 @@ describe("walkFiberTree", () => {
       (f) => {
         visited.push(f.type as string);
       },
-      2
+      2,
     );
     // depth 0: A, depth 1: B, depth 2: C, depth 3: D (skipped)
     expect(visited).toEqual(["A", "B", "C"]);

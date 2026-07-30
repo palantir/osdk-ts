@@ -58,7 +58,7 @@ export class ComputeMonitor {
     computeStore: ComputeStore,
     logger: Logger = createMonitorLogger(),
     originalFetch: typeof globalThis.fetch = globalThis.fetch,
-    eventTimeline?: EventTimeline
+    eventTimeline?: EventTimeline,
   ) {
     this.computeStore = computeStore;
     this.logger = logger;
@@ -76,7 +76,7 @@ export class ComputeMonitor {
 
     this.interceptedFetch = async (
       input: RequestInfo | URL,
-      init?: RequestInit
+      init?: RequestInit,
     ): Promise<Response> => {
       const pathname = self.extractPathnameFromRequest(input);
 
@@ -122,7 +122,7 @@ export class ComputeMonitor {
           }
         }
         throw new Error(
-          "OSDK network requests are paused by OSDK ComputeTools"
+          "OSDK network requests are paused by OSDK ComputeTools",
         );
       }
 
@@ -188,7 +188,7 @@ export class ComputeMonitor {
         if (typeof computeUsage === "number") {
           self.logger.debug(
             "Fulfilling request with compute usage:",
-            computeUsage
+            computeUsage,
           );
           self.computeStore.fulfillRequest(requestId, {
             computeUsage,
@@ -233,7 +233,7 @@ export class ComputeMonitor {
                 type: "fetch-error",
                 message: error.message,
               }
-            : { type: "unknown" }
+            : { type: "unknown" },
         );
         throw error;
       }

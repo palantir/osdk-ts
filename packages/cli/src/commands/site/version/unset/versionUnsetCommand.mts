@@ -34,9 +34,9 @@ export default async function versionUnsetCommand({
     const confirmed = await consola.prompt(
       `Are you sure you want to clear the live site version?\n${colorize(
         "bold",
-        "Your site will no longer be accessible until a new live site version is set."
+        "Your site will no longer be accessible until a new live site version is set.",
       )}`,
-      { type: "confirm", cancel: "symbol" }
+      { type: "confirm", cancel: "symbol" },
     );
     handlePromptCancel(confirmed);
   }

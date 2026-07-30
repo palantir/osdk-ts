@@ -31,7 +31,7 @@ import type { Store } from "./Store.js";
  * Generic over PAYLOAD to preserve type information when the guard passes.
  */
 function supportsViews<PAYLOAD extends BaseListPayloadShape>(
-  query: unknown
+  query: unknown,
 ): query is ListQueryViewTarget<PAYLOAD> {
   return (
     query != null &&
@@ -71,7 +71,7 @@ export abstract class AbstractHelper<
     options: TObserveOptions,
     subFn: Observer<
       TQuery extends Query<any, infer PAYLOAD, any> ? PAYLOAD : never
-    >
+    >,
   ): QuerySubscription<TQuery> {
     const query = this.getQuery(options);
     return this._subscribe(query, options, subFn);
@@ -84,7 +84,7 @@ export abstract class AbstractHelper<
   >(
     query: TQuery,
     options: TObserveOptions,
-    subFn: Observer<PAYLOAD>
+    subFn: Observer<PAYLOAD>,
   ): QuerySubscription<TQuery> {
     // the ListQuery represents the shared state of the list
     // If there is a deferred release pending for this key (from a prior
@@ -130,7 +130,7 @@ export abstract class AbstractHelper<
       ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
           query,
           listOptions.pageSize ?? 100,
-          listOptions.autoFetchMore
+          listOptions.autoFetchMore,
         ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
       : query.subscribe(subFn);
 
@@ -138,7 +138,7 @@ export abstract class AbstractHelper<
 
     query.registerSubscriptionDedupeInterval(
       querySub.subscriptionId,
-      options.dedupeInterval
+      options.dedupeInterval,
     );
 
     sub.add(() => {
@@ -156,7 +156,7 @@ export abstract class AbstractHelper<
       // running before or after this one.
       this.store.pendingCleanup.set(
         query.cacheKey,
-        (this.store.pendingCleanup.get(query.cacheKey) ?? 0) + 1
+        (this.store.pendingCleanup.get(query.cacheKey) ?? 0) + 1,
       );
       queueMicrotask(() => {
         const currentPending =

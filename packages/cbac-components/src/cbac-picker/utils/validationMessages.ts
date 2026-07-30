@@ -25,7 +25,7 @@ export interface ValidationContext {
 }
 
 export function getSubmitDisabledReason(
-  ctx: ValidationContext
+  ctx: ValidationContext,
 ): string | undefined {
   if (ctx.isValid) {
     return undefined;
@@ -35,7 +35,7 @@ export function getSubmitDisabledReason(
   }
   const selectedSet = new Set(ctx.selectedIds);
   const hasDisallowedSelected = ctx.disallowedMarkingIds.some((id) =>
-    selectedSet.has(id)
+    selectedSet.has(id),
   );
   if (hasDisallowedSelected) {
     return "Selections include disallowed markings.";

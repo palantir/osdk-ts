@@ -72,7 +72,7 @@ export function BaseCbacBannerPopover({
       color: textColor,
       background: backgroundFromColors(backgroundColors),
     }),
-    [textColor, backgroundColors]
+    [textColor, backgroundColors],
   );
 
   const showSkeleton = isLoading === true && appliedMarkings.length === 0;
@@ -93,7 +93,7 @@ export function BaseCbacBannerPopover({
             <span
               className={classnames(
                 styles.caretIcon,
-                open && styles.caretIconVisible
+                open && styles.caretIconVisible,
               )}
             >
               {open ? <CaretUp size={12} /> : <CaretDown size={12} />}

@@ -42,11 +42,11 @@ export async function getProductVersionMetadataByMavenProductId(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   mavenProductId: _api_MavenProductId,
-  version: _api_SlsVersion
+  version: _api_SlsVersion,
 ): Promise<_api_GetProductVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/mavenProductId/${mavenProductId}/version/${version}/productMetadata`,
-    "GET"
+    "GET",
   );
 }

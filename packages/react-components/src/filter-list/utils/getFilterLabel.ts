@@ -20,7 +20,7 @@ import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
 export function getFilterLabel<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>
+  definition: FilterDefinitionUnion<Q>,
 ): string {
   if ("label" in definition && definition.label) {
     return definition.label;

@@ -33,7 +33,7 @@ describe("ObjectSpecifier Utilities", () => {
       const primaryKey = "12345";
       const specifier = createObjectSpecifierFromPrimaryKey(
         mockObjectTypeDefinition,
-        primaryKey
+        primaryKey,
       );
       expect(specifier).toBe("myApi:12345");
     });

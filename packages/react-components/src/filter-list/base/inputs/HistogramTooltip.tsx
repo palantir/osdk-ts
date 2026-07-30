@@ -87,7 +87,7 @@ function HistogramTooltipInner({
     >
       {text}
     </div>,
-    document.body
+    document.body,
   );
 }
 

@@ -47,7 +47,7 @@ export async function runChatStream(
   transport: ChatTransport<UIMessage>,
   chatId: string,
   seed: ReadonlyArray<UIMessage>,
-  trigger: "submit-message" | "regenerate-message"
+  trigger: "submit-message" | "regenerate-message",
 ): Promise<void> {
   ctx.abortRef.current?.abort();
   const ctrl = new AbortController();
@@ -73,7 +73,7 @@ export async function drainStream(
   ctx: StreamContext,
   stream: ReadableStream<UIMessageChunk>,
   assistantMessageId: string,
-  capturedCtrl: AbortController
+  capturedCtrl: AbortController,
 ): Promise<void> {
   const { store } = ctx;
   const reader = stream.getReader();
@@ -123,7 +123,7 @@ export async function drainStream(
     store.setState((prev) => ({ ...prev, status: "ready" }));
     const finalSnap = store.getSnapshot();
     const finalMessage = finalSnap.messages.find(
-      (m) => m.id === assistantMessageId
+      (m) => m.id === assistantMessageId,
     );
     if (finalMessage != null && ctx.onFinish != null) {
       ctx.onFinish({ message: finalMessage, messages: finalSnap.messages });
@@ -138,7 +138,7 @@ export async function drainStream(
 function upsertAssistantText(
   store: ChatStore,
   assistantMessageId: string,
-  text: string
+  text: string,
 ): void {
   store.setStateThrottled((prev) => {
     const exists = prev.messages.some((m) => m.id === assistantMessageId);
@@ -146,7 +146,7 @@ function upsertAssistantText(
       ? prev.messages.map((m) =>
           m.id === assistantMessageId
             ? { ...m, parts: [{ type: "text" as const, text }] }
-            : m
+            : m,
         )
       : [
           ...prev.messages,
@@ -163,7 +163,7 @@ function upsertAssistantText(
 function handleStreamError(
   ctx: StreamContext,
   err: unknown,
-  capturedCtrl: AbortController
+  capturedCtrl: AbortController,
 ): void {
   if (ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl) {
     return;

@@ -132,13 +132,13 @@ async function getContext(args: {
     .check((argv) => {
       if (argv.mode === "publish" && !argv.publishCmd) {
         throw new Error(
-          "You must provide a publish command when running in publish mode"
+          "You must provide a publish command when running in publish mode",
         );
       }
 
       if (argv.publishCmd && argv.mode !== "publish") {
         throw new Error(
-          "You cannot provide a publish command when running in version mode"
+          "You cannot provide a publish command when running in version mode",
         );
       }
 
@@ -165,7 +165,7 @@ async function getContext(args: {
 
   if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !(await isGitClean())) {
     throw new FailedWithUserMessage(
-      "Your working directory is not clean. We are aborting for your protection."
+      "Your working directory is not clean. We are aborting for your protection.",
     );
   }
 
@@ -175,7 +175,7 @@ async function getContext(args: {
 
   const hasChangesets = changesets.length !== 0;
   const hasNonEmptyChangesets = changesets.some(
-    (changeset) => changeset.releases.length > 0
+    (changeset) => changeset.releases.length > 0,
   );
   if (args.mode === "simulateMinorBump") {
     simulateMinorBump();
@@ -212,7 +212,7 @@ async function getContext(args: {
       consola.info("Found existing user .npmrc file");
       const userNpmrcContent = await fs.promises.readFile(
         userNpmrcPath,
-        "utf8"
+        "utf8",
       );
       const authLine = userNpmrcContent.split("\n").find((line) => {
         // check based on https://github.com/npm/cli/blob/8f8f71e4dd5ee66b3b17888faad5a7bf6c657eed/test/lib/adduser.js#L103-L105
@@ -220,22 +220,22 @@ async function getContext(args: {
       });
       if (authLine) {
         consola.info(
-          "Found existing auth token for the npm registry in the user .npmrc file"
+          "Found existing auth token for the npm registry in the user .npmrc file",
         );
       } else {
         consola.info(
-          "Didn't find existing auth token for the npm registry in the user .npmrc file, creating one"
+          "Didn't find existing auth token for the npm registry in the user .npmrc file, creating one",
         );
         fs.appendFileSync(
           userNpmrcPath,
-          `\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`
+          `\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
         );
       }
     } else {
       consola.info("No user .npmrc file found, creating one");
       fs.writeFileSync(
         userNpmrcPath,
-        `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`
+        `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
       );
     }
 
@@ -262,7 +262,7 @@ async function getGithubTokenOrFail() {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
     consola.info(
-      "Unable to find GITHUB_TOKEN in environment, trying GitHub CLI..."
+      "Unable to find GITHUB_TOKEN in environment, trying GitHub CLI...",
     );
 
     try {
@@ -275,13 +275,13 @@ async function getGithubTokenOrFail() {
       return token;
     } catch (e) {
       consola.error(
-        "Unable to find GITHUB_TOKEN in environment or GitHub CLI, please add it to the environment"
+        "Unable to find GITHUB_TOKEN in environment or GitHub CLI, please add it to the environment",
       );
       consola.error("Output from gh auth token: ", e);
     }
 
     throw new FailedWithUserMessage(
-      "Please add the GITHUB_TOKEN to the changesets action"
+      "Please add the GITHUB_TOKEN to the changesets action",
     );
   }
   consola.info("GitHub token was found in environment.");

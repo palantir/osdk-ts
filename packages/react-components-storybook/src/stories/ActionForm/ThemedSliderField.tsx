@@ -34,7 +34,7 @@ export const ThemedSliderField = memo(function ThemedSliderFieldFn({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(event.currentTarget.valueAsNumber);
     },
-    [onChange]
+    [onChange],
   );
 
   return (

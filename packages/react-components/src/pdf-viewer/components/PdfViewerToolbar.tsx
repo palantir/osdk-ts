@@ -88,7 +88,7 @@ export function PdfViewerToolbar({
     function syncPageInput() {
       setPageInputValue(String(currentPage));
     },
-    [currentPage]
+    [currentPage],
   );
 
   const handlePrevPage = useCallback(() => {
@@ -111,7 +111,7 @@ export function PdfViewerToolbar({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPageInputValue(e.target.value);
     },
-    []
+    [],
   );
 
   const handlePageInputKeyDown = useCallback(
@@ -125,7 +125,7 @@ export function PdfViewerToolbar({
         }
       }
     },
-    [pageInputValue, numPages, onPageChange, currentPage]
+    [pageInputValue, numPages, onPageChange, currentPage],
   );
 
   const handlePageInputBlur = useCallback(() => {
@@ -209,7 +209,7 @@ export function PdfViewerToolbar({
         <Button
           className={classnames(
             styles.toolbarButton,
-            autoSize && styles.toolbarButtonActive
+            autoSize && styles.toolbarButtonActive,
           )}
           onClick={onAutoSizeToggle}
           aria-label={autoSize ? "Disable fit to width" : "Fit to width"}
@@ -251,7 +251,7 @@ export function PdfViewerToolbar({
           <Button
             className={classnames(
               styles.toolbarButton,
-              highlightModeActive && styles.toolbarButtonActive
+              highlightModeActive && styles.toolbarButtonActive,
             )}
             onClick={onHighlightToggle}
             aria-label={

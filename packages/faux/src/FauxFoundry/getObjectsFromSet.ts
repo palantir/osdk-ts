@@ -24,7 +24,7 @@ import { filterObjects } from "./filterObjects.js";
 export function getObjectsFromSet(
   ds: FauxDataStore,
   objectSet: OntologiesV2.ObjectSet,
-  methodInput: BaseServerObject | undefined
+  methodInput: BaseServerObject | undefined,
 ): Array<BaseServerObject> {
   switch (objectSet.type) {
     case "base":
@@ -49,13 +49,13 @@ export function getObjectsFromSet(
 
     case "subtract": {
       const set = new Set<BaseServerObject>(
-        getObjectsFromSet(ds, objectSet.objectSets[0], methodInput)
+        getObjectsFromSet(ds, objectSet.objectSets[0], methodInput),
       );
       for (let i = 1; i < objectSet.objectSets.length; i++) {
         const toSubtract = getObjectsFromSet(
           ds,
           objectSet.objectSets[i],
-          methodInput
+          methodInput,
         );
         for (const obj of toSubtract) {
           set.delete(obj);
@@ -66,19 +66,19 @@ export function getObjectsFromSet(
 
     case "intersect": {
       const set = new Set<BaseServerObject>(
-        getObjectsFromSet(ds, objectSet.objectSets[0], methodInput)
+        getObjectsFromSet(ds, objectSet.objectSets[0], methodInput),
       );
       for (let i = 1; i < objectSet.objectSets.length; i++) {
         const toIntersect = getObjectsFromSet(
           ds,
           objectSet.objectSets[i],
-          methodInput
+          methodInput,
         );
         for (const obj of set) {
           const match = toIntersect.find(
             (x) =>
               x.__apiName === obj.__apiName &&
-              x.__primaryKey === obj.__primaryKey
+              x.__primaryKey === obj.__primaryKey,
           );
 
           if (!match) {
@@ -100,7 +100,7 @@ export function getObjectsFromSet(
         const ret = ds.getLinksOrThrow(
           o.__apiName,
           o.__primaryKey,
-          objectSet.link
+          objectSet.link,
         );
         return ret;
       });
@@ -112,7 +112,7 @@ export function getObjectsFromSet(
         const ret = ds.getLinksOrThrow(
           o.__apiName,
           o.__primaryKey,
-          objectSet.interfaceLink
+          objectSet.interfaceLink,
         );
         return ret;
       });
@@ -132,7 +132,7 @@ export function getObjectsFromSet(
         const extra = Object.fromEntries(
           Object.entries(derivedProperties).map(([k, v]) => {
             return [k, getDerivedPropertyValue(ds, obj, v)];
-          })
+          }),
         );
 
         return { ...obj, ...extra };
@@ -145,12 +145,12 @@ export function getObjectsFromSet(
 
     case "asBaseObjectTypes":
       throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
       );
 
     case "asType":
       throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`
+        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
       );
 
     case "interfaceBase":
@@ -164,7 +164,7 @@ export function getObjectsFromSet(
         .flatMap((x) => Array.from(ds.getObjectsOfType(x.objectType.apiName)))
         .map((obj) => {
           const objDef = ds.ontology.getObjectTypeFullMetadataOrThrow(
-            obj.__apiName
+            obj.__apiName,
           );
           const ifaceMap =
             objDef.implementsInterfaces2[objectSet.interfaceType];
@@ -174,7 +174,7 @@ export function getObjectsFromSet(
                 Object.values(ifaceMap.properties).map((propApiName) => [
                   propApiName,
                   obj[propApiName],
-                ])
+                ]),
               );
 
           return {
@@ -194,19 +194,19 @@ export function getObjectsFromSet(
       return getObjectsFromSet(
         ds,
         ds.getObjectSetOrThrow(objectSetRid),
-        methodInput
+        methodInput,
       );
   }
 
   throw new Error(
-    `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`
+    `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
   );
 }
 
 function objToInterface(
   ds: FauxDataStore,
   o: BaseServerObject,
-  iface: OntologiesV2.InterfaceTypeApiName
+  iface: OntologiesV2.InterfaceTypeApiName,
 ): BaseServerObject {
   const ifaceDef = ds.ontology.getInterfaceType(iface);
   const propMap = ds.ontology.getObjectTypeFullMetadataOrThrow(o.__apiName)
@@ -229,7 +229,7 @@ function objToInterface(
 export function getDerivedPropertyValue(
   ds: FauxDataStore,
   obj: BaseServerObject,
-  def: OntologiesV2.DerivedPropertyDefinition
+  def: OntologiesV2.DerivedPropertyDefinition,
 ): any {
   switch (def.type) {
     case "selection": {
@@ -237,7 +237,7 @@ export function getDerivedPropertyValue(
     }
   }
   throw new Error(
-    `Unhandled derived property type ${def.type} in ${JSON.stringify(def)}`
+    `Unhandled derived property type ${def.type} in ${JSON.stringify(def)}`,
   );
   // return obj[property.propertyIdentifier];
 }
@@ -245,7 +245,7 @@ export function getDerivedPropertyValue(
 function getDerivedPropertySelection(
   ds: FauxDataStore,
   obj: BaseServerObject,
-  { operation, objectSet }: OntologiesV2.SelectedPropertyExpression
+  { operation, objectSet }: OntologiesV2.SelectedPropertyExpression,
 ) {
   switch (operation.type) {
     case "get": {
@@ -262,7 +262,7 @@ function getDerivedPropertySelection(
     case "collectSet": {
       const objs = getObjectsFromSet(ds, objectSet, obj);
       return Array.from(
-        new Set(objs.map((o) => o[operation.selectedPropertyApiName]))
+        new Set(objs.map((o) => o[operation.selectedPropertyApiName])),
       );
     }
     case "count": {
@@ -276,7 +276,7 @@ export function createOrderBySortFn(orderBy: OntologiesV2.SearchOrderByV2) {
   const fns = orderBy.fields.map(({ field, direction }) => {
     return (
       a: BaseServerObject | undefined,
-      b: BaseServerObject | undefined
+      b: BaseServerObject | undefined,
     ): number => {
       const aValue = a?.[field];
       const bValue = b?.[field];
@@ -297,7 +297,7 @@ export function createOrderBySortFn(orderBy: OntologiesV2.SearchOrderByV2) {
 
   return (
     a: BaseServerObject | undefined,
-    b: BaseServerObject | undefined
+    b: BaseServerObject | undefined,
   ): number => {
     for (const sortFn of fns) {
       const ret = sortFn(a, b);

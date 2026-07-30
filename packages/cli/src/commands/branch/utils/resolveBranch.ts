@@ -22,7 +22,7 @@ const NON_BRANCH = new Set(["main", "master", "HEAD"]);
  */
 export function resolveBranch(
   argBranchName: string | undefined,
-  gitBranchName: string | undefined
+  gitBranchName: string | undefined,
 ): string | undefined {
   const argBranch = argBranchName?.trim();
   if (argBranch != null && argBranch !== "") {

@@ -24,12 +24,12 @@ import type { Website } from "./Website.mjs";
 
 export async function getWebsite(
   ctx: InternalClientContext,
-  thirdPartyAppRid: ThirdPartyAppRid
+  thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website`,
-    ctx.foundryUrl
+    ctx.foundryUrl,
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();

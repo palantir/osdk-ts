@@ -93,7 +93,7 @@ export interface UseChatReturn {
   setMessages: (
     messages:
       | ReadonlyArray<UIMessage>
-      | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>)
+      | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>),
   ) => void;
 
   status: ChatStatus;
@@ -129,7 +129,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
 
   const id = React.useMemo(
     () => options.id ?? generateMessageId(),
-    [options.id]
+    [options.id],
   );
 
   // JSON-stringify keys keep the memo stable when callers pass inline objects.
@@ -142,7 +142,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       }
       if (options.model == null) {
         throw new Error(
-          "useChat: `model` is required when no `transport` is provided."
+          "useChat: `model` is required when no `transport` is provided.",
         );
       }
       const built: LmsChatTransportOptions = {
@@ -172,7 +172,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       options.seed,
       headersKey,
       stopSequencesKey,
-    ]
+    ],
   );
 
   const store = React.useMemo<ChatStore>(
@@ -184,13 +184,13 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     // Recreating the store mid-session would drop chat state, so it's keyed
     // only by `id`. Use `setMessages` to mutate messages at runtime.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id]
+    [id],
   );
 
   const state = React.useSyncExternalStore(
     store.subscribe,
     store.getSnapshot,
-    store.getSnapshot
+    store.getSnapshot,
   );
 
   const abortRef = React.useRef<AbortController | undefined>(undefined);
@@ -208,10 +208,10 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   const runStream = React.useCallback(
     (
       seed: ReadonlyArray<UIMessage>,
-      trigger: "submit-message" | "regenerate-message"
+      trigger: "submit-message" | "regenerate-message",
     ): Promise<void> =>
       runChatStream(ctxRef.current, transport, id, seed, trigger),
-    [transport, id]
+    [transport, id],
   );
 
   const sendMessage = React.useCallback(
@@ -225,7 +225,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       });
       await runStream(seeded, "submit-message");
     },
-    [store, runStream]
+    [store, runStream],
   );
 
   const regenerate = React.useCallback(
@@ -233,7 +233,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       const messages = store.getSnapshot().messages;
       const cutoff = resolveRegenerateCutoff(
         messages,
-        regenerateOpts?.messageId
+        regenerateOpts?.messageId,
       );
       if (cutoff.kind === "noop") {
         return;
@@ -254,7 +254,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       });
       await runStream(truncated, "regenerate-message");
     },
-    [store, runStream]
+    [store, runStream],
   );
 
   const stop = React.useCallback((): void => {
@@ -281,7 +281,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     store.setState((prev) =>
       prev.status === "error"
         ? { ...prev, status: "ready", error: undefined }
-        : prev
+        : prev,
     );
   }, [store]);
 
@@ -289,7 +289,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     (
       next:
         | ReadonlyArray<UIMessage>
-        | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>)
+        | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>),
     ): void => {
       store.setState((prev) => {
         if (prev.status === "streaming" || prev.status === "submitted") {
@@ -301,7 +301,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         };
       });
     },
-    [store]
+    [store],
   );
 
   return React.useMemo(
@@ -328,7 +328,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       stop,
       resumeStream,
       clearError,
-    ]
+    ],
   );
 }
 
@@ -339,7 +339,7 @@ type RegenerateCutoff =
 
 function resolveRegenerateCutoff(
   messages: ReadonlyArray<UIMessage>,
-  messageId: string | undefined
+  messageId: string | undefined,
 ): RegenerateCutoff {
   if (messageId != null) {
     const index = messages.findIndex((m) => m.id === messageId);
@@ -352,7 +352,7 @@ function resolveRegenerateCutoff(
         kind: "error",
         error: new Error(
           `useChat.regenerate: messageId "${messageId}" is ` +
-            `not an assistant message; only assistant messages can be regenerated.`
+            `not an assistant message; only assistant messages can be regenerated.`,
         ),
       };
     }

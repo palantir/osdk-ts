@@ -62,7 +62,7 @@ describe("getAnthropicBaseUrl", () => {
     const client = createMockClient();
 
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
     );
   });
 
@@ -72,7 +72,7 @@ describe("getAnthropicBaseUrl", () => {
     });
 
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
     );
   });
 });
@@ -82,7 +82,7 @@ describe("getOpenAiBaseUrl", () => {
     const client = createMockClient();
 
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
     );
   });
 
@@ -92,7 +92,7 @@ describe("getOpenAiBaseUrl", () => {
     });
 
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
     );
   });
 });
@@ -102,7 +102,7 @@ describe("getGoogleBaseUrl", () => {
     const client = createMockClient();
 
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
     );
   });
 
@@ -112,7 +112,7 @@ describe("getGoogleBaseUrl", () => {
     });
 
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
     );
   });
 });
@@ -126,19 +126,19 @@ describe("accepts an OSDK Client (context nested under symbolClientContext)", ()
       // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
       async () => "nested-token",
       {},
-      mockFetch
+      mockFetch,
     );
 
     expect(await getFoundryToken(client)).toBe("nested-token");
     expect(typeof createFetch(client)).toBe("function");
     expect(getOpenAiBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
     );
     expect(getAnthropicBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
     );
     expect(getGoogleBaseUrl(client)).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/google"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/google",
     );
   });
 });

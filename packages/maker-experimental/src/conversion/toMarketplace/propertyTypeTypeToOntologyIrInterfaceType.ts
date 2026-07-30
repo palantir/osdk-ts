@@ -26,7 +26,7 @@ import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 export function propertyTypeTypeToOntologyIrInterfaceType(
   type: PropertyTypeType,
   propertyApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): InterfacePropertyTypeType {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -44,7 +44,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
           field = {
             structFieldRid: ridGenerator.generateStructFieldRid(
               propertyApiName,
-              key
+              key,
             ),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
@@ -53,7 +53,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             fieldType: propertyTypeTypeToOntologyIrInterfaceType(
               fieldTypeDefinition,
               propertyApiName,
-              ridGenerator
+              ridGenerator,
             ),
             requireImplementation: true,
           };
@@ -68,12 +68,12 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               apiName: key,
               structFieldRid: ridGenerator.generateStructFieldRid(
                 propertyApiName,
-                key
+                key,
               ),
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition.fieldType,
                 propertyApiName,
-                ridGenerator
+                ridGenerator,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -89,7 +89,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               apiName: key,
               structFieldRid: ridGenerator.generateStructFieldRid(
                 propertyApiName,
-                key
+                key,
               ),
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],
@@ -97,7 +97,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition,
                 propertyApiName,
-                ridGenerator
+                ridGenerator,
               ),
               requireImplementation: true,
             };

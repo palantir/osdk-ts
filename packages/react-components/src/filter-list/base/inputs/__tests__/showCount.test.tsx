@@ -40,7 +40,7 @@ describe("ListogramInput showCount", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("42")).toBeDefined();
@@ -57,7 +57,7 @@ describe("ListogramInput showCount", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         showCount={true}
-      />
+      />,
     );
 
     expect(screen.getByText("42")).toBeDefined();
@@ -74,7 +74,7 @@ describe("ListogramInput showCount", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         showCount={false}
-      />
+      />,
     );
 
     expect(screen.queryByText("42")).toBeNull();
@@ -95,7 +95,7 @@ describe("ListogramInput showCount", () => {
         onChange={vi.fn()}
         displayMode="full"
         showCount={false}
-      />
+      />,
     );
 
     expect(screen.queryByText("42")).toBeNull();
@@ -113,7 +113,7 @@ describe("ListogramInput showCount", () => {
         onChange={vi.fn()}
         displayMode="count"
         showCount={false}
-      />
+      />,
     );
 
     expect(screen.queryByText("42")).toBeNull();
@@ -131,7 +131,7 @@ describe("ListogramInput showCount", () => {
         onChange={vi.fn()}
         displayMode="minimal"
         showCount={true}
-      />
+      />,
     );
 
     expect(screen.queryByText("42")).toBeNull();
@@ -153,7 +153,7 @@ describe("MultiSelectInput showCounts", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         showCounts={false}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -168,7 +168,7 @@ describe("MultiSelectInput showCounts", () => {
         selectedValues={[]}
         onChange={vi.fn()}
         showCounts={true}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -182,7 +182,7 @@ describe("MultiSelectInput showCounts", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -203,7 +203,7 @@ describe("SingleSelectInput showCounts", () => {
         selectedValue={undefined}
         onChange={vi.fn()}
         showCounts={false}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();
@@ -218,7 +218,7 @@ describe("SingleSelectInput showCounts", () => {
         selectedValue={undefined}
         onChange={vi.fn()}
         showCounts={true}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).toBeDefined();

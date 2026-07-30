@@ -420,7 +420,7 @@ function ControlledFormStory(): React.ReactElement {
     (fieldKey: string, value: unknown) => {
       setFormState((prev) => ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   return (
@@ -432,7 +432,7 @@ function ControlledFormStory(): React.ReactElement {
             formState,
             (_key, value) =>
               value instanceof File ? `File: ${value.name}` : value,
-            2
+            2,
           )}
         </pre>
       </div>
@@ -519,7 +519,7 @@ const disabledFieldInitialState: Record<string, unknown> = {
 const CUSTOM_STATUS_OPTIONS = ["Requires approval", "Ready to submit"];
 
 function renderDisabledCustomField(
-  props: BaseFormFieldProps<unknown>
+  props: BaseFormFieldProps<unknown>,
 ): React.ReactNode {
   const selectedValue = props.value != null ? String(props.value) : undefined;
 
@@ -553,17 +553,17 @@ function DisabledFieldsStory(): React.ReactElement {
   const client = useOsdkClient();
   const employeeObjectSet = useMemo(
     () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [client]
+    [client],
   );
   const [formState, setFormState] = useState<Record<string, unknown>>(
-    disabledFieldInitialState
+    disabledFieldInitialState,
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
       setFormState((prev) => ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   const disabledFormContent: ReadonlyArray<FormContentItem> = useMemo(
@@ -698,7 +698,7 @@ function DisabledFieldsStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -1170,7 +1170,7 @@ function ObjectSetFieldStory(): React.ReactElement {
   // prevent structural assignability, so an assertion is needed here.
   const employeeObjectSet = useMemo(
     () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [client]
+    [client],
   );
 
   const objectSetFormContent: ReadonlyArray<FormContentItem> = useMemo(
@@ -1193,7 +1193,7 @@ function ObjectSetFieldStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -2141,7 +2141,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
       client(Employee).where({
         department: "Marketing",
       }) as ObjectSet<ObjectTypeDefinition>,
-    [client]
+    [client],
   );
   const scopedObjectSelectFormContent = useMemo(
     (): ReadonlyArray<FormContentItem> => [
@@ -2156,7 +2156,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
         },
       }),
     ],
-    [marketingEmployees]
+    [marketingEmployees],
   );
 
   return (

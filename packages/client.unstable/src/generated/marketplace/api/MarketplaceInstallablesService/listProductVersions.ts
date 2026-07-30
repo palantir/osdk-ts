@@ -31,13 +31,13 @@ export async function listProductVersions(
   marketplaceRid: _api_MarketplaceRid,
   productId: _api_ProductId,
   pageToken: _api_ListProductVersionsPageToken | null | undefined,
-  limit: number | null | undefined
+  limit: number | null | undefined,
 ): Promise<_api_ListProductVersionsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/${marketplaceRid}/product/${productId}/list`,
     "GET",
     undefined,
-    { pageToken, limit }
+    { pageToken, limit },
   );
 }

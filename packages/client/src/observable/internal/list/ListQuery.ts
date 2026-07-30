@@ -137,7 +137,7 @@ export abstract class ListQuery extends BaseListQuery<
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiName: string,
     cacheKey: ListCacheKey,
-    opts: ListQueryOptions
+    opts: ListQueryOptions,
   ) {
     super(
       store,
@@ -151,9 +151,9 @@ export abstract class ListQuery extends BaseListQuery<
               msgPrefix: `ListQuery<${cacheKey.otherKeys
                 .map((x) => JSON.stringify(x))
                 .join(", ")}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
 
     this.apiName = apiName;
@@ -174,7 +174,7 @@ export abstract class ListQuery extends BaseListQuery<
     if (!this.#pivotInfo && this.cacheKey.otherKeys[RDP_IDX] == null) {
       this.sortingStrategy = new OrderBySortingStrategy(
         this.apiName,
-        this.#orderBy
+        this.#orderBy,
       );
     }
   }
@@ -225,7 +225,7 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   protected abstract createObjectSet(
-    store: Store
+    store: Store,
   ): ObjectSet<ObjectTypeDefinition>;
 
   /**
@@ -233,7 +233,7 @@ export abstract class ListQuery extends BaseListQuery<
    * Fetches a page of data
    */
   protected async fetchPageData(
-    signal: AbortSignal | undefined
+    signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
     const needsResultType =
       (Object.keys(this.#orderBy).length > 0 &&
@@ -248,7 +248,7 @@ export abstract class ListQuery extends BaseListQuery<
       const { resultType, invalidationSet } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
-          wireObjectSet
+          wireObjectSet,
         );
 
       this.#updateFetchedObjectType(resultType.apiName);
@@ -266,8 +266,8 @@ export abstract class ListQuery extends BaseListQuery<
           // there are no derived properties.
           await extractRdpDefinition(
             this.store.client[additionalContext],
-            wireObjectSet
-          )
+            wireObjectSet,
+          ),
         );
       }
 
@@ -287,7 +287,7 @@ export abstract class ListQuery extends BaseListQuery<
 
             if (rdpConfig != null) {
               objectSet = objectSet.withProperties(
-                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
               );
             }
 
@@ -318,7 +318,7 @@ export abstract class ListQuery extends BaseListQuery<
         const { resultType, invalidationSet } =
           await getObjectTypesThatInvalidate(
             this.store.client[additionalContext],
-            wireObjectSet
+            wireObjectSet,
           );
         this.#updateFetchedObjectType(resultType.apiName);
         this.#rdpInvalidationSet = invalidationSet;
@@ -367,7 +367,7 @@ export abstract class ListQuery extends BaseListQuery<
   protected handleFetchError(
     error: unknown,
     _status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<ListCacheKey> {
     this.logger?.error("error", error);
     this.store.subjects.get(this.cacheKey).error(error);
@@ -378,7 +378,7 @@ export abstract class ListQuery extends BaseListQuery<
     return this.writeToStore(
       { data: [], totalCount: existingTotalCount },
       "error",
-      batch
+      batch,
     );
   }
 
@@ -403,12 +403,12 @@ export abstract class ListQuery extends BaseListQuery<
    * Postprocess fetched data.
    */
   protected abstract postProcessFetchedData(
-    data: Osdk.Instance<any>[]
+    data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]>;
 
   invalidateObjectType = async (
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void> => {
     if (await this.revalidateObjectType(objectType)) {
       changes?.modified.add(this.cacheKey);
@@ -428,7 +428,7 @@ export abstract class ListQuery extends BaseListQuery<
 
   maybeUpdateAndRevalidate = (
     changes: Changes,
-    optimisticId: OptimisticId | undefined
+    optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -493,7 +493,7 @@ export abstract class ListQuery extends BaseListQuery<
 
         const toAdd = new Set<ObjectHolder | InterfaceHolder>(
           // easy case. objects are new to the cache and they match this filter
-          relevantObjects.added.strictMatches
+          relevantObjects.added.strictMatches,
         );
 
         // anything thats been deleted can be removed, so start there
@@ -541,7 +541,7 @@ export abstract class ListQuery extends BaseListQuery<
           status,
           batch,
           { type: "clientOrdered" },
-          existingTotalCount
+          existingTotalCount,
         );
       });
 
@@ -571,7 +571,7 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   protected _extractAndCategorizeRelevantObjects(
-    changes: Changes
+    changes: Changes,
   ): ExtractRelevantObjectsResult {
     const relevantObjects = this.extractRelevantObjects(changes);
 
@@ -592,7 +592,7 @@ export abstract class ListQuery extends BaseListQuery<
    * Extract relevant objects for this query type.
    */
   protected abstract extractRelevantObjects(
-    changes: Changes
+    changes: Changes,
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
@@ -628,7 +628,7 @@ export abstract class ListQuery extends BaseListQuery<
           this.rdpConfig,
           undefined,
           this.includeAllBaseObjectProperties,
-          EMPTY_RDP_SET
+          EMPTY_RDP_SET,
         );
       });
     } else if (state === "REMOVED") {
@@ -637,7 +637,7 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   protected onOswRemoved(
-    objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>
+    objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
   ): void {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -648,13 +648,13 @@ export abstract class ListQuery extends BaseListQuery<
       const existing = batch.read(this.cacheKey);
       invariant(
         existing,
-        "the truth value for our list should exist as we already subscribed"
+        "the truth value for our list should exist as we already subscribed",
       );
       if (existing.status === "loaded") {
         const objectCacheKey = this.getObjectCacheKey(objOrIface);
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
-          (o) => o !== objectCacheKey
+          (o) => o !== objectCacheKey,
         );
 
         // If the filter didn't change anything, then the list was already
@@ -665,7 +665,7 @@ export abstract class ListQuery extends BaseListQuery<
           batch.write(
             this.cacheKey,
             { data: newObjects ?? [], totalCount: existingTotalCount },
-            "loaded"
+            "loaded",
           );
           // Should there be an else for this case? Do we need to invalidate
           // the paging tokens we may have? FIXME
@@ -682,7 +682,7 @@ export abstract class ListQuery extends BaseListQuery<
       if (process.env.NODE_ENV !== "production") {
         logger?.info(
           "Removing an object from an object list that is in the middle of being loaded.",
-          existing
+          existing,
         );
       }
 
@@ -707,7 +707,7 @@ export abstract class ListQuery extends BaseListQuery<
       "object",
       obj.$objectType,
       pk,
-      this.rdpConfig ?? undefined
+      this.rdpConfig ?? undefined,
     );
   }
 }

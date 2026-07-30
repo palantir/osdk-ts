@@ -34,7 +34,7 @@ export class TimeSeriesPropertyImpl<
     client: MinimalClient,
     objectApiName: string,
     primaryKey: any,
-    propertyName: string
+    propertyName: string,
   ) {
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
@@ -44,7 +44,7 @@ export class TimeSeriesPropertyImpl<
     return TimeSeriesPropertiesV2.getFirstPoint(
       this.#client,
       await this.#client.ontologyRid,
-      ...this.#triplet
+      ...this.#triplet,
     ) as Promise<TimeSeriesPoint<T>>;
   }
 
@@ -52,12 +52,12 @@ export class TimeSeriesPropertyImpl<
     return TimeSeriesPropertiesV2.getLastPoint(
       this.#client,
       await this.#client.ontologyRid,
-      ...this.#triplet
+      ...this.#triplet,
     ) as Promise<TimeSeriesPoint<T>>;
   }
 
   public async getAllPoints(
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
@@ -79,11 +79,11 @@ export class TimeSeriesPropertyImpl<
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
-      query ? { range: getTimeRange(query) } : {}
+      query ? { range: getTimeRange(query) } : {},
     );
 
     for await (const timeseriesPoint of asyncIterPointsHelper<T>(
-      streamPointsIterator
+      streamPointsIterator,
     )) {
       yield timeseriesPoint;
     }

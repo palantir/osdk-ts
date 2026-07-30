@@ -54,7 +54,7 @@ function SingleDateInputInner({
     (value: Date | null) => {
       onChange(value ?? undefined);
     },
-    [onChange]
+    [onChange],
   );
 
   return (

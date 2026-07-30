@@ -31,7 +31,7 @@ interface TableBodyProps<TData extends RowData> {
   rowHeight?: number;
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>
+    cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   isLoadingMore?: boolean;
   headerGroups?: Array<HeaderGroup<TData>>;

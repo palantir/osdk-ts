@@ -29,11 +29,11 @@ import type {
  */
 export async function validateBlockSetVersionV2(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_ValidateBlockSetVersionResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/version/${blockSetVersionId}/validate`,
-    "GET"
+    "GET",
   );
 }

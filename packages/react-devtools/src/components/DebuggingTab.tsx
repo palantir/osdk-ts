@@ -66,7 +66,7 @@ function collectIssues(monitorStore: MonitorStore, now: number): Issue[] {
             parameters: err.parameters,
           },
           null,
-          2
+          2,
         ),
       },
     });
@@ -90,7 +90,7 @@ function collectIssues(monitorStore: MonitorStore, now: number): Issue[] {
           colno: we.colno,
         },
         null,
-        2
+        2,
       );
     }
     const hasExpandable =
@@ -178,7 +178,7 @@ function collectIssues(monitorStore: MonitorStore, now: number): Issue[] {
   issues.sort(
     (a, b) =>
       SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] ||
-      b.timestamp - a.timestamp
+      b.timestamp - a.timestamp,
   );
 
   return issues;
@@ -202,7 +202,7 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const issueStore = React.useMemo(
     () =>
       createPollingStore(() => collectIssues(monitorStore, Date.now()), 2000),
-    [monitorStore]
+    [monitorStore],
   );
   const issues =
     React.useSyncExternalStore(issueStore.subscribe, issueStore.getSnapshot) ??
@@ -214,12 +214,12 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
         const entries = await monitorStore.loadCacheEntries();
         return entries.length;
       }, 5000),
-    [monitorStore]
+    [monitorStore],
   );
   const cacheCount =
     React.useSyncExternalStore(
       cacheCountStore.subscribe,
-      cacheCountStore.getSnapshot
+      cacheCountStore.getSnapshot,
     ) ?? 0;
 
   const searchFilter = useCallback(
@@ -235,12 +235,12 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
         issue.category.toLowerCase().includes(q)
       );
     },
-    [searchQuery]
+    [searchQuery],
   );
 
   const errorIssues = useMemo(
     () => issues.filter((i) => i.severity === "error").filter(searchFilter),
-    [issues, searchFilter]
+    [issues, searchFilter],
   );
 
   const filteredConsoleEntries = useMemo(() => {
@@ -252,7 +252,7 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
       (entry) =>
         entry.args.some((arg) => arg.toLowerCase().includes(q)) ||
         entry.level.includes(q) ||
-        (entry.source?.toLowerCase().includes(q) ?? false)
+        (entry.source?.toLowerCase().includes(q) ?? false),
     );
   }, [consoleEntries, searchQuery]);
 
@@ -318,7 +318,7 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
           <div
             className={classNames(
               styles.sectionHeader,
-              styles.errorSectionHeader
+              styles.errorSectionHeader,
             )}
           >
             <Icon icon="error" size={14} color="var(--dt-red)" />

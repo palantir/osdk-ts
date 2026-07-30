@@ -51,7 +51,7 @@ function resolveContext(client: Client | PlatformClient): PlatformClient {
  * ```
  */
 export function createFetch(
-  client: Client | PlatformClient
+  client: Client | PlatformClient,
 ): typeof globalThis.fetch {
   return resolveContext(client).fetch;
 }
@@ -70,7 +70,7 @@ export function createFetch(
 // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 export async function getFoundryToken(
-  client: Client | PlatformClient
+  client: Client | PlatformClient,
 ): Promise<string> {
   return resolveContext(client).tokenProvider();
 }
@@ -90,7 +90,7 @@ export async function getFoundryToken(
 export function getAnthropicBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/anthropic",
-    resolveContext(client).baseUrl
+    resolveContext(client).baseUrl,
   ).toString();
 }
 
@@ -109,7 +109,7 @@ export function getAnthropicBaseUrl(client: Client | PlatformClient): string {
 export function getOpenAiBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/openai/v1",
-    resolveContext(client).baseUrl
+    resolveContext(client).baseUrl,
   ).toString();
 }
 
@@ -136,6 +136,6 @@ export function getOpenAiBaseUrl(client: Client | PlatformClient): string {
 export function getGoogleBaseUrl(client: Client | PlatformClient): string {
   return new URL(
     "api/v2/llm/proxy/google",
-    resolveContext(client).baseUrl
+    resolveContext(client).baseUrl,
   ).toString();
 }

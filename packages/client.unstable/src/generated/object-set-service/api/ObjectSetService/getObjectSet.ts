@@ -26,7 +26,7 @@ import type {
  */
 export async function getObjectSet(
   ctx: ConjureContext,
-  objectSetRid: _api_ObjectSetRid
+  objectSetRid: _api_ObjectSetRid,
 ): Promise<_api_GetObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/${objectSetRid}`, "GET");
 }

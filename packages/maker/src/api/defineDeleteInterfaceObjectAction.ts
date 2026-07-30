@@ -20,14 +20,14 @@ import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import { defineAction, kebab } from "./defineAction.js";
 
 export function defineDeleteInterfaceObjectAction(
-  defInput: InterfaceActionTypeUserDefinition
+  defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   return defineAction({
     apiName:
       def.apiName ??
       `delete-interface-object-${kebab(
-        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName
+        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
       )}`,
     displayName:
       def.displayName ??

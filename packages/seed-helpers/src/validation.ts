@@ -104,7 +104,7 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
  */
 export function validateSeedObject(
   props: Record<string, unknown>,
-  objectType: Ontology.ObjectTypeV2
+  objectType: Ontology.ObjectTypeV2,
 ): void {
   const apiName = objectType.apiName;
   const identity = pkIdentity(props, objectType);
@@ -116,14 +116,14 @@ export function validateSeedObject(
       wireType !== undefined,
       () =>
         `Property '${key}' on '${apiName}' object` +
-        ` (primary key ${identity}) is not defined in the ontology`
+        ` (primary key ${identity}) is not defined in the ontology`,
     );
 
     invariant(
       value != null,
       () =>
         `Property '${key}' on '${apiName}' object` +
-        ` (primary key ${identity}) is null or undefined`
+        ` (primary key ${identity}) is null or undefined`,
     );
 
     const expectedJsType = EXPECTED_JS_TYPE[wireType];
@@ -132,7 +132,7 @@ export function validateSeedObject(
       () =>
         `Property '${key}' on '${apiName}' object` +
         ` (primary key ${identity}) expects ${wireType} (a ${expectedJsType})` +
-        ` but got ${typeof value}`
+        ` but got ${typeof value}`,
     );
 
     const format = WIRE_TYPE_FORMAT[wireType];
@@ -142,12 +142,12 @@ export function validateSeedObject(
     formatErrors.push(
       `property '${key}' has invalid ${wireType}` +
         ` format: '${String(value)}'.` +
-        ` Expected format like '${format.example}'`
+        ` Expected format like '${format.example}'`,
     );
   }
 
   invariant(formatErrors.length === 0, () =>
-    formatValidationErrors(apiName, identity, formatErrors)
+    formatValidationErrors(apiName, identity, formatErrors),
   );
 }
 
@@ -158,7 +158,7 @@ export function validateSeedObject(
  */
 function pkIdentity(
   props: Record<string, unknown>,
-  objectType: Ontology.ObjectTypeV2
+  objectType: Ontology.ObjectTypeV2,
 ): string {
   const pk = props[objectType.primaryKey];
   return pk == null ? "<unknown>" : String(pk);
@@ -167,7 +167,7 @@ function pkIdentity(
 function formatValidationErrors(
   apiName: string,
   identity: string,
-  messages: string[]
+  messages: string[],
 ): string {
   const errorWord = messages.length === 1 ? "error" : "errors";
   const body = messages.map((msg) => `  ${msg}`).join("\n");

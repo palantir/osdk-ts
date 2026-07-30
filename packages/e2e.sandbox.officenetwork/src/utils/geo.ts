@@ -1,7 +1,7 @@
 import type { GeoJsonProperties, Geometry, Point } from "geojson";
 
 export function isPoint(
-  value: Geometry | GeoJsonProperties | null | undefined
+  value: Geometry | GeoJsonProperties | null | undefined,
 ): value is Point {
   return (
     typeof value === "object" &&
@@ -17,7 +17,7 @@ export function isPoint(
 }
 
 export function getPointCoords(
-  value: Geometry | GeoJsonProperties | null | undefined
+  value: Geometry | GeoJsonProperties | null | undefined,
 ): [number, number] | null {
   if (!isPoint(value)) return null;
   return [value.coordinates[0], value.coordinates[1]];

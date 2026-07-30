@@ -48,7 +48,7 @@ import {
  */
 function createLocalizedAbout(
   fallbackTitle: string,
-  fallbackDescription?: string
+  fallbackDescription?: string,
 ): LocalizedTitleAndDescription {
   return {
     fallbackTitle,
@@ -68,7 +68,7 @@ class BaseParameterTypeConverter {
 
   constructor(
     objectTypeIds?: Record<string, string>,
-    interfaceTypes?: Record<string, string>
+    interfaceTypes?: Record<string, string>,
   ) {
     this.objectTypeIds = objectTypeIds ?? {};
     this.interfaceTypes = interfaceTypes ?? {};
@@ -260,7 +260,7 @@ class BaseParameterTypeConverter {
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
           for (const [fieldName, fieldType] of Object.entries(
-            structType.structFieldTypes
+            structType.structFieldTypes,
           )) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
@@ -282,7 +282,7 @@ class BaseParameterTypeConverter {
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
           for (const [fieldName, fieldType] of Object.entries(
-            structType.structFieldTypes
+            structType.structFieldTypes,
           )) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
@@ -343,12 +343,12 @@ function convertShapeDataType(
   dataType: IDataType,
   objectTypeIds: Record<string, string>,
   interfaceTypes: Record<string, string>,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): { type: string; [key: string]: unknown } {
   switch (dataType.type) {
     case "object": {
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        (dataType.object as { objectTypeId: string }).objectTypeId
+        (dataType.object as { objectTypeId: string }).objectTypeId,
       );
       const blockId = objectTypeIds[objectTypeId];
       return {
@@ -358,7 +358,7 @@ function convertShapeDataType(
     }
     case "objectSet": {
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        (dataType.objectSet as { objectTypeId: string }).objectTypeId
+        (dataType.objectSet as { objectTypeId: string }).objectTypeId,
       );
       const blockId = objectTypeIds[objectTypeId];
       return {
@@ -399,7 +399,7 @@ function convertShapeDataType(
               list.elementsType,
               objectTypeIds,
               interfaceTypes,
-              ridGenerator
+              ridGenerator,
             ),
           },
         };
@@ -418,7 +418,7 @@ function convertShapeDataType(
               set.elementsType,
               objectTypeIds,
               interfaceTypes,
-              ridGenerator
+              ridGenerator,
             ),
           },
         };
@@ -437,7 +437,7 @@ function convertShapeDataType(
               opt.wrappedType,
               objectTypeIds,
               interfaceTypes,
-              ridGenerator
+              ridGenerator,
             ),
           },
         };
@@ -453,7 +453,7 @@ function buildFunctionShape(
   functionApiName: string,
   discoveredFunction: IDiscoveredFunction,
   ridGenerator: OntologyRidGenerator,
-  knownIdentifiers: KnownMarketplaceIdentifiers
+  knownIdentifiers: KnownMarketplaceIdentifiers,
 ): FunctionInputShape {
   const objectTypeIds = knownIdentifiers.objectTypeIds ?? {};
   const interfaceTypes = knownIdentifiers.interfaceTypes ?? {};
@@ -479,7 +479,7 @@ function buildFunctionShape(
         dataType,
         objectTypeIds,
         interfaceTypes,
-        ridGenerator
+        ridGenerator,
       ),
       required,
     };
@@ -501,7 +501,7 @@ function buildFunctionShape(
           outputDataType,
           objectTypeIds,
           interfaceTypes,
-          ridGenerator
+          ridGenerator,
         ),
       },
     },
@@ -522,7 +522,7 @@ export class ActionTypeShapeExtractor {
     actionType: ActionTypeBlockDataV2,
     ridGenerator: OntologyRidGenerator,
     knownIdentifiers: KnownMarketplaceIdentifiers,
-    functionsIr?: FunctionsIr
+    functionsIr?: FunctionsIr,
   ): BlockShapes {
     const actionApiName = (actionType.actionType as ActionType).metadata
       .apiName;
@@ -548,23 +548,23 @@ export class ActionTypeShapeExtractor {
         (actionType.actionType as ActionType).metadata.displayMetadata
           .displayName,
         (actionType.actionType as ActionType).metadata.displayMetadata
-          .description
+          .description,
       ),
       parameters: {}, // Legacy field, kept empty
       parametersV2: Object.entries(actionType.parameterIds ?? {}).map(
         ([_key, parameterId]) => {
           const paramReadableId = this.getParameterReadableId(
             actionApiName,
-            parameterId
+            parameterId,
           );
           return this.toBlockInternalId(paramReadableId, ridGenerator);
-        }
+        },
       ),
     };
 
     const baseParameterTypeConverter = new BaseParameterTypeConverter(
       knownIdentifiers.objectTypeIds,
-      knownIdentifiers.interfaceTypes
+      knownIdentifiers.interfaceTypes,
     );
 
     // Build parameter output shapes
@@ -577,13 +577,13 @@ export class ActionTypeShapeExtractor {
       for (const [parameterId, parameter] of Object.entries(parameters)) {
         const paramReadableId = this.getParameterReadableId(
           actionApiName,
-          parameterId
+          parameterId,
         );
 
         const parameterShape: ActionTypeParameterShape = {
           about: createLocalizedAbout(
             parameter.displayMetadata.displayName,
-            parameter.displayMetadata.description
+            parameter.displayMetadata.description,
           ),
           type: baseParameterTypeConverter.convert(parameter.type),
           actionType: this.toBlockInternalId(actionReadableId, ridGenerator),
@@ -605,7 +605,7 @@ export class ActionTypeShapeExtractor {
     const allInputShapes = new Map<ReadableId, InputShape>();
     const allInputMappings: InputMappingEntry[] = [];
     const functionRule = actionType.actionType.actionTypeLogic.logic.rules.find(
-      (r) => r.type === "functionRule"
+      (r) => r.type === "functionRule",
     );
     if (functionRule && functionsIr) {
       const functionApiName =
@@ -613,7 +613,7 @@ export class ActionTypeShapeExtractor {
         functionRule.functionRule.functionRid;
 
       const discoveredFunction = functionsIr.discoveredFunctions.find(
-        (f) => f.locator.typescript?.functionName === functionApiName
+        (f) => f.locator.typescript?.functionName === functionApiName,
       );
 
       if (discoveredFunction) {
@@ -621,7 +621,7 @@ export class ActionTypeShapeExtractor {
           functionApiName,
           discoveredFunction,
           ridGenerator,
-          knownIdentifiers
+          knownIdentifiers,
         );
 
         const readableFunctionId =
@@ -653,14 +653,14 @@ export class ActionTypeShapeExtractor {
 
   private getParameterReadableId(
     actionApiName: string,
-    parameterId: string
+    parameterId: string,
   ): ReadableId {
     return `action-${actionApiName}-parameter-${parameterId}` as ReadableId;
   }
 
   private toBlockInternalId(
     readableId: ReadableId,
-    ridGenerator: OntologyRidGenerator
+    ridGenerator: OntologyRidGenerator,
   ): string {
     return ridGenerator.toBlockInternalId(readableId);
   }

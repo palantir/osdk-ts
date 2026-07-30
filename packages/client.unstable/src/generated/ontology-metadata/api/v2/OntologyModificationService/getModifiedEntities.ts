@@ -28,7 +28,7 @@ import type {
 export async function getModifiedEntities(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_GetModifiedEntitiesRequest
+  request: _api_modification_GetModifiedEntitiesRequest,
 ): Promise<_api_modification_GetModifiedEntitiesResponse> {
   return conjureFetch(ctx, `/ontology/v2/${ontologyRid}/diff`, "POST", request);
 }

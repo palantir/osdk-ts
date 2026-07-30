@@ -27,11 +27,11 @@ import type {
  */
 export async function deleteObjectSetsBySecurityRid(
   ctx: ConjureContext,
-  securityRid: _api_internal_SecurityRid
+  securityRid: _api_internal_SecurityRid,
 ): Promise<_api_internal_DeleteObjectSetsBySecurityRidResponse> {
   return conjureFetch(
     ctx,
     `/internal/objectSets/securityRid/${securityRid}`,
-    "DELETE"
+    "DELETE",
   );
 }

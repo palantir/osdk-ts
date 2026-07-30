@@ -80,5 +80,5 @@ function NullValueWrapperInner({
 }
 
 export const NullValueWrapper = memo(
-  NullValueWrapperInner
+  NullValueWrapperInner,
 ) as typeof NullValueWrapperInner;

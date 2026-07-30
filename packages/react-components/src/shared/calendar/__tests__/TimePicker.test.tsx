@@ -28,32 +28,32 @@ afterEach(() => {
 describe("TimePicker", () => {
   it("renders hour and minute inputs from a Date value", () => {
     const { rerender } = render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />,
     );
 
     expect(
-      (screen.getByLabelText("Time hours") as HTMLInputElement).value
+      (screen.getByLabelText("Time hours") as HTMLInputElement).value,
     ).toBe("9");
     expect(
-      (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
     ).toBe("05");
 
     rerender(
-      <TimePicker value={new Date(2024, 0, 15, 14, 45)} onChange={vi.fn()} />
+      <TimePicker value={new Date(2024, 0, 15, 14, 45)} onChange={vi.fn()} />,
     );
 
     expect(
-      (screen.getByLabelText("Time hours") as HTMLInputElement).value
+      (screen.getByLabelText("Time hours") as HTMLInputElement).value,
     ).toBe("14");
     expect(
-      (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
     ).toBe("45");
   });
 
   it("emits a Date with the existing date portion when a valid hour is blurred", () => {
     const onChange = vi.fn();
     render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />,
     );
 
     const hourInput = screen.getByLabelText("Time hours");
@@ -70,7 +70,7 @@ describe("TimePicker", () => {
   it("does not emit a Date before the edited hour is blurred", () => {
     const onChange = vi.fn();
     render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />,
     );
 
     fireEvent.change(screen.getByLabelText("Time hours"), {
@@ -84,7 +84,7 @@ describe("TimePicker", () => {
     const onChange = vi.fn();
     const value = new Date(2024, 0, 15, 10, 45);
     const { rerender } = render(
-      <TimePicker value={value} onChange={onChange} />
+      <TimePicker value={value} onChange={onChange} />,
     );
 
     const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
@@ -98,24 +98,24 @@ describe("TimePicker", () => {
     expect(hourInput.value).toBe("1");
 
     rerender(
-      <TimePicker value={new Date(2024, 0, 16, 12, 30)} onChange={onChange} />
+      <TimePicker value={new Date(2024, 0, 16, 12, 30)} onChange={onChange} />,
     );
     expect(hourInput.value).toBe("12");
     expect(
-      (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
     ).toBe("30");
 
     rerender(<TimePicker value={value} onChange={onChange} />);
 
     expect(hourInput.value).toBe("10");
     expect(
-      (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
     ).toBe("45");
   });
 
   it("discards draft text when parent value changes mid-edit", () => {
     const { rerender } = render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />,
     );
     const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
 
@@ -125,13 +125,13 @@ describe("TimePicker", () => {
 
     // Parent pushes a completely different value while draft is active
     rerender(
-      <TimePicker value={new Date(2024, 0, 15, 20, 0)} onChange={vi.fn()} />
+      <TimePicker value={new Date(2024, 0, 15, 20, 0)} onChange={vi.fn()} />,
     );
 
     // New parent value should win over stale draft
     expect(hourInput.value).toBe("20");
     expect(
-      (screen.getByLabelText("Time minutes") as HTMLInputElement).value
+      (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
     ).toBe("00");
   });
 
@@ -164,7 +164,7 @@ describe("TimePicker", () => {
   it("does not emit a Date before the edited minute is blurred", () => {
     const onChange = vi.fn();
     render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />,
     );
 
     fireEvent.change(screen.getByLabelText("Time minutes"), {
@@ -177,7 +177,7 @@ describe("TimePicker", () => {
   it("marks an invalid segment before restoring it on blur", () => {
     const onChange = vi.fn();
     render(
-      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />
+      <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={onChange} />,
     );
 
     const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
@@ -197,11 +197,11 @@ describe("TimePicker", () => {
       <ControlledTimePicker
         initialValue={new Date(2024, 0, 15, 9, 5)}
         onChange={onChange}
-      />
+      />,
     );
 
     const minuteInput = screen.getByLabelText(
-      "Time minutes"
+      "Time minutes",
     ) as HTMLInputElement;
     fireEvent.change(minuteInput, { target: { value: "99" } });
     expect(minuteInput.getAttribute("aria-invalid")).toBe("true");
@@ -229,7 +229,7 @@ function ControlledTimePicker({
       onChange?.(nextValue);
       setValue(nextValue);
     },
-    [onChange]
+    [onChange],
   );
 
   return <TimePicker value={value} onChange={handleChange} />;

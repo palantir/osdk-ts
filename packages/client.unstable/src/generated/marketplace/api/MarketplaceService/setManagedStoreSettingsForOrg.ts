@@ -32,12 +32,12 @@ import type {
 export async function setManagedStoreSettingsForOrg(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  setManagedStoreSettingsForOrgRequest: _api_SetManagedStoreSettingsForOrgRequest
+  setManagedStoreSettingsForOrgRequest: _api_SetManagedStoreSettingsForOrgRequest,
 ): Promise<_api_SetManagedStoreSettingsForOrgResponse> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStoresSettings/${organizationRid}`,
     "POST",
-    setManagedStoreSettingsForOrgRequest
+    setManagedStoreSettingsForOrgRequest,
   );
 }

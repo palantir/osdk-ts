@@ -103,7 +103,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
       enableSorting && filterDefinitions
         ? filterDefinitions.map((def) => getFilterKey(def))
         : [],
-    [enableSorting, filterDefinitions, getFilterKey]
+    [enableSorting, filterDefinitions, getFilterKey],
   );
 
   const pointerSensor = useSensor(PointerSensor, {
@@ -123,7 +123,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
 
   const activeFilterKey = useMemo(
     () => (activeDefinition ? getFilterKey(activeDefinition) : undefined),
-    [activeDefinition, getFilterKey]
+    [activeDefinition, getFilterKey],
   );
 
   // Memoize per-definition fallbacks by filter key so the `??` lookup at each
@@ -161,7 +161,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
         onOrderChange?.(next);
       }
     },
-    [sortableIds, onOrderChange]
+    [sortableIds, onOrderChange],
   );
 
   const handleDragCancel = useCallback(() => {

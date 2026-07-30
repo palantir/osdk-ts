@@ -29,12 +29,12 @@ import type {
  */
 export async function getEntityModificationHistoryV2(
   ctx: ConjureContext,
-  request: _api_modification_GetEntityModificationHistoryRequest
+  request: _api_modification_GetEntityModificationHistoryRequest,
 ): Promise<_api_modification_GetEntityModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/modification/history/entity`,
     "POST",
-    request
+    request,
   );
 }

@@ -47,13 +47,13 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
        * in controlled mode.
        */
       onFormStateChange: (
-        updater: (prevState: FormState<Q>) => FormState<Q>
+        updater: (prevState: FormState<Q>) => FormState<Q>,
       ) => void;
     })
   | (ActionFormConfigProps<Q> & {
       formState?: undefined;
       onFormStateChange?: (
-        updater: (prevState: FormState<Q>) => FormState<Q>
+        updater: (prevState: FormState<Q>) => FormState<Q>,
       ) => void;
     });
 
@@ -85,8 +85,8 @@ interface ActionFormConfigProps<
   onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
-      args: ActionParameters<Q>
-    ) => Promise<ActionEditResponse | undefined>
+      args: ActionParameters<Q>,
+    ) => Promise<ActionEditResponse | undefined>,
   ) => Promise<unknown> | void;
 
   /**

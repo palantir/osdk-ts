@@ -35,8 +35,8 @@ describe(MinimalLogger, () => {
   const consoleMocks = Object.fromEntries(
     consoleTypes.map(
       (name) =>
-        [name, vi.spyOn(console, name)] as [consoleTypes, MockInstance<any>]
-    )
+        [name, vi.spyOn(console, name)] as [consoleTypes, MockInstance<any>],
+    ),
   ) as Record<(typeof consoleTypes)[number], MockInstance<any>>;
 
   beforeEach(() => {

@@ -48,7 +48,7 @@ interface Accumulator extends Partial<LoadParams> {
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(
-  (c) => new BulkObjectLoader(c)
+  (c) => new BulkObjectLoader(c),
 );
 
 export function getBulkObjectLoader(client: Client): BulkObjectLoader {
@@ -79,7 +79,7 @@ export class BulkObjectLoader {
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
-    includeAllBaseObjectProperties?: boolean
+    includeAllBaseObjectProperties?: boolean,
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
@@ -113,8 +113,8 @@ export class BulkObjectLoader {
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
-          `Conflicting defType for ${apiName}: existing=${entry.defType}, new=${defType}`
-        )
+          `Conflicting defType for ${apiName}: existing=${entry.defType}, new=${defType}`,
+        ),
       );
       return deferred.promise;
     }
@@ -157,8 +157,8 @@ export class BulkObjectLoader {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
           new PalantirApiError(
-            `Failed to load ${params.apiName} with pk ${primaryKey}: ${errorMessage}`
-          )
+            `Failed to load ${params.apiName} with pk ${primaryKey}: ${errorMessage}`,
+          ),
         );
       }
     });
@@ -203,7 +203,7 @@ export class BulkObjectLoader {
         deferred.resolve(object);
       } else {
         deferred.reject(
-          new PalantirApiError(`Object not found: ${primaryKey}`)
+          new PalantirApiError(`Object not found: ${primaryKey}`),
         );
       }
     }
@@ -265,8 +265,8 @@ export class BulkObjectLoader {
       } else {
         deferred.reject(
           new PalantirApiError(
-            `Interface ${params.apiName} object not found: ${primaryKey}`
-          )
+            `Interface ${params.apiName} object not found: ${primaryKey}`,
+          ),
         );
       }
     }

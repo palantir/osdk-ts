@@ -58,7 +58,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         event.preventDefault();
         focusFileTrigger();
       },
-      [focusFileTrigger]
+      [focusFileTrigger],
     );
 
     const handleBrowseClick = useCallback(() => {
@@ -80,7 +80,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           onChange?.(files[0] ?? null);
         }
       },
-      [onChange, isMulti]
+      [onChange, isMulti],
     );
 
     const handleClear = useCallback(
@@ -91,7 +91,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           inputRef.current.value = "";
         }
       },
-      [onChange]
+      [onChange],
     );
 
     const handleKeyDown = useCallback(
@@ -101,7 +101,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           openFileDialog();
         }
       },
-      [openFileDialog]
+      [openFileDialog],
     );
 
     const displayText = useMemo(() => getDisplayText(value), [value]);
@@ -130,7 +130,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           type="button"
           className={classnames(
             styles.osdkFilePickerText,
-            !hasValue && styles.osdkFilePickerPlaceholder
+            !hasValue && styles.osdkFilePickerPlaceholder,
           )}
           onClick={openFileDialog}
           onKeyDown={handleKeyDown}
@@ -163,11 +163,11 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         </ActionButton>
       </div>
     );
-  }
+  },
 );
 
 function normalizeAccept(
-  accept: string | string[] | undefined
+  accept: string | string[] | undefined,
 ): string | undefined {
   if (accept == null) {
     return undefined;

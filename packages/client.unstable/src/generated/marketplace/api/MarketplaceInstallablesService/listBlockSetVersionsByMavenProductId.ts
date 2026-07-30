@@ -31,13 +31,13 @@ export async function listBlockSetVersionsByMavenProductId(
   marketplaceRid: _api_MarketplaceRid,
   mavenProductId: _api_MavenProductId,
   limit: number | null | undefined,
-  request: _api_ListInstallableBlockSetVersionsRequest
+  request: _api_ListInstallableBlockSetVersionsRequest,
 ): Promise<_api_ListInstallableBlockSetVersionsByMavenProductIdResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/${marketplaceRid}/mavenProductId/${mavenProductId}/blockSetVersions`,
     "POST",
     request,
-    { limit }
+    { limit },
   );
 }

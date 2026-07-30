@@ -25,11 +25,11 @@ export async function getComputeModuleDiagnostics(
   ctx: ConjureContext,
   compassRid: string,
   branch: string,
-  moduleId: string
+  moduleId: string,
 ): Promise<_ModuleStatus> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${compassRid}/${branch}/${moduleId}/diagnostics`,
-    "GET"
+    "GET",
   );
 }

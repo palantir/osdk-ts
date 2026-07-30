@@ -198,7 +198,7 @@ export class ComponentContextCapture {
       const line = lines[i];
 
       const chromeMatch = line.match(
-        /at\s+([A-Z]\w+)\s+\((.*?):(\d+):(\d+)\)/u
+        /at\s+([A-Z]\w+)\s+\((.*?):(\d+):(\d+)\)/u,
       );
       if (chromeMatch) {
         const [, funcName, filePath, lineNum, colNum] = chromeMatch;
@@ -232,7 +232,7 @@ export class ComponentContextCapture {
       const line = lines[i];
 
       const fileMatch = line.match(
-        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/u
+        /\((https?:\/\/[^)]+|\/[^)]+)\)|at\s+(https?:\/\/\S+|\/\S+)/u,
       );
       if (fileMatch) {
         const filePath = fileMatch[1] || fileMatch[2];

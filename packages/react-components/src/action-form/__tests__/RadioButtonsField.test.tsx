@@ -57,7 +57,7 @@ describe("RadioButtonsField", () => {
           value="red"
           options={STRING_OPTIONS}
           onChange={onChange}
-        />
+        />,
       );
 
       const radios = screen.getAllByRole("radio");
@@ -74,7 +74,7 @@ describe("RadioButtonsField", () => {
           options={STRING_OPTIONS}
           onChange={onChange}
           disabled={true}
-        />
+        />,
       );
 
       const radios = screen.getAllByRole("radio");
@@ -107,7 +107,7 @@ describe("RadioButtonsField", () => {
           value="red"
           options={STRING_OPTIONS}
           orientation="horizontal"
-        />
+        />,
       );
 
       const radioGroup = screen.getByRole("radiogroup");
@@ -136,7 +136,7 @@ describe("RadioButtonsField", () => {
           value={appleValue}
           options={options}
           onChange={onChange}
-        />
+        />,
       );
 
       const appleRadio = screen

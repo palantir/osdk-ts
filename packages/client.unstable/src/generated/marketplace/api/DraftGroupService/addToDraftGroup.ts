@@ -32,12 +32,12 @@ import type {
 export async function addToDraftGroup(
   ctx: ConjureContext,
   draftGroupRid: _api_DraftGroupRid,
-  request: _api_AddToDraftGroupRequest
+  request: _api_AddToDraftGroupRequest,
 ): Promise<_api_DraftGroup> {
   return conjureFetch(
     ctx,
     `/draft-groups/${draftGroupRid}/add-versions`,
     "POST",
-    request
+    request,
   );
 }

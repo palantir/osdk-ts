@@ -27,11 +27,11 @@ import type { ClientId } from "../ClientId.js";
  */
 export async function getApplicationForClient(
   ctx: ConjureContext,
-  clientId: ClientId
+  clientId: ClientId,
 ): Promise<ApplicationRid | undefined> {
   return conjureFetch(
     ctx,
     `/application-clients/for-client/${clientId}`,
-    "GET"
+    "GET",
   );
 }

@@ -37,7 +37,7 @@ type PropertySecuritiesMap = {
 
 function extractValueByImplementation(
   underlying: Record<string, unknown>,
-  impl: ObjectMetadata.InterfacePropertyImplementation
+  impl: ObjectMetadata.InterfacePropertyImplementation,
 ): unknown {
   switch (impl.type) {
     case "localProperty":
@@ -63,7 +63,7 @@ function extractValueByImplementation(
             ];
           }
           return [fieldName, underlying[entry.propertyApiName]];
-        })
+        }),
       );
     case "reduced":
       return extractValueByImplementation(underlying, impl.implementation);
@@ -73,7 +73,7 @@ function extractValueByImplementation(
 /** @internal */
 export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
   underlying: ObjectHolder,
-  interfaceDef: InterfaceMetadata
+  interfaceDef: InterfaceMetadata,
 ): InterfaceHolder {
   const [objApiNamespace] = extractNamespace(interfaceDef.apiName);
   const objDef = underlying[ObjectDefRef];
@@ -121,7 +121,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
               | undefined,
             underlying[ObjectDefRef],
             interfaceDef,
-            objApiNamespace
+            objApiNamespace,
           ),
           enumerable: "$propertySecurities" in underlying,
         },
@@ -156,7 +156,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
             if (impl != null) {
               const value = extractValueByImplementation(
                 underlying as unknown as Record<string, unknown>,
-                impl
+                impl,
               );
               return [
                 exposedName,
@@ -177,10 +177,10 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
                 value: underlying[targetPropName as keyof typeof underlying],
               },
             ];
-          })
+          }),
         ),
-      }
-    ) as InterfaceHolder
+      },
+    ) as InterfaceHolder,
   );
   function clone(update: Record<string, any> | undefined) {
     if (update == null) {
@@ -190,7 +190,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
     for (const key of Object.keys(update)) {
       if (!(key in interfaceDef.properties)) {
         throw new Error(
-          `Invalid property ${key} for interface ${interfaceDef.apiName}`
+          `Invalid property ${key} for interface ${interfaceDef.apiName}`,
         );
       }
     }
@@ -198,7 +198,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
     const remappedProps = Object.fromEntries(
       Object.keys(update)
         .map((p) => mapProperty(p, update[p]))
-        .filter((x) => x != null)
+        .filter((x) => x != null),
     );
 
     return underlying.$clone(remappedProps).$as(interfaceDef);
@@ -210,7 +210,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
     // If the underlying object does not implement the SPT, throw errors
     if (targetPropName == null) {
       throw new Error(
-        `Cannot clone interface with ${propertyName} as property is not implemented by the underlying object type ${objDef.apiName}`
+        `Cannot clone interface with ${propertyName} as property is not implemented by the underlying object type ${objDef.apiName}`,
       );
     }
     return [targetPropName, value];
@@ -221,7 +221,7 @@ function remapPropertySecuritiesForInterface(
   underlyingSecurities: PropertySecuritiesMap | undefined,
   objDef: FetchedObjectTypeDefinition,
   interfaceDef: InterfaceMetadata,
-  objApiNamespace: string | undefined
+  objApiNamespace: string | undefined,
 ): PropertySecuritiesMap | undefined {
   if (underlyingSecurities == null) return undefined;
 

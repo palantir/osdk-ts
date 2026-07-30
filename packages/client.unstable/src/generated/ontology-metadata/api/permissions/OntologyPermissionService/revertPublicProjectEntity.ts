@@ -31,12 +31,12 @@ import type {
  */
 export async function revertPublicProjectEntity(
   ctx: ConjureContext,
-  request: _api_permissions_RevertPublicProjectEntityRequest
+  request: _api_permissions_RevertPublicProjectEntityRequest,
 ): Promise<_api_permissions_RevertPublicProjectEntityResponse> {
   return conjureFetch(
     ctx,
     `/permissions/revertPublicProjectEntity`,
     "POST",
-    request
+    request,
   );
 }

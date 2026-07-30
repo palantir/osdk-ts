@@ -28,13 +28,13 @@ import type { ResetMonitorEventSetViewResponse as _api_registry_ResetMonitorEven
 export async function resetMonitorEventSetView(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_registry_ResetMonitorEventSetViewResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/reset-event-set-view/${monitorRid}`,
     "GET",
     undefined,
-    { branchRid }
+    { branchRid },
   );
 }

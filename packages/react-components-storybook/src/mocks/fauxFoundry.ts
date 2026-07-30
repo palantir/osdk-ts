@@ -39,7 +39,7 @@ export const updateEmployeeStoryAction = TypeHelpers.actionTypeBuilder(
     apiName: "updateEmployeeStoryAction",
     displayName: "Update employee",
     parameters: {},
-  })
+  }),
 )
   .addParameter("fullName", "string", true)
   .addParameter("yearsExperience", "integer", false)
@@ -52,7 +52,7 @@ export const toggleRemoteStoryAction = TypeHelpers.actionTypeBuilder(
     apiName: "toggleRemoteStoryAction",
     displayName: "Toggle remote status",
     parameters: {},
-  })
+  }),
 )
   .addParameter("isRemote", "boolean", false)
   .build();
@@ -119,7 +119,7 @@ export const generatedFieldsStoryAction = TypeHelpers.actionTypeBuilder(
     apiName: "generatedFieldsStoryAction",
     displayName: "Create employee profile",
     parameters: generatedFieldsActionParameters,
-  })
+  }),
 ).build();
 
 const unsupportedFieldsActionParameters = {
@@ -163,7 +163,7 @@ export const unsupportedFieldsStoryAction = TypeHelpers.actionTypeBuilder(
     apiName: "unsupportedFieldsStoryAction",
     displayName: "Review unsupported fields",
     parameters: unsupportedFieldsActionParameters,
-  })
+  }),
 ).build();
 
 let isInitialized = false;
@@ -187,7 +187,7 @@ export async function setupFauxFoundry(): Promise<void> {
     .getDefaultOntology()
     .registerActionType(
       updateEmployeeStoryAction.actionTypeV2,
-      () => undefined
+      () => undefined,
     );
   fauxFoundry
     .getDefaultOntology()
@@ -196,13 +196,13 @@ export async function setupFauxFoundry(): Promise<void> {
     .getDefaultOntology()
     .registerActionType(
       generatedFieldsStoryAction.actionTypeV2,
-      () => undefined
+      () => undefined,
     );
   fauxFoundry
     .getDefaultOntology()
     .registerActionType(
       unsupportedFieldsStoryAction.actionTypeV2,
-      () => undefined
+      () => undefined,
     );
 
   // Add mock data from JSON file. We synthesize marking values so the
@@ -243,7 +243,7 @@ export async function setupFauxFoundry(): Promise<void> {
     buffer,
     "application/pdf",
     // cspell:disable-next-line
-    "compressed.tracemonkey-pldi-09.pdf"
+    "compressed.tracemonkey-pldi-09.pdf",
   );
   const employee = dataStore.getObjectOrThrow("Employee", MEDIA_EMPLOYEE_PK);
   dataStore.replaceObjectOrThrow({
@@ -394,7 +394,7 @@ export async function setupFauxFoundry(): Promise<void> {
 
     const markingMap = new Map(markings.map((m) => [m.id, m]));
     const classificationId = markingIds.find(
-      (id) => markingMap.get(id)?.categoryId === "cat-classification"
+      (id) => markingMap.get(id)?.categoryId === "cat-classification",
     );
 
     if (classificationId == null) {
@@ -487,14 +487,14 @@ export async function setupFauxFoundry(): Promise<void> {
         }
       }
       return { value: result };
-    }
+    },
   );
 
   // Log registered objects for debugging
   // eslint-disable-next-line no-console
   console.log(
     `FauxFoundry: Registered ${employeeData.length} employees`,
-    [...dataStore.getObjectsOfType("Employee")].length
+    [...dataStore.getObjectsOfType("Employee")].length,
   );
 
   isInitialized = true;

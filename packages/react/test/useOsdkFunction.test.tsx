@@ -102,7 +102,7 @@ describe("useOsdkFunction", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockObserveFunction).not.toHaveBeenCalled();
@@ -130,7 +130,7 @@ describe("useOsdkFunction", () => {
           dependsOnObjects: [mockObject],
           dedupeIntervalMs: 5000,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveFunction).toHaveBeenCalledTimes(1);
@@ -142,7 +142,7 @@ describe("useOsdkFunction", () => {
         dependsOnObjects: [mockObject],
         dedupeInterval: 5000,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -151,7 +151,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper }
+      { wrapper },
     );
 
     act(() => {
@@ -169,7 +169,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper }
+      { wrapper },
     );
 
     const observer = mockObserveFunction.mock.calls[0][3];
@@ -187,7 +187,7 @@ describe("useOsdkFunction", () => {
 
     const { result } = renderHook(
       () => useOsdkFunction(MockQueryDef, { params: { id: "123" } }),
-      { wrapper }
+      { wrapper },
     );
 
     const observer = mockObserveFunction.mock.calls[0][3];
@@ -243,7 +243,7 @@ describe("useOsdkFunction", () => {
             useOsdkFunction(MockQueryDef, {
               params: { someInput: os } as unknown as Record<string, unknown>,
             }),
-          { wrapper, initialProps: { os: osA } }
+          { wrapper, initialProps: { os: osA } },
         );
 
         expect(mockObserveFunction).toHaveBeenCalledTimes(1);
@@ -251,7 +251,7 @@ describe("useOsdkFunction", () => {
         rerender({ os: osB });
 
         expect(mockObserveFunction).toHaveBeenCalledTimes(2);
-      }
+      },
     );
   });
 });

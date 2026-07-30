@@ -59,10 +59,10 @@ export const setupOctokit = (githubToken: string): Octokit => {
         retryAfter: any,
         options: any,
         octokit: any,
-        retryCount: any
+        retryCount: any,
       ) => {
         octokit.log.warn(
-          `Request quota exhausted for request ${options.method} ${options.url}`
+          `Request quota exhausted for request ${options.method} ${options.url}`,
         );
 
         octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
@@ -77,7 +77,7 @@ export const setupOctokit = (githubToken: string): Octokit => {
       onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
         // does not retry, only logs a warning
         octokit.log.warn(
-          `SecondaryRateLimit detected for request ${options.method} ${options.url}`
+          `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
         );
       },
     },

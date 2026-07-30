@@ -55,7 +55,7 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
 export default async function main(
-  args: string[] = process.argv
+  args: string[] = process.argv,
 ): Promise<void> {
   consola.log("Generating BlockGeneratorResult for ontology...");
 
@@ -158,7 +158,7 @@ export default async function main(
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
-      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$"
+      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
     );
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
@@ -166,25 +166,25 @@ export default async function main(
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
-      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee"
+      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
     );
   }
 
   let functionsIrFile;
   if (commandLineOpts.temporaryBlockDataFile) {
     consola.info(
-      `Loading temporary block data from ${commandLineOpts.temporaryBlockDataFile}`
+      `Loading temporary block data from ${commandLineOpts.temporaryBlockDataFile}`,
     );
     const fileContent = await fs.promises.readFile(
       commandLineOpts.temporaryBlockDataFile,
-      "utf-8"
+      "utf-8",
     );
     let blockDataJson: unknown;
     try {
       blockDataJson = JSON.parse(fileContent);
     } catch {
       consola.error(
-        `Failed to parse JSON from ${commandLineOpts.temporaryBlockDataFile}`
+        `Failed to parse JSON from ${commandLineOpts.temporaryBlockDataFile}`,
       );
       process.exit(1);
     }
@@ -192,21 +192,21 @@ export default async function main(
       PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
         blockDataJson as Parameters<
           typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-        >[0]
+        >[0],
       );
     invariant(
       commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
-      "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile"
+      "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile",
     );
     await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
       commandLineOpts.functionsDir,
       commandLineOpts.nodeModulesDir,
       commandLineOpts.functionsIrOutputFile,
-      previewMetadata
+      previewMetadata,
     );
     functionsIrFile = commandLineOpts.functionsIrOutputFile;
     consola.info(
-      `Discovered functions during block data generation at ${commandLineOpts.functionsIrOutputFile}`
+      `Discovered functions during block data generation at ${commandLineOpts.functionsIrOutputFile}`,
     );
   }
 
@@ -217,7 +217,7 @@ export default async function main(
 
   const dependencyFile = path.join(
     commandLineOpts.buildDir,
-    "dependencies.json"
+    "dependencies.json",
   );
   if (!fs.existsSync(dependencyFile)) {
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
@@ -244,7 +244,7 @@ export default async function main(
     dependencyFile,
     functionsIrFile,
     commandLineOpts.randomnessKey,
-    importedLinkTypeIdsByApiName
+    importedLinkTypeIdsByApiName,
   );
 
   // Create temp directory for block data
@@ -263,15 +263,15 @@ export default async function main(
     OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
       ontologyIr.importedOntology,
       undefined,
-      ontologyIr.transitiveImportedOntology
+      ontologyIr.transitiveImportedOntology,
     );
   const importedMetadataPath = path.join(
     commandLineOpts.buildDir,
-    "oac-imported-metadata.json"
+    "oac-imported-metadata.json",
   );
   await fs.promises.writeFile(
     importedMetadataPath,
-    JSON.stringify(importedMetadata, null, 2)
+    JSON.stringify(importedMetadata, null, 2),
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
@@ -279,7 +279,7 @@ export default async function main(
   if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
       ontologyIr.valueTypes,
-      commandLineOpts.buildDir
+      commandLineOpts.buildDir,
     );
   }
 
@@ -290,7 +290,7 @@ export default async function main(
   for (const apiName of backingDatasourceApiNames) {
     const objectTypeBlockData = findObjectTypeByApiName(
       ontologyIr.ontology.objectTypes,
-      apiName
+      apiName,
     );
     if (!objectTypeBlockData) continue;
 
@@ -311,7 +311,7 @@ export default async function main(
     for (const prop of nonEditOnlyProps) {
       const colInputReadableId = ReadableIdGenerator.getForDatasetColumn(
         apiName,
-        prop.apiName!
+        prop.apiName!,
       );
       const getForDatasetColumnOutput =
         ReadableIdGenerator.getForDatasetColumnOutput(apiName, prop.apiName!);
@@ -328,7 +328,7 @@ export default async function main(
   for (const linkApiName of backingDatasourceLinkApiNames) {
     const linkTypeBlockData = findLinkTypeByApiName(
       ontologyIr.ontology.linkTypes,
-      linkApiName
+      linkApiName,
     );
     if (!linkTypeBlockData) continue;
 
@@ -354,11 +354,11 @@ export default async function main(
       for (const colName of columnNames) {
         const colInputId = ReadableIdGenerator.getForDatasetColumn(
           datasetName,
-          colName
+          colName,
         );
         const colOutputId = ReadableIdGenerator.getForDatasetColumnOutput(
           datasetName,
-          colName
+          colName,
         );
         if (shapes.inputShapes.has(colInputId)) {
           ontologyInputMappingEntries.push({
@@ -371,7 +371,7 @@ export default async function main(
   }
 
   ontologyInputMappingEntries.push(
-    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes)
+    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
   );
 
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
@@ -380,25 +380,25 @@ export default async function main(
       .filter((apiName) => {
         const objectTypeBlockData = findObjectTypeByApiName(
           ontologyIr.ontology.objectTypes,
-          apiName
+          apiName,
         );
         return objectTypeBlockData !== undefined;
       })
       .map(async (apiName) => {
         const objectTypeBlockData = findObjectTypeByApiName(
           ontologyIr.ontology.objectTypes,
-          apiName
+          apiName,
         );
         consola.info(
-          `Generating backing datasource BlockGeneratorResult for ${apiName}...`
+          `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
         );
 
         return await generateBackingDatasetBlockResult(
           objectTypeBlockData!,
           commandLineOpts.buildDir,
-          commandLineOpts.randomnessKey
+          commandLineOpts.randomnessKey,
         );
-      })
+      }),
   );
 
   // Generate backing datasource BlockGeneratorResults for link types with includeEmptyBackingDatasource
@@ -407,21 +407,21 @@ export default async function main(
       .map((linkApiName) => {
         const linkTypeBlockData = findLinkTypeByApiName(
           ontologyIr.ontology.linkTypes,
-          linkApiName
+          linkApiName,
         );
         if (!linkTypeBlockData) return undefined;
         consola.info(
-          `Generating backing datasource BlockGeneratorResult for link ${linkApiName}...`
+          `Generating backing datasource BlockGeneratorResult for link ${linkApiName}...`,
         );
         return generateBackingDatasetBlockResultForLink(
           linkTypeBlockData,
           linkApiName,
           ontologyIr.ontology.objectTypes,
           commandLineOpts.buildDir,
-          commandLineOpts.randomnessKey
+          commandLineOpts.randomnessKey,
         );
       })
-      .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined)
+      .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
   );
 
   // Create BlockGeneratorResult
@@ -438,7 +438,7 @@ export default async function main(
       ontologyIr.importedOntology,
       ontologyIr.valueTypes,
       ontologyIr.importedValueTypes,
-      shapes.inputShapes
+      shapes.inputShapes,
     ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
@@ -454,7 +454,7 @@ export default async function main(
       ...valueTypeResults,
     ],
     null,
-    2
+    2,
   );
   await fs.promises.writeFile(commandLineOpts.output, blockGeneratorResultJson);
   consola.success(`BlockGeneratorResult written to ${commandLineOpts.output}`);
@@ -464,10 +464,10 @@ export default async function main(
     const valueTypeResultsJson = JSON.stringify(valueTypeResults, null, 2);
     await fs.promises.writeFile(
       commandLineOpts.valueTypesOutput,
-      valueTypeResultsJson
+      valueTypeResultsJson,
     );
     consola.success(
-      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`
+      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
     );
   }
 }
@@ -479,7 +479,7 @@ async function loadOntology(
   dependencyFile?: string,
   functionsIrFile?: string,
   randomnessKey?: string,
-  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -488,7 +488,7 @@ async function loadOntology(
     dependencyFile,
     functionsIrFile,
     randomnessKey,
-    importedLinkTypeIdsByApiName
+    importedLinkTypeIdsByApiName,
   );
   return result;
 }
@@ -517,10 +517,10 @@ function getImportedLinkTypeIdsByApiName(
  */
 function findObjectTypeByApiName(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
-  apiName: string
+  apiName: string,
 ): ObjectTypeBlockDataV2 | undefined {
   return Object.values(objectTypes).find(
-    (objectTypeBlockData) => objectTypeBlockData.objectType.apiName === apiName
+    (objectTypeBlockData) => objectTypeBlockData.objectType.apiName === apiName,
   );
 }
 
@@ -529,7 +529,7 @@ function findObjectTypeByApiName(
  */
 function findLinkTypeByApiName(
   linkTypes: Record<string, LinkTypeBlockDataV2>,
-  apiName: string
+  apiName: string,
 ): LinkTypeBlockDataV2 | undefined {
   const linkTypeId = cleanAndValidateLinkTypeId(apiName);
   return Object.values(linkTypes).find((lt) => lt.linkType.id === linkTypeId);

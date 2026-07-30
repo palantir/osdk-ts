@@ -24,7 +24,7 @@ import { hideBin } from "yargs/helpers";
 import { writeImportedOntology } from "../generate/writeImportedOntology.js";
 
 export default async function main(
-  args: string[] = process.argv
+  args: string[] = process.argv,
 ): Promise<void> {
   const commandLineOpts = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")

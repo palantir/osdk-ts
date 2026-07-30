@@ -80,7 +80,7 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   const capabilities = React.useSyncExternalStore(
     subscribeToCapabilities,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot
+    getCapabilitiesSnapshot,
   );
 
   const disabledFeatures = [...capabilities.disabledFeatures];
@@ -251,6 +251,6 @@ export function useFiberCapabilities(): FiberCapabilities {
   return React.useSyncExternalStore(
     subscribeToCapabilitiesSimple,
     getCapabilitiesSnapshot,
-    getCapabilitiesSnapshot
+    getCapabilitiesSnapshot,
   );
 }

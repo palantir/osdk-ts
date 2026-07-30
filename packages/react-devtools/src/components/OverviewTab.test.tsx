@@ -28,7 +28,7 @@ import type {
 import { OverviewTab } from "./OverviewTab.js";
 
 function makeSnapshot(
-  overrides: Partial<MetricsSnapshot["aggregates"]>
+  overrides: Partial<MetricsSnapshot["aggregates"]>,
 ): MetricsSnapshot {
   const aggregates = {
     cacheHits: 0,
@@ -70,7 +70,7 @@ function makeBinding(queryParams: QueryParams): ComponentHookBinding {
 
 function makeStore(
   snapshot: MetricsSnapshot,
-  active = new Map<string, ComponentHookBinding[]>()
+  active = new Map<string, ComponentHookBinding[]>(),
 ): MonitorStore {
   // Stable reference: useConsoleLogs caches its snapshot by identity, so
   // getEntries must return the same array each call (as the real store does).
@@ -129,7 +129,7 @@ describe("OverviewTab value tiles", () => {
       <OverviewTab
         monitorStore={makeStore(makeSnapshot({}))}
         onNavigateToTab={noop}
-      />
+      />,
     );
     expect(screen.getByText("Ontology")).not.toBeNull();
     expect(screen.getByText("Metrics")).not.toBeNull();
@@ -141,7 +141,7 @@ describe("OverviewTab value tiles", () => {
       <OverviewTab
         monitorStore={makeStore(makeSnapshot({}))}
         onNavigateToTab={noop}
-      />
+      />,
     );
     expect(screen.getByText("No recommendations right now.")).not.toBeNull();
   });
@@ -157,17 +157,17 @@ describe("OverviewTab value tiles", () => {
     const metrics = getClientMetrics(snapshot);
 
     render(
-      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />
+      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />,
     );
 
     expect(screen.getByText(formatMetric(metrics.cacheHitRate))).not.toBeNull();
     expect(screen.getByText("67%")).not.toBeNull();
     expect(
-      screen.getByText(formatMetric(metrics.avgResponseMs))
+      screen.getByText(formatMetric(metrics.avgResponseMs)),
     ).not.toBeNull();
     expect(screen.getByText("12 ms")).not.toBeNull();
     expect(
-      screen.getByText(formatMetric(metrics.requestsSaved))
+      screen.getByText(formatMetric(metrics.requestsSaved)),
     ).not.toBeNull();
   });
 
@@ -194,7 +194,7 @@ describe("OverviewTab value tiles", () => {
       <OverviewTab
         monitorStore={makeStore(makeSnapshot({}), active)}
         onNavigateToTab={noop}
-      />
+      />,
     );
 
     expect(screen.getByText("Object types")).not.toBeNull();
@@ -213,7 +213,7 @@ describe("OverviewTab value tiles", () => {
     const snapshot = makeSnapshot({});
     const metrics = getClientMetrics(snapshot);
     render(
-      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />
+      <OverviewTab monitorStore={makeStore(snapshot)} onNavigateToTab={noop} />,
     );
 
     // With no ontology usage, the Ontology section shows the empty state, not tiles.

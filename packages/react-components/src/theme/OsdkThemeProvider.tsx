@@ -111,12 +111,12 @@ export function OsdkThemeProvider({
       }
       onThemeChanged?.(next);
     },
-    [controlledTheme, onThemeChanged]
+    [controlledTheme, onThemeChanged],
   );
 
   const value = React.useMemo<OsdkThemeContextValue>(
     () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme]
+    [theme, resolvedTheme, setTheme],
   );
 
   return (

@@ -49,7 +49,7 @@ describe("ComputeStore", () => {
     expect(requests[0].type).toBe("pending");
     expect(requests[0].id).toBe(id);
     expect(requests[0].requestUrl).toBe(
-      "https://example.com/api/v2/ontologies/ri.test/objectSets/loadObjects"
+      "https://example.com/api/v2/ontologies/ri.test/objectSets/loadObjects",
     );
   });
 
@@ -180,7 +180,7 @@ describe("ComputeStore", () => {
           requestUrl: `https://example.com/api/${i}`,
           requestPayload: `{"i":${i}}`,
           requestPayloadHash: i,
-        })
+        }),
       );
     }
 
@@ -201,7 +201,7 @@ describe("ComputeStore", () => {
           requestUrl: `https://example.com/api/${i}`,
           requestPayload: `{"i":${i}}`,
           requestPayloadHash: i,
-        })
+        }),
       );
     }
 
@@ -341,7 +341,7 @@ describe("ComputeStore", () => {
       expect(endEvent.endTimestamp).toBeInstanceOf(Date);
       if (endEvent.endTimestamp) {
         expect(endEvent.endTimestamp.getTime()).toBeGreaterThan(
-          endEvent.timestamp.getTime()
+          endEvent.timestamp.getTime(),
         );
       }
     }

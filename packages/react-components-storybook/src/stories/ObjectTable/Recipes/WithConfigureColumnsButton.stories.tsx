@@ -123,14 +123,14 @@ return (
           id: colDef.locator.id,
           name: colDef.columnName || colDef.locator.id,
         })),
-      []
+      [],
     );
 
     const currentVisibility = useMemo(() => {
       const visibility: Record<string, boolean> = {};
       initialColumnDefinitions.forEach((colDef) => {
         visibility[colDef.locator.id] = columnDefinitions.some(
-          (def) => def.locator.id === colDef.locator.id
+          (def) => def.locator.id === colDef.locator.id,
         );
       });
       return visibility;
@@ -138,7 +138,7 @@ return (
 
     const currentColumnOrder = useMemo(
       () => columnDefinitions.map((colDef) => colDef.locator.id),
-      [columnDefinitions]
+      [columnDefinitions],
     );
 
     const handleApplyColumnConfig = useCallback(
@@ -148,7 +148,7 @@ return (
         columns.forEach(({ columnId, isVisible }) => {
           if (isVisible) {
             const colDef = initialColumnDefinitions.find(
-              (def) => def.locator.id === columnId
+              (def) => def.locator.id === columnId,
             );
             if (colDef) {
               newColumnDefinitions.push(colDef);
@@ -158,7 +158,7 @@ return (
         setColumnDefinitions(newColumnDefinitions);
         setIsColumnConfigOpen(false);
       },
-      []
+      [],
     );
 
     return (

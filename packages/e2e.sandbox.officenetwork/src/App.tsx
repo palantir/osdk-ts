@@ -139,7 +139,7 @@ function App() {
     (employee: Employee.OsdkInstance) => {
       setSelectedEmployee(employee);
     },
-    []
+    [],
   );
 
   const handleSelectEmployeeWithOffice = React.useCallback(
@@ -154,7 +154,7 @@ function App() {
         const employeeOfficeId = employee.primaryOfficeId;
         if (employeeOfficeId && offices) {
           const office = offices.find(
-            (o) => o.primaryKey_ === employeeOfficeId
+            (o) => o.primaryKey_ === employeeOfficeId,
           );
           if (office) {
             setSelectedOffice(office);
@@ -162,7 +162,7 @@ function App() {
         }
       }
     },
-    [offices, selectedEmployee, filteredLevel]
+    [offices, selectedEmployee, filteredLevel],
   );
 
   const handleCloseOfficePanel = React.useCallback(() => {
@@ -184,7 +184,7 @@ function App() {
         }
       }
     },
-    [offices]
+    [offices],
   );
 
   const handleLensModeChange = React.useCallback((mode: LensMode) => {
@@ -196,7 +196,7 @@ function App() {
     (level: HierarchyLevel | null) => {
       setFilteredLevel(level);
     },
-    []
+    [],
   );
 
   const handleGenerateData = React.useCallback(() => {
