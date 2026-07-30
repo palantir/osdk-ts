@@ -115,10 +115,7 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const dataType =
-      propertyMetadata?.type && typeof propertyMetadata.type === "string"
-        ? propertyMetadata.type
-        : undefined;
+    const dataType = getDataType(propertyMetadata);
 
     const markingType =
       propertyMetadata?.typeMetadata?.type === "marking"
@@ -191,11 +188,27 @@ function getDefaultColumns<
       accessorKey: key,
       header: property.displayName ?? key,
       meta: {
-        // Surfaced so type-aware rendering (e.g. the header's sort icons)
-        // works for default columns too, not just explicit columnDefinitions.
-        dataType: typeof property.type === "string" ? property.type : undefined,
+        // Surfaced so type-aware rendering works for default columns too, not
+        // just explicit columnDefinitions.
+        dataType: getDataType(property),
       },
     };
     return colDef;
   });
+}
+
+/**
+ * The property's `WirePropertyTypes` value, used for type-aware rendering such
+ * as the header's and multi-sort dialog's sort icons.
+ *
+ * Structured types (arrays, structs) carry an object rather than a wire type
+ * string, and a column may have no metadata at all (e.g. function-backed
+ * columns), so both yield `undefined`.
+ */
+function getDataType(
+  property: ObjectMetadata.Property | undefined
+): string | undefined {
+  return typeof property?.type === "string" && property.type.length > 0
+    ? property.type
+    : undefined;
 }
