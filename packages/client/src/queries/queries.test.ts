@@ -602,7 +602,7 @@ describe("queries", () => {
   });
 
   describe("executeStreamingFunction", () => {
-    it("throws because streaming execution is no longer supported", async () => {
+    it("throws because streaming execution is not currently supported", async () => {
       let caught: unknown;
       try {
         for await (const _ of client(
@@ -615,7 +615,7 @@ describe("queries", () => {
         caught = e;
       }
       expect(caught).toBeInstanceOf(Error);
-      expect((caught as Error).message).toContain("not supported");
+      expect((caught as Error).message).toContain("not currently supported");
     });
 
     it("yields elements of an array-returning query as the element type", () => {

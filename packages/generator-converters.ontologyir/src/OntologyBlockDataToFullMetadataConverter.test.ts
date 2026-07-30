@@ -76,7 +76,8 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
           type: "timeSeries",
           timeSeries: {
             assumedMarkings: [],
-            // "ri.p.unmapped" has no api name and must fall back to the rid.
+            // "ri.p.unmapped" is not a property of the object type, so it
+            // drops rather than falling back to the rid.
             properties: ["ri.p.name", "ri.p.unmapped"],
             timeSeriesSyncRid: "ri.tss.1",
           },

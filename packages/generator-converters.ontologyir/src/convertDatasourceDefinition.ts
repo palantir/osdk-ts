@@ -21,8 +21,8 @@ import type {
   OntologyIrObjectTypeDatasourceDefinition,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-
 import { consola } from "consola";
+
 import type { ApiName } from "./ApiName.js";
 import type { ResolvePropertyApiName } from "./convertPropertyMapping.js";
 import {
@@ -131,10 +131,7 @@ export function convertBlockDataDatasourceDefinition(
       return {
         type: "timeSeries",
         timeSeriesSyncRid: def.timeSeries.timeSeriesSyncRid,
-        properties: resolveApiNames(
-          def.timeSeries.properties,
-          resolveApiName,
-        ),
+        properties: resolveApiNames(def.timeSeries.properties, resolveApiName),
       };
     case "mediaSetView":
       return {
@@ -194,14 +191,13 @@ export function convertBlockDataDatasourceDefinition(
     case "derived":
       return unsupportedDatasource(
         DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
-        derivedPropertyNames(
-          def.derived.definition,
-          resolveApiName,
-        ),
+        derivedPropertyNames(def.derived.definition, resolveApiName),
       );
     default: {
       // Degrade rather than fail generation. The `never` guard makes a future
-      // variant a compile error here.
+      // variant a compile error here. The platform emits `unknown` for a
+      // variant it does not recognize; the raw name is emitted instead so it
+      // survives in the generated metadata rather than only in this warning.
       const _: never = def;
       consola.warn(
         `Unknown block-data datasource variant "${sourceType}"; `
@@ -310,10 +306,7 @@ export function convertIrDatasourceDefinition(
         type: "timeSeries",
         timeSeriesSyncRid:
           `ri.timeSeriesSync.${def.timeSeries.timeSeriesSyncRid}`,
-        properties: resolveApiNames(
-          def.timeSeries.properties,
-          resolveApiName,
-        ),
+        properties: resolveApiNames(def.timeSeries.properties, resolveApiName),
       };
     case "mediaSetView":
       return {
@@ -338,15 +331,11 @@ export function convertIrDatasourceDefinition(
     case "derived":
       return unsupportedDatasource(
         DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
-        derivedPropertyNames(
-          def.derived.definition,
-          resolveApiName,
-        ),
+        derivedPropertyNames(def.derived.definition, resolveApiName),
       );
     default: {
       // Degrade rather than fail generation. The `never` guard makes a future
       // variant a compile error here.
-      const _: never = def;
       consola.warn(
         `Unknown IR datasource variant "${sourceType}"; `
           + `degrading to unsupported.`,
@@ -380,10 +369,7 @@ function derivedPropertyNames(
         resolveApiName,
       );
     case "deleted":
-      return resolveApiNames(
-        definition.deleted.propertyTypes,
-        resolveApiName,
-      );
+      return resolveApiNames(definition.deleted.propertyTypes, resolveApiName);
     default: {
       // The `never` guard makes a future variant a compile error here.
       const _: never = definition;

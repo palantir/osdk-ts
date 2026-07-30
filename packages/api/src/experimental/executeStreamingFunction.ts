@@ -36,11 +36,11 @@ type StreamingElement<QD extends QueryDefinition<any>> =
  * @experimental This feature is experimental and might change in the future.
  *
  * Intended to execute a query as a streaming function, yielding results as
- * they arrive from the server. Streaming query execution is currently
- * unsupported: the `streamingExecute` callable was dropped from the generated
- * `@osdk/foundry.functions` SDK, so iterating the returned async iterable
- * throws. If the generated SDK regains a streaming callable, this should be
- * reimplemented against it.
+ * they arrive from the server. Streaming query execution is not currently
+ * supported in the TypeScript OSDK: the `streamingExecute` callable was dropped
+ * from the generated `@osdk/foundry.functions` SDK, so iterating the returned
+ * async iterable throws. If the generated SDK regains a streaming callable,
+ * this should be reimplemented against it.
  */
 type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
   query: QD,
