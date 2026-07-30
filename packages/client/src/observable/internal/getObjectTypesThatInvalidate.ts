@@ -54,6 +54,7 @@ export async function getObjectTypesThatInvalidate(
     counts,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
+    narrowTypeMapping: mc.narrowTypeInterfaceOrObjectMapping,
   });
 
   // we need to uncount the final result type
@@ -77,6 +78,7 @@ interface Ctx {
   counts: Record<string, number>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
+  narrowTypeMapping: Record<string, "object" | "interface">;
 }
 
 async function calcObjectSet(
@@ -215,8 +217,17 @@ async function calcObjectSet(
       // otherwise it will double count everything
       return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
-    case "asType":
-    // we don't currently support this anywhere.
+    case "asType": {
+      // The source set still has to invalidate us, so count it, but the result
+      // type is the cast target rather than the source's own type. Both
+      // `narrowToType` and interface-link pivots on reference-scoped sets
+      // register that target in the narrow type mapping.
+      await calcObjectSet(os.objectSet, ctx);
+      return ctx.narrowTypeMapping[os.entityType] === "object"
+        ? await bumpObject(os.entityType)
+        : await bumpInterface(os.entityType);
+    }
+
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually
     // internally, we actually use it this way but we shouldn't be finding that object sets.

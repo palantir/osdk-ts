@@ -352,21 +352,29 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
-      return clientCtx.objectSetFactory(
-        objectType,
-        clientCtx,
-        objectType.type === "object"
-          ? {
-              type: "searchAround",
-              objectSet,
-              link,
-            }
-          : {
-              type: "interfaceLinkSearchAround",
-              objectSet,
-              interfaceLink: link,
-            }
-      );
+      let def: WireObjectSet;
+      if (objectType.type === "object") {
+        def = { type: "searchAround", objectSet, link };
+      } else {
+        // An intersect source (e.g. a hydrated reference-scoped set) can't be
+        // resolved to one interface type when nested, so re-assert it via asType.
+        let interfaceSource: WireObjectSet = objectSet;
+        if (objectSet.type === "intersect") {
+          interfaceSource = {
+            type: "asType",
+            entityType: objectType.apiName,
+            objectSet,
+          };
+          clientCtx.narrowTypeInterfaceOrObjectMapping[objectType.apiName] =
+            "interface";
+        }
+        def = {
+          type: "interfaceLinkSearchAround",
+          objectSet: interfaceSource,
+          interfaceLink: link,
+        };
+      }
+      return clientCtx.objectSetFactory(objectType, clientCtx, def);
     };
   }
 
