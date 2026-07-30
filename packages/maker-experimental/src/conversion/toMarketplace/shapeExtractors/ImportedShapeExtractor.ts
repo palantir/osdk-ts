@@ -93,7 +93,7 @@ export function getImportedShapes(
     importedBlockData,
     ridGenerator,
     blockShapes,
-    linkTypeIdsByApiName
+    linkTypeIdsByApiName,
   );
   extractImportedInterfaceTypes(importedBlockData, ridGenerator, blockShapes);
   extractImportedSharedPropertyTypes(
@@ -472,7 +472,7 @@ function extractImportedInterfaceTypes(
       addApiNamePreset(
         blockShapes,
         propReadableId,
-        property.interfaceDefinedPropertyType.apiName
+        property.interfaceDefinedPropertyType.apiName,
       );
     }
 
@@ -520,7 +520,7 @@ function extractImportedInterfaceTypes(
       addApiNamePreset(
         blockShapes,
         linkReadableId,
-        interfaceLinkType.metadata.apiName
+        interfaceLinkType.metadata.apiName,
       );
     }
 
@@ -564,7 +564,7 @@ function extractImportedInterfaceTypes(
       addApiNamePreset(
         blockShapes,
         constraintReadableId,
-        actionTypeConstraint.metadata.apiName
+        actionTypeConstraint.metadata.apiName,
       );
 
       // Generate interface parameter constraint input shapes
@@ -722,7 +722,7 @@ function extractImportedActionTypes(
 function addApiNamePreset(
   blockShapes: ImportedBlockShapes,
   readableId: ReadableId,
-  apiName: string
+  apiName: string,
 ): void {
   addPreset(blockShapes, readableId, {
     type: "apiNameResolver",
@@ -733,7 +733,7 @@ function addApiNamePreset(
 function addPreset(
   blockShapes: ImportedBlockShapes,
   readableId: ReadableId,
-  resolver: InputShapeResolver
+  resolver: InputShapeResolver,
 ): void {
   blockShapes.inputPresets.set(readableId, {
     value: {

@@ -226,8 +226,8 @@ export default async function main(
   const importedLinkTypeIdsByApiName = commandLineOpts.importJson
     ? getImportedLinkTypeIdsByApiName(
         JSON.parse(
-          await fs.promises.readFile(commandLineOpts.importJson, "utf-8")
-        ) as ImportedOntologyMetadata
+          await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+        ) as ImportedOntologyMetadata,
       )
     : undefined;
 
@@ -498,7 +498,7 @@ type ImportedOntologyMetadata = OntologyFullMetadata & {
 };
 
 function getImportedLinkTypeIdsByApiName(
-  metadata: ImportedOntologyMetadata
+  metadata: ImportedOntologyMetadata,
 ): LinkTypeIdsByApiName {
   const result: Record<string, string> = {};
   for (const objectType of Object.values(metadata.objectTypes)) {

@@ -831,7 +831,7 @@ describe("Experimental Test Suite", () => {
           ["object-type-importedFoo", apiNamePreset("importedFoo")],
           ["importedFoo-property-type-id", apiNamePreset("id")],
           ["importedFoo-property-type-name", apiNamePreset("name")],
-        ])
+        ]),
       );
 
       // Local object should have an output shape, not input
@@ -980,7 +980,7 @@ describe("Experimental Test Suite", () => {
         },
       });
       expect(result.importedInputPresets.get(sptInputShapes[0][0])).toEqual(
-        apiNamePreset("com.external.pkg.externalId")
+        apiNamePreset("com.external.pkg.externalId"),
       );
     });
 
@@ -1020,8 +1020,8 @@ describe("Experimental Test Suite", () => {
       });
       expect(
         result.importedInputPresets.get(
-          ReadableIdGenerator.getForActionType("importedAction")
-        )
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
       ).toEqual(apiNamePreset("importedAction"));
 
       // No parameters on this action, so no parameter input shapes
@@ -1089,8 +1089,8 @@ describe("Experimental Test Suite", () => {
       });
       expect(
         result.importedInputPresets.get(
-          ReadableIdGenerator.getForInterface("importedInterface")
-        )
+          ReadableIdGenerator.getForInterface("importedInterface"),
+        ),
       ).toEqual(apiNamePreset("importedInterface"));
     });
   });
