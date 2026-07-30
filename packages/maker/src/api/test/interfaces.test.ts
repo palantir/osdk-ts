@@ -32,7 +32,7 @@ describe("Interfaces", () => {
     expect(() => {
       defineInterface({ apiName: "Foo" });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`
+      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`,
     );
   });
 
@@ -1298,7 +1298,7 @@ describe("Interfaces", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 
@@ -1361,7 +1361,7 @@ describe("Interfaces", () => {
           parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`
+        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
       );
     });
 
@@ -1418,7 +1418,7 @@ describe("Interfaces", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`
+        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
       );
     });
 
@@ -1481,10 +1481,10 @@ describe("Interfaces", () => {
               ],
             });
           },
-          undefined
-        )
+          undefined,
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`
+        `[Error: Invariant failed: Object "com.palantir.myObject" implements interface "com.palantir.MyInterface" which has required action type constraints: com.palantir.myConstraint. Action type constraint implementation is not yet supported in OAC. Set requireImplementation to false and manually implement the constraint after installation.]`,
       );
     });
 

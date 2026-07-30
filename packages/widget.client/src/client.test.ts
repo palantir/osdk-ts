@@ -57,7 +57,7 @@ describe("FoundryWidgetClient", () => {
 
   const emitEvent: FoundryWidgetClient<typeof config>["emitEvent"] = (
     _eventId,
-    _payload
+    _payload,
   ) => {};
 
   it("should narrow the emit event type when no parameters", () => {

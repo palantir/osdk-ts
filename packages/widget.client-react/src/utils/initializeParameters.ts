@@ -23,12 +23,12 @@ import type { ExtendedAsyncParameterValueMap } from "../context.js";
  */
 export function initializeParameters<C extends WidgetConfig<C["parameters"]>>(
   config: C,
-  initialLoadingState: "loading" | "not-started"
+  initialLoadingState: "loading" | "not-started",
 ): ExtendedAsyncParameterValueMap<C> {
   return Object.fromEntries(
     Object.entries(config.parameters).map(([key, parameterConfig]) => [
       key,
       { type: parameterConfig.type, value: { type: initialLoadingState } },
-    ])
+    ]),
   ) as ExtendedAsyncParameterValueMap<C>;
 }

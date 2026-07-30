@@ -238,7 +238,7 @@ export const OverrideItem: React.FC<OverrideItemProps> = React.memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 OverrideItem.displayName = "OverrideItem";

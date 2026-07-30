@@ -64,7 +64,7 @@ export abstract class Query<
     observable: Observable<SubjectPayload<KEY>>,
     opts: O,
     cacheKey: KEY,
-    logger?: Logger
+    logger?: Logger,
   ) {
     this.options = opts;
     this.cacheKey = cacheKey;
@@ -85,12 +85,12 @@ export abstract class Query<
                       .map((x) => JSON.stringify(x))
                       .join(", ")}>`
                   : "Query",
-            }
+            },
           ));
   }
 
   protected abstract _createConnectable(
-    subject: Observable<SubjectPayload<KEY>>
+    subject: Observable<SubjectPayload<KEY>>,
   ): Connectable<PAYLOAD>;
 
   public subscribe(observer: Observer<PAYLOAD>): Subscription {
@@ -121,7 +121,7 @@ export abstract class Query<
    */
   registerSubscriptionDedupeInterval(
     subscriptionId: string,
-    dedupeInterval: number | undefined
+    dedupeInterval: number | undefined,
   ): void {
     if (dedupeInterval != null && dedupeInterval > 0) {
       this.#subscriptionDedupeIntervals.set(subscriptionId, dedupeInterval);
@@ -279,7 +279,7 @@ export abstract class Query<
   abstract writeToStore(
     data: KEY["__cacheKey"]["value"],
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<KEY>;
 
   /**
@@ -290,11 +290,11 @@ export abstract class Query<
    */
   maybeUpdateAndRevalidate?: (
     changes: Changes,
-    optimisticId: OptimisticId | undefined
+    optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
 
   abstract invalidateObjectType(
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void>;
 }

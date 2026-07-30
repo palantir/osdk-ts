@@ -41,7 +41,7 @@ import type {
  */
 export async function createTemporaryObjectSet(
   ctx: ConjureContext,
-  request: _api_CreateTemporaryObjectSetRequest
+  request: _api_CreateTemporaryObjectSetRequest,
 ): Promise<_api_CreateTemporaryObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/temporary`, "POST", request);
 }

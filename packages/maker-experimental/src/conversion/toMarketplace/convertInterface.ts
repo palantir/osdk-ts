@@ -26,7 +26,7 @@ import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
   const {
     __type,
@@ -60,7 +60,7 @@ export function convertInterface(
             sharedPropertyType: convertedSpt,
           },
         ];
-      })
+      }),
     ),
     displayMetadata: {
       displayName: interfaceType.displayMetadata.displayName,
@@ -72,7 +72,7 @@ export function convertInterface(
     },
     // TODO: Convert extendsInterfaces from API names to RIDs
     extendsInterfaces: interfaceType.extendsInterfaces.map((i) =>
-      ridGenerator.generateRidForInterface(i.apiName)
+      ridGenerator.generateRidForInterface(i.apiName),
     ),
     // TODO: Convert links to add RIDs
     links: interfaceType.links.map((link) => ({
@@ -82,18 +82,18 @@ export function convertInterface(
           ? {
               type: "interfaceType",
               interfaceType: ridGenerator.generateRidForInterface(
-                link.linkedEntityTypeId.interfaceType
+                link.linkedEntityTypeId.interfaceType,
               ),
             }
           : {
               type: "objectType",
               objectType: ridGenerator.generateObjectTypeId(
-                link.linkedEntityTypeId.objectType
+                link.linkedEntityTypeId.objectType,
               ),
             },
       rid: ridGenerator.generateRidForInterfaceLinkType(
         link.metadata.apiName,
-        interfaceType.apiName
+        interfaceType.apiName,
       ),
     })),
     actionTypeConstraints: (interfaceType.actionTypeConstraints ?? []).map(
@@ -101,7 +101,7 @@ export function convertInterface(
         ...constraint,
         rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
           constraint.metadata.apiName,
-          interfaceType.apiName
+          interfaceType.apiName,
         ),
         parameters: Object.fromEntries(
           Object.entries(constraint.parameters ?? {}).map(
@@ -112,14 +112,14 @@ export function convertInterface(
                 ridGenerator.generateRidForInterfaceParameterConstraint(
                   constraint.metadata.apiName,
                   interfaceType.apiName,
-                  paramDisplayApiName
+                  paramDisplayApiName,
                 ),
                 paramConstraint,
               ];
-            }
-          )
+            },
+          ),
         ),
-      })
+      }),
     ),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
@@ -129,9 +129,9 @@ export function convertInterface(
           prop,
           apiName,
           interfaceType.apiName,
-          ridGenerator
-        )
-      )
+          ridGenerator,
+        ),
+      ),
     ),
   };
 }

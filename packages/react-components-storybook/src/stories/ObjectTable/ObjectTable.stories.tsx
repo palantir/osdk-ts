@@ -66,16 +66,16 @@ export const Default: Story = {
 
     await openHeaderMenu(canvas, "fullName");
     await expect(
-      await screen.findByRole("menuitem", { name: "Sort ascending" })
+      await screen.findByRole("menuitem", { name: "Sort ascending" }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole("menuitem", { name: "Sort descending" })
+      screen.getByRole("menuitem", { name: "Sort descending" }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole("menuitem", { name: "Pin column" })
+      screen.getByRole("menuitem", { name: "Pin column" }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole("menuitem", { name: "Configure Columns" })
+      screen.getByRole("menuitem", { name: "Configure Columns" }),
     ).toBeInTheDocument();
 
     // Dismiss the menu so the story is left in a clean state.

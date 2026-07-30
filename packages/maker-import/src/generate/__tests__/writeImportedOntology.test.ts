@@ -32,7 +32,7 @@ const TEST_OUTPUT_DIR = path.resolve(
   "..",
   "..",
   "..",
-  "test-output"
+  "test-output",
 );
 
 afterEach(() => {
@@ -78,24 +78,24 @@ describe("mapPropertyType", () => {
         type: "array",
         subType: { type: "string" },
         reducers: [],
-      })
+      }),
     ).toEqual({ type: "string", array: true });
   });
 
   it("returns undefined for unsupported types", () => {
     expect(mapPropertyType({ type: "marking" })).toBeUndefined();
     expect(
-      mapPropertyType({ type: "struct", structFieldTypes: [] })
+      mapPropertyType({ type: "struct", structFieldTypes: [] }),
     ).toBeUndefined();
     expect(
-      mapPropertyType({ type: "timeseries", itemType: { type: "string" } })
+      mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
     ).toBeUndefined();
     expect(
       mapPropertyType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
-      })
+      }),
     ).toBeUndefined();
     expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
   });
@@ -115,7 +115,7 @@ describe("mapActionParameterType", () => {
         type: "object",
         objectApiName: "employee",
         objectTypeApiName: "Employee",
-      })
+      }),
     ).toEqual({
       type: "objectReference",
       objectReference: { objectTypeId: "Employee" },
@@ -127,7 +127,7 @@ describe("mapActionParameterType", () => {
       mapActionParameterType({
         type: "objectSet",
         objectTypeApiName: "Employee",
-      })
+      }),
     ).toEqual({
       type: "objectSetRid",
       objectSetRid: { objectTypeId: "Employee" },
@@ -139,7 +139,7 @@ describe("mapActionParameterType", () => {
       mapActionParameterType({
         type: "array",
         subType: { type: "string" },
-      })
+      }),
     ).toBe("stringList");
   });
 
@@ -152,7 +152,7 @@ describe("mapActionParameterType", () => {
           objectTypeApiName: "Employee",
           objectApiName: "employee",
         },
-      })
+      }),
     ).toEqual({
       type: "objectReferenceList",
       objectReferenceList: { objectTypeId: "Employee" },
@@ -167,7 +167,7 @@ describe("mapActionParameterType", () => {
           { name: "name", fieldType: { type: "string" }, required: true },
           { name: "count", fieldType: { type: "integer" }, required: true },
         ],
-      })
+      }),
     ).toEqual({
       type: "struct",
       struct: {
@@ -189,7 +189,7 @@ describe("mapActionParameterType", () => {
             { name: "key", fieldType: { type: "string" }, required: true },
           ],
         },
-      })
+      }),
     ).toEqual({
       type: "structList",
       structList: {
@@ -202,7 +202,7 @@ describe("mapActionParameterType", () => {
 
   it("maps objectType parameters", () => {
     expect(mapActionParameterType({ type: "objectType" })).toBe(
-      "objectTypeReference"
+      "objectTypeReference",
     );
   });
 
@@ -212,7 +212,7 @@ describe("mapActionParameterType", () => {
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
-      })
+      }),
     ).toBeUndefined();
   });
 });
@@ -309,7 +309,7 @@ describe("writeImportedOntology", () => {
 
     const objectFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "codegen/object-types/employee.ts"),
-      "utf-8"
+      "utf-8",
     );
     expect(objectFile).toContain("wrapWithProxy");
     expect(objectFile).toContain("OntologyEntityTypeEnum.OBJECT_TYPE");
@@ -324,7 +324,7 @@ describe("writeImportedOntology", () => {
 
     const actionFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "codegen/action-types/createEmployee.ts"),
-      "utf-8"
+      "utf-8",
     );
     expect(actionFile).toContain("wrapWithProxy");
     expect(actionFile).toContain("OntologyEntityTypeEnum.ACTION_TYPE");
@@ -338,7 +338,7 @@ describe("writeImportedOntology", () => {
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8"
+      "utf-8",
     );
     expect(indexFile).toContain("export { employee }");
     expect(indexFile).toContain("export { createEmployee }");
@@ -440,18 +440,18 @@ describe("writeImportedOntology", () => {
     // Both should get unique files using full namespace
     expect(
       fs.existsSync(
-        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comAFoo.ts")
-      )
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comAFoo.ts"),
+      ),
     ).toBe(true);
     expect(
       fs.existsSync(
-        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comBFoo.ts")
-      )
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comBFoo.ts"),
+      ),
     ).toBe(true);
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8"
+      "utf-8",
     );
     expect(indexFile).toContain("export { comAFoo }");
     expect(indexFile).toContain("export { comBFoo }");
@@ -514,7 +514,7 @@ describe("writeImportedOntology", () => {
 
     const indexFile = fs.readFileSync(
       path.join(TEST_OUTPUT_DIR, "index.ts"),
-      "utf-8"
+      "utf-8",
     );
     const exports = indexFile.split("\n").filter((l) => l.includes("export"));
     // Should have exactly 2 exports, both named differently

@@ -138,7 +138,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
-    newState: FilterStateType
+    newState: FilterStateType,
   ) => void;
 
   /**
@@ -183,7 +183,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
@@ -207,7 +207,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
     newStates: Array<{
       filterKey: FilterKey<Q>;
       isVisible: boolean;
-    }>
+    }>,
   ) => void;
 
   /**

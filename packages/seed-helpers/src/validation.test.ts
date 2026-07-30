@@ -27,7 +27,7 @@ type WireType = Ontology.ObjectPropertyType["type"];
 function makeObjectType(
   apiName: string,
   primaryKey: string,
-  properties: Record<string, WireType>
+  properties: Record<string, WireType>,
 ): Ontology.ObjectTypeV2 {
   return {
     apiName,
@@ -37,7 +37,7 @@ function makeObjectType(
       Object.entries(properties).map(([name, type]) => [
         name,
         { dataType: { type } },
-      ])
+      ]),
     ),
   } as unknown as Ontology.ObjectTypeV2;
 }
@@ -61,43 +61,43 @@ describe("validateSeedObject", () => {
           createdAt: "2025-01-01T00:00:00Z",
           score: "9007199254740993",
         },
-        employeeType
-      )
+        employeeType,
+      ),
     ).not.toThrow();
   });
 
   it("throws immediately on structural violations", () => {
     // Unknown property name.
     expect(() =>
-      validateSeedObject({ employeeId: "emp-001", badProp: "x" }, employeeType)
+      validateSeedObject({ employeeId: "emp-001", badProp: "x" }, employeeType),
     ).toThrow(
-      /Property 'badProp' on 'Employee' object \(primary key emp-001\) is not defined in the ontology/u
+      /Property 'badProp' on 'Employee' object \(primary key emp-001\) is not defined in the ontology/u,
     );
     // Null value — and the identity falls back to <unknown> without a primary key.
     expect(() =>
       validateSeedObject(
         { employeeId: "emp-001", firstName: null },
-        employeeType
-      )
+        employeeType,
+      ),
     ).toThrow(
-      /Property 'firstName' on 'Employee' object \(primary key emp-001\) is null or undefined/u
+      /Property 'firstName' on 'Employee' object \(primary key emp-001\) is null or undefined/u,
     );
     expect(() => validateSeedObject({ firstName: null }, employeeType)).toThrow(
-      /Property 'firstName' on 'Employee' object \(primary key <unknown>\) is null or undefined/u
+      /Property 'firstName' on 'Employee' object \(primary key <unknown>\) is null or undefined/u,
     );
     // JS type mismatch in either direction.
     expect(() =>
       validateSeedObject(
         { employeeId: "emp-001", createdAt: 12345 },
-        employeeType
-      )
+        employeeType,
+      ),
     ).toThrow(
-      /Property 'createdAt' on 'Employee' object \(primary key emp-001\) expects timestamp \(a string\) but got number/u
+      /Property 'createdAt' on 'Employee' object \(primary key emp-001\) expects timestamp \(a string\) but got number/u,
     );
     expect(() =>
-      validateSeedObject({ employeeId: "emp-001", age: "30" }, employeeType)
+      validateSeedObject({ employeeId: "emp-001", age: "30" }, employeeType),
     ).toThrow(
-      /Property 'age' on 'Employee' object \(primary key emp-001\) expects integer \(a number\) but got string/u
+      /Property 'age' on 'Employee' object \(primary key emp-001\) expects integer \(a number\) but got string/u,
     );
   });
 
@@ -105,14 +105,14 @@ describe("validateSeedObject", () => {
     try {
       validateSeedObject(
         { employeeId: "emp-001", createdAt: "asdf", score: "not-a-number" },
-        employeeType
+        employeeType,
       );
       expect.unreachable("should have thrown");
     } catch (e: unknown) {
       expect(e).toBeInstanceOf(Error);
       const msg = (e as Error).message;
       expect(msg).toMatch(
-        /property 'createdAt' has invalid timestamp format: 'asdf'/u
+        /property 'createdAt' has invalid timestamp format: 'asdf'/u,
       );
       expect(msg).toMatch(/property 'score' has invalid long format/u);
     }

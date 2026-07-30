@@ -64,7 +64,7 @@ export class MockDataGenerator {
         },
       },
       null,
-      2
+      2,
     );
   }
 
@@ -150,7 +150,7 @@ export class MockDataGenerator {
   }
 
   private static generateObjectSetMockData(
-    objectSetData: DiscoveredObjectSet
+    objectSetData: DiscoveredObjectSet,
   ): string {
     const objectType = objectSetData.type;
     const pageSize = objectSetData.pageSize || 10;
@@ -166,7 +166,7 @@ export class MockDataGenerator {
           __title: `${objectType} ${index + 1}`,
           ...this.generateFieldsForObjectType(objectType),
         };
-      }
+      },
     );
 
     const mockData = {
@@ -226,7 +226,7 @@ export class MockDataGenerator {
   }
 
   private static generateActionFunctionCode(
-    actionData: DiscoveredAction
+    actionData: DiscoveredAction,
   ): string {
     const actionName = actionData.name;
 
@@ -267,7 +267,7 @@ function generateId() {
   }
 
   private static generateObjectFunctionCode(
-    objectData: DiscoveredObject
+    objectData: DiscoveredObject,
   ): string {
     const objectType = objectData.type;
 
@@ -293,7 +293,7 @@ function generateId() {
   }
 
   private static generateObjectSetFunctionCode(
-    objectSetData: DiscoveredObjectSet
+    objectSetData: DiscoveredObjectSet,
   ): string {
     const objectType = objectSetData.type;
 
@@ -330,7 +330,7 @@ function generateId() {
     const linkName = linkData.linkName;
     const linkedType = this.inferLinkedTypeFromLinkName(
       linkName,
-      linkData.sourceType
+      linkData.sourceType,
     );
 
     return `function generateMock(params) {
@@ -396,7 +396,7 @@ function generateId() {
   }
 
   private static generateFieldsForObjectType(
-    objectType: string
+    objectType: string,
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -434,7 +434,7 @@ function generateId() {
   }
 
   private static generateDynamicFieldsForObjectType(
-    objectType: string
+    objectType: string,
   ): string {
     if (objectType === "Todo") {
       return `title: \`Todo Item \${index || ""}\`,
@@ -478,7 +478,7 @@ function generateId() {
 
   private static inferLinkedTypeFromLinkName(
     linkName: string,
-    sourceType: string
+    sourceType: string,
   ): string {
     if (linkName === "occupants" || linkName === "employees") {
       return "Employee";
@@ -506,7 +506,7 @@ function generateId() {
   }
 
   private static generateCreateParameters(
-    objectType: string
+    objectType: string,
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -533,7 +533,7 @@ function generateId() {
   }
 
   private static generateUpdateParameters(
-    objectType: string
+    objectType: string,
   ): Record<string, unknown> {
     if (objectType === "Todo") {
       return {
@@ -559,7 +559,7 @@ function generateId() {
   }
 
   private static generateDeleteParameters(
-    _objectType: string
+    _objectType: string,
   ): Record<string, unknown> {
     return {
       object: { $primaryKey: crypto.randomUUID() },

@@ -69,7 +69,7 @@ export function PdfViewer({
         cancelled = true;
       };
     },
-    [media]
+    [media],
   );
 
   const rootClassName = classnames(styles.pdfViewer, className);

@@ -53,7 +53,7 @@ export const useColumnResize = ({
         return newState;
       });
     },
-    [onColumnResize]
+    [onColumnResize],
   );
 
   return { columnSizing, onColumnSizingChange };

@@ -18,7 +18,7 @@ import { execa } from "execa";
 
 /** The npm dist tags (tag -> version) published for `pkg`. */
 export async function npmDistTags(
-  pkg: string
+  pkg: string,
 ): Promise<Record<string, string>> {
   const { stdout } = await execa("npm", ["view", pkg, "dist-tags", "--json"]);
   const trimmed = stdout.trim();
@@ -30,7 +30,7 @@ export async function npmDistTags(
  * a no-op when `specs` is empty.
  */
 export async function npmInstall(
-  specs: ReadonlyArray<{ pkg: string; version: string }>
+  specs: ReadonlyArray<{ pkg: string; version: string }>,
 ): Promise<void> {
   if (specs.length === 0) return;
   await execa("npm", [

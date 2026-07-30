@@ -30,7 +30,7 @@ import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createAdminHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   Admin.Markings.applyListMarkings(baseUrl, (): ListMarkingsResponse => {
     return fauxFoundry.getAdmin().listMarkings();
@@ -40,7 +40,7 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
     baseUrl,
     (): ListMarkingCategoriesResponse => {
       return fauxFoundry.getAdmin().listMarkingCategories();
-    }
+    },
   ),
 
   Admin.CbacBanners.applyGetCbacBanner(baseUrl, ({ request }): CbacBanner => {
@@ -55,7 +55,7 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
       const url = new URL(request.url);
       const markingIds = url.searchParams.getAll("markingIds");
       return fauxFoundry.getAdmin().getCbacMarkingRestrictions(markingIds);
-    }
+    },
   ),
 
   Admin.Users.applyGetCurrent(baseUrl, (): User => {
@@ -78,7 +78,7 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
         new URL(request.url).searchParams.get("include") ?? "ACTIVE";
       const pageSize = Number.parseInt(
         new URL(request.url).searchParams.get("pageSize") ?? "1000",
-        10
+        10,
       );
       const pageToken =
         new URL(request.url).searchParams.get("pageToken") ?? undefined;
@@ -89,7 +89,7 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
       ) {
         throw new OpenApiCallError(
           400,
-          InvalidArgument("Default:InvalidArgument")
+          InvalidArgument("Default:InvalidArgument"),
         );
       }
 
@@ -104,6 +104,6 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
         data: response.users,
         nextPageToken: response.nextPageToken,
       };
-    }
+    },
   ),
 ];

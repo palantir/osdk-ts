@@ -72,7 +72,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.link-person-employer"
+      "com.palantir.link-person-employer",
     );
     const actionType =
       actionTypes["com.palantir.link-person-employer"].actionType;
@@ -289,17 +289,17 @@ describe("defineCreateInterfaceLinkAction", () => {
       throw new Error("expected addInterfaceLinkRuleV2");
     }
     expect(rule.addInterfaceLinkRuleV2.interfaceTypeRid).toBe(
-      "com.palantir.Person"
+      "com.palantir.Person",
     );
     expect(rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid).toBe(
-      "com.palantir.employer"
+      "com.palantir.employer",
     );
     const sourceParam = actionType.metadata.parameters.source;
     if (sourceParam.type.type !== "interfaceReference") {
       throw new Error("expected interfaceReference");
     }
     expect(sourceParam.type.interfaceReference.interfaceTypeRid).toBe(
-      "com.palantir.Person"
+      "com.palantir.Person",
     );
   });
 
@@ -330,7 +330,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.link-person-to-employer"
+      "com.palantir.link-person-to-employer",
     );
     const rule =
       actionTypes["com.palantir.link-person-to-employer"].actionType
@@ -350,10 +350,10 @@ describe("defineCreateInterfaceLinkAction", () => {
     expect(sourceObject.existingObject).toBe("sourcePerson");
     expect(targetObject.existingObject).toBe("targetCompany");
     expect(rule.addInterfaceLinkRuleV2.interfaceTypeRid).toBe(
-      "com.palantir.Person"
+      "com.palantir.Person",
     );
     expect(rule.addInterfaceLinkRuleV2.interfaceLinkTypeRid).toBe(
-      "com.palantir.employer"
+      "com.palantir.employer",
     );
   });
 
@@ -390,7 +390,7 @@ describe("defineCreateInterfaceLinkAction", () => {
       throw new Error("expected interfaceReferenceList");
     }
     expect(targetParam.type.interfaceReferenceList.interfaceTypeRid).toBe(
-      "com.palantir.Company"
+      "com.palantir.Company",
     );
     // source stays single
     expect(params.source.type.type).toBe("interfaceReference");
@@ -520,7 +520,7 @@ describe("defineCreateInterfaceLinkAction", () => {
       defineCreateInterfaceLinkAction({
         from: person,
         interfaceLink: "employer",
-      })
+      }),
     ).toThrow(/Interface link constraint "employer" not found on interface/u);
   });
 
@@ -541,7 +541,7 @@ describe("defineCreateInterfaceLinkAction", () => {
       defineCreateInterfaceLinkAction({
         from: person,
         interfaceLink: "employer",
-      })
+      }),
     ).toThrow(/Target interface .* is not defined/u);
   });
 
@@ -568,7 +568,7 @@ describe("defineCreateInterfaceLinkAction", () => {
     });
 
     expect(() =>
-      defineCreateInterfaceLinkAction({ from: other, interfaceLink: employer })
+      defineCreateInterfaceLinkAction({ from: other, interfaceLink: employer }),
     ).toThrow(/does not match/u);
   });
 
@@ -591,7 +591,7 @@ describe("defineCreateInterfaceLinkAction", () => {
 
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
-      defineCreateInterfaceLinkAction({ interfaceLink: "employer" })
+      defineCreateInterfaceLinkAction({ interfaceLink: "employer" }),
     ).toThrow(/"from" is required/u);
   });
 });
@@ -625,7 +625,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.delete-interface-link-person-employer"
+      "com.palantir.delete-interface-link-person-employer",
     );
     const actionType =
       actionTypes["com.palantir.delete-interface-link-person-employer"]
@@ -633,7 +633,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     // default display name
     expect(actionType.metadata.displayMetadata.displayName).toBe(
-      "Delete Person link"
+      "Delete Person link",
     );
 
     // singular params on both sides
@@ -695,7 +695,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     expect(params.source.type.type).toBe("interfaceReference");
     expect(
       actionType.actionTypeLogic.validation.parameterValidations.target
-        .defaultValidation.validation.required
+        .defaultValidation.validation.required,
     ).toEqual({ type: "required", required: {} });
   });
 
@@ -726,7 +726,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     const actionTypes = dumpOntologyFullMetadata().ontology.actionTypes;
     expect(Object.keys(actionTypes)).toContain(
-      "com.palantir.unlink-person-from-employer"
+      "com.palantir.unlink-person-from-employer",
     );
     const rule =
       actionTypes["com.palantir.unlink-person-from-employer"].actionType
@@ -765,7 +765,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
       throw new Error("expected deleteInterfaceLinkRule");
     }
     expect(rule.deleteInterfaceLinkRule.interfaceTypeRid).toBe(
-      "com.palantir.Person"
+      "com.palantir.Person",
     );
   });
 
@@ -788,7 +788,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
 
     expect(() =>
       // @ts-expect-error "from" is required when interfaceLink is a string
-      defineDeleteInterfaceLinkAction({ interfaceLink: "employer" })
+      defineDeleteInterfaceLinkAction({ interfaceLink: "employer" }),
     ).toThrow(/"from" is required/u);
   });
 
@@ -815,7 +815,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
         interfaceLink: "employer",
         sourceParameter: { id: "shared" },
         targetParameter: { id: "shared" },
-      })
+      }),
     ).toThrow(/must differ/u);
   });
 
@@ -860,7 +860,7 @@ describe("defineDeleteInterfaceLinkAction", () => {
     });
     expect(meta.parameters.src.displayMetadata.displayName).toBe("The person");
     expect(meta.parameters.tgt.displayMetadata.displayName).toBe(
-      "The employer"
+      "The employer",
     );
   });
 });

@@ -95,7 +95,7 @@ describe("BasePdfViewer download wiring", () => {
         src="x.pdf"
         enableDownload={true}
         downloadFileName="custom.pdf"
-      />
+      />,
     );
     fireEvent.click(screen.getByLabelText("Download"));
 

@@ -56,7 +56,7 @@ export class SubscriptionTracker {
     hasData: boolean,
     isOptimistic: boolean,
     optimisticId?: string | number,
-    timestamp: number = Date.now()
+    timestamp: number = Date.now(),
   ): void {
     const metadata = this.subscriptions.get(subscriptionId);
     if (!metadata) return;
@@ -126,7 +126,7 @@ export class SubscriptionTracker {
         (e) =>
           !e.isOptimistic &&
           firstOptimisticTimestamp != null &&
-          e.timestamp >= firstOptimisticTimestamp
+          e.timestamp >= firstOptimisticTimestamp,
       )?.timestamp;
     }
 
@@ -168,7 +168,7 @@ export class SubscriptionTracker {
 
   getActiveSubscriptions(): SubscriptionMetadata[] {
     return [...this.subscriptions.values()].filter(
-      (s) => s.unsubscribeTime === undefined
+      (s) => s.unsubscribeTime === undefined,
     );
   }
 

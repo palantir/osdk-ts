@@ -29,25 +29,25 @@ import { USER_AGENT } from "./UserAgent.js";
 
 export function createFetch(
   tokenProvider: () => Promise<string> | string,
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
 ): typeof fetch {
   return createFetchHeaderMutator(
     createRequestLoggingFetch(
-      createErrorExitingFetch(createFetchOrThrow(fetchFn))
+      createErrorExitingFetch(createFetchOrThrow(fetchFn)),
     ),
     async (headers) => {
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
       headers.set("Fetch-User-Agent", USER_AGENT);
       return headers;
-    }
+    },
   );
 }
 
 function createErrorExitingFetch(fetchFn: typeof fetch = fetch): typeof fetch {
   return function errorExitingFetch(
     input: RequestInfo | URL,
-    init?: RequestInit
+    init?: RequestInit,
   ) {
     return fetchFn(input, init).catch(handleFetchError);
   };
@@ -126,7 +126,7 @@ function handleFetchError(e: unknown): Promise<Response> {
       message = `${e.message}\n\n${JSON.stringify(
         { errorCode, errorName, errorInstanceId, parameters },
         null,
-        2
+        2,
       )}`;
     }
   }
@@ -135,11 +135,11 @@ function handleFetchError(e: unknown): Promise<Response> {
 }
 
 function createRequestLoggingFetch(
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
 ): typeof fetch {
   return function requestLoggingFetch(
     input: RequestInfo | URL,
-    init?: RequestInit
+    init?: RequestInit,
   ) {
     const requestLog =
       typeof input === "string" || input instanceof URL

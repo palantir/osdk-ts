@@ -390,8 +390,8 @@ describe("Miscellaneous Tests", () => {
           __dirname,
           "..",
           "generatedNoCheck",
-          "export_files_are_generated_correctly"
-        )
+          "export_files_are_generated_correctly",
+        ),
       );
       await defineOntology(
         "com.my.package.",
@@ -426,14 +426,14 @@ describe("Miscellaneous Tests", () => {
             ],
           });
         },
-        generatedDir
+        generatedDir,
       );
 
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/interface-types/myInterface.ts"),
-          "utf8"
-        )
+          "utf8",
+        ),
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -509,8 +509,8 @@ describe("Miscellaneous Tests", () => {
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/object-types/myObject.ts"),
-          "utf8"
-        )
+          "utf8",
+        ),
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -611,8 +611,8 @@ describe("Miscellaneous Tests", () => {
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/shared-property-types/mySpt.ts"),
-          "utf8"
-        )
+          "utf8",
+        ),
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -651,8 +651,8 @@ describe("Miscellaneous Tests", () => {
           __dirname,
           "..",
           "generatedNoCheck",
-          "extended_interfaces_are_propagated_to_the_static_objects"
-        )
+          "extended_interfaces_are_propagated_to_the_static_objects",
+        ),
       );
       await defineOntology(
         "com.palantir.",
@@ -679,14 +679,14 @@ describe("Miscellaneous Tests", () => {
             extends: [parentInterface],
           });
         },
-        generatedDir
+        generatedDir,
       );
 
       expect(
         fs.readFileSync(
           path.join(generatedDir, "codegen/interface-types/childInterface.ts"),
-          "utf8"
-        )
+          "utf8",
+        ),
       ).toMatchInlineSnapshot(`
         "
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -1489,8 +1489,8 @@ describe("Miscellaneous Tests", () => {
           __dirname,
           "..",
           "generatedNoCheck",
-          "correctly_adds_dependencies"
-        )
+          "correctly_adds_dependencies",
+        ),
       );
       await defineOntology(
         "com.palantir.",
@@ -1504,19 +1504,19 @@ describe("Miscellaneous Tests", () => {
           });
         },
         generatedDir,
-        path.join(generatedDir, "dependencies.json")
+        path.join(generatedDir, "dependencies.json"),
       );
 
       const packageJson = JSON.parse(
         fs.readFileSync(
           path.join(__dirname, "..", "..", "..", "package.json"),
-          "utf8"
-        )
+          "utf8",
+        ),
       );
       expect(packageJson.version).toBeDefined();
 
       expect(
-        fs.readFileSync(path.join(generatedDir, "dependencies.json"), "utf8")
+        fs.readFileSync(path.join(generatedDir, "dependencies.json"), "utf8"),
       ).toMatchInlineSnapshot(`
         "{
           "com.palantir": "${packageJson.version}"
@@ -1524,9 +1524,9 @@ describe("Miscellaneous Tests", () => {
       `);
 
       expect(
-        fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8")
+        fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
       ).toContain(
-        `addDependency("com.palantir", new URL(import.meta.url).pathname);`
+        `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
       );
 
       fs.rmSync(path.join(generatedDir, ".."), {

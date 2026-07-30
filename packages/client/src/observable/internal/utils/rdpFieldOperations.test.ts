@@ -114,7 +114,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1", "rdpField2"]),
       new Set(),
-      undefined
+      undefined,
     );
 
     assertValidObjectHolder(result);
@@ -151,7 +151,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1", "rdpField2", "rdpField3"]),
       new Set(["rdpField1"]),
-      undefined
+      undefined,
     );
 
     assertValidObjectHolder(result);
@@ -179,7 +179,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target
+      target,
     );
 
     assertValidObjectHolder(result);
@@ -207,7 +207,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target
+      target,
     );
 
     assertValidObjectHolder(result);
@@ -234,7 +234,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target
+      target,
     );
 
     assertValidObjectHolder(result);
@@ -260,7 +260,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      target
+      target,
     );
 
     assertValidObjectHolder(result);
@@ -280,7 +280,7 @@ describe("rdpFieldOperations", () => {
       source,
       new Set(["rdpField1"]),
       new Set(["rdpField1", "rdpField2"]),
-      undefined
+      undefined,
     );
 
     assertValidObjectHolder(result);
@@ -330,7 +330,7 @@ describe("mergeSelectFields", () => {
       source,
       new Set(["fullName"]),
       existing,
-      new Set(["computedScore"])
+      new Set(["computedScore"]),
     );
 
     assertValidObjectHolder(result);

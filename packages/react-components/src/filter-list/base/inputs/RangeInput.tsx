@@ -108,7 +108,7 @@ function formatTickAdaptive(value: number, step: number): string {
     if (compactStep >= 0.05) {
       const decimals = Math.max(
         0,
-        Math.min(2, Math.ceil(-Math.log10(compactStep)))
+        Math.min(2, Math.ceil(-Math.log10(compactStep))),
       );
       return value.toLocaleString(undefined, {
         notation: "compact",
@@ -187,10 +187,10 @@ function RangeInputInner<T>({
   const maxInputId = useId();
 
   const [localMin, setLocalMin] = useState<string>(
-    config.formatValue(minValue)
+    config.formatValue(minValue),
   );
   const [localMax, setLocalMax] = useState<string>(
-    config.formatValue(maxValue)
+    config.formatValue(maxValue),
   );
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
@@ -205,7 +205,7 @@ function RangeInputInner<T>({
         const parsed = config.parseValue(newValue);
         onChangeRef.current(parsed, maxValueRef.current);
       }, DEBOUNCE_MS),
-    [config]
+    [config],
   );
 
   const debouncedMaxChange = useMemo(
@@ -214,7 +214,7 @@ function RangeInputInner<T>({
         const parsed = config.parseValue(newValue);
         onChangeRef.current(minValueRef.current, parsed);
       }, DEBOUNCE_MS),
-    [config]
+    [config],
   );
 
   // Date branch handlers — only invoked when `config.inputType === "date"`,
@@ -255,11 +255,11 @@ function RangeInputInner<T>({
     }
     const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
-      Infinity
+      Infinity,
     );
     const max = displayPairs.reduce(
       (acc, p) => Math.max(acc, config.toNumber(p.value)),
-      -Infinity
+      -Infinity,
     );
     return {
       min: config.fromNumber(min),
@@ -272,7 +272,7 @@ function RangeInputInner<T>({
       dataMin: computedRange.min,
       dataMax: computedRange.max,
     }),
-    [computedRange.min, computedRange.max]
+    [computedRange.min, computedRange.max],
   );
 
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
@@ -291,7 +291,7 @@ function RangeInputInner<T>({
       displayPairs,
       { min: computedRange.min, max: computedRange.max },
       config.toNumber,
-      config.fromNumber
+      config.fromNumber,
     );
   }, [histogramData, showHistogram, displayPairs, computedRange, config]);
 
@@ -303,7 +303,7 @@ function RangeInputInner<T>({
 
   const barLayout = useMemo(
     () => computeBarLayout(buckets.length),
-    [buckets.length]
+    [buckets.length],
   );
 
   const dataBounds = useMemo<{ minN: number; maxN: number } | null>(() => {
@@ -368,7 +368,7 @@ function RangeInputInner<T>({
       const stride = Math.ceil(buckets.length / COUNT_LABEL_THRESHOLD);
       return i % stride !== 0;
     },
-    [buckets.length]
+    [buckets.length],
   );
 
   // Drag range tracked in a ref so synchronous read/write across
@@ -468,7 +468,7 @@ function RangeInputInner<T>({
       }
       onChangeRef.current(minBucket.min, maxBucket.max);
     },
-    []
+    [],
   );
 
   // Distance (in client px) below which a pointerup is treated as a click
@@ -504,7 +504,7 @@ function RangeInputInner<T>({
       const idx = Math.round((localX - barW / 2) / slotW);
       return Math.max(0, Math.min(bucketCount - 1, idx));
     },
-    []
+    [],
   );
 
   const bucketIndexFromTarget = useCallback(
@@ -519,7 +519,7 @@ function RangeInputInner<T>({
       const parsed = parseInt(dataIdx, 10);
       return Number.isNaN(parsed) ? null : parsed;
     },
-    []
+    [],
   );
 
   const handlePlotPointerDown = useCallback(
@@ -548,7 +548,7 @@ function RangeInputInner<T>({
       dragRangeRef.current = { start: startIdx, end: startIdx };
       setDragRange({ start: startIdx, end: startIdx });
     },
-    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient]
+    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient],
   );
 
   const handlePlotPointerMove = useCallback(
@@ -570,7 +570,7 @@ function RangeInputInner<T>({
       dragRangeRef.current = next;
       setDragRange(next);
     },
-    [bucketIndexFromTarget, bucketIndexAtClient]
+    [bucketIndexFromTarget, bucketIndexAtClient],
   );
 
   const handlePlotPointerUp = useCallback(
@@ -588,7 +588,7 @@ function RangeInputInner<T>({
       const treatAsClick = dx * dx + dy * dy < DRAG_VS_CLICK_THRESHOLD_SQ;
       commitDragRange(current.start, current.end, treatAsClick);
     },
-    [commitDragRange]
+    [commitDragRange],
   );
 
   const handlePlotPointerCancel = useCallback(() => {
@@ -614,7 +614,7 @@ function RangeInputInner<T>({
       setLocalMin(next);
       debouncedMinChange(next);
     },
-    [debouncedMinChange]
+    [debouncedMinChange],
   );
 
   const handleMaxChange = useCallback(
@@ -622,7 +622,7 @@ function RangeInputInner<T>({
       setLocalMax(next);
       debouncedMaxChange(next);
     },
-    [debouncedMaxChange]
+    [debouncedMaxChange],
   );
 
   return (
@@ -739,7 +739,7 @@ function RangeInputInner<T>({
                       {config.formatTooltip(
                         bucket.min,
                         bucket.max,
-                        bucket.count
+                        bucket.count,
                       )}
                     </title>
                   </rect>
@@ -844,7 +844,7 @@ function RangeInputInner<T>({
                 text={config.formatTooltip(
                   buckets[hoveredIndex].min,
                   buckets[hoveredIndex].max,
-                  buckets[hoveredIndex].count
+                  buckets[hoveredIndex].count,
                 )}
                 cx={barLayout.xCenter(hoveredIndex)}
                 barTop={
@@ -984,7 +984,7 @@ function RangeBoundInput({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(e.target.value);
     },
-    [onChange]
+    [onChange],
   );
   return (
     <Input

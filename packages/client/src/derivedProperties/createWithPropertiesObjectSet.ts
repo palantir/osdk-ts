@@ -32,7 +32,7 @@ export function createWithPropertiesObjectSet<
   objectType: Q,
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
-  fromBaseObjectSet: boolean = false
+  fromBaseObjectSet: boolean = false,
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
   return {
     pivotTo: (link) => {
@@ -43,7 +43,7 @@ export function createWithPropertiesObjectSet<
           objectSet,
           link,
         },
-        definitionMap
+        definitionMap,
       );
     },
     where: (clause) => {
@@ -55,14 +55,14 @@ export function createWithPropertiesObjectSet<
           objectSet,
           where: modernToLegacyWhereClause(clause, objectType, rdpNames),
         },
-        definitionMap
+        definitionMap,
       );
     },
     aggregate: (aggregation: string, opt: any) => {
       const splitAggregation = aggregation.split(":");
       invariant(
         splitAggregation.length === 2 || splitAggregation[0] === "$count",
-        "Invalid aggregation format"
+        "Invalid aggregation format",
       );
       const [aggregationPropertyName, aggregationOperation] = splitAggregation;
       let aggregationOperationDefinition: SelectedPropertyOperation;
@@ -103,7 +103,7 @@ export function createWithPropertiesObjectSet<
         default:
           invariant(
             false,
-            "Invalid aggregation operation " + aggregationOperation
+            "Invalid aggregation operation " + aggregationOperation,
           );
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {

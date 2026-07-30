@@ -26,7 +26,7 @@ import type {
  */
 export async function getRunningMonitorsForObjectType(
   ctx: ConjureContext,
-  request: _api_metrics_GetRunningMonitorsForObjectTypeRequest
+  request: _api_metrics_GetRunningMonitorsForObjectTypeRequest,
 ): Promise<_api_metrics_GetRunningMonitorsForObjectTypeResponse> {
   return conjureFetch(ctx, `/monitorMetrics/runningMonitors`, "POST", request);
 }

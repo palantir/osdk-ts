@@ -25,7 +25,7 @@ export async function modifyOntology(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
   ontologyRid: _api_OntologyRid | null | undefined,
-  request: _api_modification_OntologyModificationRequest
+  request: _api_modification_OntologyModificationRequest,
 ): Promise<_api_modification_OntologyModificationResponse> {
   return conjureFetch(ctx, `/ontology/v2/modify`, "POST", request, {
     ontologyRid,

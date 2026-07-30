@@ -26,11 +26,11 @@ import type { ManagedInstallation as _installmanager_api_ManagedInstallation } f
  */
 export async function getInstallationForApolloEntityId(
   ctx: ConjureContext,
-  apolloEntityId: _api_ApolloEntityId
+  apolloEntityId: _api_ApolloEntityId,
 ): Promise<_installmanager_api_ManagedInstallation> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/entity-id/${apolloEntityId}`,
-    "GET"
+    "GET",
   );
 }

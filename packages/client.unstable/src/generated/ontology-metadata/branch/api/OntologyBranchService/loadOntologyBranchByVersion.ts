@@ -26,7 +26,7 @@ import type {
  */
 export async function loadOntologyBranchByVersion(
   ctx: ConjureContext,
-  request: _branch_api_LoadOntologyBranchByVersionRequest
+  request: _branch_api_LoadOntologyBranchByVersionRequest,
 ): Promise<_branch_api_LoadOntologyBranchByVersionResponse> {
   return conjureFetch(ctx, `/ontology/branch/load/version`, "POST", request);
 }

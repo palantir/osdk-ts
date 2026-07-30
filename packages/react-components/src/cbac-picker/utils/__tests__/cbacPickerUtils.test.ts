@@ -35,7 +35,7 @@ describe("backgroundFromColors", () => {
 
   it("builds a left-to-right gradient for multiple colors", () => {
     expect(backgroundFromColors(["#FF0000", "#00FF00", "#0000FF"])).toBe(
-      "linear-gradient(to right, #FF0000, #00FF00, #0000FF)"
+      "linear-gradient(to right, #FF0000, #00FF00, #0000FF)",
     );
   });
 });
@@ -89,13 +89,13 @@ describe("groupMarkingsByCategory (applied markings)", () => {
       [
         { categoryName: "Category A", markingNames: ["Alpha"] },
         { categoryName: "Category B", markingNames: ["Gamma"] },
-      ]
+      ],
     );
   });
 
   it("collects multiple selected markings within the same category", () => {
     expect(groupMarkingsByCategory(["a1", "a2"], categories, markings)).toEqual(
-      [{ categoryName: "Category A", markingNames: ["Alpha", "Beta"] }]
+      [{ categoryName: "Category A", markingNames: ["Alpha", "Beta"] }],
     );
   });
 

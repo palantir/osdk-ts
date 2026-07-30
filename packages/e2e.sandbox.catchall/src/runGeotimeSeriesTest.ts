@@ -40,7 +40,7 @@ export async function runGeotimeSeriesReferenceTests(): Promise<void> {
   console.log(allPoints![0].value);
 
   const secondResult = await dsClient(
-    RhemmingsObjectWithGtsrProperty2
+    RhemmingsObjectWithGtsrProperty2,
   ).fetchOne("track-id");
 
   for await (const t of secondResult.gtsr!.asyncIterValues({

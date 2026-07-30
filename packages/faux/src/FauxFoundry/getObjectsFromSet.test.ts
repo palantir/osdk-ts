@@ -81,7 +81,7 @@ describe(getObjectsFromSet, () => {
     fauxDataStore = new FauxDataStore(
       fauxOntology,
       new FauxAttachmentStore(),
-      true
+      true,
     );
 
     fauxOntology.registerObjectType({
@@ -141,7 +141,7 @@ describe(getObjectsFromSet, () => {
   it("resolves a reference object set from the data store", () => {
     fauxDataStore.registerObjectSet(
       activeEmployeesRid,
-      activeEmployeesObjectSet
+      activeEmployeesObjectSet,
     );
 
     expect(
@@ -152,16 +152,16 @@ describe(getObjectsFromSet, () => {
             type: "reference",
             reference: activeEmployeesRid,
           },
-          undefined
-        )
-      )
+          undefined,
+        ),
+      ),
     ).toEqual(["a", "c"]);
   });
 
   it("resolves nested reference object sets", () => {
     fauxDataStore.registerObjectSet(
       activeEmployeesRid,
-      activeEmployeesObjectSet
+      activeEmployeesObjectSet,
     );
     fauxDataStore.registerObjectSet(nestedActiveEmployeesRid, {
       type: "reference",
@@ -176,16 +176,16 @@ describe(getObjectsFromSet, () => {
             type: "reference",
             reference: nestedActiveEmployeesRid,
           },
-          undefined
-        )
-      )
+          undefined,
+        ),
+      ),
     ).toEqual(["a", "c"]);
   });
 
   it("supports references inside composed object sets", () => {
     fauxDataStore.registerObjectSet(
       activeEmployeesRid,
-      activeEmployeesObjectSet
+      activeEmployeesObjectSet,
     );
 
     expect(
@@ -213,16 +213,16 @@ describe(getObjectsFromSet, () => {
               },
             ],
           },
-          undefined
-        )
-      )
+          undefined,
+        ),
+      ),
     ).toEqual(["c"]);
   });
 
   it("supports references in derived property object sets", () => {
     fauxDataStore.registerObjectSet(
       activeEmployeesRid,
-      activeEmployeesObjectSet
+      activeEmployeesObjectSet,
     );
 
     const objects = getObjectsFromSet(
@@ -246,14 +246,14 @@ describe(getObjectsFromSet, () => {
           },
         },
       },
-      undefined
+      undefined,
     );
 
     expect(
       objects.map((o) => ({
         id: o.id,
         activeEmployeeCount: o.activeEmployeeCount,
-      }))
+      })),
     ).toEqual([
       { id: "a", activeEmployeeCount: "2" },
       { id: "b", activeEmployeeCount: "2" },
@@ -269,10 +269,10 @@ describe(getObjectsFromSet, () => {
           type: "reference",
           reference: "ri.object-set.missing",
         },
-        undefined
-      )
+        undefined,
+      ),
     ).toThrow(
-      'NOT_FOUND ObjectSetNotFound {"objectSetRid":"ri.object-set.missing"}'
+      'NOT_FOUND ObjectSetNotFound {"objectSetRid":"ri.object-set.missing"}',
     );
   });
 });

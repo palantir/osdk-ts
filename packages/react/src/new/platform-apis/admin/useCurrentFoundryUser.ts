@@ -57,7 +57,7 @@ export function useCurrentFoundryUser({
 
   const handleQuery = React.useCallback(
     () => Users.getCurrent(client),
-    [client]
+    [client],
   );
 
   const query = usePlatformQuery({

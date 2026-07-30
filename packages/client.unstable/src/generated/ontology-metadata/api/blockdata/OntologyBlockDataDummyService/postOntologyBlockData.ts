@@ -22,7 +22,7 @@ import type {
 } from "../__components.js";
 export async function postOntologyBlockData(
   ctx: ConjureContext,
-  request: _api_blockdata_PostOntologyBlockDataRequest
+  request: _api_blockdata_PostOntologyBlockDataRequest,
 ): Promise<_api_blockdata_PostOntologyBlockDataResponse> {
   return conjureFetch(ctx, `/block-data/dummy/block-data`, "POST", request);
 }

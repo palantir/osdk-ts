@@ -29,11 +29,11 @@ import type {
 export async function getRecallsForBlockSet(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetId: _api_BlockSetId
+  blockSetId: _api_BlockSetId,
 ): Promise<_api_GetRecallsForBlockSetResponse> {
   return conjureFetch(
     ctx,
     `/automation/product/${marketplaceRid}/${blockSetId}/release/getRecalls`,
-    "GET"
+    "GET",
   );
 }

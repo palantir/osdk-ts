@@ -29,7 +29,7 @@ describe("callerLocation", () => {
     it("resolves to the real caller when the boundary function's name shares no substring with anything internal", () => {
       function totallyUnrelatedBoundaryName(): string | undefined {
         return formatCallerLocation(
-          captureCallerLocation(totallyUnrelatedBoundaryName)
+          captureCallerLocation(totallyUnrelatedBoundaryName),
         );
       }
 
@@ -81,7 +81,7 @@ describe("callerLocation", () => {
   describe("parseLineLocation", () => {
     it("parses a Firefox/Safari-style frame", () => {
       const location = parseLineLocation(
-        "MyComponent@http://localhost:5173/src/MyComponent.tsx:42:15"
+        "MyComponent@http://localhost:5173/src/MyComponent.tsx:42:15",
       );
 
       expect(location).toEqual({
@@ -95,7 +95,7 @@ describe("callerLocation", () => {
       // A leading space in the name (e.g. Firefox's top-level "global code")
       // must not be mistaken for a frame-separator by the regex.
       const location = parseLineLocation(
-        "global code@http://localhost:5173/src/MyComponent.tsx:1:1"
+        "global code@http://localhost:5173/src/MyComponent.tsx:1:1",
       );
 
       expect(location).toEqual({
@@ -120,7 +120,7 @@ describe("callerLocation", () => {
       ].join("\n");
 
       expect(locateCallerLine(stack, 2)).toBe(
-        "    at realCaller (callerLocation.test.ts:20:3)"
+        "    at realCaller (callerLocation.test.ts:20:3)",
       );
     });
 
@@ -132,7 +132,7 @@ describe("callerLocation", () => {
       ].join("\n");
 
       expect(locateCallerLine(stack, 2)).toBe(
-        "realCaller@callerLocation.test.ts:20:3"
+        "realCaller@callerLocation.test.ts:20:3",
       );
     });
 

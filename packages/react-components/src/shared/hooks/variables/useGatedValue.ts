@@ -25,12 +25,12 @@ import * as React from "react";
  */
 export function useGatedValue<T>(
   value: Readonly<T>,
-  isGateOpen: (current: T, previous: T) => boolean
+  isGateOpen: (current: T, previous: T) => boolean,
 ): T {
   const ref = React.useRef<T>(value);
   const gateOpen = React.useMemo(
     () => isGateOpen(value, ref.current),
-    [value, isGateOpen]
+    [value, isGateOpen],
   );
   React.useEffect(() => {
     if (gateOpen) {
@@ -49,11 +49,11 @@ export function useGatedValue<T>(
  */
 export function useInverseGatedValue<T>(
   value: T,
-  isGateClosed: (current: T, previous: T) => boolean
+  isGateClosed: (current: T, previous: T) => boolean,
 ): T {
   const isGateOpen = React.useCallback(
     (current: T, previous: T) => !isGateClosed(current, previous),
-    [isGateClosed]
+    [isGateClosed],
   );
   return useGatedValue(value, isGateOpen);
 }

@@ -93,7 +93,7 @@ function TextTagsInputInner({
       .filter(
         (s) =>
           (!inputValue.trim() || s.value.toLowerCase().includes(lowerInput)) &&
-          !tags.includes(s.value)
+          !tags.includes(s.value),
       )
       .slice(0, suggestionLimit);
   }, [suggestions, inputValue, tags, suggestionLimit]);
@@ -106,21 +106,21 @@ function TextTagsInputInner({
       }
       setInputValue("");
     },
-    [tags, onChange]
+    [tags, onChange],
   );
 
   const removeTag = useCallback(
     (tag: string) => {
       onChange(tags.filter((t) => t !== tag));
     },
-    [tags, onChange]
+    [tags, onChange],
   );
 
   const handleValueChange = useCallback(
     (newTags: string[] | null) => {
       onChange(newTags ?? []);
     },
-    [onChange]
+    [onChange],
   );
 
   const handleInputValueChange = useCallback((value: string) => {
@@ -141,7 +141,7 @@ function TextTagsInputInner({
         removeTag(tags[tags.length - 1]);
       }
     },
-    [inputValue, tags, addTag, removeTag, allowCustomTags, filteredSuggestions]
+    [inputValue, tags, addTag, removeTag, allowCustomTags, filteredSuggestions],
   );
 
   const handlePaste = useCallback(
@@ -158,7 +158,7 @@ function TextTagsInputInner({
         }
       }
     },
-    [tags, onChange]
+    [tags, onChange],
   );
 
   return (
@@ -233,5 +233,5 @@ function TextTagsInputInner({
 }
 
 export const TextTagsInput = memo(
-  TextTagsInputInner
+  TextTagsInputInner,
 ) as typeof TextTagsInputInner;

@@ -57,8 +57,8 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
         errorProps: "stack,cause,properties",
         ignore: "time,hostname,pid",
         destination: new PinoConsoleLogDestination(),
-      })
-    )
+      }),
+    ),
   );
 });
 
@@ -89,7 +89,7 @@ describe("intellisense", () => {
       reactPackagePath,
       "src",
       "intellisense.test.helpers",
-      `${a.task.name}.ts`
+      `${a.task.name}.ts`,
     );
 
     console.log(intellisenseFilePath);

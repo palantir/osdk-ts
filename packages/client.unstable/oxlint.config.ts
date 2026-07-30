@@ -38,7 +38,7 @@ import root from "../../oxlint.config.ts";
 export default defineConfig({
   extends: [root],
   ignorePatterns: (root.ignorePatterns ?? []).filter(
-    (p) => p !== "**/generated"
+    (p) => p !== "**/generated",
   ),
 
   rules: {

@@ -66,7 +66,7 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
 
     await openHeaderMenu(screen, "fullName");
     await expect(
-      await screen.findByRole("menuitem", { name: "Configure Columns" })
+      await screen.findByRole("menuitem", { name: "Configure Columns" }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard("{Escape}");
@@ -99,7 +99,7 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
 
     await openHeaderMenu(screen, "fullName");
     await expect(
-      await screen.findByRole("menuitem", { name: "Configure Columns" })
+      await screen.findByRole("menuitem", { name: "Configure Columns" }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard("{Escape}");
@@ -132,7 +132,7 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
 
     await openHeaderMenu(screen, "fullName");
     await expect(
-      await screen.findByRole("menuitem", { name: "Configure Columns" })
+      await screen.findByRole("menuitem", { name: "Configure Columns" }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard("{Escape}");

@@ -28,11 +28,11 @@ import type {
 export async function getBlockSet(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_GetBlockSetResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/version/${blockSetVersionId}`,
-    "GET"
+    "GET",
   );
 }

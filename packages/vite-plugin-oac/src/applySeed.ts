@@ -19,7 +19,7 @@ import { createJiti } from "jiti";
 
 export async function applySeed(
   fauxFoundry: FauxFoundry,
-  seedPath: string
+  seedPath: string,
 ): Promise<void> {
   const jiti = createJiti(import.meta.filename, {
     moduleCache: false,

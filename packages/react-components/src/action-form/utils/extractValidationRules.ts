@@ -32,7 +32,7 @@ type RhfRules = RegisterOptions<Record<string, unknown>, string>;
  * custom messages into the RHF rules object.
  */
 export function extractValidationRules(
-  fieldDef: RendererFieldDefinition
+  fieldDef: RendererFieldDefinition,
 ): RhfRules {
   const rules: RhfRules = {};
 
@@ -101,7 +101,7 @@ export function extractValidationRules(
           }
           if (Array.isArray(value)) {
             const oversized = value.some(
-              (f: unknown) => f instanceof File && f.size > maxSize
+              (f: unknown) => f instanceof File && f.size > maxSize,
             );
             return oversized ? msg : true;
           }
@@ -135,7 +135,7 @@ export function extractValidationRules(
 
 function getMessage(
   fieldDef: RendererFieldDefinition,
-  error: ValidationError
+  error: ValidationError,
 ): string {
   return fieldDef.onValidationError?.(error) ?? getDefaultMessage(error);
 }

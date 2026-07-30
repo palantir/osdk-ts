@@ -133,7 +133,7 @@ export function useDateEditState({
     (date: Date | null) => {
       setInputValue(date != null ? editFormatFn(date) : "");
     },
-    [editFormatFn]
+    [editFormatFn],
   );
 
   const startEditing = useCallback(() => {

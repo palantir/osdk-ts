@@ -26,12 +26,12 @@ import type {
  */
 export async function updateSeenMonitorEvents(
   ctx: ConjureContext,
-  request: _api_registry_SeenMonitorEventsRequest
+  request: _api_registry_SeenMonitorEventsRequest,
 ): Promise<_api_registry_SeenMonitorEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/seen-events`,
     "POST",
-    request
+    request,
   );
 }

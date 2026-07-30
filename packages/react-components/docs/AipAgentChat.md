@@ -171,7 +171,7 @@ import { useChat } from "@osdk/react/experimental/aip";
 function MyChat() {
   const lmsModel = useMemo(
     () => foundryModel({ client: platformClient, model: "gpt-4o" }),
-    []
+    [],
   );
   const { messages, status, error, sendMessage, stop, clearError } = useChat({
     model: lmsModel,

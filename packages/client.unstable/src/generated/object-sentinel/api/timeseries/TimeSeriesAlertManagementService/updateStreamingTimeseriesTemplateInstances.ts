@@ -31,12 +31,12 @@ import type {
 export async function updateStreamingTimeseriesTemplateInstances(
   ctx: ConjureContext,
   monitorGroupRid: _api_timeseries_StreamingTimeseriesMonitorGroupRid,
-  request: _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesRequest
+  request: _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesRequest,
 ): Promise<_api_timeseries_UpdateStreamingTimeseriesTemplateInstancesResponse> {
   return conjureFetch(
     ctx,
     `/time-series/alert/v0/streaming/update-template-instances/${monitorGroupRid}`,
     "POST",
-    request
+    request,
   );
 }

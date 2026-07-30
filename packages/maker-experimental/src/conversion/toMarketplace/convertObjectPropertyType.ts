@@ -36,20 +36,20 @@ import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIr
 export function convertObjectPropertyType(
   property: ObjectPropertyType,
   objectTypeApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): PropertyType {
   const apiName = getNamespace() + property.apiName;
   invariant(
     !shouldNotHaveRenderHints(property.type) ||
       !hasRenderHints(property.typeClasses),
     `Property type ${apiName} of type '${getPropertyTypeName(
-      property.type
-    )}' should not have render hints`
+      property.type,
+    )}' should not have render hints`,
   );
   // TODO: Generate proper RID and ID based on object type and property API name
   const propertyRid = ridGenerator.generatePropertyRid(
     property.apiName,
-    objectTypeApiName
+    objectTypeApiName,
   );
   const output: PropertyType = {
     apiName: property.apiName,
@@ -72,7 +72,7 @@ export function convertObjectPropertyType(
             subtype: propertyTypeTypeToOntologyIrType(
               property.type,
               ridGenerator,
-              property.apiName
+              property.apiName,
             ),
             reducers: [],
           },
@@ -80,7 +80,7 @@ export function convertObjectPropertyType(
       : propertyTypeTypeToOntologyIrType(
           property.type,
           ridGenerator,
-          property.apiName
+          property.apiName,
         ),
     typeClasses:
       property.typeClasses ??

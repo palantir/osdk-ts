@@ -34,11 +34,11 @@ import type {
  */
 export async function getPendingBlockSetShapes(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_GetPendingBlockSetShapesResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/pending/version/${blockSetVersionId}/shapes`,
-    "GET"
+    "GET",
   );
 }

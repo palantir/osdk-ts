@@ -66,7 +66,7 @@ export function CustomOfficeTable({
 
   const allColumns = useMemo<Array<ColumnDef<OfficeRow>>>(
     () => (selectionColumn != null ? [selectionColumn, ...columns] : columns),
-    [selectionColumn, columns]
+    [selectionColumn, columns],
   );
 
   const table = useReactTable<OfficeRow>({
@@ -107,7 +107,7 @@ export function CustomOfficeTable({
                   >
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
                     {sortDir === "asc" && " ▲"}
                     {sortDir === "desc" && " ▼"}

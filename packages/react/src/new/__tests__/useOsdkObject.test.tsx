@@ -55,11 +55,11 @@ function createMockObservableClient(): {
           type: unknown,
           primaryKey: unknown,
           options: ObserveObjectCall["options"],
-          observer: Observer
+          observer: Observer,
         ) => {
           calls.push({ type, primaryKey, options, observer });
           return { unsubscribe: vi.fn() };
-        }
+        },
       ),
   } as unknown as ObservableClient;
   return { client, calls };

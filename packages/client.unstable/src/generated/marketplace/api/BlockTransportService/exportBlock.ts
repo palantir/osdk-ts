@@ -56,7 +56,7 @@ export async function exportBlock(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockVersionId: _api_BlockVersionId,
-  request: _api_ExportBlockRequest
+  request: _api_ExportBlockRequest,
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -65,6 +65,6 @@ export async function exportBlock(
     request,
     undefined,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

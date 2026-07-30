@@ -31,7 +31,7 @@ import type { ExactMatchFilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../../types/LinkedFilterTypes.js";
 
 function createExactMatchState(
-  values: string[]
+  values: string[],
 ): ExactMatchFilterState<string> {
   return { type: "EXACT_MATCH", values };
 }
@@ -40,7 +40,7 @@ import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
 
 function createProps(
-  overrides: Partial<FilterListProps<typeof MockObjectType>> = {}
+  overrides: Partial<FilterListProps<typeof MockObjectType>> = {},
 ): FilterListProps<typeof MockObjectType> {
   return {
     objectType: MockObjectType,
@@ -71,7 +71,7 @@ describe("useFilterListState", () => {
     });
     const { result } = renderHook(() => useFilterListState(props));
     expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
-      initialState
+      initialState,
     );
   });
 
@@ -79,7 +79,7 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      createExactMatchState([])
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -88,11 +88,11 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createExactMatchState(["selected"])
+        createExactMatchState(["selected"]),
       );
     });
     expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
-      createExactMatchState(["selected"])
+      createExactMatchState(["selected"]),
     );
   });
 
@@ -101,7 +101,7 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      createExactMatchState([])
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -119,7 +119,7 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      createExactMatchState([])
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -128,7 +128,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
     });
     expect(result.current.whereClause).toEqual({ name: "John" });
@@ -146,7 +146,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -158,7 +158,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           getFilterKey(nameDef),
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
 
@@ -184,7 +184,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const initialFilterStates = new Map([
         [getFilterKey(nameDef), createExactMatchState(["John"])],
@@ -200,7 +200,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           getFilterKey(nameDef),
-          createExactMatchState(["Jane"])
+          createExactMatchState(["Jane"]),
         );
       });
 
@@ -221,7 +221,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const initialFilterStates = new Map([
         [getFilterKey(nameDef), createExactMatchState(["Seed"])],
@@ -240,7 +240,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -250,7 +250,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           getFilterKey(nameDef),
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
       expect(onFilterClauseChanged).toHaveBeenLastCalledWith({ name: "John" });
@@ -262,7 +262,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const initialFilterStates = new Map([
         [getFilterKey(nameDef), createExactMatchState(["Seed"])],
@@ -277,7 +277,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           getFilterKey(nameDef),
-          createExactMatchState(["Other"])
+          createExactMatchState(["Other"]),
         );
       });
       expect(result.current.whereClause).toEqual({ name: "Other" });
@@ -294,7 +294,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["default"])
+        createExactMatchState(["default"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -305,7 +305,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
       expect(result.current.filterStates.has(filterKey)).toBe(true);
@@ -320,7 +320,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -331,7 +331,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
       expect(result.current.whereClause).toEqual({ name: "John" });
@@ -346,7 +346,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -357,7 +357,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
       expect(result.current.activeFilterCount).toBe(1);
@@ -372,12 +372,12 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const activeDef = createPropertyFilterDef(
         "active",
         "TOGGLE",
-        createToggleState(false)
+        createToggleState(false),
       );
       const props = createProps({
         filterDefinitions: [nameDef, activeDef],
@@ -397,7 +397,7 @@ describe("useFilterListState", () => {
       });
       expect(result.current.filterStates.has(nameKey)).toBe(false);
       expect(result.current.filterStates.get(activeKey)).toEqual(
-        createToggleState(true)
+        createToggleState(true),
       );
       expect(result.current.activeFilterCount).toBe(1);
     });
@@ -407,7 +407,7 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      createExactMatchState([])
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -418,7 +418,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
     });
     expect(result.current.whereClause).toEqual({ name: "John" });
@@ -432,12 +432,12 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "LISTOGRAM",
-      createExactMatchState([])
+      createExactMatchState([]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
-      createToggleState(false)
+      createToggleState(false),
     );
     const props = createProps({
       filterDefinitions: [nameDef, activeDef],
@@ -446,11 +446,11 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       result.current.setFilterState(
         getFilterKey(activeDef),
-        createToggleState(true)
+        createToggleState(true),
       );
     });
     expect(result.current.whereClause).toEqual({
@@ -463,12 +463,12 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const activeDef = createPropertyFilterDef(
         "active",
         "TOGGLE",
-        createToggleState(false)
+        createToggleState(false),
       );
       const props = createProps({
         filterDefinitions: [nameDef, activeDef],
@@ -491,12 +491,12 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const activeDef = createPropertyFilterDef(
         "active",
         "TOGGLE",
-        createToggleState(false)
+        createToggleState(false),
       );
       const props = createProps({
         filterDefinitions: [nameDef, activeDef],
@@ -520,12 +520,12 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const activeDef = createPropertyFilterDef(
         "active",
         "TOGGLE",
-        createToggleState(false)
+        createToggleState(false),
       );
       const props = createProps({
         filterDefinitions: [nameDef, activeDef],
@@ -557,17 +557,17 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const activeDef = createPropertyFilterDef(
         "active",
         "TOGGLE",
-        createToggleState(false)
+        createToggleState(false),
       );
       const { result, rerender } = renderHook(
         (defs: FilterListProps<typeof MockObjectType>["filterDefinitions"]) =>
           useFilterListState(createProps({ filterDefinitions: defs })),
-        { initialProps: [nameDef, activeDef] }
+        { initialProps: [nameDef, activeDef] },
       );
       const nameKey = getFilterKey(nameDef);
       const activeKey = getFilterKey(activeDef);
@@ -581,7 +581,7 @@ describe("useFilterListState", () => {
         createPropertyFilterDef(
           "name",
           "LISTOGRAM",
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         ),
         createPropertyFilterDef("active", "TOGGLE", createToggleState(false)),
       ]);
@@ -651,7 +651,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -664,7 +664,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -675,7 +675,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["Jane"])
+          createExactMatchState(["Jane"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(true);
@@ -685,7 +685,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -696,7 +696,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["Jane"])
+          createExactMatchState(["Jane"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(true);
@@ -704,7 +704,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["John"])
+          createExactMatchState(["John"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(false);
@@ -714,7 +714,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -732,7 +732,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState(["John"])
+        createExactMatchState(["John"]),
       );
       const props = createProps({
         filterDefinitions: [nameDef],
@@ -743,7 +743,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["Jane"])
+          createExactMatchState(["Jane"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(true);
@@ -758,7 +758,7 @@ describe("useFilterListState", () => {
       const nameDef = createPropertyFilterDef(
         "name",
         "LISTOGRAM",
-        createExactMatchState([])
+        createExactMatchState([]),
       );
       const filterKey = getFilterKey(nameDef);
       const props = createProps({
@@ -773,7 +773,7 @@ describe("useFilterListState", () => {
       act(() => {
         result.current.setFilterState(
           filterKey,
-          createExactMatchState(["Other"])
+          createExactMatchState(["Other"]),
         );
       });
       expect(result.current.hasChangesFromInitial).toBe(true);

@@ -51,16 +51,16 @@ describe("local functions", () => {
     saveLocal(client, {}, storage);
 
     expect(vi.mocked(globalThis.localStorage.getItem)).toBeCalledWith(
-      oldLocalStorageKey
+      oldLocalStorageKey,
     );
 
     expect(vi.mocked(globalThis.localStorage.setItem)).toBeCalledWith(
       oldLocalStorageKey,
-      expect.anything()
+      expect.anything(),
     );
 
     expect(vi.mocked(globalThis.localStorage.removeItem)).toBeCalledWith(
-      oldLocalStorageKey
+      oldLocalStorageKey,
     );
   });
 
@@ -75,7 +75,7 @@ describe("local functions", () => {
 
     const authServer = createAuthorizationServer(
       "multipass",
-      "https://stack.palantir.com"
+      "https://stack.palantir.com",
     );
 
     const { makeTokenAndSaveRefresh } = common(
@@ -86,7 +86,7 @@ describe("local functions", () => {
       refresh,
       "marker marker",
       "yay:my-fun-scope sad:my-boring-scope",
-      storage
+      storage,
     );
 
     makeTokenAndSaveRefresh(
@@ -96,7 +96,7 @@ describe("local functions", () => {
         token_type: "idk",
         expires_in: 10_000,
       },
-      "signIn"
+      "signIn",
     );
 
     expect(globalThis.localStorage.setItem).toBeCalledWith(
@@ -105,7 +105,7 @@ describe("local functions", () => {
         refresh_token: "refresh",
         refreshTokenMarker: "marker marker",
         requestedScopes: "yay:my-fun-scope sad:my-boring-scope",
-      })
+      }),
     );
   });
 });

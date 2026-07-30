@@ -27,7 +27,7 @@ import type {
  */
 export async function getBulkSharedPropertyTypePermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest
+  request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
 ): Promise<_api_permissions_GetBulkSharedPropertyTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/sharedPropertyTypes`, "PUT", request);
 }

@@ -21,7 +21,7 @@ import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
-  interfaceType: InterfaceType
+  interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
@@ -33,7 +33,7 @@ export function convertInterface(
           required: spt.required,
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
         },
-      ])
+      ]),
     ),
     displayMetadata: {
       displayName: interfaceType.displayMetadata.displayName,
@@ -48,11 +48,11 @@ export function convertInterface(
     properties: [],
     propertiesV3: Object.fromEntries(
       Object.entries(interfaceType.propertiesV3).map(([apiName, prop]) =>
-        convertInterfaceProperty(prop, apiName)
-      )
+        convertInterfaceProperty(prop, apiName),
+      ),
     ),
     extendsInterfacesMetadata: interfaceType.extendsInterfaces.map((i) =>
-      convertInterface(i)
+      convertInterface(i),
     ),
   };
 }

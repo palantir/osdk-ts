@@ -34,7 +34,7 @@ export async function transformAndWaitInternal(
   mediaItemRid: string,
   transformation: Transformation,
   token: string | undefined,
-  options?: TransformOptions
+  options?: TransformOptions,
 ): Promise<Response> {
   const pollIntervalMs = Math.max(options?.pollIntervalMs ?? 3000, 100);
   const pollTimeoutMs = Math.max(options?.pollTimeoutMs ?? 30000, 1000);
@@ -47,7 +47,7 @@ export async function transformAndWaitInternal(
     mediaItemRid,
     { transformation },
     { preview: true },
-    headerParams
+    headerParams,
   );
 
   let status = job.status;
@@ -64,7 +64,7 @@ export async function transformAndWaitInternal(
       mediaItemRid,
       jobId,
       { preview: true },
-      headerParams
+      headerParams,
     );
     status = statusResponse.status;
 
@@ -82,6 +82,6 @@ export async function transformAndWaitInternal(
     mediaItemRid,
     jobId,
     { preview: true },
-    headerParams
+    headerParams,
   );
 }

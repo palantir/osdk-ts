@@ -79,11 +79,11 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
         const entries = await monitorStore.loadCacheEntries();
         const totalSize = entries.reduce(
           (sum: number, e: CacheEntry) => sum + e.metadata.size,
-          0
+          0,
         );
         const totalHits = entries.reduce(
           (sum: number, e: CacheEntry) => sum + (e.metadata.hitCount ?? 0),
-          0
+          0,
         );
         return {
           entries,
@@ -94,11 +94,11 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
           },
         };
       }, 2000),
-    [monitorStore]
+    [monitorStore],
   );
   const polledSnapshot = React.useSyncExternalStore(
     snapshotStore.subscribe,
-    snapshotStore.getSnapshot
+    snapshotStore.getSnapshot,
   );
 
   const snapshot: CacheSnapshot = polledSnapshot ?? emptySnapshot;
@@ -116,7 +116,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
           entry.type.toLowerCase().includes(query)
         );
       }),
-    [snapshot.entries, searchQuery]
+    [snapshot.entries, searchQuery],
   );
 
   const toggleExpanded = (key: string) => {
@@ -138,7 +138,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
       snapshotStore.forceRefresh();
     } catch (error) {
       setInvalidateError(
-        error instanceof Error ? error : new Error(String(error))
+        error instanceof Error ? error : new Error(String(error)),
       );
     }
   };
@@ -153,7 +153,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
         snapshotStore.forceRefresh();
       } catch (error) {
         setInvalidateError(
-          error instanceof Error ? error : new Error(String(error))
+          error instanceof Error ? error : new Error(String(error)),
         );
       }
     }
@@ -281,7 +281,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                   </Tooltip>
                   <Tooltip
                     content={`Last updated: ${new Date(
-                      entry.metadata.timestamp
+                      entry.metadata.timestamp,
                     ).toLocaleString()}`}
                   >
                     <span className={styles.age}>
@@ -327,7 +327,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = ({
                               pageSize: entry.pageSize,
                             },
                             null,
-                            2
+                            2,
                           )}
                         </CopyableCodeBlock>
                       </div>

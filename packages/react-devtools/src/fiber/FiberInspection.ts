@@ -110,7 +110,7 @@ export function getComponentId(fiber: Fiber): string {
     {
       fallback: `fiber-unknown-${Date.now()}`,
       feature: "component-inspection",
-    }
+    },
   );
 }
 
@@ -126,7 +126,7 @@ export function getSourceLocation(fiber: Fiber): SourceLocation | null {
       }
       return null;
     },
-    { fallback: null, feature: "component-inspection" }
+    { fallback: null, feature: "component-inspection" },
   );
 }
 
@@ -138,7 +138,7 @@ export function getProps(fiber: Fiber): Record<string, unknown> {
       }
       return {};
     },
-    { fallback: {}, feature: "component-inspection" }
+    { fallback: {}, feature: "component-inspection" },
   );
 }
 
@@ -155,6 +155,6 @@ export function getHookStates(fiber: Fiber): unknown[] {
 
       return states;
     },
-    { fallback: [], feature: "state-inspection" }
+    { fallback: [], feature: "state-inspection" },
   );
 }

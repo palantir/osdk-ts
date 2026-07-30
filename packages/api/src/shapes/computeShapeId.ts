@@ -30,9 +30,9 @@ function sortedStringify(obj: unknown): string {
   return JSON.stringify(obj, (_, v) =>
     v && typeof v === "object" && !Array.isArray(v)
       ? Object.fromEntries(
-          Object.entries(v).sort(([a], [b]) => a.localeCompare(b))
+          Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
         )
-      : v
+      : v,
   );
 }
 
@@ -75,7 +75,7 @@ function canonicalizeShapeInput(input: ShapeIdInput): Record<string, unknown> {
 }
 
 function canonicalizeObjectSetDef(
-  def: ShapeLinkObjectSetDef
+  def: ShapeLinkObjectSetDef,
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {
     segments: def.segments.map((seg) => ({

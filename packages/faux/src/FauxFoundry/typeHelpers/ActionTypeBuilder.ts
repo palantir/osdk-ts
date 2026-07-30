@@ -78,7 +78,7 @@ export class ActionTypeBuilder<
   >(
     paramId: K,
     parameter: V,
-    required: R | false = false
+    required: R | false = false,
   ): ActionTypeBuilder<
     NEW_P<
       P,
@@ -103,7 +103,7 @@ export class ActionTypeBuilder<
   build(): ActionTypeBuilderResult<P> {
     const actionTypeV2 = this.action;
     const actionMetadata = wireActionTypeV2ToSdkActionMetadata(
-      actionTypeV2
+      actionTypeV2,
       // cast below is needed because the compile time type also needs `signatures`
       // which we don't create in the conversion.
     ) as TH_ActionMetadata<TH_ActionTypeV2<P>>;

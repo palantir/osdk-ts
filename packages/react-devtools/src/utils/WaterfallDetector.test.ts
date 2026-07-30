@@ -28,7 +28,7 @@ function createMockRegistry(
       queryParams: Record<string, unknown>;
       querySignature: string;
     }>
-  >()
+  >(),
 ): ComponentQueryRegistry {
   return {
     getActiveComponents: vi.fn().mockReturnValue(components),
@@ -43,7 +43,7 @@ function createMockRegistry(
 
 function createMockTimeline(
   emissions: Array<{ timestamp: number; subscriptionId: string }> = [],
-  linkTraversals: Array<{ timestamp: number; linkName: string }> = []
+  linkTraversals: Array<{ timestamp: number; linkName: string }> = [],
 ): EventTimeline {
   return {
     getEventsByType: vi.fn().mockImplementation((type: string) => {
@@ -65,7 +65,7 @@ describe("WaterfallDetector", () => {
   it("returns empty array with no events", () => {
     const detector = new WaterfallDetector(
       createMockRegistry(),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     expect(detector.detectWaterfalls()).toEqual([]);
@@ -77,7 +77,7 @@ describe("WaterfallDetector", () => {
         { timestamp: 100, subscriptionId: "parent-query" },
         { timestamp: 130, subscriptionId: "child-query" },
       ],
-      [{ timestamp: 115, linkName: "assignee" }]
+      [{ timestamp: 115, linkName: "assignee" }],
     );
 
     const detector = new WaterfallDetector(createMockRegistry(), timeline);
@@ -102,9 +102,9 @@ describe("WaterfallDetector", () => {
     const components = new Map([["comp-1", bindings]]);
     const detector = new WaterfallDetector(
       createMockRegistry(
-        components as Parameters<typeof createMockRegistry>[0]
+        components as Parameters<typeof createMockRegistry>[0],
       ),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     const waterfalls = detector.detectWaterfalls();
@@ -124,9 +124,9 @@ describe("WaterfallDetector", () => {
     const components = new Map([["comp-1", bindings]]);
     const detector = new WaterfallDetector(
       createMockRegistry(
-        components as Parameters<typeof createMockRegistry>[0]
+        components as Parameters<typeof createMockRegistry>[0],
       ),
-      createMockTimeline()
+      createMockTimeline(),
     );
 
     const waterfalls = detector.detectWaterfalls();

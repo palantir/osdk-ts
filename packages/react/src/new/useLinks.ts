@@ -150,7 +150,7 @@ export function useLinks<
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
-  options: UseLinksOptions<LinkedType<T, L>> = {}
+  options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext);
 
@@ -190,7 +190,7 @@ export function useLinks<
           hookType: "useLinks",
           sourceObjectType: objectsArray[0]?.$apiName,
           linkName,
-        })
+        }),
       );
     }
     return makeExternalStore<ObserveLinks.CallbackArgs<LinkedType<T, L>>>(
@@ -209,13 +209,13 @@ export function useLinks<
             resolveToObjectType,
             ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
           },
-          observer
+          observer,
         ),
       devToolsMetadata({
         hookType: "useLinks",
         sourceObjectType: objectsArray[0]?.$apiName,
         linkName,
-      })
+      }),
     );
   }, [
     enabled,
@@ -246,6 +246,6 @@ export function useLinks<
       fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
     }),
-    [payload, enabled]
+    [payload, enabled],
   );
 }

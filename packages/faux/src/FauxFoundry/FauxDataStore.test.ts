@@ -39,8 +39,8 @@ describe(FauxDataStore, () => {
               __primaryKey: id,
               id,
             },
-          ] as const
-      )
+          ] as const,
+      ),
     ) as unknown as Record<(typeof pks)[number], BaseServerObject>;
 
     const projectPks = ["p1", "p2"] as const;
@@ -55,8 +55,8 @@ describe(FauxDataStore, () => {
               id,
               name: `Project ${id}`,
             },
-          ] as const
-      )
+          ] as const,
+      ),
     ) as unknown as Record<(typeof projectPks)[number], BaseServerObject>;
 
     beforeEach(() => {
@@ -70,7 +70,7 @@ describe(FauxDataStore, () => {
       fauxDataStore = new FauxDataStore(
         fauxOntology,
         attachmentsStore,
-        /*strict*/ true
+        /*strict*/ true,
       );
 
       const Employee = {
@@ -233,7 +233,7 @@ describe(FauxDataStore, () => {
       contributors: fauxDataStore.getLinksOrThrow(
         "Project",
         projectId,
-        "contributors"
+        "contributors",
       ),
     });
 
@@ -241,12 +241,12 @@ describe(FauxDataStore, () => {
       ownedProjects: fauxDataStore.getLinksOrThrow(
         "Employee",
         employeeId,
-        "ownedProjects"
+        "ownedProjects",
       ),
       contributedProjects: fauxDataStore.getLinksOrThrow(
         "Employee",
         employeeId,
-        "contributedProjects"
+        "contributedProjects",
       ),
     });
 
@@ -270,11 +270,11 @@ describe(FauxDataStore, () => {
       it("registers and returns object sets by rid", () => {
         fauxDataStore.registerObjectSet(
           activeEmployeesRid,
-          activeEmployeesObjectSet
+          activeEmployeesObjectSet,
         );
 
         expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
-          activeEmployeesObjectSet
+          activeEmployeesObjectSet,
         );
       });
 
@@ -294,23 +294,23 @@ describe(FauxDataStore, () => {
 
         fauxDataStore.registerObjectSet(
           activeEmployeesRid,
-          activeEmployeesObjectSet
+          activeEmployeesObjectSet,
         );
         fauxDataStore.registerObjectSet(
           activeEmployeesRid,
-          inactiveEmployeesObjectSet
+          inactiveEmployeesObjectSet,
         );
 
         expect(fauxDataStore.getObjectSetOrThrow(activeEmployeesRid)).toBe(
-          inactiveEmployeesObjectSet
+          inactiveEmployeesObjectSet,
         );
       });
 
       it("throws ObjectSetNotFound for unknown object set rids", () => {
         expect(() =>
-          fauxDataStore.getObjectSetOrThrow("ri.object-set.missing")
+          fauxDataStore.getObjectSetOrThrow("ri.object-set.missing"),
         ).toThrow(
-          'NOT_FOUND ObjectSetNotFound {"objectSetRid":"ri.object-set.missing"}'
+          'NOT_FOUND ObjectSetNotFound {"objectSetRid":"ri.object-set.missing"}',
         );
       });
 
@@ -321,7 +321,7 @@ describe(FauxDataStore, () => {
         fauxDataStore.registerObject({ ...c, status: "ACTIVE" });
         fauxDataStore.registerObjectSet(
           activeEmployeesRid,
-          activeEmployeesObjectSet
+          activeEmployeesObjectSet,
         );
 
         const page = fauxDataStore.getObjectsFromObjectSet({
@@ -419,7 +419,7 @@ describe(FauxDataStore, () => {
         peeps: [a], // b's peeps should not change
       });
       expect(
-        fauxDataStore.getObject(b.__apiName, b.__primaryKey)
+        fauxDataStore.getObject(b.__apiName, b.__primaryKey),
       ).toMatchObject({
         leadId: "d",
       });
@@ -503,7 +503,7 @@ describe(FauxDataStore, () => {
         contributedProjects: [],
       });
       expect(
-        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey),
       ).toMatchObject({
         ownerId: "a",
       });
@@ -524,7 +524,7 @@ describe(FauxDataStore, () => {
         contributedProjects: [],
       });
       expect(
-        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey),
       ).toMatchObject({
         ownerId: "b",
       });
@@ -551,7 +551,7 @@ describe(FauxDataStore, () => {
         p1,
         "contributors",
         c,
-        "contributedProjects"
+        "contributedProjects",
       );
 
       expect(getProjectLinks("p1")).toMatchObject({
@@ -591,7 +591,7 @@ describe(FauxDataStore, () => {
         contributedProjects: [p2],
       });
       expect(
-        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey),
       ).toMatchObject({
         ownerId: undefined,
       });
@@ -613,7 +613,7 @@ describe(FauxDataStore, () => {
         contributedProjects: [],
       });
       expect(
-        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey)
+        fauxDataStore.getObject(p1.__apiName, p1.__primaryKey),
       ).toMatchObject({
         ownerId: "c",
       });

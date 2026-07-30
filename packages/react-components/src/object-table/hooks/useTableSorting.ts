@@ -71,7 +71,7 @@ export const useTableSorting = <
 > => {
   // The sorting state in uncontrolled mode
   const [internalSorting, setInternalSorting] = useState<SortingState>(() =>
-    defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : []
+    defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : [],
   );
 
   const isControlled = orderBy !== undefined;
@@ -81,7 +81,7 @@ export const useTableSorting = <
   // If uncontrolled, return the internalSorting state
   const sortingState: SortingState = useMemo(
     () => (orderBy ? convertOrderByToSortingState(orderBy) : internalSorting),
-    [orderBy, internalSorting]
+    [orderBy, internalSorting],
   );
 
   const orderByState: OrderBy<Q, RDPs> = useMemo(() => {
@@ -90,7 +90,7 @@ export const useTableSorting = <
       : convertSortingStateToOrderBy(internalSorting);
 
     return Object.fromEntries(
-      currentOrderBy.map(({ property, direction }) => [property, direction])
+      currentOrderBy.map(({ property, direction }) => [property, direction]),
     ) as OrderBy<Q, RDPs>;
   }, [orderBy, internalSorting]);
 
@@ -109,7 +109,7 @@ export const useTableSorting = <
         onOrderByChanged(newOrderBy);
       }
     },
-    [isControlled, sortingState, onOrderByChanged]
+    [isControlled, sortingState, onOrderByChanged],
   );
 
   return { sorting: sortingState, orderByState, onSortingChange };
@@ -119,7 +119,7 @@ function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(
   orderBy: Array<{
     property: PropertyKeys<Q>;
     direction: "asc" | "desc";
-  }>
+  }>,
 ): SortingState {
   return orderBy.map(({ property, direction }) => ({
     id: property,
@@ -128,7 +128,7 @@ function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(
 }
 
 function convertSortingStateToOrderBy<Q extends ObjectOrInterfaceDefinition>(
-  sorting: SortingState
+  sorting: SortingState,
 ): Array<{
   property: PropertyKeys<Q>;
   direction: "asc" | "desc";

@@ -45,7 +45,7 @@ export class PropertyAccessTracker {
     obj: T,
     objectKey: string,
     componentId: string,
-    depth: number = 0
+    depth: number = 0,
   ): T {
     if (this.wrappedObjects.has(obj)) {
       return obj;
@@ -86,7 +86,7 @@ export class PropertyAccessTracker {
             value,
             `${objectKey}.${prop}`,
             componentId,
-            depth + 1
+            depth + 1,
           );
         }
 
@@ -147,7 +147,7 @@ export class PropertyAccessTracker {
   getUnusedPropertiesForObject(
     componentId: string,
     objectKey: string,
-    availableProperties: string[]
+    availableProperties: string[],
   ): string[] {
     const accessed = this.getAccessedProperties(componentId, objectKey);
     return availableProperties.filter((prop) => !accessed.has(prop));
@@ -213,7 +213,7 @@ export class PropertyAccessTracker {
 
   getAccessFrequency(
     componentId: string,
-    objectKey: string
+    objectKey: string,
   ): Map<string, number> {
     const frequency = new Map<string, number>();
 
@@ -224,7 +224,7 @@ export class PropertyAccessTracker {
       ) {
         frequency.set(
           access.property,
-          (frequency.get(access.property) || 0) + 1
+          (frequency.get(access.property) || 0) + 1,
         );
       }
     }
@@ -263,15 +263,15 @@ export class PropertyAccessTracker {
     for (const access of this.accesses.toArray()) {
       componentCounts.set(
         access.componentId,
-        (componentCounts.get(access.componentId) || 0) + 1
+        (componentCounts.get(access.componentId) || 0) + 1,
       );
       objectCounts.set(
         access.objectKey,
-        (objectCounts.get(access.objectKey) || 0) + 1
+        (objectCounts.get(access.objectKey) || 0) + 1,
       );
       propertyCounts.set(
         access.property,
-        (propertyCounts.get(access.property) || 0) + 1
+        (propertyCounts.get(access.property) || 0) + 1,
       );
     }
 

@@ -27,7 +27,7 @@ import type {
  */
 export async function getBulkTypeGroupPermissions(
   ctx: ConjureContext,
-  request: _api_permissions_GetBulkTypeGroupPermissionsRequest
+  request: _api_permissions_GetBulkTypeGroupPermissionsRequest,
 ): Promise<_api_permissions_GetBulkTypeGroupPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/typeGroups`, "PUT", request);
 }

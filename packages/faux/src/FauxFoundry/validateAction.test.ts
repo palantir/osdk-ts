@@ -103,10 +103,10 @@ describe("matchesOntologyDataType", () => {
     it("should return true for valid long values within safe integer bounds", () => {
       expect(matchesOntologyDataType(dataType, 0)).toBe(true);
       expect(matchesOntologyDataType(dataType, Number.MAX_SAFE_INTEGER)).toBe(
-        true
+        true,
       );
       expect(matchesOntologyDataType(dataType, Number.MIN_SAFE_INTEGER)).toBe(
-        true
+        true,
       );
     });
 
@@ -117,10 +117,10 @@ describe("matchesOntologyDataType", () => {
 
     it("should return false for values outside safe integer range", () => {
       expect(
-        matchesOntologyDataType(dataType, Number.MAX_SAFE_INTEGER + 1)
+        matchesOntologyDataType(dataType, Number.MAX_SAFE_INTEGER + 1),
       ).toBe(false);
       expect(
-        matchesOntologyDataType(dataType, Number.MIN_SAFE_INTEGER - 1)
+        matchesOntologyDataType(dataType, Number.MIN_SAFE_INTEGER - 1),
       ).toBe(false);
     });
   });
@@ -227,10 +227,10 @@ describe("matchesOntologyDataType", () => {
 
     it("should return true for valid timestamp strings", () => {
       expect(matchesOntologyDataType(dataType, "2025-01-15T10:30:00Z")).toBe(
-        true
+        true,
       );
       expect(
-        matchesOntologyDataType(dataType, "2025-01-15T10:30:00.123Z")
+        matchesOntologyDataType(dataType, "2025-01-15T10:30:00.123Z"),
       ).toBe(true);
       expect(matchesOntologyDataType(dataType, "2025-01-15")).toBe(true);
     });
@@ -316,13 +316,13 @@ describe("matchesOntologyDataType", () => {
 
     it("should return true for objects with $primaryKey", () => {
       expect(matchesOntologyDataType(dataType, { $primaryKey: "123" })).toBe(
-        true
+        true,
       );
       expect(
         matchesOntologyDataType(dataType, {
           $primaryKey: "123",
           name: "test",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -348,7 +348,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should return true for objects with objectSet property", () => {
       expect(
-        matchesOntologyDataType(dataType, { objectSet: "definition" })
+        matchesOntologyDataType(dataType, { objectSet: "definition" }),
       ).toBe(true);
     });
 
@@ -396,13 +396,13 @@ describe("matchesOntologyDataType", () => {
         matchesOntologyDataType(dataType, [
           [1, 2],
           [3, 4],
-        ])
+        ]),
       ).toBe(true);
       expect(
         matchesOntologyDataType(dataType, [
           [1, 2],
           ["a", "b"],
-        ])
+        ]),
       ).toBe(false);
     });
 
@@ -425,8 +425,8 @@ describe("matchesOntologyDataType", () => {
       expect(
         matchesOntologyDataType(
           dataType,
-          "CIPHER::ri.channel.123::encrypted::CIPHER"
-        )
+          "CIPHER::ri.channel.123::encrypted::CIPHER",
+        ),
       ).toBe(true);
     });
 
@@ -434,29 +434,29 @@ describe("matchesOntologyDataType", () => {
       expect(
         matchesOntologyDataType(
           dataType,
-          "BELLASO::ri.channel.123::encrypted::BELLASO"
-        )
+          "BELLASO::ri.channel.123::encrypted::BELLASO",
+        ),
       ).toBe(true);
     });
 
     it("should return true for valid BELLASO format without suffix", () => {
       expect(
-        matchesOntologyDataType(dataType, "BELLASO::ri.channel.123::encrypted")
+        matchesOntologyDataType(dataType, "BELLASO::ri.channel.123::encrypted"),
       ).toBe(true);
     });
 
     it("should return false for invalid cipher format", () => {
       expect(matchesOntologyDataType(dataType, "CIPHER::channel::data")).toBe(
-        false
+        false,
       ); // missing ri. prefix
       expect(
-        matchesOntologyDataType(dataType, "CIPHER::ri.channel.123::")
+        matchesOntologyDataType(dataType, "CIPHER::ri.channel.123::"),
       ).toBe(false); // empty encrypted value
       expect(
         matchesOntologyDataType(
           dataType,
-          "INVALID::ri.channel.123::data::INVALID"
-        )
+          "INVALID::ri.channel.123::data::INVALID",
+        ),
       ).toBe(false);
     });
 
@@ -471,7 +471,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should throw an error", () => {
       expect(() => matchesOntologyDataType(dataType, "data")).toThrow(
-        "validateDataType: binary not implemented yet."
+        "validateDataType: binary not implemented yet.",
       );
     });
   });
@@ -485,7 +485,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should throw an error", () => {
       expect(() => matchesOntologyDataType(dataType, {})).toThrow(
-        "matchesOntologyDataType: map not implemented yet."
+        "matchesOntologyDataType: map not implemented yet.",
       );
     });
   });
@@ -498,7 +498,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should throw an error", () => {
       expect(() => matchesOntologyDataType(dataType, new Set())).toThrow(
-        "matchesOntologyDataType: set not implemented yet."
+        "matchesOntologyDataType: set not implemented yet.",
       );
     });
   });
@@ -511,7 +511,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should throw an error", () => {
       expect(() => matchesOntologyDataType(dataType, {})).toThrow(
-        "matchesOntologyDataType: struct not implemented yet."
+        "matchesOntologyDataType: struct not implemented yet.",
       );
     });
   });
@@ -525,7 +525,7 @@ describe("matchesOntologyDataType", () => {
 
     it("should throw an error", () => {
       expect(() => matchesOntologyDataType(dataType, "anything")).toThrow(
-        "matchesOntologyDataType: unsupported not implemented yet."
+        "matchesOntologyDataType: unsupported not implemented yet.",
       );
     });
   });
@@ -556,7 +556,7 @@ describe("isMediaReference", () => {
           type: "mediaSetViewItem",
           mediaSetViewItem: {},
         },
-      })
+      }),
     ).toBe(false);
   });
 
@@ -583,7 +583,7 @@ describe("isInterfaceActionParam", () => {
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
         primaryKeyValue: "emp-123",
-      })
+      }),
     ).toBe(true);
   });
 
@@ -592,7 +592,7 @@ describe("isInterfaceActionParam", () => {
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
         primaryKeyValue: 123,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -601,7 +601,7 @@ describe("isInterfaceActionParam", () => {
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
         primaryKeyValue: true,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -609,7 +609,7 @@ describe("isInterfaceActionParam", () => {
     expect(
       isInterfaceActionParam({
         primaryKeyValue: "123",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -617,7 +617,7 @@ describe("isInterfaceActionParam", () => {
     expect(
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
-      })
+      }),
     ).toBe(false);
   });
 
@@ -626,14 +626,14 @@ describe("isInterfaceActionParam", () => {
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
         primaryKeyValue: {},
-      })
+      }),
     ).toBe(false);
 
     expect(
       isInterfaceActionParam({
         objectTypeApiName: "Employee",
         primaryKeyValue: [],
-      })
+      }),
     ).toBe(false);
   });
 });

@@ -46,7 +46,7 @@ export function BaseCbacPickerDialog({
       }
       onOpenChange(open);
     },
-    [onCancel, onOpenChange]
+    [onCancel, onOpenChange],
   );
 
   return (

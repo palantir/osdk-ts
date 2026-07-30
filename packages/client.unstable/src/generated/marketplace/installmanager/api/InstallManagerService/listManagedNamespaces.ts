@@ -27,12 +27,12 @@ import type {
  */
 export async function listManagedNamespaces(
   ctx: ConjureContext,
-  request: _installmanager_api_ListManagedNamespacesRequest
+  request: _installmanager_api_ListManagedNamespacesRequest,
 ): Promise<_installmanager_api_ListManagedNamespacesResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/managed-namespaces`,
     "POST",
-    request
+    request,
   );
 }

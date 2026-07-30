@@ -24,7 +24,7 @@ import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";
 
 export const RadioButtonsField: <V>(
-  props: RadioButtonsFieldProps<V>
+  props: RadioButtonsFieldProps<V>,
 ) => React.ReactElement = typedReactMemo(function RadioButtonsFieldFn<V>({
   id,
   value,
@@ -38,7 +38,7 @@ export const RadioButtonsField: <V>(
       value != null
         ? options.find((opt) => opt.value === value)?.label
         : undefined,
-    [options, value]
+    [options, value],
   );
 
   const handleValueChange = useCallback(
@@ -46,7 +46,7 @@ export const RadioButtonsField: <V>(
       const match = options.find((opt) => opt.label === nextLabel);
       onChange?.(match?.value ?? null);
     },
-    [options, onChange]
+    [options, onChange],
   );
 
   return (

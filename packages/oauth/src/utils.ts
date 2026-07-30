@@ -39,14 +39,14 @@ export function processOptionsAndAssignDefaults(
   postLoginPage?: string,
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
-  ctxPath?: string
+  ctxPath?: string,
 ): ProcessedPublicOauthClientOptions {
   let options: PublicOauthClientOptions = {};
 
   if (typeof useHistory === "object") {
     invariant(
       !loginPage && !postLoginPage && !scopes && !fetchFn && !ctxPath,
-      "If useHistory is an object, other options should not be provided"
+      "If useHistory is an object, other options should not be provided",
     );
     options = useHistory;
   } else {

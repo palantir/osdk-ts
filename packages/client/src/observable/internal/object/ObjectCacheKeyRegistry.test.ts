@@ -51,7 +51,7 @@ function createMockRdp(...fields: string[]): Canonical<Rdp> {
 function createMockObjectCacheKey(
   apiName: string,
   pk: string,
-  rdpConfig?: Canonical<Rdp>
+  rdpConfig?: Canonical<Rdp>,
 ): ObjectCacheKey {
   return {
     type: "object" as const,
@@ -77,7 +77,7 @@ describe("ObjectCacheKeyRegistry", () => {
     const unrelatedKey = createMockObjectCacheKey(
       "Employee",
       "emp2",
-      undefined
+      undefined,
     );
 
     registry.register(key1, "Employee", "emp1", undefined);
@@ -127,7 +127,7 @@ describe("ObjectCacheKeyRegistry", () => {
     const key2 = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      createMockRdp("address")
+      createMockRdp("address"),
     );
 
     registry.register(key1, "Employee", "emp1", undefined);
@@ -149,12 +149,12 @@ describe("ObjectCacheKeyRegistry", () => {
     const keyWithoutRdp = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      undefined
+      undefined,
     );
     const keyWithRdp = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      createMockRdp("address")
+      createMockRdp("address"),
     );
 
     registry.register(keyWithoutRdp, "Employee", "emp1", undefined);
@@ -178,12 +178,12 @@ describe("ObjectCacheKeyRegistry", () => {
     const key2 = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      createMockRdp("address")
+      createMockRdp("address"),
     );
     const key3 = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      createMockRdp("phone")
+      createMockRdp("phone"),
     );
 
     expect(registry.getVariantCount("Employee", "emp1")).toBe(0);
@@ -241,7 +241,7 @@ describe("ObjectCacheKeyRegistry", () => {
     const key2 = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      createMockRdp("address")
+      createMockRdp("address"),
     );
 
     registry.register(key1, "Employee", "emp1", undefined);

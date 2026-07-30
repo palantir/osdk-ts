@@ -111,7 +111,7 @@ export function mapFinishReason(reason: string): FinishReason {
 
 export function convertMessage(
   m: ModelMessage,
-  warnings: Array<Warning>
+  warnings: Array<Warning>,
 ): Array<OpenAiMessage> {
   switch (m.role) {
     case "system":
@@ -185,7 +185,7 @@ export function convertMessage(
 
 function stringifyToolResult(
   part: ToolResultPart,
-  warnings: Array<Warning>
+  warnings: Array<Warning>,
 ): string {
   switch (part.output.type) {
     case "text":
@@ -213,7 +213,7 @@ function stringifyToolResult(
 
 export function convertTools<TOOLS extends ToolSet>(
   tools: TOOLS,
-  warnings: Array<Warning>
+  warnings: Array<Warning>,
 ): Array<OpenAiTool> {
   return Object.entries(tools).map(([name, tool]) => {
     const parameters = isJsonSchemaLike(tool.inputSchema)
@@ -235,7 +235,7 @@ export function convertTools<TOOLS extends ToolSet>(
 }
 
 export function convertToolChoice<TOOLS extends ToolSet>(
-  choice: ToolChoice<TOOLS> | undefined
+  choice: ToolChoice<TOOLS> | undefined,
 ): OpenAiToolChoice | undefined {
   if (choice == null) {
     return undefined;
@@ -261,7 +261,7 @@ function isJsonSchemaLike(value: unknown): boolean {
 
 export function parseToolArguments(
   args: string,
-  warnings: Array<Warning>
+  warnings: Array<Warning>,
 ): unknown {
   if (args === "") {
     return {};
@@ -317,15 +317,15 @@ export type OpenAiChatRequestStreaming = OpenAiChatRequestCommon & {
 
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: false
+  streaming: false,
 ): OpenAiChatRequestNonStreaming;
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: true
+  streaming: true,
 ): OpenAiChatRequestStreaming;
 export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
   args: BuildRequestBodyArgs<TOOLS>,
-  streaming: boolean
+  streaming: boolean,
 ): OpenAiChatRequestNonStreaming | OpenAiChatRequestStreaming {
   const common: OpenAiChatRequestCommon = {
     model: args.apiName,
@@ -349,7 +349,7 @@ export function buildOpenAiRequestBody<TOOLS extends ToolSet>(
 
 export function buildAssistantContent(
   text: string,
-  toolCalls: ReadonlyArray<ToolCall>
+  toolCalls: ReadonlyArray<ToolCall>,
 ): AssistantModelMessage["content"] {
   if (toolCalls.length === 0) {
     return text;
@@ -378,7 +378,7 @@ export function buildAssistantContent(
 }
 
 export function filterHeaders(
-  input: Record<string, string | undefined>
+  input: Record<string, string | undefined>,
 ): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(input)) {
@@ -410,7 +410,7 @@ export interface PostChatCompletionsArgs {
  * the raw response. Throws on a non-2xx response.
  */
 export async function postChatCompletions(
-  args: PostChatCompletionsArgs
+  args: PostChatCompletionsArgs,
 ): Promise<Response> {
   const handle = _getFoundryInternal(args.model);
   const baseUrl = getOpenAiBaseUrl(handle.client);
@@ -431,7 +431,7 @@ export async function postChatCompletions(
     const errBody = await safeReadText(res);
     throw new Error(
       `LMS chat/completions request failed: ${res.status} ${res.statusText}` +
-        (errBody ? `: ${errBody}` : "")
+        (errBody ? `: ${errBody}` : ""),
     );
   }
 

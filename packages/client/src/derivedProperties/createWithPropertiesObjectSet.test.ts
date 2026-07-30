@@ -29,7 +29,7 @@ describe(createWithPropertiesObjectSet, () => {
       {
         type: "methodInput",
       },
-      map
+      map,
     );
 
     const clause = {
@@ -65,7 +65,7 @@ describe(createWithPropertiesObjectSet, () => {
         type: "methodInput",
       },
       map,
-      true
+      true,
     );
 
     const clause = {
@@ -89,7 +89,7 @@ describe(createWithPropertiesObjectSet, () => {
       {
         type: "methodInput",
       },
-      map
+      map,
     );
 
     const clause: DerivedProperty.Clause<Employee> = {
@@ -156,7 +156,7 @@ describe(createWithPropertiesObjectSet, () => {
           type: "methodInput",
         },
         map,
-        true
+        true,
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
@@ -205,7 +205,7 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true
+        true,
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
@@ -250,7 +250,7 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true
+        true,
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
@@ -295,7 +295,7 @@ describe(createWithPropertiesObjectSet, () => {
         Employee,
         { type: "methodInput" },
         map,
-        true
+        true,
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
@@ -344,7 +344,7 @@ describe(createWithPropertiesObjectSet, () => {
         {
           type: "methodInput",
         },
-        map
+        map,
       );
 
       const clause: DerivedProperty.Clause<Employee> = {
@@ -403,7 +403,7 @@ describe(createWithPropertiesObjectSet, () => {
       {
         type: "methodInput",
       },
-      map
+      map,
     );
 
     const clause: DerivedProperty.Clause<Employee> = {

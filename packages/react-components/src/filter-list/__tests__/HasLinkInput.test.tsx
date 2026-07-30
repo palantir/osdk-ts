@@ -55,7 +55,7 @@ function renderHasLinkInput({
       onFilterStateChanged={onFilterStateChanged}
       whereClause={EMPTY_WHERE}
       excludeRowOpen={excludeRowOpen}
-    />
+    />,
   );
 }
 

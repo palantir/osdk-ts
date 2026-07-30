@@ -26,7 +26,7 @@ import type {
  */
 export async function loadObjects(
   ctx: ConjureContext,
-  request: _api_LoadObjectsRequest
+  request: _api_LoadObjectsRequest,
 ): Promise<_api_LoadObjectsResponse> {
   return conjureFetch(ctx, `/objects/load`, "POST", request);
 }

@@ -39,14 +39,14 @@ export interface LinksHelper {
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     options: ObserveLinks.Options<T, L>,
-    subFn: Observer<SpecificLinkPayload>
+    subFn: Observer<SpecificLinkPayload>,
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
-    options: ObserveLinks.Options<T, L>
+    options: ObserveLinks.Options<T, L>,
   ): SpecificLinkQuery;
 }
 
@@ -63,7 +63,7 @@ export class LinksHelper extends AbstractHelper<
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
-    selectCanonicalizer: SelectCanonicalizer
+    selectCanonicalizer: SelectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
@@ -79,10 +79,10 @@ export class LinksHelper extends AbstractHelper<
     const { apiName, type: sourceTypeKind } = options.srcType;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(
-      options.where ?? {}
+      options.where ?? {},
     );
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(
-      options.orderBy ?? {}
+      options.orderBy ?? {},
     );
     const canonSelect =
       options.select && options.select.length > 0
@@ -99,7 +99,7 @@ export class LinksHelper extends AbstractHelper<
       canonOrderBy,
       canonSelect,
       options.$includeAllBaseObjectProperties ? true : undefined,
-      options.resolveToObjectType ? true : undefined
+      options.resolveToObjectType ? true : undefined,
     );
 
     return this.store.queries.get(linkCacheKey, () => {
@@ -107,7 +107,7 @@ export class LinksHelper extends AbstractHelper<
         this.store,
         this.store.subjects.get(linkCacheKey),
         linkCacheKey,
-        options
+        options,
       );
     });
   }

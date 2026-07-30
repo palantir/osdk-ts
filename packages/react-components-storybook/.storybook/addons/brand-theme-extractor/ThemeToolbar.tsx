@@ -77,13 +77,13 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
   const themeState = useMemo(() => parseBrandThemeState(rawState), [rawState]);
   const selectedPreset = useMemo(
     () => findThemePreset(themeState.selectedPresetId),
-    [themeState.selectedPresetId]
+    [themeState.selectedPresetId],
   );
   const isCustom = themeState.selectedPresetId === "custom";
   const selectedLabel = selectedPreset?.label ?? "Custom";
   const selectedSwatches = useMemo(
     () => selectedPreset?.swatches ?? getCustomSwatches(themeState),
-    [selectedPreset?.swatches, themeState]
+    [selectedPreset?.swatches, themeState],
   );
   const { builtInPresets, customPresets } = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -91,7 +91,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       normalizedQuery === ""
         ? THEME_PRESETS
         : THEME_PRESETS.filter((preset) =>
-            preset.label.toLowerCase().includes(normalizedQuery)
+            preset.label.toLowerCase().includes(normalizedQuery),
           );
 
     const builtIn: ThemePreset[] = [];
@@ -139,7 +139,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       return () =>
         document.removeEventListener("pointerdown", handlePointerDown);
     },
-    [open]
+    [open],
   );
 
   const updateDropdownPosition = useCallback(() => {
@@ -154,7 +154,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       blockStart: triggerRect.bottom + DROPDOWN_OFFSET,
       inlineStart: Math.max(
         DROPDOWN_MARGIN,
-        Math.min(triggerRect.left, maxInlineStart)
+        Math.min(triggerRect.left, maxInlineStart),
       ),
     });
   }, []);
@@ -175,7 +175,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
         window.removeEventListener("scroll", updateDropdownPosition, true);
       };
     },
-    [open, updateDropdownPosition]
+    [open, updateDropdownPosition],
   );
 
   const toggleDropdown = useCallback(() => {
@@ -192,7 +192,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
       setOpen(false);
       setSearchQuery("");
     },
-    [updateGlobals]
+    [updateGlobals],
   );
 
   const openCustomPanel = useCallback(() => {
@@ -291,7 +291,7 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
               </>
             )}
           </Dropdown>,
-          document.body
+          document.body,
         )}
     </ToolbarRoot>
   );
@@ -431,7 +431,7 @@ const Dropdown = styled.div<{ dropdownPosition: DropdownPosition }>(
     paddingInline: 8,
     position: "fixed",
     zIndex: 10000,
-  })
+  }),
 );
 
 const SearchRow = styled.div(({ theme }) => ({
@@ -537,7 +537,7 @@ const CustomHint = styled.span(({ theme }) => ({
 function resolveAssignmentColor(
   themeState: BrandThemeGlobals,
   role: string,
-  fallback: string
+  fallback: string,
 ): string {
   const assignment = themeState.assignments.find((item) => item.role === role);
   if (!assignment) {
@@ -547,7 +547,7 @@ function resolveAssignmentColor(
 }
 
 function getCustomSwatches(
-  themeState: BrandThemeGlobals
+  themeState: BrandThemeGlobals,
 ): [string, string, string] {
   const [backgroundFallback, primaryFallback, textFallback] = DEFAULT_SWATCHES;
   return [

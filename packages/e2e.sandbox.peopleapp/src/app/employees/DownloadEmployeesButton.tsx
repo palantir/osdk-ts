@@ -58,9 +58,9 @@ function snapshotToCsv<
     ...rows.map((row) =>
       columns
         .map((column) =>
-          escapeCsvCell(formatCellValue(row.getValue(column.id)))
+          escapeCsvCell(formatCellValue(row.getValue(column.id))),
         )
-        .join(",")
+        .join(","),
     ),
   ].join("\n");
 }

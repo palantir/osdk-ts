@@ -103,14 +103,14 @@ export function isPropertyTypeType(v: PropertyTypeType): v is PropertyTypeType {
   );
 }
 export function isExotic(
-  type: PropertyTypeType | undefined
+  type: PropertyTypeType | undefined,
 ): type is PropertyTypeTypeExotic {
   if (type === undefined) {
     return false;
   }
   if (typeof type === "string") {
     return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
-      type
+      type,
     );
   } else if (typeof type === "object" && type != null) {
     return (
@@ -123,7 +123,7 @@ export function isExotic(
   return false;
 }
 export function isStruct(
-  type: PropertyTypeType
+  type: PropertyTypeType,
 ): type is PropertyTypeTypeStruct {
   return typeof type === "object" && type.type === "struct";
 }

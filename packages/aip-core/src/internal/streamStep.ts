@@ -120,7 +120,7 @@ interface ToolCallAccumulator {
 }
 
 export async function streamStep<TOOLS extends ToolSet>(
-  input: StreamStepInput<TOOLS>
+  input: StreamStepInput<TOOLS>,
 ): Promise<StreamStepResult> {
   const apiName = getModelApiName(_getFoundryInternal(input.model).identifier);
   const body = buildOpenAiRequestBody<TOOLS>({ apiName, ...input }, true);
@@ -156,7 +156,7 @@ const TEXT_PART_ID = "text-0";
 const REASONING_PART_ID = "reasoning-0";
 
 async function parseSseStream(
-  args: ParseSseStreamArgs
+  args: ParseSseStreamArgs,
 ): Promise<StreamStepResult> {
   const reader = args.body.pipeThrough(new TextDecoderStream()).getReader();
 
@@ -298,7 +298,7 @@ async function parseSseStream(
       toolCallId: acc.id !== "" ? acc.id : `tool_call_${index}`,
       toolName: acc.name,
       input: parseToolArguments(acc.args, args.warnings),
-    })
+    }),
   );
   for (const tc of toolCalls) {
     await args.onChunk({

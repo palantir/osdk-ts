@@ -81,7 +81,7 @@ export const MarkingButton: React.MemoExoticComponent<
     <Button
       className={classnames(
         styles.markingButton,
-        selectionStateClassMap[selectionState]
+        selectionStateClassMap[selectionState],
       )}
       onClick={isButtonDisabled ? undefined : handleToggle}
       disabled={showTooltip ? undefined : isButtonDisabled}

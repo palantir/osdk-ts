@@ -33,7 +33,7 @@ import type {
 export async function exportMultipleBlockSets(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_ExportMultipleBlockSetsRequest
+  request: _api_ExportMultipleBlockSetsRequest,
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -42,6 +42,6 @@ export async function exportMultipleBlockSets(
     request,
     undefined,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

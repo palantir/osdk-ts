@@ -58,7 +58,7 @@ function FilterPopoverInner({
       e.stopPropagation();
       onRemove?.();
     },
-    [onRemove]
+    [onRemove],
   );
 
   return (
@@ -67,7 +67,7 @@ function FilterPopoverInner({
         className={classnames(
           styles.fieldGroup,
           labelPlacement === "top" && styles.fieldGroupTop,
-          className
+          className,
         )}
       >
         <span className={styles.label}>{label}</span>
@@ -78,7 +78,7 @@ function FilterPopoverInner({
           <span
             className={classnames(
               styles.summary,
-              !summaryHasValue && styles.placeholder
+              !summaryHasValue && styles.placeholder,
             )}
           >
             {summaryHasValue ? summary : placeholder}

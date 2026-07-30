@@ -32,12 +32,12 @@ import type {
 export async function moveBlockSetInstallationsBetweenStores(
   ctx: ConjureContext,
   moveBlockSetInstallationsRequest: _api_MoveBlockSetInstallationsRequest,
-  onBehalfOf: string | null | undefined
+  onBehalfOf: string | null | undefined,
 ): Promise<_api_MoveBlockSetInstallationsResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/move`,
     "POST",
-    moveBlockSetInstallationsRequest
+    moveBlockSetInstallationsRequest,
   );
 }

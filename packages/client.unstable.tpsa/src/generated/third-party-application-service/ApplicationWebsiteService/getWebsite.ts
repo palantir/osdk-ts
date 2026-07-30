@@ -29,7 +29,7 @@ import type { ApplicationWebsite } from "../ApplicationWebsite.js";
  */
 export async function getWebsite(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<ApplicationWebsite> {
   return conjureFetch(ctx, `/application-websites/v2/${applicationRid}`, "GET");
 }

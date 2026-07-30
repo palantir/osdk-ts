@@ -33,11 +33,11 @@ import type {
  */
 export async function getBlockSetVersionSpecs(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_GetBlockSetVersionSpecsResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/version/${blockSetVersionId}/specs`,
-    "GET"
+    "GET",
   );
 }

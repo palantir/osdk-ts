@@ -135,7 +135,7 @@ function createMockExcelMedia(): Media {
             "Content-Type":
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           },
-        })
+        }),
       ),
     fetchMetadata: () =>
       Promise.resolve({
@@ -233,7 +233,7 @@ export const WithRealFile: StoryObj<ExcelViewerMediaProps> = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_XLSX_URL,
-      "notional-excel-example.xlsx"
+      "notional-excel-example.xlsx",
     ),
   },
   render: (args: ExcelViewerMediaProps) => (

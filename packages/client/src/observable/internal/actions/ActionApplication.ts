@@ -29,11 +29,11 @@ export class ActionApplication {
     args:
       | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
-    opts?: Store.ApplyActionOptions
+    opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {}
+    { optimisticUpdate } = {},
   ) => {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -41,7 +41,7 @@ export class ActionApplication {
         : this.store.logger;
     const removeOptimisticResult = runOptimisticJob(
       this.store,
-      optimisticUpdate
+      optimisticUpdate,
     );
 
     let actionResults: ActionEditResponse;
@@ -81,7 +81,7 @@ export class ActionApplication {
       void this.#invalidatePerTypeEdits(actionResults).catch((e: unknown) => {
         logger?.warn(
           { err: e },
-          "Error while invalidating action edits by object type"
+          "Error while invalidating action edits by object type",
         );
       });
     } finally {
@@ -96,7 +96,7 @@ export class ActionApplication {
   };
 
   #invalidatePerObjectEdits = async (
-    actionEditResponse: ActionEditResponse | undefined
+    actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
     if (actionEditResponse == null || actionEditResponse.type !== "edits") {
       return;
@@ -108,7 +108,7 @@ export class ActionApplication {
     for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
       for (const obj of list ?? []) {
         promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey)
+          this.store.invalidateObject(obj.objectType, obj.primaryKey),
         );
       }
     }
@@ -118,11 +118,11 @@ export class ActionApplication {
       for (const { objectType, primaryKey } of deletedObjects ?? []) {
         for (const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
           objectType,
-          primaryKey
+          primaryKey,
         )) {
           this.store.queries.peek(cacheKey)?.deleteFromStore(
             "loaded", // this is probably not the best value to use
-            batch
+            batch,
           );
         }
       }
@@ -131,7 +131,7 @@ export class ActionApplication {
   };
 
   #invalidatePerTypeEdits = async (
-    actionEditResponse: ActionEditResponse | undefined
+    actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
     if (actionEditResponse == null) {
       return;

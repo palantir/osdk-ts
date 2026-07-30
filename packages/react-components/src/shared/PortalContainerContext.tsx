@@ -19,7 +19,7 @@ import React, { createContext, useContext } from "react";
 import type { PortalContainer } from "./PortalDismissLayer.js";
 
 const PortalContainerContext = createContext<PortalContainer | undefined>(
-  undefined
+  undefined,
 );
 
 interface PortalContainerProviderProps {

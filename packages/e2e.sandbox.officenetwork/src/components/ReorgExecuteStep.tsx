@@ -108,7 +108,7 @@ export function ReorgExecuteStep({
           change.targetOfficeId &&
           change.targetOfficeId !== employee.primaryOfficeId
         );
-      }
+      },
     );
 
     if (changesToExecute.length === 0) {
@@ -152,7 +152,7 @@ export function ReorgExecuteStep({
         addLog(
           `Moving ${employee.fullName}: ${fromOffice?.name ?? "none"} → ${
             toOffice?.name ?? "none"
-          }`
+          }`,
         );
 
         await withTimeout(
@@ -166,7 +166,7 @@ export function ReorgExecuteStep({
             department: change.targetDepartment,
             leadEmployeeNumber: change.targetLeadEmployeeNumber,
           }),
-          ACTION_TIMEOUT_MS
+          ACTION_TIMEOUT_MS,
         );
 
         dispatch({ type: "UPDATE_PROGRESS", completed: i + 1 });
@@ -228,7 +228,7 @@ export function ReorgExecuteStep({
             department: snapshot.originalValues.department,
             leadEmployeeNumber: snapshot.originalValues.leadEmployeeNumber,
           }),
-          ACTION_TIMEOUT_MS
+          ACTION_TIMEOUT_MS,
         );
 
         addLog(`✓ ${employee.fullName} rolled back`);
@@ -244,7 +244,7 @@ export function ReorgExecuteStep({
   const handleRollback = React.useCallback(() => {
     if (
       window.confirm(
-        `This will revert ${execution.snapshots.length} changes. This cannot be undone. Continue?`
+        `This will revert ${execution.snapshots.length} changes. This cannot be undone. Continue?`,
       )
     ) {
       void executeRollback();

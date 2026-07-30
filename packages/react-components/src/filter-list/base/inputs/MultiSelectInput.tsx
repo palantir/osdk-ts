@@ -77,26 +77,26 @@ function MultiSelectInputInner({
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
     },
-    [onChange]
+    [onChange],
   );
 
   const stableValues = useStableData(values, isLoading);
 
   const items = useMemo(
     () => stableValues.map(({ value }) => value),
-    [stableValues]
+    [stableValues],
   );
 
   const countByValue = useMemo(
     () => new Map(stableValues.map(({ value, count }) => [value, count])),
-    [stableValues]
+    [stableValues],
   );
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
   const comboboxFilter = useMemo(
     () => (renderValue ? createRenderValueFilter(renderValue) : undefined),
-    [renderValue]
+    [renderValue],
   );
 
   const renderItem = useCallback(
@@ -120,7 +120,7 @@ function MultiSelectInputInner({
         </Combobox.Item>
       );
     },
-    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue]
+    [countByValue, selectedSet, showCounts, showFilteredOutValues, renderValue],
   );
 
   const renderChips = useCallback(
@@ -140,7 +140,7 @@ function MultiSelectInputInner({
         />
       </>
     ),
-    [placeholder, ariaLabel, renderValue]
+    [placeholder, ariaLabel, renderValue],
   );
 
   const isNoData = !error && stableValues.length === 0;
@@ -195,5 +195,5 @@ function MultiSelectInputInner({
 }
 
 export const MultiSelectInput = memo(
-  MultiSelectInputInner
+  MultiSelectInputInner,
 ) as typeof MultiSelectInputInner;

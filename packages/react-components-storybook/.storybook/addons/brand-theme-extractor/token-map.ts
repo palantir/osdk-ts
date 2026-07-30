@@ -520,7 +520,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
 ];
 
 const TOKEN_ROLE_MAP = new Map<string, TokenRoleDefinition>(
-  TOKEN_ROLES.map((t) => [t.role, t])
+  TOKEN_ROLES.map((t) => [t.role, t]),
 );
 
 /** Lookup a token role definition by role name (O(1) via Map) */

@@ -35,7 +35,7 @@ export default async function versionInfoCommand({
   const response = await widgetRegistry.getRelease(
     clientCtx,
     widgetSet,
-    version
+    version,
   );
   consola.success(`Loaded version info for ${version}`);
   consola.log(JSON.stringify(response, null, 2));

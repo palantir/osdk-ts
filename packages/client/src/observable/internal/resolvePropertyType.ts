@@ -64,7 +64,7 @@ export interface PropertyTypeSource {
 export function resolvePropertyType(
   holder: PropertyTypeSource | undefined,
   key: string,
-  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {}
+  derivedPropertyMetadata: DerivedPropertyRuntimeMetadata = {},
 ): string | undefined {
   const objectType = holder?.[ObjectDefRef]?.properties?.[key]?.type;
   if (typeof objectType === "string") {
@@ -72,7 +72,7 @@ export function resolvePropertyType(
   }
   const interfaceType = resolveInterfacePropertyType(
     holder?.[InterfaceDefRef],
-    key
+    key,
   );
   if (typeof interfaceType === "string") {
     return interfaceType;
@@ -92,7 +92,7 @@ export function resolvePropertyType(
  */
 function resolveInterfacePropertyType(
   interfaceDef: InterfaceMetadata | undefined,
-  key: string
+  key: string,
 ): string | undefined {
   if (interfaceDef == null) {
     return undefined;

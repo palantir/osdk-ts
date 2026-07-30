@@ -41,7 +41,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
       objectSet = createObjectSet(
         objectTypeDef,
         this.store.client[additionalContext],
-        this.parsedWireObjectSet
+        this.parsedWireObjectSet,
       );
     } else {
       objectSet = this.store.client(objectTypeDef);
@@ -49,7 +49,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
 
     if (this.rdpConfig) {
       objectSet = objectSet.withProperties(
-        this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+        this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
       );
     }
 
@@ -61,7 +61,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
 
         if (this.rdpConfig) {
           intersectSet = intersectSet.withProperties(
-            this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+            this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
           );
         }
 
@@ -72,7 +72,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     }
 
     return await objectSet.aggregate(
-      this.canonicalAggregate as Parameters<typeof objectSet.aggregate>[0]
+      this.canonicalAggregate as Parameters<typeof objectSet.aggregate>[0],
     );
   }
 }

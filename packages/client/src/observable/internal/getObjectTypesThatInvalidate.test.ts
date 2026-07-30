@@ -43,7 +43,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const testSetup = startNodeApiServer(
       new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
       createClient,
-      { logger }
+      { logger },
     );
     ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -55,7 +55,7 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   async function helper<T extends ObjectOrInterfaceDefinition>(
-    osdkObjectSet: ObjectSet<T>
+    osdkObjectSet: ObjectSet<T>,
   ) {
     const wireObjectSet = objectSetDefinitions.get(osdkObjectSet);
     invariant(wireObjectSet);
@@ -63,7 +63,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, invalidationSet, counts } =
       await getObjectTypesThatInvalidate(
         client[additionalContext],
-        wireObjectSet
+        wireObjectSet,
       );
 
     return {
@@ -212,7 +212,7 @@ describe(getObjectTypesThatInvalidate, () => {
 
     const { resultType, invalidationSet } = await getObjectTypesThatInvalidate(
       client[additionalContext],
-      wireObjectSet as any
+      wireObjectSet as any,
     );
     expect(resultType.apiName).toEqual("Employee");
     expect([...invalidationSet]).toEqual([]);
@@ -339,8 +339,8 @@ describe(getObjectTypesThatInvalidate, () => {
       await expect(
         getObjectTypesThatInvalidate(
           client[additionalContext],
-          wireObjectSet as any
-        )
+          wireObjectSet as any,
+        ),
       ).rejects.toThrow(/Unsupported|Unhandled ObjectSet type/u);
     }
   });

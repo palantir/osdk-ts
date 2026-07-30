@@ -30,11 +30,11 @@ export async function getSdk(
   ctx: ConjureContext,
   repositoryRid: ArtifactsRepositoryRid,
   packageName: PackageName,
-  sdkVersion: SdkVersion
+  sdkVersion: SdkVersion,
 ): Promise<Sdk> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/${sdkVersion}`,
-    "GET"
+    "GET",
   );
 }

@@ -42,7 +42,7 @@ const errorInstanceId = "errorInstanceId";
 const objectTypeRid = "ri.foundry.main.objectType.1";
 
 export function ObjectTypeDoesNotExistError(
-  objectType: string
+  objectType: string,
 ): ObjectTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -59,7 +59,7 @@ export function ObjectTypeDoesNotExistError(
 
 export function LinkTypeNotFound(
   objectType: string,
-  linkType: string
+  linkType: string,
 ): OGLinkTypeNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -91,7 +91,7 @@ export function OntologyNotFoundError(ontology: string): OntologyNotFound {
 
 export function ObjectNotFoundError(
   objectType: string,
-  primaryKey: string
+  primaryKey: string,
 ): ObjectNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -107,7 +107,7 @@ export function ObjectNotFoundError(
 }
 
 export function ObjectSetNotFoundError(
-  objectSetRid: string
+  objectSetRid: string,
 ): ObjectSetNotFound {
   return {
     errorCode: "NOT_FOUND",
@@ -260,7 +260,7 @@ export const GetUserActiveStatusError = (userId: string): UserIsActive => ({
 });
 
 export const GetInvalidPageTokenError = (
-  pageToken: string
+  pageToken: string,
 ): InvalidPageToken => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidPageToken",

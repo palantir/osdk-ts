@@ -25,7 +25,7 @@ export async function dryRunModifyOntology(
   ctx: ConjureContext,
   onBehalfOf: string | null | undefined,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_OntologyModificationDryRunRequest
+  request: _api_modification_OntologyModificationDryRunRequest,
 ): Promise<_api_modification_OntologyModificationDryRunResponse> {
   return conjureFetch(ctx, `/ontology/v2/modify/dry-run`, "POST", request, {
     ontologyRid,

@@ -121,7 +121,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns variations for a nested example", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.4.0",
-        "derivedPropertyNumericExpression"
+        "derivedPropertyNumericExpression",
       );
       expect(variations).toBeDefined();
       expect(Object.keys(variations!)).toContain("#isUnary");
@@ -130,7 +130,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(variations!["#isUnary"].code).toBeTruthy();
       expect(variations!["^isUnary"].code).toBeTruthy();
       expect(variations!["#isUnary"].code).not.toEqual(
-        variations!["^isUnary"].code
+        variations!["^isUnary"].code,
       );
       // Check for structure rather than specific method names
       expect(variations!["#isUnary"].code).toMatch(/selectProperty|aggregate/u);
@@ -140,7 +140,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns undefined for simple examples without variations", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.0.0",
-        "loadSingleObjectGuide"
+        "loadSingleObjectGuide",
       );
       expect(variations).toBeUndefined();
     });
@@ -149,7 +149,7 @@ describe("NestedOsdkExamplesContext", () => {
       // Check that variations from 2.0.0 are accessible in 2.4.0
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.4.0",
-        "applyAction"
+        "applyAction",
       );
       expect(variations).toBeDefined();
       if (variations) {
@@ -160,7 +160,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns undefined for non-existent examples", () => {
       const variations = NestedOsdkExamplesContext.getVariations(
         "2.0.0",
-        "nonExistentExample"
+        "nonExistentExample",
       );
       expect(variations).toBeUndefined();
     });
@@ -170,7 +170,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns true for examples with variations", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.4.0",
-        "derivedPropertyNumericExpression"
+        "derivedPropertyNumericExpression",
       );
       expect(hasVariations).toBe(true);
     });
@@ -178,7 +178,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns false for simple examples", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.0.0",
-        "loadSingleObjectGuide"
+        "loadSingleObjectGuide",
       );
       expect(hasVariations).toBe(false);
     });
@@ -186,7 +186,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("returns false for non-existent examples", () => {
       const hasVariations = NestedOsdkExamplesContext.hasVariations(
         "2.0.0",
-        "nonExistentExample"
+        "nonExistentExample",
       );
       expect(hasVariations).toBe(false);
     });
@@ -199,7 +199,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(examples.length).toBeGreaterThan(0);
 
       const aggregationExample = examples.find(
-        (e) => e.name === "aggregationTemplate"
+        (e) => e.name === "aggregationTemplate",
       );
       expect(aggregationExample).toBeDefined();
       expect(aggregationExample?.availableInVersions).toContain("2.0.0");
@@ -214,14 +214,14 @@ describe("NestedOsdkExamplesContext", () => {
 
       // Find an example that should exist only in newer versions
       const newerExample = examples.find(
-        (e) => e.name === "derivedPropertyNumericExpression"
+        (e) => e.name === "derivedPropertyNumericExpression",
       );
       expect(newerExample).toBeDefined();
       expect(newerExample?.availableInVersions).toContain("2.4.0");
 
       // Check that some examples show version info
       const exampleWithVersions = examples.find(
-        (e) => e.availableInVersions.length > 0
+        (e) => e.availableInVersions.length > 0,
       );
       expect(exampleWithVersions).toBeDefined();
     });
@@ -246,7 +246,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("searches within compatible versions when version specified", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "aggregation",
-        "2.4.0"
+        "2.4.0",
       );
       expect(results.length).toBeGreaterThan(0);
 
@@ -259,7 +259,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("finds nested variations", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "isUnary",
-        "2.4.0"
+        "2.4.0",
       );
       expect(results.length).toBeGreaterThan(0);
 
@@ -271,7 +271,7 @@ describe("NestedOsdkExamplesContext", () => {
     it("includes source version information", () => {
       const results = NestedOsdkExamplesContext.searchExamples(
         "loadSingleObjectGuide",
-        "2.4.0"
+        "2.4.0",
       );
       expect(results.length).toBe(1);
       expect(results[0].version).toBe("2.4.0"); // target version
@@ -307,7 +307,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(version200.examples).toBeDefined();
       expect(version200.examples["loadSingleObjectGuide"]).toBeDefined();
       expect(version200.examples["loadSingleObjectGuide"].code).toContain(
-        "fetchOne"
+        "fetchOne",
       );
     });
 
@@ -316,10 +316,10 @@ describe("NestedOsdkExamplesContext", () => {
       const version240 = flattened.versions["2.4.0"];
 
       expect(
-        version240.examples["derivedPropertyNumericExpression_#isUnary"]
+        version240.examples["derivedPropertyNumericExpression_#isUnary"],
       ).toBeDefined();
       expect(
-        version240.examples["derivedPropertyNumericExpression_^isUnary"]
+        version240.examples["derivedPropertyNumericExpression_^isUnary"],
       ).toBeDefined();
     });
 
@@ -380,7 +380,7 @@ describe("NestedOsdkExamplesContext", () => {
             // If it's not a direct example, check if it has variations
             const variations = NestedOsdkExamplesContext.getVariations(
               version,
-              exampleName
+              exampleName,
             );
             expect(variations).toBeDefined();
 

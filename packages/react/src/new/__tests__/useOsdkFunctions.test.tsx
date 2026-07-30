@@ -73,7 +73,7 @@ type Observer = {
 };
 
 function createMockObservableClient(
-  overrides?: Partial<ObservableClient>
+  overrides?: Partial<ObservableClient>,
 ): ObservableClient {
   return {
     observeFunction: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
@@ -108,11 +108,11 @@ function captureObservers(mockObservableClient: ObservableClient): Observer[] {
           _def: unknown,
           _params: unknown,
           _opts: unknown,
-          observer: Observer
+          observer: Observer,
         ) => {
           observers.push(observer);
           return { unsubscribe: vi.fn() };
-        }
+        },
       );
   return observers;
 }
@@ -206,7 +206,7 @@ describe("useOsdkFunctions", () => {
       MOCK_QUERY_DEF_1,
       { departmentId: "engineering" },
       { dedupeInterval: 2_000 },
-      expect.objectContaining({ next: expect.any(Function) })
+      expect.objectContaining({ next: expect.any(Function) }),
     );
   });
 
@@ -282,13 +282,13 @@ describe("useOsdkFunctions", () => {
       MOCK_QUERY_DEF_1,
       { departmentId: "engineering" },
       { dedupeInterval: 2_000 },
-      expect.objectContaining({ next: expect.any(Function) })
+      expect.objectContaining({ next: expect.any(Function) }),
     );
     expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
       MOCK_QUERY_DEF_2,
       { startDate: "2024-01-01" },
       { dedupeInterval: 2_000 },
-      expect.objectContaining({ next: expect.any(Function) })
+      expect.objectContaining({ next: expect.any(Function) }),
     );
   });
 
@@ -343,7 +343,7 @@ describe("useOsdkFunctions", () => {
       MOCK_QUERY_DEF_2,
       undefined,
       { dedupeInterval: 2_000 },
-      expect.objectContaining({ next: expect.any(Function) })
+      expect.objectContaining({ next: expect.any(Function) }),
     );
   });
 
@@ -577,7 +577,7 @@ describe("useOsdkFunctions", () => {
         dependsOn: [TestObjectType],
         dependsOnObjects: [testObject],
       },
-      expect.objectContaining({ next: expect.any(Function) })
+      expect.objectContaining({ next: expect.any(Function) }),
     );
   });
 
@@ -611,7 +611,7 @@ describe("useOsdkFunctions", () => {
         // Sanity: both serialize to {} via the default JSON.stringify path —
         // this is what makes the buggy memo key collide.
         expect(JSON.stringify({ someInput: osA })).toBe(
-          JSON.stringify({ someInput: osB })
+          JSON.stringify({ someInput: osB }),
         );
 
         const { rerender } = renderHook(
@@ -633,7 +633,7 @@ describe("useOsdkFunctions", () => {
           {
             wrapper: createWrapper(mockObservableClient),
             initialProps: { os: osA },
-          }
+          },
         );
 
         expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(1);
@@ -641,7 +641,7 @@ describe("useOsdkFunctions", () => {
         rerender({ os: osB });
 
         expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(2);
-      }
+      },
     );
   });
 
@@ -667,7 +667,7 @@ describe("useOsdkFunctions", () => {
         MOCK_QUERY_DEF_1,
         undefined,
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
       expect(observers).toHaveLength(1);
     });
@@ -704,7 +704,7 @@ describe("useOsdkFunctions", () => {
         MOCK_QUERY_DEF_2,
         undefined,
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
 
       // Complete the second query — should trigger subscription to third
@@ -722,7 +722,7 @@ describe("useOsdkFunctions", () => {
         MOCK_QUERY_DEF_3,
         undefined,
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
 
       // Complete the third query
@@ -845,7 +845,7 @@ describe("useOsdkFunctions", () => {
         MOCK_QUERY_DEF_2,
         undefined,
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
 
       // Complete second — third should start
@@ -862,7 +862,7 @@ describe("useOsdkFunctions", () => {
         MOCK_QUERY_DEF_3,
         undefined,
         expect.anything(),
-        expect.anything()
+        expect.anything(),
       );
     });
   });

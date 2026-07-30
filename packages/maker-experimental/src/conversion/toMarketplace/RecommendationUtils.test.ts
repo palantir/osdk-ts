@@ -30,13 +30,13 @@ import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { getExternalRecommendations } from "./RecommendationUtils.js";
 
 function callGetExternalRecommendations(
-  result: Awaited<ReturnType<typeof defineOntologyV2>>
+  result: Awaited<ReturnType<typeof defineOntologyV2>>,
 ) {
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
     result.ontologyIr.valueTypes,
     result.ontologyIr.importedValueTypes,
-    result.shapes.inputShapes
+    result.shapes.inputShapes,
   );
 }
 
@@ -83,7 +83,7 @@ describe("RecommendationUtils", () => {
     const allMappings = recs.flatMap((r) => r.mappings);
 
     const sptReadableId = ReadableIdGenerator.getForSpt(
-      "com.external.pkg.externalId"
+      "com.external.pkg.externalId",
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: sptReadableId,
@@ -124,7 +124,7 @@ describe("RecommendationUtils", () => {
     // Property external recs
     const propReadableId = ReadableIdGenerator.getForObjectProperty(
       "ImportedObj",
-      "id"
+      "id",
     );
     expect(allMappings).toContainEqual({
       targetInputReadableId: propReadableId,

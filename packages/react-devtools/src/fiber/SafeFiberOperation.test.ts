@@ -41,7 +41,7 @@ describe("safeFiberOperation", () => {
         () => {
           throw new Error("fiber access failed");
         },
-        { fallback: "default", feature: "hook-discovery" }
+        { fallback: "default", feature: "hook-discovery" },
       );
       expect(result).toBe("default");
     });
@@ -54,13 +54,13 @@ describe("safeFiberOperation", () => {
         () => {
           throw new Error("test error");
         },
-        { fallback: null, feature: "hook-discovery" }
+        { fallback: null, feature: "hook-discovery" },
       );
 
       expect(recordErrorSpy).toHaveBeenCalledTimes(1);
       expect(recordErrorSpy).toHaveBeenCalledWith(
         "hook-discovery",
-        expect.objectContaining({ message: "test error" })
+        expect.objectContaining({ message: "test error" }),
       );
 
       recordErrorSpy.mockRestore();

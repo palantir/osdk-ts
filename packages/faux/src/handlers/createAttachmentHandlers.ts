@@ -24,7 +24,7 @@ import { requireSearchParams } from "./util/requireSearchParams.js";
 
 export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   /**
    * Upload attachment
@@ -47,7 +47,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.Attachments.get(baseUrl, async ({ params }) => {
     return fauxFoundry.attachments.getAttachmentMetadataByRid(
-      params.attachmentRid
+      params.attachmentRid,
     );
   }),
 
@@ -66,7 +66,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
           .getAttachmentMetadata(objectType, primaryKey, propertyName),
         type: "single" as const,
       };
-    }
+    },
   ),
 
   /**
@@ -75,7 +75,7 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.Attachments.read(baseUrl, async ({ params }) => {
     return new Response(
-      fauxFoundry.attachments.getAttachmentBuffer(params.attachmentRid)
+      fauxFoundry.attachments.getAttachmentBuffer(params.attachmentRid),
     );
   }),
 
@@ -91,8 +91,8 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
       return new Response(
         fauxFoundry
           .getDataStore(ontologyApiName)
-          .getAttachmentBuffer(objectType, primaryKey, propertyName)
+          .getAttachmentBuffer(objectType, primaryKey, propertyName),
       );
-    }
+    },
   ),
 ];

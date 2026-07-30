@@ -35,7 +35,7 @@ describe("autoVersion", () => {
     const validPackageJsonVersion = "1.2.3";
     vi.mocked(findUp).mockResolvedValue("/path/package.json");
     vi.mocked(fsPromises.readFile).mockResolvedValue(
-      JSON.stringify({ version: validPackageJsonVersion })
+      JSON.stringify({ version: validPackageJsonVersion }),
     );
     const version = await autoVersion({
       type: "package-json",
@@ -92,7 +92,7 @@ describe("autoVersion", () => {
     await expect(
       autoVersion({
         type: "git-describe",
-      })
+      }),
     ).rejects.toThrowError();
   });
 
@@ -104,7 +104,7 @@ describe("autoVersion", () => {
     await expect(
       autoVersion({
         type: "git-describe",
-      })
+      }),
     ).rejects.toThrowError("git is not installed");
   });
 
@@ -116,7 +116,7 @@ describe("autoVersion", () => {
     await expect(
       autoVersion({
         type: "git-describe",
-      })
+      }),
     ).rejects.toThrowError("the current directory is not a git repository");
   });
 
@@ -128,7 +128,7 @@ describe("autoVersion", () => {
     await expect(
       autoVersion({
         type: "git-describe",
-      })
+      }),
     ).rejects.toThrowError("no matching tags were found.");
   });
 });

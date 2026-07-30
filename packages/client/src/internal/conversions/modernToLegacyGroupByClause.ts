@@ -23,12 +23,12 @@ import type {
 
 /** @internal */
 export function modernToLegacyGroupByClause(
-  groupByClause: GroupByClause<any> | undefined
+  groupByClause: GroupByClause<any> | undefined,
 ) {
   if (!groupByClause) return [];
 
   return Object.entries(
-    groupByClause as Record<string, AllGroupByValues>
+    groupByClause as Record<string, AllGroupByValues>,
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
     if (type === "exact") {
       return [{ type, field }];
@@ -83,7 +83,7 @@ export function modernToLegacyGroupByClause(
 }
 
 function convertRange(
-  range: GroupByRange<number | string>
+  range: GroupByRange<number | string>,
 ): AggregationRangeV2 {
   return { startValue: range[0], endValue: range[1] };
 }

@@ -57,7 +57,7 @@ export class ListsHelper extends AbstractHelper<
     intersectCanonicalizer: IntersectCanonicalizer,
     pivotCanonicalizer: PivotCanonicalizer,
     ridListCanonicalizer: RidListCanonicalizer,
-    selectCanonicalizer: SelectCanonicalizer
+    selectCanonicalizer: SelectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
@@ -72,7 +72,7 @@ export class ListsHelper extends AbstractHelper<
 
   observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveListOptions<T, {}>,
-    subFn: Observer<ListPayload>
+    subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
     const ret = super.observe(options, subFn);
 
@@ -83,7 +83,7 @@ export class ListsHelper extends AbstractHelper<
           console.warn(
             "[@osdk/client] streamUpdates is not supported with pivotTo. " +
               "The server does not support websocket subscriptions for " +
-              "link-traversal queries. Ignoring streamUpdates."
+              "link-traversal queries. Ignoring streamUpdates.",
           );
         }
       } else if (options.withProperties) {
@@ -92,7 +92,7 @@ export class ListsHelper extends AbstractHelper<
           console.warn(
             "[@osdk/client] streamUpdates is not supported with withProperties. " +
               "The server does not support websocket subscriptions for " +
-              "object sets that include derived properties. Ignoring streamUpdates."
+              "object sets that include derived properties. Ignoring streamUpdates.",
           );
         }
       } else {
@@ -103,7 +103,7 @@ export class ListsHelper extends AbstractHelper<
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T, {}>
+    options: ObserveListOptions<T, {}>,
   ): ListQuery {
     const {
       type: typeDefinition,
@@ -163,7 +163,7 @@ export class ListsHelper extends AbstractHelper<
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
-      canonResolveToObjectType
+      canonResolveToObjectType,
     );
 
     return this.store.queries.get(listCacheKey, () => {
@@ -174,7 +174,7 @@ export class ListsHelper extends AbstractHelper<
         this.store.subjects.get(listCacheKey),
         apiName,
         listCacheKey,
-        options
+        options,
       );
     });
   }

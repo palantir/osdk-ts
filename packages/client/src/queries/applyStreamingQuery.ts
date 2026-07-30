@@ -31,13 +31,13 @@ export function applyStreamingQuery<
 >(
   _client: MinimalClient,
   _query: QD,
-  _params?: P
+  _params?: P,
 ): AsyncGenerator<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>,
   void,
   unknown
 > {
   throw new Error(
-    "Streaming query execution is not currently supported in the TypeScript OSDK."
+    "Streaming query execution is not currently supported in the TypeScript OSDK.",
   );
 }

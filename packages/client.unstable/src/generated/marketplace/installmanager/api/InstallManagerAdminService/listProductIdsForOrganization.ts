@@ -32,12 +32,12 @@ import type {
 export async function listProductIdsForOrganization(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  request: _installmanager_api_ListProductIdsForOrganizationRequest
+  request: _installmanager_api_ListProductIdsForOrganizationRequest,
 ): Promise<_installmanager_api_ListProductIdsForOrganizationResponse> {
   return conjureFetch(
     ctx,
     `/install-manager-admin/organization/${organizationRid}/product-ids/list`,
     "POST",
-    request
+    request,
   );
 }

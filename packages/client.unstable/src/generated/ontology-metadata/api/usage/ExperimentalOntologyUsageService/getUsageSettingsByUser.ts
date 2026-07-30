@@ -27,7 +27,7 @@ import type {
  */
 export async function getUsageSettingsByUser(
   ctx: ConjureContext,
-  request: _api_usage_GetUsageSettingsByUserRequest
+  request: _api_usage_GetUsageSettingsByUserRequest,
 ): Promise<_api_usage_GetUsageSettingsByUserResponse> {
   return conjureFetch(ctx, `/usage/getSettings/user`, "POST", request);
 }

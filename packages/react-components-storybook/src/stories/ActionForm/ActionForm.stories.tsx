@@ -78,7 +78,7 @@ type StoryApplyAction<Q extends ActionDefinition<unknown>> = Parameters<
 interface UseActionFormSubmissionOptions<Q extends ActionDefinition<unknown>> {
   applyStoryAction: (
     formState: FormState<Q>,
-    applyAction: StoryApplyAction<Q>
+    applyAction: StoryApplyAction<Q>,
   ) => Promise<ActionEditResponse | undefined>;
   onSubmit?: StoryOnSubmit<Q>;
 }
@@ -190,36 +190,36 @@ function handleSuccess(result: ActionEditResponse | undefined): void {
 
 function applyUpdateEmployeeStoryAction(
   formState: FormState<typeof actionDefinition>,
-  applyAction: UpdateEmployeeApplyAction
+  applyAction: UpdateEmployeeApplyAction,
 ): ReturnType<UpdateEmployeeApplyAction> {
   // ActionForm passes coerced form values to custom submit handlers at runtime.
   // The callback type currently exposes metadata-shaped ActionParameters, so the
   // story uses the callback's parameter type to keep the example wired to the
   // real apply path while preserving type safety.
   return applyAction(
-    formState as unknown as Parameters<UpdateEmployeeApplyAction>[0]
+    formState as unknown as Parameters<UpdateEmployeeApplyAction>[0],
   );
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState<typeof generatedFieldsActionDefinition>,
-  applyAction: GeneratedFieldsApplyAction
+  applyAction: GeneratedFieldsApplyAction,
 ): ReturnType<GeneratedFieldsApplyAction> {
   // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
   // using the same applyAction path even though the callback type is metadata-shaped.
   return applyAction(
-    formState as unknown as Parameters<GeneratedFieldsApplyAction>[0]
+    formState as unknown as Parameters<GeneratedFieldsApplyAction>[0],
   );
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState<typeof unsupportedFieldsActionDefinition>,
-  applyAction: UnsupportedFieldsApplyAction
+  applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType<UnsupportedFieldsApplyAction> {
   // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
   // through the real applyAction path so the response panel shows true results.
   return applyAction(
-    formState as unknown as Parameters<UnsupportedFieldsApplyAction>[0]
+    formState as unknown as Parameters<UnsupportedFieldsApplyAction>[0],
   );
 }
 
@@ -281,7 +281,7 @@ function useActionFormSubmission<Q extends ActionDefinition<unknown>>({
         throw error;
       }
     },
-    [applyStoryAction, onSubmit]
+    [applyStoryAction, onSubmit],
   );
 
   const handleStoryError: StoryOnError<Q> = useCallback((error) => {
@@ -514,7 +514,7 @@ export const SubmitSuccess: Story = {
 
     await waitFor(() => expect(successSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByText("Submit succeeded.")
+      await canvas.findByText("Submit succeeded."),
     ).toBeInTheDocument();
     await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
@@ -543,7 +543,7 @@ export const SubmitFailure: Story = {
     await waitFor(() => expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText("Submit failed.")).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/u)
+      await canvas.findByText(/Demo submission failed/u),
     ).toBeInTheDocument();
   },
   parameters: {
@@ -595,7 +595,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole("button", { name: /submit/iu })
+      await canvas.findByRole("button", { name: /submit/iu }),
     ).toBeDisabled();
   },
 };
@@ -620,7 +620,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() => expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole("button", { name: /submitting/iu })
+      await canvas.findByRole("button", { name: /submitting/iu }),
     ).toBeDisabled();
   },
   parameters: {
@@ -663,8 +663,8 @@ export const CustomSubmitHandler: Story = {
 
     await waitFor(() =>
       expect(customSubmitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ fullName: "Grace Hopper" })
-      )
+        expect.objectContaining({ fullName: "Grace Hopper" }),
+      ),
     );
   },
   parameters: {

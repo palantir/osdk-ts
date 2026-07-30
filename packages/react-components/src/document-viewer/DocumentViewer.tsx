@@ -60,7 +60,7 @@ function isTiffFile(mimeType: string, fileName: string | undefined): boolean {
 
 function getViewerType(
   mimeType: string,
-  fileName: string | undefined
+  fileName: string | undefined,
 ): ViewerType {
   if (mimeType === "application/pdf") {
     return ViewerType.Pdf;
@@ -110,7 +110,7 @@ export function DocumentViewer({
   const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
   const viewerType = useMemo(
     () => getViewerType(mimeType, fileName),
-    [mimeType, fileName]
+    [mimeType, fileName],
   );
   const rootClassName = classnames(styles.container, className);
 

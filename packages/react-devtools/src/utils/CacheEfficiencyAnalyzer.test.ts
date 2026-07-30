@@ -83,7 +83,7 @@ describe("CacheEfficiencyAnalyzer", () => {
     const result = analyzer.analyze({ entries } as never);
     expect(result.hotEntries).toHaveLength(10);
     expect(result.hotEntries[0].metadata.hitCount ?? 0).toBeGreaterThanOrEqual(
-      result.hotEntries[1].metadata.hitCount ?? 0
+      result.hotEntries[1].metadata.hitCount ?? 0,
     );
   });
 
@@ -98,7 +98,7 @@ describe("CacheEfficiencyAnalyzer", () => {
 
     const result = analyzer.analyze({ entries: [] } as never);
     const lowHitRateRec = result.recommendations.find((r) =>
-      r.title.toLowerCase().includes("low cache hit rate")
+      r.title.toLowerCase().includes("low cache hit rate"),
     );
     expect(lowHitRateRec).toBeDefined();
   });
@@ -111,7 +111,7 @@ describe("CacheEfficiencyAnalyzer", () => {
 
     const result = analyzer.analyze({ entries: [] } as never);
     const dedupRec = result.recommendations.find((r) =>
-      r.title.toLowerCase().includes("deduplication")
+      r.title.toLowerCase().includes("deduplication"),
     );
     if (dedupRec == null) throw new Error("expected dedupRec to be defined");
     expect(dedupRec.level).toBe("success");

@@ -19,7 +19,7 @@ import type { OntologyIrValueTypeBlockDataEntry } from "@osdk/client.unstable";
 import type { ValueTypeDefinitionVersion } from "../../api/values/ValueTypeDefinitionVersion.js";
 
 export function convertValueTypesToIr(
-  valueTypes: Record<string, ValueTypeDefinitionVersion[]>
+  valueTypes: Record<string, ValueTypeDefinitionVersion[]>,
 ): OntologyIrValueTypeBlockDataEntry[] {
   return Object.values(valueTypes).map<OntologyIrValueTypeBlockDataEntry>(
     (definitions) => ({
@@ -32,14 +32,14 @@ export function convertValueTypesToIr(
       // TODO(dpaquin): instead of deduping here, we should refactor the value type types from arrays to maps
       versions: Array.from(
         new Map(
-          definitions.map((definition) => [definition.version, definition])
-        ).values()
+          definitions.map((definition) => [definition.version, definition]),
+        ).values(),
       ).map((definition) => ({
         version: definition.version,
         baseType: definition.baseType,
         constraints: definition.constraints,
         exampleValues: definition.exampleValues,
       })),
-    })
+    }),
   );
 }

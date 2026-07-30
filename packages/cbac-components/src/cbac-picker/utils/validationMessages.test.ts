@@ -40,7 +40,7 @@ describe("getSubmitDisabledReason", () => {
         requiredMarkingGroups: [{ markingNames: ["A", "B"] }],
         disallowedMarkingIds: ["m1"],
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBe("Selected markings do not include all required markings.");
   });
 
@@ -52,7 +52,7 @@ describe("getSubmitDisabledReason", () => {
         selectedIds: ["m1", "m2"],
         disallowedMarkingIds: ["m2"],
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBe("Selections include disallowed markings.");
   });
 
@@ -62,9 +62,9 @@ describe("getSubmitDisabledReason", () => {
         ...validBase,
         isValid: false,
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBe(
-      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings."
+      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
     );
   });
 
@@ -73,7 +73,7 @@ describe("getSubmitDisabledReason", () => {
       getSubmitDisabledReason({
         ...validBase,
         isValid: false,
-      })
+      }),
     ).toBe("Invalid marking selection.");
   });
 
@@ -85,7 +85,7 @@ describe("getSubmitDisabledReason", () => {
         requiredMarkingGroups: [{ markingNames: ["A"] }],
         selectedIds: ["m1"],
         disallowedMarkingIds: ["m1"],
-      })
+      }),
     ).toBe("Selected markings do not include all required markings.");
   });
 
@@ -97,7 +97,7 @@ describe("getSubmitDisabledReason", () => {
         selectedIds: ["m1"],
         disallowedMarkingIds: ["m1"],
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBe("Selections include disallowed markings.");
   });
 
@@ -109,9 +109,9 @@ describe("getSubmitDisabledReason", () => {
         selectedIds: ["m1"],
         disallowedMarkingIds: ["m2"],
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBe(
-      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings."
+      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
     );
   });
 
@@ -121,7 +121,7 @@ describe("getSubmitDisabledReason", () => {
         ...validBase,
         isValid: true,
         userSatisfiesMarkings: false,
-      })
+      }),
     ).toBeUndefined();
   });
 
@@ -132,7 +132,7 @@ describe("getSubmitDisabledReason", () => {
         isValid: false,
         selectedIds: [],
         disallowedMarkingIds: ["m1"],
-      })
+      }),
     ).toBe("Invalid marking selection.");
   });
 });

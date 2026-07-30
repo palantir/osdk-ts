@@ -81,7 +81,7 @@ export function CbacPickerDialog({
       selectedIds,
       disallowedMarkingIds,
       userSatisfiesMarkings,
-    ]
+    ],
   );
 
   const constraintCallout = useConstraintCallout(maxClassificationConstraint);

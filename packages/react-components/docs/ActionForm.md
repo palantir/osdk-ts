@@ -173,7 +173,7 @@ import client from "./client";
 function UpdateEmployeeForm() {
   const marketingEmployees = useMemo(
     () => client(Employee).where({ department: "Marketing" }),
-    []
+    [],
   );
 
   const fields = [

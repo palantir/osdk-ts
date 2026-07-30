@@ -31,12 +31,12 @@ import type {
 export async function executeMonitor(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_executor_ExecuteMonitorRequest
+  request: _api_executor_ExecuteMonitorRequest,
 ): Promise<_api_executor_ExecuteMonitorResponse> {
   return conjureFetch(
     ctx,
     `/executor/v0/monitors/${monitorRid}/execute`,
     "POST",
-    request
+    request,
   );
 }

@@ -43,7 +43,7 @@ export async function buildDevModeManifest(
   codeEntrypoints: Record<string, string>,
   configFileToEntrypoint: Record<string, string>,
   baseHref: string,
-  pluginOptions?: FoundryWidgetPluginOptions
+  pluginOptions?: FoundryWidgetPluginOptions,
 ): Promise<DevModeManifest> {
   const injectedScripts = await extractInjectedScripts(server);
 
@@ -57,7 +57,7 @@ export async function buildDevModeManifest(
         const scriptPaths = [
           VITE_INJECTIONS_PATH,
           ...injectedScripts.scriptSources.map((script) =>
-            removeBasePath(script, baseHref)
+            removeBasePath(script, baseHref),
           ),
           entrypointRelativePath.slice(1),
         ];
@@ -69,16 +69,16 @@ export async function buildDevModeManifest(
             type: "module" as const,
           })),
           [],
-          pluginOptions
+          pluginOptions,
         );
 
         return [widgetConfig.id, manifest];
-      })
-    )
+      }),
+    ),
   );
 
   const inputSpec = await getWidgetSetInputSpec(
-    path.resolve(server.config.root, "package.json")
+    path.resolve(server.config.root, "package.json"),
   );
 
   return {

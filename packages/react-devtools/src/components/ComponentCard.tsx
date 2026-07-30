@@ -74,7 +74,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           <span
             className={classNames(
               styles.healthDot,
-              styles[`health_${healthStatus}`]
+              styles[`health_${healthStatus}`],
             )}
           />
           <span className={styles.componentName}>{componentName}</span>
@@ -149,7 +149,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
                   key={issue.id}
                   className={classNames(
                     styles.inlineIssue,
-                    styles[`inlineIssue_${issue.severity}`]
+                    styles[`inlineIssue_${issue.severity}`],
                   )}
                 >
                   <Icon

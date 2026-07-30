@@ -26,21 +26,21 @@ import { makeGeoFilterPolygon } from "./makeGeoFilterPolygon.js";
 export function makeGeoFilterIntersects(
   intersectsBody: GeoFilterOptions["$intersects"],
   propertyIdentifier?: PropertyIdentifier,
-  field?: string
+  field?: string,
 ): SearchJsonQueryV2 {
   if (Array.isArray(intersectsBody)) {
     return makeGeoFilterBbox(
       intersectsBody,
       "$intersects",
       propertyIdentifier,
-      field
+      field,
     );
   } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
     return makeGeoFilterBbox(
       intersectsBody.$bbox,
       "$intersects",
       propertyIdentifier,
-      field
+      field,
     );
   } else {
     const coordinates =
@@ -51,7 +51,7 @@ export function makeGeoFilterIntersects(
       coordinates,
       "intersectsPolygon",
       propertyIdentifier,
-      field
+      field,
     );
   }
 }

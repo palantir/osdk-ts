@@ -32,7 +32,7 @@ export function TableHeaderContent<TData extends RowData>({
       {
         flexRender(
           header.column.columnDef.header,
-          header.getContext()
+          header.getContext(),
         ) as ReactNode
       }
     </div>

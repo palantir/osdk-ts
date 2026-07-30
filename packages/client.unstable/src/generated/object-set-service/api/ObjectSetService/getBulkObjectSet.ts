@@ -26,7 +26,7 @@ import type {
  */
 export async function getBulkObjectSet(
   ctx: ConjureContext,
-  request: _api_GetBulkObjectSetRequest
+  request: _api_GetBulkObjectSetRequest,
 ): Promise<_api_GetBulkObjectSetResponse> {
   return conjureFetch(ctx, `/bulk/objectSets`, "PUT", request);
 }
