@@ -3176,7 +3176,33 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "objectType": {
               "aliases": [],
               "apiName": "Dc3DistributionCenterProposal",
-              "datasources": [],
+              "datasources": [
+                {
+                  "definition": {
+                    "datasetRid": "Dc3DistributionCenterProposal",
+                    "propertyMapping": {
+                      "name": {
+                        "column": "name",
+                        "type": "column",
+                      },
+                      "price": {
+                        "column": "price",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "proposedLocation": {
+                        "column": "proposedLocation",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
+                  },
+                  "rid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposal",
+                },
+              ],
               "description": undefined,
               "displayName": "[DC3] Distribution Center Proposal",
               "icon": {
@@ -3272,7 +3298,33 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "objectType": {
               "aliases": [],
               "apiName": "Dc3DistributionRouteAnalysis",
-              "datasources": [],
+              "datasources": [
+                {
+                  "definition": {
+                    "datasetRid": "Dc3DistributionRouteAnalysis",
+                    "propertyMapping": {
+                      "distributionProposal": {
+                        "column": "distributionProposal",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "restaurant": {
+                        "column": "restaurant",
+                        "type": "column",
+                      },
+                      "timeMinutes": {
+                        "column": "timeMinutes",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
+                  },
+                  "rid": "ri.Dc3DistributionRouteAnalysis.Dc3DistributionRouteAnalysis",
+                },
+              ],
               "description": undefined,
               "displayName": "[DC3] Distribution Route Analysis",
               "icon": {
@@ -3358,7 +3410,33 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "objectType": {
               "aliases": [],
               "apiName": "Dc3Restaurant",
-              "datasources": [],
+              "datasources": [
+                {
+                  "definition": {
+                    "datasetRid": "Dc3Restaurant",
+                    "propertyMapping": {
+                      "location": {
+                        "column": "location",
+                        "type": "column",
+                      },
+                      "name": {
+                        "column": "name",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "rating": {
+                        "column": "rating",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
+                  },
+                  "rid": "ri.Dc3Restaurant.Dc3Restaurant",
+                },
+              ],
               "description": undefined,
               "displayName": "[DC3] Restaurant",
               "icon": {
