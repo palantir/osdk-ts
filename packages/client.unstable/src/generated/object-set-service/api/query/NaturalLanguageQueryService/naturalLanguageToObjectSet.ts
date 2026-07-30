@@ -26,7 +26,7 @@ import type {
  */
 export async function naturalLanguageToObjectSet(
   ctx: ConjureContext,
-  request: _api_query_NaturalLanguageObjectSetRequest
+  request: _api_query_NaturalLanguageObjectSetRequest,
 ): Promise<_api_query_NaturalLanguageObjectSetResponse> {
   return conjureFetch(ctx, `/natural-language/llm/objectSet`, "PUT", request);
 }

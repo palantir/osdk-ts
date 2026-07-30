@@ -33,7 +33,7 @@ import type {
  */
 export async function getUsage(
   ctx: ConjureContext,
-  request: _api_usage_GetUsageRequest
+  request: _api_usage_GetUsageRequest,
 ): Promise<_api_usage_GetUsageResponse> {
   return conjureFetch(ctx, `/usage/search/getUsage`, "PUT", request);
 }

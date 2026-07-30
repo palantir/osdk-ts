@@ -24,7 +24,7 @@ export function makeGeoFilterBbox(
   bbox: BBox,
   filterType: "$within" | "$intersects",
   propertyIdentifier?: PropertyIdentifier,
-  field?: string
+  field?: string,
 ): SearchJsonQueryV2 {
   return {
     type:

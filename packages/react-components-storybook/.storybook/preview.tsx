@@ -55,7 +55,7 @@ const fauxFoundryReady = setupFauxFoundry();
 const mockClient = createClient(
   fauxFoundry.baseUrl,
   fauxFoundry.defaultOntologyRid,
-  () => Promise.resolve("myAccessToken")
+  () => Promise.resolve("myAccessToken"),
 );
 
 const preview: Preview = {

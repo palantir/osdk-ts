@@ -245,7 +245,7 @@ export class ComponentQueryRegistry {
   }
 
   getBindingBySubscription(
-    subscriptionId: string
+    subscriptionId: string,
   ): ComponentHookBinding | undefined {
     const bindingId = this.subscriptionToBinding.get(subscriptionId);
     return bindingId ? this.bindings.get(bindingId) : undefined;
@@ -258,7 +258,7 @@ export class ComponentQueryRegistry {
       const bindings = [...bindingIds]
         .map((id) => this.bindings.get(id))
         .filter(
-          (b): b is ComponentHookBinding => b !== undefined && !b.unmountedAt
+          (b): b is ComponentHookBinding => b !== undefined && !b.unmountedAt,
         );
 
       if (bindings.length > 0) {
@@ -365,14 +365,14 @@ export class ComponentQueryRegistry {
   }
 
   private buildQuerySignature(
-    hookMeta: DiscoveredComponent["hooks"][0]
+    hookMeta: DiscoveredComponent["hooks"][0],
   ): string {
     switch (hookMeta.hookType) {
       case "useOsdkObject":
         return `object:${hookMeta.objectType}:${hookMeta.primaryKey}`;
       case "useOsdkObjects":
         return `useOsdkObjects:${hookMeta.objectType}:${JSON.stringify(
-          hookMeta.where
+          hookMeta.where,
         )}:${JSON.stringify(hookMeta.orderBy)}`;
       case "useOsdkAction":
         return `action:${hookMeta.actionName}`;
@@ -382,7 +382,7 @@ export class ComponentQueryRegistry {
         }`;
       case "useOsdkAggregation":
         return `aggregation:${hookMeta.objectType}:${JSON.stringify(
-          hookMeta.aggregate
+          hookMeta.aggregate,
         )}`;
       default:
         return `unknown:${JSON.stringify(hookMeta)}`;
@@ -390,7 +390,7 @@ export class ComponentQueryRegistry {
   }
 
   private mapHookType(
-    hookType: DiscoveredComponent["hooks"][0]["hookType"]
+    hookType: DiscoveredComponent["hooks"][0]["hookType"],
   ): ComponentHookBinding["hookType"] {
     switch (hookType) {
       case "useOsdkObject":
@@ -409,7 +409,7 @@ export class ComponentQueryRegistry {
   }
 
   private buildQueryParams(
-    hookMeta: DiscoveredComponent["hooks"][0]
+    hookMeta: DiscoveredComponent["hooks"][0],
   ): QueryParams {
     switch (hookMeta.hookType) {
       case "useOsdkObject":

@@ -29,12 +29,12 @@ export async function setBlockSetDeprecationStatus(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  deprecationStatus: _api_DeprecationStatus
+  deprecationStatus: _api_DeprecationStatus,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/blockSet/version/${blockSetVersionId}/deprecationStatus`,
     "POST",
-    deprecationStatus
+    deprecationStatus,
   );
 }

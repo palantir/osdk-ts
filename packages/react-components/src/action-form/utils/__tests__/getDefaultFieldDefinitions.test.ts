@@ -20,7 +20,7 @@ import { describe, expect, it } from "vitest";
 import { getDefaultFieldDefinitions } from "../getDefaultFieldDefinitions.js";
 
 function makeMetadata(
-  parameters: ActionMetadata["parameters"]
+  parameters: ActionMetadata["parameters"],
 ): ActionMetadata {
   return {
     type: "action",
@@ -47,7 +47,7 @@ describe("getDefaultFieldDefinitions", () => {
             type: parameterType,
             nullable: false,
           },
-        })
+        }),
       );
 
       expect(fieldDefinition).toMatchObject({
@@ -55,7 +55,7 @@ describe("getDefaultFieldDefinitions", () => {
         fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       });
-    }
+    },
   );
 
   it("renders interface parameters as unsupported", () => {
@@ -65,7 +65,7 @@ describe("getDefaultFieldDefinitions", () => {
           type: { type: "interface", interface: "Employee" },
           nullable: false,
         },
-      })
+      }),
     );
 
     expect(fieldDefinition).toMatchObject({
@@ -82,7 +82,7 @@ describe("getDefaultFieldDefinitions", () => {
           type: { type: "struct", struct: { name: "string" } },
           nullable: false,
         },
-      })
+      }),
     );
 
     expect(fieldDefinition).toMatchObject({
@@ -101,7 +101,7 @@ describe("getDefaultFieldDefinitions", () => {
             nullable: false,
             displayName: "Tags",
           },
-        })
+        }),
       );
 
       expect(fieldDefinition.label).toBe("Tags");
@@ -114,7 +114,7 @@ describe("getDefaultFieldDefinitions", () => {
             type: "string",
             nullable: false,
           },
-        })
+        }),
       );
 
       expect(fieldDefinition.label).toBe("tags");

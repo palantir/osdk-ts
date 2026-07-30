@@ -26,7 +26,7 @@ import type { CreateClientResponse } from "../CreateClientResponse.js";
  */
 export async function createClient(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<CreateClientResponse> {
   return conjureFetch(ctx, `/application-clients/${applicationRid}`, "PUT");
 }

@@ -36,11 +36,11 @@ import type {
  */
 export async function previewUninstall(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid
+  blockSetInstallationRid: _api_BlockSetInstallationRid,
 ): Promise<_api_PreviewUninstallResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/${blockSetInstallationRid}/uninstall/preview`,
-    "POST"
+    "POST",
   );
 }

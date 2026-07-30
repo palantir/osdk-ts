@@ -31,13 +31,13 @@ export async function listVersionsV2(
   marketplaceRid: _api_MarketplaceRid,
   pageToken: _api_ListBlockSetVersionsPageToken | null | undefined,
   limit: number | null | undefined,
-  blockSetId: _api_BlockSetId
+  blockSetId: _api_BlockSetId,
 ): Promise<_api_ListBlockSetVersionsResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${marketplaceRid}/${blockSetId}/v2`,
     "GET",
     undefined,
-    { pageToken, limit }
+    { pageToken, limit },
   );
 }

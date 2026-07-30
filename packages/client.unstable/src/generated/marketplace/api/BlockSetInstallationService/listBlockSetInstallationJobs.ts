@@ -35,7 +35,7 @@ export async function listBlockSetInstallationJobs(
   marketplaceRid: _api_MarketplaceRid,
   blockSetInstallationRid: _api_BlockSetInstallationRid | null | undefined,
   pageToken: _api_ListBlockSetInstallationJobsPageToken | null | undefined,
-  limit: _api_PageSizeLimitHint | null | undefined
+  limit: _api_PageSizeLimitHint | null | undefined,
 ): Promise<_api_ListBlockSetInstallationJobsResponse> {
   return conjureFetch(ctx, `/block-set-installation/jobs`, "GET", undefined, {
     marketplaceRid,

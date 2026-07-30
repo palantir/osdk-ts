@@ -39,7 +39,7 @@ export interface ResolveSdkPackageVersionsDeps {
 export async function resolveSdkPackageVersions(
   candidates: ReadonlyArray<DiscoveredOsdkPackage>,
   branch: string | undefined,
-  deps: ResolveSdkPackageVersionsDeps
+  deps: ResolveSdkPackageVersionsDeps,
 ): Promise<SdkPackageVersion[]> {
   const resolved: SdkPackageVersion[] = [];
   for (const c of candidates) {
@@ -77,7 +77,7 @@ function mapNpmViewError(e: unknown, pkg: string): ExitProcessError {
       1,
       `Not authorized to read ${pkg}.`,
       "Ensure FOUNDRY_TOKEN is set and your .npmrc registry is correct.",
-      e instanceof Error ? e : undefined
+      e instanceof Error ? e : undefined,
     );
   }
   return new ExitProcessError(1, `Failed to read dist tags for ${pkg}.`);

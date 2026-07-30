@@ -38,7 +38,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { officeLink: mockOffice } }
+        { links: { officeLink: mockOffice } },
       );
 
       const officeName = await getEmployeeOfficeName(mockEmployee);
@@ -60,7 +60,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: [mockPeep1, mockPeep2] } }
+        { links: { peeps: [mockPeep1, mockPeep2] } },
       );
 
       const peepNames = await getEmployeePeepNames(mockEmployee);
@@ -72,7 +72,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: [] } }
+        { links: { peeps: [] } },
       );
 
       const peepNames = await getEmployeePeepNames(mockEmployee);
@@ -98,7 +98,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: [mockPeep1, mockPeep2, mockPeep3] } }
+        { links: { peeps: [mockPeep1, mockPeep2, mockPeep3] } },
       );
 
       const count = await countEmployeePeeps(mockEmployee);
@@ -120,7 +120,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: [mockPeep1, mockPeep2] } }
+        { links: { peeps: [mockPeep1, mockPeep2] } },
       );
 
       const peep = await getSpecificPeep(mockEmployee, 11);
@@ -136,11 +136,11 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: [mockPeep1] } }
+        { links: { peeps: [mockPeep1] } },
       );
 
       expect(() => mockEmployee.$link.peeps.fetchOne(999)).toThrow(
-        "fetchOne could not find object with primary key 999"
+        "fetchOne could not find object with primary key 999",
       );
     });
   });
@@ -152,14 +152,14 @@ describe("objectWithLinks", () => {
 
       mockClient
         .whenObjectSet(peepsSet, (os) =>
-          os.aggregate({ $select: { $count: "unordered" } })
+          os.aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 7 });
 
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { links: { peeps: peepsSet } }
+        { links: { peeps: peepsSet } },
       );
 
       const count = await countPeepsViaAggregate(mockEmployee);

@@ -32,7 +32,7 @@ import type {
  */
 export async function validateProducts(
   ctx: ConjureContext,
-  request: _api_ValidateProductsRequest
+  request: _api_ValidateProductsRequest,
 ): Promise<_api_ValidateProductsResponse> {
   return conjureFetch(ctx, `/product-groups/validate`, "POST", request);
 }

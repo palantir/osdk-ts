@@ -104,7 +104,7 @@ export function SubmissionOutputPanel({
 
 function getSubmissionStatusText(
   status: StorySubmissionStatus,
-  idleMessage: string
+  idleMessage: string,
 ): string {
   switch (status) {
     case "idle":

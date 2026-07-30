@@ -86,7 +86,7 @@ const ErrorMessage: React.FunctionComponent<{ message: string }> = React.memo(
       <ErrorIcon className={styles.errorIcon} />
       {message}
     </div>
-  )
+  ),
 );
 
 const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
@@ -102,12 +102,12 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
         }
         const renderedImageData = ctx.createImageData(
           imageData.width,
-          imageData.height
+          imageData.height,
         );
         renderedImageData.data.set(imageData.content);
         ctx.putImageData(renderedImageData, 0, 0);
       },
-      [imageData]
+      [imageData],
     );
 
     return (

@@ -29,12 +29,12 @@ import type {
 export async function registerKey(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_RegisterKeyRequest
+  request: _api_RegisterKeyRequest,
 ): Promise<_api_RegisterKeyResponse> {
   return conjureFetch(
     ctx,
     `/oac-publisher/${marketplaceRid}/register-key`,
     "POST",
-    request
+    request,
   );
 }

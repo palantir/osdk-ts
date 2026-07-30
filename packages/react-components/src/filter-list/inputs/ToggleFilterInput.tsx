@@ -34,7 +34,7 @@ function ToggleFilterInputInner({
     (enabled: boolean) => {
       onFilterStateChanged({ type: "TOGGLE", enabled });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   return <ToggleInput enabled={enabled} onChange={handleChange} />;

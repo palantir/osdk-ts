@@ -49,7 +49,7 @@ export function parseLineLocation(line: string): CallerLocation | undefined {
  */
 export function locateCallerLine(
   stack: string,
-  framesBeforeCaller: number
+  framesBeforeCaller: number,
 ): string | undefined {
   const lines = stack.split("\n");
   const hasHeader = parseLineLocation(lines[0]) === undefined;
@@ -58,7 +58,7 @@ export function locateCallerLine(
 
 function captureViaCallSites(
   captureStackTrace: typeof Error.captureStackTrace,
-  boundaryFn: (...args: unknown[]) => unknown
+  boundaryFn: (...args: unknown[]) => unknown,
 ): CallerLocation | undefined {
   const originalPrepareStackTrace = Error.prepareStackTrace;
   let callSites: NodeJS.CallSite[] | undefined;
@@ -97,7 +97,7 @@ function captureViaCallSites(
  * fixed 2 frames, so `boundaryFn` must call this directly.
  */
 export function captureCallerLocation(
-  boundaryFn: (...args: unknown[]) => unknown
+  boundaryFn: (...args: unknown[]) => unknown,
 ): CallerLocation | undefined {
   // Best-effort: this pokes host/engine internals and mutates a shared global.
   // If it throws, the caller gets `undefined` instead of a thrown error.
@@ -122,7 +122,7 @@ export function captureCallerLocation(
 }
 
 export function formatCallerLocation(
-  location: CallerLocation | undefined
+  location: CallerLocation | undefined,
 ): string | undefined {
   if (!location) {
     return undefined;

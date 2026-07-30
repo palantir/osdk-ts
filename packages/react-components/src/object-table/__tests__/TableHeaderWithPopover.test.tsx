@@ -52,13 +52,13 @@ describe(TableHeaderWithPopover, () => {
           }}
         />
         <div data-testid="header-menu-portal" ref={portalContainerRef} />
-      </PortalContainerProvider>
+      </PortalContainerProvider>,
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Open header menu for column with id=name",
-      })
+      }),
     );
 
     await waitFor(() => {
@@ -68,8 +68,8 @@ describe(TableHeaderWithPopover, () => {
     const portalContainer = screen.getByTestId("header-menu-portal");
     expect(
       portalContainer.contains(
-        screen.getByRole("menuitem", { name: "Pin column" })
-      )
+        screen.getByRole("menuitem", { name: "Pin column" }),
+      ),
     ).toBe(true);
   });
 
@@ -94,18 +94,18 @@ describe(TableHeaderWithPopover, () => {
           />
           <div data-testid="header-menu-portal" ref={portalContainerRef} />
         </PortalContainerProvider>
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Menu for name",
-      })
+      }),
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole("menuitem", { name: "Stick this column" })
+        screen.getByRole("menuitem", { name: "Stick this column" }),
       ).toBeTruthy();
     });
   });

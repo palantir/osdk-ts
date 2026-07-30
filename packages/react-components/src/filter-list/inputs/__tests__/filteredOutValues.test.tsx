@@ -46,7 +46,7 @@ vi.mock("@osdk/react", () => ({
 const EMPTY_WHERE = {} as WhereClause<typeof MockObjectType>;
 
 function mockAggregationData(
-  groups: Array<{ name: string; count: number }>
+  groups: Array<{ name: string; count: number }>,
 ): void {
   vi.mocked(useOsdkAggregation).mockReturnValue({
     data: groups.map((g) => ({ $group: { name: g.name }, $count: g.count })),
@@ -63,7 +63,7 @@ afterEach(() => {
 
 function mockDualAggregationData(
   narrowed: Array<{ name: string; count: number }>,
-  base: Array<{ name: string; count: number }>
+  base: Array<{ name: string; count: number }>,
 ): void {
   mockAggregationByObjectSetKind({ narrowed, base, linked: narrowed });
 }
@@ -82,7 +82,7 @@ describe("filtered-out initialFilterStates values", () => {
           }}
           onFilterStateChanged={vi.fn()}
           whereClause={EMPTY_WHERE}
-        />
+        />,
       );
 
       // Both rows render — "Marketing" from aggregation, "Research" synthesized
@@ -112,7 +112,7 @@ describe("filtered-out initialFilterStates values", () => {
           }}
           onFilterStateChanged={vi.fn()}
           whereClause={EMPTY_WHERE}
-        />
+        />,
       );
 
       // Without the fix, values.length === 0 shows "No options available"
@@ -136,7 +136,7 @@ describe("filtered-out initialFilterStates values", () => {
           }}
           onFilterStateChanged={vi.fn()}
           whereClause={EMPTY_WHERE}
-        />
+        />,
       );
 
       // Without the fix, values.length === 0 renders "No options available"
@@ -166,18 +166,18 @@ describe("STATIC_VALUES filters", () => {
         definition={definition}
         filterState={definition.filterState}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
 
     expect(
       screen
         .getByRole("button", { name: /Marketing/u })
-        .hasAttribute("data-filtered-out")
+        .hasAttribute("data-filtered-out"),
     ).toBe(false);
     expect(
       screen
         .getByRole("button", { name: /Operations/u })
-        .hasAttribute("data-filtered-out")
+        .hasAttribute("data-filtered-out"),
     ).toBe(false);
   });
 
@@ -199,14 +199,14 @@ describe("STATIC_VALUES filters", () => {
         filterState={definition.filterState}
         onFilterStateChanged={vi.fn()}
         layout="inline"
-      />
+      />,
     );
 
     expect(
-      screen.getByRole("option", { name: /Alpha/u }).className
+      screen.getByRole("option", { name: /Alpha/u }).className,
     ).not.toContain("filteredOutItem");
     expect(
-      screen.getByRole("option", { name: /Beta/u }).className
+      screen.getByRole("option", { name: /Beta/u }).className,
     ).not.toContain("filteredOutItem");
   });
 });
@@ -244,7 +244,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
       [
         { name: "Engineering", count: 5 },
         { name: "Marketing", count: 2 },
-      ]
+      ],
     );
     render(
       <ListogramFilterInput
@@ -256,17 +256,17 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
         showFilteredOutValues={true}
         filterState={{ type: "EXACT_MATCH", values: [] }}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
     expect(
       screen
         .getByRole("button", { name: /Engineering/u })
-        .hasAttribute("data-filtered-out")
+        .hasAttribute("data-filtered-out"),
     ).toBe(false);
     expect(
       screen
         .getByRole("button", { name: /Marketing/u })
-        .hasAttribute("data-filtered-out")
+        .hasAttribute("data-filtered-out"),
     ).toBe(true);
   });
 
@@ -276,7 +276,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
       [
         { name: "Engineering", count: 5 },
         { name: "Marketing", count: 2 },
-      ]
+      ],
     );
     render(
       <MultiSelectFilterInput
@@ -288,10 +288,10 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
         showFilteredOutValues={true}
         filterState={{ type: "SELECT", selectedValues: [] }}
         onFilterStateChanged={vi.fn()}
-      />
+      />,
     );
     expect(
-      screen.getByTitle("Approximate count of unique values").textContent
+      screen.getByTitle("Approximate count of unique values").textContent,
     ).toContain("2");
   });
 
@@ -353,7 +353,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
           { name: "Alice", count: 5 },
           { name: "Bob", count: 3 },
           { name: "Carol", count: 1 },
-        ]
+        ],
       );
 
       render(
@@ -369,18 +369,18 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
           showFilteredOutValues={true}
-        />
+        />,
       );
 
       expect(
         screen
           .getByRole("button", { name: /Alice/u })
-          .hasAttribute("data-filtered-out")
+          .hasAttribute("data-filtered-out"),
       ).toBe(false);
       expect(
         screen
           .getByRole("button", { name: /Bob/u })
-          .hasAttribute("data-filtered-out")
+          .hasAttribute("data-filtered-out"),
       ).toBe(false);
       const carolRow = screen.getByRole("button", { name: /Carol/u });
       expect(carolRow.hasAttribute("data-filtered-out")).toBe(true);
@@ -397,7 +397,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
           { name: "Alice", count: 5 },
           { name: "Bob", count: 3 },
           { name: "Carol", count: 1 },
-        ]
+        ],
       );
 
       render(
@@ -413,7 +413,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
           filterState={undefined}
           onFilterStateChanged={vi.fn()}
           showFilteredOutValues={false}
-        />
+        />,
       );
 
       expect(screen.queryByRole("button", { name: /Carol/u })).toBeNull();

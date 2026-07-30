@@ -31,7 +31,7 @@ export function createSharedClientContext(
   tokenProvider: () => Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
-  customHeaders?: Record<string, string>
+  customHeaders?: Record<string, string>,
 ): SharedClientContext & OldSharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
@@ -59,7 +59,7 @@ export function createSharedClientContext(
 
       const customUserAgent = customHeaders
         ? Object.entries(customHeaders).find(
-            ([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase()
+            ([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase(),
           )?.[1]
         : undefined;
 
@@ -67,16 +67,16 @@ export function createSharedClientContext(
         USER_AGENT_HEADER,
         [headers.get(USER_AGENT_HEADER), userAgent, customUserAgent]
           .filter((x) => x && x?.length > 0)
-          .join(" ")
+          .join(" "),
       );
       return headers;
-    }
+    },
   );
 
   // because this is async await it preserves stack traces, which the retrying fetch does not
   const fetchWrapper = async (
     input: RequestInfo | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ) => {
     try {
       return await retryingFetchWithAuthOrThrow(input, init);
@@ -90,10 +90,10 @@ export function createSharedClientContext(
               error.errorDescription,
               error.statusCode,
               error.errorInstanceId,
-              error.parameters
+              error.parameters,
             )
           : new Error(
-              `Captured stack trace for error: ${error.message ?? error}`
+              `Captured stack trace for error: ${error.message ?? error}`,
             );
 
       (betterError as any).cause = error;

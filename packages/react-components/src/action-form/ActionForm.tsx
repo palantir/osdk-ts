@@ -33,7 +33,7 @@ const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
-  props: ActionFormProps<Q>
+  props: ActionFormProps<Q>,
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
   Q extends ActionDefinition<unknown>,
 >({
@@ -63,7 +63,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         onError?.({ type: "unknown", error: metadataError });
       }
     },
-    [metadataError, onError]
+    [metadataError, onError],
   );
 
   const parameters = metadata?.parameters;
@@ -96,7 +96,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       (metadata != null
         ? getDefaultFieldDefinitions(metadata)
         : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata]
+    [customFieldDefinitions, metadata],
   );
 
   const formContent = useMemo(
@@ -104,9 +104,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       rendererFieldDefinitions.length === 0
         ? EMPTY_FORM_CONTENT
         : rendererFieldDefinitions.map(
-            (def): FormContentItem => ({ type: "field", definition: def })
+            (def): FormContentItem => ({ type: "field", definition: def }),
           ),
-    [rendererFieldDefinitions]
+    [rendererFieldDefinitions],
   );
 
   const coerceFormState = useCallback(
@@ -117,7 +117,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       }
       return coerced;
     },
-    [parameters]
+    [parameters],
   );
 
   const handleSubmit = useCallback(
@@ -134,7 +134,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         onError?.({ type: "submission", error: e });
       }
     },
-    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError]
+    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
   );
 
   const handleFieldValueChange = useCallback(
@@ -144,10 +144,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           ({
             ...prev,
             [fieldKey]: value,
-          }) as FormState<Q>
+          }) as FormState<Q>,
       );
     },
-    [onFormStateChange]
+    [onFormStateChange],
   );
 
   const resolvedTitle = showFormTitle

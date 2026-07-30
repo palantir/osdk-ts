@@ -27,11 +27,11 @@ import type {
  */
 export async function checkCanExportFromStore(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid
+  marketplaceRid: _api_MarketplaceRid,
 ): Promise<_api_CheckCanExportFromStoreResponse> {
   return conjureFetch(
     ctx,
     `/block-set-transport/${marketplaceRid}/permission/export`,
-    "POST"
+    "POST",
   );
 }

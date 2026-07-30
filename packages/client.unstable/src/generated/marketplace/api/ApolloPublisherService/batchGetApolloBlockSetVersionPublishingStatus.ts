@@ -29,12 +29,12 @@ import type {
 export async function batchGetApolloBlockSetVersionPublishingStatus(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_BatchGetApolloBlockSetVersionPublishingStatusRequest
+  request: _api_BatchGetApolloBlockSetVersionPublishingStatusRequest,
 ): Promise<_api_BatchGetApolloBlockSetVersionPublishingStatusResponse> {
   return conjureFetch(
     ctx,
     `/apollo-publisher/${marketplaceRid}/batch/block-set-publishing-status`,
     "POST",
-    request
+    request,
   );
 }

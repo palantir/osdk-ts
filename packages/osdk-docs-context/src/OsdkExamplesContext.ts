@@ -72,7 +72,7 @@ export class OsdkExamplesContext {
    */
   static getExample(
     version: string,
-    exampleName: string
+    exampleName: string,
   ): ExampleMetadata | undefined {
     const versionData =
       TYPESCRIPT_OSDK_EXAMPLES.versions[
@@ -88,7 +88,7 @@ export class OsdkExamplesContext {
    */
   static getExampleCode(
     version: string,
-    exampleName: string
+    exampleName: string,
   ): string | undefined {
     const example = this.getExample(version, exampleName);
     return example?.code;
@@ -103,10 +103,10 @@ export class OsdkExamplesContext {
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(
-      TYPESCRIPT_OSDK_EXAMPLES.versions
+      TYPESCRIPT_OSDK_EXAMPLES.versions,
     )) {
       for (const [exampleName, metadata] of Object.entries(
-        versionData.examples
+        versionData.examples,
       )) {
         if (regex.test(exampleName)) {
           results.push({
@@ -125,17 +125,17 @@ export class OsdkExamplesContext {
    * Get examples that contain specific code patterns
    */
   static findExamplesByCodePattern(
-    pattern: string
+    pattern: string,
   ): Array<ExampleSearchResult> {
     const results: Array<ExampleSearchResult> = [];
     // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
     const regex = new RegExp(pattern, "i");
 
     for (const [version, versionData] of Object.entries(
-      TYPESCRIPT_OSDK_EXAMPLES.versions
+      TYPESCRIPT_OSDK_EXAMPLES.versions,
     )) {
       for (const [exampleName, metadata] of Object.entries(
-        versionData.examples
+        versionData.examples,
       )) {
         const typedMetadata = metadata as ExampleMetadata;
         if (regex.test(typedMetadata.code)) {

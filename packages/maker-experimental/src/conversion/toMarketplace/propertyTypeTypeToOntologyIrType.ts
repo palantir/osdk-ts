@@ -24,7 +24,7 @@ export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   ridGenerator: OntologyRidGenerator,
   propertyApiName?: string,
-  includeMainValue?: boolean
+  includeMainValue?: boolean,
 ): Type {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -50,7 +50,7 @@ export function propertyTypeTypeToOntologyIrType(
             fieldType: propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
-              propertyApiName
+              propertyApiName,
             ),
           };
         } else {
@@ -65,7 +65,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
-                propertyApiName
+                propertyApiName,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -86,7 +86,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
-                propertyApiName
+                propertyApiName,
               ),
             };
           }

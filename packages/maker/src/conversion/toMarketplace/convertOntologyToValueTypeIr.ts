@@ -21,11 +21,11 @@ import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.
 import { convertValueTypesToIr } from "./convertValueTypesToIr.js";
 
 export function convertOntologyToValueTypeIr(
-  ontology: OntologyDefinition
+  ontology: OntologyDefinition,
 ): OntologyIrValueTypeBlockData {
   return {
     valueTypes: convertValueTypesToIr(
-      ontology[OntologyEntityTypeEnum.VALUE_TYPE]
+      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
     ),
   };
 }

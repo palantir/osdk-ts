@@ -40,7 +40,7 @@ function args(over: Partial<SyncArgs> = {}): SyncArgs {
 function deps(
   installed: Record<string, unknown>,
   declared: string,
-  over: Partial<SyncDeps> = {}
+  over: Partial<SyncDeps> = {},
 ): SyncDeps {
   const files: Record<string, unknown> = {
     "/repo/package.json": { dependencies: { "@my-app/sdk": declared } },
@@ -49,12 +49,12 @@ function deps(
   vi.mocked(resolvePackagePath).mockImplementation((name: string) =>
     name === "@my-app/sdk"
       ? "/repo/node_modules/@my-app/sdk/package.json"
-      : null
+      : null,
   );
   return {
     cwd: "/repo",
     readFile: vi.fn((p: string) =>
-      Promise.resolve(JSON.stringify(files[p] ?? {}))
+      Promise.resolve(JSON.stringify(files[p] ?? {})),
     ),
     getGitBranch: vi.fn().mockResolvedValue("my-feature"),
     npmDistTags: vi.fn().mockResolvedValue({
@@ -126,11 +126,11 @@ describe("syncCommand", () => {
       npmInstall: vi
         .fn()
         .mockRejectedValue(
-          Object.assign(new Error("boom"), { stderr: "npm error code E500" })
+          Object.assign(new Error("boom"), { stderr: "npm error code E500" }),
         ),
     });
     await expect(syncCommand(args(), d)).rejects.toThrow(
-      /Failed to install 1 SDK/iu
+      /Failed to install 1 SDK/iu,
     );
   });
 });

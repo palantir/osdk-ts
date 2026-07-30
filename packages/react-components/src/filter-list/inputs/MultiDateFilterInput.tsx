@@ -35,7 +35,7 @@ function MultiDateFilterInputInner({
       filterState?.type === "SELECT"
         ? filterState.selectedValues.filter((v): v is Date => v instanceof Date)
         : [],
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -47,7 +47,7 @@ function MultiDateFilterInputInner({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   return (

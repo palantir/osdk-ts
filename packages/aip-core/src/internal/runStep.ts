@@ -69,7 +69,7 @@ export interface RunStepInput<TOOLS extends ToolSet> {
  * system messages before invoking.
  */
 export async function runStep<TOOLS extends ToolSet>(
-  input: RunStepInput<TOOLS>
+  input: RunStepInput<TOOLS>,
 ): Promise<StepResult<TOOLS>> {
   const apiName = getModelApiName(_getFoundryInternal(input.model).identifier);
 
@@ -120,12 +120,12 @@ interface OpenAiChatCompletionResponse {
 function parseResponse<TOOLS extends ToolSet>(
   res: OpenAiChatCompletionResponse,
   request: OpenAiChatRequestNonStreaming,
-  warnings: Array<Warning>
+  warnings: Array<Warning>,
 ): StepResult<TOOLS> {
   const choice = res.choices[0];
   if (choice == null) {
     throw new Error(
-      "LMS chat/completions response did not include any choices"
+      "LMS chat/completions response did not include any choices",
     );
   }
 

@@ -30,11 +30,11 @@ export interface ToggleExclusionButtonProps {
 
 /** Flips `isExcluded` on a StatusUpdate row. The action expects the new (flipped) value. */
 export function ToggleExclusionButton(
-  props: ToggleExclusionButtonProps
+  props: ToggleExclusionButtonProps,
 ): React.JSX.Element {
   const { statusUpdate } = props;
   const { applyAction, isPending, error } = useOsdkAction(
-    toggleStatusExclusion
+    toggleStatusExclusion,
   );
   const currentlyExcluded = statusUpdate.isExcluded === true;
 

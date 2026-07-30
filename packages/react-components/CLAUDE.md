@@ -141,7 +141,7 @@ For every state change with a built-in default behavior (sort, filter, select, e
   import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
   export const MyComponent: typeof _MyComponent = withOsdkMetrics(
     _MyComponent,
-    "MyComponent"
+    "MyComponent",
   );
   ```
 

@@ -35,7 +35,7 @@ const _knownVariantKeys: Record<MediaItemMetadata["type"], true> = {
 };
 
 const KNOWN_VARIANTS: ReadonlySet<string> = new Set(
-  Object.keys(_knownVariantKeys)
+  Object.keys(_knownVariantKeys),
 );
 
 /**

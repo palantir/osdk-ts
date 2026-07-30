@@ -79,7 +79,7 @@ fs.writeFileSync(
           },`;
   }).join("\n")}
   ];
-  `
+  `,
 );
 
 /**

@@ -57,7 +57,7 @@ function HeaderMenuItem({
         styles.osdkCenterContainer,
         styles.osdkContentGap,
         styles.osdkHeaderMenuItem,
-        active && styles.osdkHeaderActiveMenuItem
+        active && styles.osdkHeaderActiveMenuItem,
       )}
       onClick={onClick}
     >
@@ -206,7 +206,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
           className={classNames(
             styles.osdkCenterContainer,
             styles.osdkContentGap,
-            styles.osdkHeaderContainer
+            styles.osdkHeaderContainer,
           )}
           onContextMenu={handleInteraction}
         >
@@ -215,7 +215,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
               styles.osdkCenterContainer,
               styles.osdkContentGap,
               styles.osdkHeaderContentLeft,
-              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable
+              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
             )}
             onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
           >
@@ -226,7 +226,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
             className={classNames(
               styles.osdkCenterContainer,
               styles.osdkContentGap,
-              styles.osdkHeaderContentRight
+              styles.osdkHeaderContentRight,
             )}
           >
             {isSorted && (
@@ -246,7 +246,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
                 aria-label={labels.headerMenuAriaLabel(header.column.id)}
                 className={classNames(
                   styles.osdkCenterContainer,
-                  styles.osdkHeaderPopoverTrigger
+                  styles.osdkHeaderPopoverTrigger,
                 )}
               >
                 <ChevronDown className={styles.osdkHeaderIcon} />

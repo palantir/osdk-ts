@@ -143,7 +143,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   return (
     <span className={styles.inlineFieldGroup}>
@@ -172,11 +172,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) => setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   const handleRemove = useCallback(
     () => clearFilterState(filterKey),
-    [filterKey, clearFilterState]
+    [filterKey, clearFilterState],
   );
   return (
     <FilterPopover

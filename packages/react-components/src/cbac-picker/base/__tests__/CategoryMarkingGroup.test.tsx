@@ -31,7 +31,7 @@ function markings(count: number): Array<{ id: string; name: string }> {
 
 function renderGroup(
   count: number,
-  onMarkingToggle: (id: string) => void = vi.fn()
+  onMarkingToggle: (id: string) => void = vi.fn(),
 ): void {
   render(
     <CategoryMarkingGroup
@@ -39,7 +39,7 @@ function renderGroup(
       markings={markings(count)}
       markingStates={EMPTY_STATES}
       onMarkingToggle={onMarkingToggle}
-    />
+    />,
   );
 }
 
@@ -50,7 +50,7 @@ describe("CategoryMarkingGroup", () => {
     renderGroup(5);
     for (let i = 0; i < 5; i++) {
       expect(
-        screen.getByRole("button", { name: `Marking ${i}` })
+        screen.getByRole("button", { name: `Marking ${i}` }),
       ).toBeDefined();
     }
     expect(screen.queryByText(/more$/u)).toBeNull();

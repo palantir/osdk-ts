@@ -64,19 +64,19 @@ export type InterfaceTypeDefinition = {
 };
 
 export function defineInterface(
-  interfaceDefInput: InterfaceTypeDefinition
+  interfaceDefInput: InterfaceTypeDefinition,
 ): InterfaceType {
   const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName] ===
       undefined,
-    `Interface ${apiName} already exists`
+    `Interface ${apiName} already exists`,
   );
 
   invariant(
     isValidApiName(interfaceDef.apiName),
-    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`
+    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
   );
 
   // legacy support for propertiesV2 (only SPTs)
@@ -98,7 +98,7 @@ export function defineInterface(
             required,
           },
         ];
-      })
+      }),
   );
   const propertiesV2 = Object.fromEntries(
     Object.entries(spts).map<
@@ -106,7 +106,7 @@ export function defineInterface(
     >(([propName, type]) => {
       const sptApiName = combineApiNamespaceIfMissing(
         namespace,
-        type.sharedPropertyType.apiName
+        type.sharedPropertyType.apiName,
       );
       return [
         sptApiName,
@@ -115,11 +115,11 @@ export function defineInterface(
           sharedPropertyType: verifyBasePropertyDefinition(
             namespace,
             propName,
-            type.sharedPropertyType
+            type.sharedPropertyType,
           ),
         },
       ];
-    })
+    }),
   );
 
   const propertiesV3 = Object.fromEntries(
@@ -128,7 +128,7 @@ export function defineInterface(
     >(([apiName, prop]) => {
       invariant(
         isValidApiName(apiName),
-        `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`
+        `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
       );
       const required =
         typeof prop === "object" && isInterfaceSharedPropertyType(prop)
@@ -154,7 +154,7 @@ export function defineInterface(
         // IDP
         return [apiName, propertyBase];
       }
-    })
+    }),
   );
 
   const extendsInterfaces = interfaceDef.extends
@@ -164,13 +164,13 @@ export function defineInterface(
     : [];
 
   const status: InterfaceTypeStatus = mapSimplifiedStatusToInterfaceTypeStatus(
-    interfaceDef.status ?? { type: "active" }
+    interfaceDef.status ?? { type: "active" },
   );
 
   invariant(
     status.type !== "deprecated" ||
       (status.deprecated.message && status.deprecated.deadline),
-    `Deprecated status must include message and deadline properties.`
+    `Deprecated status must include message and deadline properties.`,
   );
 
   const fullInterface: InterfaceType = {
@@ -211,21 +211,21 @@ export function defineInterface(
 function verifyBasePropertyDefinition(
   namespace: string,
   apiName: string,
-  type: SharedPropertyType
+  type: SharedPropertyType,
 ): SharedPropertyType {
   const unNamespacedTypeApiName = withoutNamespace(type.apiName);
   invariant(
     isPropertyTypeType(type.type) || isExotic(type.type),
     `Invalid data type ${JSON.stringify(
-      type
-    )} for property ${apiName} on InterfaceType ${apiName}`
+      type,
+    )} for property ${apiName} on InterfaceType ${apiName}`,
   );
   invariant(
     namespace + apiName === type.apiName || apiName === unNamespacedTypeApiName,
     `property key and it's apiName must be identical. ${JSON.stringify({
       key: apiName,
       apiName: type.apiName,
-    })}`
+    })}`,
   );
   return type;
 }

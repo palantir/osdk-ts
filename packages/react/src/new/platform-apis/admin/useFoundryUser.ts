@@ -61,7 +61,7 @@ export interface UseFoundryUserResult {
  */
 export function useFoundryUser(
   userId: string,
-  { enabled = true, status = "ACTIVE" }: UseFoundryUserOptions = {}
+  { enabled = true, status = "ACTIVE" }: UseFoundryUserOptions = {},
 ): UseFoundryUserResult {
   const { client } = React.useContext(OsdkContext);
 

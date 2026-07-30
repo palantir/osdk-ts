@@ -31,7 +31,7 @@ import type {
  */
 export async function createOntology(
   ctx: ConjureContext,
-  request: _api_modification_OntologyCreateRequest
+  request: _api_modification_OntologyCreateRequest,
 ): Promise<_api_modification_OntologyCreateResponse> {
   return conjureFetch(ctx, `/ontology/v2/create`, "POST", request);
 }

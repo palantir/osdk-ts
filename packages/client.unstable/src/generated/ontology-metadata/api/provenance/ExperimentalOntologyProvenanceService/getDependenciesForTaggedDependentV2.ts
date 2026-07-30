@@ -34,12 +34,12 @@ import type {
  */
 export async function getDependenciesForTaggedDependentV2(
   ctx: ConjureContext,
-  request: _api_provenance_GetDependenciesForTaggedDependentRequestV2
+  request: _api_provenance_GetDependenciesForTaggedDependentRequestV2,
 ): Promise<_api_provenance_GetDependenciesForTaggedDependentResponseV2> {
   return conjureFetch(
     ctx,
     `/provenance/getDependencyForResourceV2`,
     "PUT",
-    request
+    request,
   );
 }

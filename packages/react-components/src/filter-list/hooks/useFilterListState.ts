@@ -54,7 +54,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
 }
 
 function buildInitialStates<Q extends ObjectTypeDefinition>(
-  definitions: FilterListProps<Q>["filterDefinitions"]
+  definitions: FilterListProps<Q>["filterDefinitions"],
 ): Map<string, FilterState> {
   const states = new Map<string, FilterState>();
 
@@ -108,7 +108,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
 }
 
 export function useFilterListState<Q extends ObjectTypeDefinition>(
-  props: FilterListProps<Q>
+  props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
   const {
     objectType,
@@ -154,11 +154,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         }
       }
       return snapshot;
-    }
+    },
   );
 
   const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
-    () => new Map(initialFilterStatesSnapshot)
+    () => new Map(initialFilterStatesSnapshot),
   );
 
   const setFilterState = useCallback(
@@ -170,13 +170,13 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       });
 
       const definition = filterDefinitionsRef.current?.find(
-        (d) => getFilterKey(d) === filterKey
+        (d) => getFilterKey(d) === filterKey,
       );
       if (definition) {
         onFilterStateChanged?.(definition, state);
       }
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   const clearFilterState = useCallback((filterKey: string) => {
@@ -193,12 +193,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const whereClause = useMemo(
     () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
-    [filterDefinitions, filterStates, propertyTypes]
+    [filterDefinitions, filterStates, propertyTypes],
   );
 
   const linkedFilters = useMemo(
     () => getActiveLinkedFilters(filterDefinitions, filterStates),
-    [filterDefinitions, filterStates]
+    [filterDefinitions, filterStates],
   );
 
   const effectiveObjectSet = useMemo<ObjectSet<Q> | undefined>(
@@ -206,7 +206,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       objectSet == null
         ? undefined
         : narrowObjectSet(objectSet, whereClause, linkedFilters),
-    [objectSet, whereClause, linkedFilters]
+    [objectSet, whereClause, linkedFilters],
   );
 
   useEffect(() => {
@@ -227,11 +227,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         const key = getFilterKey(definition);
         map.set(
           key,
-          buildWhereClause(filterDefinitions, filterStates, propertyTypes, key)
+          buildWhereClause(filterDefinitions, filterStates, propertyTypes, key),
         );
       }
       return map;
-    }, [filterDefinitions, filterStates, propertyTypes])
+    }, [filterDefinitions, filterStates, propertyTypes]),
   );
 
   const perFilterLinkedFilters = useStableMapEntries(
@@ -241,11 +241,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         const key = getFilterKey(definition);
         map.set(
           key,
-          getActiveLinkedFilters(filterDefinitions, filterStates, key)
+          getActiveLinkedFilters(filterDefinitions, filterStates, key),
         );
       }
       return map;
-    }, [filterDefinitions, filterStates])
+    }, [filterDefinitions, filterStates]),
   );
 
   const activeFilterCount = useMemo(() => {
@@ -260,7 +260,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const hasChangesFromInitial = useMemo(
     () => !isEqual(filterStates, initialFilterStatesSnapshot),
-    [filterStates, initialFilterStatesSnapshot]
+    [filterStates, initialFilterStatesSnapshot],
   );
 
   return useMemo(
@@ -287,6 +287,6 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       activeFilterCount,
       hasChangesFromInitial,
       reset,
-    ]
+    ],
   );
 }

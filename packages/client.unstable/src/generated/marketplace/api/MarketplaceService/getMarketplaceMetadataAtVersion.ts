@@ -28,11 +28,11 @@ import type {
 export async function getMarketplaceMetadataAtVersion(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  version: _api_MarketplaceMetadataVersion
+  version: _api_MarketplaceMetadataVersion,
 ): Promise<_api_VersionedMarketplaceMetadata> {
   return conjureFetch(
     ctx,
     `/marketplaces/${marketplaceRid}/metadata/${version}`,
-    "GET"
+    "GET",
   );
 }

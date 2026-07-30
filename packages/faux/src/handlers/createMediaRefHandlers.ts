@@ -30,7 +30,7 @@ const transformationJobs = new Map<
 
 export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   /**
    * Load media metadata
@@ -43,7 +43,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
       return fauxFoundry
         .getDataStore(ontologyApiName)
         .getMediaOrThrow(objectType, primaryKey, propertyName).metaData;
-    }
+    },
   ),
   /**
    * Read media content
@@ -63,7 +63,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
       return new Response(content, {
         headers: { "Content-Type": mediaType },
       });
-    }
+    },
   ),
 
   /**
@@ -78,7 +78,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
     async () => ({
       type: "untyped" as const,
       sizeBytes: 25,
-    })
+    }),
   ),
 
   OntologiesV2.MediaReferenceProperties.upload(
@@ -96,9 +96,9 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
           propertyName,
           await request.arrayBuffer(),
           request.headers.get("Content-Type") ?? "application/octet-stream",
-          mediaItemPath
+          mediaItemPath,
         );
-    }
+    },
   ),
 
   /**
@@ -127,7 +127,7 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
         return { jobId: transformationJobId, status: "FAILED" as const };
       }
       return { jobId: transformationJobId, status: job.status };
-    }
+    },
   ),
 
   /**
@@ -143,6 +143,6 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
       return new Response(job.content, {
         headers: { "Content-Type": "application/octet-stream" },
       });
-    }
+    },
   ),
 ];

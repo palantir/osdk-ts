@@ -85,7 +85,7 @@ export type ActionSignature<
   X extends Record<any, ActionMetadata.Parameter<any>>,
 > = <A extends NOOP<OsdkActionParameters<X>>, OP extends ApplyActionOptions>(
   args: A,
-  options?: OP
+  options?: OP,
 ) => Promise<ActionReturnTypeForOptions<OP>>;
 
 export type BatchActionSignature<
@@ -95,7 +95,7 @@ export type BatchActionSignature<
   OP extends ApplyBatchActionOptions,
 >(
   args: A,
-  options?: OP
+  options?: OP,
 ) => Promise<ActionReturnTypeForOptions<OP>>;
 
 export async function applyAction<
@@ -112,20 +112,20 @@ export async function applyAction<
   client: MinimalClient,
   action: AD,
   parameters?: P,
-  options: Op = {} as Op
+  options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
   const clientWithHeaders = addUserAgentAndRequestContextHeaders(
     augmentRequestContext(client, (_) => ({ finalMethodCall: "applyAction" })),
-    action
+    action,
   );
   if (Array.isArray(parameters)) {
     invariant(
       client.transactionId == null,
-      "Batch actions are not supported for staged edit functions or when supplying a transaction ID"
+      "Batch actions are not supported for staged edit functions or when supplying a transaction ID",
     );
     invariant(
       client.scenarioRid == null,
-      "Batch actions are not supported when scoped to a scenario"
+      "Batch actions are not supported when scoped to a scenario",
     );
     const response = await Actions.applyBatch(
       clientWithHeaders,
@@ -137,15 +137,15 @@ export async function applyAction<
               parameters,
               client,
               await client.ontologyProvider.getActionDefinition(
-                action.unsanitizedApiName ?? action.apiName
-              )
+                action.unsanitizedApiName ?? action.apiName,
+              ),
             )
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
       },
-      { branch: client.branch }
+      { branch: client.branch },
     );
 
     const edits = response.edits;
@@ -168,8 +168,8 @@ export async function applyAction<
           >,
           client,
           await client.ontologyProvider.getActionDefinition(
-            action.unsanitizedApiName ?? action.apiName
-          )
+            action.unsanitizedApiName ?? action.apiName,
+          ),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -182,7 +182,7 @@ export async function applyAction<
         branch: client.branch,
         transactionId: client.transactionId,
         scenarioRid: client.scenarioRid,
-      }
+      },
     );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
@@ -210,7 +210,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
-  actionMetadata: ActionMetadata
+  actionMetadata: ActionMetadata,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -227,21 +227,21 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 async function remapBatchActionParams<AD extends ActionDefinition<any>>(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
-  actionMetadata: ActionMetadata
+  actionMetadata: ActionMetadata,
 ) {
   const remappedParams = await Promise.all(
     params.map(async (param) => {
       return {
         parameters: await remapActionParams<AD>(param, client, actionMetadata),
       };
-    })
+    }),
   );
 
   return remappedParams;
 }
 
 export function remapActionResponse(
-  response: SyncApplyActionResponseV2 | BatchApplyActionResponseV2
+  response: SyncApplyActionResponseV2 | BatchApplyActionResponseV2,
 ): ActionEditResponse | undefined {
   const editResponses = response?.edits;
   if (editResponses?.type === "edits") {

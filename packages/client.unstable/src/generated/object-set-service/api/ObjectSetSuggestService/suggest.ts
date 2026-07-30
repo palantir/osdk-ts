@@ -32,7 +32,7 @@ import type {
 export async function suggest(
   ctx: ConjureContext,
   request: _api_SuggestRequest,
-  backend: _api_Backend | null | undefined
+  backend: _api_Backend | null | undefined,
 ): Promise<_api_SuggestResponse> {
   return conjureFetch(ctx, `/suggest`, "PUT", request);
 }

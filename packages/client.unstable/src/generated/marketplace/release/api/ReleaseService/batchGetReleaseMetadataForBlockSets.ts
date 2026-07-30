@@ -33,12 +33,12 @@ import type {
  */
 export async function batchGetReleaseMetadataForBlockSets(
   ctx: ConjureContext,
-  request: _release_api_BatchGetReleaseMetadataForBlockSetsRequest
+  request: _release_api_BatchGetReleaseMetadataForBlockSetsRequest,
 ): Promise<_release_api_BatchGetReleaseMetadataForBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/releases/batchGetReleaseMetadataForBlockSets`,
     "POST",
-    request
+    request,
   );
 }

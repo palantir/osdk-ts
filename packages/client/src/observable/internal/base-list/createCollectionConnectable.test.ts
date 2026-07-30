@@ -151,7 +151,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       // Connect and subscribe
@@ -170,7 +170,7 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           isOptimistic: false,
           count: 2,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -192,7 +192,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -208,7 +208,7 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           isOptimistic: false,
           count: 0,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -230,7 +230,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -246,7 +246,7 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           isOptimistic: false,
           count: 0,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -280,13 +280,13 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -302,7 +302,7 @@ describe("createCollectionConnectable", () => {
           status: "loading",
           isOptimistic: true, // Should preserve optimistic flag
           count: 1,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -336,13 +336,13 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -359,7 +359,7 @@ describe("createCollectionConnectable", () => {
           status: "init",
           isOptimistic: false,
           count: 1,
-        })
+        }),
       );
 
       observer.next.mockClear();
@@ -379,7 +379,7 @@ describe("createCollectionConnectable", () => {
           status: "loading",
           isOptimistic: false,
           count: 1,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -453,7 +453,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -469,7 +469,7 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           isOptimistic: false,
           count: 3,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -526,7 +526,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -541,7 +541,7 @@ describe("createCollectionConnectable", () => {
         expect.objectContaining({
           data: [mockEmployee1],
           count: 1,
-        })
+        }),
       );
 
       observer.next.mockClear();
@@ -562,7 +562,7 @@ describe("createCollectionConnectable", () => {
         expect.objectContaining({
           data: [mockEmployee1, mockEmployee2],
           count: 2,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -596,13 +596,13 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -620,14 +620,14 @@ describe("createCollectionConnectable", () => {
         expect.objectContaining({
           data: [mockEmployee1],
           count: 1,
-        })
+        }),
       );
 
       expect(observer2.next).toHaveBeenCalledWith(
         expect.objectContaining({
           data: [mockEmployee1],
           count: 1,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -659,13 +659,13 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -689,7 +689,7 @@ describe("createCollectionConnectable", () => {
         expect.objectContaining({
           data: [mockEmployee1],
           count: 1,
-        })
+        }),
       );
 
       // First observer should not receive additional calls
@@ -727,13 +727,13 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        createPayload
+        createPayload,
       );
 
       const subscription = connectable.connect();
@@ -749,7 +749,7 @@ describe("createCollectionConnectable", () => {
           data: [undefined],
           status: "loaded",
           count: 1,
-        })
+        }),
       );
 
       subscription.unsubscribe();
@@ -781,7 +781,7 @@ describe("createCollectionConnectable", () => {
           status: "loaded",
           lastUpdated: Date.now(),
           isOptimistic: false,
-        } as any)
+        } as any),
       );
 
       // Mock createPayload to throw an error
@@ -792,7 +792,7 @@ describe("createCollectionConnectable", () => {
       const connectable = actualCreateCollectionConnectable(
         subject,
         mockSubjects,
-        errorThrowingCreatePayload
+        errorThrowingCreatePayload,
       );
 
       const subscription = connectable.connect();
@@ -806,7 +806,7 @@ describe("createCollectionConnectable", () => {
       expect(observer.error).toHaveBeenCalledWith(
         expect.objectContaining({
           message: "Test error in createPayload",
-        })
+        }),
       );
 
       subscription.unsubscribe();

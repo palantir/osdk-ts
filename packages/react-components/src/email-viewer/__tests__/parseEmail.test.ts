@@ -52,7 +52,7 @@ describe("parseEmailFromResponse", () => {
         date: "2026-01-01T00:00:00Z",
         html: "<p>Hello</p>",
         text: "Hello",
-      })
+      }),
     );
 
     const result = await parseEmailFromResponse(mockResponse());
@@ -72,7 +72,7 @@ describe("parseEmailFromResponse", () => {
     mockedParse.mockResolvedValue(
       baseEmail({
         subject: "",
-      })
+      }),
     );
 
     const result = await parseEmailFromResponse(mockResponse());
@@ -103,7 +103,7 @@ describe("parseEmailFromResponse", () => {
           },
         ],
         text: "test",
-      })
+      }),
     );
 
     const result = await parseEmailFromResponse(mockResponse());
@@ -124,7 +124,7 @@ describe("parseEmailFromResponse", () => {
           { name: "B", address: "b@example.com" },
         ],
         cc: [{ name: "C", address: "c@example.com" }],
-      })
+      }),
     );
 
     const result = await parseEmailFromResponse(mockResponse());
@@ -141,7 +141,7 @@ describe("parseEmailFromResponse", () => {
           name: "Group",
           group: [{ name: "Alice", address: "alice@example.com" }],
         },
-      })
+      }),
     );
 
     const result = await parseEmailFromResponse(mockResponse());

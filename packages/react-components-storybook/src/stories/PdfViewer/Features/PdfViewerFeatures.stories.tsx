@@ -60,11 +60,11 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(
   SAMPLE_PDF_URL,
-  "compressed.tracemonkey-pldi-09.pdf"
+  "compressed.tracemonkey-pldi-09.pdf",
 );
 const mockBookmarkedMedia = createMockMedia(
   BOOKMARKED_PDF_URL,
-  "pdf-example-bookmarks.pdf"
+  "pdf-example-bookmarks.pdf",
 );
 
 const meta: Meta<PdfViewerMediaProps> = {

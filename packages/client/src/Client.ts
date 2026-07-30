@@ -70,7 +70,7 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns an object set scoped to all objects of this type.
    */
   <Q extends ObjectTypeDefinition>(
-    o: Q
+    o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"]
     ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
@@ -84,7 +84,7 @@ export interface Client extends SharedClient, OldSharedClient {
    * @returns a minimal object set over all objects implementing the interface.
    */
   <Q extends InterfaceDefinition>(
-    o: Q
+    o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"]
     ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
@@ -129,7 +129,7 @@ export interface Client extends SharedClient, OldSharedClient {
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
-    experiment: Q
+    experiment: Q,
   ): ExperimentFns<Q>;
 
   /**
@@ -151,7 +151,7 @@ export interface Client extends SharedClient, OldSharedClient {
       | ActionDefinition<any>
       | QueryDefinition<any>,
   >(
-    o: Q
+    o: Q,
   ): Promise<
     Q extends ObjectTypeDefinition
       ? ObjectMetadata

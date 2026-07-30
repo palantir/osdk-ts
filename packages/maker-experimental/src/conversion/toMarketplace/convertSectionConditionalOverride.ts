@@ -22,7 +22,7 @@ import { convertConditionDefinition } from "./convertConditionDefinition.js";
 export function convertSectionConditionalOverride(
   override: SectionConditionalOverride,
   defaultVisibility: "visible" | "hidden",
-  actionParameters?: ActionParameter[]
+  actionParameters?: ActionParameter[],
 ): OntologyIrSectionConditionalOverride {
   return {
     condition: convertConditionDefinition(override.condition, actionParameters),

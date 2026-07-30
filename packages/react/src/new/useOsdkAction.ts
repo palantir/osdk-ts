@@ -37,7 +37,7 @@ type ApplyActionParams<Q extends ActionDefinition<any>> = Parameters<
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
-    args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>
+    args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
   ) => Promise<ActionEditResponse | undefined>;
 
   error:
@@ -59,14 +59,14 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
    * @returns A promise that resolves to the validation response, or undefined if aborted
    */
   validateAction: (
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse | undefined>;
 
   validationResult?: ActionValidationResponse;
 }
 
 export function useOsdkAction<Q extends ActionDefinition<any>>(
-  actionDef: Q
+  actionDef: Q,
 ): UseOsdkActionResult<Q> {
   const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext);
   useDevToolsMetadata(devtoolsEnabled, "useOsdkAction", actionDef.apiName);
@@ -81,7 +81,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
   const applyAction = React.useCallback(
     async function applyAction(
-      hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>
+      hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
     ) {
       try {
         // If validation is in progress, abort it
@@ -136,12 +136,12 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         setPending(false);
       }
     },
-    [observableClient, actionDef, isValidating]
+    [observableClient, actionDef, isValidating],
   );
 
   const validateAction = React.useCallback(
     async function validateAction(
-      args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     ): Promise<ActionValidationResponse | undefined> {
       try {
         // Check if action is being applied
@@ -186,7 +186,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         setValidating(false);
       }
     },
-    [observableClient, actionDef, isPending]
+    [observableClient, actionDef, isPending],
   );
 
   // Cleanup on unmount
@@ -214,6 +214,6 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       isPending,
       isValidating,
       validationResult,
-    ]
+    ],
   );
 }

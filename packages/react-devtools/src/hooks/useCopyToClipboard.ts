@@ -41,7 +41,7 @@ export function useCopyToClipboard(resetMs = 1500): UseCopyToClipboard {
         // Clipboard writes can reject (e.g. denied permission); ignore silently.
       }
     },
-    [resetMs]
+    [resetMs],
   );
 
   return { copied, copy };

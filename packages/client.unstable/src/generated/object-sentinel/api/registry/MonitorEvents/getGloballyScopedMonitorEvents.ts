@@ -35,13 +35,13 @@ export async function getGloballyScopedMonitorEvents(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
   pageToken: _api_registry_PageToken | null | undefined,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_registry_GetGloballyScopedMonitorEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors/${monitorRid}/globally-scoped-events`,
     "GET",
     undefined,
-    { pageToken, branchRid }
+    { pageToken, branchRid },
   );
 }

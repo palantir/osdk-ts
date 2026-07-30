@@ -65,10 +65,10 @@ function DatePickerCellFieldInner({
         return;
       }
       onChange(
-        showTime ? newValue.toISOString() : formatDateForInput(newValue)
+        showTime ? newValue.toISOString() : formatDateForInput(newValue),
       );
     },
-    [onChange, showTime]
+    [onChange, showTime],
   );
 
   return (

@@ -40,11 +40,11 @@ export class CipherTextPropertyImpl implements CipherText {
     const result = await cipherTextDecrypt(
       this.#client,
       ontologyRid,
-      ...this.#locator
+      ...this.#locator,
     );
     invariant(
       Object.hasOwn(result, "plaintext"),
-      "Expected decryption result to have plaintext value"
+      "Expected decryption result to have plaintext value",
     );
     return result.plaintext!;
   }

@@ -40,11 +40,11 @@ const buckets = [
 const slashFormat = (d: Date): string =>
   `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(
     2,
-    "0"
+    "0",
   )}/${d.getFullYear()}`;
 
 function renderInput(
-  props: Partial<React.ComponentProps<typeof DateRangeHistogramInput>> = {}
+  props: Partial<React.ComponentProps<typeof DateRangeHistogramInput>> = {},
 ) {
   return render(
     <DateRangeHistogramInput
@@ -54,7 +54,7 @@ function renderInput(
       maxValue={undefined}
       onChange={vi.fn()}
       {...props}
-    />
+    />,
   );
 }
 

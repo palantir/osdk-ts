@@ -260,7 +260,7 @@ function WithValidationStory() {
       const visibleCount = columns.filter((c) => c.isVisible).length;
       return visibleCount >= 2;
     },
-    []
+    [],
   );
 
   return (

@@ -24,7 +24,7 @@ import type {
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export const InterfaceDefinitions: unique symbol = Symbol(
-  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined
+  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
 );
 
 export interface FetchedObjectTypeDefinition extends ObjectMetadata {
@@ -43,7 +43,7 @@ export interface OntologyProvider {
    * @returns
    */
   getObjectDefinition: (
-    apiName: string
+    apiName: string,
   ) => Promise<FetchedObjectTypeDefinition>;
 
   /**
@@ -57,7 +57,7 @@ export interface OntologyProvider {
 
   getQueryDefinition: (
     apiName: string,
-    version: string | undefined
+    version: string | undefined,
   ) => Promise<QueryMetadata>;
 
   getActionDefinition: (apiName: string) => Promise<ActionMetadata>;

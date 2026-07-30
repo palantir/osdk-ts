@@ -125,7 +125,7 @@ describe("ObjectSet", () => {
               .map(([k, impl]) => [
                 k,
                 (impl as { propertyApiName: string }).propertyApiName,
-              ])
+              ]),
           ),
         },
       },
@@ -161,8 +161,8 @@ describe("ObjectSet", () => {
               ...wireMappings,
               totalCount: "1",
               propertySecurities: [],
-            })
-          )
+            }),
+          ),
         );
 
         const result = await client(ComplexImplementationInterface).fetchPage();
@@ -176,7 +176,7 @@ describe("ObjectSet", () => {
 
         // @ts-expect-error
         expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
-          /has a non-local implementation/u
+          /has a non-local implementation/u,
         );
       })();
     });

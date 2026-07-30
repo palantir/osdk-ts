@@ -26,7 +26,7 @@ import type {
  */
 export async function getEntityQueryableSource(
   ctx: ConjureContext,
-  request: _api_GetEntityQueryableSourceRequest
+  request: _api_GetEntityQueryableSourceRequest,
 ): Promise<_api_GetEntityQueryableSourceResponse> {
   return conjureFetch(ctx, `/ontology/entityQueryableSource`, "POST", request);
 }

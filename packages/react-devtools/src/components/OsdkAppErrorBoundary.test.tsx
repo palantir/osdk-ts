@@ -37,7 +37,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <div>healthy</div>
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
     expect(screen.getByText("healthy")).toBeDefined();
   });
@@ -51,7 +51,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Thrower message="render-explode" />
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
 
     expect(recordError).toHaveBeenCalledTimes(1);
@@ -66,7 +66,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Thrower message="visible-error" />
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
 
     expect(screen.getByRole("alert")).toBeDefined();
@@ -90,7 +90,7 @@ describe("OsdkAppErrorBoundary", () => {
         )}
       >
         <Thrower message="x" />
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
 
     expect(screen.getByText("custom-x")).toBeDefined();
@@ -107,7 +107,7 @@ describe("OsdkAppErrorBoundary", () => {
         fallback={<div>static-fallback</div>}
       >
         <Thrower message="x" />
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
 
     expect(screen.getByText("static-fallback")).toBeDefined();
@@ -128,7 +128,7 @@ describe("OsdkAppErrorBoundary", () => {
     render(
       <OsdkAppErrorBoundary monitorStore={store}>
         <Toggle />
-      </OsdkAppErrorBoundary>
+      </OsdkAppErrorBoundary>,
     );
 
     expect(screen.getByText("once")).toBeDefined();

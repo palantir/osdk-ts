@@ -35,7 +35,7 @@ afterEach(cleanup);
 const slashFormat = (d: Date): string =>
   `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(
     2,
-    "0"
+    "0",
   )}/${d.getFullYear()}`;
 
 describe("formatDate / parseDate plumbing", () => {
@@ -47,7 +47,7 @@ describe("formatDate / parseDate plumbing", () => {
           selectedDate={selectedDate}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       const input = screen.getByLabelText("Select date") as HTMLInputElement;
       expect(input.value).toBe("01/15/2024");
@@ -56,7 +56,7 @@ describe("formatDate / parseDate plumbing", () => {
     it("falls back to ISO YYYY-MM-DD when formatDate is omitted", () => {
       const selectedDate = new Date(2024, 0, 15);
       render(
-        <SingleDateInput selectedDate={selectedDate} onChange={vi.fn()} />
+        <SingleDateInput selectedDate={selectedDate} onChange={vi.fn()} />,
       );
       const input = screen.getByLabelText("Select date") as HTMLInputElement;
       expect(input.value).toBe("2024-01-15");
@@ -68,7 +68,7 @@ describe("formatDate / parseDate plumbing", () => {
           selectedDate={undefined}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       const input = screen.getByLabelText("Select date") as HTMLInputElement;
       expect(input.value).toBe("");
@@ -83,7 +83,7 @@ describe("formatDate / parseDate plumbing", () => {
           selectedDates={dates}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       expect(screen.getByText("01/15/2024")).toBeDefined();
       expect(screen.getByText("06/30/2024")).toBeDefined();
@@ -104,7 +104,7 @@ describe("formatDate / parseDate plumbing", () => {
           selectedDates={dates}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       const removeButton = screen.getByLabelText("Remove 01/15/2024");
       expect(removeButton).toBeDefined();
@@ -121,7 +121,7 @@ describe("formatDate / parseDate plumbing", () => {
           endDate={end}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       expect(screen.getByText("05/01/2024")).toBeDefined();
       expect(screen.getByText("05/31/2024")).toBeDefined();
@@ -134,7 +134,7 @@ describe("formatDate / parseDate plumbing", () => {
           startDate={start}
           endDate={undefined}
           onChange={vi.fn()}
-        />
+        />,
       );
       expect(screen.queryByText("05/01/2024")).toBeNull();
       const node = document.body.textContent ?? "";
@@ -149,7 +149,7 @@ describe("formatDate / parseDate plumbing", () => {
           endDate={undefined}
           onChange={vi.fn()}
           formatDate={slashFormat}
-        />
+        />,
       );
       const input = screen.getByLabelText("Start date") as HTMLInputElement;
       expect(input.type).toBe("date");

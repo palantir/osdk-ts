@@ -166,7 +166,7 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
  */
 export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   queryDef: Q,
-  options: UseOsdkFunctionOptions<Q> = {}
+  options: UseOsdkFunctionOptions<Q> = {},
 ): UseOsdkFunctionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext);
   const {
@@ -180,16 +180,16 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const stableParams = React.useMemo(
     () => params,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stableSerialize(params)]
+    [stableSerialize(params)],
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       stableSerialize(
-        dependsOn?.map((d) => (typeof d === "string" ? d : d.apiName))
+        dependsOn?.map((d) => (typeof d === "string" ? d : d.apiName)),
       ),
-    ]
+    ],
   );
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
@@ -199,10 +199,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
         dependsOnObjects?.map((item) =>
           "$apiName" in item
             ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
-            : item
-        )
+            : item,
+        ),
       ),
-    ]
+    ],
   );
 
   // Record<string, unknown> required as typing is figured out at runtime
@@ -215,7 +215,7 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
         devToolsMetadata({
           hookType: "useOsdkFunction",
           objectType: queryDef.apiName,
-        })
+        }),
       );
     }
     return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
@@ -228,12 +228,12 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
             dependsOnObjects: stableDependsOnObjects,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
           },
-          observer
+          observer,
         ),
       devToolsMetadata({
         hookType: "useOsdkFunction",
         objectType: queryDef.apiName,
-      })
+      }),
     );
   }, [
     observableClient,

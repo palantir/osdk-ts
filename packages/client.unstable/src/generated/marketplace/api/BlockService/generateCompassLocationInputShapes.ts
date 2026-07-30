@@ -28,12 +28,12 @@ import type {
  */
 export async function generateCompassLocationInputShapes(
   ctx: ConjureContext,
-  request: _api_GenerateCompassLocationInputShapesRequest
+  request: _api_GenerateCompassLocationInputShapesRequest,
 ): Promise<_api_GenerateCompassLocationInputShapesResponse> {
   return conjureFetch(
     ctx,
     `/blocks/generate-compass-location-input-shapes`,
     "POST",
-    request
+    request,
   );
 }

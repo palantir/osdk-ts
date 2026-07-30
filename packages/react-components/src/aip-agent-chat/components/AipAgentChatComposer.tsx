@@ -79,7 +79,7 @@ export function AipAgentChatComposer({
         }
       }
     },
-    [handleSend, isInFlight]
+    [handleSend, isInFlight],
   );
 
   // Attach the keydown handler in the `render` prop so it can be typed against
@@ -88,7 +88,7 @@ export function AipAgentChatComposer({
     (props: React.ComponentPropsWithRef<"textarea">) => (
       <textarea {...props} onKeyDown={handleKeyDown} rows={3} />
     ),
-    [handleKeyDown]
+    [handleKeyDown],
   );
 
   return (

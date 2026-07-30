@@ -106,7 +106,7 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    */
   getEditedEntities<Q extends ObjectTypeDefinition>(
     objectType: Q,
-    options?: { pageSize?: number; pageToken?: string }
+    options?: { pageSize?: number; pageToken?: string },
   ): Promise<EditedEntitiesPage<Q>>;
 
   /**
@@ -123,7 +123,7 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    */
   editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
-    options?: { pageSize?: number }
+    options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
 
   /**
@@ -132,7 +132,7 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    * here.
    */
   getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q
+    sourceObjectType: Q,
   ): Promise<LinkTypeApiNamesFor<Q>[]>;
 
   /**
@@ -145,7 +145,7 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   >(
     sourceObjectType: Q,
     linkType: LINK_TYPE_API_NAME,
-    options?: { pageSize?: number; pageToken?: string }
+    options?: { pageSize?: number; pageToken?: string },
   ): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>>;
 
   /**
@@ -167,14 +167,14 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   >(
     sourceObjectType: Q,
     linkType: LINK_TYPE_API_NAME,
-    options?: { pageSize?: number }
+    options?: { pageSize?: number },
   ): AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
   >;
 }
 
 export function isScenarioClient(
-  value: unknown
+  value: unknown,
 ): value is EXPERIMENTAL_ScenarioClient {
   return (
     value != null &&
@@ -194,19 +194,19 @@ export function isScenarioClient(
  */
 export function buildScenarioClient(
   parent: Client,
-  scenarioRid: string
+  scenarioRid: string,
 ): EXPERIMENTAL_ScenarioClient {
   const ctx: MinimalClient = parent[additionalContext];
 
   if (ctx.transactionId != null) {
     // eslint-disable-next-line no-console
     console.warn(
-      "withScenario / createScenario: the supplied client has an active transaction. Ignoring the transaction and scoping to the scenario instead."
+      "withScenario / createScenario: the supplied client has an active transaction. Ignoring the transaction and scoping to the scenario instead.",
     );
   }
   if (ctx.scenarioRid != null) {
     throw new Error(
-      "withScenario / createScenario: the supplied client already has an active scenario. Scenarios cannot be nested."
+      "withScenario / createScenario: the supplied client already has an active scenario. Scenarios cannot be nested.",
     );
   }
 
@@ -219,7 +219,7 @@ export function buildScenarioClient(
       logger: ctx.logger,
       UNSTABLE_DO_NOT_USE_BRANCH: ctx.branch,
     },
-    ctx.fetch
+    ctx.fetch,
   );
 
   const innerCtx: MinimalClient = inner[additionalContext];
@@ -230,7 +230,7 @@ export function buildScenarioClient(
       innerCtx,
       ontologyRid,
       scenarioRid,
-      { preview: true }
+      { preview: true },
     );
     return {
       objectTypes: response.objectTypes,
@@ -240,7 +240,7 @@ export function buildScenarioClient(
 
   async function getEditedEntities<Q extends ObjectTypeDefinition>(
     objectType: Q,
-    options?: { pageSize?: number; pageToken?: string }
+    options?: { pageSize?: number; pageToken?: string },
   ): Promise<EditedEntitiesPage<Q>> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioEditedObjects(
@@ -252,7 +252,7 @@ export function buildScenarioClient(
         pageSize: options?.pageSize,
         pageToken: options?.pageToken,
         preview: true,
-      }
+      },
     );
     const data: ObjectIdentifiers<Q>[] = response.data.map((entry) => {
       const wire = entry as { __apiName?: unknown; __primaryKey?: unknown };
@@ -269,7 +269,7 @@ export function buildScenarioClient(
 
   async function* editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
-    options?: { pageSize?: number }
+    options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>> {
     const seen = new Set<unknown>();
     let pageToken: string | undefined;
@@ -289,7 +289,7 @@ export function buildScenarioClient(
   }
 
   async function getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q
+    sourceObjectType: Q,
   ): Promise<LinkTypeApiNamesFor<Q>[]> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioEditedLinkTypes(
@@ -297,7 +297,7 @@ export function buildScenarioClient(
       ontologyRid,
       scenarioRid,
       sourceObjectType.apiName,
-      { preview: true }
+      { preview: true },
     );
     return response.data as LinkTypeApiNamesFor<Q>[];
   }
@@ -308,7 +308,7 @@ export function buildScenarioClient(
   >(
     sourceObjectType: Q,
     linkType: LINK_TYPE_API_NAME,
-    options?: { pageSize?: number; pageToken?: string }
+    options?: { pageSize?: number; pageToken?: string },
   ): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioEditedLinks(
@@ -321,7 +321,7 @@ export function buildScenarioClient(
         pageSize: options?.pageSize,
         pageToken: options?.pageToken,
         preview: true,
-      }
+      },
     );
 
     const data: MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>[] = [];
@@ -367,7 +367,7 @@ export function buildScenarioClient(
   >(
     sourceObjectType: Q,
     linkType: LINK_TYPE_API_NAME,
-    options?: { pageSize?: number }
+    options?: { pageSize?: number },
   ): AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
   > {

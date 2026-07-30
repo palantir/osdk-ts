@@ -42,7 +42,7 @@ function toDisplayValue(value: unknown): React.ReactNode {
 // edits change elsewhere in the table.
 function filterCellEditsToRow<TData extends RowData>(
   cellEdits: Record<string, CellEditInfo<TData, unknown>> | undefined,
-  rowId: string
+  rowId: string,
 ): Record<string, CellEditInfo<TData, unknown>> | undefined {
   if (!cellEdits) return undefined;
   let result: Record<string, CellEditInfo<TData, unknown>> | undefined;
@@ -56,7 +56,7 @@ function filterCellEditsToRow<TData extends RowData>(
 }
 
 export function renderDefaultCell<TData extends RowData>(
-  cellContext: CellContext<TData, unknown>
+  cellContext: CellContext<TData, unknown>,
 ): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;

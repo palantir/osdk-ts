@@ -24,11 +24,11 @@ import type { GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSh
  */
 export async function getSharedPropertyTypePermissions(
   ctx: ConjureContext,
-  sharedPropertyTypeRid: _api_SharedPropertyTypeRid
+  sharedPropertyTypeRid: _api_SharedPropertyTypeRid,
 ): Promise<_api_permissions_GetSharedPropertyTypePermissionsResponse> {
   return conjureFetch(
     ctx,
     `/permissions/sharedPropertyType/${sharedPropertyTypeRid}`,
-    "GET"
+    "GET",
   );
 }

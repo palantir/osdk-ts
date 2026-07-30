@@ -24,7 +24,7 @@ export async function basicAggregate(client: Client): Promise<Integer> {
     .aggregate({ $select: { "employeeLocation:exactDistinct": "asc" } });
   if (aggregation.employeeLocation.exactDistinct !== 3) {
     throw new Error(
-      `Unexpected aggregation result: ${JSON.stringify(aggregation)}`
+      `Unexpected aggregation result: ${JSON.stringify(aggregation)}`,
     );
   }
 
@@ -46,7 +46,7 @@ export async function basicAggregate(client: Client): Promise<Integer> {
     aggregation2[0].fullName.approximateDistinct !== 1
   ) {
     throw new Error(
-      `Unexpected aggregation result: ${JSON.stringify(aggregation2)}`
+      `Unexpected aggregation result: ${JSON.stringify(aggregation2)}`,
     );
   }
 

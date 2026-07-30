@@ -55,7 +55,7 @@ export function useColumnDefs<
   >,
 >(
   objectType: Q,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
@@ -67,7 +67,7 @@ export function useColumnDefs<
     if (columnDefinitions) {
       return getColumnsFromColumnDefinitions<Q, RDPs, FunctionColumns>(
         columnDefinitions,
-        objectProperties
+        objectProperties,
       );
     }
 
@@ -87,7 +87,7 @@ function getColumnsFromColumnDefinitions<
   >,
 >(
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  objectProperties?: Record<any, ObjectMetadata.Property>
+  objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -176,7 +176,7 @@ function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  objectProperties?: Record<any, ObjectMetadata.Property>
+  objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>

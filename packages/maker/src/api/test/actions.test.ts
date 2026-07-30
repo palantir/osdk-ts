@@ -5654,12 +5654,12 @@ describe("Action Types", () => {
               },
             },
           ],
-        })
+        }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`
+        `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
       );
       expect(() =>
-        defineCreateInterfaceObjectAction({ interfaceType })
+        defineCreateInterfaceObjectAction({ interfaceType }),
       ).not.toThrow();
     });
 
@@ -5740,7 +5740,7 @@ describe("Action Types", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`
+        `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`,
       );
     });
 
@@ -5765,7 +5765,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
       );
       expect(() => {
         const createAction = defineModifyInterfaceObjectAction({
@@ -5777,7 +5777,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
       );
       expect(() => {
         const createAction = defineCreateInterfaceObjectAction({
@@ -5838,7 +5838,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineModifyInterfaceObjectAction({
@@ -5854,7 +5854,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineCreateInterfaceObjectAction({
@@ -5893,7 +5893,7 @@ describe("Action Types", () => {
           excludedProperties: ["custom_parameter"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineModifyInterfaceObjectAction({
@@ -5901,7 +5901,7 @@ describe("Action Types", () => {
           excludedProperties: ["custom_parameter"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineCreateInterfaceObjectAction({
@@ -10628,7 +10628,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleObject and its type is not explicitly defined]`
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleObject and its type is not explicitly defined]`,
       );
       expect(() => {
         const createAction = defineCreateObjectAction({
@@ -10644,7 +10644,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
       );
       expect(() => {
         const createAction = defineCreateObjectAction({
@@ -10652,7 +10652,7 @@ describe("Action Types", () => {
           excludedProperties: ["custom_parameter"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
       );
       expect(() => {
         const createAction = defineCreateObjectAction({
@@ -10679,7 +10679,7 @@ describe("Action Types", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter condition references unknown parameter non_existent_parameter]`
+        `[Error: Invariant failed: Action parameter condition references unknown parameter non_existent_parameter]`,
       );
     });
 
@@ -10711,9 +10711,9 @@ describe("Action Types", () => {
               },
             },
           },
-        })
+        }),
       ).toThrowError(
-        "Invariant failed: Default static value for parameter buzz does not match type"
+        "Invariant failed: Default static value for parameter buzz does not match type",
       );
     });
 
@@ -10761,9 +10761,9 @@ describe("Action Types", () => {
               validation: { required: true, allowedValues: { type: "text" } },
             },
           ],
-        })
+        }),
       ).toThrowError(
-        "Invariant failed: Object to modify parameter must be defined in parameters"
+        "Invariant failed: Object to modify parameter must be defined in parameters",
       );
     });
 
@@ -15547,7 +15547,7 @@ describe("Action Types", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameters ["foo"] were referenced but not defined]`
+        `[Error: Invariant failed: Parameters ["foo"] were referenced but not defined]`,
       );
     });
 
@@ -15572,7 +15572,7 @@ describe("Action Types", () => {
           excludedProperties: ["id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineModifyObjectAction({
@@ -15581,7 +15581,7 @@ describe("Action Types", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateOrModifyObjectAction({
@@ -15590,7 +15590,7 @@ describe("Action Types", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateObjectAction({
@@ -15604,7 +15604,7 @@ describe("Action Types", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineModifyObjectAction({
@@ -15618,7 +15618,7 @@ describe("Action Types", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateOrModifyObjectAction({
@@ -15632,7 +15632,7 @@ describe("Action Types", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
       );
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
@@ -16922,7 +16922,7 @@ describe("Action Types", () => {
             },
           },
         ],
-      })
+      }),
     ).toThrow(/referenced but not defined/u);
   });
 
@@ -16992,7 +16992,7 @@ describe("Action Types", () => {
             },
           },
         ],
-      })
+      }),
     ).toThrow(/Interface link type .* does not exist on interface/u);
   });
 
@@ -17024,7 +17024,7 @@ describe("Action Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 });

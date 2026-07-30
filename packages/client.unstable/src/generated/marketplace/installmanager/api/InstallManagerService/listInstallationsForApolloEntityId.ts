@@ -30,12 +30,12 @@ import type {
 export async function listInstallationsForApolloEntityId(
   ctx: ConjureContext,
   apolloEntityId: _api_ApolloEntityId,
-  request: _installmanager_api_ListInstallationsForEntityIdRequest
+  request: _installmanager_api_ListInstallationsForEntityIdRequest,
 ): Promise<_installmanager_api_ListInstallationsForEntityIdResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/installations/entity-id/${apolloEntityId}/list`,
     "POST",
-    request
+    request,
   );
 }

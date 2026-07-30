@@ -30,12 +30,12 @@ import type {
  */
 export async function batchGetBlockSetVersionStatusV3(
   ctx: ConjureContext,
-  request: _api_BatchGetBlockSetVersionStatusV3Request
+  request: _api_BatchGetBlockSetVersionStatusV3Request,
 ): Promise<_api_BatchGetBlockSetVersionStatusV3Response> {
   return conjureFetch(
     ctx,
     `/block-sets/v3/version/status/batchGet`,
     "POST",
-    request
+    request,
   );
 }

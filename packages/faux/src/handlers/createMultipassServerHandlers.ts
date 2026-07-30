@@ -20,12 +20,12 @@ import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js"
 
 export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   http.post(
     new URL(
       "multipass/api/oauth2/token",
-      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/"
+      baseUrl.endsWith("/") ? baseUrl : baseUrl + "/",
     ).toString(),
     async (req) => {
       const body = await req.request.text();
@@ -79,9 +79,9 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
 
       return HttpResponse.json(
         { message: "Invalid request body" },
-        { status: 400 }
+        { status: 400 },
       );
-    }
+    },
   ),
 
   http.post(
@@ -109,8 +109,8 @@ export const createMultipassServerHandlers: FauxFoundryHandlersFactory = (
 
       return HttpResponse.json(
         { message: "Invalid request body" },
-        { status: 400 }
+        { status: 400 },
       );
-    }
+    },
   ),
 ];

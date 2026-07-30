@@ -32,11 +32,11 @@ import type {
 export async function getSnapshot(
   ctx: ConjureContext,
   productGroupRid: _api_ProductGroupRid,
-  snapshotRid: _api_ProductGroupSnapshotRid
+  snapshotRid: _api_ProductGroupSnapshotRid,
 ): Promise<_api_GetProductGroupSnapshotResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/${productGroupRid}/snapshots/${snapshotRid}`,
-    "GET"
+    "GET",
   );
 }

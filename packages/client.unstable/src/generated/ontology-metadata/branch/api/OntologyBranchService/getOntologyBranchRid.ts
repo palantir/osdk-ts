@@ -34,7 +34,7 @@ import type {
  */
 export async function getOntologyBranchRid(
   ctx: ConjureContext,
-  globalBranchRid: _api_GlobalBranchRid
+  globalBranchRid: _api_GlobalBranchRid,
 ): Promise<_api_OntologyBranchRid> {
   return conjureFetch(ctx, `/ontology/branch/global/${globalBranchRid}`, "GET");
 }

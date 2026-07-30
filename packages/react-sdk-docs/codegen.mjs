@@ -26,7 +26,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const docsContent = fs.readFileSync(
   path.join(__dirname, "./src/documentation.yml"),
-  "utf-8"
+  "utf-8",
 );
 
 const docs = yaml.parse(docsContent);
@@ -47,5 +47,5 @@ import type { SdkSnippets } from "@osdk/docs-spec-core";
 import type { OSDK_SNIPPETS_SPEC } from "@osdk/docs-spec-sdk";
 
 export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = ${docsJson};
-  `
+  `,
 );

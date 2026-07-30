@@ -47,7 +47,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string }
+      env: { command: string },
     ) => boolean;
 
     const result = applyFn({ mode: "production" }, { command: "serve" });
@@ -59,7 +59,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string }
+      env: { command: string },
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -70,7 +70,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string }
+      env: { command: string },
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "build" });
@@ -81,7 +81,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools();
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string }
+      env: { command: string },
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -123,7 +123,7 @@ describe("osdkDevTools vite plugin", () => {
     const plugin = osdkDevTools({ enabled: false });
     const applyFn = plugin.apply as (
       config: { mode?: string },
-      env: { command: string }
+      env: { command: string },
     ) => boolean;
 
     const result = applyFn({ mode: "development" }, { command: "serve" });
@@ -170,7 +170,7 @@ describe("osdkDevTools vite plugin", () => {
     transformConfig.handler(html);
 
     expect(spy).toHaveBeenCalledWith(
-      "[osdk-devtools] Injected devtools into HTML"
+      "[osdk-devtools] Injected devtools into HTML",
     );
     spy.mockRestore();
   });

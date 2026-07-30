@@ -21,7 +21,7 @@ export function noop(): any {}
 interface LoggerConstructor {
   new (
     bindings: Record<string, any>,
-    options?: { level?: string; msgPrefix?: string }
+    options?: { level?: string; msgPrefix?: string },
   ): Logger;
 }
 
@@ -42,7 +42,7 @@ export abstract class BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any>,
     options: { level?: string; msgPrefix?: string },
-    factory: LoggerConstructor
+    factory: LoggerConstructor,
   ) {
     this.bindings = bindings;
     this.options = options;
@@ -65,7 +65,7 @@ export abstract class BaseLogger implements Logger {
 
   protected abstract createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-    bindings: Record<string, any>
+    bindings: Record<string, any>,
   ): Logger.LogFn;
 
   trace: Logger.LogFn = noop;
@@ -77,7 +77,7 @@ export abstract class BaseLogger implements Logger {
 
   child(
     bindings: Record<string, any>,
-    options?: { level?: string; msgPrefix?: string }
+    options?: { level?: string; msgPrefix?: string },
   ): Logger {
     return new this.#factory(
       {
@@ -89,7 +89,7 @@ export abstract class BaseLogger implements Logger {
         msgPrefix: [this.options?.msgPrefix, options?.msgPrefix]
           .filter((x) => x)
           .join(" "),
-      }
+      },
     );
   }
 

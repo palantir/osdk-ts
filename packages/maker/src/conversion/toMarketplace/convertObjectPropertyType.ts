@@ -33,15 +33,15 @@ import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstrain
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertObjectPropertyType(
-  property: ObjectPropertyType
+  property: ObjectPropertyType,
 ): OntologyIrPropertyType {
   const apiName = namespace + property.apiName;
   invariant(
     !shouldNotHaveRenderHints(property.type) ||
       !hasRenderHints(property.typeClasses),
     `Property type ${apiName} of type '${getPropertyTypeName(
-      property.type
-    )}' should not have render hints`
+      property.type,
+    )}' should not have render hints`,
   );
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
@@ -62,13 +62,13 @@ export function convertObjectPropertyType(
             subtype: propertyTypeTypeToOntologyIrType(
               property.type,
               property.apiName,
-              property.sharedPropertyType
+              property.sharedPropertyType,
             ),
             reducers: convertReducers(
               property.type,
               property.apiName,
               property.reducers ?? [],
-              property.sharedPropertyType
+              property.sharedPropertyType,
             ),
           },
         }

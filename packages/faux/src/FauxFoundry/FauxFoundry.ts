@@ -51,7 +51,7 @@ export class FauxFoundry {
       description: "The default ontology",
       rid: `ri.ontology.main.ontology.${crypto.randomUUID()}`,
     },
-    { logger, strict }: { logger?: Logger; strict?: boolean } = {}
+    { logger, strict }: { logger?: Logger; strict?: boolean } = {},
   ) {
     this.strict = strict ?? true;
     this.baseUrl = baseUrl;
@@ -87,12 +87,12 @@ export class FauxFoundry {
   registerOntology(ontology: FauxOntology): void {
     this.#ontologiesByApiName.set(
       ontology.getOntologyFullMetadata().ontology.apiName,
-      ontology
+      ontology,
     );
 
     this.#ontologiesByRid.set(
       ontology.getOntologyFullMetadata().ontology.rid,
-      ontology
+      ontology,
     );
   }
 
@@ -103,7 +103,7 @@ export class FauxFoundry {
     if (!ontology) {
       throw new OpenApiCallError(
         404,
-        OntologyNotFoundError(ontologyApiNameOrRid)
+        OntologyNotFoundError(ontologyApiNameOrRid),
       );
     }
     return ontology;
@@ -111,7 +111,7 @@ export class FauxFoundry {
 
   setDataStore(
     ontologyApiNameOrRid: string,
-    fauxDataStore: FauxDataStore
+    fauxDataStore: FauxDataStore,
   ): void {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
     this.#dataStoresByOntologyApiName.set(ontology.apiName, fauxDataStore);

@@ -31,12 +31,12 @@ import type {
 export async function getOrgSettings(
   ctx: ConjureContext,
   organizationRid: _api_OrganizationRid,
-  request: _api_organization_GetOrgSettingsRequest
+  request: _api_organization_GetOrgSettingsRequest,
 ): Promise<_api_organization_GetOrgSettingsResponse> {
   return conjureFetch(
     ctx,
     `/organization/getSettings/${organizationRid}`,
     "POST",
-    request
+    request,
   );
 }

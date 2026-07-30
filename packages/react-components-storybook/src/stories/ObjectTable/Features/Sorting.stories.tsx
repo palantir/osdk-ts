@@ -74,21 +74,21 @@ export const WithDefaultSorting: Story = {
 
     await getColumnHeader(canvas, "fullName");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "fullName")).toBe("desc")
+      expect(sortDirectionOf(canvas, "fullName")).toBe("desc"),
     );
 
     // Switch to ascending.
     await openHeaderMenu(canvas, "fullName");
     await clickHeaderMenuItem("Sort ascending");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "fullName")).toBe("asc")
+      expect(sortDirectionOf(canvas, "fullName")).toBe("asc"),
     );
 
     // Sorting descending again returns to the default sort state.
     await openHeaderMenu(canvas, "fullName");
     await clickHeaderMenuItem("Sort descending");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "fullName")).toBe("desc")
+      expect(sortDirectionOf(canvas, "fullName")).toBe("desc"),
     );
   },
 };
@@ -119,14 +119,14 @@ return (
   },
   render: (args) => {
     const [orderBy, setOrderBy] = useState<any>(
-      args.orderBy ?? [{ property: "fullName", direction: "asc" }]
+      args.orderBy ?? [{ property: "fullName", direction: "asc" }],
     );
     const handleOrderByChanged = useCallback(
       (newOrderBy: any) => {
         args.onOrderByChanged?.(newOrderBy);
         setOrderBy(newOrderBy);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -164,14 +164,14 @@ return (
 
     await waitFor(() => expect(args.onOrderByChanged).toHaveBeenCalled());
     await waitFor(() =>
-      expect(canvas.getByText("fullName (desc)")).toBeInTheDocument()
+      expect(canvas.getByText("fullName (desc)")).toBeInTheDocument(),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, "fullName");
     await clickHeaderMenuItem("Sort ascending");
     await waitFor(() =>
-      expect(canvas.getByText("fullName (asc)")).toBeInTheDocument()
+      expect(canvas.getByText("fullName (asc)")).toBeInTheDocument(),
     );
   },
 };

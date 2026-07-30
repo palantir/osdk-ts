@@ -35,7 +35,7 @@ describe(Dialog, () => {
           Dialog content
         </Dialog>
         <div data-testid="dialog-portal-container" ref={portalContainerRef} />
-      </PortalContainerProvider>
+      </PortalContainerProvider>,
     );
 
     const portalContainer = screen.getByTestId("dialog-portal-container");

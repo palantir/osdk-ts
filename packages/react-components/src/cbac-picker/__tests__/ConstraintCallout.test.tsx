@@ -49,7 +49,7 @@ describe("ConstraintCallout", () => {
     expect(screen.getByText("Maximum allowed classification")).toBeDefined();
     expect(screen.getByText("TOP SECRET")).toBeDefined();
     expect(
-      screen.getByText("Selection cannot exceed this level.")
+      screen.getByText("Selection cannot exceed this level."),
     ).toBeDefined();
   });
 

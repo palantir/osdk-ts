@@ -63,6 +63,6 @@ export function CellContextMenu<TData extends RowData>({
     >
       {renderContent(cell.row.original, cell)}
     </div>,
-    document.body
+    document.body,
   );
 }

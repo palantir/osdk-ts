@@ -109,7 +109,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { enabled: false },
-        }
+        },
       );
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { objectSet: objectSet1 },
-        }
+        },
       );
 
       expect(result.current.data).toBeUndefined();
@@ -162,7 +162,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { objectSet: objectSet1 },
-        }
+        },
       );
 
       const mockData = {
@@ -317,7 +317,7 @@ describe(useObjectSet, () => {
 
       const { result } = renderHook(
         () => useObjectSet(mockObjectSet, { enabled: false }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.isLoading).toBe(false);
@@ -428,7 +428,7 @@ describe(useObjectSet, () => {
         {
           wrapper,
           initialProps: { orderBy: { name: "asc" as const } },
-        }
+        },
       );
 
       expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
@@ -460,7 +460,7 @@ describe(useObjectSet, () => {
           initialProps: {
             objectSet: undefined as typeof mockObjectSet | undefined,
           },
-        }
+        },
       );
 
       expect(mockObserveObjectSet).not.toHaveBeenCalled();

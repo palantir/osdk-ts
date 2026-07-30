@@ -27,12 +27,12 @@ import type {
  */
 export async function getStreamingTimeseriesMonitorGroup(
   ctx: ConjureContext,
-  request: _api_registry_GetStreamingTimeseriesMonitorGroupRequest
+  request: _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
 ): Promise<_api_registry_GetStreamingTimeseriesMonitorGroupResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/get-streaming-timeseries-monitor-group`,
     "POST",
-    request
+    request,
   );
 }

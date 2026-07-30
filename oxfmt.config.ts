@@ -20,6 +20,11 @@ import ultracite from "ultracite/oxfmt";
 // `**/auto-generated`, `**/codegen`, …) are left intact.
 export default defineConfig({
   ...ultracite,
+  // Override Ultracite's `trailingComma: "es5"`. We use "all" so trailing commas
+  // are added to every multi-line comma-separated structure (function params/args
+  // and type parameters included), matching the dprint-formatted packages'
+  // `onlyMultiLine` behavior for consistency across the monorepo.
+  trailingComma: "all",
   ignorePatterns: [
     ...(ultracite.ignorePatterns ?? []).filter((p) =>
       p !== "**/generated" && p !== "**/*.generated.*"

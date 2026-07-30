@@ -38,7 +38,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).toBeNull();
@@ -52,7 +52,7 @@ describe("useSelectionColumn", () => {
           hasSelection: true,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).toBeNull();
@@ -68,7 +68,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).not.toBeNull();
@@ -90,7 +90,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;
@@ -114,7 +114,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow,
-        })
+        }),
       );
 
       const columnDef = result.current;
@@ -137,7 +137,7 @@ describe("useSelectionColumn", () => {
           }),
         {
           initialProps: { isAllSelected: false, hasSelection: false },
-        }
+        },
       );
 
       const firstResult = result.current;
@@ -166,7 +166,7 @@ describe("useSelectionColumn", () => {
           }),
         {
           initialProps: { selectionMode: "single" },
-        }
+        },
       );
 
       const firstResult = result.current;
@@ -186,7 +186,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       expect(result.current).not.toBeNull();
@@ -209,7 +209,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll,
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;
@@ -234,7 +234,7 @@ describe("useSelectionColumn", () => {
           hasSelection: false,
           onToggleAll: vi.fn(),
           onToggleRow: vi.fn(),
-        })
+        }),
       );
 
       const columnDef = result.current;

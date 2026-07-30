@@ -26,14 +26,14 @@ export function convertReducers(
   type: PropertyTypeType,
   apiName: string,
   reducers?: Array<ReducerType>,
-  sharedPropertyType?: SharedPropertyType
+  sharedPropertyType?: SharedPropertyType,
 ): Array<OntologyIrArrayPropertyTypeReducer> {
   reducers?.forEach((reducer) => {
     if (reducer.structField) {
       invariant(
         isStruct(type) &&
           Object.keys(type.structDefinition).includes(reducer.structField),
-        `Reducer structField ${reducer.structField} does not exist in struct definition`
+        `Reducer structField ${reducer.structField} does not exist in struct definition`,
       );
     }
   });
@@ -46,7 +46,7 @@ export function convertReducers(
 
 export function mapReducers(
   apiName: string,
-  reducers?: Array<ReducerType>
+  reducers?: Array<ReducerType>,
 ): Array<OntologyIrArrayPropertyTypeReducer> {
   return (
     reducers?.map((reducer) => {
@@ -65,7 +65,7 @@ export function mapReducers(
           };
         default: {
           throw new Error(
-            `Unsupported reducer direction: ${reducer.direction}`
+            `Unsupported reducer direction: ${reducer.direction}`,
           );
         }
       }

@@ -71,7 +71,7 @@ export function createMockClient(): MockClient {
     resolveStub(
       stubs.filter((s) => s.objectType === objectType),
       calls,
-      `No stub for request\n`
+      `No stub for request\n`,
     );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
@@ -106,12 +106,12 @@ export function createMockClient(): MockClient {
     }
 
     return createMockObjectSetWithResolver(def, (calls) =>
-      resolve(def.apiName, calls)
+      resolve(def.apiName, calls),
     );
   }) as MockClient;
 
   mockClient.when = <T>(
-    callback: StubPatternCallback<T>
+    callback: StubPatternCallback<T>,
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;
 
@@ -138,7 +138,7 @@ export function createMockClient(): MockClient {
 
   mockClient.whenObjectSet = <Q extends ObjectOrInterfaceDefinition, T>(
     objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>
+    callback: ObjectSetStubCallback<Q, T>,
   ): StubBuilderFor<T> => {
     let capturedCalls: Call[] | undefined;
 
@@ -147,7 +147,7 @@ export function createMockClient(): MockClient {
       (calls) => {
         capturedCalls = calls;
         return { data: [], nextPageToken: undefined };
-      }
+      },
     );
 
     void callback(capturingProxy);
@@ -169,7 +169,7 @@ export function createMockClient(): MockClient {
 
   mockClient.whenQuery = <Q extends QueryDefinition>(
     query: Q,
-    params?: QueryParamsFromDef<Q>
+    params?: QueryParamsFromDef<Q>,
   ): QueryStubBuilder<QueryReturnTypeFromDef<Q>> => {
     return {
       thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
@@ -207,7 +207,7 @@ export function createMockClient(): MockClient {
     value: createPlatformClient(
       "https://mock.invalid/",
       // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-      async () => "mock-token"
+      async () => "mock-token",
     ),
     enumerable: false,
   });

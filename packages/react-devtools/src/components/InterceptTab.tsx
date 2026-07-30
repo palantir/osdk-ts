@@ -66,7 +66,7 @@ function getJsonExtensionSnapshot(): JsonExtension | null {
 
 function parseJsonField<T>(
   text: string,
-  fieldName: string
+  fieldName: string,
 ): { value: T | undefined; error: string | null } {
   try {
     const trimmed = text.trim();
@@ -208,7 +208,7 @@ interface HydrateOverrideFormParams {
 }
 
 function hydrateOverrideFields(
-  params: HydrateOverrideFormParams
+  params: HydrateOverrideFormParams,
 ): Pick<
   InterceptState,
   "whereClauseText" | "orderByText" | "pageSize" | "groupByText" | "selectText"
@@ -237,7 +237,7 @@ function hydrateOverrideFields(
 
 function interceptReducer(
   state: InterceptState,
-  action: InterceptAction
+  action: InterceptAction,
 ): InterceptState {
   switch (action.type) {
     case "SET_SELECTED_PRIMITIVE":
@@ -381,11 +381,11 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
 
   const jsonExtension = React.useSyncExternalStore(
     subscribeJsonExtension,
-    getJsonExtensionSnapshot
+    getJsonExtensionSnapshot,
   );
   const jsonExtensions = useMemo(
     () => (jsonExtension ? [jsonExtension] : []),
-    [jsonExtension]
+    [jsonExtension],
   );
 
   const overrideStore = monitorStore.getPrototypeOverrideStore();
@@ -393,7 +393,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
   const overrideSnapshotRef = React.useRef<PrototypeOverride[]>([]);
   const overrideSubscribe = useCallback(
     (callback: () => void) => overrideStore.subscribe(callback),
-    [overrideStore]
+    [overrideStore],
   );
   const overrideGetSnapshot = useCallback((): PrototypeOverride[] => {
     const current = overrideStore.getAll();
@@ -409,7 +409,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
   }, [overrideStore]);
   const overrideStoreOverrides = React.useSyncExternalStore(
     overrideSubscribe,
-    overrideGetSnapshot
+    overrideGetSnapshot,
   );
 
   const mockPollingStore = React.useMemo(() => {
@@ -418,7 +418,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
   }, [monitorStore]);
   const polledMocks = React.useSyncExternalStore(
     mockPollingStore.subscribe,
-    mockPollingStore.getSnapshot
+    mockPollingStore.getSnapshot,
   );
 
   const effectiveMocks: Array<MockWithConfig> = useMemo(() => {
@@ -633,7 +633,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
           type: "UPDATE_MOCKS",
           updater: (prevMocks) =>
             prevMocks.map((m) =>
-              m.id === editingMock.id ? { ...mockResponse, config, id } : m
+              m.id === editingMock.id ? { ...mockResponse, config, id } : m,
             ),
         });
       } else {
@@ -696,12 +696,12 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
           type: "UPDATE_MOCKS",
           updater: (prevMocks) =>
             prevMocks.map((m) =>
-              m.id === mockId ? { ...m, enabled: newEnabled } : m
+              m.id === mockId ? { ...m, enabled: newEnabled } : m,
             ),
         });
       }
     },
-    [monitorStore]
+    [monitorStore],
   );
 
   const handleDeleteMock = useCallback(
@@ -713,7 +713,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
         updater: (prevMocks) => prevMocks.filter((m) => m.id !== mockId),
       });
     },
-    [monitorStore]
+    [monitorStore],
   );
 
   const handleEditMock = useCallback((mock: MockWithConfig) => {
@@ -737,7 +737,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
 
     const whereResult = parseJsonField<Record<string, unknown>>(
       whereClauseText,
-      "Where Clause"
+      "Where Clause",
     );
     if (whereResult.error) {
       dispatch({ type: "SET_ERROR", error: whereResult.error });
@@ -751,7 +751,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     if (selectedQuery.isAggregation) {
       const groupByResult = parseJsonField<Record<string, unknown>>(
         groupByText,
-        "Group By"
+        "Group By",
       );
       if (groupByResult.error) {
         dispatch({ type: "SET_ERROR", error: groupByResult.error });
@@ -760,7 +760,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
 
       const selectResult = parseJsonField<Record<string, unknown>>(
         selectText,
-        "Select"
+        "Select",
       );
       if (selectResult.error) {
         dispatch({ type: "SET_ERROR", error: selectResult.error });
@@ -775,7 +775,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     } else {
       const orderByResult = parseJsonField<Record<string, "asc" | "desc">>(
         orderByText,
-        "Order By"
+        "Order By",
       );
       if (orderByResult.error) {
         dispatch({ type: "SET_ERROR", error: orderByResult.error });
@@ -822,14 +822,14 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
         overrideStore.updateOverride(bindingId, { enabled: !override.enabled });
       }
     },
-    [overrideStore]
+    [overrideStore],
   );
 
   const handleRemoveOverride = useCallback(
     (bindingId: string) => {
       overrideStore.clearOverride(bindingId);
     },
-    [overrideStore]
+    [overrideStore],
   );
 
   const handleEditOverride = useCallback((override: PrototypeOverride) => {

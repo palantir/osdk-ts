@@ -28,12 +28,12 @@ import type {
 export async function updateTimeseriesJobConfiguration(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_registry_UpdateTimeseriesJobConfigurationRequest
+  request: _api_registry_UpdateTimeseriesJobConfigurationRequest,
 ): Promise<_api_registry_UpdateTimeseriesJobConfigurationResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/update-timeseries-job-configuration/${monitorRid}`,
     "POST",
-    request
+    request,
   );
 }

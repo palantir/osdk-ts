@@ -75,19 +75,19 @@ export function OsdkProvider({
           debug: { refCounts: debugRefCounts, cacheKeys: debugCacheKeys },
         },
       }),
-    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys]
+    [client, actionDelayMs, logLevel, debugRefCounts, debugCacheKeys],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(
     baseObservableClient,
-    devtoolsEnabled
+    devtoolsEnabled,
   );
 
   const content = wrapChildren?.(children) ?? children;
 
   const contextValue = useMemo(
     () => ({ client, observableClient: devToolsClient, devtoolsEnabled }),
-    [client, devToolsClient, devtoolsEnabled]
+    [client, devToolsClient, devtoolsEnabled],
   );
 
   return (

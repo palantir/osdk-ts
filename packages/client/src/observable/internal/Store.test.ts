@@ -97,7 +97,7 @@ const logger = new TestLogger(
   {},
   {
     level: "debug",
-  }
+  },
 );
 
 inspect.defaultOptions.depth = 9;
@@ -216,7 +216,7 @@ describe(Store, () => {
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/"),
         createClient,
-        { logger }
+        { logger },
       );
       ({ client, fauxFoundry } = testSetup);
 
@@ -251,7 +251,7 @@ describe(Store, () => {
           cache,
           type: Employee,
           primaryKey: 1,
-        }
+        },
       );
       const emp1 = emp1Payload?.object;
       invariant(emp1);
@@ -272,7 +272,7 @@ describe(Store, () => {
           asBsoStub(emp1),
           "peeps",
           { __apiName: "Employee", __primaryKey: JOHN_DOE_ID },
-          "lead"
+          "lead",
         );
 
       const targetType = "Employee";
@@ -284,7 +284,7 @@ describe(Store, () => {
       // Invalidate the employee cache
       const invalidateEmployeePromise = cache.invalidateObjectType(
         targetType,
-        undefined
+        undefined,
       );
 
       await waitForCall(linkSubFn);
@@ -353,7 +353,7 @@ describe(Store, () => {
           srcLinkName: "occupants",
           targetType: Employee,
           expected: [expect.objectContaining({ $primaryKey: 1 })],
-        }
+        },
       );
 
       // Clear any initial calls
@@ -371,7 +371,7 @@ describe(Store, () => {
       //  - any link queries where the target is an Employee to be invalidated
       const invalidateEmployeePromise = cache.invalidateObjectType(
         Employee,
-        undefined
+        undefined,
       );
 
       // The link should be invalidated (loading state)
@@ -425,7 +425,7 @@ describe(Store, () => {
           pk: emp2.$primaryKey,
           dedupeInterval: 60_000,
         },
-        linkSubFn1
+        linkSubFn1,
       );
 
       await waitForCall(linkSubFn1);
@@ -450,8 +450,8 @@ describe(Store, () => {
             pk: emp2.$primaryKey,
             dedupeInterval: 60_000,
           },
-          linkSubFn2
-        )
+          linkSubFn2,
+        ),
       );
 
       await waitForCall(linkSubFn2);
@@ -479,8 +479,8 @@ describe(Store, () => {
             pk: emp2.$primaryKey,
             dedupeInterval: 60_000,
           },
-          linkSubFn
-        )
+          linkSubFn,
+        ),
       );
 
       await waitForCall(linkSubFn);
@@ -495,7 +495,7 @@ describe(Store, () => {
 
       const invalidatePromise = cache.invalidateObjectType(
         "Employee",
-        undefined
+        undefined,
       );
 
       await waitForCall(linkSubFn);
@@ -512,26 +512,26 @@ describe(Store, () => {
 
     describe("multi-object observeLinks", () => {
       function getLastPayload(
-        subFn: ReturnType<typeof mockLinkSubCallback>
+        subFn: ReturnType<typeof mockLinkSubCallback>,
       ): SpecificLinkPayload {
         const calls = subFn.next.mock.calls;
         return calls[calls.length - 1][0] as SpecificLinkPayload;
       }
 
       async function waitForLoaded(
-        subFn: ReturnType<typeof mockLinkSubCallback>
+        subFn: ReturnType<typeof mockLinkSubCallback>,
       ) {
         await vi.waitFor(
           () => {
             expect(getLastPayload(subFn)?.status).toBe("loaded");
           },
-          { interval: 0 }
+          { interval: 0 },
         );
       }
 
       it("returns linked objects from all source objects", async () => {
         const observableClient: ObservableClient = new ObservableClientImpl(
-          cache
+          cache,
         );
 
         const { payload: emp1Payload } = await expectStandardObserveObject({
@@ -558,8 +558,8 @@ describe(Store, () => {
             "officeLink",
             { linkName: "officeLink" },
             // @ts-expect-error crossing typed/untyped barrier for test
-            linkSubFn as unknown as Observer<SpecificLinkPayload>
-          )
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
         );
 
         await waitForLoaded(linkSubFn);
@@ -570,18 +570,18 @@ describe(Store, () => {
           expect.arrayContaining([
             expect.objectContaining({ $primaryKey: "101" }),
             expect.objectContaining({ $primaryKey: "102" }),
-          ])
+          ]),
         );
         expect(lastPayload.totalCount).toBe("2");
         expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ $primaryKey: "101" }),
-          ])
+          ]),
         );
         expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(2)).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ $primaryKey: "102" }),
-          ])
+          ]),
         );
       });
 
@@ -593,12 +593,12 @@ describe(Store, () => {
           { __apiName: "Employee", __primaryKey: 3 },
           "officeLink",
           { __apiName: "Office", __primaryKey: "101" },
-          "occupants"
+          "occupants",
         );
 
         try {
           const observableClient: ObservableClient = new ObservableClientImpl(
-            cache
+            cache,
           );
 
           const { payload: emp1Payload } = await expectStandardObserveObject({
@@ -625,8 +625,8 @@ describe(Store, () => {
               "officeLink",
               { linkName: "officeLink" },
               // @ts-expect-error crossing typed/untyped barrier for test
-              linkSubFn as unknown as Observer<SpecificLinkPayload>
-            )
+              linkSubFn as unknown as Observer<SpecificLinkPayload>,
+            ),
           );
 
           await waitForLoaded(linkSubFn);
@@ -638,19 +638,19 @@ describe(Store, () => {
           expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ $primaryKey: "101" }),
-            ])
+            ]),
           );
           expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(3)).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ $primaryKey: "101" }),
-            ])
+            ]),
           );
         } finally {
           dataStore.unregisterLink(
             { __apiName: "Employee", __primaryKey: 3 },
             "officeLink",
             { __apiName: "Office", __primaryKey: "101" },
-            "occupants"
+            "occupants",
           );
         }
       });
@@ -665,17 +665,17 @@ describe(Store, () => {
           { __apiName: "Employee", __primaryKey: 1 },
           "peeps",
           { __apiName: "Employee", __primaryKey: 3 },
-          "lead"
+          "lead",
         );
         dataStore.registerLink(
           { __apiName: "Employee", __primaryKey: 1 },
           "peeps",
           { __apiName: "Employee", __primaryKey: 4 },
-          "lead"
+          "lead",
         );
 
         const observableClient: ObservableClient = new ObservableClientImpl(
-          cache
+          cache,
         );
 
         const { payload: emp1Payload } = await expectStandardObserveObject({
@@ -704,8 +704,8 @@ describe(Store, () => {
             "peeps",
             { linkName: "peeps", pageSize: 1 },
             // @ts-expect-error crossing typed/untyped barrier for test
-            linkSubFn as unknown as Observer<SpecificLinkPayload>
-          )
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
         );
 
         await waitForLoaded(linkSubFn);
@@ -717,7 +717,7 @@ describe(Store, () => {
 
       it("single object fast path still works", async () => {
         const observableClient: ObservableClient = new ObservableClientImpl(
-          cache
+          cache,
         );
 
         const { payload: emp1Payload } = await expectStandardObserveObject({
@@ -736,8 +736,8 @@ describe(Store, () => {
             "officeLink",
             { linkName: "officeLink" },
             // @ts-expect-error crossing typed/untyped barrier for test
-            linkSubFn as unknown as Observer<SpecificLinkPayload>
-          )
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
         );
 
         await waitForCall(linkSubFn);
@@ -749,7 +749,7 @@ describe(Store, () => {
         expectSingleLinkCallAndClear(
           linkSubFn,
           [expect.objectContaining({ $primaryKey: "101" })],
-          { status: "loaded" }
+          { status: "loaded" },
         );
       });
     });
@@ -780,7 +780,7 @@ describe(Store, () => {
           sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
           pk: fooInterfaceInstance.$primaryKey,
         },
-        linkSubFn
+        linkSubFn,
       );
 
       await waitForCall(linkSubFn);
@@ -813,7 +813,7 @@ describe(Store, () => {
           sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
           pk: fooInterfaceInstance.$primaryKey,
         },
-        linkSubFn
+        linkSubFn,
       );
 
       await waitForCall(linkSubFn);
@@ -826,7 +826,7 @@ describe(Store, () => {
 
       subscription.unsubscribe();
       testStage(
-        "Interface link invalidation via implementing object type verified"
+        "Interface link invalidation via implementing object type verified",
       );
     });
   });
@@ -843,7 +843,7 @@ describe(Store, () => {
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/"),
         createClient,
-        { logger }
+        { logger },
       );
       ({ client } = testSetup);
 
@@ -883,7 +883,7 @@ describe(Store, () => {
       const cacheKey = cacheKeys.get<ObjectCacheKey>(
         "object",
         "Employee",
-        emp.$primaryKey
+        emp.$primaryKey,
       );
 
       // starts empty
@@ -897,7 +897,7 @@ describe(Store, () => {
 
       const updatedEmpFromCache = updateObject(
         cache,
-        emp.$clone({ fullName: "new name" })
+        emp.$clone({ fullName: "new name" }),
       );
       expect(updatedEmpFromCache).not.toBe(emp);
 
@@ -918,8 +918,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
@@ -932,7 +932,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(
           subFn,
           emp.$clone({ fullName: "new name" }),
-          "loaded"
+          "loaded",
         );
 
         // remove the optimistic write
@@ -950,7 +950,7 @@ describe(Store, () => {
             where: {},
             orderBy: {},
           },
-          employeesAsServerReturns
+          employeesAsServerReturns,
         );
 
         const emp = employeesAsServerReturns[0];
@@ -963,8 +963,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            empSubFn
-          )
+            empSubFn,
+          ),
         );
 
         expectSingleObjectCallAndClear(empSubFn, emp, "loaded");
@@ -976,8 +976,8 @@ describe(Store, () => {
               type: Employee,
               mode: "offline",
             },
-            listSubFn
-          )
+            listSubFn,
+          ),
         );
 
         await waitForCall(listSubFn, 1);
@@ -1008,7 +1008,7 @@ describe(Store, () => {
           {
             isOptimistic: true,
             status: "loading",
-          }
+          },
         );
 
         // write the real update, via the earlier list definition
@@ -1029,7 +1029,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(
           empSubFn,
           truthUpdatedEmployee,
-          "loaded"
+          "loaded",
         );
 
         // see the list get updated
@@ -1052,8 +1052,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
 
@@ -1083,7 +1083,7 @@ describe(Store, () => {
 
       it("adds an object to a $title-filtered list when an optimistic write makes it match", async () => {
         const johnDoe = employeesAsServerReturns.find(
-          (e) => e.$primaryKey === JOHN_DOE_ID
+          (e) => e.$primaryKey === JOHN_DOE_ID,
         );
         invariant(johnDoe, "expected John Doe in the seeded employees");
 
@@ -1095,8 +1095,8 @@ describe(Store, () => {
         defer(
           cache.lists.observe(
             { type: Employee, where, orderBy: {}, mode: "offline" },
-            listSubFn
-          )
+            listSubFn,
+          ),
         );
 
         await waitForCall(listSubFn, 1);
@@ -1117,7 +1117,7 @@ describe(Store, () => {
 
       it("adds an object to a $primaryKey-filtered list when written to the cache", async () => {
         const johnDoe = employeesAsServerReturns.find(
-          (e) => e.$primaryKey === JOHN_DOE_ID
+          (e) => e.$primaryKey === JOHN_DOE_ID,
         );
         invariant(johnDoe, "expected John Doe in the seeded employees");
 
@@ -1128,8 +1128,8 @@ describe(Store, () => {
         defer(
           cache.lists.observe(
             { type: Employee, where, orderBy: {}, mode: "offline" },
-            listSubFn
-          )
+            listSubFn,
+          ),
         );
 
         await waitForCall(listSubFn, 1);
@@ -1159,8 +1159,8 @@ describe(Store, () => {
                 pk: emp.$primaryKey,
                 mode: "offline",
               },
-              subFn
-            )
+              subFn,
+            ),
           );
           expectSingleObjectCallAndClear(subFn, emp);
 
@@ -1171,8 +1171,8 @@ describe(Store, () => {
                 type: Employee,
                 mode: "offline",
               },
-              subListFn
-            )
+              subListFn,
+            ),
           );
 
           await waitForCall(subListFn, 1);
@@ -1181,7 +1181,7 @@ describe(Store, () => {
           const cacheKey = cacheKeys.get<ObjectCacheKey>(
             "object",
             emp.$apiName,
-            emp.$primaryKey
+            emp.$primaryKey,
           );
 
           // Actual test is here, prior to this is setup
@@ -1194,7 +1194,7 @@ describe(Store, () => {
             (batch) => {
               batch.changes.deleteObject(cacheKey);
               batch.delete(cacheKey, "loading");
-            }
+            },
           );
 
           expectSingleObjectCallAndClear(subFn, undefined);
@@ -1221,8 +1221,8 @@ describe(Store, () => {
                 pk: emp.$primaryKey,
                 mode: "offline",
               },
-              subFn
-            )
+              subFn,
+            ),
           );
           expectSingleObjectCallAndClear(subFn, emp);
 
@@ -1233,8 +1233,8 @@ describe(Store, () => {
                 type: Employee,
                 mode: "offline",
               },
-              subListFn
-            )
+              subListFn,
+            ),
           );
 
           await waitForCall(subListFn, 1);
@@ -1249,7 +1249,7 @@ describe(Store, () => {
                   apiName: Employee,
                   pk: emp.$primaryKey,
                 },
-                undefined
+                undefined,
               )
               .deleteFromStore("loaded", batch);
           });
@@ -1279,8 +1279,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
 
         expectSingleObjectCallAndClear(subFn, staleEmp, "loaded");
@@ -1314,8 +1314,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
@@ -1326,8 +1326,8 @@ describe(Store, () => {
               type: Employee,
               mode: "offline",
             },
-            subListFn
-          )
+            subListFn,
+          ),
         );
 
         await waitForCall(subListFn, 1);
@@ -1381,8 +1381,8 @@ describe(Store, () => {
               pk: emp.$primaryKey,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
@@ -1395,8 +1395,8 @@ describe(Store, () => {
               orderBy: {},
               mode: "offline",
             },
-            subListFn
-          )
+            subListFn,
+          ),
         );
 
         await waitForCall(subListFn, 1);
@@ -1408,7 +1408,7 @@ describe(Store, () => {
 
         const pInvalidateComplete = cache.invalidateObjectType(
           Employee,
-          undefined
+          undefined,
         );
 
         await waitForCall(subListFn, 1);
@@ -1428,7 +1428,7 @@ describe(Store, () => {
           objectPayloadContaining({
             status: "loading",
             object: staleEmp as unknown as ObjectHolder,
-          })
+          }),
         );
         // Second call is for loaded state with fresh data
         expect(subFn.next).toHaveBeenNthCalledWith(
@@ -1436,7 +1436,7 @@ describe(Store, () => {
           objectPayloadContaining({
             status: "loaded",
             object: emp as unknown as ObjectHolder,
-          })
+          }),
         );
         subFn.next.mockClear();
 
@@ -1473,8 +1473,8 @@ describe(Store, () => {
               pk: JOHN_DOE_ID,
               mode: "force",
             },
-            subFn1
-          )
+            subFn1,
+          ),
         );
 
         expect(subFn1.next).toHaveBeenCalledExactlyOnceWith(
@@ -1482,7 +1482,7 @@ describe(Store, () => {
             status: "loading",
             object: undefined,
             isOptimistic: false,
-          })
+          }),
         );
 
         subFn1.next.mockClear();
@@ -1492,7 +1492,7 @@ describe(Store, () => {
           objectPayloadContaining({
             object: likeEmployee50030,
             isOptimistic: false,
-          })
+          }),
         );
 
         const firstLoad = subFn1.next.mock.lastCall?.[0]!;
@@ -1506,8 +1506,8 @@ describe(Store, () => {
               pk: JOHN_DOE_ID,
               mode: "force",
             },
-            subFn2
-          )
+            subFn2,
+          ),
         );
         expectSingleObjectCallAndClear(subFn1, likeEmployee50030, "loading");
 
@@ -1522,7 +1522,7 @@ describe(Store, () => {
             objectPayloadContaining({
               ...firstLoad,
               lastUpdated: expect.toBeGreaterThan(firstLoad.lastUpdated),
-            })
+            }),
           );
 
           s.next.mockClear();
@@ -1575,7 +1575,7 @@ describe(Store, () => {
               expect.objectContaining({
                 $primaryKey: JOHN_DOE_ID,
                 employeeId: JOHN_DOE_ID,
-              })
+              }),
             ),
         },
       ];
@@ -1589,7 +1589,7 @@ describe(Store, () => {
           await waitForCall(subFn1);
           const aLoaded = subFn1.next.mock.lastCall?.[0]!;
           expect(aLoaded.object).toEqual(
-            expect.objectContaining({ $primaryKey: JOHN_DOE_ID })
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
           );
           expect(aLoaded.status).toBe("loaded");
           subFn1.next.mockClear();
@@ -1606,10 +1606,10 @@ describe(Store, () => {
           const bLoaded = subFn2.next.mock.lastCall?.[0]!;
           expect(bLoaded.status).toBe("loaded");
           expect(bLoaded.object).toEqual(
-            expect.objectContaining({ $primaryKey: JOHN_DOE_ID })
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
           );
           expectLoadedB?.(bLoaded.object);
-        }
+        },
       );
     });
 
@@ -1629,8 +1629,8 @@ describe(Store, () => {
               pk: JOHN_DOE_ID,
               mode: "offline",
             },
-            subFn
-          )
+            subFn,
+          ),
         );
 
         expectSingleObjectCallAndClear(subFn, undefined!, "init");
@@ -1638,7 +1638,7 @@ describe(Store, () => {
 
       it("does basic observation and unsubscribe", () => {
         const emp = employeesAsServerReturns.find(
-          (x) => x.$primaryKey === JOHN_DOE_ID
+          (x) => x.$primaryKey === JOHN_DOE_ID,
         )!;
 
         // force an update
@@ -1649,7 +1649,7 @@ describe(Store, () => {
         updateObject(cache, emp.$clone({ fullName: "new name" }));
         expectSingleObjectCallAndClear(
           subFn,
-          emp.$clone({ fullName: "new name" })
+          emp.$clone({ fullName: "new name" }),
         );
 
         sub.unsubscribe();
@@ -1661,7 +1661,7 @@ describe(Store, () => {
 
       it("observes with list update", () => {
         const emp = employeesAsServerReturns.find(
-          (x) => x.$primaryKey === JOHN_DOE_ID
+          (x) => x.$primaryKey === JOHN_DOE_ID,
         )!;
 
         // force an update
@@ -1671,14 +1671,14 @@ describe(Store, () => {
         updateList(
           cache,
           { type: Employee, where: {}, orderBy: {} },
-          employeesAsServerReturns
+          employeesAsServerReturns,
         );
         expect(subFn.next).toHaveBeenCalledTimes(2);
 
         expect(subFn.next.mock.calls[1][0]).toEqual(
           objectPayloadContaining({
             object: emp as unknown as ObjectHolder<typeof emp>,
-          })
+          }),
         );
       });
     });
@@ -1707,8 +1707,8 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "force",
               },
-              listSub1
-            )
+              listSub1,
+            ),
           );
 
           defer(
@@ -1719,8 +1719,8 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "force",
               },
-              ifaceSub
-            )
+              ifaceSub,
+            ),
           );
 
           await waitForCall(listSub1);
@@ -1747,11 +1747,11 @@ describe(Store, () => {
                 $apiName: "FooInterface",
                 $objectType: "Employee",
                 $primaryKey: e.$primaryKey,
-              })
+              }),
             ),
             {
               status: "loaded",
-            }
+            },
           );
 
           expectNoMoreCalls(listSub1);
@@ -1771,8 +1771,8 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "force",
               },
-              ifaceSub
-            )
+              ifaceSub,
+            ),
           );
           await waitForCall(ifaceSub, 2);
 
@@ -1790,14 +1790,14 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "force",
               },
-              ifaceSub
-            )
+              ifaceSub,
+            ),
           );
           await waitForCall(ifaceSub, 2);
 
           const ifacePayload = ifaceSub.next.mock.calls[1][0];
           expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe(
-            "FooInterface"
+            "FooInterface",
           );
           expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
 
@@ -1815,8 +1815,8 @@ describe(Store, () => {
                 mode: "force",
                 resolveToObjectType: true,
               },
-              ifaceSub
-            )
+              ifaceSub,
+            ),
           );
           await waitForCall(ifaceSub, 2);
 
@@ -1853,13 +1853,13 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "force",
               },
-              ifaceSub
-            )
+              ifaceSub,
+            ),
           );
           await waitForCall(ifaceSub, 2);
 
           expect(
-            ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName
+            ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName,
           ).toBe("FooInterface");
 
           defer(
@@ -1869,13 +1869,13 @@ describe(Store, () => {
                 pk: employeesAsServerReturns[0].$primaryKey,
                 mode: "force",
               },
-              objSub
-            )
+              objSub,
+            ),
           );
           await waitForCall(objSub, 2);
 
           expect(
-            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName
+            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName,
           ).toBe("FooInterface");
         });
 
@@ -1884,7 +1884,7 @@ describe(Store, () => {
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
-            mutatedEmployees
+            mutatedEmployees,
           );
 
           defer(
@@ -1893,8 +1893,8 @@ describe(Store, () => {
                 type: Employee,
                 mode: "force",
               },
-              listSub1
-            )
+              listSub1,
+            ),
           );
 
           await waitForCall(listSub1, 1);
@@ -1921,14 +1921,14 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "offline",
               },
-              listSub1
-            )
+              listSub1,
+            ),
           );
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
-            employeesAsServerReturns
+            employeesAsServerReturns,
           );
 
           await waitForCall(listSub1);
@@ -1952,14 +1952,14 @@ describe(Store, () => {
                 orderBy: {},
                 mode: "offline",
               },
-              listSub1
-            )
+              listSub1,
+            ),
           );
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
-            employeesAsServerReturns
+            employeesAsServerReturns,
           );
 
           await waitForCall(listSub1);
@@ -1973,7 +1973,7 @@ describe(Store, () => {
               where: { employeeId: { $gt: 0 } },
               orderBy: {},
             },
-            mutatedEmployees
+            mutatedEmployees,
           );
 
           // original list updates still
@@ -2002,8 +2002,8 @@ describe(Store, () => {
               mode: "force",
               pageSize: 1,
             },
-            listSub
-          )
+            listSub,
+          ),
         );
 
         await waitForCall(listSub, 1);
@@ -2016,7 +2016,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 1),
-          { status: "loaded" }
+          { status: "loaded" },
         );
 
         void fetchMore();
@@ -2025,14 +2025,14 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 1),
-          { status: "loading" }
+          { status: "loading" },
         );
 
         await waitForCall(listSub, 1);
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 2),
-          { status: "loaded" }
+          { status: "loaded" },
         );
       });
 
@@ -2047,8 +2047,8 @@ describe(Store, () => {
               mode: "force",
               pageSize: 1,
             },
-            listSub
-          )
+            listSub,
+          ),
         );
 
         await waitForCall(listSub, 1);
@@ -2061,7 +2061,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 1),
-          { status: "loaded" }
+          { status: "loaded" },
         );
 
         void fetchMore();
@@ -2069,7 +2069,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 1),
-          { status: "loading" }
+          { status: "loading" },
         );
 
         await waitForCall(listSub, 1);
@@ -2077,7 +2077,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 2),
-          { status: "loaded" }
+          { status: "loaded" },
         );
 
         void fetchMore();
@@ -2085,7 +2085,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 2),
-          { status: "loading" }
+          { status: "loading" },
         );
 
         await waitForCall(listSub, 1);
@@ -2093,7 +2093,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 3),
-          { status: "loaded" }
+          { status: "loaded" },
         );
 
         void fetchMore();
@@ -2101,14 +2101,14 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 3),
-          { status: "loading" }
+          { status: "loading" },
         );
 
         await waitForCall(listSub, 1);
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 4),
-          { status: "loaded" }
+          { status: "loaded" },
         );
       });
     });
@@ -2124,7 +2124,7 @@ describe(Store, () => {
       const testSetup = startNodeApiServer(
         new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
         createClient,
-        { logger }
+        { logger },
       );
       ({ client, apiServer, fauxFoundry } = testSetup);
 
@@ -2154,7 +2154,7 @@ describe(Store, () => {
           type: { apiName: "notReal", type: "object" },
           orderBy: {},
         },
-        sub
+        sub,
       );
 
       await waitForCall(sub.next);
@@ -2188,8 +2188,8 @@ describe(Store, () => {
               apiName: Employee,
               pk: 0,
             },
-            a
-          )
+            a,
+          ),
         );
         defer(
           store.objects.observe(
@@ -2197,8 +2197,8 @@ describe(Store, () => {
               apiName: Employee,
               pk: 1,
             },
-            b
-          )
+            b,
+          ),
         );
 
         await a.expectLoadingAndLoaded({
@@ -2246,8 +2246,8 @@ describe(Store, () => {
               apiName: Todo,
               pk: 0,
             },
-            todoSubFn
-          )
+            todoSubFn,
+          ),
         );
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -2300,8 +2300,8 @@ describe(Store, () => {
               apiName: Todo,
               pk: 0,
             },
-            todoSubFn
-          )
+            todoSubFn,
+          ),
         );
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -2318,7 +2318,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0)
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
         )?.value as any;
         invariant(object);
 
@@ -2333,8 +2333,8 @@ describe(Store, () => {
               optimisticUpdate: (ctx) => {
                 ctx.updateObject(object.$clone({ text: "optimistic" }));
               },
-            }
-          )
+            },
+          ),
         ).rejects.toThrow(ActionValidationError);
 
         await waitForCall(todoSubFn, 2);
@@ -2376,7 +2376,7 @@ describe(Store, () => {
             });
 
             return client(Todo).fetchOne(id, { $includeRid: true });
-          })
+          }),
         );
       });
 
@@ -2406,8 +2406,8 @@ describe(Store, () => {
               ...noWhereNoOrderBy,
               mode: "offline",
             },
-            subListUnordered
-          )
+            subListUnordered,
+          ),
         );
         await waitForCall(subListUnordered);
         expectSingleListCallAndClear(subListUnordered, undefined, {
@@ -2420,8 +2420,8 @@ describe(Store, () => {
               ...noWhereOrderByText,
               mode: "offline",
             },
-            subListOrdered
-          )
+            subListOrdered,
+          ),
         );
         await waitForCall(subListOrdered);
         expectSingleListCallAndClear(subListOrdered, undefined, {
@@ -2517,7 +2517,7 @@ describe(Store, () => {
             optimisticallyMutatedA, // same position, new values
             optimisticallyCreatedObjectD,
           ],
-          { isOptimistic: true }
+          { isOptimistic: true },
         );
 
         // the second list is now [A, B, optimistic]
@@ -2525,7 +2525,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           subListOrdered,
           [fauxObjectB, optimisticallyCreatedObjectD, optimisticallyMutatedA],
-          { isOptimistic: true }
+          { isOptimistic: true },
         );
 
         // Roll back the optimistic update
@@ -2536,7 +2536,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           subListUnordered,
           [fauxObjectB, fauxObjectA],
-          { isOptimistic: false }
+          { isOptimistic: false },
         );
 
         // the second list is now [A, B]
@@ -2544,7 +2544,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           subListOrdered,
           [fauxObjectA, fauxObjectB],
-          { isOptimistic: false }
+          { isOptimistic: false },
         );
       });
       // I think these are named backwards
@@ -2621,7 +2621,7 @@ describe(Store, () => {
               });
               b.updateObject(optimisticallyMutatedA);
             },
-          }
+          },
         );
 
         testStage("Optimistic Updates");
@@ -2635,7 +2635,7 @@ describe(Store, () => {
             optimisticallyMutatedA, // same position, new values
             optimisticallyCreatedObjectD,
           ],
-          { isOptimistic: true }
+          { isOptimistic: true },
         );
 
         // the second list is now [B, optimistic, optimistic a]
@@ -2643,7 +2643,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           subListOrdered,
           [fauxObjectB, optimisticallyCreatedObjectD, optimisticallyMutatedA],
-          { isOptimistic: true }
+          { isOptimistic: true },
         );
 
         testStage("Resolve Action");
@@ -2663,14 +2663,14 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           subListUnordered,
           [fauxObjectB, modifiedObjectA, createdObjectD],
-          { isOptimistic: false }
+          { isOptimistic: false },
         );
 
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
           [modifiedObjectA, fauxObjectB, createdObjectD],
-          { isOptimistic: false }
+          { isOptimistic: false },
         );
       });
     });
@@ -2714,8 +2714,8 @@ describe(Store, () => {
             baseObjectSet: client(Employee).pivotTo("officeLink"),
             orderBy: { name: "asc" },
           },
-          sub
-        )
+          sub,
+        ),
       );
 
       await vi.waitFor(
@@ -2723,10 +2723,10 @@ describe(Store, () => {
           expect(sub.next).toHaveBeenLastCalledWith(
             expect.objectContaining({
               status: "loaded",
-            })
+            }),
           );
         },
-        { timeout: 5000 }
+        { timeout: 5000 },
       );
 
       expect(sub.next).toHaveBeenLastCalledWith(
@@ -2736,7 +2736,7 @@ describe(Store, () => {
             expect.objectContaining({ name: "Alpha Office" }),
             expect.objectContaining({ name: "Zebra Office" }),
           ],
-        })
+        }),
       );
 
       expect(sub.error).not.toHaveBeenCalled();
@@ -2758,8 +2758,8 @@ describe(Store, () => {
             {
               baseObjectSet: client(Employee) as ObjectSet<Employee>,
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -2767,17 +2767,17 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             status: "loaded",
             resolvedList: [expect.objectContaining({ employeeId: 100 })],
-          })
+          }),
         );
 
         fauxFoundry.getDefaultDataStore().registerObject(Employee, {
@@ -2798,7 +2798,7 @@ describe(Store, () => {
           () => {
             expect(sub.next).toHaveBeenCalled();
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
@@ -2807,7 +2807,7 @@ describe(Store, () => {
               expect.objectContaining({ employeeId: 100 }),
               expect.objectContaining({ employeeId: 200 }),
             ]),
-          })
+          }),
         );
       });
 
@@ -2838,8 +2838,8 @@ describe(Store, () => {
             {
               baseObjectSet: client(Employee).pivotTo("officeLink"),
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -2847,17 +2847,17 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             status: "loaded",
             resolvedList: [expect.objectContaining({ name: "Pivot Office" })],
-          })
+          }),
         );
       });
 
@@ -2876,8 +2876,8 @@ describe(Store, () => {
             {
               baseObjectSet: client(Employee) as ObjectSet<Employee>,
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -2885,10 +2885,10 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         const callCountBefore = sub.next.mock.calls.length;
@@ -2920,8 +2920,8 @@ describe(Store, () => {
               baseObjectSet: client(Employee) as ObjectSet<Employee>,
               where: { fullName: { $eq: "Matching Employee" } },
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -2929,17 +2929,17 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             status: "loaded",
             resolvedList: [expect.objectContaining({ employeeId: 500 })],
-          })
+          }),
         );
 
         fauxFoundry
@@ -2963,13 +2963,13 @@ describe(Store, () => {
           () => {
             expect(sub.next).toHaveBeenCalled();
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             resolvedList: [],
-          })
+          }),
         );
       });
 
@@ -2989,8 +2989,8 @@ describe(Store, () => {
               baseObjectSet: client(Employee) as ObjectSet<Employee>,
               where: { fullName: { $eq: "Now Matching" } },
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -2998,17 +2998,17 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             status: "loaded",
             resolvedList: [],
-          })
+          }),
         );
 
         fauxFoundry
@@ -3032,13 +3032,13 @@ describe(Store, () => {
           () => {
             expect(sub.next).toHaveBeenCalled();
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             resolvedList: [expect.objectContaining({ employeeId: 600 })],
-          })
+          }),
         );
       });
 
@@ -3079,17 +3079,17 @@ describe(Store, () => {
               baseObjectSet,
               streamUpdates: true,
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
           () => {
             expect(sub.next).toHaveBeenLastCalledWith(
-              expect.objectContaining({ status: "loaded" })
+              expect.objectContaining({ status: "loaded" }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
@@ -3099,7 +3099,7 @@ describe(Store, () => {
               expect.objectContaining({ employeeId: 800 }),
               expect.objectContaining({ employeeId: 801 }),
             ]),
-          })
+          }),
         );
 
         await vi.waitFor(() => {
@@ -3120,7 +3120,7 @@ describe(Store, () => {
           () => {
             expect(sub.next).toHaveBeenCalled();
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         const lastCall = sub.next.mock.calls.at(-1)?.[0];
@@ -3157,8 +3157,8 @@ describe(Store, () => {
               baseObjectSet: client(Employee) as ObjectSet<Employee>,
               pivotTo: "officeLink",
             },
-            sub
-          )
+            sub,
+          ),
         );
 
         await vi.waitFor(
@@ -3166,10 +3166,10 @@ describe(Store, () => {
             expect(sub.next).toHaveBeenLastCalledWith(
               expect.objectContaining({
                 status: "loaded",
-              })
+              }),
             );
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
@@ -3178,7 +3178,7 @@ describe(Store, () => {
             resolvedList: [
               expect.objectContaining({ name: "Delete Test Office" }),
             ],
-          })
+          }),
         );
 
         sub.next.mockClear();
@@ -3190,7 +3190,7 @@ describe(Store, () => {
         const objectCacheKey = store.cacheKeys.get<ObjectCacheKey>(
           "object",
           "Employee",
-          700
+          700,
         );
 
         store.batch({}, (batch) => {
@@ -3202,13 +3202,13 @@ describe(Store, () => {
           () => {
             expect(sub.next).toHaveBeenCalled();
           },
-          { timeout: 5000 }
+          { timeout: 5000 },
         );
 
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({
             resolvedList: [],
-          })
+          }),
         );
       });
     });
@@ -3226,11 +3226,11 @@ describe(Store, () => {
             $objectType: "Employee",
             $apiName: "Employee",
             $title: `truth ${i}`,
-          }) as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>
+          }) as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>,
       );
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey),
       );
 
       // set the truth
@@ -3241,7 +3241,7 @@ describe(Store, () => {
       // expect the truth
       for (const obj of baseObjects) {
         expect(getObject(store, "Employee", obj.$primaryKey)).toEqual(
-          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` })
+          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` }),
         );
       }
 
@@ -3256,7 +3256,7 @@ describe(Store, () => {
               ...baseObjects[i],
               $title: `optimistic ${baseObjects[i].$primaryKey}`,
             },
-            "loading"
+            "loading",
           );
         });
       }
@@ -3264,11 +3264,11 @@ describe(Store, () => {
       // expect the optimistic values
       for (let i = 0; i < 2; i++) {
         expect(
-          getObject(store, "Employee", baseObjects[i].$primaryKey)
+          getObject(store, "Employee", baseObjects[i].$primaryKey),
         ).toEqual(
           expect.objectContaining({
             $title: `optimistic ${baseObjects[i].$primaryKey}`,
-          })
+          }),
         );
       }
 
@@ -3277,10 +3277,10 @@ describe(Store, () => {
 
       // should have truth object 1 and optimistic object 2
       expect(getObject(store, "Employee", 1)).toEqual(
-        expect.objectContaining({ $title: "truth 1" })
+        expect.objectContaining({ $title: "truth 1" }),
       );
       expect(getObject(store, "Employee", 2)).toEqual(
-        expect.objectContaining({ $title: "optimistic 2" })
+        expect.objectContaining({ $title: "optimistic 2" }),
       );
 
       // remove the second layer
@@ -3289,7 +3289,7 @@ describe(Store, () => {
       // should have truth objects
       for (const obj of baseObjects) {
         expect(getObject(store, "Employee", obj.$primaryKey)).toEqual(
-          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` })
+          expect.objectContaining({ $title: `truth ${obj.$primaryKey}` }),
         );
       }
     });
@@ -3311,7 +3311,7 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
       {
         msgPrefix: "Store",
         level: "debug",
-      }
+      },
     );
   });
 
@@ -3329,7 +3329,7 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
       {
         msgPrefix: "Store",
         level: undefined,
-      }
+      },
     );
   });
 
@@ -3344,7 +3344,7 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
 
     const onCreateLogs = logSpy.mock.calls.filter(
       ([first]) =>
-        typeof first === "string" && first.includes("CacheKeys.onCreate")
+        typeof first === "string" && first.includes("CacheKeys.onCreate"),
     );
     expect(onCreateLogs).toHaveLength(1);
 
@@ -3361,7 +3361,8 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
     store.cacheKeys.get("object", "Employee", 1);
 
     const getLogs = debugSpy.mock.calls.filter(
-      ([first]) => typeof first === "string" && first.includes("CacheKeys.get(")
+      ([first]) =>
+        typeof first === "string" && first.includes("CacheKeys.get("),
     );
     expect(getLogs).toHaveLength(1);
 
@@ -3380,7 +3381,7 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
       ([first]) =>
         typeof first === "string" &&
         (first.includes("CacheKeys.onCreate") ||
-          first.includes("CacheKeys.get("))
+          first.includes("CacheKeys.get(")),
     );
     expect(cacheLogs).toHaveLength(0);
 
@@ -3390,7 +3391,7 @@ describe("Store dev-mode logLevel and debug forwarding", () => {
 });
 
 export function asBsoStub(
-  x: ObjectHolder<any> | Osdk.Instance<any>
+  x: ObjectHolder<any> | Osdk.Instance<any>,
 ): BaseServerObject {
   return {
     __apiName: x.$apiName,

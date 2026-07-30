@@ -20,7 +20,7 @@ import type { RendererFieldDefinition } from "../../FormFieldApi.js";
 import { extractValidationRules } from "../extractValidationRules.js";
 
 function makeFieldDef(
-  overrides: Partial<RendererFieldDefinition>
+  overrides: Partial<RendererFieldDefinition>,
 ): RendererFieldDefinition {
   return {
     fieldKey: "testField",
@@ -35,7 +35,7 @@ type ValidateFn = (v: unknown) => string | true;
 type AsyncValidateFn = (v: unknown) => Promise<string | true>;
 
 function getValidateFns(
-  fieldDef: Partial<RendererFieldDefinition>
+  fieldDef: Partial<RendererFieldDefinition>,
 ): Record<string, ValidateFn> {
   const rules = extractValidationRules(makeFieldDef(fieldDef));
   return rules.validate as Record<string, ValidateFn>;
@@ -90,7 +90,7 @@ describe("extractValidationRules", () => {
         makeFieldDef({
           fieldComponent: "TEXT_INPUT",
           fieldComponentProps: { minLength: 3 },
-        })
+        }),
       );
       expect(rules.minLength).toEqual({
         value: 3,
@@ -103,7 +103,7 @@ describe("extractValidationRules", () => {
         makeFieldDef({
           fieldComponent: "TEXT_INPUT",
           fieldComponentProps: { maxLength: 50 },
-        })
+        }),
       );
       expect(rules.maxLength).toEqual({
         value: 50,
@@ -118,7 +118,7 @@ describe("extractValidationRules", () => {
         makeFieldDef({
           fieldComponent: "TEXT_AREA",
           fieldComponentProps: { minLength: 10, maxLength: 500 },
-        })
+        }),
       );
       expect(rules.minLength).toEqual({
         value: 10,
@@ -141,7 +141,7 @@ describe("extractValidationRules", () => {
       const earlyDate = new Date(2023, 11, 31);
       const lateDate = new Date(2024, 5, 1);
       expect(validate.min(earlyDate)).toBe(
-        `Must be at least ${minDate.toLocaleDateString()}`
+        `Must be at least ${minDate.toLocaleDateString()}`,
       );
       expect(validate.min(lateDate)).toBe(true);
     });
@@ -155,7 +155,7 @@ describe("extractValidationRules", () => {
       const lateDate = new Date(2026, 0, 1);
       const earlyDate = new Date(2025, 5, 1);
       expect(validate.max(lateDate)).toBe(
-        `Must be at most ${maxDate.toLocaleDateString()}`
+        `Must be at most ${maxDate.toLocaleDateString()}`,
       );
       expect(validate.max(earlyDate)).toBe(true);
     });
@@ -174,7 +174,7 @@ describe("extractValidationRules", () => {
 
       expect(validate.maxSize(smallFile)).toBe(true);
       expect(validate.maxSize(bigFile)).toBe(
-        "File must be smaller than 1.0 KB"
+        "File must be smaller than 1.0 KB",
       );
     });
 
@@ -190,7 +190,7 @@ describe("extractValidationRules", () => {
 
       expect(validate.maxSize([smallFile])).toBe(true);
       expect(validate.maxSize([smallFile, bigFile])).toBe(
-        "File must be smaller than 1.0 KB"
+        "File must be smaller than 1.0 KB",
       );
     });
   });
@@ -201,7 +201,7 @@ describe("extractValidationRules", () => {
         makeFieldDef({
           fieldComponent: "DROPDOWN",
           fieldComponentProps: { items: [] },
-        })
+        }),
       );
       expect(rules.required).toBeUndefined();
       expect(rules.validate).toBeUndefined();
@@ -213,7 +213,7 @@ describe("extractValidationRules", () => {
           fieldComponent: "RADIO_BUTTONS",
           isRequired: true,
           fieldComponentProps: { options: [] },
-        })
+        }),
       );
       expect(rules.required).toBe("This field is required");
       expect(rules.validate).toBeUndefined();
@@ -225,7 +225,7 @@ describe("extractValidationRules", () => {
           fieldComponent: "UNSUPPORTED",
           isRequired: true,
           fieldComponentProps: {},
-        })
+        }),
       );
       expect(rules.required).toBe("This field is required");
       expect(rules.validate).toBeUndefined();
@@ -238,7 +238,7 @@ describe("extractValidationRules", () => {
       const rules = extractValidationRules(
         makeFieldDef({
           validate: userValidate,
-        })
+        }),
       );
       const validate = rules.validate as Record<string, AsyncValidateFn>;
       expect(await validate.custom("test")).toBe(true);
@@ -250,7 +250,7 @@ describe("extractValidationRules", () => {
       const rules = extractValidationRules(
         makeFieldDef({
           validate: userValidate,
-        })
+        }),
       );
       const validate = rules.validate as Record<string, AsyncValidateFn>;
       expect(await validate.custom("test")).toBe("Custom error");
@@ -268,7 +268,7 @@ describe("extractValidationRules", () => {
             }
             return undefined;
           },
-        })
+        }),
       );
       expect(rules.required).toBe("Please fill this in");
     });
@@ -278,7 +278,7 @@ describe("extractValidationRules", () => {
         makeFieldDef({
           isRequired: true,
           onValidationError: () => undefined,
-        })
+        }),
       );
       expect(rules.required).toBe("This field is required");
     });
@@ -290,7 +290,7 @@ describe("extractValidationRules", () => {
           fieldComponent: "NUMBER_INPUT",
           fieldComponentProps: { min: 10 },
           onValidationError,
-        })
+        }),
       );
       expect(onValidationError).toHaveBeenCalledWith({
         type: "min",

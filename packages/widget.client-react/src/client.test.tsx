@@ -105,7 +105,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
       root.render(
         <FoundryWidget config={config} client={client}>
           <EmitEventCapture emitEventRef={emitEventRef} />
-        </FoundryWidget>
+        </FoundryWidget>,
       );
     });
 
@@ -140,7 +140,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
             }) => void,
           });
         }),
-      })
+      }),
     );
 
     return {
@@ -287,7 +287,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
       (_config, _eventId, payload) => ({
         type: "passThrough" as const,
         payload: payload as { parameterUpdates: { myParam: string } },
-      })
+      }),
     );
 
     const emit = await mountWidget();

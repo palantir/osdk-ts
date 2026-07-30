@@ -62,7 +62,7 @@ export interface UseRowSelectionResult {
   onToggleRow: (
     rowId: string,
     rowIndex: number,
-    isShiftClick?: boolean
+    isShiftClick?: boolean,
   ) => void;
 }
 
@@ -113,7 +113,7 @@ export function useRowSelection<
 
   const selectedCount = useMemo(
     () => Object.values(rowSelectionState).filter(Boolean).length,
-    [rowSelectionState]
+    [rowSelectionState],
   );
   const totalCount = data?.length ?? 0;
   const isAllSelected = deriveIsAllSelected(
@@ -121,7 +121,7 @@ export function useRowSelection<
     isAllSelectedProp,
     internalIsAllSelected,
     selectedCount,
-    totalCount
+    totalCount,
   );
   const hasSelection = isAllSelected || selectedCount > 0;
 
@@ -134,14 +134,14 @@ export function useRowSelection<
         const currentData = data ?? [];
         const selectedKeySet = new Set(ids.map((id) => String(id)));
         const instances = currentData.filter((item) =>
-          selectedKeySet.has(String(item.$primaryKey))
+          selectedKeySet.has(String(item.$primaryKey)),
         );
         onRowSelectionChanged({
           selectedRows: instances,
           isSelectAll,
         });
       }
-    }
+    },
   );
 
   const onToggleAll = useCallback(() => {
@@ -222,7 +222,7 @@ export function useRowSelection<
       fireSelectionCallbacks,
       rowSelectionState,
       lastSelectedRowIndex,
-    ]
+    ],
   );
 
   // Refire callbacks when uncontrolled "select all" is active and new rows arrive.
@@ -240,7 +240,7 @@ export function useRowSelection<
       lastFiredAllSelectedIdsRef.current = serializedIds;
       fireSelectionCallbacks(ids, true);
     },
-    [isControlled, internalIsAllSelected, data, fireSelectionCallbacks]
+    [isControlled, internalIsAllSelected, data, fireSelectionCallbacks],
   );
 
   return {
@@ -340,7 +340,7 @@ function getRowsInRange<
 >(
   data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ): Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>> {
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
@@ -363,7 +363,7 @@ function deriveIsAllSelected(
   isAllSelectedProp: boolean | undefined,
   internalIsAllSelected: boolean,
   selectedCount: number,
-  totalCount: number
+  totalCount: number,
 ): boolean {
   if (isControlled && isAllSelectedProp !== undefined) return isAllSelectedProp;
   if (!isControlled && internalIsAllSelected) return true;
@@ -371,7 +371,7 @@ function deriveIsAllSelected(
 }
 
 function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
-  primaryKeys: PrimaryKeyType<Q>[]
+  primaryKeys: PrimaryKeyType<Q>[],
 ): RowSelectionState {
   return primaryKeys.reduce<RowSelectionState>((acc, primaryKey) => {
     acc[getRowIdFromPrimaryKey(primaryKey)] = true;
@@ -384,7 +384,7 @@ function getSelectedPrimaryKeys<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   selectionState: RowSelectionState,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
 ): PrimaryKeyType<Q>[] {
   return data
     .filter((item) => selectionState[getRowId(item)])

@@ -220,7 +220,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -235,7 +235,7 @@ describe(useColumnDefs, () => {
       expect(nameColumn.id).toBe("name");
       expect(
         (nameColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey
+          .accessorKey,
       ).toBe("name");
       expect(nameColumn.header).toBe("Name");
       expect(nameColumn.size).toBe(200);
@@ -248,7 +248,7 @@ describe(useColumnDefs, () => {
       expect(emailColumn.id).toBe("email");
       expect(
         (emailColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey
+          .accessorKey,
       ).toBe("email");
       expect(emailColumn.header).toBe("Email Address");
     });
@@ -279,7 +279,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve({
@@ -318,7 +318,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -341,7 +341,7 @@ describe(useColumnDefs, () => {
       const customRenderCell = vitest.fn(
         (object: Osdk.Instance<TestObject>) => (
           <div>Custom: {(object as unknown as { name: string }).name}</div>
-        )
+        ),
       );
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
@@ -353,7 +353,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -399,7 +399,7 @@ describe(useColumnDefs, () => {
       const customRenderCell = vitest.fn(
         (object: Osdk.Instance<TestObject>) => (
           <div>Custom: {(object as unknown as { name: string }).name}</div>
-        )
+        ),
       );
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
@@ -412,7 +412,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -459,7 +459,7 @@ describe(useColumnDefs, () => {
       const customRenderCell = vitest.fn(
         (object: Osdk.Instance<TestObject>) => (
           <div>Custom: {(object as unknown as { name: string }).name}</div>
-        )
+        ),
       );
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
@@ -472,7 +472,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -521,7 +521,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -584,7 +584,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -599,7 +599,7 @@ describe(useColumnDefs, () => {
       expect(functionColumn.id).toBe("myFunction");
       expect(
         (functionColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey
+          .accessorKey,
       ).toBe("myFunction");
       expect(functionColumn.header).toBeUndefined();
       expect(functionColumn.size).toBe(150);
@@ -629,7 +629,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(mockMetadata);
@@ -644,7 +644,7 @@ describe(useColumnDefs, () => {
       expect(rdpColumn.id).toBe("myRdp");
       expect(
         (rdpColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey
+          .accessorKey,
       ).toBe("myRdp");
       expect(rdpColumn.header).toBeUndefined();
       expect(rdpColumn.size).toBe(180);
@@ -678,7 +678,7 @@ describe(useColumnDefs, () => {
         {
           initialProps: { colDefs: initialColumnDefinitions as ColDefs },
           wrapper,
-        }
+        },
       );
 
       deferred.resolve(mockMetadata);
@@ -787,7 +787,7 @@ describe(useColumnDefs, () => {
 
       const { result } = renderHook(
         () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper }
+        { wrapper },
       );
 
       deferred.resolve(markingMetadata);
@@ -813,7 +813,7 @@ describe(useColumnDefs, () => {
 
     const { result, rerender } = renderHook(
       () => useColumnDefs(TestObjectType),
-      { wrapper }
+      { wrapper },
     );
 
     deferred.resolve(mockMetadata);

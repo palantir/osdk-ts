@@ -76,7 +76,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       onChange?.(newValue);
       setQuery("");
     },
-    [onChange]
+    [onChange],
   );
 
   // Search by the object's title via the special `$title` filter so the where
@@ -144,7 +144,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
 });
 
 function resolveObjectSelectSource(
-  props: ObjectSelectFieldProps<ObjectTypeDefinition>
+  props: ObjectSelectFieldProps<ObjectTypeDefinition>,
 ): ResolvedObjectSelectSource<ObjectTypeDefinition> {
   if ("objectSet" in props && props.objectSet != null) {
     return {
@@ -167,7 +167,7 @@ function itemToKey(obj: ObjectSelectOsdkObject): string {
 
 function isItemEqual(
   a: ObjectSelectOsdkObject,
-  b: ObjectSelectOsdkObject
+  b: ObjectSelectOsdkObject,
 ): boolean {
   return a.$primaryKey === b.$primaryKey;
 }

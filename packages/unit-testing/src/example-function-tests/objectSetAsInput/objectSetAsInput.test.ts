@@ -67,7 +67,7 @@ describe("objectSetAsInput", () => {
 
       mockClient
         .whenObjectSet(empSet, (os) =>
-          os.aggregate({ $select: { $count: "unordered" } })
+          os.aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 42 });
 

@@ -60,7 +60,7 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
         <span className={styles.metricSubtext}>
           {observedOptimisticActions > 0
             ? `Total ${formatTime(totalTimeSaved)} across ${formatNumber(
-                observedOptimisticActions
+                observedOptimisticActions,
               )} actions`
             : waitingForOptimism
               ? "Optimistic handlers have not emitted yet"
@@ -115,7 +115,7 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
               ? styles.success
               : rollbackRate <= ROLLBACK_ACCEPTABLE
                 ? styles.warning
-                : styles.danger
+                : styles.danger,
           )}
         >
           {totalActions > 0 ? `${(rollbackRate * 100).toFixed(0)}%` : "\u2014"}
@@ -133,7 +133,7 @@ export const ActionMetrics: React.FC<ActionMetricsProps> = ({ metrics }) => {
         <span className={styles.metricSubtext}>
           {validations > 0
             ? `${formatNumber(validations)} validations \u00B7 saved ${formatTime(
-                validationSavings
+                validationSavings,
               )}`
             : "No validations run"}
         </span>

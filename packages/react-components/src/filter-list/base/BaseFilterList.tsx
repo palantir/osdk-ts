@@ -28,7 +28,7 @@ import { FilterListHeader } from "./FilterListHeader.js";
 import styles from "./FilterList.module.css";
 
 export function BaseFilterList<D extends FilterDefinitionControls>(
-  props: BaseFilterListProps<D>
+  props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
@@ -58,7 +58,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   } = props;
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
 
   const showHeader =
@@ -94,7 +94,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
         ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
-          isCollapsed && styles.hiddenContent
+          isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
       >

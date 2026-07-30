@@ -697,7 +697,7 @@ const createPersonAction = defineCreateInterfaceObjectAction({
 // Define an action for a specific object type that implements an interface
 const createEmployeePersonAction = defineCreateInterfaceObjectAction(
   personInterface,
-  employeeObject
+  employeeObject,
 );
 
 // Define an action to modify objects implementing an interface

@@ -88,10 +88,10 @@ describe("generateValueTypeBlockResults", () => {
     const outputKeys = Object.keys(outputs);
     expect(outputKeys).toHaveLength(2);
     expect(outputKeys).toContain(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1")
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1"),
     );
     expect(outputKeys).toContain(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.2")
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.2"),
     );
 
     const shape = Object.values(outputs)[0];
@@ -117,7 +117,7 @@ describe("generateValueTypeBlockResults", () => {
 
     const blockDataPath = path.join(
       results[0].block_data_directory,
-      "value-types.json"
+      "value-types.json",
     );
     const written = JSON.parse(fs.readFileSync(blockDataPath, "utf-8"));
     expect(written.metadata.baseType).toEqual({
@@ -137,7 +137,7 @@ describe("getValueTypeInternalMappings", () => {
   it("returns empty when produced value type is not consumed", () => {
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1"])],
-      new Map()
+      new Map(),
     );
     expect(mappings).toEqual([]);
   });
@@ -146,7 +146,7 @@ describe("getValueTypeInternalMappings", () => {
     const inputShapes = new Map<string, InputShape>();
     const consumedId = ReadableIdGenerator.getForConsumedValueType(
       "enumerated",
-      "0.0.1"
+      "0.0.1",
     );
     inputShapes.set(consumedId, {
       type: "valueType",
@@ -166,13 +166,13 @@ describe("getValueTypeInternalMappings", () => {
 
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1"])],
-      inputShapes
+      inputShapes,
     );
 
     expect(mappings).toHaveLength(1);
     expect(mappings[0].input).toBe(consumedId);
     expect(mappings[0].output).toBe(
-      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1")
+      ReadableIdGenerator.getForProducedValueType("enumerated", "0.0.1"),
     );
   });
 
@@ -195,13 +195,13 @@ describe("getValueTypeInternalMappings", () => {
               primitive: { type: "string", string: {} as any },
             },
           },
-        }
+        },
       );
     }
 
     const mappings = getValueTypeInternalMappings(
       [makeEntry("enumerated", ["0.0.1", "0.0.2"])],
-      inputShapes
+      inputShapes,
     );
 
     expect(mappings).toHaveLength(2);

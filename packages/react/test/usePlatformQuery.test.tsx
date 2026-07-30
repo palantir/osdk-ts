@@ -44,7 +44,7 @@ describe("usePlatformQuery enabled option", () => {
         }),
       {
         wrapper,
-      }
+      },
     );
 
     expect(mockQueryFn).not.toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe("usePlatformQuery enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockQueryFn).not.toHaveBeenCalled();

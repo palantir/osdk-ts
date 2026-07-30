@@ -31,7 +31,7 @@ describe("transformEmitEventPayload", () => {
   const client = vi.fn() as Mock<Client> & Client;
 
   const createMockObjectType = (
-    rid = "ri.object-type.123"
+    rid = "ri.object-type.123",
   ): AllowedObjectSetParameterType => ({
     apiName: "MyObjectType",
     type: "object",
@@ -69,14 +69,14 @@ describe("transformEmitEventPayload", () => {
     });
 
     vi.mocked(createAndFetchTempObjectSetRid).mockResolvedValue(
-      "ri.object-set.456"
+      "ri.object-set.456",
     );
 
     const result = transformEmitEventPayload(
       config,
       "updateMixed",
       { parameterUpdates: { myObjectSet: mockObjectSet, myString: "world" } },
-      client
+      client,
     );
 
     expect(result.type).toBe("async");
@@ -127,7 +127,7 @@ describe("transformEmitEventPayload", () => {
           objectSetB: mockObjectSet,
         },
       },
-      client
+      client,
     );
 
     expect(result.type).toBe("async");
@@ -167,7 +167,7 @@ describe("transformEmitEventPayload", () => {
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      'Cannot emit event "updateObjectSet" with ObjectSet parameter "myObjectSet" without an osdk client'
+      'Cannot emit event "updateObjectSet" with ObjectSet parameter "myObjectSet" without an osdk client',
     );
   });
 
@@ -198,7 +198,7 @@ describe("transformEmitEventPayload", () => {
       config,
       "updatePrimitives",
       { parameterUpdates: { myString: "hello", myNumber: 42 } },
-      client
+      client,
     );
 
     expect(result.type).toBe("passThrough");
@@ -227,12 +227,12 @@ describe("transformEmitEventPayload", () => {
       config,
       "nonExistentEvent" as never,
       { parameterUpdates: { myObjectSet: mockObjectSet } } as never,
-      client
+      client,
     );
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      'Event with ID "nonExistentEvent" not found in widget config'
+      'Event with ID "nonExistentEvent" not found in widget config',
     );
   });
 });

@@ -99,7 +99,7 @@ export class MockManager {
     mockId: string,
     objectType: string,
     primaryKey: string | number,
-    objectData: Record<string, unknown>
+    objectData: Record<string, unknown>,
   ): void {
     const objectMockId = `${mockId}-object-${primaryKey}`;
     this.mocks.set(objectMockId, {
@@ -403,7 +403,7 @@ export class MockManager {
     }
 
     const matchedRequests = this.requestLog.filter(
-      (entry) => entry.matchedMock
+      (entry) => entry.matchedMock,
     ).length;
 
     return {

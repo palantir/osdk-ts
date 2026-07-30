@@ -48,21 +48,21 @@ describe("FilterList", () => {
       });
 
       render(
-        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
+        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />,
       );
 
       // On first render the … shows from the state buildInitialStates seeds
       // out of `definition.filterState`
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
 
       // Removing clears the stored state and hides the filter.
       fireEvent.click(
-        screen.getByRole("button", { name: "Remove dept filter" })
+        screen.getByRole("button", { name: "Remove dept filter" }),
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
 
       // Re-add it through the "+ Add filter" menu
@@ -70,7 +70,7 @@ describe("FilterList", () => {
       fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
 
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 
@@ -78,25 +78,25 @@ describe("FilterList", () => {
       const def = createHasLinkFilterDef("manager");
 
       render(
-        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
+        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />,
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
 
       fireEvent.click(
-        screen.getByRole("button", { name: "Remove manager filter" })
+        screen.getByRole("button", { name: "Remove manager filter" }),
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
 
       fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "manager" }));
 
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 
@@ -104,18 +104,18 @@ describe("FilterList", () => {
       const def = createLinkedPropertyFilterDef("manager", "fullName");
 
       render(
-        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
+        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />,
       );
 
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
 
       fireEvent.click(
-        screen.getByRole("button", { name: "Remove manager filter" })
+        screen.getByRole("button", { name: "Remove manager filter" }),
       );
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
 
       fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
@@ -124,7 +124,7 @@ describe("FilterList", () => {
       // The linked filter is not seeded either; the … reappears via the
       // getEmptyDisplayState fallback (unwrapped to the inner EXACT_MATCH state).
       expect(
-        screen.getByRole("button", { name: /more actions/iu })
+        screen.getByRole("button", { name: /more actions/iu }),
       ).toBeDefined();
     });
 
@@ -136,11 +136,11 @@ describe("FilterList", () => {
       });
 
       render(
-        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
+        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />,
       );
 
       expect(
-        screen.queryByRole("button", { name: /more actions/iu })
+        screen.queryByRole("button", { name: /more actions/iu }),
       ).toBeNull();
     });
 
@@ -151,7 +151,7 @@ describe("FilterList", () => {
       });
 
       render(
-        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />
+        <FilterList objectType={MockObjectType} filterDefinitions={[def]} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /more actions/iu }));

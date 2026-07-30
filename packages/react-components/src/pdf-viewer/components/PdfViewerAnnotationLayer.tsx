@@ -43,7 +43,7 @@ interface CustomAnnotationItemProps extends AnnotationItemProps {
 
 function applyTransform(
   point: readonly [number, number],
-  m: readonly number[]
+  m: readonly number[],
 ): [number, number] {
   return [
     m[0] * point[0] + m[2] * point[1] + m[4],
@@ -55,12 +55,12 @@ function applyTransform(
 function computeRectStyle(
   rect: PdfRect,
   transform: readonly number[],
-  color: string | undefined
+  color: string | undefined,
 ): React.CSSProperties {
   const [x1, y1] = applyTransform([rect.x, rect.y], transform);
   const [x2, y2] = applyTransform(
     [rect.x + rect.width, rect.y + rect.height],
-    transform
+    transform,
   );
   return {
     left: Math.min(x1, x2),
@@ -75,7 +75,7 @@ function computeRectStyle(
 
 function useAnnotationHandlers(
   annotation: PdfAnnotation,
-  onClick?: (annotation: PdfAnnotation) => void
+  onClick?: (annotation: PdfAnnotation) => void,
 ) {
   const handleClick = useCallback(() => {
     onClick?.(annotation);
@@ -88,7 +88,7 @@ function useAnnotationHandlers(
         onClick?.(annotation);
       }
     },
-    [onClick, annotation]
+    [onClick, annotation],
   );
 
   return { handleClick, handleKeyDown };
@@ -101,7 +101,7 @@ function AnnotationItem({
 }: AnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
     annotation,
-    onClick
+    onClick,
   );
 
   const className = classnames(styles.annotation, styles[annotation.type]);
@@ -111,7 +111,7 @@ function AnnotationItem({
 
   const style = useMemo(
     () => computeRectStyle(annotation.rect, transform, annotation.color),
-    [annotation, transform]
+    [annotation, transform],
   );
 
   // Multi-rect: render a group wrapper with one div per rect
@@ -162,17 +162,17 @@ function CustomAnnotationItem({
 }: CustomAnnotationItemProps): React.ReactElement {
   const { handleClick, handleKeyDown } = useAnnotationHandlers(
     annotation,
-    onClick
+    onClick,
   );
 
   const style = useMemo(
     () => computeRectStyle(annotation.rect, transform, undefined),
-    [annotation, transform]
+    [annotation, transform],
   );
 
   const renderProps = useMemo(
     () => ({ annotation, scale, pageHeight, transform }),
-    [annotation, scale, pageHeight, transform]
+    [annotation, scale, pageHeight, transform],
   );
 
   return (
@@ -217,7 +217,7 @@ export function PdfViewerAnnotationLayer({
             transform={transform}
             onClick={onAnnotationClick}
           />
-        )
+        ),
       )}
     </div>
   );

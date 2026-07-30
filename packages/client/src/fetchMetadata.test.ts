@@ -249,7 +249,7 @@ describe("FetchMetadata", () => {
 
   it("fetches interface metadata correctly", async () => {
     const interfaceMetadata = await client.fetchMetadata(
-      $Interfaces.FooInterface
+      $Interfaces.FooInterface,
     );
 
     expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
@@ -363,7 +363,7 @@ describe("FetchMetadata", () => {
 
   it("fetches query metadata correctly", async () => {
     const queryMetadata = await client.fetchMetadata(
-      $Queries.queryAcceptsObject
+      $Queries.queryAcceptsObject,
     );
 
     expectTypeOf(queryMetadata).toEqualTypeOf<QueryMetadata>();

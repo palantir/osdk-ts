@@ -23,7 +23,7 @@ import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createActionHandlers = (
   baseUrl: string,
-  fauxFoundry: FauxFoundry
+  fauxFoundry: FauxFoundry,
 ): Array<RequestHandler> => [
   /**
    * Apply an Action
@@ -43,7 +43,7 @@ export const createActionHandlers = (
       }
 
       return response;
-    }
+    },
   ),
 
   OntologiesV2.Actions.applyBatch(
@@ -52,6 +52,6 @@ export const createActionHandlers = (
       return fauxFoundry
         .getDataStore(ontologyApiName)
         .batchApplyAction(actionType, await request.json());
-    }
+    },
   ),
 ];

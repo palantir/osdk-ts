@@ -59,7 +59,7 @@ const config: StorybookConfig = {
         return entries.map((entry) =>
           entry.title?.startsWith("Components/")
             ? { ...entry, tags: [...new Set([...(entry.tags ?? []), "beta"])] }
-            : entry
+            : entry,
         );
       },
     })),

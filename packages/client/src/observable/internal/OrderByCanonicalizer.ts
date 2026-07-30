@@ -26,12 +26,12 @@ export class OrderByCanonicalizer {
       (result, _, index, array) => {
         if (index % 2 === 0 && array[index] != null) {
           result.push(
-            array.slice(index, index + 2) as [string, "asc" | "desc"]
+            array.slice(index, index + 2) as [string, "asc" | "desc"],
           );
         }
         return result;
       },
-      []
+      [],
     );
     const data = Object.fromEntries(pairs) satisfies Record<
       string,
@@ -41,13 +41,13 @@ export class OrderByCanonicalizer {
   });
 
   canonicalize(
-    orderBy: Record<string, "asc" | "desc" | undefined>
+    orderBy: Record<string, "asc" | "desc" | undefined>,
   ): Canonical<Record<string, "asc" | "desc" | undefined>>;
   canonicalize(
-    orderBy: Record<string, "asc" | "desc" | undefined> | undefined
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
   ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined;
   canonicalize(
-    orderBy: Record<string, "asc" | "desc" | undefined> | undefined
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
   ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined {
     if (orderBy == null) {
       return undefined;

@@ -44,7 +44,7 @@ describe("useOnUnmount", () => {
     const second = vi.fn();
     const { rerender, unmount } = renderHook(
       ({ onUnmount }) => useOnUnmount(onUnmount),
-      { initialProps: { onUnmount: first } }
+      { initialProps: { onUnmount: first } },
     );
     rerender({ onUnmount: second });
     unmount();

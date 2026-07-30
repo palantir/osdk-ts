@@ -305,7 +305,7 @@ export const Default: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
     return (
       <div style={SIDEBAR_STYLE}>
@@ -351,7 +351,7 @@ export const IntegerNumberRangeRounding: Story = {
   render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [employeeNumberFilter],
-      []
+      [],
     );
     return (
       <div style={SIDEBAR_STYLE}>
@@ -372,12 +372,12 @@ function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
       client(Employee).where({
         department: "Marketing",
       }),
-    [client]
+    [client],
   );
 
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [teamFilter, locationCityFilter],
-    []
+    [],
   );
 
   return (
@@ -441,7 +441,7 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
         isVisible: false,
       } as FilterDefinitionUnion<Employee>,
     ],
-    []
+    [],
   );
 
   return (
@@ -495,7 +495,7 @@ function WithAllFilterTypesStory(args: Partial<EmployeeFilterListProps>) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -670,7 +670,7 @@ export const WithSorting: Story = {
 function CollapsiblePanelStory(
   args: Partial<EmployeeFilterListProps> & {
     onCollapsedChange?: (collapsed: boolean) => void;
-  }
+  },
 ) {
   return (
     <div style={SIDEBAR_STYLE}>
@@ -717,7 +717,7 @@ export const CollapsiblePanel: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       <CollapsiblePanelStory
@@ -753,7 +753,7 @@ export const KeywordSearch: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -780,7 +780,7 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
         filterState: { type: "EXACT_MATCH", values: [] },
       },
     ],
-    []
+    [],
   );
   const withColorMap = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -799,7 +799,7 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
         },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -871,7 +871,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         filterState: { type: "EXACT_MATCH", values: [] },
       },
     ],
-    []
+    [],
   );
   const withRenderValue = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -894,7 +894,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         renderValue: (value: string) => value.toUpperCase(),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1013,7 +1013,7 @@ function WithRenderValueReactNodeStory(args: Partial<EmployeeFilterListProps>) {
         ),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1058,7 +1058,7 @@ export const WithRenderValueAsReactNode: Story = {
 };
 
 function WithListogramDisplayModesStory(
-  args: Partial<EmployeeFilterListProps>
+  args: Partial<EmployeeFilterListProps>,
 ) {
   const fullDefs = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -1072,7 +1072,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: "full" },
       },
     ],
-    []
+    [],
   );
   const countDefs = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -1086,7 +1086,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: "count" },
       },
     ],
-    []
+    [],
   );
   const minimalDefs = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -1100,7 +1100,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: "minimal" },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1201,7 +1201,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         filterState: { type: "SELECT", selectedValues: [] },
       },
     ],
-    []
+    [],
   );
   const withoutCounts = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -1224,7 +1224,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         showCount: false,
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1290,7 +1290,7 @@ function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
         filterState: { type: "EXACT_MATCH", values: [] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1342,11 +1342,11 @@ export const WithCheckbox: Story = {
         })
         .map((row) => {
           const label = expectedDepartmentOrder.find((name) =>
-            row.textContent?.includes(name)
+            row.textContent?.includes(name),
           );
           if (label == null) {
             throw new Error(
-              `Unable to identify department row from "${row.textContent}"`
+              `Unable to identify department row from "${row.textContent}"`,
             );
           }
           return label;
@@ -1358,16 +1358,16 @@ export const WithCheckbox: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
     await waitFor(() =>
       expect(
-        canvas.getByRole("button", { name: "Marketing 4" })
-      ).toHaveAttribute("aria-pressed", "true")
+        canvas.getByRole("button", { name: "Marketing 4" }),
+      ).toHaveAttribute("aria-pressed", "true"),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
 
     await userEvent.click(canvas.getByRole("button", { name: "Marketing 4" }));
     await waitFor(() =>
       expect(
-        canvas.getByRole("button", { name: "Marketing 4" })
-      ).toHaveAttribute("aria-pressed", "false")
+        canvas.getByRole("button", { name: "Marketing 4" }),
+      ).toHaveAttribute("aria-pressed", "false"),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
   },
@@ -1388,7 +1388,7 @@ function WithBelowFoldSelectionStory(args: Partial<EmployeeFilterListProps>) {
         filterState: { type: "EXACT_MATCH", values: ["Sales"] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -1447,11 +1447,11 @@ export const WithBelowFoldSelection: Story = {
     const renderedDepartments = () =>
       canvas.getAllByRole("button", { name: departmentRowName }).map((row) => {
         const label = allDepartments.find((name) =>
-          row.textContent?.includes(name)
+          row.textContent?.includes(name),
         );
         if (label == null) {
           throw new Error(
-            `Unable to identify department row from "${row.textContent}"`
+            `Unable to identify department row from "${row.textContent}"`,
           );
         }
         return label;
@@ -1479,7 +1479,7 @@ export const WithBelowFoldSelection: Story = {
     await canvas.findByRole("button", { name: "Marketing 4" });
     await expect(renderedDepartments()).toEqual(initialCollapsedOrder);
     await expect(
-      canvas.getByRole("button", { name: "Sales 2" })
+      canvas.getByRole("button", { name: "Sales 2" }),
     ).toHaveAttribute("aria-pressed", "true");
 
     // Unselect the below-fold "Sales": it is no longer selected, so it drops
@@ -1490,15 +1490,15 @@ export const WithBelowFoldSelection: Story = {
 
     // Expand with "View all (N)" to reach "Sales" again, then re-select it.
     await userEvent.click(
-      canvas.getByRole("button", { name: /^View all \(\d+\)/u })
+      canvas.getByRole("button", { name: /^View all \(\d+\)/u }),
     );
     await canvas.findByRole("button", { name: "View less" });
     await userEvent.click(canvas.getByRole("button", { name: "Sales 2" }));
     await waitFor(() =>
       expect(canvas.getByRole("button", { name: "Sales 2" })).toHaveAttribute(
         "aria-pressed",
-        "true"
-      )
+        "true",
+      ),
     );
 
     // "View less" collapses back to the initial state: the head plus the
@@ -1506,10 +1506,10 @@ export const WithBelowFoldSelection: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "View less" }));
     await canvas.findByRole("button", { name: /^View all \(\d+\)/u });
     await expect(
-      canvas.queryByRole("button", { name: "View less" })
+      canvas.queryByRole("button", { name: "View less" }),
     ).toBeNull();
     await waitFor(() =>
-      expect(renderedDepartments()).toEqual(initialCollapsedOrder)
+      expect(renderedDepartments()).toEqual(initialCollapsedOrder),
     );
   },
 };
@@ -1528,11 +1528,11 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   return (
@@ -1645,7 +1645,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -1654,7 +1654,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -1749,7 +1749,7 @@ export const WithStaticValues: Story = {
 function FullFeaturedStory(
   args: Partial<EmployeeFilterListProps> & {
     onCollapsedChange?: (collapsed: boolean) => void;
-  }
+  },
 ) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
@@ -1767,11 +1767,11 @@ function FullFeaturedStory(
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   const argsOnReset = args.onReset;
@@ -1786,7 +1786,7 @@ function FullFeaturedStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -1855,7 +1855,7 @@ export const FullFeatured: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       <FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} />
@@ -1864,7 +1864,7 @@ export const FullFeatured: Story = {
 };
 
 function WithLinkedPropertyFiltersStory(
-  args: Partial<EmployeeFilterListProps>
+  args: Partial<EmployeeFilterListProps>,
 ) {
   const client = useOsdkClient();
   const objectSet = useMemo(() => client(Employee), [client]);
@@ -1894,7 +1894,7 @@ function WithLinkedPropertyFiltersStory(
         label: "Manager Department",
       } as FilterDefinitionUnion<Employee>,
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -1903,7 +1903,7 @@ function WithLinkedPropertyFiltersStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -2066,7 +2066,7 @@ function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -2205,7 +2205,7 @@ function CustomNameContainsFilter({
         customState: { value },
       });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   const handleClear = useCallback(() => {
@@ -2282,7 +2282,7 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -2291,7 +2291,7 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -2552,7 +2552,7 @@ function WithInitialFilterStatesStory(args: Partial<EmployeeFilterListProps>) {
     (clause: WhereClause<Employee>) => {
       setFilterClause(clause);
     },
-    []
+    [],
   );
 
   return (
@@ -2675,7 +2675,7 @@ function ResetGateMirror({
   }, [initialFilterStates]);
 
   const [mirror, setMirror] = useState<Map<string, FilterState>>(
-    () => new Map(initialMirror)
+    () => new Map(initialMirror),
   );
 
   const argsOnFilterStateChanged = storyArgs.onFilterStateChanged;
@@ -2688,7 +2688,7 @@ function ResetGateMirror({
       });
       argsOnFilterStateChanged?.(definition, newState);
     },
-    [argsOnFilterStateChanged]
+    [argsOnFilterStateChanged],
   );
 
   const argsOnReset = storyArgs.onReset;
@@ -2725,7 +2725,7 @@ function ResetGateMirror({
 }
 
 function WithResetButtonEmptyInitialStory(
-  args: Partial<EmployeeFilterListProps>
+  args: Partial<EmployeeFilterListProps>,
 ) {
   return <ResetGateMirror storyArgs={args} />;
 }
@@ -2756,7 +2756,7 @@ export const WithResetButtonEmptyInitial: Story = {
 };
 
 function WithResetButtonNonEmptyInitialStory(
-  args: Partial<EmployeeFilterListProps>
+  args: Partial<EmployeeFilterListProps>,
 ) {
   return (
     <ResetGateMirror

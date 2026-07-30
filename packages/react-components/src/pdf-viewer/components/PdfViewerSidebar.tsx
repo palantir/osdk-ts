@@ -62,7 +62,7 @@ export function PdfViewerSidebar({
     function syncActiveThumbnail() {
       virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
     },
-    [currentPage, virtualizer]
+    [currentPage, virtualizer],
   );
 
   return (

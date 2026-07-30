@@ -41,12 +41,12 @@ import type {
 export async function updateBlockSetMetadata(
   ctx: ConjureContext,
   blockSetId: _api_BlockSetId,
-  request: _api_UpdateBlockSetMetadataRequest
+  request: _api_UpdateBlockSetMetadataRequest,
 ): Promise<_api_UpdateBlockSetMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/${blockSetId}/metadata`,
     "PUT",
-    request
+    request,
   );
 }

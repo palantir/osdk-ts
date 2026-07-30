@@ -27,7 +27,7 @@ import type { EditablePredicate } from "./editableUtils.js";
 export function shouldShowEditableCell<TData>(
   editable: EditablePredicate<TData> | undefined,
   onCellEdit: unknown,
-  isInEditMode: boolean | undefined
+  isInEditMode: boolean | undefined,
 ): boolean {
   return (
     editable != null &&

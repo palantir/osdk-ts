@@ -29,11 +29,11 @@ export interface SubscriptionConnection {
   close(): void;
   addEventListener(
     type: "open" | "message" | "close" | "error",
-    listener: (ev: any) => void
+    listener: (ev: any) => void,
   ): void;
   removeEventListener(
     type: "open" | "message" | "close" | "error",
-    listener: (ev: any) => void
+    listener: (ev: any) => void,
   ): void;
 }
 

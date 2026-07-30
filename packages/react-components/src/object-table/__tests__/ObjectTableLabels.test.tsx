@@ -46,7 +46,7 @@ function resolveLabels(labels?: Partial<ObjectTableLabels>): ObjectTableLabels {
       <ObjectTableLabelsProvider labels={labels}>
         <Capture />
       </ObjectTableLabelsProvider>
-    )
+    ),
   );
   if (captured == null) {
     throw new Error("useObjectTableLabels did not resolve");
@@ -134,7 +134,7 @@ describe("ObjectTableLabels", () => {
         <ObjectTableLabelsProvider labels={{ editFooterEditTable: "Inner" }}>
           <Capture />
         </ObjectTableLabelsProvider>
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
 
     // Inner override wins for the key it sets...
@@ -143,7 +143,7 @@ describe("ObjectTableLabels", () => {
     expect(captured?.noData).toBe("Empty here");
     // ...and untouched keys remain the defaults.
     expect(captured?.editFooterCancel).toBe(
-      DEFAULT_OBJECT_TABLE_LABELS.editFooterCancel
+      DEFAULT_OBJECT_TABLE_LABELS.editFooterCancel,
     );
   });
 
@@ -156,7 +156,7 @@ describe("ObjectTableLabels", () => {
     render(
       <ObjectTableLabelsProvider>
         <Capture />
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
     // A provider with no labels does not allocate a new object.
     expect(captured).toBe(DEFAULT_OBJECT_TABLE_LABELS);
@@ -176,19 +176,19 @@ describe("ObjectTableLabels", () => {
     const { rerender } = render(
       <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
         <Capture />
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
     // Re-render with a brand-new inline object of identical content.
     rerender(
       <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
         <Capture />
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
     // Content change gets a fresh identity.
     rerender(
       <ObjectTableLabelsProvider labels={{ noData: "Other" }}>
         <Capture />
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
 
     expect(seen[0]).toBe(seen[1]);

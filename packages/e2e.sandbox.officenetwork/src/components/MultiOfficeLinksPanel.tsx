@@ -26,7 +26,7 @@ export function MultiOfficeLinksPanel({
   } = useLinks(offices, "occupants");
 
   const [expandedOffices, setExpandedOffices] = React.useState<Set<string>>(
-    () => new Set()
+    () => new Set(),
   );
 
   const toggleOffice = React.useCallback((officeId: string) => {
@@ -79,7 +79,7 @@ export function MultiOfficeLinksPanel({
         <div className="p-2">
           {offices.map((office) => {
             const officeEmployees = linkedObjectsBySourcePrimaryKey.get(
-              office.primaryKey_
+              office.primaryKey_,
             );
             const count = officeEmployees?.length ?? 0;
             const isExpanded = expandedOffices.has(office.primaryKey_);

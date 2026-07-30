@@ -84,7 +84,7 @@ export function useFocusedRow<TData>({
       }
       fireChanged(id);
     },
-    [effectiveId, isControlled, fireChanged]
+    [effectiveId, isControlled, fireChanged],
   );
 
   return {

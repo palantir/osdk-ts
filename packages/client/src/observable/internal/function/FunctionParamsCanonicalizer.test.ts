@@ -38,7 +38,7 @@ describe("FunctionParamsCanonicalizer", () => {
   it("returns different refs for different values", () => {
     const c = new FunctionParamsCanonicalizer();
     expect(c.canonicalize({ a: { b: 1 } })).not.toBe(
-      c.canonicalize({ b: { a: 1 } })
+      c.canonicalize({ b: { a: 1 } }),
     );
   });
 
@@ -83,7 +83,7 @@ describe("FunctionParamsCanonicalizer", () => {
 
     // Sets sorted
     expect(c.canonicalize({ s: new Set([3, 1, 2]) })).toBe(
-      c.canonicalize({ s: new Set([1, 2, 3]) })
+      c.canonicalize({ s: new Set([1, 2, 3]) }),
     );
 
     // Maps sorted by key
@@ -93,29 +93,29 @@ describe("FunctionParamsCanonicalizer", () => {
           ["b", 2],
           ["a", 1],
         ]),
-      })
+      }),
     ).toBe(
       c.canonicalize({
         m: new Map([
           ["a", 1],
           ["b", 2],
         ]),
-      })
+      }),
     );
 
     // Arrays preserve order
     expect(c.canonicalize({ arr: [1, 2, 3] })).not.toBe(
-      c.canonicalize({ arr: [3, 2, 1] })
+      c.canonicalize({ arr: [3, 2, 1] }),
     );
 
     // Dates as ISO strings
     expect(c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") })).toBe(
-      c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") })
+      c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") }),
     );
 
     // Deep nesting
     expect(c.canonicalize({ outer: { inner: { deep: 1 } } })).toBe(
-      c.canonicalize({ outer: { inner: { deep: 1 } } })
+      c.canonicalize({ outer: { inner: { deep: 1 } } }),
     );
 
     // Type distinction
@@ -127,7 +127,7 @@ describe("FunctionParamsCanonicalizer", () => {
     const obj1 = { id: 1, name: "first" };
     const obj2 = { id: 2, name: "second" };
     expect(c.canonicalize({ s: new Set([obj1, obj2]) })).toBe(
-      c.canonicalize({ s: new Set([obj2, obj1]) })
+      c.canonicalize({ s: new Set([obj2, obj1]) }),
     );
   });
 
@@ -141,14 +141,14 @@ describe("FunctionParamsCanonicalizer", () => {
           [key1, "a"],
           [key2, "b"],
         ]),
-      })
+      }),
     ).toBe(
       c.canonicalize({
         m: new Map([
           [key2, "b"],
           [key1, "a"],
         ]),
-      })
+      }),
     );
   });
 
@@ -162,21 +162,21 @@ describe("FunctionParamsCanonicalizer", () => {
           ["a", val1],
           ["b", val2],
         ]),
-      })
+      }),
     ).toBe(
       c.canonicalize({
         m: new Map([
           ["b", val2],
           ["a", val1],
         ]),
-      })
+      }),
     );
   });
 
   it("distinguishes null from undefined", () => {
     const c = new FunctionParamsCanonicalizer();
     expect(c.canonicalize({ val: null })).not.toBe(
-      c.canonicalize({ val: undefined })
+      c.canonicalize({ val: undefined }),
     );
   });
 
@@ -188,7 +188,7 @@ describe("FunctionParamsCanonicalizer", () => {
 
     expect(os1).not.toBe(os2);
     expect(c.canonicalize({ employees: os1 })).toBe(
-      c.canonicalize({ employees: os2 })
+      c.canonicalize({ employees: os2 }),
     );
   });
 
@@ -199,7 +199,7 @@ describe("FunctionParamsCanonicalizer", () => {
     const os2 = createFakeObjectSet({ type: "base", objectType: "Office" });
 
     expect(c.canonicalize({ items: os1 })).not.toBe(
-      c.canonicalize({ items: os2 })
+      c.canonicalize({ items: os2 }),
     );
   });
 });
