@@ -125,6 +125,27 @@ export const WithDefaultColumnPinning: Story = {
     await waitFor(() =>
       expect(fullNameHeader).toHaveAttribute("data-pinned", "left")
     );
+
+    // Assert that pinned cells have an opaque background
+    // and matches its row background color.
+    const pinnedCell = await waitFor(() => {
+      const cell = canvasElement.querySelector<HTMLElement>(
+        '[data-row-parity] [data-pinned="left"]'
+      );
+      if (cell == null) {
+        throw new Error("no left-pinned body cell rendered");
+      }
+      return cell;
+    });
+    const pinnedRow = pinnedCell.closest<HTMLElement>("[data-row-parity]");
+    if (pinnedRow == null) {
+      throw new Error("pinned cell is not inside a row");
+    }
+    const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
+    await expect(pinnedCellBg).not.toBe("rgba(0, 0, 0, 0)");
+    await expect(pinnedCellBg).toBe(
+      getComputedStyle(pinnedRow).backgroundColor
+    );
   },
 };
 
