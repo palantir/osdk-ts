@@ -126,7 +126,7 @@ export const WithDefaultColumnPinning: Story = {
       expect(fullNameHeader).toHaveAttribute("data-pinned", "left")
     );
 
-    // Assert that pinned cells have an opaque background 
+    // Assert that pinned cells have an opaque background
     // and matches its row background color.
     const pinnedCell = await waitFor(() => {
       const cell = canvasElement.querySelector<HTMLElement>(
