@@ -337,7 +337,7 @@ function DefaultActionFormStory(): React.ReactElement {
   });
 
   return (
-    <div className="osdkFormCard">
+    <div className="osdkFormCard" style={{ marginInline: "auto" }}>
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
@@ -423,7 +423,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => <DefaultActionFormStory />,
   parameters: {
-    layout: "centered",
     docs: {
       description: {
         story:
