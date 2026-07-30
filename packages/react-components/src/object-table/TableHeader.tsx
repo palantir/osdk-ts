@@ -135,6 +135,7 @@ export function TableHeader<TData extends RowData>({
           id: column.id,
           name: getHeaderName(column, allHeaders),
           canSort: column.getCanSort(),
+          dataType: column.columnDef.meta?.dataType,
         };
       });
   }, [table]);

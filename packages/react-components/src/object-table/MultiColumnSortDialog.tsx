@@ -15,13 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import {
-  Add,
-  CaretDown,
-  Cog,
-  SortAlphabetical,
-  SortAlphabeticalDesc,
-} from "@blueprintjs/icons";
+import { Add, CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -36,6 +30,7 @@ import {
   withObjectTableLabels,
 } from "./ObjectTableLabels.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
+import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./MultiColumnSortDialog.module.css";
@@ -154,28 +149,39 @@ function MultiColumnSortDialogInner({
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
-    return selectedSortColumns.map((item) => ({
-      id: item.id,
-      label: item.name,
-      content: (
-        <div className={styles.sortColumnItem}>
-          <span className={classNames(styles.sortColumnName, styles.truncate)}>
-            {item.name}
-          </span>
-          <Button
-            className={styles.sortDirectionButton}
-            onClick={() => handleToggleSortDirection(item.id)}
-            aria-label={labels.sortDialogToggleDirection(item.name)}
-          >
-            {item.direction === "asc" ? (
-              <SortAlphabetical className={styles.sortIcon} />
-            ) : (
-              <SortAlphabeticalDesc className={styles.sortIcon} />
-            )}
-          </Button>
-        </div>
-      ),
-    }));
+    return selectedSortColumns.map((item) => {
+      // Match the direction glyphs to the column's property type the same way
+      // the table header does: A→Z for text, 1→9 for numbers, plain
+      // ascending/descending arrows for dates and everything else.
+      const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
+        item.dataType
+      );
+
+      return {
+        id: item.id,
+        label: item.name,
+        content: (
+          <div className={styles.sortColumnItem}>
+            <span
+              className={classNames(styles.sortColumnName, styles.truncate)}
+            >
+              {item.name}
+            </span>
+            <Button
+              className={styles.sortDirectionButton}
+              onClick={() => handleToggleSortDirection(item.id)}
+              aria-label={labels.sortDialogToggleDirection(item.name)}
+            >
+              {item.direction === "asc" ? (
+                <SortAscendingIcon className={styles.sortIcon} />
+              ) : (
+                <SortDescendingIcon className={styles.sortIcon} />
+              )}
+            </Button>
+          </div>
+        ),
+      };
+    });
   }, [selectedSortColumns, handleToggleSortDirection, labels]);
 
   const footer = useMemo(

@@ -25,6 +25,13 @@ export interface ColumnOption {
   id: string;
   name: string;
   canSort: boolean;
+  /**
+   * The column's underlying property type, i.e. an OSDK `WirePropertyTypes`
+   * value, mirroring the column definition's `meta.dataType`. Used to pick sort
+   * icons that match the type. Absent for columns whose type isn't known (e.g.
+   * function-backed columns), which fall back to directional icons.
+   */
+  dataType?: string;
 }
 
 export interface CellIdentifier {
