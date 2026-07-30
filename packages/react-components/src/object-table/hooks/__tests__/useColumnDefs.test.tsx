@@ -120,18 +120,55 @@ describe(useColumnDefs, () => {
       expect(result.current.columns[0]).toEqual({
         accessorKey: "id",
         header: "ID",
+        meta: { dataType: "string" },
       });
       expect(result.current.columns[1]).toEqual({
         accessorKey: "name",
         header: "Name",
+        meta: { dataType: "string" },
       });
       expect(result.current.columns[2]).toEqual({
         accessorKey: "age",
         header: "Age",
+        meta: { dataType: "integer" },
       });
       expect(result.current.columns[3]).toEqual({
         accessorKey: "email",
         header: "Email Address",
+        meta: { dataType: "string" },
+      });
+    });
+
+    it("omits dataType for properties with a structured (non-string) type", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
+
+      deferred.resolve({
+        ...mockMetadata,
+        properties: {
+          tags: {
+            type: { array: "string" },
+            displayName: "Tags",
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]).toEqual({
+        accessorKey: "tags",
+        header: "Tags",
+        meta: { dataType: undefined },
       });
     });
 
@@ -188,6 +225,7 @@ describe(useColumnDefs, () => {
       expect(result.current.columns[0]).toEqual({
         accessorKey: "noDisplayName",
         header: "noDisplayName",
+        meta: { dataType: "string" },
       });
     });
   });
