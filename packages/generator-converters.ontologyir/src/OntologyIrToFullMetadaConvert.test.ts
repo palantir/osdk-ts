@@ -74,16 +74,17 @@ describe(OntologyIrToFullMetadataConverter, () => {
         {
           rid: "ri.MyObject.kept",
           definition: {
-            type: "unsupported",
-            unsupportedType: "datasetV2",
-            properties: ["name"],
+            type: "dataset",
+            datasetRid: "ri.dataset.kept",
+            propertyMapping: {
+              name: { type: "column", column: "name" },
+            },
           },
         },
       ]);
     });
 
-    it("never emits an IR input name as a resource rid", () => {
-      // Every resource identifier below is an input name, not a rid.
+    it("synthesizes backing resource rids from IR input names", () => {
       const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
         {
           datasourceName: "ds.dataset",
@@ -104,6 +105,19 @@ describe(OntologyIrToFullMetadataConverter, () => {
               propertyMapping: { name: "name_col" },
               retentionPolicy: { type: "none", none: {} },
               streamLocator: "Dc3RestaurantStream",
+            },
+          },
+        },
+        {
+          datasourceName: "ds.streamV3",
+          datasource: {
+            type: "streamV3",
+            streamV3: {
+              propertyMapping: {
+                name: { type: "column", column: "name_col" },
+              },
+              retentionPolicy: { type: "none", none: {} },
+              streamLocator: "Dc3RestaurantStreamV3",
             },
           },
         },
@@ -151,48 +165,78 @@ describe(OntologyIrToFullMetadataConverter, () => {
             },
           },
         },
+        {
+          datasourceName: "ds.geotimeSeries",
+          datasource: {
+            type: "geotimeSeries",
+            geotimeSeries: {
+              geotimeSeriesIntegrationRid: "Dc3RestaurantGeotime",
+              properties: ["rating"],
+            },
+          },
+        },
       ];
 
       const result = OntologyIrToFullMetadataConverter
         .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
 
-      // Each degrades to `unsupported`, keeping the variant and its properties.
       expect(result.map((ds) => ds.definition)).toEqual([
         {
-          type: "unsupported",
-          unsupportedType: "datasetV3",
-          properties: ["name"],
+          type: "dataset",
+          datasetRid: "ri.dataset.Dc3Restaurant",
+          branch: "master",
+          propertyMapping: {
+            name: { type: "column", column: "name_col" },
+          },
         },
         {
-          type: "unsupported",
-          unsupportedType: "streamV2",
-          properties: ["name"],
+          type: "stream",
+          streamRid: "ri.stream.Dc3RestaurantStream",
+          propertyMapping: {
+            name: { type: "column", column: "name_col" },
+          },
         },
         {
-          type: "unsupported",
-          unsupportedType: "restrictedViewV2",
-          properties: ["name"],
+          type: "stream",
+          streamRid: "ri.stream.Dc3RestaurantStreamV3",
+          propertyMapping: {
+            name: { type: "column", column: "name_col" },
+          },
         },
         {
-          type: "unsupported",
-          unsupportedType: "direct",
-          properties: ["name"],
+          type: "restrictedView",
+          restrictedViewRid: "ri.restrictedView.Dc3RestaurantView",
+          propertyMapping: {
+            name: { type: "column", column: "name_col" },
+          },
         },
         {
-          type: "unsupported",
-          unsupportedType: "timeSeries",
+          type: "direct",
+          directSourceRid: "ri.directSource.Dc3RestaurantSource",
+          propertyMapping: {
+            name: { type: "column", column: "name_col" },
+          },
+        },
+        {
+          type: "timeSeries",
+          timeSeriesSyncRid: "ri.timeSeriesSync.Dc3RestaurantSync",
           properties: ["rating"],
         },
         {
-          type: "unsupported",
-          unsupportedType: "mediaSetView",
+          type: "mediaSetView",
+          mediaSetViewRid: "ri.mediaSetView.Dc3RestaurantMedia",
+          properties: ["rating"],
+        },
+        {
+          type: "geotimeSeries",
+          geotimeSeriesIntegrationRid:
+            "ri.geotimeSeriesIntegration.Dc3RestaurantGeotime",
           properties: ["rating"],
         },
       ]);
-      expect(JSON.stringify(result)).not.toContain("Dc3Restaurant");
     });
 
-    it("maps the variants that carry a real rid or no rid at all", () => {
+    it("preserves real table rids and maps edits-only datasources", () => {
       const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
         {
           datasourceName: "ds.table",
@@ -291,9 +335,11 @@ describe(OntologyIrToFullMetadataConverter, () => {
         .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
 
       expect(result[0].definition).toEqual({
-        type: "unsupported",
-        unsupportedType: "datasetV2",
-        properties: ["name"],
+        type: "dataset",
+        datasetRid: "ri.dataset.ds",
+        propertyMapping: {
+          name: { type: "column", column: "name_col" },
+        },
       });
     });
   });
@@ -3444,14 +3490,26 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "properties": [
-                      "primaryKey_",
-                      "name",
-                      "price",
-                      "proposedLocation",
-                    ],
-                    "type": "unsupported",
-                    "unsupportedType": "datasetV2",
+                    "datasetRid": "ri.dataset.Dc3DistributionCenterProposal",
+                    "propertyMapping": {
+                      "name": {
+                        "column": "name",
+                        "type": "column",
+                      },
+                      "price": {
+                        "column": "price",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "proposedLocation": {
+                        "column": "proposedLocation",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
                   },
                   "rid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposal",
                 },
@@ -3554,14 +3612,26 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "properties": [
-                      "primaryKey_",
-                      "distributionProposal",
-                      "restaurant",
-                      "timeMinutes",
-                    ],
-                    "type": "unsupported",
-                    "unsupportedType": "datasetV2",
+                    "datasetRid": "ri.dataset.Dc3DistributionRouteAnalysis",
+                    "propertyMapping": {
+                      "distributionProposal": {
+                        "column": "distributionProposal",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "restaurant": {
+                        "column": "restaurant",
+                        "type": "column",
+                      },
+                      "timeMinutes": {
+                        "column": "timeMinutes",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
                   },
                   "rid": "ri.Dc3DistributionRouteAnalysis.Dc3DistributionRouteAnalysis",
                 },
@@ -3654,14 +3724,26 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "properties": [
-                      "primaryKey_",
-                      "name",
-                      "location",
-                      "rating",
-                    ],
-                    "type": "unsupported",
-                    "unsupportedType": "datasetV2",
+                    "datasetRid": "ri.dataset.Dc3Restaurant",
+                    "propertyMapping": {
+                      "location": {
+                        "column": "location",
+                        "type": "column",
+                      },
+                      "name": {
+                        "column": "name",
+                        "type": "column",
+                      },
+                      "primaryKey_": {
+                        "column": "primaryKey_",
+                        "type": "column",
+                      },
+                      "rating": {
+                        "column": "rating",
+                        "type": "column",
+                      },
+                    },
+                    "type": "dataset",
                   },
                   "rid": "ri.Dc3Restaurant.Dc3Restaurant",
                 },

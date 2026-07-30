@@ -840,7 +840,7 @@ export class OntologyIrToFullMetadataConverter {
    * The IR has no datasource rid, so the required wire `rid` is synthesized on
    * the same `ri.${apiName}.*` convention this converter uses for object and
    * property rids — it identifies the datasource in the generated metadata but
-   * is not resolvable. Most definitions degrade to `unsupported`; see
+   * is not resolvable. Backing resource input names are handled similarly; see
    * `convertIrDatasourceDefinition`.
    */
   static getOsdkObjectTypeDatasources(

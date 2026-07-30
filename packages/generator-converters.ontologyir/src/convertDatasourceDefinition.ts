@@ -38,77 +38,6 @@ import {
 const DERIVED_PROPERTIES_UNSUPPORTED_TYPE = "derivedProperties";
 
 /**
- * The property names a derived datasource backs. `linkedProperties` and
- * `aggregatedProperties` key them off `propertyTypeMapping`; `deleted` lists
- * them directly.
- */
-function derivedPropertyNames(
-  definition:
-    | DerivedPropertiesDefinition
-    | OntologyIrDerivedPropertiesDefinition,
-  resolveApiName: ResolvePropertyApiName,
-): ApiName[] {
-  const sourceType: string = definition.type;
-  switch (definition.type) {
-    case "linkedProperties":
-      return resolveApiNames(
-        Object.keys(definition.linkedProperties.propertyTypeMapping),
-        resolveApiName,
-      );
-    case "aggregatedProperties":
-      return resolveApiNames(
-        Object.keys(definition.aggregatedProperties.propertyTypeMapping),
-        resolveApiName,
-      );
-    case "deleted":
-      return resolveApiNames(
-        definition.deleted.propertyTypes,
-        resolveApiName,
-      );
-    default: {
-      // The `never` guard makes a future variant a compile error here.
-      const _: never = definition;
-      consola.warn(
-        `Unknown derived properties definition variant "${sourceType}"; `
-          + `omitting its backed property names.`,
-      );
-      return [];
-    }
-  }
-}
-
-/** Resolves each property reference to an api name, dropping the unresolved. */
-function resolveApiNames(
-  keys: readonly string[],
-  resolveApiName: ResolvePropertyApiName,
-): ApiName[] {
-  const result: ApiName[] = [];
-  for (const key of keys) {
-    const apiName = resolveApiName(key);
-    if (apiName != null) {
-      result.push(apiName);
-    }
-  }
-  return result;
-}
-
-/**
- * The `unsupported` wire datasource for a variant with no public counterpart,
- * preserving the api names of the properties it backs.
- */
-function unsupportedDatasource(
-  unsupportedType: string,
-  propertyRefs: readonly string[],
-  resolveApiName: ResolvePropertyApiName,
-): Ontologies.ObjectTypeDatasourceDefinition {
-  return {
-    type: "unsupported",
-    unsupportedType,
-    properties: resolveApiNames(propertyRefs, resolveApiName),
-  };
-}
-
-/**
  * Convert a block-data datasource definition to the platform wire format.
  * Block-data carries real resource rids, so they are used directly; property
  * rids are resolved to api names. Variants with no public wire counterpart
@@ -252,24 +181,24 @@ export function convertBlockDataDatasourceDefinition(
       // cannot be collapsed onto `mediaSetView`.
       return unsupportedDatasource(
         def.type,
-        def.media.properties,
-        resolveApiName,
+        resolveApiNames(def.media.properties, resolveApiName),
       );
     case "restrictedStream":
       return unsupportedDatasource(
         def.type,
-        Object.keys(def.restrictedStream.propertyMapping),
-        resolveApiName,
+        resolveApiNames(
+          Object.keys(def.restrictedStream.propertyMapping),
+          resolveApiName,
+        ),
       );
     case "derived":
-      return {
-        type: "unsupported",
-        unsupportedType: DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
-        properties: derivedPropertyNames(
+      return unsupportedDatasource(
+        DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
+        derivedPropertyNames(
           def.derived.definition,
           resolveApiName,
         ),
-      };
+      );
     default: {
       // Degrade rather than fail generation. The `never` guard makes a future
       // variant a compile error here.
@@ -278,11 +207,7 @@ export function convertBlockDataDatasourceDefinition(
         `Unknown block-data datasource variant "${sourceType}"; `
           + `degrading to unsupported.`,
       );
-      return {
-        type: "unsupported",
-        unsupportedType: sourceType,
-        properties: [],
-      };
+      return unsupportedDatasource(sourceType, []);
     }
   }
 }
@@ -290,14 +215,10 @@ export function convertBlockDataDatasourceDefinition(
 /**
  * Convert an IR datasource definition to the platform wire format.
  *
- * The IR identifies backing resources by ontology-as-code *input name*
- * (`DataSetName`, `StreamName`, …) and carries no name-to-rid mapping, while the
- * wire variants promise a navigable Foundry rid. Emitting an input name there
- * would misidentify the backing resource, so those variants degrade to
- * `unsupported`, which still records the kind of source and the properties it
- * backs. Only `table` (real `TableRid`) and `editsOnly` (no backing resource)
- * map onto their wire variants; reinstate the rest if a resolver becomes
- * available.
+ * The IR identifies most backing resources by ontology-as-code input name
+ * (`DataSetName`, `StreamName`, …), so their wire rids are stable placeholders,
+ * consistent with the other synthesized rids in the IR converter. Variants
+ * with no public wire counterpart degrade to `unsupported`.
  *
  * IR property references are already api names; those not naming a property of
  * the object type are dropped.
@@ -321,74 +242,107 @@ export function convertIrDatasourceDefinition(
     case "editsOnly":
       return { type: "editsOnly" };
     case "datasetV2":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.datasetV2.propertyMapping),
-        resolveApiName,
-      );
-    case "datasetV3":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.datasetV3.propertyMapping),
-        resolveApiName,
-      );
-    case "streamV2":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.streamV2.propertyMapping),
-        resolveApiName,
-      );
-    case "streamV3":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.streamV3.propertyMapping),
-        resolveApiName,
-      );
-    case "restrictedViewV2":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.restrictedViewV2.propertyMapping),
-        resolveApiName,
-      );
-    case "direct":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.direct.propertyMapping),
-        resolveApiName,
-      );
-    case "restrictedStream":
-      return unsupportedDatasource(
-        def.type,
-        Object.keys(def.restrictedStream.propertyMapping),
-        resolveApiName,
-      );
-    case "timeSeries":
-      return unsupportedDatasource(
-        def.type,
-        def.timeSeries.properties,
-        resolveApiName,
-      );
-    case "mediaSetView":
-      return unsupportedDatasource(
-        def.type,
-        def.mediaSetView.properties,
-        resolveApiName,
-      );
-    case "geotimeSeries":
-      return unsupportedDatasource(
-        def.type,
-        def.geotimeSeries.properties,
-        resolveApiName,
-      );
-    case "derived":
       return {
-        type: "unsupported",
-        unsupportedType: DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
-        properties: derivedPropertyNames(
-          def.derived.definition,
+        type: "dataset",
+        datasetRid: `ri.dataset.${def.datasetV2.datasetRid}`,
+        propertyMapping: convertPropertyMapping(
+          def.datasetV2.propertyMapping,
           resolveApiName,
         ),
       };
+    case "datasetV3":
+      return {
+        type: "dataset",
+        datasetRid: `ri.dataset.${def.datasetV3.datasetRid}`,
+        branch: def.datasetV3.branchId,
+        propertyMapping: convertPropertyMapping(
+          def.datasetV3.propertyMapping,
+          resolveApiName,
+        ),
+      };
+    case "streamV2":
+      return {
+        type: "stream",
+        streamRid: `ri.stream.${def.streamV2.streamLocator}`,
+        propertyMapping: convertColumnMapping(
+          def.streamV2.propertyMapping,
+          resolveApiName,
+        ),
+      };
+    case "streamV3":
+      return {
+        type: "stream",
+        streamRid: `ri.stream.${def.streamV3.streamLocator}`,
+        propertyMapping: convertPropertyMapping(
+          def.streamV3.propertyMapping,
+          resolveApiName,
+        ),
+      };
+    case "restrictedViewV2":
+      return {
+        type: "restrictedView",
+        restrictedViewRid:
+          `ri.restrictedView.${def.restrictedViewV2.restrictedViewRid}`,
+        propertyMapping: convertPropertyMapping(
+          def.restrictedViewV2.propertyMapping,
+          resolveApiName,
+        ),
+      };
+    case "direct":
+      return {
+        type: "direct",
+        directSourceRid: `ri.directSource.${def.direct.directSourceRid}`,
+        propertyMapping: convertPropertyMapping(
+          def.direct.propertyMapping,
+          resolveApiName,
+        ),
+      };
+    case "restrictedStream":
+      return unsupportedDatasource(
+        def.type,
+        resolveApiNames(
+          Object.keys(def.restrictedStream.propertyMapping),
+          resolveApiName,
+        ),
+      );
+    case "timeSeries":
+      return {
+        type: "timeSeries",
+        timeSeriesSyncRid:
+          `ri.timeSeriesSync.${def.timeSeries.timeSeriesSyncRid}`,
+        properties: resolveApiNames(
+          def.timeSeries.properties,
+          resolveApiName,
+        ),
+      };
+    case "mediaSetView":
+      return {
+        type: "mediaSetView",
+        mediaSetViewRid:
+          `ri.mediaSetView.${def.mediaSetView.mediaSetViewLocator}`,
+        properties: resolveApiNames(
+          def.mediaSetView.properties,
+          resolveApiName,
+        ),
+      };
+    case "geotimeSeries":
+      return {
+        type: "geotimeSeries",
+        geotimeSeriesIntegrationRid:
+          `ri.geotimeSeriesIntegration.${def.geotimeSeries.geotimeSeriesIntegrationRid}`,
+        properties: resolveApiNames(
+          def.geotimeSeries.properties,
+          resolveApiName,
+        ),
+      };
+    case "derived":
+      return unsupportedDatasource(
+        DERIVED_PROPERTIES_UNSUPPORTED_TYPE,
+        derivedPropertyNames(
+          def.derived.definition,
+          resolveApiName,
+        ),
+      );
     default: {
       // Degrade rather than fail generation. The `never` guard makes a future
       // variant a compile error here.
@@ -397,11 +351,77 @@ export function convertIrDatasourceDefinition(
         `Unknown IR datasource variant "${sourceType}"; `
           + `degrading to unsupported.`,
       );
-      return {
-        type: "unsupported",
-        unsupportedType: sourceType,
-        properties: [],
-      };
+      return unsupportedDatasource(sourceType, []);
     }
   }
+}
+
+/**
+ * The property names a derived datasource backs. `linkedProperties` and
+ * `aggregatedProperties` key them off `propertyTypeMapping`; `deleted` lists
+ * them directly.
+ */
+function derivedPropertyNames(
+  definition:
+    | DerivedPropertiesDefinition
+    | OntologyIrDerivedPropertiesDefinition,
+  resolveApiName: ResolvePropertyApiName,
+): ApiName[] {
+  const sourceType: string = definition.type;
+  switch (definition.type) {
+    case "linkedProperties":
+      return resolveApiNames(
+        Object.keys(definition.linkedProperties.propertyTypeMapping),
+        resolveApiName,
+      );
+    case "aggregatedProperties":
+      return resolveApiNames(
+        Object.keys(definition.aggregatedProperties.propertyTypeMapping),
+        resolveApiName,
+      );
+    case "deleted":
+      return resolveApiNames(
+        definition.deleted.propertyTypes,
+        resolveApiName,
+      );
+    default: {
+      // The `never` guard makes a future variant a compile error here.
+      const _: never = definition;
+      consola.warn(
+        `Unknown derived properties definition variant "${sourceType}"; `
+          + `omitting its backed property names.`,
+      );
+      return [];
+    }
+  }
+}
+
+/** Resolves each property reference to an api name, dropping the unresolved. */
+function resolveApiNames(
+  keys: readonly string[],
+  resolveApiName: ResolvePropertyApiName,
+): ApiName[] {
+  const result: ApiName[] = [];
+  for (const key of keys) {
+    const apiName = resolveApiName(key);
+    if (apiName != null) {
+      result.push(apiName);
+    }
+  }
+  return result;
+}
+
+/**
+ * The `unsupported` wire datasource for a variant with no public counterpart,
+ * preserving the api names of the properties it backs.
+ */
+function unsupportedDatasource(
+  unsupportedType: string,
+  properties: ApiName[],
+): Ontologies.ObjectTypeDatasourceDefinition {
+  return {
+    type: "unsupported",
+    unsupportedType,
+    properties,
+  };
 }
