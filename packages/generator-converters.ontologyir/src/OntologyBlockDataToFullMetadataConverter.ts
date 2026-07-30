@@ -23,6 +23,7 @@ import type {
   LinkTypeStatus,
   MarketplaceInterfaceLinkType,
   ObjectTypeBlockDataV2,
+  ObjectTypeDatasourceDefinition,
   ObjectTypeStatus,
   OntologyBlockDataV2,
   SharedPropertyTypeBlockDataV2,
@@ -33,6 +34,10 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import { hash } from "node:crypto";
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertColumnMapping,
+  convertPropertyMapping,
+} from "./convertPropertyMapping.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
@@ -189,10 +194,11 @@ export class OntologyBlockDataToFullMetadataConverter {
         status: this.convertObjectTypeStatusFromBlockData(object.status),
         properties,
         rid,
-        // `aliases` (from `fullObject.entityMetadata`) and `datasources` are not
-        // populated here yet; left empty pending a follow-up.
-        aliases: [],
-        datasources: [],
+        aliases: fullObject.entityMetadata?.aliases ?? [],
+        datasources: this.getOsdkObjectTypeDatasourcesFromBlockData(
+          fullObject.datasources,
+          propRidToApiName,
+        ),
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -237,6 +243,30 @@ export class OntologyBlockDataToFullMetadataConverter {
     }
 
     return result;
+  }
+
+  /**
+   * Convert block-data object type datasources to the platform wire format.
+   *
+   * Unlike the IR converter, block-data datasources carry a real `rid`, so it is
+   * used directly. Block-data property references (both `propertyMapping` keys
+   * and `properties` arrays) are property rids, so they are resolved to api names
+   * via `propRidToApiName`, falling back to the raw rid when unmapped. Variants
+   * with no public wire counterpart (`media`, `restrictedStream`, `derived`) map
+   * to the `unsupported` datasource, which the wire type provides for exactly
+   * this purpose.
+   */
+  static getOsdkObjectTypeDatasourcesFromBlockData(
+    datasources: ObjectTypeBlockDataV2["datasources"],
+    propRidToApiName: Record<string, string>,
+  ): Ontologies.ObjectTypeDatasource[] {
+    return datasources.map((ds) => ({
+      rid: ds.rid,
+      definition: convertBlockDataDatasourceDefinition(
+        ds.datasource,
+        propRidToApiName,
+      ),
+    }));
   }
 
   static getLinkMappingsFromBlockData(
@@ -1279,4 +1309,157 @@ export function resolveBlockDataApiName(
     return id;
   }
   return lookup.byRid.get(id) ?? lookup.byHyphenated.get(id) ?? id;
+}
+
+function convertBlockDataDatasourceDefinition(
+  def: ObjectTypeDatasourceDefinition,
+  propRidToApiName: Record<string, string>,
+): Ontologies.ObjectTypeDatasourceDefinition {
+  const sourceType = def.type;
+  const toApiName = (key: string) => propRidToApiName[key] ?? key;
+  switch (def.type) {
+    case "dataset":
+      return {
+        type: "dataset",
+        datasetRid: def.dataset.datasetRid,
+        branch: def.dataset.branchId,
+        propertyMapping: convertColumnMapping(
+          def.dataset.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "datasetV2":
+      return {
+        type: "dataset",
+        datasetRid: def.datasetV2.datasetRid,
+        branch: def.datasetV2.branchId,
+        propertyMapping: convertPropertyMapping(
+          def.datasetV2.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "datasetV3":
+      return {
+        type: "dataset",
+        datasetRid: def.datasetV3.datasetRid,
+        branch: def.datasetV3.branchId,
+        propertyMapping: convertPropertyMapping(
+          def.datasetV3.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "stream":
+      return {
+        type: "stream",
+        streamRid: def.stream.streamLocator.streamLocatorRid,
+        propertyMapping: convertColumnMapping(
+          def.stream.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "streamV2":
+      return {
+        type: "stream",
+        streamRid: def.streamV2.streamLocator.streamLocatorRid,
+        propertyMapping: convertColumnMapping(
+          def.streamV2.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "streamV3":
+      return {
+        type: "stream",
+        streamRid: def.streamV3.streamLocator.streamLocatorRid,
+        propertyMapping: convertPropertyMapping(
+          def.streamV3.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "restrictedView":
+      return {
+        type: "restrictedView",
+        restrictedViewRid: def.restrictedView.restrictedViewRid,
+        propertyMapping: convertColumnMapping(
+          def.restrictedView.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "restrictedViewV2":
+      return {
+        type: "restrictedView",
+        restrictedViewRid: def.restrictedViewV2.restrictedViewRid,
+        propertyMapping: convertPropertyMapping(
+          def.restrictedViewV2.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "timeSeries":
+      return {
+        type: "timeSeries",
+        timeSeriesSyncRid: def.timeSeries.timeSeriesSyncRid,
+        properties: def.timeSeries.properties.map(toApiName),
+      };
+    case "mediaSetView":
+      return {
+        type: "mediaSetView",
+        mediaSetViewRid: def.mediaSetView.mediaSetViewLocator.mediaSetViewRid,
+        properties: def.mediaSetView.properties.map(toApiName),
+      };
+    case "geotimeSeries":
+      return {
+        type: "geotimeSeries",
+        geotimeSeriesIntegrationRid:
+          def.geotimeSeries.geotimeSeriesIntegrationRid,
+        properties: def.geotimeSeries.properties.map(toApiName),
+      };
+    case "table":
+      return {
+        type: "table",
+        tableRid: def.table.tableRid,
+        branch: def.table.branchId,
+        propertyMapping: convertPropertyMapping(
+          def.table.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "editsOnly":
+      return { type: "editsOnly" };
+    case "direct":
+      return {
+        type: "direct",
+        directSourceRid: def.direct.directSourceRid,
+        propertyMapping: convertPropertyMapping(
+          def.direct.propertyMapping,
+          toApiName,
+        ),
+      };
+    case "media":
+      return {
+        type: "unsupported",
+        unsupportedType: def.type,
+        properties: def.media.properties.map(toApiName),
+      };
+    case "restrictedStream":
+      return {
+        type: "unsupported",
+        unsupportedType: def.type,
+        properties: Object.keys(def.restrictedStream.propertyMapping).map(
+          toApiName,
+        ),
+      };
+    case "derived":
+      return {
+        type: "unsupported",
+        unsupportedType: def.type,
+        properties: [],
+      };
+    default:
+      // Any block-data datasource variant with no public wire counterpart
+      // degrades to `unsupported` rather than failing generation.
+      return {
+        type: "unsupported",
+        unsupportedType: sourceType,
+        properties: [],
+      };
+  }
 }
