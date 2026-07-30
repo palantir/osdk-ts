@@ -105,7 +105,7 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
         }),
         isSelected: selectedSet ? selectedSet.has(request.id) : undefined,
         id: request.id,
-      })
+      }),
     );
 
     if (hasSelections) {
@@ -142,7 +142,7 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
         domain: [0, Math.max(500, maxTimeDomain ?? 0)],
         range: [0, width],
       }),
-    [maxTimeDomain, width]
+    [maxTimeDomain, width],
   );
 
   const yScale = React.useMemo(
@@ -151,12 +151,12 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
         domain: [-1, 12],
         range: [chartHeight, MARGIN_TOP],
       }),
-    [chartHeight]
+    [chartHeight],
   );
 
   const handleUnselect = React.useCallback(
     () => onSelectRequest(undefined),
-    [onSelectRequest]
+    [onSelectRequest],
   );
 
   return (

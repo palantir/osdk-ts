@@ -75,7 +75,7 @@ export function smartClientPlugin(): Plugin {
       if (!superrepoRoot) {
         pendingWarnings.push(
           "running outside a SuperRepo (no `foundry.yml` ancestor found " +
-            `from ${root}); proxy routes will not be installed.`
+            `from ${root}); proxy routes will not be installed.`,
         );
         return undefined;
       }
@@ -97,7 +97,7 @@ export function smartClientPlugin(): Plugin {
             route,
             basePrefix,
             pendingWarnings,
-            getLogger
+            getLogger,
           );
           setupProxies.push({ prefix: context, target: read.entry.url });
           continue;
@@ -107,21 +107,21 @@ export function smartClientPlugin(): Plugin {
             pendingWarnings.push(
               `no live discovery for ${route.service} under ${palantirDir}. ` +
                 `Run \`foundry start ${route.service}\` and the dev server ` +
-                `will pick it up automatically.`
+                `will pick it up automatically.`,
             );
             break;
           case "stale":
             pendingWarnings.push(
               `discovery for ${route.service} is stale (recorded PID ` +
                 `${read.pid} is no longer running). Restart ` +
-                `\`foundry start ${route.service}\`.`
+                `\`foundry start ${route.service}\`.`,
             );
             break;
           case "malformed":
             pendingWarnings.push(
               `${route.service} discovery file is corrupt (${read.reason}). ` +
                 `Delete ${palantirDir}/.${route.service}-discovery.json and ` +
-                `restart \`foundry start ${route.service}\`.`
+                `restart \`foundry start ${route.service}\`.`,
             );
             break;
         }
@@ -162,7 +162,7 @@ export function smartClientPlugin(): Plugin {
 
       const palantirDir = path.join(superrepoRoot, ".palantir");
       const expectedFiles = PROXY_ROUTES.map((r) =>
-        path.join(palantirDir, `.${r.service}-discovery.json`)
+        path.join(palantirDir, `.${r.service}-discovery.json`),
       );
       const expectedFileSet = new Set(expectedFiles);
 
@@ -266,7 +266,7 @@ export function smartClientPlugin(): Plugin {
       // and any other imports are untouched.
       return code.replace(
         /from\s+(["'])@osdk\/client\1/u,
-        `from "@osdk/vite-plugin-superrepo/osdkClient"`
+        `from "@osdk/vite-plugin-superrepo/osdkClient"`,
       );
     },
   };
@@ -277,7 +277,7 @@ function buildProxyOptions(
   route: { prefix: string; rewrite: boolean },
   basePrefix: string,
   pendingWarnings: string[],
-  getLogger: () => Logger | undefined
+  getLogger: () => Logger | undefined,
 ): ProxyOptions {
   const isHttps = entry.url.startsWith("https://");
   const options: ProxyOptions = {
@@ -287,7 +287,7 @@ function buildProxyOptions(
       proxy.on("proxyReq", (_proxyReq, req) => {
         getLogger()?.info(
           `[vite-plugin-superrepo] ${route.prefix} ${req.method} ${req.url}` +
-            ` → ${entry.url}`
+            ` → ${entry.url}`,
         );
       });
     },
@@ -312,7 +312,7 @@ function buildProxyOptions(
       options.secure = false;
       pendingWarnings.push(
         `discovery for ${entry.url} has no caCertPath; ` +
-          `TLS verification disabled for this proxy.`
+          `TLS verification disabled for this proxy.`,
       );
     }
   }

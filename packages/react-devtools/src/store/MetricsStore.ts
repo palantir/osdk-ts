@@ -113,7 +113,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1
+    objectCount: number = 1,
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -133,7 +133,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1
+    objectCount: number = 1,
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -152,7 +152,7 @@ export class MetricsStore extends SubscribableStore {
     signature: string,
     responseTime: number,
     metadata?: OperationMetadata,
-    objectCount: number = 1
+    objectCount: number = 1,
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -182,7 +182,7 @@ export class MetricsStore extends SubscribableStore {
 
   recordOptimisticUpdate(
     signature: string,
-    metadata?: OperationMetadata
+    metadata?: OperationMetadata,
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -203,7 +203,7 @@ export class MetricsStore extends SubscribableStore {
   recordActionValidation(
     signature: string,
     duration: number,
-    metadata?: OperationMetadata
+    metadata?: OperationMetadata,
   ): void {
     const operation: Operation = {
       id: crypto.randomUUID(),
@@ -354,7 +354,7 @@ export class MetricsStore extends SubscribableStore {
         if (operation.saved) {
           this.aggregates.requestsSaved++;
           this.aggregates.bytesServedFromCache += this.estimateBytes(
-            operation.signature
+            operation.signature,
           );
         }
         break;
@@ -480,7 +480,7 @@ export class MetricsStore extends SubscribableStore {
       averageValidationTime,
       validationTimeSaved: Math.max(
         0,
-        averageServerRoundTripTime - averageValidationTime
+        averageServerRoundTripTime - averageValidationTime,
       ),
     };
   }
@@ -550,7 +550,7 @@ export class MetricsStore extends SubscribableStore {
       if (recentMisses.length > 0) {
         const totalTime = recentMisses.reduce(
           (sum, op) => sum + (op.responseTime ?? 0),
-          0
+          0,
         );
         this.cachedAvgNetworkTime = totalTime / recentMisses.length;
       }
@@ -567,7 +567,7 @@ export class MetricsStore extends SubscribableStore {
           (op) =>
             op.type === "cache-miss" &&
             op.objectCount != null &&
-            op.objectCount > 0
+            op.objectCount > 0,
         );
 
       if (recentMisses.length > 0) {

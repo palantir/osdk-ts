@@ -51,7 +51,7 @@ export async function defineOntologyV2(
   outputDir?: string,
   dependencyFile?: string,
   functionsIrFile?: string,
-  randomnessKey?: string
+  randomnessKey?: string,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -61,7 +61,7 @@ export async function defineOntologyV2(
     // eslint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
-      e
+      e,
     );
     throw e;
   }
@@ -75,26 +75,26 @@ export async function defineOntologyV2(
 
   const ridGenerator = new OntologyRidGeneratorImpl(
     getImportedTypes(),
-    randomnessKey
+    randomnessKey,
   );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
-    randomnessKey
+    randomnessKey,
   );
 
   const shapes = await getShapes(
     ontDef.ontology,
     ridGenerator,
     functionsIr,
-    randomnessKey
+    randomnessKey,
   );
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
     ontDef.importedOntology,
-    ridGenerator
+    ridGenerator,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
@@ -104,15 +104,15 @@ export async function defineOntologyV2(
   }
 
   const backingDatasourceApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE]
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
   )
     .filter(
-      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true
+      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true,
     )
     .map(([apiName]) => apiName);
 
   const backingDatasourceLinkApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE]
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
   )
     .filter(([_, link]) => {
       const lt = link as LinkType;

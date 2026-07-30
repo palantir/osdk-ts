@@ -17,7 +17,7 @@ export function EmployeeSelector({
 }: EmployeeSelectorProps) {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const employee = employees.find(
-      (emp) => String(emp.employeeNumber) === e.target.value
+      (emp) => String(emp.employeeNumber) === e.target.value,
     );
     if (employee) {
       onSelectEmployee(employee);

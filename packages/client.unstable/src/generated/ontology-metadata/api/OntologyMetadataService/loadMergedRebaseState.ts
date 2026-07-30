@@ -45,12 +45,12 @@ import type {
  */
 export async function loadMergedRebaseState(
   ctx: ConjureContext,
-  request: _api_LoadMergedRebaseStateRequest
+  request: _api_LoadMergedRebaseStateRequest,
 ): Promise<_api_OntologyBulkLoadEntitiesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/loadMergedRebaseState`,
     "POST",
-    request
+    request,
   );
 }

@@ -36,7 +36,7 @@ export async function downloadAttachment(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  attachmentId: _api_AttachmentId
+  attachmentId: _api_AttachmentId,
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -45,6 +45,6 @@ export async function downloadAttachment(
     undefined,
     undefined,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

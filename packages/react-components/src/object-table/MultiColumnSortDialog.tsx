@@ -106,7 +106,7 @@ function MultiColumnSortDialogInner({
     (fromIndex: number, toIndex: number) => {
       setSelectedSortColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    []
+    [],
   );
 
   const handleToggleSortDirection = useCallback((id: string) => {
@@ -114,8 +114,8 @@ function MultiColumnSortDialogInner({
       prev.map((item) =>
         item.id === id
           ? { ...item, direction: item.direction === "asc" ? "desc" : "asc" }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -133,14 +133,14 @@ function MultiColumnSortDialogInner({
       columnOptions.filter(
         (col) =>
           col.canSort &&
-          !selectedSortColumns.some((selected) => selected.id === col.id)
+          !selectedSortColumns.some((selected) => selected.id === col.id),
       ),
-    [columnOptions, selectedSortColumns]
+    [columnOptions, selectedSortColumns],
   );
 
   const searchableMenuItems = useMemo(
     () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
-    [availableColumns]
+    [availableColumns],
   );
 
   const handleMenuItemSelected = useCallback(
@@ -150,7 +150,7 @@ function MultiColumnSortDialogInner({
         handleAddColumn(column);
       }
     },
-    [availableColumns, handleAddColumn]
+    [availableColumns, handleAddColumn],
   );
 
   const sortableItems: SortableItem[] = useMemo(() => {
@@ -187,7 +187,7 @@ function MultiColumnSortDialogInner({
         </ActionButton>
       </>
     ),
-    [handleApply, onClose, labels]
+    [handleApply, onClose, labels],
   );
 
   const dialogTitle = useMemo(
@@ -197,7 +197,7 @@ function MultiColumnSortDialogInner({
         {labels.sortDialogTitle}
       </div>
     ),
-    [labels]
+    [labels],
   );
 
   return (

@@ -30,12 +30,12 @@ import type {
 export async function getModificationHistory(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_GetModificationHistoryRequest
+  request: _api_modification_GetModificationHistoryRequest,
 ): Promise<_api_modification_GetModificationHistoryResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/history`,
     "POST",
-    request
+    request,
   );
 }

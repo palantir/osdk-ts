@@ -39,7 +39,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={["Engineering"]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("Engineering")).toBeDefined();
@@ -51,7 +51,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={["Engineering"]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("Engineering")).toBeDefined();
@@ -67,7 +67,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
@@ -80,7 +80,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
@@ -95,7 +95,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     rerender(
@@ -105,7 +105,7 @@ describe("MultiSelectInput stableData", () => {
         error={null}
         selectedValues={[]}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
@@ -122,7 +122,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).not.toBeNull();
@@ -134,7 +134,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(container.querySelector("input")).not.toBeNull();
@@ -149,7 +149,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
@@ -162,7 +162,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
@@ -177,7 +177,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     rerender(
@@ -187,7 +187,7 @@ describe("SingleSelectInput stableData", () => {
         error={null}
         selectedValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
@@ -205,7 +205,7 @@ describe("TextTagsInput stableData", () => {
         tags={[]}
         onChange={vi.fn()}
         suggestionLimit={10}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
@@ -218,7 +218,7 @@ describe("TextTagsInput stableData", () => {
         tags={[]}
         onChange={vi.fn()}
         suggestionLimit={10}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
@@ -233,7 +233,7 @@ describe("TextTagsInput stableData", () => {
         tags={[]}
         onChange={vi.fn()}
         suggestionLimit={0}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
@@ -248,7 +248,7 @@ describe("TextTagsInput stableData", () => {
         tags={[]}
         onChange={vi.fn()}
         suggestionLimit={10}
-      />
+      />,
     );
 
     expect(screen.queryByTestId("select-input-skeleton")).toBeNull();

@@ -27,12 +27,12 @@ import type { UpdateApplicationRolesRequest } from "../UpdateApplicationRolesReq
 export async function updateApplicationRoles(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: UpdateApplicationRolesRequest
+  request: UpdateApplicationRolesRequest,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/applications/${applicationRid}/roles`,
     "PUT",
-    request
+    request,
   );
 }

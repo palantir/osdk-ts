@@ -29,13 +29,13 @@ export async function getInstallableBlockSetVersion(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  onlyLoadMetadata: boolean | null | undefined
+  onlyLoadMetadata: boolean | null | undefined,
 ): Promise<_api_GetInstallableBlockSetVersionResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/blockSet/version/${blockSetVersionId}`,
     "GET",
     undefined,
-    { onlyLoadMetadata }
+    { onlyLoadMetadata },
   );
 }

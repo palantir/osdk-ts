@@ -31,7 +31,7 @@ import type {
  */
 export async function getLatestOwnedBlockVersion(
   ctx: ConjureContext,
-  blockId: _api_BlockId
+  blockId: _api_BlockId,
 ): Promise<_api_GetOwnedBlockVersionResponse | null | undefined> {
   return conjureFetch(ctx, `/blocks/${blockId}/latest-owned`, "GET");
 }

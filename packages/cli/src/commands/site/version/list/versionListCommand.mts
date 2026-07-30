@@ -47,7 +47,7 @@ export default async function versionListCommand({
 
   const semver = await import("semver");
   const sortedVersions = semver.rsort(
-    versions.data.map((v) => v.version).filter((v) => semver.valid(v))
+    versions.data.map((v) => v.version).filter((v) => semver.valid(v)),
   );
   for (const version of sortedVersions) {
     consola.log(
@@ -55,7 +55,7 @@ export default async function versionListCommand({
         website?.deployedVersion && version === website?.deployedVersion
           ? colorize("green", ` (deployed)`)
           : ""
-      }`
+      }`,
     );
   }
 }

@@ -35,7 +35,7 @@ describe(MultiColumnSortDialog, () => {
         onApply={vi.fn()}
         currentSorting={[]}
         columnOptions={COLUMN_OPTIONS}
-      />
+      />,
     );
 
     expect(screen.getByText("Sort on Multiple Columns")).toBeTruthy();
@@ -56,7 +56,7 @@ describe(MultiColumnSortDialog, () => {
           sortDialogTitle: "Sort by many columns",
           sortDialogAddColumnToSort: "Add another column",
         }}
-      />
+      />,
     );
 
     expect(screen.getByText("Sort by many columns")).toBeTruthy();

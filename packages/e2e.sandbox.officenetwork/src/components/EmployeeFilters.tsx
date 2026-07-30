@@ -67,7 +67,7 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
 ];
 
 const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter(
-  (def) => def.id != null && ["department", "locationCity"].includes(def.id)
+  (def) => def.id != null && ["department", "locationCity"].includes(def.id),
 );
 
 const FILTER_SIDEBAR_WIDTH = 256;
@@ -140,22 +140,22 @@ export function EmployeeFilters({
   const activeIds = useMemo(
     () =>
       new Set(filterDefinitions.map((d) => d.id).filter((id) => id != null)),
-    [filterDefinitions]
+    [filterDefinitions],
   );
 
   const availableFilters = useMemo(
     () =>
       ALL_FILTER_DEFINITIONS.filter(
-        (def) => def.id != null && !activeIds.has(def.id)
+        (def) => def.id != null && !activeIds.has(def.id),
       ),
-    [activeIds]
+    [activeIds],
   );
 
   const handleAddFilter = useCallback(
     (def: FilterDefinitionUnion<Employee>) => {
       setFilterDefinitions((prev) => [...prev, def]);
     },
-    []
+    [],
   );
 
   const handleRemoveFilter = useCallback((filterKey: string) => {
@@ -169,7 +169,7 @@ export function EmployeeFilters({
         onAdd={handleAddFilter}
       />
     ),
-    [availableFilters, handleAddFilter]
+    [availableFilters, handleAddFilter],
   );
 
   const containerStyle = useMemo(
@@ -177,7 +177,7 @@ export function EmployeeFilters({
       width: collapsed ? undefined : FILTER_SIDEBAR_WIDTH,
       height: "100%" as const,
     }),
-    [collapsed]
+    [collapsed],
   );
 
   return (

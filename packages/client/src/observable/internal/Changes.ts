@@ -61,11 +61,11 @@ export class Changes {
   registerObject = (
     cacheKey: ObjectCacheKey,
     data: ObjectHolder,
-    isNew: boolean
+    isNew: boolean,
   ): void => {
     this[isNew ? "addedObjects" : "modifiedObjects"].set(
       data.$objectType ?? data.$apiName,
-      data
+      data,
     );
     this[isNew ? "added" : "modified"].add(cacheKey);
   };
@@ -119,7 +119,7 @@ export function DEBUG_ONLY__changesToString(changes: Changes): string {
         modified: listHelper(changes.modified),
       },
       null,
-      2
+      2,
     );
   } else {
     throw new Error("not implemented");
@@ -134,6 +134,6 @@ function multimapHelper(multimap: MultiMap<string, ObjectHolder>) {
   return Object.fromEntries(
     Array.from(multimap.associations()).map(([type, objects]) => {
       return [type, objects.map((o) => o.$primaryKey)];
-    })
+    }),
   );
 }

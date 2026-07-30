@@ -28,13 +28,13 @@ export const defaultTypeClasses: TypeClass[] = [
 // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
   return ["struct", "mediaReference", "geotimeSeries", "attachment"].includes(
-    getPropertyTypeName(type)
+    getPropertyTypeName(type),
   );
 }
 
 export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
   return (typeClasses ?? []).some(
-    (tc) => tc.kind.toLowerCase() === "render_hint"
+    (tc) => tc.kind.toLowerCase() === "render_hint",
   );
 }
 

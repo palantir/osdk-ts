@@ -41,7 +41,7 @@ export const PdfAnnotationOverlay: React.FC<PdfAnnotationOverlayProps> = ({
       pointerEvents: "none",
       zIndex: 1,
     }),
-    [target.left, target.top, target.width, target.height]
+    [target.left, target.top, target.width, target.height],
   );
 
   return (

@@ -45,7 +45,7 @@ export function AipAgentChatModelPicker({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       onModelChange(event.target.value);
     },
-    [onModelChange]
+    [onModelChange],
   );
 
   if (models.length === 0) {

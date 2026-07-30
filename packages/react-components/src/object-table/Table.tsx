@@ -132,7 +132,7 @@ export interface BaseTableProps<TData extends RowData> {
    */
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>
+    cell: Cell<TData, unknown>,
   ) => React.ReactNode;
 
   /**
@@ -200,7 +200,7 @@ export interface BaseTableProps<TData extends RowData> {
 }
 
 export function BaseTable<TData extends RowData>(
-  props: BaseTableProps<TData>
+  props: BaseTableProps<TData>,
 ): ReactElement {
   return (
     <ObjectTableLabelsProvider labels={props.labels}>
@@ -245,7 +245,7 @@ function BaseTableInner<TData extends RowData>({
         return null;
       }
     },
-    [table]
+    [table],
   );
 
   const { focusedRowId, setFocusedRowId } = useFocusedRow<TData>({
@@ -292,14 +292,14 @@ function BaseTableInner<TData extends RowData>({
         }
       }
     },
-    [fetchNextPage, isLoading, isLoadingMore]
+    [fetchNextPage, isLoading, isLoadingMore],
   );
 
   const handleScroll = useCallback(
     async (e: React.UIEvent<HTMLDivElement>) => {
       await fetchMoreOnEndReached(e.currentTarget);
     },
-    [fetchMoreOnEndReached]
+    [fetchMoreOnEndReached],
   );
 
   const rows = table.getRowModel().rows;
@@ -309,7 +309,7 @@ function BaseTableInner<TData extends RowData>({
   const hasEditableColumns = table
     .getAllColumns()
     .some((column) =>
-      isColumnDeclaredEditable(column.columnDef.meta?.editable)
+      isColumnDeclaredEditable(column.columnDef.meta?.editable),
     );
 
   // Use pointerdown instead of click to detect outside interactions.

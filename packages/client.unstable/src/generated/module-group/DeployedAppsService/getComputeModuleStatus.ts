@@ -25,11 +25,11 @@ import type { ComputeModuleStatus as _ComputeModuleStatus } from "../__component
 export async function getComputeModuleStatus(
   ctx: ConjureContext,
   compassRid: string,
-  branch: string
+  branch: string,
 ): Promise<_ComputeModuleStatus> {
   return conjureFetch(
     ctx,
     `/deployed-apps/${compassRid}/${branch}/status`,
-    "GET"
+    "GET",
   );
 }

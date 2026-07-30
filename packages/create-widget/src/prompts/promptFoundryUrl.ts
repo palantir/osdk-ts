@@ -28,9 +28,9 @@ export async function promptFoundryUrl({
     }
     foundryUrl = await consola.prompt(
       `Enter the URL for your Foundry stack:\n${italic(
-        "(Example: https://example.palantirfoundry.com)"
+        "(Example: https://example.palantirfoundry.com)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
   return foundryUrl.replace(/\/$/u, "");

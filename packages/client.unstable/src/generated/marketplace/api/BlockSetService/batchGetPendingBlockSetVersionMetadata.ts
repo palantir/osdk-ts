@@ -30,12 +30,12 @@ import type {
  */
 export async function batchGetPendingBlockSetVersionMetadata(
   ctx: ConjureContext,
-  request: _api_BatchGetPendingBlockSetVersionMetadataRequest
+  request: _api_BatchGetPendingBlockSetVersionMetadataRequest,
 ): Promise<_api_BatchGetPendingBlockSetVersionMetadataResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/metadata/batchGet`,
     "POST",
-    request
+    request,
   );
 }

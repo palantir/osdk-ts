@@ -58,7 +58,7 @@ const DropdownButton = styled.button<{ disabled?: boolean }>(
       borderColor: disabled ? theme.appBorderColor : theme.color.secondary,
       boxShadow: disabled ? "none" : "0 2px 8px rgba(0,0,0,0.2)",
     },
-  })
+  }),
 );
 
 const Menu = styled.div(({ theme }) => ({
@@ -123,7 +123,7 @@ const ActionButton = styled.button<{ intent: "copy" | "download" }>(
         background: "rgba(0,0,0,0.04)",
       },
     };
-  }
+  },
 );
 
 const Chevron = styled.span({
@@ -171,7 +171,7 @@ export function ExportDropdown({
       window.clearTimeout(copiedTimerRef.current);
       copiedTimerRef.current = window.setTimeout(
         () => setCopiedLabel(undefined),
-        2000
+        2000,
       );
     } catch {
       // ignore

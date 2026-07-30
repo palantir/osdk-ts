@@ -126,7 +126,7 @@ export function OfficeMap({
   const mapRef = React.useRef<MapRef>(null);
 
   const officesWithLocation = offices.filter(
-    (o): o is typeof o & { location: Point } => isPoint(o.location)
+    (o): o is typeof o & { location: Point } => isPoint(o.location),
   );
 
   const officeLocationMap = React.useMemo(() => {
@@ -212,7 +212,7 @@ export function OfficeMap({
       showsEmployeeMarkers(lensMode)
     ) {
       const officeInfo = officeLocationMap.get(
-        selectedEmployee.primaryOfficeId
+        selectedEmployee.primaryOfficeId,
       );
       if (officeInfo) {
         mapRef.current.flyTo({
@@ -252,7 +252,7 @@ export function OfficeMap({
             const isSelected =
               selectedOffice?.primaryKey_ === office.primaryKey_;
             const hasMatchingEmployees = employeesByOffice.has(
-              office.primaryKey_
+              office.primaryKey_,
             );
             const isDimmed =
               hasActiveFilters && !hasMatchingEmployees && !isSelected;

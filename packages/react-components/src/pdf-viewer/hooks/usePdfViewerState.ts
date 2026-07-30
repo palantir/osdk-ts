@@ -98,7 +98,7 @@ export function usePdfViewerState({
   const search = usePdfViewerSearch(
     core.eventBusRef,
     core.findControllerRef,
-    core.document
+    core.document,
   );
 
   const outlineItems = usePdfOutline(core.document);
@@ -108,7 +108,7 @@ export function usePdfViewerState({
     function syncSidebarMode() {
       setSidebarMode(sidebarModeProp);
     },
-    [sidebarModeProp]
+    [sidebarModeProp],
   );
 
   // Sync rotation → PDFViewer
@@ -119,7 +119,7 @@ export function usePdfViewerState({
         pdfViewer.pagesRotation = rotation;
       }
     },
-    [core.pdfViewerRef, rotation]
+    [core.pdfViewerRef, rotation],
   );
 
   // Re-apply page-width after rotation changes while auto-size is active.
@@ -137,7 +137,7 @@ export function usePdfViewerState({
       }
       pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
     },
-    [core.pdfViewerRef, core.autoSize, rotation]
+    [core.pdfViewerRef, core.autoSize, rotation],
   );
 
   // Ctrl+F keyboard shortcut
@@ -154,7 +154,7 @@ export function usePdfViewerState({
         window.removeEventListener("keydown", handleKeyDown);
       };
     },
-    [search.openSearch]
+    [search.openSearch],
   );
 
   const zoomIn = useCallback(() => {
@@ -211,7 +211,7 @@ export function usePdfViewerState({
           });
         });
     },
-    [core.document, src, onDownload]
+    [core.document, src, onDownload],
   );
 
   return useMemo(
@@ -246,14 +246,14 @@ export function usePdfViewerState({
       search,
       outlineItems,
       download,
-    ]
+    ],
   );
 }
 
 /** Derive a download filename from an explicit name, the src URL, or a fallback. */
 function resolveDownloadFilename(
   src: PdfSource,
-  filename: string | undefined
+  filename: string | undefined,
 ): string {
   if (filename != null) {
     return filename;

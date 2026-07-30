@@ -28,12 +28,12 @@ import type {
  */
 export async function getPackagesForOwningResources(
   ctx: ConjureContext,
-  request: _api_packages_GetPackagesForOwningResourcesRequest
+  request: _api_packages_GetPackagesForOwningResourcesRequest,
 ): Promise<_api_packages_GetPackagesForOwningResourcesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/packages/packagesForOwningResources`,
     "PUT",
-    request
+    request,
   );
 }

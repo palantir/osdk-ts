@@ -34,12 +34,12 @@ import type {
 export async function createSnapshot(
   ctx: ConjureContext,
   productGroupRid: _api_ProductGroupRid,
-  request: _api_CreateSnapshotRequest
+  request: _api_CreateSnapshotRequest,
 ): Promise<_api_CreateSnapshotResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/${productGroupRid}/snapshots`,
     "POST",
-    request
+    request,
   );
 }

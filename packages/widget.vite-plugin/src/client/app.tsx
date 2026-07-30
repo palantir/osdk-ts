@@ -86,7 +86,7 @@ export const App: React.FC = () => {
               throw new ResponseError(
                 result.error,
                 result.response,
-                result.hint
+                result.hint,
               );
             }
             throw new Error(result.error);

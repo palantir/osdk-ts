@@ -66,7 +66,7 @@ export function useInfiniteScroll({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [],
   );
 
   /**
@@ -91,7 +91,7 @@ export function useInfiniteScroll({
       if (observer.current == null) {
         observer.current = new IntersectionObserver(
           handleObserverUpdate,
-          OPTIONS
+          OPTIONS,
         );
       }
       observer.current.observe(node);

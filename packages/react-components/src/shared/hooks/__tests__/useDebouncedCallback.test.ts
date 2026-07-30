@@ -28,7 +28,7 @@ describe("useDebouncedCallback", () => {
     vi.useFakeTimers();
     const cb = vi.fn();
     const { result } = renderHook(() =>
-      useDebouncedCallback(cb as (n: number) => void, 10)
+      useDebouncedCallback(cb as (n: number) => void, 10),
     );
     const f = result.current;
     f(1);
@@ -44,7 +44,7 @@ describe("useDebouncedCallback", () => {
     vi.useFakeTimers();
     const cb = vi.fn();
     const { result, unmount } = renderHook(() =>
-      useDebouncedCallback(cb as (n: number) => void, 10)
+      useDebouncedCallback(cb as (n: number) => void, 10),
     );
     result.current(1);
     unmount();
@@ -56,7 +56,7 @@ describe("useDebouncedCallback", () => {
   it("returns a stable function reference across re-renders", () => {
     const { result, rerender } = renderHook(
       ({ cb }) => useDebouncedCallback(cb, 10),
-      { initialProps: { cb: (_n: number) => {} } }
+      { initialProps: { cb: (_n: number) => {} } },
     );
     const first = result.current;
     rerender({ cb: (_n: number) => {} });

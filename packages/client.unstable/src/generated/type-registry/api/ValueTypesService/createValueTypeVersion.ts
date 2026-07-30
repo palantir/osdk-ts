@@ -26,12 +26,12 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
 export async function createValueTypeVersion(
   ctx: ConjureContext,
   valueTypeRid: ValueTypeRid,
-  request: CreateValueTypeVersionRequest
+  request: CreateValueTypeVersionRequest,
 ): Promise<CreateValueTypeVersionResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/version/${valueTypeRid}`,
     "POST",
-    request
+    request,
   );
 }

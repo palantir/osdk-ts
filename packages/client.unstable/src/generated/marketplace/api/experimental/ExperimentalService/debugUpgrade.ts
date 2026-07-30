@@ -28,12 +28,12 @@ import type { UpgradeRequest as _api_experimental_UpgradeRequest } from "../__co
 export async function debugUpgrade(
   ctx: ConjureContext,
   installationRid: _api_BlockSetInstallationRid,
-  request: _api_experimental_UpgradeRequest
+  request: _api_experimental_UpgradeRequest,
 ): Promise<_api_InstallBlockSetsRequest> {
   return conjureFetch(
     ctx,
     `/experimental/installations/${installationRid}/upgrade/debug`,
     "POST",
-    request
+    request,
   );
 }

@@ -92,7 +92,7 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
 
   const recentRequests = useMemo(
     () => requests.slice(-50).reverse(),
-    [requests]
+    [requests],
   );
 
   return (
@@ -221,7 +221,7 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
               <span
                 className={classNames(
                   styles.operationMetric,
-                  getUsageClass(request.computeUsage)
+                  getUsageClass(request.computeUsage),
                 )}
               >
                 {formatNumber(request.computeUsage)} CU

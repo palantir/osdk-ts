@@ -34,7 +34,7 @@ describe(getSortIcons, () => {
         asc: SortAlphabetical,
         desc: SortAlphabeticalDesc,
       });
-    }
+    },
   );
 
   it.each(["byte", "decimal", "double", "float", "integer", "long", "short"])(
@@ -44,7 +44,7 @@ describe(getSortIcons, () => {
         asc: SortNumerical,
         desc: SortNumericalDesc,
       });
-    }
+    },
   );
 
   it.each(["datetime", "timestamp"])(
@@ -54,7 +54,7 @@ describe(getSortIcons, () => {
         asc: SortAsc,
         desc: SortDesc,
       });
-    }
+    },
   );
 
   it.each(["boolean", "attachment", "geopoint", "vector", "someFutureType"])(
@@ -64,7 +64,7 @@ describe(getSortIcons, () => {
         asc: SortAsc,
         desc: SortDesc,
       });
-    }
+    },
   );
 
   it("falls back to the directional icons when the type is unknown", () => {

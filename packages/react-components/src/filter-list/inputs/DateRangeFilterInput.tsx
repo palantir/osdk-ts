@@ -61,7 +61,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         includeNull,
       });
     },
-    [onFilterStateChanged, dateRangeState?.minValue, dateRangeState?.maxValue]
+    [onFilterStateChanged, dateRangeState?.minValue, dateRangeState?.maxValue],
   );
 
   const handleRangeChange = useCallback(
@@ -73,22 +73,22 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull]
+    [onFilterStateChanged, includeNull],
   );
 
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey),
-    [propertyKey]
+    [propertyKey],
   );
 
   const histogramArgs = useMemo(
     () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
-    [aggregateOptions, objectSet, whereClause]
+    [aggregateOptions, objectSet, whereClause],
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    histogramArgs
+    histogramArgs,
   );
 
   const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(() => {
@@ -112,12 +112,12 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
-    []
+    [],
   );
 
   const nullCountWhereClause = useMemo(
     () => createNullCountWhereClause<Q>(propertyKey, whereClause),
-    [propertyKey, whereClause]
+    [propertyKey, whereClause],
   );
 
   const nullCountArgs = useMemo(
@@ -126,7 +126,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullCountWhereClause, nullCountAggregateOptions, objectSet]
+    [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 
   const {
@@ -168,5 +168,5 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const DateRangeFilterInput: typeof DateRangeFilterInputInner = memo(
-  DateRangeFilterInputInner
+  DateRangeFilterInputInner,
 ) as typeof DateRangeFilterInputInner;

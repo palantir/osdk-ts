@@ -54,7 +54,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         initialSelected={["Support", "Marketing"]}
-      />
+      />,
     );
 
     expect(getRenderedOrder()).toEqual([
@@ -75,7 +75,7 @@ describe("ListogramInput ordering", () => {
         maxCount={42}
         maxVisibleItems={2}
         initialSelected={["Support"]}
-      />
+      />,
     );
 
     expect(getRenderedOrder()).toEqual(["Engineering", "Sales", "Support"]);
@@ -93,7 +93,7 @@ describe("ListogramInput ordering", () => {
         maxCount={42}
         maxVisibleItems={2}
         initialSelected={["Support"]}
-      />
+      />,
     );
 
     const supportRow = queryRow("Support");
@@ -114,7 +114,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={2}
-      />
+      />,
     );
 
     expect(getRenderedOrder()).toEqual(["Engineering", "Sales"]);
@@ -138,7 +138,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={mockValues.length}
-      />
+      />,
     );
 
     expect(getRenderedOrder()).toEqual([
@@ -148,7 +148,7 @@ describe("ListogramInput ordering", () => {
       "Support",
     ]);
     expect(
-      screen.queryByRole("button", { name: /View (all|less)/u })
+      screen.queryByRole("button", { name: /View (all|less)/u }),
     ).toBeNull();
   });
 
@@ -158,17 +158,17 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={2}
-      />
+      />,
     );
 
     expect(
-      screen.queryAllByRole("button", { name: /View (all|less)/u })
+      screen.queryAllByRole("button", { name: /View (all|less)/u }),
     ).toHaveLength(1);
 
     fireEvent.click(screen.getByRole("button", { name: "View all (4)" }));
 
     expect(
-      screen.queryAllByRole("button", { name: /View (all|less)/u })
+      screen.queryAllByRole("button", { name: /View (all|less)/u }),
     ).toHaveLength(1);
   });
 
@@ -178,7 +178,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={2}
-      />
+      />,
     );
 
     expect(screen.getByRole("button", { name: "View all (4)" })).not.toBeNull();
@@ -195,7 +195,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={2}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "View all (4)" }));
@@ -221,7 +221,7 @@ describe("ListogramInput ordering", () => {
         values={mockValues}
         maxCount={42}
         maxVisibleItems={2}
-      />
+      />,
     );
 
     const collapsed = screen.getByRole("button", { name: "View all (4)" });

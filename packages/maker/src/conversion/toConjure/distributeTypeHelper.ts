@@ -15,7 +15,7 @@
  */
 
 export function distributeTypeHelper<T extends string>(
-  type: T
+  type: T,
 ): T extends any
   ? { type: T } & {
       [K in T]: {};

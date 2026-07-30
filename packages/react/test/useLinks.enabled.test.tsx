@@ -61,7 +61,7 @@ describe("useLinks enabled option", () => {
 
     renderHook(
       () => useLinks(mockObject, "relatedObjects", { enabled: false }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveLinks).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe("useLinks enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockObserveLinks).not.toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe("useLinks enabled option", () => {
       {
         wrapper,
         initialProps: { obj: undefined as typeof mockObject | undefined },
-      }
+      },
     );
 
     expect(mockObserveLinks).not.toHaveBeenCalled();
@@ -121,7 +121,7 @@ describe("useLinks enabled option", () => {
         useLinks(mockObject, "relatedObjects", {
           dedupeIntervalMs: 5000,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
@@ -134,7 +134,7 @@ describe("useLinks enabled option", () => {
 
     const { result } = renderHook(
       () => useLinks(mockObject, "relatedObjects"),
-      { wrapper }
+      { wrapper },
     );
 
     expect(result.current.linkedObjectsBySourcePrimaryKey).toBeDefined();
@@ -146,7 +146,7 @@ describe("useLinks enabled option", () => {
 
     const { result } = renderHook(
       () => useLinks(mockObject, "relatedObjects"),
-      { wrapper }
+      { wrapper },
     );
 
     const observer = mockObserveLinks.mock.calls[0][3];
@@ -168,7 +168,7 @@ describe("useLinks enabled option", () => {
     });
 
     expect(
-      result.current.linkedObjectsBySourcePrimaryKey.get("obj-123")
+      result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"),
     ).toEqual([linkedObj]);
   });
 
@@ -180,7 +180,7 @@ describe("useLinks enabled option", () => {
         useLinks(mockObject, "relatedObjects", {
           $includeAllBaseObjectProperties: true,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
@@ -197,7 +197,7 @@ describe("useLinks enabled option", () => {
           useLinks(mockObject, "relatedObjects", {
             resolveToObjectType: true,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(mockObserveLinks).toHaveBeenCalledTimes(1);

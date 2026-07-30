@@ -28,7 +28,7 @@ import type {
  */
 export async function getOrganizationsForTypeGroups(
   ctx: ConjureContext,
-  request: _api_TypeGroupGetOrganizationsRequest
+  request: _api_TypeGroupGetOrganizationsRequest,
 ): Promise<_api_TypeGroupGetOrganizationsResponse> {
   return conjureFetch(ctx, `/type-groups/orgs/get`, "PUT", request);
 }

@@ -86,7 +86,7 @@ export const LogEntryCard: React.FC<LogEntryCardProps> = ({
         styles.logEntry,
         config.className,
         isMultiline && styles.interactive,
-        tinted && styles.tinted
+        tinted && styles.tinted,
       )}
       onClick={() => {
         if (isMultiline) {

@@ -28,12 +28,12 @@ import type {
  */
 export async function getAutomationTriggerDependencies(
   ctx: ConjureContext,
-  request: _api_metrics_GetDependentAutomationsRequest
+  request: _api_metrics_GetDependentAutomationsRequest,
 ): Promise<_api_metrics_GetAutomationTriggerDependenciesResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/dependentAutomations`,
     "POST",
-    request
+    request,
   );
 }

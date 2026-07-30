@@ -15,7 +15,7 @@
  */
 
 export function generateHookInstallationScript(
-  verbose: boolean = false
+  verbose: boolean = false,
 ): string {
   return `
 <script type="module">

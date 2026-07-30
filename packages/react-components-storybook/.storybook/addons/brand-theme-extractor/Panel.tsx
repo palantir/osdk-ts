@@ -90,7 +90,7 @@ function PanelContent(): React.ReactElement {
   // Store the full state as a JSON string to preserve structure.
   const state: BrandThemeGlobals = useMemo(
     () => parseBrandThemeState(rawState),
-    [rawState]
+    [rawState],
   );
 
   // Keep a ref so callbacks read current state without re-creating.
@@ -106,17 +106,17 @@ function PanelContent(): React.ReactElement {
 
   const preset = useMemo(
     () => findThemePreset(state.selectedPresetId),
-    [state.selectedPresetId]
+    [state.selectedPresetId],
   );
   const themeName = preset?.label ?? "OSDK-brand-theme";
 
   const css = useMemo(
     () => generateCss(exportAssignments),
-    [exportAssignments]
+    [exportAssignments],
   );
   const md = useMemo(
     () => generateMarkdown(exportAssignments, themeName),
-    [exportAssignments, themeName]
+    [exportAssignments, themeName],
   );
 
   // Stable: reads state via ref, only depends on updateGlobals (stable from useGlobals).
@@ -125,7 +125,7 @@ function PanelContent(): React.ReactElement {
       const newState = { ...stateRef.current, ...partial };
       updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
-    [updateGlobals]
+    [updateGlobals],
   );
 
   const handleImport = useCallback(
@@ -137,7 +137,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: findMatchingPreset(assignments, colorMode),
       });
     },
-    [updateState]
+    [updateState],
   );
 
   const handleAssignmentChange = useCallback(
@@ -156,7 +156,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState]
+    [updateState],
   );
 
   const handleReset = useCallback(
@@ -168,7 +168,7 @@ function PanelContent(): React.ReactElement {
         selectedPresetId: findMatchingPreset(newAssignments, current.colorMode),
       });
     },
-    [updateState]
+    [updateState],
   );
 
   return (

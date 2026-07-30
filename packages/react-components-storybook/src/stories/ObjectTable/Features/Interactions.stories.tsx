@@ -115,7 +115,7 @@ export const WithContextMenu: Story = {
     // Clicking outside the menu closes it.
     await userEvent.click(canvas.getByText("Right click on any cell"));
     await waitFor(() =>
-      expect(screen.queryByText("Cell Value:")).not.toBeInTheDocument()
+      expect(screen.queryByText("Cell Value:")).not.toBeInTheDocument(),
     );
   },
 };
@@ -191,7 +191,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent("onRowClick");
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -200,7 +200,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent("onColumnHeaderClick");
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -210,7 +210,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent("onRowSelectionChanged");
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -219,7 +219,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent("onOrderByChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -227,7 +227,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent("onColumnVisibilityChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -235,7 +235,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent("onColumnsPinnedChanged");
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -243,7 +243,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -315,7 +315,7 @@ export const EventListeners: Story = {
     const fullNameHeader = await getColumnHeader(canvas, "fullName");
     await userEvent.click(within(fullNameHeader).getByText("Name"));
     await waitFor(() =>
-      expect(args.onColumnHeaderClick).toHaveBeenCalledWith("fullName")
+      expect(args.onColumnHeaderClick).toHaveBeenCalledWith("fullName"),
     );
 
     // onRowSelectionChanged: toggling a row checkbox (selectionMode "multiple").
@@ -346,7 +346,7 @@ export const EventListeners: Story = {
     await userEvent.click(removeButtons[0]);
     await userEvent.click(await screen.findByRole("button", { name: "Apply" }));
     await waitFor(() =>
-      expect(args.onColumnVisibilityChanged).toHaveBeenCalled()
+      expect(args.onColumnVisibilityChanged).toHaveBeenCalled(),
     );
 
     // Reset the row selection so the story does not end with a checked row.

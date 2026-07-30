@@ -35,7 +35,7 @@ import type { TokenRole } from "./types.js";
  * missing roles are harmonized around the brand and every value is bounded.
  */
 export function extractTokensFromDesignMarkdown(
-  markdown: string
+  markdown: string,
 ): CssExtractionResult {
   const front = extractFrontmatter(markdown);
   const parsed = front != null ? parseFrontmatter(front) : emptyParsed();
@@ -284,7 +284,7 @@ function tokenMapFromParsed(parsed: ParsedDesign): CssTokenMap {
   // Spacing — take the smallest defined step, clamped to the dense ceiling.
   const spacing =
     firstPx(
-      parsed.spacing["xs"] ?? parsed.spacing["sm"] ?? parsed.spacing["md"]
+      parsed.spacing["xs"] ?? parsed.spacing["sm"] ?? parsed.spacing["md"],
     ) ?? firstNumericValue(parsed.spacing);
   if (spacing != null) {
     map.spacing = String(Math.min(spacing, MAX_SPACING_PX));
@@ -294,7 +294,7 @@ function tokenMapFromParsed(parsed: ParsedDesign): CssTokenMap {
 }
 
 function pickBodyTypography(
-  typography: Record<string, Record<string, string>>
+  typography: Record<string, Record<string, string>>,
 ): Record<string, string> | null {
   const keys = Object.keys(typography);
   if (keys.length === 0) return null;
@@ -307,7 +307,7 @@ function pickBodyTypography(
 }
 
 function pickMonoFamily(
-  typography: Record<string, Record<string, string>>
+  typography: Record<string, Record<string, string>>,
 ): string | null {
   for (const [role, props] of Object.entries(typography)) {
     const family = props.fontFamily;
@@ -371,7 +371,7 @@ function normalizeColor(raw: string): string | null {
   const rgb = value.match(/^rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)/u);
   if (rgb) {
     const [r, g, b] = [rgb[1], rgb[2], rgb[3]].map((n) =>
-      Math.min(255, Number(n)).toString(16).padStart(2, "0")
+      Math.min(255, Number(n)).toString(16).padStart(2, "0"),
     );
     return `#${r}${g}${b}`;
   }
@@ -397,7 +397,7 @@ interface ColorMention {
  * backgrounds/text are the near-neutral extremes).
  */
 function parseColorsFromProse(
-  markdown: string
+  markdown: string,
 ): Partial<Record<TokenRole, string>> {
   const mentions = collectColorMentions(markdown);
   if (mentions.length === 0) return {};
@@ -417,7 +417,7 @@ function parseColorsFromProse(
   const brandPool = mentions.filter(
     (m) =>
       /primary|brand|accent/u.test(m.heading) &&
-      !/background|surface|text/u.test(m.heading)
+      !/background|surface|text/u.test(m.heading),
   );
   const primary = mostSaturated(brandPool.length > 0 ? brandPool : mentions);
   take("primary", primary?.hex);
@@ -428,7 +428,7 @@ function parseColorsFromProse(
     firstMatch(
       mentions,
       ["background", "canvas", "deepest", "page background", "base surface"],
-      used
+      used,
     ) ?? extremeNeutral(mentions, used);
   take("background", bgMention?.hex);
 
@@ -441,45 +441,45 @@ function parseColorsFromProse(
     firstMatch(
       mentions,
       ["card", "surface", "container", "elevated", "panel"],
-      used
-    )?.hex
+      used,
+    )?.hex,
   );
   take(
     "text",
     firstMatch(
       mentions,
       ["primary text", "body text", "default", "text-base", "heading", "ink"],
-      used
-    )?.hex
+      used,
+    )?.hex,
   );
   take(
     "text-muted",
     firstMatch(
       mentions,
       ["secondary", "muted", "tertiary", "silver", "subdued"],
-      used
-    )?.hex
+      used,
+    )?.hex,
   );
   take(
     "border",
     firstMatch(
       mentions,
       ["border", "divider", "separator", "hairline", "outline"],
-      used
-    )?.hex
+      used,
+    )?.hex,
   );
   take(
     "danger",
     firstMatch(mentions, ["negative", "error", "danger", "destructive"], used)
-      ?.hex
+      ?.hex,
   );
   take(
     "success",
-    firstMatch(mentions, ["success", "positive", "confirm"], used)?.hex
+    firstMatch(mentions, ["success", "positive", "confirm"], used)?.hex,
   );
   take(
     "warning",
-    firstMatch(mentions, ["warning", "caution", "alert"], used)?.hex
+    firstMatch(mentions, ["warning", "caution", "alert"], used)?.hex,
   );
 
   // Fall back for text: the neutral at the opposite end from the background, so
@@ -490,7 +490,7 @@ function parseColorsFromProse(
       .sort((a, b) =>
         isDark
           ? (luminanceFromHex(b.hex) ?? 0) - (luminanceFromHex(a.hex) ?? 0)
-          : (luminanceFromHex(a.hex) ?? 1) - (luminanceFromHex(b.hex) ?? 1)
+          : (luminanceFromHex(a.hex) ?? 1) - (luminanceFromHex(b.hex) ?? 1),
       )[0];
     take("text", opposite?.hex);
   }
@@ -523,12 +523,12 @@ function collectColorMentions(markdown: string): ColorMention[] {
 function firstMatch(
   mentions: ColorMention[],
   keywords: string[],
-  used: Set<string>
+  used: Set<string>,
 ): ColorMention | undefined {
   return mentions.find(
     (m) =>
       !used.has(m.hex) &&
-      keywords.some((k) => m.line.includes(k) || m.heading.includes(k))
+      keywords.some((k) => m.line.includes(k) || m.heading.includes(k)),
   );
 }
 
@@ -549,7 +549,7 @@ function mostSaturated(mentions: ColorMention[]): ColorMention | undefined {
  * likely page background in an achromatic UI. */
 function extremeNeutral(
   mentions: ColorMention[],
-  used: Set<string>
+  used: Set<string>,
 ): ColorMention | undefined {
   const neutrals = mentions.filter((m) => !used.has(m.hex) && isNeutral(m.hex));
   if (neutrals.length === 0) return undefined;

@@ -53,35 +53,35 @@ export function get$link(holder: ObjectHolder): OsdkObjectLinksObject<any> {
         const value = !linkDef.multiplicity
           ? ({
               fetchOne: <A extends SelectArg<any, any, any, any>>(
-                options?: A
+                options?: A,
               ) =>
                 fetchSingle(
                   client,
                   objDef,
                   options ?? {},
-                  getWireObjectSet(objectSet)
+                  getWireObjectSet(objectSet),
                 ),
               fetchOneWithErrors: <A extends SelectArg<any, any, any, any>>(
-                options?: A
+                options?: A,
               ) =>
                 fetchSingleWithErrors(
                   client,
                   objDef,
                   options ?? {},
-                  getWireObjectSet(objectSet)
+                  getWireObjectSet(objectSet),
                 ),
             } as SingleLinkAccessor<any>)
           : objectSet;
 
         return [linkName, value];
-      })
-    )
+      }),
+    ),
   );
 }
 
 /** @internal */
 export function get$linkForInterface(
-  holder: InterfaceHolder
+  holder: InterfaceHolder,
 ): OsdkObjectLinksObject<any> {
   const client = holder[UnderlyingOsdkObject][ClientRef];
   const objDef = holder[UnderlyingOsdkObject][ObjectDefRef];
@@ -98,7 +98,7 @@ export function get$linkForInterface(
           .intersect(
             (client.objectSetFactory(objDef, client) as ObjectSet<any>).where({
               [objDef.primaryKeyApiName]: rawObj.$primaryKey,
-            } as WhereClause<any>)
+            } as WhereClause<any>),
           )
           .pivotTo(linkName);
 
@@ -113,28 +113,28 @@ export function get$linkForInterface(
         const value = !linkDef.multiplicity
           ? ({
               fetchOne: <A extends SelectArg<any, any, any, any>>(
-                options?: A
+                options?: A,
               ) =>
                 fetchSingle(
                   client,
                   linkTargetDef,
                   options ?? {},
-                  getWireObjectSet(objectSet)
+                  getWireObjectSet(objectSet),
                 ),
               fetchOneWithErrors: <A extends SelectArg<any, any, any, any>>(
-                options?: A
+                options?: A,
               ) =>
                 fetchSingleWithErrors(
                   client,
                   linkTargetDef,
                   options ?? {},
-                  getWireObjectSet(objectSet)
+                  getWireObjectSet(objectSet),
                 ),
             } as SingleLinkAccessor<any>)
           : objectSet;
 
         return [linkName, value];
-      })
-    )
+      }),
+    ),
   );
 }

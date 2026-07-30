@@ -27,11 +27,11 @@ import type {
  */
 export async function getInstallAutomationSettings(
   ctx: ConjureContext,
-  blockSetInstallationRid: _api_BlockSetInstallationRid
+  blockSetInstallationRid: _api_BlockSetInstallationRid,
 ): Promise<_api_GetInstallAutomationSettingsResponse> {
   return conjureFetch(
     ctx,
     `/automation/settings/block-set-installations/${blockSetInstallationRid}`,
-    "GET"
+    "GET",
   );
 }

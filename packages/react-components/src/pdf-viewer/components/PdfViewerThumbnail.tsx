@@ -102,12 +102,12 @@ export function PdfViewerThumbnail({
         onClick();
       }
     },
-    [onClick]
+    [onClick],
   );
 
   const containerClassName = classnames(
     styles.thumbnailContainer,
-    isActive && styles.active
+    isActive && styles.active,
   );
 
   return (

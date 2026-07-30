@@ -63,7 +63,7 @@ export function usePdfViewerSync({
         pdfViewer.currentScale = scale;
       }
     },
-    [pdfViewerRef, scale, autoSize]
+    [pdfViewerRef, scale, autoSize],
   );
 
   // Apply page-width scale when auto-size is enabled.
@@ -95,7 +95,7 @@ export function usePdfViewerSync({
         };
       }
     },
-    [pdfViewerRef, eventBusRef, autoSize, document]
+    [pdfViewerRef, eventBusRef, autoSize, document],
   );
 
   // ResizeObserver: re-apply page-width on container resize when auto-size is active
@@ -116,7 +116,7 @@ export function usePdfViewerSync({
         observer.disconnect();
       };
     },
-    [containerRef, pdfViewerRef, autoSize, document]
+    [containerRef, pdfViewerRef, autoSize, document],
   );
 
   // Listen to PDFViewer events → React state
@@ -144,7 +144,7 @@ export function usePdfViewerSync({
         eventBus.off(SCALE_CHANGING_EVENT, handleScaleChanging);
       };
     },
-    [eventBusRef, document, onPageChange, onScaleChange]
+    [eventBusRef, document, onPageChange, onScaleChange],
   );
 
   const scrollToPage = useCallback(
@@ -154,7 +154,7 @@ export function usePdfViewerSync({
         pdfViewer.currentPageNumber = page;
       }
     },
-    [pdfViewerRef]
+    [pdfViewerRef],
   );
 
   return { scrollToPage };

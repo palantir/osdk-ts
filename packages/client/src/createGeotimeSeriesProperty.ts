@@ -36,7 +36,7 @@ export class GeotimeSeriesPropertyImpl<
     objectApiName: string,
     primaryKey: any,
     propertyName: string,
-    initialValue?: TimeSeriesPoint<T>
+    initialValue?: TimeSeriesPoint<T>,
   ) {
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
@@ -49,18 +49,18 @@ export class GeotimeSeriesPropertyImpl<
     const latestPointPromise = TimeSeriesValueBankProperties.getLatestValue(
       this.#client,
       await this.#client.ontologyRid,
-      ...this.#triplet
+      ...this.#triplet,
     );
     latestPointPromise.then(
       (latestPoint) => (this.lastFetchedValue = latestPoint),
       // eslint-disable-next-line no-console
-      (err) => void console.error(err)
+      (err) => void console.error(err),
     );
     return latestPointPromise;
   }
 
   public async getAllValues(
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
@@ -83,11 +83,11 @@ export class GeotimeSeriesPropertyImpl<
         this.#client,
         await this.#client.ontologyRid,
         ...this.#triplet,
-        query ? { range: getTimeRange(query) } : {}
+        query ? { range: getTimeRange(query) } : {},
       );
 
     for await (const timeseriesPoint of asyncIterPointsHelper<T>(
-      streamPointsIterator
+      streamPointsIterator,
     )) {
       yield timeseriesPoint;
     }

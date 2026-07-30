@@ -50,7 +50,7 @@ function renderPicker(props: Partial<Parameters<typeof BaseCbacPicker>[0]>) {
       markingStates={EMPTY_STATES}
       onMarkingToggle={vi.fn()}
       {...props}
-    />
+    />,
   );
 }
 
@@ -91,7 +91,7 @@ describe("BaseCbacPicker", () => {
       requiredMarkingGroups: [{ markingNames: ["Need X", "Need Y"] }],
     });
     expect(
-      screen.getByText(/To complete a valid classification/u)
+      screen.getByText(/To complete a valid classification/u),
     ).toBeDefined();
     expect(screen.getByText("Need X")).toBeDefined();
     expect(screen.getByText("Need Y")).toBeDefined();
@@ -100,7 +100,7 @@ describe("BaseCbacPicker", () => {
   it("does not show the validation warning when there are no required groups", () => {
     renderPicker({ isValid: false, requiredMarkingGroups: [] });
     expect(
-      screen.queryByText(/To complete a valid classification/u)
+      screen.queryByText(/To complete a valid classification/u),
     ).toBeNull();
   });
 
@@ -116,7 +116,7 @@ describe("BaseCbacPicker", () => {
 
     expect(screen.getByText("SECRET")).toBeDefined();
     fireEvent.click(
-      screen.getByRole("button", { name: "Clear classification" })
+      screen.getByRole("button", { name: "Clear classification" }),
     );
     expect(onDismissBanner).toHaveBeenCalledOnce();
   });

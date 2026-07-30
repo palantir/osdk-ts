@@ -30,12 +30,12 @@ import type {
 export async function listSnapshotsForProductGroup(
   ctx: ConjureContext,
   productGroupRid: _api_ProductGroupRid,
-  request: _api_ListSnapshotsForProductGroupRequest
+  request: _api_ListSnapshotsForProductGroupRequest,
 ): Promise<_api_ListSnapshotsForProductGroupResponse> {
   return conjureFetch(
     ctx,
     `/product-groups/${productGroupRid}/snapshots/list`,
     "POST",
-    request
+    request,
   );
 }

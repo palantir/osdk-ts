@@ -70,7 +70,7 @@ export const SingleSelection: Story = {
 
     // No top-level "Select all rows" checkbox in single-selection mode.
     await expect(
-      canvas.queryByRole("checkbox", { name: /Select all rows/u })
+      canvas.queryByRole("checkbox", { name: /Select all rows/u }),
     ).not.toBeInTheDocument();
 
     // Selecting the first row checks it and notifies the consumer.
@@ -179,7 +179,7 @@ return (
   },
   render: (args) => {
     const [selectedRows, setSelectedRows] = useState<any[]>(
-      args.selectedRows ?? []
+      args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
     const handleRowSelectionChanged = useCallback(
@@ -191,7 +191,7 @@ return (
         setSelectedRows(change.selectedRows.map((r) => r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -243,23 +243,23 @@ return (
     await userEvent.click((await rowCheckboxes())[0]);
     await waitFor(() => expect(args.onRowSelectionChanged).toHaveBeenCalled());
     await waitFor(() =>
-      expect(canvas.getByText("1 employees")).toBeInTheDocument()
+      expect(canvas.getByText("1 employees")).toBeInTheDocument(),
     );
 
     await userEvent.click((await rowCheckboxes())[1]);
     await waitFor(() =>
-      expect(canvas.getByText("2 employees")).toBeInTheDocument()
+      expect(canvas.getByText("2 employees")).toBeInTheDocument(),
     );
 
     // Clearing resets the controlled selection back to zero.
     await userEvent.click(
-      canvas.getByRole("button", { name: "Clear Selection" })
+      canvas.getByRole("button", { name: "Clear Selection" }),
     );
     await waitFor(() =>
-      expect(canvas.getByText("0 employees")).toBeInTheDocument()
+      expect(canvas.getByText("0 employees")).toBeInTheDocument(),
     );
     await expect(
-      canvas.queryByRole("button", { name: "Clear Selection" })
+      canvas.queryByRole("button", { name: "Clear Selection" }),
     ).not.toBeInTheDocument();
   },
 };
@@ -316,7 +316,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -377,13 +377,13 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     await waitFor(() => expect(args.onFocusedRowChanged).toHaveBeenCalled());
     await waitFor(() =>
-      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument()
+      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument(),
     );
     await waitFor(() =>
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         "data-focused",
-        "true"
-      )
+        "true",
+      ),
     );
 
     // Clicking outside the table clears focus via onFocusedRowChanged(null).
@@ -391,8 +391,8 @@ return (
     await waitFor(() =>
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         "data-focused",
-        "false"
-      )
+        "false",
+      ),
     );
 
     // Re-focus, then the explicit "Clear focus" button also resets it.
@@ -400,15 +400,15 @@ return (
     await waitFor(() =>
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         "data-focused",
-        "true"
-      )
+        "true",
+      ),
     );
     await userEvent.click(canvas.getByRole("button", { name: "Clear focus" }));
     await waitFor(() =>
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         "data-focused",
-        "false"
-      )
+        "false",
+      ),
     );
   },
 };

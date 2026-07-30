@@ -28,12 +28,12 @@ import type {
 export async function loadOntologyBranch(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_LoadOntologyBranchRequest
+  request: _branch_api_LoadOntologyBranchRequest,
 ): Promise<_branch_api_LoadOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/load/${ontologyBranchRid}`,
     "POST",
-    request
+    request,
   );
 }

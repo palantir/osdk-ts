@@ -30,7 +30,7 @@ import type {
  */
 export async function getBlockVersion(
   ctx: ConjureContext,
-  blockVersionId: _api_BlockVersionId
+  blockVersionId: _api_BlockVersionId,
 ): Promise<_api_GetBlockVersionResponse> {
   return conjureFetch(ctx, `/blocks/versions/${blockVersionId}`, "GET");
 }

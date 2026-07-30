@@ -78,7 +78,7 @@ describe("getFilterKey", () => {
       "status",
       "LISTOGRAM",
       ["Active", "Inactive"],
-      { type: "EXACT_MATCH", values: [] }
+      { type: "EXACT_MATCH", values: [] },
     );
     expect(getFilterKey(definition)).toBe("status");
   });
@@ -89,7 +89,7 @@ describe("getFilterKey", () => {
         "status",
         "LISTOGRAM",
         ["Active", "Inactive"],
-        { type: "EXACT_MATCH", values: [] }
+        { type: "EXACT_MATCH", values: [] },
       ),
       id: "status-filter-1",
     } as FilterDefinitionUnion<typeof MockObjectType>;

@@ -48,7 +48,7 @@ export function createCollectionConnectable<
 >(
   subject: Observable<SubjectPayload<K>>,
   subjects: Subjects,
-  createPayload: (params: CollectionConnectableParams) => P
+  createPayload: (params: CollectionConnectableParams) => P,
 ): Connectable<P> {
   return connectable<P>(
     subject.pipe(
@@ -62,9 +62,9 @@ export function createCollectionConnectable<
                   listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
                     subjects.get(cacheKey).pipe(
                       map((objectEntry) => objectEntry?.value!),
-                      distinctUntilChanged()
-                    )
-                  )
+                      distinctUntilChanged(),
+                    ),
+                  ),
                 );
 
         return scheduled(
@@ -87,16 +87,16 @@ export function createCollectionConnectable<
                 status: params.status,
                 lastUpdated: params.lastUpdated,
                 totalCount: params.totalCount,
-              })
-            )
+              }),
+            ),
           ),
-          asapScheduler
+          asapScheduler,
         );
-      })
+      }),
     ),
     {
       resetOnDisconnect: false,
       connector: () => new ReplaySubject(1),
-    }
+    },
   );
 }

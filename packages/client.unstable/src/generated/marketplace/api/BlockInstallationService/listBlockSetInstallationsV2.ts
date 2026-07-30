@@ -41,7 +41,7 @@ export async function listBlockSetInstallationsV2(
   blockSetId: _api_BlockSetId | null | undefined,
   lastConsistentBlockSetVersionId: _api_BlockSetVersionId | null | undefined,
   pageToken: _api_ListBlockSetInstallationsV2PageToken | null | undefined,
-  limit: _api_PageSizeLimitHint | null | undefined
+  limit: _api_PageSizeLimitHint | null | undefined,
 ): Promise<_api_ListBlockSetInstallationsResponseV2> {
   return conjureFetch(
     ctx,
@@ -54,6 +54,6 @@ export async function listBlockSetInstallationsV2(
       lastConsistentBlockSetVersionId,
       pageToken,
       limit,
-    }
+    },
   );
 }

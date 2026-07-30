@@ -28,7 +28,7 @@ import type {
  */
 export async function getObjectLocatorsInitialScroll(
   ctx: ConjureContext,
-  request: _api_GetObjectLocatorsInitialScrollRequest
+  request: _api_GetObjectLocatorsInitialScrollRequest,
 ): Promise<_api_GetObjectLocatorsScrollResponse> {
   return conjureFetch(ctx, `/scroll/locators/initial`, "POST", request);
 }

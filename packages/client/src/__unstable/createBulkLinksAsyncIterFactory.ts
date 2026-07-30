@@ -38,7 +38,7 @@ import { metadataCacheClient } from "./ConjureSupport.js";
 export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
   return async function* (
     objs: Array<OsdkBase<any>>,
-    linkTypes: string[]
+    linkTypes: string[],
   ): AsyncGenerator<BulkLinkResult, void, unknown> {
     if (objs.length === 0) {
       return;
@@ -53,13 +53,13 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const helper = await mcc.forObjectByApiName(objs[0].$objectType);
 
     const [objectTypeRid, propertyMapping, fullLinkMapping] = await Promise.all(
-      [helper.getRid(), helper.getPropertyMapping(), helper.getLinkMapping()]
+      [helper.getRid(), helper.getPropertyMapping(), helper.getLinkMapping()],
     );
 
     const linkMapping = Object.fromEntries(
       Object.entries(fullLinkMapping).filter(([apiName]) =>
-        linkTypes.includes(apiName)
-      )
+        linkTypes.includes(apiName),
+      ),
     );
 
     // make sure the link being requested exists
@@ -87,9 +87,9 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
       linksRequests: [
         {
           directedLinkTypes: Object.values(
-            linkMapping
+            linkMapping,
           ).map<DirectedLinkTypeRid>(
-            ({ directedLinkTypeRid }) => directedLinkTypeRid
+            ({ directedLinkTypeRid }) => directedLinkTypeRid,
           ),
           objects: conjureUnionType(
             "objects",
@@ -99,11 +99,11 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
                 objectPrimaryKey: {
                   [propertyMapping.pk.rid]: conjureUnionType(
                     propertyMapping.pk.type.type as "string",
-                    o.$primaryKey as string
+                    o.$primaryKey as string,
                   ),
                 },
-              })
-            )
+              }),
+            ),
           ),
         },
       ],
@@ -112,7 +112,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const bulkLinksIter = pageRequestAsAsyncIter(
       getBulkLinksPage.bind(
         undefined,
-        makeConjureContext(ctx, "object-set-service/api")
+        makeConjureContext(ctx, "object-set-service/api"),
       ),
       getResults,
       (prevReq, prevResult) =>
@@ -120,9 +120,9 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
           { ...prevReq, pageToken: prevResult.pageToken },
           {
             pageToken: prevResult.pageToken,
-          }
+          },
         ),
-      req
+      req,
     );
 
     for await (const item of bulkLinksIter) {
@@ -140,7 +140,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
         const mappedLink = Object.values(linkMapping).find(
           (a) =>
             a.directedLinkTypeRid.linkTypeRid === link.link.linkTypeRid &&
-            a.directedLinkTypeRid.linkSide === link.linkSide
+            a.directedLinkTypeRid.linkSide === link.linkSide,
         );
         if (!mappedLink) throw new Error("Could not find link type"); // should not happens
 

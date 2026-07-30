@@ -64,7 +64,7 @@ function createMockClient(args: MockClientArgs = {}): {
 } {
   const fetchMock = vi.fn<typeof globalThis.fetch>(
     // oxlint-disable-next-line require-await -- intentionally async: assigned to a Promise-returning callback/mock type; no await needed
-    async () => args.response ?? sseResponse(args)
+    async () => args.response ?? sseResponse(args),
   );
   const client: PlatformClient = {
     baseUrl: args.baseUrl ?? "https://example.palantirfoundry.com",
@@ -136,7 +136,7 @@ async function collectChunks<T>(stream: ReadableStream<T>): Promise<Array<T>> {
 }
 
 function firstFetchCall(
-  mock: ReturnType<typeof vi.fn>
+  mock: ReturnType<typeof vi.fn>,
 ): [RequestInfo | URL, RequestInit | undefined] {
   const call = mock.mock.calls[0];
   if (call == null) {
@@ -164,7 +164,7 @@ describe("streamText", () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     const [url, init] = firstFetchCall(fetch);
     expect(url).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions",
     );
     expect(init?.method).toBe("POST");
     const headers = init?.headers as Record<string, string>;
@@ -284,13 +284,13 @@ describe("streamText", () => {
     const chunks = await collectChunks(result.fullStream);
     const toolCalls = chunks.filter(
       (
-        c
+        c,
       ): c is Extract<
         TextStreamChunk,
         {
           type: "tool-call";
         }
-      > => c.type === "tool-call"
+      > => c.type === "tool-call",
     );
     expect(toolCalls).toHaveLength(1);
     expect(toolCalls[0]).toEqual({
@@ -401,7 +401,7 @@ describe("streamText", () => {
         model,
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
-      })
+      }),
     ).toThrow(/cannot specify both/u);
   });
 
@@ -411,10 +411,10 @@ describe("streamText", () => {
       start(c) {
         c.enqueue(enc.encode(`data: not-json{{{\n\n`));
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ delta: { content: "ok" } })}\n\n`)
+          enc.encode(`data: ${chunkFrame({ delta: { content: "ok" } })}\n\n`),
         );
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ finishReason: "stop" })}\n\n`)
+          enc.encode(`data: ${chunkFrame({ finishReason: "stop" })}\n\n`),
         );
         c.enqueue(enc.encode(`data: [DONE]\n\n`));
         c.close();
@@ -439,14 +439,14 @@ describe("streamText", () => {
     const body = new ReadableStream<Uint8Array>({
       start(c) {
         c.enqueue(
-          enc.encode(`data: ${chunkFrame({ delta: { content: "x" } })}\n\n`)
+          enc.encode(`data: ${chunkFrame({ delta: { content: "x" } })}\n\n`),
         );
         c.enqueue(
           enc.encode(
             `data: ${JSON.stringify({
               error: { message: "upstream model went away" },
-            })}\n\n`
-          )
+            })}\n\n`,
+          ),
         );
         c.close();
       },

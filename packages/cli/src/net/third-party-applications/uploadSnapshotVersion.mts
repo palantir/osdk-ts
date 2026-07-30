@@ -24,12 +24,12 @@ export async function uploadSnapshotVersion(
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
   snapshotId: string,
-  zipFile: ReadableStream | Blob | BufferSource
+  zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot`,
-    ctx.foundryUrl
+    ctx.foundryUrl,
   );
   urlObj.searchParams.set("version", version);
   urlObj.searchParams.set("preview", "true");

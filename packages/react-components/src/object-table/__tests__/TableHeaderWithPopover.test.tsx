@@ -52,13 +52,13 @@ describe(TableHeaderWithPopover, () => {
           }}
         />
         <div data-testid="header-menu-portal" ref={portalContainerRef} />
-      </PortalContainerProvider>
+      </PortalContainerProvider>,
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Open header menu for column with id=name",
-      })
+      }),
     );
 
     await waitFor(() => {
@@ -68,8 +68,8 @@ describe(TableHeaderWithPopover, () => {
     const portalContainer = screen.getByTestId("header-menu-portal");
     expect(
       portalContainer.contains(
-        screen.getByRole("menuitem", { name: "Pin column" })
-      )
+        screen.getByRole("menuitem", { name: "Pin column" }),
+      ),
     ).toBe(true);
   });
 
@@ -94,18 +94,18 @@ describe(TableHeaderWithPopover, () => {
           />
           <div data-testid="header-menu-portal" ref={portalContainerRef} />
         </PortalContainerProvider>
-      </ObjectTableLabelsProvider>
+      </ObjectTableLabelsProvider>,
     );
 
     fireEvent.click(
       screen.getByRole("button", {
         name: "Menu for name",
-      })
+      }),
     );
 
     await waitFor(() => {
       expect(
-        screen.getByRole("menuitem", { name: "Stick this column" })
+        screen.getByRole("menuitem", { name: "Stick this column" }),
       ).toBeTruthy();
     });
   });
@@ -130,13 +130,13 @@ describe(TableHeaderWithPopover, () => {
             table={createTable()}
             header={createHeader({ dataType, isSorted: direction })}
             isColumnPinned={false}
-          />
+          />,
         );
 
         expect(
-          container.querySelector(`svg[data-icon="${expectedIcon}"]`)
+          container.querySelector(`svg[data-icon="${expectedIcon}"]`),
         ).toBeTruthy();
-      }
+      },
     );
 
     it("uses the property-type icons for the sort menu items", async () => {
@@ -151,30 +151,30 @@ describe(TableHeaderWithPopover, () => {
             featureFlags={{ showSortingItems: true }}
           />
           <div data-testid="header-menu-portal" ref={portalContainerRef} />
-        </PortalContainerProvider>
+        </PortalContainerProvider>,
       );
 
       fireEvent.click(
         screen.getByRole("button", {
           name: "Open header menu for column with id=name",
-        })
+        }),
       );
 
       await waitFor(() => {
         expect(
-          screen.getByRole("menuitem", { name: "Sort ascending" })
+          screen.getByRole("menuitem", { name: "Sort ascending" }),
         ).toBeTruthy();
       });
 
       expect(
         screen
           .getByRole("menuitem", { name: "Sort ascending" })
-          .querySelector('svg[data-icon="sort-numerical"]')
+          .querySelector('svg[data-icon="sort-numerical"]'),
       ).toBeTruthy();
       expect(
         screen
           .getByRole("menuitem", { name: "Sort descending" })
-          .querySelector('svg[data-icon="sort-numerical-desc"]')
+          .querySelector('svg[data-icon="sort-numerical-desc"]'),
       ).toBeTruthy();
     });
   });

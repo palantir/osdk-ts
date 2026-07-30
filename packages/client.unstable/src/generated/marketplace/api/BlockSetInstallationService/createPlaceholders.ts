@@ -51,12 +51,12 @@ import type {
  */
 export async function createPlaceholders(
   ctx: ConjureContext,
-  request: _api_CreatePlaceholdersRequest
+  request: _api_CreatePlaceholdersRequest,
 ): Promise<_api_CreatePlaceholdersResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/placeholders`,
     "POST",
-    request
+    request,
   );
 }

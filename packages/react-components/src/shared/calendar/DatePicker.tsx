@@ -196,14 +196,14 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
           const dateOnly = new Date(
             date.getFullYear(),
             date.getMonth(),
-            date.getDate()
+            date.getDate(),
           );
           onChange(dateOnly);
         } else {
           onChange(date);
         }
       },
-      [onChange, showTime]
+      [onChange, showTime],
     );
 
     const {
@@ -257,7 +257,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
           setVisibleCalendarMonth(parsedDate);
         }
       },
-      [max, min, parseFn, setInputValue]
+      [max, min, parseFn, setInputValue],
     );
 
     const handleBlur = useCallback(
@@ -272,7 +272,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
         }
         commitAndStopEditing();
       },
-      [commitAndStopEditing]
+      [commitAndStopEditing],
     );
 
     // Shared close sequence: dismiss the popover, reset editing state, and
@@ -311,7 +311,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
           setIsOpen(false);
         }
       },
-      [commitAndStopEditing, closePopover, isOpen, isModal]
+      [commitAndStopEditing, closePopover, isOpen, isModal],
     );
 
     // --- Popover handlers ---
@@ -325,7 +325,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
           closePopover();
         }
       },
-      [closePopover]
+      [closePopover],
     );
 
     // --- Calendar handlers ---
@@ -353,7 +353,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
         setDateValue,
         setInputValue,
         closePopover,
-      ]
+      ],
     );
 
     const handleTimeChange = useCallback(
@@ -361,7 +361,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
         handleChange(time);
         setDateValue(time);
       },
-      [handleChange, setDateValue]
+      [handleChange, setDateValue],
     );
 
     const handleCalendarClear = useCallback(() => {
@@ -396,13 +396,13 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
           lastButton?.focus();
         }
       },
-      [stopEditing]
+      [stopEditing],
     );
 
     const wrapperClassName = classnames(
       commonStyles.osdkDatePickerInputWrapper,
       styles.osdkDatetimeInputWrapper,
-      inputError != null && commonStyles.osdkDatePickerInputWrapperError
+      inputError != null && commonStyles.osdkDatePickerInputWrapperError,
     );
     const isPopoverOpen = !disabled && isOpen;
 

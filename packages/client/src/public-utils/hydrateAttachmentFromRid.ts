@@ -28,7 +28,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  */
 export function hydrateAttachmentFromRid(
   client: Client,
-  rid: string
+  rid: string,
 ): Attachment {
   return hydrateAttachmentFromRidInternal(client[additionalContext], rid);
 }
@@ -36,7 +36,7 @@ export function hydrateAttachmentFromRid(
 /** @internal */
 export function hydrateAttachmentFromRidInternal(
   client: MinimalClient,
-  rid: string
+  rid: string,
 ): Attachment {
   return {
     rid,

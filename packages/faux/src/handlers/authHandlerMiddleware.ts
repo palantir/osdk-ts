@@ -27,7 +27,7 @@ export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,
   TPathParams extends PathParams<string> = PathParams<string>,
 >(
-  handler: HttpResponseResolver<TPathParams, TReqBody>
+  handler: HttpResponseResolver<TPathParams, TReqBody>,
 ): HttpResponseResolver<TPathParams, TReqBody> {
   return async (info) => {
     const authHeader = info.request.headers.get("authorization");
@@ -37,7 +37,7 @@ export function authHandlerMiddleware<
         { message: "Missing Authorization header" },
         {
           status: 401,
-        }
+        },
       );
     }
 

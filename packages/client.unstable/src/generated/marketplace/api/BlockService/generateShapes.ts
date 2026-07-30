@@ -26,7 +26,7 @@ import type {
  */
 export async function generateShapes(
   ctx: ConjureContext,
-  request: _api_GenerateShapesRequest
+  request: _api_GenerateShapesRequest,
 ): Promise<_api_GenerateShapesResponse> {
   return conjureFetch(ctx, `/blocks/generate-shapes`, "POST", request);
 }

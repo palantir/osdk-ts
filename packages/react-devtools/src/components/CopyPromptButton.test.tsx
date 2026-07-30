@@ -120,13 +120,13 @@ describe("CopyPromptButton", () => {
 
   it("defaults to the single label and respects an override", () => {
     const { rerender } = render(
-      <CopyPromptButton recommendation={makeRec()} />
+      <CopyPromptButton recommendation={makeRec()} />,
     );
 
     expect(screen.getByText("Copy prompt")).not.toBeNull();
 
     rerender(
-      <CopyPromptButton recommendation={makeRec()} label="Fix it for me" />
+      <CopyPromptButton recommendation={makeRec()} label="Fix it for me" />,
     );
 
     expect(screen.getByText("Fix it for me")).not.toBeNull();

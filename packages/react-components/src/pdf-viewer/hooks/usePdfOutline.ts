@@ -26,7 +26,7 @@ import type { OutlineItem } from "../types.js";
 const EMPTY_OUTLINE: OutlineItem[] = [];
 
 export function usePdfOutline(
-  document: PDFDocumentProxy | undefined
+  document: PDFDocumentProxy | undefined,
 ): OutlineItem[] {
   const [outlineItems, setOutlineItems] =
     useState<OutlineItem[]>(EMPTY_OUTLINE);
@@ -71,7 +71,7 @@ export function usePdfOutline(
         cancelled = true;
       };
     },
-    [document]
+    [document],
   );
 
   return outlineItems;
@@ -81,13 +81,13 @@ type BookmarkNode = Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>[number];
 
 async function resolveBookmarkOutline(
   document: PDFDocumentProxy,
-  outline: BookmarkNode[]
+  outline: BookmarkNode[],
 ): Promise<OutlineItem[]> {
   const items: OutlineItem[] = [];
 
   const resolveItems = async (
     nodes: BookmarkNode[],
-    depth: number
+    depth: number,
   ): Promise<void> => {
     for (const node of nodes) {
       let pageNumber = 1;
@@ -142,7 +142,7 @@ interface TextItemLike {
 }
 
 function isTextItem(
-  item: Record<string, unknown>
+  item: Record<string, unknown>,
 ): item is Record<string, unknown> & TextItemLike {
   return "str" in item && "transform" in item;
 }
@@ -169,15 +169,15 @@ function getFontSize(item: TextItemLike): number {
 }
 
 async function extractHeadingsFromText(
-  document: PDFDocumentProxy
+  document: PDFDocumentProxy,
 ): Promise<OutlineItem[]> {
   const numPages = document.numPages;
 
   // Fetch all pages' text content in parallel
   const pageContents = await Promise.all(
     Array.from({ length: numPages }, (_, i) =>
-      document.getPage(i + 1).then((page) => page.getTextContent())
-    )
+      document.getPage(i + 1).then((page) => page.getTextContent()),
+    ),
   );
 
   // Collect font size frequencies across all pages
@@ -333,7 +333,7 @@ async function extractHeadingsFromText(
 
   return mergedHeadings
     .filter(
-      (heading) => heading.text.trim().length <= OUTLINE_MAX_HEADING_LENGTH
+      (heading) => heading.text.trim().length <= OUTLINE_MAX_HEADING_LENGTH,
     )
     .map((heading) => ({
       title: heading.text.trim(),

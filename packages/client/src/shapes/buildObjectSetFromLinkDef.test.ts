@@ -57,7 +57,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef
+      linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -81,7 +81,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef
+      linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -106,7 +106,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef
+      linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -131,7 +131,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef
+      linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);
@@ -162,7 +162,7 @@ describe("buildObjectSetFromLinkDefByType", () => {
       client,
       sourceType,
       50030,
-      linkDef
+      linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);

@@ -119,7 +119,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
   const ctx = useContext(PdfViewerContext);
   if (ctx == null) {
     throw new Error(
-      "usePdfViewerContext must be used within a PdfViewerProvider"
+      "usePdfViewerContext must be used within a PdfViewerProvider",
     );
   }
   return ctx;
@@ -131,7 +131,7 @@ export function usePdfViewerContext(): PdfViewerContextValue {
  * for passing to {@link PdfViewerProvider}.
  */
 export function usePdfViewerInstance(
-  options: PdfViewerInstanceOptions
+  options: PdfViewerInstanceOptions,
 ): PdfViewerContextValue {
   const viewer = usePdfViewerState({
     src: options.src,
@@ -196,6 +196,6 @@ export function usePdfViewerInstance(
       enableDownload,
       enableFormSave,
       outlineIcons,
-    ]
+    ],
   );
 }

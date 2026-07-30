@@ -81,7 +81,7 @@ export function CbacPickerDialog({
       selectedIds,
       disallowedMarkingIds,
       userSatisfiesMarkings,
-    ]
+    ],
   );
 
   const constraintCallout = React.useMemo(
@@ -89,7 +89,7 @@ export function CbacPickerDialog({
       maxClassificationConstraint != null ? (
         <ConstraintCallout constraint={maxClassificationConstraint} />
       ) : undefined,
-    [maxClassificationConstraint]
+    [maxClassificationConstraint],
   );
 
   return (

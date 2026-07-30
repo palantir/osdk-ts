@@ -21,7 +21,7 @@ import type { SdkPackageVersion } from "./resolveSdkPackageVersions.mjs";
 
 export interface UpdateSdkPackagesDeps {
   npmInstall: (
-    specs: ReadonlyArray<{ pkg: string; version: string }>
+    specs: ReadonlyArray<{ pkg: string; version: string }>,
   ) => Promise<void>;
 }
 
@@ -33,14 +33,14 @@ export async function updateSdkPackages(
   toInstall: ReadonlyArray<SdkPackageVersion>,
   args: { dryRun: boolean },
   deps: UpdateSdkPackagesDeps,
-  alreadyInSync = 0
+  alreadyInSync = 0,
 ): Promise<void> {
   if (args.dryRun) {
     for (const t of toInstall) {
       consola.info(
         `Would install ${t.pkg}@${t.version} (currently ${
           t.current ?? "unset"
-        }).`
+        }).`,
       );
     }
     return;
@@ -48,7 +48,7 @@ export async function updateSdkPackages(
 
   try {
     await deps.npmInstall(
-      toInstall.map((t) => ({ pkg: t.pkg, version: t.version }))
+      toInstall.map((t) => ({ pkg: t.pkg, version: t.version })),
     );
   } catch (e) {
     const detail =
@@ -59,7 +59,7 @@ export async function updateSdkPackages(
       1,
       `Failed to install ${toInstall.length} SDK(s).`,
       `Check your network and .npmrc registry auth (FOUNDRY_TOKEN), then re-run.\n${detail}`,
-      e instanceof Error ? e : undefined
+      e instanceof Error ? e : undefined,
     );
   }
 
@@ -69,6 +69,6 @@ export async function updateSdkPackages(
   consola.success(
     `Synced ${toInstall.length} SDK(s)${
       alreadyInSync > 0 ? ` (${alreadyInSync} already in sync)` : ""
-    }`
+    }`,
   );
 }

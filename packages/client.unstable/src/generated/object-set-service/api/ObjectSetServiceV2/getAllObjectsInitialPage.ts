@@ -38,7 +38,7 @@ import type {
 export async function getAllObjectsInitialPage(
   ctx: ConjureContext,
   request: _api_GetAllObjectsInitialPageRequest,
-  backend: _api_Backend | null | undefined
+  backend: _api_Backend | null | undefined,
 ): Promise<_api_GetAllObjectsInitialPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/all/initial`, "POST", request);
 }

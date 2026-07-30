@@ -79,7 +79,7 @@ export function configToShapeDefinition<
     for (const [prop, transform] of Object.entries(config.transforms)) {
       if (typeof transform !== "function") {
         throw new Error(
-          `transforms["${prop}"] must be a function, got: ${typeof transform}`
+          `transforms["${prop}"] must be a function, got: ${typeof transform}`,
         );
       }
       addProp(prop, {

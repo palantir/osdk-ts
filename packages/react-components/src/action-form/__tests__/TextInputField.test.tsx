@@ -24,7 +24,7 @@ describe("TextInputField", () => {
 
   it("marks the input as disabled", () => {
     render(
-      <TextInputField value="locked" onChange={vi.fn()} disabled={true} />
+      <TextInputField value="locked" onChange={vi.fn()} disabled={true} />,
     );
 
     const input = screen.getByRole("textbox") as HTMLInputElement;

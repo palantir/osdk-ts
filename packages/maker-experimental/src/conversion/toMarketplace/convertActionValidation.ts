@@ -36,7 +36,7 @@ import { convertSectionConditionalOverride } from "./convertSectionConditionalOv
 // Helper function to recursively scan conditions and register groups
 function registerGroupsFromCondition(
   condition: any,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): void {
   if (!condition) return;
 
@@ -76,18 +76,18 @@ function registerGroupsFromCondition(
       // Recursively process nested conditions
       if (condition.conditions) {
         condition.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
+          registerGroupsFromCondition(c, ridGenerator),
         );
       }
       // Handle converted and/or format
       if (condition.and?.conditions) {
         condition.and.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
+          registerGroupsFromCondition(c, ridGenerator),
         );
       }
       if (condition.or?.conditions) {
         condition.or.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
+          registerGroupsFromCondition(c, ridGenerator),
         );
       }
       break;
@@ -98,7 +98,7 @@ function registerGroupsFromCondition(
 
 export function convertActionValidation(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): ActionValidation {
   const validationRules = action.validation ?? [
     {
@@ -108,7 +108,7 @@ export function convertActionValidation(
   ];
 
   const ruleRids = validationRules.map((_, idx) =>
-    ridGenerator.generateValidationRuleRid(action.apiName, idx)
+    ridGenerator.generateValidationRuleRid(action.apiName, idx),
   );
 
   // Register groups from action-level validation conditions
@@ -135,7 +135,7 @@ export function convertActionValidation(
       // TODO: Add proper ordering of validation rule RIDs
       ordering: ruleRids,
       rules: Object.fromEntries(
-        validationRules.map((rule, idx) => [ruleRids[idx], rule])
+        validationRules.map((rule, idx) => [ruleRids[idx], rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
@@ -148,17 +148,17 @@ export function convertActionValidation(
                 renderHint:
                   p.renderHint ?? renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
-                  p.validation.defaultVisibility
+                  p.validation.defaultVisibility,
                 ),
                 ...(p.defaultValue && { prefill: p.defaultValue }),
               },
               validation: {
                 allowedValues: extractAllowedValues(
                   p.validation.allowedValues!,
-                  ridGenerator
+                  ridGenerator,
                 ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required!
+                  p.validation.required!,
                 ),
               },
             },
@@ -168,13 +168,13 @@ export function convertActionValidation(
                   override,
                   p.validation,
                   ridGenerator,
-                  action.parameters
-                )
+                  action.parameters,
+                ),
               ) ?? [],
             structFieldValidations: {},
           },
         ];
-      })
+      }),
     ),
     sectionValidations: {
       ...Object.fromEntries(
@@ -200,18 +200,18 @@ export function convertActionValidation(
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
-                  action.parameters
-                )
+                  action.parameters,
+                ),
               ) ?? [],
           },
-        ])
+        ]),
       ),
     },
   };
 }
 
 function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint
+  required: ActionParameterRequirementConstraint,
 ): ParameterRequiredConfiguration {
   if (typeof required === "boolean") {
     return required

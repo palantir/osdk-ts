@@ -26,7 +26,7 @@ import type {
  */
 export async function materializeObjectSet(
   ctx: ConjureContext,
-  request: _api_MaterializeObjectSetRequest
+  request: _api_MaterializeObjectSetRequest,
 ): Promise<_api_MaterializeObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/materialize`, "PUT", request);
 }

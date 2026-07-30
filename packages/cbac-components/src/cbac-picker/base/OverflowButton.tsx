@@ -50,7 +50,7 @@ export function OverflowButton({
           <Button
             className={classnames(
               styles.moreButton,
-              hasActiveOverflow && styles.moreButtonActive
+              hasActiveOverflow && styles.moreButtonActive,
             )}
           >
             +{overflowMarkings.length} more

@@ -22,7 +22,7 @@ import type { MetricsSnapshot } from "../types/index.js";
 export function useMetrics(store: MetricsStore): MetricsSnapshot {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

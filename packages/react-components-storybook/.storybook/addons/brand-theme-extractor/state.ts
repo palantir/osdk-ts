@@ -76,7 +76,7 @@ export function parseBrandThemeState(raw: unknown): BrandThemeGlobals {
     colorMode: getThemeColorMode(parsed.colorMode),
     selectedPresetId: getString(
       parsed.selectedPresetId,
-      defaults.selectedPresetId
+      defaults.selectedPresetId,
     ),
     assignments: getTokenAssignments(parsed.assignments),
   };
@@ -96,7 +96,7 @@ export function findThemePreset(presetId: string): ThemePreset | undefined {
  */
 export function findMatchingPreset(
   assignments: TokenAssignment[],
-  colorMode: ThemeColorMode
+  colorMode: ThemeColorMode,
 ): string {
   for (const preset of THEME_PRESETS) {
     if (preset.colorMode != null && preset.colorMode !== colorMode) continue;

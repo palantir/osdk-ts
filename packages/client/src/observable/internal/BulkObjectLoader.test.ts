@@ -40,7 +40,7 @@ describe(BulkObjectLoader, () => {
     vi.mocked(client.fetchMetadata).mockReturnValue(
       Promise.resolve({
         primaryKeyApiName: "id",
-      } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata)
+      } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata),
     );
   });
 
@@ -293,7 +293,7 @@ describe(BulkObjectLoader, () => {
       vi.advanceTimersByTime(26);
 
       await expect(loadPromise).rejects.toThrow(
-        "Interface FooInterface object not found: 1"
+        "Interface FooInterface object not found: 1",
       );
       vi.useRealTimers();
     });
@@ -338,8 +338,8 @@ describe(BulkObjectLoader, () => {
           Promise.resolve(
             def.type === "interface"
               ? (interfaceMeta as ObjectMetadata)
-              : objectMeta
-          )
+              : objectMeta,
+          ),
       );
 
       const capturedArgs: Array<Record<string, unknown>> = [];
@@ -358,7 +358,7 @@ describe(BulkObjectLoader, () => {
       };
 
       client.mockImplementation(() =>
-        captureMockSet([employees[0], employees[1]])
+        captureMockSet([employees[0], employees[1]]),
       );
 
       const without = loader.fetch(
@@ -367,7 +367,7 @@ describe(BulkObjectLoader, () => {
         "interface",
         undefined,
         false,
-        undefined
+        undefined,
       );
       const withFlag = loader.fetch(
         "FooInterface",
@@ -375,7 +375,7 @@ describe(BulkObjectLoader, () => {
         "interface",
         undefined,
         false,
-        true
+        true,
       );
 
       vi.advanceTimersByTime(26);
@@ -418,7 +418,7 @@ describe(BulkObjectLoader, () => {
       "object",
       undefined,
       false,
-      false
+      false,
     );
     const withFlag = loader.fetch(
       "Employee",
@@ -426,7 +426,7 @@ describe(BulkObjectLoader, () => {
       "object",
       undefined,
       false,
-      true
+      true,
     );
 
     vi.advanceTimersByTime(26);

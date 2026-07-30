@@ -20,7 +20,7 @@ import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
 export function getFilterKey<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>
+  definition: FilterDefinitionUnion<Q>,
 ): string {
   switch (definition.type) {
     case "PROPERTY":

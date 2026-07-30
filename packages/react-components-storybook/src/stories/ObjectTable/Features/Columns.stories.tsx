@@ -115,7 +115,7 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, "fullName");
     await clickHeaderMenuItem("Unpin Column");
     await waitFor(() =>
-      expect(fullNameHeader).toHaveAttribute("data-pinned", "false")
+      expect(fullNameHeader).toHaveAttribute("data-pinned", "false"),
     );
     await expect(args.onColumnsPinnedChanged).toHaveBeenCalled();
 
@@ -123,14 +123,14 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, "fullName");
     await clickHeaderMenuItem("Pin column");
     await waitFor(() =>
-      expect(fullNameHeader).toHaveAttribute("data-pinned", "left")
+      expect(fullNameHeader).toHaveAttribute("data-pinned", "left"),
     );
 
     // Assert that pinned cells have an opaque background
     // and matches its row background color.
     const pinnedCell = await waitFor(() => {
       const cell = canvasElement.querySelector<HTMLElement>(
-        '[data-row-parity] [data-pinned="left"]'
+        '[data-row-parity] [data-pinned="left"]',
       );
       if (cell == null) {
         throw new Error("no left-pinned body cell rendered");
@@ -144,7 +144,7 @@ export const WithDefaultColumnPinning: Story = {
     const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
     await expect(pinnedCellBg).not.toBe("rgba(0, 0, 0, 0)");
     await expect(pinnedCellBg).toBe(
-      getComputedStyle(pinnedRow).backgroundColor
+      getComputedStyle(pinnedRow).backgroundColor,
     );
   },
 };
@@ -196,27 +196,27 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
     // Header for the RDP column renders once the filtered rows load.
     await canvas.findByText("Manager");
     await waitFor(() =>
-      expect(canvas.getAllByRole("row").length).toBeGreaterThan(1)
+      expect(canvas.getAllByRole("row").length).toBeGreaterThan(1),
     );
 
     // defaultOrderBy seeds an ascending sort on the derived managerName column.
     await getColumnHeader(canvas, "managerName");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "managerName")).toBe("asc")
+      expect(sortDirectionOf(canvas, "managerName")).toBe("asc"),
     );
 
     // Sorting an RDP column flips direction through the same header menu.
     await openHeaderMenu(canvas, "managerName");
     await clickHeaderMenuItem("Sort descending");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "managerName")).toBe("desc")
+      expect(sortDirectionOf(canvas, "managerName")).toBe("desc"),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, "managerName");
     await clickHeaderMenuItem("Sort ascending");
     await waitFor(() =>
-      expect(sortDirectionOf(canvas, "managerName")).toBe("asc")
+      expect(sortDirectionOf(canvas, "managerName")).toBe("asc"),
     );
   },
   parameters: {
@@ -335,8 +335,8 @@ const columnDefinitions: ColumnDefinition<Employee, {}, SeniorityFunctions>[] = 
     // At least one row should resolve a computed seniority value.
     await waitFor(() =>
       expect(
-        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length
-      ).toBeGreaterThan(0)
+        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length,
+      ).toBeGreaterThan(0),
     );
   },
 };
@@ -437,11 +437,11 @@ export const WithCustomColumn: Story = {
 
     // Wait for rows (and their action buttons) to render.
     await expect(
-      (await canvas.findAllByRole("button", { name: "View" })).length
+      (await canvas.findAllByRole("button", { name: "View" })).length,
     ).toBeGreaterThan(0);
     await expect(canvas.getByText("Actions")).toBeInTheDocument();
     await expect(
-      canvas.getAllByRole("button", { name: "Edit" }).length
+      canvas.getAllByRole("button", { name: "Edit" }).length,
     ).toBeGreaterThan(0);
   },
 };
@@ -562,11 +562,11 @@ export const WithCustomRenderers: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.getByRole("link", { name: "Employee Name" })
+      canvas.getByRole("link", { name: "Employee Name" }),
     ).toBeInTheDocument();
     await expect(canvas.getByText("Employment Status")).toBeInTheDocument();
     await expect(
-      canvas.getAllByText(/^(Active|Inactive)$/u).length
+      canvas.getAllByText(/^(Active|Inactive)$/u).length,
     ).toBeGreaterThan(0);
   },
 };

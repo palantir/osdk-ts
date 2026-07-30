@@ -42,7 +42,7 @@ import type {
 
 export async function getObjectTypesThatInvalidate(
   mc: MinimalClient,
-  objectSet: WireObjectSet
+  objectSet: WireObjectSet,
 ): Promise<{
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
   counts: Record<string, number>;
@@ -68,7 +68,7 @@ export async function getObjectTypesThatInvalidate(
     invalidationSet: new Set(
       Object.entries(tweaked)
         .filter(([, v]) => v > 0)
-        .map(([k]) => k)
+        .map(([k]) => k),
     ),
   };
 }
@@ -81,7 +81,7 @@ interface Ctx {
 
 async function calcObjectSet(
   os: WireObjectSet,
-  ctx: Ctx
+  ctx: Ctx,
 ): Promise<FetchedObjectTypeDefinition | InterfaceMetadata> {
   const op = ctx.ontologyProvider;
 
@@ -123,8 +123,8 @@ async function calcObjectSet(
       // if we got here then we did not find the link and something is wrong.
       throw new Error(
         `Could not find link ${os.interfaceLink} in object set ${JSON.stringify(
-          os.objectSet
-        )}`
+          os.objectSet,
+        )}`,
       );
     }
 
@@ -141,8 +141,8 @@ async function calcObjectSet(
       // if we got here then we did not find the link and something is wrong.
       throw new Error(
         `Could not find link ${os.link} in object set ${JSON.stringify(
-          os.objectSet
-        )}`
+          os.objectSet,
+        )}`,
       );
     }
 
@@ -169,7 +169,7 @@ async function calcObjectSet(
       // (e.g., reference, static). In set operations, we can determine the
       // result type from the remaining resolvable operands.
       const resolvableSets = os.objectSets.filter(
-        (s) => s.type !== "reference" && s.type !== "static"
+        (s) => s.type !== "reference" && s.type !== "static",
       );
 
       const returnTypes = await Promise.all(
@@ -177,7 +177,7 @@ async function calcObjectSet(
           const counts: Record<string, number> = {};
           const r = await calcObjectSet(os, { ...ctx, counts });
           return { r, counts };
-        })
+        }),
       );
 
       for (const { counts } of returnTypes) {
@@ -191,7 +191,7 @@ async function calcObjectSet(
       }
 
       const allMatch = returnTypes.every(
-        ({ r }) => r.apiName === returnTypes[0].r.apiName
+        ({ r }) => r.apiName === returnTypes[0].r.apiName,
       );
 
       if (!allMatch) {
@@ -237,7 +237,7 @@ async function calcObjectSet(
 
 async function calcRdp(
   dpd: DerivedPropertyDefinition,
-  ctx: Ctx
+  ctx: Ctx,
 ): Promise<unknown> {
   switch (dpd.type) {
     // Operates on object sets
@@ -256,7 +256,7 @@ async function calcRdp(
     case "add":
     case "multiply":
       return await Promise.all(
-        dpd.properties.map((innerDpd) => calcRdp(innerDpd, ctx))
+        dpd.properties.map((innerDpd) => calcRdp(innerDpd, ctx)),
       );
 
     // Operates on 2 ordered properties
@@ -274,7 +274,7 @@ async function calcRdp(
 
     default:
       throw new Error(
-        `Unhandled DerivedPropertyDefinition type ${(dpd as any).type}`
+        `Unhandled DerivedPropertyDefinition type ${(dpd as any).type}`,
       );
   }
 }

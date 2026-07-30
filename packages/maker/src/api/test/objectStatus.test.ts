@@ -41,12 +41,12 @@ describe("Object Status", () => {
               properties: {
                 bar: { type: "string", status: "active" as ObjectTypeStatus },
               },
-            })
+            }),
           ).toThrowError(
-            /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/u
+            /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -68,10 +68,10 @@ describe("Object Status", () => {
                   status: "experimental" as ObjectTypeStatus,
                 },
               },
-            })
+            }),
           ).not.toThrow();
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -93,12 +93,12 @@ describe("Object Status", () => {
                   status: "active" as ObjectTypeStatus,
                 },
               },
-            })
+            }),
           ).toThrowError(
-            /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/u
+            /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -124,12 +124,12 @@ describe("Object Status", () => {
                   status: "active" as ObjectTypeStatus,
                 },
               },
-            })
+            }),
           ).toThrowError(
-            /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/u
+            /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/u,
           );
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -151,10 +151,10 @@ describe("Object Status", () => {
                   status: "experimental" as ObjectTypeStatus,
                 },
               },
-            })
+            }),
           ).not.toThrow();
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -173,10 +173,10 @@ describe("Object Status", () => {
               properties: {
                 bar: { type: "string" },
               },
-            })
+            }),
           ).not.toThrow();
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -195,10 +195,10 @@ describe("Object Status", () => {
               properties: {
                 bar: { type: "string" },
               },
-            })
+            }),
           ).not.toThrow();
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
   });
@@ -220,13 +220,13 @@ describe("Object Status", () => {
           const metadata = dumpOntologyFullMetadata();
           expect(
             metadata.ontology.objectTypes["com.palantir.defaultStatus"]
-              .objectType.status
+              .objectType.status,
           ).toEqual({
             type: "active",
             active: {},
           });
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -247,13 +247,13 @@ describe("Object Status", () => {
           const metadata = dumpOntologyFullMetadata();
           expect(
             metadata.ontology.objectTypes["com.palantir.activeStatus"]
-              .objectType.status
+              .objectType.status,
           ).toEqual({
             type: "active",
             active: {},
           });
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -274,13 +274,13 @@ describe("Object Status", () => {
           const metadata = dumpOntologyFullMetadata();
           expect(
             metadata.ontology.objectTypes["com.palantir.experimentalStatus"]
-              .objectType.status
+              .objectType.status,
           ).toEqual({
             type: "experimental",
             experimental: {},
           });
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
 
@@ -305,7 +305,7 @@ describe("Object Status", () => {
           const metadata = dumpOntologyFullMetadata();
           expect(
             metadata.ontology.objectTypes["com.palantir.deprecatedStatus"]
-              .objectType.status
+              .objectType.status,
           ).toEqual({
             type: "deprecated",
             deprecated: {
@@ -315,7 +315,7 @@ describe("Object Status", () => {
             },
           });
         },
-        "/tmp/"
+        "/tmp/",
       );
     });
   });

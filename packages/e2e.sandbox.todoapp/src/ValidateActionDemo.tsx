@@ -27,7 +27,7 @@ export default function ValidateActionDemo() {
       } else if (validationResult.result === "INVALID") {
         const failedParams: string[] = [];
         for (const [name, constraint] of Object.entries(
-          validationResult.parameters || {}
+          validationResult.parameters || {},
         )) {
           if (constraint.result === "INVALID") {
             failedParams.push(name);
@@ -39,13 +39,13 @@ export default function ValidateActionDemo() {
             ?.filter((criteria) => criteria.result === "INVALID")
             .map(
               (criteria) =>
-                criteria.configuredFailureMessage || "Failed criteria"
+                criteria.configuredFailureMessage || "Failed criteria",
             ) || [];
 
         setValidationMessage(
           `❌ Validation failed: ${
             [...failedParams, ...failedCriteria].join(", ") || "Invalid action"
-          }`
+          }`,
         );
       }
     }

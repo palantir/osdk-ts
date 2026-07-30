@@ -23,12 +23,12 @@ export async function uploadVersion(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
-  zipFile: ReadableStream | Blob | BufferSource
+  zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload`,
-    ctx.foundryUrl
+    ctx.foundryUrl,
   );
   urlObj.searchParams.set("version", version);
   urlObj.searchParams.set("preview", "true");

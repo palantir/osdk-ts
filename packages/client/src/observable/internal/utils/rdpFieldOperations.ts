@@ -30,7 +30,7 @@ import type { Rdp } from "../RdpCanonicalizer.js";
 export const EMPTY_RDP_SET: ReadonlySet<string> = new Set();
 
 export function extractRdpFieldNames(
-  rdpConfig: Canonical<Rdp> | undefined
+  rdpConfig: Canonical<Rdp> | undefined,
 ): ReadonlySet<string> {
   if (!rdpConfig) {
     return new Set();
@@ -48,7 +48,7 @@ export function extractRdpFieldNames(
  */
 export function requireObjectDef(
   objectDef: FetchedObjectTypeDefinition | undefined,
-  instance: { $apiName?: string; $objectType?: string }
+  instance: { $apiName?: string; $objectType?: string },
 ): FetchedObjectTypeDefinition {
   if (objectDef === undefined) {
     throw new Error(
@@ -56,7 +56,7 @@ export function requireObjectDef(
         instance.$apiName ?? "?"
       } $objectType=${instance.$objectType ?? "?"}. ` +
         `This likely means an InterfaceHolder leaked into the RDP merge path ` +
-        `without being unwrapped via storeOsdkInstances.`
+        `without being unwrapped via storeOsdkInstances.`,
     );
   }
   return objectDef;
@@ -64,7 +64,7 @@ export function requireObjectDef(
 
 function stripRdpFields(
   value: ObjectHolder,
-  rdpFields: ReadonlySet<string>
+  rdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   if (rdpFields.size === 0) {
     return value;
@@ -92,7 +92,7 @@ function stripRdpFields(
 
 function isSuperset(
   superset: ReadonlySet<string>,
-  subset: ReadonlySet<string>
+  subset: ReadonlySet<string>,
 ): boolean {
   for (const field of subset) {
     if (!superset.has(field)) {
@@ -105,7 +105,7 @@ function isSuperset(
 function filterToRdpFields(
   value: ObjectHolder,
   rdpFieldsToKeep: ReadonlySet<string>,
-  sourceRdpFields: ReadonlySet<string>
+  sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
   const objectDef = requireObjectDef(value[ObjectDefRef], underlying);
@@ -136,7 +136,7 @@ export function mergeSelectFields(
   sourceValue: ObjectHolder,
   selectFields: ReadonlySet<string>,
   existingValue: ObjectHolder,
-  sourceRdpFields: ReadonlySet<string>
+  sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const sourceUnderlying = sourceValue[
     UnderlyingOsdkObject
@@ -146,7 +146,7 @@ export function mergeSelectFields(
   ] as SimpleOsdkProperties;
   const objectDef = requireObjectDef(
     sourceValue[ObjectDefRef],
-    sourceUnderlying
+    sourceUnderlying,
   );
 
   const newProps: SimpleOsdkProperties = {
@@ -179,7 +179,7 @@ export function mergeObjectFields(
   sourceValue: ObjectHolder,
   sourceRdpFields: ReadonlySet<string>,
   targetRdpFields: ReadonlySet<string>,
-  targetCurrentValue: ObjectHolder | undefined
+  targetCurrentValue: ObjectHolder | undefined,
 ): ObjectHolder {
   if (targetRdpFields.size === 0) {
     return stripRdpFields(sourceValue, sourceRdpFields);
@@ -197,7 +197,7 @@ export function mergeObjectFields(
   ] as SimpleOsdkProperties;
   const objectDef = requireObjectDef(
     sourceValue[ObjectDefRef],
-    sourceUnderlying
+    sourceUnderlying,
   );
 
   const newProps: SimpleOsdkProperties = {

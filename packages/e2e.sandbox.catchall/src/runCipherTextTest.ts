@@ -27,11 +27,11 @@ export async function runCipherTextTest(): Promise<void> {
   const plaintext = await result.encrypted?.decrypt();
   invariant(
     plaintext === plaintextTruth,
-    "Expected plaintext == plaintextTruth"
+    "Expected plaintext == plaintextTruth",
   );
 
   const { data: nullFilterTestData } = await cipherTextOntologyClient(
-    CipherTextTest
+    CipherTextTest,
   )
     .where({
       encrypted: {
@@ -42,11 +42,11 @@ export async function runCipherTextTest(): Promise<void> {
 
   invariant(
     typeof nullFilterTestData?.[0]?.plaintext === "undefined",
-    "Expected null object to have empty plaintext"
+    "Expected null object to have empty plaintext",
   );
 
   const { data: nonNullFilterTestData } = await cipherTextOntologyClient(
-    CipherTextTest
+    CipherTextTest,
   )
     .where({
       encrypted: {
@@ -57,7 +57,7 @@ export async function runCipherTextTest(): Promise<void> {
 
   invariant(
     nonNullFilterTestData?.[0]?.pk === nonNullPk,
-    "Expected non-null object to have same pk"
+    "Expected non-null object to have same pk",
   );
 
   console.log("All tests passed!");

@@ -28,7 +28,7 @@ import type {
 export async function bulkImportBlockSets(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: string
+  request: string,
 ): Promise<_api_BulkImportBlockSetsResponse> {
   return conjureFetch(
     ctx,
@@ -36,6 +36,6 @@ export async function bulkImportBlockSets(
     "POST",
     request,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

@@ -56,23 +56,23 @@ import type { GithubContext } from "./runVersion.js";
 
 export const createRelease = async (
   context: GithubContext,
-  { pkg, tagName }: { pkg: Package; tagName: string }
+  { pkg, tagName }: { pkg: Package; tagName: string },
 ): Promise<void> => {
   try {
     const changelog = await fs.promises.readFile(
       path.join(pkg.dir, "CHANGELOG.md"),
-      "utf-8"
+      "utf-8",
     );
 
     const changelogEntry = getChangelogEntry(
       changelog,
-      pkg.packageJson.version
+      pkg.packageJson.version,
     );
     if (!changelogEntry) {
       // we can find a changelog but not the entry for this version
       // if this is true, something has probably gone wrong
       throw new Error(
-        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`
+        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`,
       );
     }
 

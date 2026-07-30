@@ -51,7 +51,7 @@ export function LoadingStateTable<TData extends RowData>({
   const minHeaderCount = enableRowSelection ? 1 : 0;
   const headers = useMemo(
     () => (headerGroups.length > 0 ? headerGroups[0].headers : []),
-    [headerGroups]
+    [headerGroups],
   );
   const hasHeadersLoaded = headers.length > minHeaderCount;
 
@@ -60,7 +60,7 @@ export function LoadingStateTable<TData extends RowData>({
   const [loadingRowCount, setLoadingRowCount] =
     useState<number>(MIN_LOADING_ROWS);
   const [loadingColumnCount, setLoadingColumnCount] = useState<number>(
-    headers.length
+    headers.length,
   );
   // Calculate number of columns needed to fill container width
   useEffect(() => {
@@ -109,7 +109,7 @@ export function LoadingStateTable<TData extends RowData>({
                   <SkeletonBar
                     className={classNames(
                       headerStyles.osdkLoadingHeaderCell,
-                      loadingStyles.osdkCellSkeleton
+                      loadingStyles.osdkCellSkeleton,
                     )}
                   />
                 </th>

@@ -38,7 +38,7 @@ export const fetchLinksPage = async <
   objectType: Q,
   objectSet: ObjectSet,
   links: LINK_TYPES[],
-  pageToken: string | undefined
+  pageToken: string | undefined,
 ): Promise<FetchLinksPageResult<Q, LINK_TYPES>> => {
   if (objectType.type === "interface") {
     throw new Error("Interface object sets are not supported yet.");
@@ -56,7 +56,7 @@ export const fetchLinksPage = async <
       links,
       pageToken,
     },
-    { branch: client.branch, preview: true }
+    { branch: client.branch, preview: true },
   );
 
   return remapLinksPage(result);
@@ -67,7 +67,7 @@ export const remapLinksPage = <
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPES extends LinkTypeApiNamesFor<Q>,
 >(
-  wireLinksPage: LoadObjectSetLinksResponseV2
+  wireLinksPage: LoadObjectSetLinksResponseV2,
 ): FetchLinksPageResult<Q, LINK_TYPES> => {
   return {
     ...wireLinksPage,
@@ -76,14 +76,14 @@ export const remapLinksPage = <
         source: remapObjectLocator(sourceObject!),
         target: remapObjectLocator(targetObject!),
         linkType: linkType! as LINK_TYPES,
-      }))
+      })),
     ),
   };
 };
 
 /** @internal */
 export const remapObjectLocator = <Q extends ObjectOrInterfaceDefinition>(
-  wireObjectLocator: OntologyObjectV2
+  wireObjectLocator: OntologyObjectV2,
 ): ObjectIdentifiers<Q> => ({
   $apiName: wireObjectLocator.__apiName,
   $primaryKey: wireObjectLocator.__primaryKey,

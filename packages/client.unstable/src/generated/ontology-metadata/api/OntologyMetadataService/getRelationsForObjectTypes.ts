@@ -29,12 +29,12 @@ import type {
  */
 export async function getRelationsForObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetRelationsForObjectTypesRequest
+  request: _api_GetRelationsForObjectTypesRequest,
 ): Promise<_api_GetRelationsForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/relationsForObjectTypes`,
     "POST",
-    request
+    request,
   );
 }

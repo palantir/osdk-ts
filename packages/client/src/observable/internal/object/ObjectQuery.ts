@@ -65,7 +65,7 @@ export class ObjectQuery extends Query<
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
-    includeAllBaseObjectProperties?: boolean
+    includeAllBaseObjectProperties?: boolean,
   ) {
     super(
       store,
@@ -79,9 +79,9 @@ export class ObjectQuery extends Query<
               msgPrefix: `ObjectQuery<${cacheKey.otherKeys
                 .map((x) => JSON.stringify(x))
                 .join(", ")}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
     this.#apiName = type;
     this.#pk = pk;
@@ -93,7 +93,7 @@ export class ObjectQuery extends Query<
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<ObjectCacheKey>>
+    subject: Observable<SubjectPayload<ObjectCacheKey>>,
   ): Connectable<ObjectPayload> {
     return connectable<ObjectPayload>(
       subject.pipe(
@@ -104,7 +104,7 @@ export class ObjectQuery extends Query<
             lastUpdated: x.lastUpdated,
             isOptimistic: x.isOptimistic,
           };
-        })
+        }),
       ),
       {
         connector: () =>
@@ -114,7 +114,7 @@ export class ObjectQuery extends Query<
             lastUpdated: 0,
             isOptimistic: false,
           }),
-      }
+      },
     );
   }
 
@@ -142,7 +142,7 @@ export class ObjectQuery extends Query<
       const fetched = await this.store
         .client(miniDef)
         .withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         )
         .fetchOne(this.#pk as PrimaryKeyType<ObjectTypeDefinition>, {
           $includeRid: true,
@@ -163,7 +163,7 @@ export class ObjectQuery extends Query<
         this.#defType,
         this.#select,
         this.#loadPropertySecurityMetadata,
-        this.#includeAllBaseObjectProperties
+        this.#includeAllBaseObjectProperties,
       );
     }
 
@@ -172,7 +172,7 @@ export class ObjectQuery extends Query<
         obj,
         "loaded",
         batch,
-        this.#select ? new Set(this.#select) : undefined
+        this.#select ? new Set(this.#select) : undefined,
       );
     });
   }
@@ -182,7 +182,7 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
     selectFields?: ReadonlySet<string>,
-    computedRdpFields?: ReadonlySet<string>
+    computedRdpFields?: ReadonlySet<string>,
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
@@ -191,7 +191,7 @@ export class ObjectQuery extends Query<
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig
+      rdpConfig,
     );
 
     // a caller passes the derived fields it computed. when it doesn't, default
@@ -204,7 +204,7 @@ export class ObjectQuery extends Query<
       status,
       batch,
       selectFields,
-      computed
+      computed,
     );
 
     return batch.read(this.cacheKey)!;
@@ -212,7 +212,7 @@ export class ObjectQuery extends Query<
 
   deleteFromStore(
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<ObjectCacheKey> | undefined {
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
 
@@ -220,7 +220,7 @@ export class ObjectQuery extends Query<
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig
+      rdpConfig,
     );
 
     this.store.objects.propagateWrite(this.cacheKey, tombstone, status, batch);
@@ -230,7 +230,7 @@ export class ObjectQuery extends Query<
 
   invalidateObjectType = async (
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void> => {
     if (this.#defType === "object") {
       if (this.#apiName === objectType) {

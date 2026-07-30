@@ -27,7 +27,7 @@ import type {
  */
 export async function getNextExecution(
   ctx: ConjureContext,
-  request: _api_registry_GetNextExecutionRequest
+  request: _api_registry_GetNextExecutionRequest,
 ): Promise<_api_registry_GetNextExecutionResponse> {
   return conjureFetch(ctx, `/registry/v0/getNextExecution`, "PUT", request);
 }

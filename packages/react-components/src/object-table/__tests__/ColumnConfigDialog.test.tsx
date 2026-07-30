@@ -33,7 +33,7 @@ describe(ColumnConfigDialog, () => {
         columnOptions={[{ id: "a", name: "Col A" }]}
         currentVisibility={{ a: true }}
         onApply={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("Configure Table Columns")).toBeTruthy();
@@ -54,7 +54,7 @@ describe(ColumnConfigDialog, () => {
           columnConfigTitle: "Set up the columns",
           columnConfigApply: "Save",
         }}
-      />
+      />,
     );
 
     expect(screen.getByText("Set up the columns")).toBeTruthy();

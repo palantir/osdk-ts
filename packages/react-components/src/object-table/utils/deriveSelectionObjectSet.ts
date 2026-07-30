@@ -39,7 +39,7 @@ export function deriveSelectionObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   resultingObjectSet: ObjectSet<Q, RDPs> | undefined,
-  change: UseRowSelectionChange<Q, RDPs>
+  change: UseRowSelectionChange<Q, RDPs>,
 ): ObjectSet<Q, RDPs> | undefined {
   if (!resultingObjectSet) {
     return undefined;

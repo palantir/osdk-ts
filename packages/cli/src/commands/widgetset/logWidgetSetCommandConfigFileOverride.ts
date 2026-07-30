@@ -22,7 +22,7 @@ import type { CommonWidgetSetArgs } from "./CommonWidgetSetArgs.js";
 
 export function logWidgetSetCommandConfigFileOverride(
   args: Arguments<CommonWidgetSetArgs>,
-  config: FoundryConfig<"widgetSet"> | undefined
+  config: FoundryConfig<"widgetSet"> | undefined,
 ): void {
   if (
     config?.widgetSet.rid != null &&
@@ -33,7 +33,7 @@ export function logWidgetSetCommandConfigFileOverride(
 
   if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {
     consola.debug(
-      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`
+      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`,
     );
   }
 }

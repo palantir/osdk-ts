@@ -73,7 +73,7 @@ export class LinkTraversalTracker {
       visited.add(currentKey);
 
       const traversal = this.traversals.find(
-        (t) => `${t.sourceObjectType}:${t.sourceObjectKey}` === currentKey
+        (t) => `${t.sourceObjectType}:${t.sourceObjectKey}` === currentKey,
       );
 
       if (traversal) {
@@ -156,13 +156,13 @@ export class LinkTraversalTracker {
     for (const traversal of this.traversals) {
       linkCounts.set(
         traversal.linkName,
-        (linkCounts.get(traversal.linkName) || 0) + 1
+        (linkCounts.get(traversal.linkName) || 0) + 1,
       );
 
       if (traversal.componentId) {
         componentCounts.set(
           traversal.componentId,
-          (componentCounts.get(traversal.componentId) || 0) + 1
+          (componentCounts.get(traversal.componentId) || 0) + 1,
         );
       }
     }

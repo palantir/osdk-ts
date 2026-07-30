@@ -20,7 +20,7 @@ import { formatCbacError } from "../errorMessages.js";
 
 function apiError(
   fields: { statusCode?: number; errorDescription?: string },
-  message = "raw message"
+  message = "raw message",
 ): Error {
   return Object.assign(new Error(message), fields);
 }
@@ -43,27 +43,27 @@ describe("formatCbacError", () => {
 
     it("maps 404 to a not-found message", () => {
       expect(formatCbacError(apiError({ statusCode: 404 })).title).toBe(
-        "Not found"
+        "Not found",
       );
     });
 
     it("maps any 5xx to a server-error message", () => {
       expect(formatCbacError(apiError({ statusCode: 503 })).title).toBe(
-        "Server error"
+        "Server error",
       );
     });
 
     it("falls back to errorDescription for unmapped status codes", () => {
       expect(
         formatCbacError(
-          apiError({ statusCode: 400, errorDescription: "Bad marking id" })
-        )
+          apiError({ statusCode: 400, errorDescription: "Bad marking id" }),
+        ),
       ).toEqual({ title: "Bad marking id", remediation: "" });
     });
 
     it("falls back to the raw message when an unmapped status code has no description", () => {
       expect(
-        formatCbacError(apiError({ statusCode: 400 }, "malformed request"))
+        formatCbacError(apiError({ statusCode: 400 }, "malformed request")),
       ).toEqual({ title: "malformed request", remediation: "" });
     });
   });
@@ -72,7 +72,7 @@ describe("formatCbacError", () => {
     it("unwraps to the first inner error", () => {
       const aggregate = new AggregateError(
         [apiError({ statusCode: 403 }), apiError({ statusCode: 500 })],
-        "multiple failures"
+        "multiple failures",
       );
       expect(formatCbacError(aggregate).title).toBe("Permission denied");
     });
@@ -93,7 +93,7 @@ describe("formatCbacError", () => {
 
     it("detects fetch errors by message", () => {
       expect(formatCbacError(new Error("Failed to fetch")).title).toBe(
-        "Network error"
+        "Network error",
       );
     });
 

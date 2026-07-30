@@ -30,7 +30,7 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
 export default async function main(
-  args: string[] = process.argv
+  args: string[] = process.argv,
 ): Promise<void> {
   const commandLineOpts: {
     input: string;
@@ -125,7 +125,7 @@ export default async function main(
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
-      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$"
+      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
     );
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
@@ -136,14 +136,14 @@ export default async function main(
       commandLineOpts.codeSnippetDir !== path.resolve("./"))
   ) {
     consola.info(
-      "Package name and/or directory supplied for code snippets, but code snippet generation is false."
+      "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
     );
   }
 
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
-      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee"
+      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
     );
   }
 
@@ -155,7 +155,7 @@ export default async function main(
     commandLineOpts.generateCodeSnippets,
     commandLineOpts.codeSnippetPackageName,
     commandLineOpts.codeSnippetDir,
-    commandLineOpts.randomnessKey
+    commandLineOpts.randomnessKey,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -164,8 +164,8 @@ export default async function main(
     JSON.stringify(
       ontologyIr,
       (key, value) => (key === "linkedInterfaces" ? undefined : value),
-      2
-    )
+      2,
+    ),
   );
   // No point in generating block if there aren't any value types
   if (
@@ -174,7 +174,7 @@ export default async function main(
   ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(ontologyIr.valueTypes, null, 2)
+      JSON.stringify(ontologyIr.valueTypes, null, 2),
     );
   }
 }
@@ -187,7 +187,7 @@ async function loadOntology(
   generateCodeSnippets: boolean,
   snippetPackageName: string,
   codeSnippetDir: string,
-  randomnessKey?: string
+  randomnessKey?: string,
 ) {
   const q = await defineOntology(
     apiNamespace,
@@ -197,7 +197,7 @@ async function loadOntology(
     generateCodeSnippets,
     snippetPackageName,
     codeSnippetDir,
-    randomnessKey
+    randomnessKey,
   );
   return q;
 }

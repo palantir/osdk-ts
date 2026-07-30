@@ -90,7 +90,7 @@ describe("usePdfViewerSync", () => {
           onScaleChange,
           onPageChange,
         }),
-      { initialProps: { scale: initialScale } }
+      { initialProps: { scale: initialScale } },
     );
 
     return {
@@ -172,7 +172,7 @@ describe("usePdfViewerSync", () => {
         autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange: vi.fn(),
-      })
+      }),
     );
 
     // Should not throw
@@ -200,7 +200,7 @@ describe("usePdfViewerSync", () => {
           onScaleChange: vi.fn(),
           onPageChange: vi.fn(),
         }),
-      { initialProps: { scale: 1.0 } }
+      { initialProps: { scale: 1.0 } },
     );
 
     rerender({ scale: 2.0 });
@@ -225,7 +225,7 @@ describe("usePdfViewerSync", () => {
         autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange,
-      })
+      }),
     );
 
     // onPageChange should never be called since there's no eventBus

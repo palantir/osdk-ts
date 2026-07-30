@@ -30,12 +30,12 @@ import type {
  */
 export async function batchGetEnrichedActionTypeMetadata(
   ctx: ConjureContext,
-  request: _api_BatchGetEnrichedActionTypeMetadataRequest
+  request: _api_BatchGetEnrichedActionTypeMetadataRequest,
 ): Promise<_api_BatchGetEnrichedActionTypeMetadataResponse> {
   return conjureFetch(
     ctx,
     `/actions/types/load/enriched/metadata`,
     "PUT",
-    request
+    request,
   );
 }

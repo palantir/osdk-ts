@@ -36,7 +36,7 @@ export async function listDraftGroupsForUser(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   pageToken: _api_ListDraftGroupsPageToken | null | undefined,
-  limit: number | null | undefined
+  limit: number | null | undefined,
 ): Promise<_api_ListDraftGroupsResponse> {
   return conjureFetch(ctx, `/draft-groups`, "GET", undefined, {
     marketplaceRid,

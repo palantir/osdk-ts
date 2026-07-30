@@ -28,11 +28,11 @@ import type {
  */
 export async function getJobStatus(
   ctx: ConjureContext,
-  jobId: _JobId
+  jobId: _JobId,
 ): Promise<_JobStatus> {
   return conjureFetch(
     ctx,
     `/module-group-multiplexer/jobs/${jobId}/status`,
-    "GET"
+    "GET",
   );
 }

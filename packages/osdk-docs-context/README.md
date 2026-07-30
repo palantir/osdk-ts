@@ -58,13 +58,13 @@ const variation = NestedOsdkExamplesContext.getExample("2.4.0", [
 // Check if a template has variations
 const hasVariations = NestedOsdkExamplesContext.hasVariations(
   "2.4.0",
-  "derivedPropertyNumericExpression"
+  "derivedPropertyNumericExpression",
 );
 
 // Get all variations for a template
 const variations = NestedOsdkExamplesContext.getVariations(
   "2.4.0",
-  "derivedPropertyNumericExpression"
+  "derivedPropertyNumericExpression",
 );
 // Returns: ["#isUnary", "^isUnary"]
 
@@ -87,7 +87,7 @@ const results = NestedOsdkExamplesContext.searchExamples("numeric");
 // Search within a specific version
 const versionResults = NestedOsdkExamplesContext.searchExamples(
   "load",
-  "2.4.0"
+  "2.4.0",
 );
 ```
 

@@ -32,12 +32,12 @@ import type {
 export async function createOrUpdateSparkModuleGroupDeprecated(
   ctx: ConjureContext,
   moduleGroupName: _ModuleGroupName,
-  moduleGroupCreationOrUpdateRequest: _SparkModuleGroupCreationOrUpdateRequest
+  moduleGroupCreationOrUpdateRequest: _SparkModuleGroupCreationOrUpdateRequest,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/module-group/${moduleGroupName}`,
     "POST",
-    moduleGroupCreationOrUpdateRequest
+    moduleGroupCreationOrUpdateRequest,
   );
 }

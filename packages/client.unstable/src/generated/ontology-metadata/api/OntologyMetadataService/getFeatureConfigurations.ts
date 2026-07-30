@@ -25,7 +25,7 @@ import type { GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsR
  * means they do not have granularity on org/enrollment/group level.
  */
 export async function getFeatureConfigurations(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_GetFeatureConfigurationsResponse> {
   return conjureFetch(ctx, `/ontology/featureConfigurations`, "GET");
 }

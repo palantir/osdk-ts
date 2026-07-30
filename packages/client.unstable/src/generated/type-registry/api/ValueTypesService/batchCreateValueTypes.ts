@@ -24,12 +24,12 @@ import type { BatchCreateValueTypesResponse } from "../BatchCreateValueTypesResp
  */
 export async function batchCreateValueTypes(
   ctx: ConjureContext,
-  request: BatchCreateValueTypesRequest
+  request: BatchCreateValueTypesRequest,
 ): Promise<BatchCreateValueTypesResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/batch-create-value-types`,
     "POST",
-    request
+    request,
   );
 }

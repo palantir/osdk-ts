@@ -23,11 +23,11 @@ import type { GetUserUploadPermissionQuotaResponse as _api_GetUserUploadPermissi
  * marketplace.
  */
 export async function getUserUploadPermissionQuota(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_GetUserUploadPermissionQuotaResponse> {
   return conjureFetch(
     ctx,
     `/block-set-transport/permissions/user-upload-quota`,
-    "GET"
+    "GET",
   );
 }

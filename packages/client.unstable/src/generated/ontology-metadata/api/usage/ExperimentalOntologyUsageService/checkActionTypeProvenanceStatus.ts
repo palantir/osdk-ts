@@ -30,12 +30,12 @@ import type {
  */
 export async function checkActionTypeProvenanceStatus(
   ctx: ConjureContext,
-  request: _api_usage_CheckActionTypeProvenanceStatusRequest
+  request: _api_usage_CheckActionTypeProvenanceStatusRequest,
 ): Promise<_api_usage_CheckActionTypeProvenanceStatusResponse> {
   return conjureFetch(
     ctx,
     `/usage/checkActionTypeProvenanceStatus`,
     "POST",
-    request
+    request,
   );
 }

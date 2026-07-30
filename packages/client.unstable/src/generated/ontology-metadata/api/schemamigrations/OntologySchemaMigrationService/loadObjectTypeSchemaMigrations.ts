@@ -27,7 +27,7 @@ import type {
  */
 export async function loadObjectTypeSchemaMigrations(
   ctx: ConjureContext,
-  request: _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest
+  request: _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
 ): Promise<_api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse> {
   return conjureFetch(ctx, `/schemamigrations/load/objecttype`, "PUT", request);
 }

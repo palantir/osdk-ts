@@ -126,7 +126,7 @@ describe("createDateHistogramBuckets", () => {
     const result = createDateHistogramBuckets(
       pairs,
       { min: new Date(2020, 4, 1), max: new Date(2020, 4, 31) },
-      (d) => `custom-${d.getFullYear()}`
+      (d) => `custom-${d.getFullYear()}`,
     );
     expect(result.subtitle).toBe("custom-2020");
   });
@@ -140,7 +140,7 @@ describe("createDateHistogramBuckets", () => {
     const result = createDateHistogramBuckets(
       pairs,
       { min: new Date(2020, 0, 1), max: new Date(2020, 11, 31) },
-      (d) => `custom-${d.getFullYear()}-${d.getMonth()}`
+      (d) => `custom-${d.getFullYear()}-${d.getMonth()}`,
     );
     expect(result.granularity).toBe("month");
     const expectedJune = new Intl.DateTimeFormat(undefined, {
@@ -158,7 +158,7 @@ describe("createDateHistogramBuckets", () => {
       pairs,
       { min: new Date(2020, 0, 1), max: new Date(2020, 11, 31) },
       (d) => `custom-${d.getFullYear()}`,
-      (d, granularity) => `${granularity}:${d.getMonth()}`
+      (d, granularity) => `${granularity}:${d.getMonth()}`,
     );
     expect(result.buckets[5].tickLabel).toBe("month:5");
   });
@@ -181,7 +181,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     expect(container.querySelector("svg")).toBeDefined();
     expect(container.querySelector("svg")).not.toBeNull();
@@ -195,7 +195,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const rects = container.querySelectorAll("svg rect");
     // Daily bucketer for May 1–10 → 10 buckets
@@ -210,10 +210,10 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const countLabels = container.querySelectorAll(
-      'g[class*="countLabels"] text'
+      'g[class*="countLabels"] text',
     );
     expect(countLabels.length).toBeGreaterThan(0);
     const rendered = Array.from(countLabels).map((t) => t.textContent);
@@ -228,7 +228,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const tickLabels = container.querySelectorAll('g[class*="xTicks"] text');
     expect(tickLabels.length).toBeGreaterThan(0);
@@ -242,7 +242,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const subtitle = container.querySelector('text[class*="subtitle"]');
     expect(subtitle?.textContent).toBe("2020-05");
@@ -256,7 +256,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const axisLines = container.querySelectorAll('line[class*="axisLine"]');
     const yLabels = container.querySelectorAll('text[class*="yAxisLabel"]');
@@ -278,10 +278,10 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const yValues = Array.from(
-      container.querySelectorAll('text[class*="yAxisLabel"]')
+      container.querySelectorAll('text[class*="yAxisLabel"]'),
     ).map((l) => l.textContent);
     // niceTicks(3) → [0, 1, 2, 3] — must NOT round to 5/10
     expect(yValues).toEqual(["0", "1", "2", "3"]);
@@ -300,14 +300,14 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const svg = container.querySelector("svg");
     expect(svg).not.toBeNull();
     const axisLines = container.querySelectorAll('line[class*="axisLine"]');
     expect(axisLines.length).toBeGreaterThan(1);
     const countLabels = container.querySelectorAll(
-      'g[class*="countLabels"] text'
+      'g[class*="countLabels"] text',
     );
     expect(countLabels.length).toBeGreaterThan(0);
   });
@@ -347,7 +347,7 @@ describe("RangeInput SVG histogram", () => {
           minValue={undefined}
           maxValue={undefined}
           onChange={onChange}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       expect(rects.length).toBeGreaterThan(0);
@@ -367,7 +367,7 @@ describe("RangeInput SVG histogram", () => {
           maxValue={undefined}
           onChange={onChange}
           clickToFilter={true}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       fireMouseDown(rects[0]);
@@ -389,7 +389,7 @@ describe("RangeInput SVG histogram", () => {
           maxValue={undefined}
           onChange={onChange}
           clickToFilter={true}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       fireMouseDown(rects[0]);
@@ -416,7 +416,7 @@ describe("RangeInput SVG histogram", () => {
           maxValue={undefined}
           onChange={onChange}
           clickToFilter={true}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       fireMouseDown(rects[3]);
@@ -439,11 +439,11 @@ describe("RangeInput SVG histogram", () => {
           maxValue={undefined}
           onChange={vi.fn()}
           clickToFilter={true}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       const allEnabled = Array.from(rects).every(
-        (r) => r.getAttribute("data-click-to-filter") === "true"
+        (r) => r.getAttribute("data-click-to-filter") === "true",
       );
       expect(allEnabled).toBe(true);
     });
@@ -456,11 +456,11 @@ describe("RangeInput SVG histogram", () => {
           minValue={undefined}
           maxValue={undefined}
           onChange={vi.fn()}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       const noneEnabled = Array.from(rects).every(
-        (r) => !r.hasAttribute("data-click-to-filter")
+        (r) => !r.hasAttribute("data-click-to-filter"),
       );
       expect(noneEnabled).toBe(true);
     });
@@ -508,7 +508,7 @@ describe("RangeInput SVG histogram", () => {
             maxValue={undefined}
             onChange={onChange}
             clickToFilter={true}
-          />
+          />,
         );
         const svg = container.querySelector("svg");
         expect(svg).not.toBeNull();
@@ -557,10 +557,10 @@ describe("RangeInput SVG histogram", () => {
             maxValue={undefined}
             onChange={onChange2}
             clickToFilter={true}
-          />
+          />,
         );
         const rects2 = container2.querySelectorAll(
-          'rect[class*="histogramBar"]'
+          'rect[class*="histogramBar"]',
         );
         firePointerDown(rects2[2]);
         const svg2 = container2.querySelector("svg");
@@ -596,7 +596,7 @@ describe("RangeInput SVG histogram", () => {
           minValue={new Date(2020, 4, 4)}
           maxValue={new Date(2020, 4, 7)}
           onChange={vi.fn()}
-        />
+        />,
       );
       const rects = container.querySelectorAll('rect[class*="histogramBar"]');
       const inRangeIndices: number[] = [];
@@ -622,7 +622,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const tickLabels = container.querySelectorAll('g[class*="xTicks"] text');
     const labelTexts = Array.from(tickLabels).map((t) => t.textContent);
@@ -644,7 +644,7 @@ describe("RangeInput SVG histogram", () => {
         minValue={undefined}
         maxValue={undefined}
         onChange={vi.fn()}
-      />
+      />,
     );
     const tickLabels = container.querySelectorAll('g[class*="xTicks"] text');
     const labelTexts = Array.from(tickLabels).map((t) => t.textContent);

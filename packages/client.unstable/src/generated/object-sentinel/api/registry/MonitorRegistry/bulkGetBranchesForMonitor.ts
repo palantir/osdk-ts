@@ -26,7 +26,7 @@ import type {
  */
 export async function bulkGetBranchesForMonitor(
   ctx: ConjureContext,
-  request: _api_registry_BulkGetBranchesForMonitorRequest
+  request: _api_registry_BulkGetBranchesForMonitorRequest,
 ): Promise<_api_registry_BulkGetBranchesForMonitorResponse> {
   return conjureFetch(ctx, `/registry/v0/all-branches-bulk`, "POST", request);
 }

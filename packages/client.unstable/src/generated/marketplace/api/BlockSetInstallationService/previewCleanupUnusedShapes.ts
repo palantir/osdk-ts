@@ -34,11 +34,11 @@ import type {
 export async function previewCleanupUnusedShapes(
   ctx: ConjureContext,
   blockSetInstallationRid: _api_BlockSetInstallationRid,
-  targetVersionId: _api_BlockSetVersionId
+  targetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_PreviewCleanupUnusedShapesResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/${blockSetInstallationRid}/cleanup-unused-shapes/preview/${targetVersionId}`,
-    "GET"
+    "GET",
   );
 }

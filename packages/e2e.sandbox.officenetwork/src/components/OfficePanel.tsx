@@ -45,7 +45,7 @@ export function OfficePanel({
 
   const coords = office.location
     ? `${office.location.coordinates[1].toFixed(4)}, ${office.location.coordinates[0].toFixed(
-        4
+        4,
       )}`
     : "No coordinates";
 

@@ -38,12 +38,12 @@ import type {
 export async function importSharedPropertyTypes(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_ImportSharedPropertyTypesRequest
+  request: _api_modification_ImportSharedPropertyTypesRequest,
 ): Promise<_api_modification_ImportSharedPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/import`,
     "POST",
-    request
+    request,
   );
 }

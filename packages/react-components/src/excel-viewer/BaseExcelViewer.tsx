@@ -39,7 +39,7 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
   ({ sheet }) => {
     const maxCols = useMemo(
       () => sheet.rows.reduce((max, row) => Math.max(max, row.length), 0),
-      [sheet.rows]
+      [sheet.rows],
     );
 
     if (sheet.rows.length === 0) {
@@ -74,7 +74,7 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
         </table>
       </div>
     );
-  }
+  },
 );
 SheetTable.displayName = "SheetTable";
 
@@ -87,11 +87,11 @@ export function BaseExcelViewer({
 
   const safeIndex = Math.min(
     activeSheetIndex,
-    Math.max(0, spreadsheet.sheets.length - 1)
+    Math.max(0, spreadsheet.sheets.length - 1),
   );
   const activeSheet = useMemo(
     () => spreadsheet.sheets[safeIndex],
-    [spreadsheet.sheets, safeIndex]
+    [spreadsheet.sheets, safeIndex],
   );
 
   const handleTabClick = useCallback((index: number) => {

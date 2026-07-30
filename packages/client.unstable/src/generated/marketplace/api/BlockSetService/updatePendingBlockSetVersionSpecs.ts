@@ -38,12 +38,12 @@ import type {
 export async function updatePendingBlockSetVersionSpecs(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_UpdatePendingBlockSetVersionSpecsRequest
+  request: _api_UpdatePendingBlockSetVersionSpecsRequest,
 ): Promise<_api_UpdatePendingBlockSetVersionSpecsResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/specs`,
     "PUT",
-    request
+    request,
   );
 }

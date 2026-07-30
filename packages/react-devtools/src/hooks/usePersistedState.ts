@@ -36,7 +36,7 @@ export function usePersistedState<T>(
    * The key will be prefixed with `OSDK_DEVTOOLS_KEY_PREFIX`
    */
   initialKey: string,
-  defaultValue: T
+  defaultValue: T,
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const storeRef = React.useRef<{
     key: string;
@@ -84,7 +84,7 @@ export function usePersistedState<T>(
         }
       };
     },
-    [key]
+    [key],
   );
 
   const getSnapshot = React.useCallback((): T => {
@@ -120,7 +120,7 @@ export function usePersistedState<T>(
         listener();
       }
     },
-    [key]
+    [key],
   );
 
   return [value, setPersistedValue];

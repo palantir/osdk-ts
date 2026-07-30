@@ -29,13 +29,13 @@ import type {
 export async function getAllMonitorEvents(
   ctx: ConjureContext,
   pageToken: _api_registry_PageToken | null | undefined,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_registry_GetAllMonitorEventsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/monitors-getEvents`,
     "GET",
     undefined,
-    { pageToken, branchRid }
+    { pageToken, branchRid },
   );
 }

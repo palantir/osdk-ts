@@ -27,7 +27,7 @@ import * as React from "react";
  */
 export function useChatAutoScroll<T extends HTMLElement>(
   signal: string,
-  enabled: boolean
+  enabled: boolean,
 ): React.RefCallback<T> {
   const elRef = React.useRef<T | null>(null);
   const cleanupRef = React.useRef<(() => void) | null>(null);
