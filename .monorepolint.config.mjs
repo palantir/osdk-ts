@@ -491,6 +491,29 @@ const archetypeRules = archetypes(
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    // Codegen drops the ontology metadata under src/generatedNoCheck and
+    // transpile copies it into build/, so the subpath resolves out of build/
+    // like everything else. The json is the only real artifact: it is format
+    // neutral, so both conditions point at the one copy. The types differ
+    // though -- `require()` of a json module yields the object itself, which
+    // only `export =` (a .d.cts) describes, while `import` sees a default
+    // export. Letting the resolver pick beats baking one answer in at codegen.
+    extraExports: {
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        import: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+        require: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+      },
+    },
     // Migrated to the oxc toolchain; carries a nested oxlint config (its
     // src/index.ts barrel re-exports the generated ontology, tripping
     // oxc/no-barrel-file once the module graph is resolvable).
@@ -847,7 +870,8 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExports?: string[]
+ *   cssExports?: string[],
+ *   extraExports?: Record<string, unknown>
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -925,6 +949,14 @@ const ourExportsConvention = createRuleFactory({
     const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
       expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
+    }
+
+    // escape hatch for subpaths this convention can't derive from src/public,
+    // e.g. generated data assets. also must come before the wildcard.
+    for (
+      const [subpath, target] of Object.entries(options.extraExports ?? {})
+    ) {
+      expectedExports.exports[subpath] = target;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -1170,6 +1202,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
+ * @property { Record<string, unknown> } [extraExports]
  * @property { string[] } [attwExcludeEntrypoints]
  * @property { string } [typecheckProject]
  */
@@ -1335,6 +1368,7 @@ function standardPackageRules(shared, options) {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
         cssExports,
+        extraExports: options.extraExports,
       },
     }),
     packageEntry({

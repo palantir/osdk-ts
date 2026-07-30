@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { MinimalFs } from "@osdk/generator";
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
-import { mkdir, readdir, writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import path from "node:path";
-import { normalize } from "node:path/posix";
 import { fileURLToPath } from "node:url";
 import { dirname, isAbsolute, join } from "path";
 import type { SlsLogger } from "../../logging/index.js";
@@ -28,15 +26,16 @@ import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
-import {
-  generateOntologyMetadata,
-  ONTOLOGY_METADATA_DTS_PATH,
-  ONTOLOGY_METADATA_JSON_PATH,
-} from "./generateOntologyMetadata.js";
+import { createHostFs } from "./createHostFs.js";
+import { customNormalize } from "./customNormalize.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
   "@osdk/client": undefined,
+  // the ontology metadata type shims reference OntologyFullMetadata, so it has
+  // to be resolvable from the generated package or those types silently widen
+  // to `any` under the usual skipLibCheck.
+  "@osdk/foundry.ontologies": undefined,
 };
 
 export async function generatePackage(
@@ -75,34 +74,20 @@ export async function generatePackage(
   await mkdir(packagePath, { recursive: true });
 
   const inMemoryFileSystem: { [fileName: string]: string } = {};
-  const hostFs: MinimalFs = {
-    writeFile: async (path, contents) => {
-      inMemoryFileSystem[customNormalize(path)] = contents;
-    },
-    mkdir: async (path, _options?: { recursive: boolean }) => {
-      await mkdir(customNormalize(path), { recursive: true });
-    },
-    readdir: path => readdir(path),
-  };
+  const hostFs = createHostFs(inMemoryFileSystem);
 
   await generateClientSdkVersionTwoPointZero(
     ontologyInfo.requestedMetadata,
     `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
     hostFs,
     packagePath,
-    "module",
+    undefined, // commonjs by default
     ontologyInfo.externalObjects,
     ontologyInfo.externalInterfaces,
     new Map(),
     false,
     ontologyInfo.fixedVersionQueryTypes,
   );
-
-  await generateOntologyMetadata({
-    metadata: ontologyInfo.requestedMetadata,
-    path: join(packagePath, ONTOLOGY_METADATA_JSON_PATH),
-    typePath: join(packagePath, ONTOLOGY_METADATA_DTS_PATH),
-  });
 
   // actually write file plus save contents
   const contents = await generatePackageJson({
@@ -220,8 +205,4 @@ export async function generatePackage(
   if (!success) {
     throw new Error("Failed to generate package");
   }
-}
-
-export function customNormalize(pathName: string): string {
-  return normalize(pathName.replace(/\\/g, "/"));
 }

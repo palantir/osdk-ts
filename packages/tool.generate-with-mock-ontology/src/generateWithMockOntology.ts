@@ -26,6 +26,8 @@ import { $ } from "execa";
 
 import { safeStat } from "./safeStat.js";
 
+const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+
 export async function generateWithMockOntology(): Promise<void> {
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
 
@@ -89,13 +91,14 @@ export async function generateWithMockOntology(): Promise<void> {
 
     await safeStat(testApp2Dir, "should exist");
 
-    await $({
-      stdout: "inherit",
-      stderr: "inherit",
-    })`attw --pack ${path.join(
-      testApp2Dir,
-      "osdk",
-    )} --ignore-rules internal-resolution-error`;
+    const packageDir = path.join(testApp2Dir, "osdk");
+    const attwOpts = { stdout: "inherit", stderr: "inherit" } as const;
+    await $(
+      attwOpts,
+    )`attw --pack ${packageDir} --ignore-rules internal-resolution-error --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
+    await $(
+      attwOpts,
+    )`attw --pack ${packageDir} --ignore-rules internal-resolution-error false-export-default --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
 
     const finalOutDir = path.join(process.cwd(), "osdk");
 

@@ -19,7 +19,10 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
-import { generateOntologyMetadataFile } from "./generateMetadata.js";
+import {
+  generateOntologyMetadataJSONFile,
+  generateOntologyMetadataTypeFile,
+} from "./generateMetadata.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 import { generatePerInterfaceDataFiles } from "./generatePerInterfaceDataFiles.js";
 import { generatePerObjectDataFiles } from "./generatePerObjectDataFiles.js";
@@ -64,7 +67,8 @@ export async function generateClientSdkVersionTwoPointZero(
   };
 
   await generateRootIndexTsFile(ctx);
-  await generateOntologyMetadataFile(ctx, userAgent);
+  await generateOntologyMetadataJSONFile(ctx);
+  await generateOntologyMetadataTypeFile(ctx, userAgent);
   await generatePerObjectDataFiles(ctx);
   await generatePerInterfaceDataFiles(ctx);
   await generatePerActionDataFiles(ctx);

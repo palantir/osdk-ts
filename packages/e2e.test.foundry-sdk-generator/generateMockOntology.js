@@ -24,6 +24,9 @@ import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePacka
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 
+// declared above the top level await below, which runs setup() eagerly
+const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+
 async function setup() {
   const dir = await fs.mkdtemp(
     path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
@@ -100,15 +103,8 @@ async function setup() {
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
 
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2Dir, "osdk")}`;
-
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2BetaDir, "osdk")}`;
+  await checkTypes(path.join(testApp2Dir, "osdk"));
+  await checkTypes(path.join(testApp2BetaDir, "osdk"));
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -129,6 +125,29 @@ await setup();
 /**
  * @param {string} testAppDir
  */
+/**
+ * Runs attw over a generated package.
+ *
+ * The ontology metadata entrypoint is checked separately so that
+ * `false-export-default` can be ignored for it alone, rather than package wide.
+ * attw models the entrypoint's `.json` as a CJS file using `module.exports =`
+ * and so objects to the `export default` in the ESM shim, but a json module
+ * really does hand a bundler and Node's ESM loader the object as the default
+ * export, so the shim is right and the rule is a false positive here. Every
+ * other rule, and every other entrypoint, stays fully checked.
+ */
+async function checkTypes(packageDir) {
+  const opts = { stdout: "inherit", stderr: "inherit" };
+
+  await $(
+    opts
+  )`attw --pack ${packageDir} --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
+
+  await $(
+    opts
+  )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
+}
+
 async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });

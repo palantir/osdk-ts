@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@
 import {
   generateClientSdkVersionTwoPointZero,
   getTsCompilerOptions,
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
 } from "@osdk/generator";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
@@ -396,12 +399,27 @@ async function main(): Promise<void> {
         types: "./dist/index.d.ts",
         import: "./dist/index.js",
       },
+      // json is format neutral so both conditions share it; the types cannot be
+      // shared, since `require()` of a json module yields the object itself.
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        import: {
+          types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
+        require: {
+          types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
+      },
     },
     scripts: {
       build: "tsc",
     },
     dependencies: {
       "@osdk/client": "^2.0.0",
+      // referenced by the ontology metadata type shims; without it those types
+      // silently widen to `any` under the usual skipLibCheck.
+      "@osdk/foundry.ontologies": "^2.63.0",
     },
     devDependencies: {
       "typescript": "^5.0.0",

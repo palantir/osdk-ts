@@ -78,8 +78,14 @@ describe("generatePackageJson", () => {
                     "default": "./cjs/index.js"
                 },
                 "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
-                    "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.ts",
-                    "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    "require": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    },
+                    "import": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    }
                 }
             },
             "dependencies": {
