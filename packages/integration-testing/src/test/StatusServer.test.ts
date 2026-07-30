@@ -37,14 +37,14 @@ const readyStatus = (): ServiceStatus => ({
 });
 
 describe("StatusServer", () => {
-  let projectDir: string;
+  let projectPath: string;
   let discoverer: ServiceDiscoverer;
   let stub: StubStatusServer | undefined;
 
   beforeEach(async () => {
-    projectDir = await mkdtemp(join(tmpdir(), "osdk-status-"));
+    projectPath = await mkdtemp(join(tmpdir(), "osdk-status-"));
     discoverer = new ServiceDiscoverer({
-      basePath: join(projectDir, ".palantir"),
+      basePath: join(projectPath, ".palantir"),
     });
   });
 
@@ -52,12 +52,12 @@ describe("StatusServer", () => {
     discoverer.stop();
     await stub?.close();
     stub = undefined;
-    await rm(projectDir, { recursive: true, force: true });
+    await rm(projectPath, { recursive: true, force: true });
   });
 
   /** A status server wired to the shared discoverer, but never spawned. */
   const attachedStatusServer = async (): Promise<StatusServer> => {
-    const statusServer = new StatusServer({ projectDir });
+    const statusServer = new StatusServer({ projectPath });
     await discoverer.start();
     statusServer.attach({ discoverer, statusServer });
     return statusServer;
@@ -80,7 +80,7 @@ describe("StatusServer", () => {
     // /status stays empty: the status server never publishes a lifecycle for
     // itself, so a snapshot-based check could never call it ready.
     stub = await startStubStatusServer();
-    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    await writeDiscoveryFile(projectPath, "STATUS_SERVER", { url: stub.url });
 
     const statusServer = await attachedStatusServer();
 
@@ -95,7 +95,7 @@ describe("StatusServer", () => {
   it("is discovered but not ready when the health endpoint fails", async () => {
     stub = await startStubStatusServer();
     stub.setHealthy(false);
-    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    await writeDiscoveryFile(projectPath, "STATUS_SERVER", { url: stub.url });
 
     const statusServer = await attachedStatusServer();
 
@@ -107,7 +107,7 @@ describe("StatusServer", () => {
 
   it("reads an empty 204 snapshot as no statuses", async () => {
     stub = await startStubStatusServer();
-    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    await writeDiscoveryFile(projectPath, "STATUS_SERVER", { url: stub.url });
 
     const statusServer = await attachedStatusServer();
 
@@ -117,7 +117,7 @@ describe("StatusServer", () => {
 
   it("returns the lifecycle a service published", async () => {
     stub = await startStubStatusServer([readyStatus()]);
-    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    await writeDiscoveryFile(projectPath, "STATUS_SERVER", { url: stub.url });
 
     const statusServer = await attachedStatusServer();
 
@@ -131,7 +131,7 @@ describe("StatusServer", () => {
   it("reports no statuses when discovered but unreachable", async () => {
     // Port nothing is listening on. The health poll has to keep going rather
     // than throw, so a service that is slow to bind is still waited out.
-    await writeDiscoveryFile(projectDir, "STATUS_SERVER", {
+    await writeDiscoveryFile(projectPath, "STATUS_SERVER", {
       url: "http://127.0.0.1:1",
     });
 

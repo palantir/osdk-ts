@@ -17,28 +17,24 @@
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 
+import { gte, valid } from "semver";
+
 const execAsync = promisify(exec);
+
+const FOUNDRY_VERSION_PATTERN =
+  /cli (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)/u;
+
+export const parseFoundryVersion = (stdout: string): string | undefined =>
+  stdout.trim().match(FOUNDRY_VERSION_PATTERN)?.[1];
 
 export const getFoundryVersion = (): Promise<string | undefined> => {
   return execAsync("which foundry")
     .then(() => execAsync("foundry --version"))
-    .then(({ stdout }) => stdout.trim().match(/cli (\d+\.\d+\.\d+)/u)?.[1])
+    .then(({ stdout }) => parseFoundryVersion(stdout))
     .catch(() => undefined);
 };
 
 export const MIN_FOUNDRY_CLI_VERSION = "0.200.0";
 
-export const versionIsAtMinimum = (version: string, min: string): boolean => {
-  const parsedVersion = version.split(".").map(Number);
-  const parsedMinVersion = min.split(".").map(Number);
-  if (parsedVersion.length !== parsedMinVersion.length) {
-    return false;
-  }
-  for (let i = 0; i < parsedVersion.length; ++i) {
-    const ver = parsedVersion[i];
-    const minVer = parsedMinVersion[i];
-    if (ver > minVer) return true;
-    if (ver < minVer) return false;
-  }
-  return true;
-};
+export const versionIsAtMinimum = (version: string, min: string): boolean =>
+  valid(version) != null && valid(min) != null && gte(version, min);

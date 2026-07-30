@@ -27,6 +27,8 @@ export interface StubServiceConfig extends FoundryServiceConfig {
   startLog?: ServiceName[];
   /** State reported once started. Defaults to `READY`. */
   stateWhenStarted?: ServiceState;
+  /** Explanation reported alongside the state, as a real service publishes. */
+  message?: string;
 }
 
 /**
@@ -36,12 +38,14 @@ export interface StubServiceConfig extends FoundryServiceConfig {
 export class StubService extends FoundryCliService {
   #startLog: ServiceName[] | undefined;
   #stateWhenStarted: ServiceState;
+  #message: string | undefined;
   #started = false;
 
   constructor(name: ServiceName, config: StubServiceConfig) {
     super(name, config);
     this.#startLog = config.startLog;
     this.#stateWhenStarted = config.stateWhenStarted ?? "READY";
+    this.#message = config.message;
   }
 
   protected override getArgs(): readonly string[] {
@@ -67,10 +71,12 @@ export class StubService extends FoundryCliService {
       state,
       ready: state === "READY",
       terminal: state === "FAILED" || state === "STOPPED",
+      ...(this.#message !== undefined ? { message: this.#message } : {}),
     });
   }
 
-  override stop(): void {
+  override stop(): Promise<void> {
     this.#started = false;
+    return Promise.resolve();
   }
 }

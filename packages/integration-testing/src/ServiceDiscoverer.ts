@@ -28,13 +28,12 @@ export type ServiceDiscovererConfig = {
 };
 
 /**
- * Watches `<basePath>/.palantir` for the discovery files that running Foundry
+ * Reads the discovery files that running Foundry services publish into
+ * `basePath`.
  */
 export class ServiceDiscoverer {
   #basePath: string;
   #discovered = new Map<ServiceName, ComponentDiscovery>();
-  #abortController: AbortController | undefined;
-  #watching: Promise<void> | undefined;
 
   constructor(args: ServiceDiscovererConfig) {
     this.#basePath = args.basePath;
@@ -45,13 +44,8 @@ export class ServiceDiscoverer {
   }
 
   async start(): Promise<void> {
-    if (this.#watching !== undefined) {
-      return;
-    }
     await fs.mkdir(this.#basePath, { recursive: true });
     await this.refresh();
-    this.#abortController = new AbortController();
-    this.#watching = this.#watch(this.#abortController.signal);
   }
 
   /**
@@ -95,27 +89,7 @@ export class ServiceDiscoverer {
   }
 
   stop(): void {
-    this.#abortController?.abort();
-    this.#abortController = undefined;
-    this.#watching = undefined;
-  }
-
-  async #watch(signal: AbortSignal): Promise<void> {
-    try {
-      const watcher = fs.watch(this.#basePath, {
-        signal,
-      }) as unknown as AsyncIterable<fs.FileChangeInfo<string>>; // TODO: fix after bumping typescript
-      for await (const event of watcher) {
-        if (event.filename != null) {
-          await this.#read(event.filename);
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        return;
-      }
-      throw err;
-    }
+    this.#discovered.clear();
   }
 
   async #read(fileName: string): Promise<ComponentDiscovery | undefined> {
@@ -123,8 +97,19 @@ export class ServiceDiscoverer {
     if (typeof serviceName === "undefined") {
       return undefined;
     }
-    const contents = await fs.readFile(join(this.#basePath, fileName), "utf-8");
-    const parsed = JSON.parse(contents) as ComponentDiscovery;
+    let contents: string;
+    try {
+      contents = await fs.readFile(join(this.#basePath, fileName), "utf-8");
+    } catch {
+      this.#discovered.delete(serviceName);
+      return undefined;
+    }
+    let parsed: ComponentDiscovery;
+    try {
+      parsed = JSON.parse(contents) as ComponentDiscovery;
+    } catch {
+      return undefined;
+    }
     invariant(parsed.url, `Service URL not found`);
     this.#discovered.set(serviceName, parsed);
     return parsed;

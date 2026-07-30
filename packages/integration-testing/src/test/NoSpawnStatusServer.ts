@@ -27,5 +27,7 @@ export class NoSpawnStatusServer extends StatusServer {
     return Promise.resolve();
   }
 
-  override stop(): void {}
+  override stop(): Promise<void> {
+    return Promise.resolve();
+  }
 }

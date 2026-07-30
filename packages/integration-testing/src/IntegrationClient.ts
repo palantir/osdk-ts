@@ -72,13 +72,14 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
   const seedClientFunction = async <T = void>(
     seed: SeedFunction<T> | SeedOutput
   ): Promise<T> => {
+    let result;
     if (typeof seed === "function") {
-      const result = seed(builder);
-      await applySeed(builder.build());
-      return result;
+      result = seed(builder);
+    } else {
+      builder.addAll(seed);
     }
-    await applySeed(seed);
-    return undefined as T;
+    await applySeed(builder.build());
+    return result as T;
   };
   const applySeed = async (seed: SeedOutput) => {
     const res = await OntologySeedingService.setSeed(
@@ -95,6 +96,10 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
     ref: (o, pk) => builder.ref(o, pk),
     addAll: async (output) => {
       builder.addAll(output);
+      await applySeed(builder.build());
+    },
+    set: async (output) => {
+      builder.set(output);
       await applySeed(builder.build());
     },
     create: async (o, props) => {
@@ -136,8 +141,26 @@ export async function createIntegrationClient(
   config: IntegrationClientConfig
 ): Promise<IntegrationClient> {
   const { baseUrl, metadata, caCertPath } = config;
-  const realClient = createClient(baseUrl, metadata.ontology.rid, () =>
-    Promise.resolve("integration-client-token")
+  const agent = new Agent({
+    connect: caCertPath
+      ? {
+          ca: await fs.readFile(caCertPath),
+        }
+      : {
+          rejectUnauthorized: false,
+        },
+  });
+  const fetchWithCert = ((input, init) =>
+    undiciFetch(input, {
+      ...init,
+      dispatcher: agent,
+    })) satisfies typeof undiciFetch as unknown as typeof fetch;
+  const realClient = createClient(
+    baseUrl,
+    metadata.ontology.rid,
+    () => Promise.resolve("integration-client-token"),
+    {},
+    fetchWithCert
   );
   const mockClient = createMockClient();
   const clientInternal = ((def: ClientArg) => {
@@ -160,27 +183,14 @@ export async function createIntegrationClient(
     {
       ...Object.getOwnPropertyDescriptors(realClient),
       whenQuery: {
-        value: mockClient.whenQuery,
+        value: mockClient.whenQuery.bind(undefined),
       },
     }
   );
-  const agent = new Agent({
-    connect: caCertPath
-      ? {
-          ca: await fs.readFile(caCertPath),
-        }
-      : {
-          rejectUnauthorized: false,
-        },
-  });
   const seed = createSeedClient({
     baseUrl,
     metadata,
-    fetchFn: ((input, init) =>
-      undiciFetch(input, {
-        ...init,
-        dispatcher: agent,
-      })) satisfies typeof undiciFetch as unknown as typeof fetch,
+    fetchFn: fetchWithCert,
   });
   return {
     client,

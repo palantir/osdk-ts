@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { IntegrationServer } from "../IntegrationServer.js";
+import {
+  createIntegrationServer,
+  type IntegrationServer,
+} from "../IntegrationServer.js";
 import { getFoundryVersion } from "../utils/version.js";
-
-/** Smallest metadata the ontology server accepts. */
-const EMPTY_ONTOLOGY_METADATA = {
-  ontology: {
-    apiName: "ontology",
-    rid: "ri.ontology.main.ontology.0",
-    displayName: "ontology",
-    description: "local ontology",
-  },
-  objectTypes: {},
-  actionTypes: {},
-  queryTypes: {},
-  interfaceTypes: {},
-  sharedPropertyTypes: {},
-  valueTypes: {},
-};
+import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
 
 const TEST_TIMEOUT_MS = 180_000;
 
@@ -45,22 +34,18 @@ const foundryVersion = await getFoundryVersion();
 
 // Exercises the real CLI, so it only runs where `foundry` is installed.
 describe.skipIf(foundryVersion === undefined)(
-  "IntegrationServer (end to end)",
+  "createIntegrationServer (end to end)",
   () => {
-    let projectDir: string;
+    let projectPath: string;
     let server: IntegrationServer;
 
     beforeAll(async () => {
-      projectDir = await mkdtemp(join(tmpdir(), "osdk-integration-e2e-"));
-      await writeFile(
-        join(projectDir, "metadata.json"),
-        JSON.stringify(EMPTY_ONTOLOGY_METADATA),
-        "utf-8"
-      );
-      server = new IntegrationServer({
-        projectDir,
-        metadataPath: "metadata.json",
+      projectPath = await mkdtemp(join(tmpdir(), "osdk-integration-e2e-"));
+      server = await createIntegrationServer({
+        metadata: EMPTY_ONTOLOGY_METADATA,
+        projectPath,
       });
+      // Resolves only once the ontology service reports READY.
       await server.start();
     }, TEST_TIMEOUT_MS);
 
@@ -68,21 +53,25 @@ describe.skipIf(foundryVersion === undefined)(
       await server?.stop();
     });
 
-    it("reports both services ready", async () => {
-      expect(await server.checkHealth()).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            service: "STATUS_SERVER",
-            state: "READY",
-            ready: true,
-          }),
-          expect.objectContaining({
-            service: "ONTOLOGY",
-            state: "READY",
-            ready: true,
-          }),
-        ])
+    it("discovers the running ontology service", () => {
+      expect(server.getOntologyUrl()).toMatch(/^https?:\/\//u);
+    });
+
+    it("exposes the ontology service's CA certificate", async () => {
+      const caCertPath = server.getOntologyCaCertPath();
+      invariant(caCertPath, "the ontology service published no CA cert path");
+
+      await expect(readFile(caCertPath, "utf-8")).resolves.toContain(
+        "-----BEGIN CERTIFICATE-----"
       );
+    });
+
+    it("creates a client whose seeder reaches the ontology service", async () => {
+      const { client, seed } = await server.createClient();
+
+      expect(client).toBeTypeOf("function");
+      // Round-trips an empty seed through the live seeding endpoint.
+      await expect(seed(() => {})).resolves.toBeUndefined();
     });
   }
 );

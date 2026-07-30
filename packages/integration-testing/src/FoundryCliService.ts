@@ -15,6 +15,7 @@
  */
 
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { once } from "node:events";
 
 import invariant from "tiny-invariant";
 
@@ -25,6 +26,8 @@ import type { StatusServer } from "./StatusServer.js";
 const MAX_CAPTURED_STDERR_CHUNKS = 32;
 
 export const DEFAULT_READY_TIMEOUT_MS = 30_000;
+
+export const DEFAULT_STOP_GRACE_MS = 5_000;
 
 export type ServiceState = ServiceLifecycle | "UNDISCOVERED" | "DISCOVERED";
 
@@ -51,11 +54,16 @@ export interface FoundryServiceConfig {
   /** Path to the `foundry` binary. */
   foundryCliPath?: string;
   /** Working directory the CLI runs in; the `.palantir/` dir hangs off it. */
-  projectDir: string;
+  projectPath: string;
   /** How long {@link FoundryCliService} may take to reach `READY`. */
   readyTimeoutMs?: number;
   /** Services that must be ready before this one may be started. */
   dependencies?: readonly FoundryCliService[];
+  /**
+   * How long {@link FoundryCliService.stop} waits after `SIGINT` before
+   * escalating to `SIGKILL`.
+   */
+  stopGraceMs?: number;
 }
 
 const TERMINAL_STATES: ReadonlySet<ServiceState> = new Set<ServiceState>([
@@ -77,8 +85,9 @@ export abstract class FoundryCliService {
   readonly dependencies: readonly FoundryCliService[];
 
   #foundryCliPath: string;
-  #projectDir: string;
+  #projectPath: string;
   #readyTimeoutMs: number;
+  #stopGraceMs: number;
   #child: ChildProcessWithoutNullStreams | undefined;
   #context: ServiceContext | undefined;
   #stderr: string[] = [];
@@ -88,8 +97,9 @@ export abstract class FoundryCliService {
     this.name = name;
     this.dependencies = config.dependencies ?? [];
     this.#foundryCliPath = config.foundryCliPath ?? "foundry";
-    this.#projectDir = config.projectDir;
+    this.#projectPath = config.projectPath;
     this.#readyTimeoutMs = config.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS;
+    this.#stopGraceMs = config.stopGraceMs ?? DEFAULT_STOP_GRACE_MS;
   }
 
   protected abstract getArgs(): readonly string[];
@@ -98,8 +108,8 @@ export abstract class FoundryCliService {
     return this.#readyTimeoutMs;
   }
 
-  getProjectDir(): string {
-    return this.#projectDir;
+  getProjectPath(): string {
+    return this.#projectPath;
   }
 
   getCaCertPath(): string | undefined {
@@ -152,7 +162,7 @@ export abstract class FoundryCliService {
     this.#exit = undefined;
     this.#stderr = [];
     const child = spawn(this.#foundryCliPath, [...this.getArgs()], {
-      cwd: this.#projectDir,
+      cwd: this.#projectPath,
     });
     this.#child = child;
     child.stderr.setEncoding("utf-8");
@@ -161,6 +171,7 @@ export abstract class FoundryCliService {
         this.#stderr.shift();
       }
     });
+    child.stdout.resume(); // flush, since we don't read from stdout
     child.on("exit", (code, signal) => {
       this.#exit = { code, signal };
     });
@@ -202,10 +213,28 @@ export abstract class FoundryCliService {
     };
   }
 
-  stop(): void {
-    if (this.#child !== undefined && this.#child.exitCode == null) {
-      this.#child.kill("SIGINT");
-    }
+  /**
+   * Signal the service and wait for the process to actually be gone.
+   */
+  async stop(): Promise<void> {
+    const child = this.#child;
     this.#child = undefined;
+    if (
+      child === undefined ||
+      child.exitCode != null ||
+      child.signalCode != null
+    ) {
+      return;
+    }
+    const exited = once(child, "exit");
+    child.kill("SIGINT");
+    const escalation = setTimeout(() => {
+      child.kill("SIGKILL");
+    }, this.#stopGraceMs);
+    try {
+      await exited;
+    } finally {
+      clearTimeout(escalation);
+    }
   }
 }

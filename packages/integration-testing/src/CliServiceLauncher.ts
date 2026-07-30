@@ -35,8 +35,18 @@ export interface CliServiceLauncherConfig {
   statusServer?: StatusServer;
 }
 
-const formatDetail = (service: FoundryCliService): string => {
+/**
+ * Everything known about why a service is not ready: what it published about
+ * itself, whether its process is gone, and what it printed on the way out.
+ */
+const formatDetail = (
+  service: FoundryCliService,
+  health: ServiceHealth
+): string => {
   const parts: string[] = [];
+  if (health.message != null && health.message.length > 0) {
+    parts.push(health.message);
+  }
   const exit = service.getExitInfo();
   if (exit !== undefined) {
     parts.push(`the process exited (${exit})`);
@@ -68,7 +78,7 @@ export class CliServiceLauncher {
     this.#statusServer =
       config.statusServer ??
       new StatusServer({
-        projectDir,
+        projectPath: projectDir,
         foundryCliPath: config.foundryCliPath,
       });
     this.register(this.#statusServer);
@@ -141,10 +151,20 @@ export class CliServiceLauncher {
 
   async #startImmediate(service: FoundryCliService): Promise<void> {
     await Promise.all(
-      service.dependencies.map((dependency) => this.#start(dependency))
+      this.#prerequisites(service).map((dependency) => this.#start(dependency))
     );
     await service.start();
     await this.waitUntilReady(service);
+  }
+
+  /**
+   * Everything that must be ready before `service` may start: its declared
+   * dependencies, plus the status server.
+   */
+  #prerequisites(service: FoundryCliService): readonly FoundryCliService[] {
+    return service.name === this.#statusServer.name
+      ? service.dependencies
+      : [this.#statusServer, ...service.dependencies];
   }
 
   /**
@@ -155,19 +175,16 @@ export class CliServiceLauncher {
     const deadline = Date.now() + service.getReadyTimeoutMs();
     let health = await service.checkHealth();
     while (!health.ready) {
-      invariant(
-        !health.terminal,
-        `${service.name} is not ready (${health.state})`
-      );
-      invariant(
-        service.getExitInfo() === undefined,
-        `${service.name} is not ready (${health.state}) ${formatDetail(
-          service
-        )}`
-      );
+      const current = health;
+      const notReady = (): string =>
+        `${service.name} is not ready (${current.state})${formatDetail(service, current)}`;
+      invariant(!current.terminal, notReady);
+      invariant(service.getExitInfo() === undefined, notReady);
       invariant(
         Date.now() < deadline,
-        `${service.name} is not ready (${health.state}) within ${service.getReadyTimeoutMs()}ms`
+        () =>
+          `${service.name} is not ready (${current.state}) within ` +
+          `${service.getReadyTimeoutMs()}ms${formatDetail(service, current)}`
       );
       await setTimeout(HEALTH_POLL_INTERVAL_MS);
       await this.#discoverer.refresh();
@@ -197,9 +214,13 @@ export class CliServiceLauncher {
     return healths.every(({ ready }) => ready);
   }
 
-  stop(): void {
+  /**
+   * Stop every service, dependents before their dependencies, waiting for each
+   * process to be gone before the next is signalled.
+   */
+  async stop(): Promise<void> {
     for (const service of this.#startupOrder().reverse()) {
-      service.stop();
+      await service.stop();
     }
     this.#starts.clear();
     this.#discoverer.stop();
@@ -218,7 +239,7 @@ export class CliServiceLauncher {
         return;
       }
       seen.add(service.name);
-      for (const dependency of service.dependencies) {
+      for (const dependency of this.#prerequisites(service)) {
         visit(dependency);
       }
       ordered.push(service);
@@ -231,20 +252,23 @@ export class CliServiceLauncher {
 
   #assertAcyclic(): void {
     const settled = new Set<ServiceName>();
-    const visit = (service: FoundryCliService, path: ServiceName[]): void => {
+    const visit = (
+      service: FoundryCliService,
+      walkedPath: ServiceName[]
+    ): void => {
       if (settled.has(service.name)) {
         return;
       }
-      const cycleStart = path.indexOf(service.name);
+      const cycleStart = walkedPath.indexOf(service.name);
       invariant(
         cycleStart === -1,
         `Dependency cycle between services: ${[
-          ...path.slice(cycleStart),
+          ...walkedPath.slice(cycleStart),
           service.name,
         ].join(" -> ")}`
       );
-      for (const dependency of service.dependencies) {
-        visit(dependency, [...path, service.name]);
+      for (const dependency of this.#prerequisites(service)) {
+        visit(dependency, [...walkedPath, service.name]);
       }
       settled.add(service.name);
     };

@@ -29,12 +29,10 @@ export class OntologyServer extends FoundryCliService {
   #metadataPath: string;
 
   constructor(config: OntologyServerConfig) {
-    super("ONTOLOGY", {
-      ...config,
-    });
+    super("ONTOLOGY", config);
     this.#metadataPath = isAbsolute(config.metadataPath)
       ? config.metadataPath
-      : resolve(config.projectDir, config.metadataPath);
+      : resolve(config.projectPath, config.metadataPath);
   }
 
   getMetadataPath(): string {

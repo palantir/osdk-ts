@@ -35,7 +35,7 @@ export type IntegrationServerConfig = {
   metadata: OntologyFullMetadata;
   /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
   foundryCliPath?: string;
-  /** Directory the services run in. Defaults to './.test' */
+  /** Directory the services run in. Defaults to './.test-run-...' */
   projectPath?: string;
   /** How long each service may take to become ready. Defaults to 30_000ms. */
   readyTimeoutMs?: number;
@@ -60,9 +60,6 @@ const writeMetadata = async (args: {
   previewMetadata: PreviewOntologyFullMetadata;
 }) => {
   const { metadataPath, previewMetadata } = args;
-  await fs.mkdir(path.dirname(metadataPath), {
-    recursive: true,
-  });
   const stringified = JSON.stringify(previewMetadata);
   await fs.writeFile(metadataPath, stringified);
 };
@@ -80,20 +77,19 @@ export async function createIntegrationServer(
 ): Promise<IntegrationServer> {
   const {
     metadata,
-    projectPath = path.resolve(process.cwd(), "./.tests"),
+    projectPath = process.cwd(),
     foundryCliPath,
     readyTimeoutMs,
   } = config;
 
-  const metadataPath = path.resolve(projectPath, "ontology-metadata.json");
+  const testPath = await fs.mkdtemp(path.join(projectPath, ".test-run-"));
+  const metadataPath = path.resolve(testPath, "ontology-metadata.json");
   const previewMetadata = transformMetadata(metadata);
+
   const serviceLauncher = new CliServiceLauncher({
-    projectDir: projectPath,
+    projectDir: testPath,
     foundryCliPath,
   });
-  const statusServer = serviceLauncher.get("STATUS_SERVER");
-  invariant(statusServer, "Status server is not registered");
-
   // write metadata to metadataPath for foundry cli to read from
   await writeMetadata({
     previewMetadata,
@@ -102,7 +98,7 @@ export async function createIntegrationServer(
 
   const ontology = serviceLauncher.register(
     new OntologyServer({
-      projectDir: projectPath,
+      projectPath: testPath,
       metadataPath,
       readyTimeoutMs,
       foundryCliPath,
@@ -115,8 +111,8 @@ export async function createIntegrationServer(
       await serviceLauncher.waitUntilReady(ontology);
     },
     stop: async () => {
-      serviceLauncher.stop();
-      await fs.rm(projectPath, { recursive: true, force: true });
+      await serviceLauncher.stop();
+      await fs.rm(testPath, { recursive: true, force: true });
     },
     getOntologyUrl: () => ontology.getUrl(),
     getOntologyCaCertPath: () => ontology.getCaCertPath(),
@@ -126,6 +122,7 @@ export async function createIntegrationServer(
       return createIntegrationClient({
         baseUrl,
         metadata,
+        caCertPath: ontology.getCaCertPath(),
       });
     },
   };

@@ -43,7 +43,7 @@ describe("CliServiceLauncher", () => {
   });
 
   afterEach(async () => {
-    launcher?.stop();
+    await launcher?.stop();
     launcher = undefined;
     await stub?.close();
     stub = undefined;
@@ -61,7 +61,7 @@ describe("CliServiceLauncher", () => {
       await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
       launcher = new CliServiceLauncher({
         projectDir,
-        statusServer: new NoSpawnStatusServer({ projectDir }),
+        statusServer: new NoSpawnStatusServer({ projectPath: projectDir }),
       });
       return launcher;
     };
@@ -73,10 +73,11 @@ describe("CliServiceLauncher", () => {
       dependencies?: readonly FoundryCliService[];
       stateWhenStarted?: ServiceState;
       readyTimeoutMs?: number;
+      message?: string;
     } = {}
   ): StubService =>
     new StubService(name, {
-      projectDir,
+      projectPath: projectDir,
       ...(options.startLog != null ? { startLog: options.startLog } : {}),
       ...(options.dependencies != null
         ? { dependencies: options.dependencies }
@@ -87,13 +88,14 @@ describe("CliServiceLauncher", () => {
       ...(options.readyTimeoutMs != null
         ? { readyTimeoutMs: options.readyTimeoutMs }
         : {}),
+      ...(options.message != null ? { message: options.message } : {}),
     });
 
   it("registers the status server, and dependencies transitively", () => {
-    const statusServer = new NoSpawnStatusServer({ projectDir });
+    const statusServer = new NoSpawnStatusServer({ projectPath: projectDir });
     launcher = new CliServiceLauncher({ projectDir, statusServer });
     const ontology = new OntologyServer({
-      projectDir,
+      projectPath: projectDir,
       metadataPath: "metadata.json",
       dependencies: [statusServer],
     });
@@ -114,7 +116,7 @@ describe("CliServiceLauncher", () => {
     // alongside the one already answering on the discovered port.
     launcher = new CliServiceLauncher({
       projectDir,
-      statusServer: new StatusServer({ projectDir }),
+      statusServer: new StatusServer({ projectPath: projectDir }),
     });
 
     await expect(launcher.start()).rejects.toThrow(
@@ -185,6 +187,74 @@ describe("CliServiceLauncher", () => {
     await expect(launch.start()).rejects.toThrow(/within 300ms/u);
   });
 
+  it("says why a service failed, not just that it did", async () => {
+    const launch = await launcherWithStubStatusServer();
+
+    launch.register(
+      stubService("APP", {
+        stateWhenStarted: "FAILED",
+        message: "port 8080 already in use",
+      })
+    );
+
+    // The whole point of capturing a service's own explanation is that it
+    // reaches the error a caller actually sees.
+    await expect(launch.start()).rejects.toThrow(
+      /APP is not ready \(FAILED\): port 8080 already in use/u
+    );
+  });
+
+  it("says why a service timed out, not just that it did", async () => {
+    const launch = await launcherWithStubStatusServer();
+
+    launch.register(
+      stubService("APP", {
+        stateWhenStarted: "PREPARING",
+        message: "still importing the ontology",
+        readyTimeoutMs: 300,
+      })
+    );
+
+    await expect(launch.start()).rejects.toThrow(
+      /within 300ms: still importing the ontology/u
+    );
+  });
+
+  it("waits for the status server before a service that never declared it", async () => {
+    stub = await startStubStatusServer();
+    stub.setHealthy(false);
+    await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
+    launcher = new CliServiceLauncher({
+      projectDir,
+      statusServer: new NoSpawnStatusServer({
+        projectPath: projectDir,
+        readyTimeoutMs: 300,
+      }),
+    });
+    const ontology = stubService("ONTOLOGY");
+    launcher.register(ontology);
+
+    await expect(launcher.start()).rejects.toThrow(
+      /STATUS_SERVER is not ready/u
+    );
+
+    expect(ontology.isStarted()).toBe(false);
+  });
+
+  it("rejects a status server that depends on another service", async () => {
+    const ontology = stubService("ONTOLOGY");
+    launcher = new CliServiceLauncher({
+      projectDir,
+      statusServer: new NoSpawnStatusServer({
+        projectPath: projectDir,
+        dependencies: [ontology],
+      }),
+    });
+    await expect(launcher.start()).rejects.toThrow(
+      /Dependency cycle between services: STATUS_SERVER -> ONTOLOGY -> STATUS_SERVER/u
+    );
+  });
+
   it("rejects a dependency cycle instead of deadlocking", async () => {
     const launch = await launcherWithStubStatusServer();
 
@@ -230,7 +300,7 @@ describe("CliServiceLauncher", () => {
     launch.register(dependent);
     await launch.start();
 
-    launch.stop();
+    await launch.stop();
 
     expect(dependent.isStarted()).toBe(false);
     expect(dependency.isStarted()).toBe(false);

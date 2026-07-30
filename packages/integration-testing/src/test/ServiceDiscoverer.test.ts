@@ -124,6 +124,65 @@ describe("ServiceDiscoverer", () => {
     await expect(discoverer.start()).rejects.toThrow(/Service URL not found/u);
   });
 
+  it("skips a record that is still being written, and picks it up after", async () => {
+    await mkdir(discoveryDir, { recursive: true });
+    const path = join(discoveryDir, discoveryFileName("ONTOLOGY"));
+    // A scan can land between the publisher's open and its final write.
+    await writeFile(path, '{"url":"https://127.0.0.1:38', "utf-8");
+
+    await discoverer.start();
+    expect(discoverer.isDiscovered("ONTOLOGY")).toBe(false);
+
+    await writeDiscoveryFile(projectDir, "ONTOLOGY", {
+      url: "https://127.0.0.1:38860",
+    });
+    await discoverer.refresh();
+
+    expect(discoverer.get("ONTOLOGY")?.url).toBe("https://127.0.0.1:38860");
+  });
+
+  it("skips a discovery path it cannot read, without failing the scan", async () => {
+    // Unreadable rather than absent, so readdir still lists it.
+    await mkdir(join(discoveryDir, discoveryFileName("ONTOLOGY")), {
+      recursive: true,
+    });
+    await writeDiscoveryFile(projectDir, "STATUS_SERVER", {
+      url: "http://127.0.0.1:27312",
+    });
+
+    await discoverer.start();
+
+    expect([...discoverer.all().keys()]).toEqual(["STATUS_SERVER"]);
+  });
+
+  it("forgets a record that disappears while it is listed", async () => {
+    await writeDiscoveryFile(projectDir, "ONTOLOGY", {
+      url: "https://127.0.0.1:38860",
+    });
+    await discoverer.start();
+    expect(discoverer.isDiscovered("ONTOLOGY")).toBe(true);
+
+    // Replacing the file with an unreadable directory is the deterministic
+    // stand-in for losing the race against a service's own unlink.
+    await rm(join(discoveryDir, discoveryFileName("ONTOLOGY")));
+    await mkdir(join(discoveryDir, discoveryFileName("ONTOLOGY")));
+    await discoverer.refresh();
+
+    expect(discoverer.isDiscovered("ONTOLOGY")).toBe(false);
+  });
+
+  it("forgets everything when stopped", async () => {
+    await writeDiscoveryFile(projectDir, "ONTOLOGY", {
+      url: "https://127.0.0.1:38860",
+    });
+    await discoverer.start();
+
+    discoverer.stop();
+
+    expect(discoverer.isDiscovered("ONTOLOGY")).toBe(false);
+    expect(discoverer.all().size).toBe(0);
+  });
+
   it("reports every live service", async () => {
     await writeDiscoveryFile(projectDir, "STATUS_SERVER", {
       url: "http://127.0.0.1:1000",

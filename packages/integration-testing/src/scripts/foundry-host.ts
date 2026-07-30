@@ -56,8 +56,10 @@ export const getArtifactPlatform = (
 
 const parseGitRemoteHost = (gitRemote: string): string | undefined => {
   try {
-    // Strips any userinfo (`https://user:token@host/...`)
-    return new URL(gitRemote).host || undefined;
+    // Strips any userinfo (`https://user:token@host/...`), and the port with it:
+    // a git remote's port belongs to the git transport (`ssh://...:22/repo`),
+    // not to the Foundry endpoint this host is used to build.
+    return new URL(gitRemote).hostname || undefined;
   } catch {
     // scp-like remotes (`user@host:path`)
     const host = gitRemote
@@ -68,15 +70,30 @@ const parseGitRemoteHost = (gitRemote: string): string | undefined => {
   }
 };
 
+/**
+ * Reads the host out of an explicitly configured value.
+ */
+const parseConfiguredHost = (value: string): string | undefined => {
+  const trimmed = value.trim();
+  let fromUrl: string | undefined;
+  try {
+    fromUrl = new URL(trimmed).host || undefined;
+  } catch {
+    fromUrl = undefined;
+  }
+  return fromUrl ?? (trimmed.split("/")[0] || undefined);
+};
+
 export const resolveFoundryHost = async (
   options: ResolveBearerTokenOptions = {}
 ): Promise<string> => {
   const env = options.env ?? process.env;
-  if (env.FOUNDRY_EXTERNAL_HOST) {
-    return new URL(env.FOUNDRY_EXTERNAL_HOST).host;
-  }
-  if (env.FOUNDRY_HOSTNAME) {
-    return env.FOUNDRY_HOSTNAME;
+  const envValue = env.FOUNDRY_EXTERNAL_HOST ?? env.FOUNDRY_HOSTNAME;
+  if (envValue) {
+    const configured = parseConfiguredHost(envValue);
+    if (typeof configured !== "undefined") {
+      return configured;
+    }
   }
   const gitRemote = await readGitRemoteUrl(options);
   const gitRemoteHost =

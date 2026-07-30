@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 
-export type QueryReturnTypeFromDef<Q extends QueryDefinition> =
-  ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
-    ? R
-    : never;
-
-export type QueryParamsFromDef<Q extends QueryDefinition> =
-  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
-    ? P
-    : undefined;
+/** The smallest metadata the ontology server accepts. */
+export const EMPTY_ONTOLOGY_METADATA: OntologyFullMetadata = {
+  ontology: {
+    apiName: "ontology",
+    rid: "ri.ontology.main.ontology.0",
+    displayName: "ontology",
+    description: "local ontology",
+  },
+  objectTypes: {},
+  actionTypes: {},
+  queryTypes: {},
+  interfaceTypes: {},
+  sharedPropertyTypes: {},
+  valueTypes: {},
+};
