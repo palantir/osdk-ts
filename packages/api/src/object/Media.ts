@@ -30,10 +30,17 @@ export interface Media {
    * Fetches type-specific metadata for this media item, i.e. page count for documents,
    * dimensions for imagery, duration for audio/video, etc.
    *
-   * Returns a `MediaFullMetadata` that can be narrowed on `result.itemMetadata.type`
-   * to access variant-specific fields.
-   *
-   * @beta
+   * Every `Media` returned by this SDK implements this method.
+   * @example
+   * ```ts
+   * const equipment = await client(Equipment).fetchOne(12345);
+   * const fullMetadata = await equipment.trainingMaterial?.fetchFullMetadata?.();
+   * if (fullMetadata?.itemMetadata.type === "document") {
+   *   console.log(fullMetadata.itemMetadata.pages);
+   * }
+   * ```
+   * @returns a `MediaFullMetadata` whose `itemMetadata` narrows on `itemMetadata.type` to expose
+   * variant-specific fields
    */
   fetchFullMetadata?(): Promise<MediaFullMetadata>;
   /**
