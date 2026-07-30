@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-export * from "./custom.js";
-export * from "./dataset.js";
-export * from "./mediaset.js";
-export * from "./model.js";
-export * from "./source.js";
-export * from "./stream.js";
+import { loadResolvedAliases } from "./loaders.js";
+import type { Dataset } from "./types.js";
+export type { Dataset } from "./types.js";
+
+export function dataset(alias: string): Dataset {
+  const resolvedAliases = loadResolvedAliases();
+
+  if (!(alias in resolvedAliases.datasets)) {
+    const available = Object.keys(resolvedAliases.datasets);
+    throw new Error(
+      `Dataset alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
+    );
+  }
+
+  return resolvedAliases.datasets[alias];
+}
