@@ -22,7 +22,6 @@ import type {
   OntologyIrLinkTypeStatus,
   OntologyIrMarketplaceInterfaceLinkType,
   OntologyIrObjectTypeBlockDataV2,
-  OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrObjectTypeStatus,
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
@@ -41,11 +40,8 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
+import { convertIrDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
-import {
-  convertColumnMapping,
-  convertPropertyMapping,
-} from "./convertPropertyMapping.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
@@ -853,13 +849,17 @@ export class OntologyIrToFullMetadataConverter {
     datasources: OntologyIrObjectTypeBlockDataV2["datasources"],
     propRidToApiName: Record<string, string>,
   ): Ontologies.ObjectTypeDatasource[] {
-    return datasources.map((ds) => ({
-      rid: `ri.${objectApiName}.${ds.datasourceName}`,
-      definition: convertIrDatasourceDefinition(
-        ds.datasource,
-        propRidToApiName,
-      ),
-    }));
+    // Redacted datasources are dropped: the public wire type has no `redacted`
+    // field, so emitting them would leak backing rids/metadata.
+    return datasources
+      .filter((ds) => ds.redacted !== true)
+      .map((ds) => ({
+        rid: `ri.${objectApiName}.${ds.datasourceName}`,
+        definition: convertIrDatasourceDefinition(
+          ds.datasource,
+          propRidToApiName,
+        ),
+      }));
   }
 
   /**
@@ -1625,120 +1625,4 @@ function isParameterRequired(
   return action.actionType.actionTypeLogic.validation
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
-}
-
-function convertIrDatasourceDefinition(
-  def: OntologyIrObjectTypeDatasourceDefinition,
-  propRidToApiName: Record<string, string>,
-): Ontologies.ObjectTypeDatasourceDefinition {
-  const sourceType = def.type;
-  const toApiName = (key: string) => propRidToApiName[key] ?? key;
-  switch (def.type) {
-    case "datasetV2":
-      return {
-        type: "dataset",
-        datasetRid: def.datasetV2.datasetRid,
-        propertyMapping: convertPropertyMapping(
-          def.datasetV2.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "datasetV3":
-      return {
-        type: "dataset",
-        datasetRid: def.datasetV3.datasetRid,
-        branch: def.datasetV3.branchId,
-        propertyMapping: convertPropertyMapping(
-          def.datasetV3.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "streamV2":
-      return {
-        type: "stream",
-        streamRid: def.streamV2.streamLocator,
-        propertyMapping: convertColumnMapping(
-          def.streamV2.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "streamV3":
-      return {
-        type: "stream",
-        streamRid: def.streamV3.streamLocator,
-        propertyMapping: convertPropertyMapping(
-          def.streamV3.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "restrictedViewV2":
-      return {
-        type: "restrictedView",
-        restrictedViewRid: def.restrictedViewV2.restrictedViewRid,
-        propertyMapping: convertPropertyMapping(
-          def.restrictedViewV2.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "timeSeries":
-      return {
-        type: "timeSeries",
-        timeSeriesSyncRid: def.timeSeries.timeSeriesSyncRid,
-        properties: def.timeSeries.properties,
-      };
-    case "mediaSetView":
-      return {
-        type: "mediaSetView",
-        mediaSetViewRid: def.mediaSetView.mediaSetViewLocator,
-        properties: def.mediaSetView.properties,
-      };
-    case "geotimeSeries":
-      return {
-        type: "geotimeSeries",
-        geotimeSeriesIntegrationRid:
-          def.geotimeSeries.geotimeSeriesIntegrationRid,
-        properties: def.geotimeSeries.properties,
-      };
-    case "table":
-      return {
-        type: "table",
-        tableRid: def.table.tableRid,
-        branch: def.table.branchId,
-        propertyMapping: convertPropertyMapping(
-          def.table.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "editsOnly":
-      return { type: "editsOnly" };
-    case "direct":
-      return {
-        type: "direct",
-        directSourceRid: def.direct.directSourceRid,
-        propertyMapping: convertPropertyMapping(
-          def.direct.propertyMapping,
-          toApiName,
-        ),
-      };
-    case "restrictedStream":
-      return {
-        type: "unsupported",
-        unsupportedType: def.type,
-        properties: Object.keys(def.restrictedStream.propertyMapping),
-      };
-    case "derived":
-      return {
-        type: "unsupported",
-        unsupportedType: def.type,
-        properties: [],
-      };
-    default:
-      // Any IR datasource variant with no public wire counterpart degrades to
-      // `unsupported` rather than failing generation.
-      return {
-        type: "unsupported",
-        unsupportedType: sourceType,
-        properties: [],
-      };
-  }
 }

@@ -139,11 +139,13 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
         },
       },
       {
-        // The structured stream locator is flattened to its rid.
+        // The structured stream locator is flattened to its rid; its branch is
+        // carried through to the wire `branch` field.
         rid: "ri.ds.streamV2",
         definition: {
           type: "stream",
           streamRid: "ri.stream.1",
+          branch: "master",
           propertyMapping: {
             primaryKey: { type: "column", column: "pk_col" },
           },
@@ -169,6 +171,79 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
       {
         rid: "ri.ds.editsOnly",
         definition: { type: "editsOnly" },
+      },
+    ]);
+  });
+
+  it("drops redacted datasources", () => {
+    const datasources: ObjectTypeBlockDataV2["datasources"] = [
+      {
+        rid: "ri.ds.kept",
+        datasource: {
+          type: "datasetV2",
+          datasetV2: {
+            branchId: "master",
+            datasetRid: "ri.dataset.kept",
+            propertyMapping: {
+              "ri.p.pk": { type: "column", column: "pk_col" },
+            },
+          },
+        },
+      },
+      {
+        rid: "ri.ds.redacted",
+        redacted: true,
+        datasource: {
+          type: "datasetV2",
+          datasetV2: {
+            branchId: "master",
+            datasetRid: "ri.dataset.secret",
+            propertyMapping: {
+              "ri.p.pk": { type: "column", column: "pk_col" },
+            },
+          },
+        },
+      },
+    ];
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getOsdkObjectTypeDatasourcesFromBlockData(datasources, propRidToApiName);
+
+    // Only the non-redacted datasource survives; the redacted rid never leaks.
+    expect(result.map((ds) => ds.rid)).toEqual(["ri.ds.kept"]);
+  });
+
+  it("preserves backed property names for derived datasources", () => {
+    const datasources: ObjectTypeBlockDataV2["datasources"] = [
+      {
+        rid: "ri.ds.derived",
+        datasource: {
+          type: "derived",
+          derived: {
+            definition: {
+              // `deleted` is the simplest valid derived definition; the
+              // linked/aggregated variants read names off `propertyTypeMapping`
+              // keys instead (both routed through `derivedPropertyNames`).
+              type: "deleted",
+              deleted: { propertyTypes: ["ri.p.pk", "ri.p.unmapped"] },
+            },
+          },
+        },
+      },
+    ];
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getOsdkObjectTypeDatasourcesFromBlockData(datasources, propRidToApiName);
+
+    expect(result).toEqual([
+      {
+        rid: "ri.ds.derived",
+        definition: {
+          type: "unsupported",
+          unsupportedType: "derived",
+          // Names are resolved to api names, unmapped rids fall back to the rid.
+          properties: ["primaryKey", "ri.p.unmapped"],
+        },
       },
     ]);
   });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIrObjectTypeBlockDataV2 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -33,6 +34,102 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 }));
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  describe("getOsdkObjectTypeDatasources", () => {
+    // IR property references are already api names, so the rid->apiName map is
+    // an identity fallback here.
+    const identity: Record<string, string> = {};
+
+    it("drops redacted datasources", () => {
+      const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
+        {
+          datasourceName: "kept",
+          datasource: {
+            type: "datasetV2",
+            datasetV2: {
+              datasetRid: "kept",
+              propertyMapping: { name: { type: "column", column: "name" } },
+            },
+          },
+        },
+        {
+          datasourceName: "secret",
+          redacted: true,
+          datasource: {
+            type: "datasetV2",
+            datasetV2: {
+              datasetRid: "secret",
+              propertyMapping: { name: { type: "column", column: "name" } },
+            },
+          },
+        },
+      ];
+
+      const result = OntologyIrToFullMetadataConverter
+        .getOsdkObjectTypeDatasources("MyObject", datasources, identity);
+
+      // Only the non-redacted datasource survives, with a synthesized rid.
+      expect(result).toEqual([
+        {
+          rid: "ri.MyObject.kept",
+          definition: {
+            type: "dataset",
+            datasetRid: "kept",
+            propertyMapping: { name: { type: "column", column: "name" } },
+          },
+        },
+      ]);
+    });
+
+    it("preserves derived property names and drops the editOnly payload", () => {
+      const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
+        {
+          datasourceName: "derived",
+          datasource: {
+            type: "derived",
+            derived: {
+              definition: {
+                type: "deleted",
+                deleted: { propertyTypes: ["name", "rating"] },
+              },
+            },
+          },
+        },
+        {
+          datasourceName: "editOnly",
+          datasource: {
+            type: "datasetV2",
+            datasetV2: {
+              datasetRid: "ds",
+              propertyMapping: { name: { type: "editOnly", editOnly: {} } },
+            },
+          },
+        },
+      ];
+
+      const result = OntologyIrToFullMetadataConverter
+        .getOsdkObjectTypeDatasources("MyObject", datasources, identity);
+
+      expect(result).toEqual([
+        {
+          rid: "ri.MyObject.derived",
+          definition: {
+            type: "unsupported",
+            unsupportedType: "derived",
+            properties: ["name", "rating"],
+          },
+        },
+        {
+          rid: "ri.MyObject.editOnly",
+          definition: {
+            type: "dataset",
+            datasetRid: "ds",
+            propertyMapping: { name: { type: "editOnly" } },
+          },
+        },
+      ]);
+    });
+  });
+
   it("should convert ontology IR to full metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(

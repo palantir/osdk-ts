@@ -58,8 +58,9 @@ function convertMappingInfo(
 ): Ontologies.PropertyTypeMappingInfo {
   switch (info.type) {
     case "column":
+      return { type: "column", column: info.column };
     case "editOnly":
-      return info;
+      return { type: "editOnly" };
     case "struct": {
       const fields: Record<string, { apiName: string }> = {};
       for (const [fieldName, nested] of Object.entries(info.struct.mapping)) {
