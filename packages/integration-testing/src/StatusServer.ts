@@ -35,6 +35,9 @@ export type StatusServerConfig = FoundryServiceConfig;
  * The local status server, and the health authority for every other service.
  */
 export class StatusServer extends FoundryCliService {
+  /** Shared by callers that ask while a fetch is already outstanding. */
+  #inFlight: Promise<ServiceStatus[] | undefined> | undefined;
+
   constructor(config: StatusServerConfig) {
     super("STATUS_SERVER", config);
   }
@@ -78,17 +81,22 @@ export class StatusServer extends FoundryCliService {
     }
   }
 
+  /**
+   * The lifecycle snapshot for every service.
+   */
   async getServiceStatuses(): Promise<ServiceStatus[]> {
     const baseUrl = this.getContext().discoverer.get("STATUS_SERVER")?.url;
     invariant(
       baseUrl,
       "Cannot get service status because the status server is not discovered yet"
     );
-    const statuses = await StatusService.getStatus({
-      baseUrl,
-      servicePath: "",
-    }).catch(() => undefined);
-    return statuses ?? [];
+    this.#inFlight ??= StatusService.getStatus({ baseUrl, servicePath: "" })
+      .catch(() => undefined)
+      .finally(() => {
+        this.#inFlight = undefined;
+      });
+    const result = await this.#inFlight;
+    return result ?? [];
   }
 
   async getServiceStatus(

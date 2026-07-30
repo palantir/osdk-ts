@@ -35,7 +35,12 @@ export type IntegrationServerConfig = {
   metadata: OntologyFullMetadata;
   /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
   foundryCliPath?: string;
-  /** Directory the services run in. Defaults to './.test-run-...' */
+  /**
+   * Directory to create this server's run directory in. Each server gets its
+   * own `.test-run-*` beneath it, removed on {@link IntegrationServer.stop}, so
+   * servers sharing a `projectPath` stay isolated. Must already exist; defaults
+   * to the working directory.
+   */
   projectPath?: string;
   /** How long each service may take to become ready. Defaults to 30_000ms. */
   readyTimeoutMs?: number;
@@ -108,7 +113,6 @@ export async function createIntegrationServer(
   return {
     start: async () => {
       await serviceLauncher.start();
-      await serviceLauncher.waitUntilReady(ontology);
     },
     stop: async () => {
       await serviceLauncher.stop();

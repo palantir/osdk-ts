@@ -4,8 +4,56 @@
 
 ```ts
 
-// @public
-export const packageName = "@osdk/integration-testing";
+import { Client } from '@osdk/client';
+import { MockClient } from '@osdk/unit-testing';
+import type * as Ontology from '@osdk/foundry.ontologies';
+import type { OntologyFullMetadata } from '@osdk/foundry.ontologies';
+import { SeedClient } from '@osdk/seed-helpers';
+
+// @public (undocumented)
+export function createIntegrationClient(config: IntegrationClientConfig): Promise<IntegrationClient>;
+
+// @public (undocumented)
+export function createIntegrationServer(config: IntegrationServerConfig): Promise<IntegrationServer>;
+
+// @public (undocumented)
+export interface IntegrationClient {
+    	// Warning: (ae-forgotten-export) The symbol "LocalOntologyClient" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    client: LocalOntologyClient;
+    	// (undocumented)
+    seed: SeedClient;
+}
+
+// @public (undocumented)
+export type IntegrationClientConfig = {
+    	baseUrl: string
+    	metadata: Ontology.OntologyFullMetadata
+    	caCertPath?: string
+};
+
+// @public (undocumented)
+export interface IntegrationServer {
+    	// (undocumented)
+    createClient(): Promise<IntegrationClient>;
+    	// (undocumented)
+    getOntologyCaCertPath(): string | undefined;
+    	// (undocumented)
+    getOntologyUrl(): string | undefined;
+    	// (undocumented)
+    start(): Promise<void>;
+    	// (undocumented)
+    stop(): Promise<void>;
+}
+
+// @public (undocumented)
+export type IntegrationServerConfig = {
+    	metadata: OntologyFullMetadata
+    	foundryCliPath?: string
+    	projectPath?: string
+    	readyTimeoutMs?: number
+};
 
 // (No @packageDocumentation comment for this package)
 

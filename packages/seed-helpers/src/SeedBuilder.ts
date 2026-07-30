@@ -32,11 +32,16 @@ import { validateSeedObject } from "./validation.js";
 export type SeedFunction<T> = (seed: SeedBuilder) => T;
 
 export type SeedClient = {
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'SeedBuilder.set'
+  /**
+   * Transactional interface to SeedBuilder
+   * Applies changes if function is provided, calls .addAll(seed) if SeedOutput is provided.
+   */
+  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>;
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>,
   ): SeedRef<Q> | undefined;
+  set(seed?: SeedOutput): Promise<void>;
   addAll(seed: SeedOutput): Promise<void>;
   create<Q extends ObjectTypeDefinition>(
     o: Q,
