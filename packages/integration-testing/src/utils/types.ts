@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * The published name of this package.
- *
- * Placeholder entry point for `@osdk/integration-testing`. Integration-testing
- * helpers will be exported from here as they are implemented.
- */
+import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
 
-export type {
-  IntegrationClient,
-  IntegrationClientConfig,
-} from "./IntegrationClient.js";
-export type {
-  IntegrationServer,
-  IntegrationServerConfig,
-} from "./IntegrationServer.js";
+export type QueryReturnTypeFromDef<Q extends QueryDefinition> =
+  ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
+    ? R
+    : never;
 
-export { createIntegrationClient } from "./IntegrationClient.js";
-export { createIntegrationServer } from "./IntegrationServer.js";
+export type QueryParamsFromDef<Q extends QueryDefinition> =
+  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
+    ? P
+    : undefined;

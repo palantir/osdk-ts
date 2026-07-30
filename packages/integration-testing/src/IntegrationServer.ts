@@ -17,66 +17,116 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import type { PreviewOntologyFullMetadata } from "@osdk/generator-converters.preview";
+import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import invariant from "tiny-invariant";
 
 import { CliServiceLauncher } from "./CliServiceLauncher.js";
-import type { ServiceHealth } from "./FoundryCliService.js";
+import {
+  createIntegrationClient,
+  type IntegrationClient,
+} from "./IntegrationClient.js";
 import { OntologyServer } from "./OntologyServer.js";
+import { EMPTY_ONTOLOGY_BLOCK_DATA } from "./utils/empty-ontology-block.js";
 
 export type IntegrationServerConfig = {
   /** Path to a prebuilt ontology metadata JSON. */
-  metadataPath: string;
+  metadata: OntologyFullMetadata;
   /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
   foundryCliPath?: string;
   /** Directory the services run in. Defaults to './.test' */
-  projectDir?: string;
+  projectPath?: string;
   /** How long each service may take to become ready. Defaults to 30_000ms. */
   readyTimeoutMs?: number;
 };
 
-/**
- * A local ontology stack, ready to test against.
- */
-export class IntegrationServer {
-  #serviceLauncher: CliServiceLauncher;
-  #projectDir: string;
-  #ontology: OntologyServer;
-  constructor(args: IntegrationServerConfig) {
-    this.#projectDir =
-      args.projectDir ?? path.resolve(process.cwd(), "./.tests");
-    const foundryCliPath = args.foundryCliPath;
-    const readyTimeoutMs = args.readyTimeoutMs;
-    this.#serviceLauncher = new CliServiceLauncher({
-      projectDir: this.#projectDir,
-      foundryCliPath,
-    });
-    const statusServer = this.#serviceLauncher.get("STATUS_SERVER");
-    invariant(statusServer, "Status server is not registered");
-    this.#ontology = this.#serviceLauncher.register(
-      new OntologyServer({
-        projectDir: this.#projectDir,
-        metadataPath: args.metadataPath,
-        dependencies: [statusServer],
-        readyTimeoutMs,
-        foundryCliPath,
-      })
+const transformMetadata = (
+  metadata: OntologyFullMetadata
+): PreviewOntologyFullMetadata => {
+  const transformed =
+    PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
+      EMPTY_ONTOLOGY_BLOCK_DATA,
+      metadata
     );
-  }
-  get ontologyUrl(): string | undefined {
-    return this.#ontology.url;
-  }
-  get ontologyCaCertPath(): string | undefined {
-    return this.#ontology.caCertPath;
-  }
-  async start(): Promise<void> {
-    await this.#serviceLauncher.start();
-  }
-  async checkHealth(): Promise<ServiceHealth[]> {
-    return this.#serviceLauncher.checkHealth();
-  }
+  return {
+    ...transformed,
+    ontology: metadata.ontology,
+  };
+};
 
-  async stop(): Promise<void> {
-    this.#serviceLauncher.stop();
-    await fs.rm(this.#projectDir, { recursive: true, force: true });
-  }
+const writeMetadata = async (args: {
+  metadataPath: string;
+  previewMetadata: PreviewOntologyFullMetadata;
+}) => {
+  const { metadataPath, previewMetadata } = args;
+  await fs.mkdir(path.dirname(metadataPath), {
+    recursive: true,
+  });
+  const stringified = JSON.stringify(previewMetadata);
+  await fs.writeFile(metadataPath, stringified);
+};
+
+export interface IntegrationServer {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  getOntologyUrl(): string | undefined;
+  getOntologyCaCertPath(): string | undefined;
+  createClient(): Promise<IntegrationClient>;
+}
+
+export async function createIntegrationServer(
+  config: IntegrationServerConfig
+): Promise<IntegrationServer> {
+  const {
+    metadata,
+    projectPath = path.resolve(process.cwd(), "./.tests"),
+    foundryCliPath,
+    readyTimeoutMs,
+  } = config;
+
+  const metadataPath = path.resolve(projectPath, "ontology-metadata.json");
+  const previewMetadata = transformMetadata(metadata);
+  const serviceLauncher = new CliServiceLauncher({
+    projectDir: projectPath,
+    foundryCliPath,
+  });
+  const statusServer = serviceLauncher.get("STATUS_SERVER");
+  invariant(statusServer, "Status server is not registered");
+
+  // write metadata to metadataPath for foundry cli to read from
+  await writeMetadata({
+    previewMetadata,
+    metadataPath,
+  });
+
+  const ontology = serviceLauncher.register(
+    new OntologyServer({
+      projectDir: projectPath,
+      metadataPath,
+      readyTimeoutMs,
+      foundryCliPath,
+    })
+  );
+
+  return {
+    start: async () => {
+      await serviceLauncher.start();
+      await serviceLauncher.waitUntilReady(ontology);
+    },
+    stop: async () => {
+      serviceLauncher.stop();
+      await fs.rm(projectPath, { recursive: true, force: true });
+    },
+    getOntologyUrl: () => ontology.getUrl(),
+    getOntologyCaCertPath: () => ontology.getCaCertPath(),
+    createClient: () => {
+      const baseUrl = ontology.getUrl();
+      invariant(baseUrl, "Ontology server is not ready");
+      return createIntegrationClient({
+        baseUrl,
+        metadata,
+      });
+    },
+  };
 }

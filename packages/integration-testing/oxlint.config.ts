@@ -41,7 +41,6 @@ export default defineConfig({
   ignorePatterns: (root.ignorePatterns ?? []).filter(
     (p) => p !== "**/generated"
   ),
-
   rules: {
     // The generated barrels (`export * as ...` in index.ts and the per-service
     // index.ts files) re-export the whole tree; barrels are intrinsic to the

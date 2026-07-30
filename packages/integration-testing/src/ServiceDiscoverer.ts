@@ -120,9 +120,7 @@ export class ServiceDiscoverer {
 
   async #read(fileName: string): Promise<ComponentDiscovery | undefined> {
     const serviceName = serviceNameFromFileName(fileName);
-    if (serviceName === undefined) {
-      // Not a discovery record. Services share this directory with the CLI, and
-      // with whatever else the filesystem leaves lying around.
+    if (typeof serviceName === "undefined") {
       return undefined;
     }
     const contents = await fs.readFile(join(this.#basePath, fileName), "utf-8");

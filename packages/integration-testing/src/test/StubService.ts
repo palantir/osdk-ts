@@ -44,11 +44,11 @@ export class StubService extends FoundryCliService {
     this.#stateWhenStarted = config.stateWhenStarted ?? "READY";
   }
 
-  protected override get args(): readonly string[] {
+  protected override getArgs(): readonly string[] {
     return [];
   }
 
-  get started(): boolean {
+  isStarted(): boolean {
     return this.#started;
   }
 

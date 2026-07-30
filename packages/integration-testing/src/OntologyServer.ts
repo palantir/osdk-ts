@@ -37,11 +37,11 @@ export class OntologyServer extends FoundryCliService {
       : resolve(config.projectDir, config.metadataPath);
   }
 
-  get metadataPath(): string {
+  getMetadataPath(): string {
     return this.#metadataPath;
   }
 
-  protected override get args(): readonly string[] {
+  protected override getArgs(): readonly string[] {
     return [
       "start",
       "ontology",

@@ -58,7 +58,6 @@ export interface FoundryServiceConfig {
   dependencies?: readonly FoundryCliService[];
 }
 
-/** States from which a service will not recover on its own. */
 const TERMINAL_STATES: ReadonlySet<ServiceState> = new Set<ServiceState>([
   "FAILED",
   "STOPPED",
@@ -93,25 +92,25 @@ export abstract class FoundryCliService {
     this.#readyTimeoutMs = config.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS;
   }
 
-  protected abstract get args(): readonly string[];
+  protected abstract getArgs(): readonly string[];
 
-  get readyTimeoutMs(): number {
+  getReadyTimeoutMs(): number {
     return this.#readyTimeoutMs;
   }
 
-  get projectDir(): string {
+  getProjectDir(): string {
     return this.#projectDir;
   }
 
-  get caCertPath(): string | undefined {
+  getCaCertPath(): string | undefined {
     return this.#context?.discoverer.get(this.name)?.caCertPath ?? undefined;
   }
 
-  get url(): string | undefined {
+  getUrl(): string | undefined {
     return this.#context?.discoverer.get(this.name)?.url;
   }
 
-  get exitInfo(): string | undefined {
+  getExitInfo(): string | undefined {
     if (this.#exit === undefined) {
       return undefined;
     }
@@ -119,11 +118,11 @@ export abstract class FoundryCliService {
     return signal ?? `code ${code}`;
   }
 
-  get capturedStderr(): string {
+  getCapturedStderr(): string {
     return this.#stderr.join("").trim();
   }
 
-  protected get context(): ServiceContext {
+  protected getContext(): ServiceContext {
     const context = this.#context;
     invariant(
       context !== undefined,
@@ -141,7 +140,7 @@ export abstract class FoundryCliService {
     if (this.#child !== undefined) {
       return;
     }
-    await this.context.discoverer.refresh();
+    await this.getContext().discoverer.refresh();
     invariant(
       !(await this.checkHealth()).ready,
       `${this.name} is already running; stop it before starting a new one`
@@ -152,7 +151,7 @@ export abstract class FoundryCliService {
   async #spawn(): Promise<void> {
     this.#exit = undefined;
     this.#stderr = [];
-    const child = spawn(this.#foundryCliPath, [...this.args], {
+    const child = spawn(this.#foundryCliPath, [...this.getArgs()], {
       cwd: this.#projectDir,
     });
     this.#child = child;
@@ -181,7 +180,7 @@ export abstract class FoundryCliService {
   }
 
   async checkHealth(): Promise<ServiceHealth> {
-    const { discoverer, statusServer } = this.context;
+    const { discoverer, statusServer } = this.getContext();
     const discovery = discoverer.get(this.name);
     if (typeof discovery === "undefined") {
       return {

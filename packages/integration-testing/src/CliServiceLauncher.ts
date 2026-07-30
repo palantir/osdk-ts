@@ -37,11 +37,11 @@ export interface CliServiceLauncherConfig {
 
 const formatDetail = (service: FoundryCliService): string => {
   const parts: string[] = [];
-  const exit = service.exitInfo;
+  const exit = service.getExitInfo();
   if (exit !== undefined) {
     parts.push(`the process exited (${exit})`);
   }
-  const stderr = service.capturedStderr;
+  const stderr = service.getCapturedStderr();
   if (stderr.length > 0) {
     parts.push(`stderr:\n${stderr}`);
   }
@@ -152,7 +152,7 @@ export class CliServiceLauncher {
    * exceeds its timeout.
    */
   async waitUntilReady(service: FoundryCliService): Promise<ServiceHealth> {
-    const deadline = Date.now() + service.readyTimeoutMs;
+    const deadline = Date.now() + service.getReadyTimeoutMs();
     let health = await service.checkHealth();
     while (!health.ready) {
       invariant(
@@ -160,14 +160,14 @@ export class CliServiceLauncher {
         `${service.name} is not ready (${health.state})`
       );
       invariant(
-        service.exitInfo === undefined,
+        service.getExitInfo() === undefined,
         `${service.name} is not ready (${health.state}) ${formatDetail(
           service
         )}`
       );
       invariant(
         Date.now() < deadline,
-        `${service.name} is not ready (${health.state}) within ${service.readyTimeoutMs}ms`
+        `${service.name} is not ready (${health.state}) within ${service.getReadyTimeoutMs()}ms`
       );
       await setTimeout(HEALTH_POLL_INTERVAL_MS);
       await this.#discoverer.refresh();

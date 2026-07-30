@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import fs from "node:fs/promises";
+
+import type {
+  ActionDefinition,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  QueryDefinition,
+} from "@osdk/api";
+import type { Experiment } from "@osdk/api/unstable";
+import { createClient, type Client } from "@osdk/client";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import {
   SeedBuilder,
@@ -21,48 +31,44 @@ import {
   type SeedFunction,
   type SeedOutput,
 } from "@osdk/seed-helpers";
+import { createMockClient, type MockClient } from "@osdk/unit-testing";
+import { fetch as undiciFetch, Agent } from "undici";
 
 import { OntologySeedingService } from "./generated/cli/index.js";
 
-export type IntegrationClientConfig = {
+type LocalOntologyClient = Client & {
+  // local ontology does not have the ability to support function queries at the moment.
+  whenQuery: MockClient["whenQuery"];
+};
+
+export interface IntegrationClient {
+  client: LocalOntologyClient;
+  seed: SeedClient;
+}
+
+/** The definition kinds accepted by {@link Client}'s call signatures. */
+type ClientArg =
+  | ObjectTypeDefinition
+  | InterfaceDefinition
+  | ActionDefinition
+  | QueryDefinition
+  | Experiment<"2.0.8">
+  | Experiment<"2.1.0">
+  | Experiment<"2.8.0">
+  | Experiment<"2.19.0">;
+
+type SeedClientConfig = {
   baseUrl: string;
   metadata: Ontology.OntologyFullMetadata;
   fetchFn?: typeof fetch;
 };
 
-export class IntegrationClient {
-  #baseUrl: string;
-  #metadata: Ontology.OntologyFullMetadata;
-  #seed: SeedClient;
+type PropsOf<T> = { [K in keyof T]: T[K] };
+type SeedClientProps = PropsOf<SeedClient>;
 
-  constructor(args: IntegrationClientConfig) {
-    this.#baseUrl = args.baseUrl;
-    this.#metadata = args.metadata;
-    this.#seed = createSeedClient(this.#baseUrl, this.#metadata, args.fetchFn);
-  }
-
-  get seed(): SeedClient {
-    return this.#seed;
-  }
-}
-
-const createSeedClient = (
-  baseUrl: string,
-  metadata: Ontology.OntologyFullMetadata,
-  fetchFn?: typeof fetch
-): SeedClient => {
+function createSeedClient(config: SeedClientConfig): SeedClient {
+  const { baseUrl, metadata, fetchFn } = config;
   const builder = new SeedBuilder(metadata);
-  const applySeed = async (seed: SeedOutput) => {
-    const res = await OntologySeedingService.setSeed(
-      {
-        baseUrl,
-        servicePath: "/api",
-        fetchFn,
-      },
-      seed
-    );
-    return res;
-  };
   const seedClientFunction = async <T = void>(
     seed: SeedFunction<T> | SeedOutput
   ): Promise<T> => {
@@ -74,35 +80,110 @@ const createSeedClient = (
     await applySeed(seed);
     return undefined as T;
   };
+  const applySeed = async (seed: SeedOutput) => {
+    const res = await OntologySeedingService.setSeed(
+      {
+        baseUrl,
+        servicePath: "/api",
+        fetchFn,
+      },
+      seed
+    );
+    return res;
+  };
+  const seedClientUtils: SeedClientProps = {
+    ref: (o, pk) => builder.ref(o, pk),
+    addAll: async (output) => {
+      builder.addAll(output);
+      await applySeed(builder.build());
+    },
+    create: async (o, props) => {
+      const ref = builder.create(o, props);
+      await applySeed(builder.build());
+      return ref;
+    },
+    update: async (ref, props) => {
+      const returnedRef = builder.update(ref, props);
+      await applySeed(builder.build());
+      return returnedRef;
+    },
+    delete: async (ref) => {
+      builder.delete(ref);
+      await applySeed(builder.build());
+    },
+    link: async (source, apiName, target) => {
+      builder.link(source, apiName, target);
+      await applySeed(builder.build());
+    },
+    unlink: async (source, apiName, target) => {
+      builder.unlink(source, apiName, target);
+      await applySeed(builder.build());
+    },
+  };
+  return Object.defineProperties<SeedClient>(
+    seedClientFunction as SeedClient,
+    Object.getOwnPropertyDescriptors(seedClientUtils)
+  );
+}
 
-  const seedClient = seedClientFunction as SeedClient;
-
-  seedClient.ref = (o, pk) => builder.ref(o, pk);
-  seedClient.addAll = async (output) => {
-    builder.addAll(output);
-    await applySeed(builder.build());
-  };
-  seedClient.create = async (o, props) => {
-    const ref = builder.create(o, props);
-    await applySeed(builder.build());
-    return ref;
-  };
-  seedClient.update = async (ref, props) => {
-    const returnedRef = builder.update(ref, props);
-    await applySeed(builder.build());
-    return returnedRef;
-  };
-  seedClient.delete = async (ref) => {
-    builder.delete(ref);
-    await applySeed(builder.build());
-  };
-  seedClient.link = async (source, apiName, target) => {
-    builder.link(source, apiName, target);
-    await applySeed(builder.build());
-  };
-  seedClient.unlink = async (source, apiName, target) => {
-    builder.unlink(source, apiName, target);
-    await applySeed(builder.build());
-  };
-  return seedClient;
+export type IntegrationClientConfig = {
+  baseUrl: string;
+  metadata: Ontology.OntologyFullMetadata;
+  caCertPath?: string;
 };
+
+export async function createIntegrationClient(
+  config: IntegrationClientConfig
+): Promise<IntegrationClient> {
+  const { baseUrl, metadata, caCertPath } = config;
+  const realClient = createClient(baseUrl, metadata.ontology.rid, () =>
+    Promise.resolve("integration-client-token")
+  );
+  const mockClient = createMockClient();
+  const clientInternal = ((def: ClientArg) => {
+    if (def.type === "query") {
+      return mockClient(def);
+    }
+    if (def.type === "action") {
+      return realClient(def);
+    }
+    if (def.type === "interface") {
+      return realClient(def);
+    }
+    if (def.type === "object") {
+      return realClient(def);
+    }
+    return realClient(def);
+  }) as Client;
+  const client = Object.defineProperties<LocalOntologyClient>(
+    clientInternal as LocalOntologyClient,
+    {
+      ...Object.getOwnPropertyDescriptors(realClient),
+      whenQuery: {
+        value: mockClient.whenQuery,
+      },
+    }
+  );
+  const agent = new Agent({
+    connect: caCertPath
+      ? {
+          ca: await fs.readFile(caCertPath),
+        }
+      : {
+          rejectUnauthorized: false,
+        },
+  });
+  const seed = createSeedClient({
+    baseUrl,
+    metadata,
+    fetchFn: ((input, init) =>
+      undiciFetch(input, {
+        ...init,
+        dispatcher: agent,
+      })) satisfies typeof undiciFetch as unknown as typeof fetch,
+  });
+  return {
+    client,
+    seed,
+  };
+}

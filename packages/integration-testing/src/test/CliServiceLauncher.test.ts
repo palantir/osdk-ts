@@ -169,7 +169,7 @@ describe("CliServiceLauncher", () => {
       /PLATFORM_API_PROXY is not ready \(FAILED\)/u
     );
     // The dependent is never started once its dependency failed.
-    expect(dependent.started).toBe(false);
+    expect(dependent.isStarted()).toBe(false);
   });
 
   it("gives up on a service that never reaches READY", async () => {
@@ -232,7 +232,7 @@ describe("CliServiceLauncher", () => {
 
     launch.stop();
 
-    expect(dependent.started).toBe(false);
-    expect(dependency.started).toBe(false);
+    expect(dependent.isStarted()).toBe(false);
+    expect(dependency.isStarted()).toBe(false);
   });
 });

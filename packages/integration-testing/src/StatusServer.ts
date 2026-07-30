@@ -39,12 +39,12 @@ export class StatusServer extends FoundryCliService {
     super("STATUS_SERVER", config);
   }
 
-  protected override get args(): readonly string[] {
+  protected override getArgs(): readonly string[] {
     return ["start", "status-server"];
   }
 
   override async checkHealth(): Promise<ServiceHealth> {
-    const discovery = this.context.discoverer.get("STATUS_SERVER");
+    const discovery = this.getContext().discoverer.get("STATUS_SERVER");
     if (discovery === undefined) {
       return {
         service: "STATUS_SERVER",
@@ -79,7 +79,7 @@ export class StatusServer extends FoundryCliService {
   }
 
   async getServiceStatuses(): Promise<ServiceStatus[]> {
-    const baseUrl = this.context.discoverer.get("STATUS_SERVER")?.url;
+    const baseUrl = this.getContext().discoverer.get("STATUS_SERVER")?.url;
     invariant(
       baseUrl,
       "Cannot get service status because the status server is not discovered yet"
@@ -88,8 +88,6 @@ export class StatusServer extends FoundryCliService {
       baseUrl,
       servicePath: "",
     }).catch(() => undefined);
-    // Undefined either because the server is unreachable, or because it
-    // answered 204 — not an empty array — with nothing published yet.
     return statuses ?? [];
   }
 
