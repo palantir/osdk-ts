@@ -68,9 +68,6 @@ export function extractFunctionLocators<
  * values for `objects`. Builds an unfiltered base set from
  * `objectOrInterfaceType` (so pages are scoped purely by primary key) and
  * narrows each page via `{ $primaryKey: { $in: pageKeys } }`.
- *
- * Returns `[]` when the type is an interface (no base set can be built) or
- * when no primary-key apiName is available and the input is empty.
  */
 export function buildPagedObjectSets<
   Q extends ObjectOrInterfaceDefinition,
@@ -81,15 +78,15 @@ export function buildPagedObjectSets<
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   pageSize: number,
 ): PagedObjects<Q, RDPs>[] {
-  const isObjectType = objectOrInterfaceType.type === "object";
-
-  const baseObjectSet = isObjectType
-    ? (client(objectOrInterfaceType) as ObjectSet<Q, RDPs>)
-    : undefined;
-
-  if (!baseObjectSet) {
-    return [];
-  }
+  // `client()` is overloaded on ObjectTypeDefinition / InterfaceDefinition and
+  // does not accept the ObjectOrInterfaceDefinition union, so narrow before
+  // calling it. Both branches build the same unfiltered base set.
+  // TODO: Fix type def of client() param and its return types.
+  const baseObjectSet = (
+    objectOrInterfaceType.type === "object"
+      ? client(objectOrInterfaceType)
+      : client(objectOrInterfaceType)
+  ) as ObjectSet<Q, RDPs>;
 
   return chunk(objects, pageSize).map((page) => {
     const whereClause = {

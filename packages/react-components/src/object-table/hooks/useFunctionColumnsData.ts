@@ -94,8 +94,8 @@ export function useFunctionColumnsData<
   );
 
   // Construct an object set per page (base set filtered to each page's
-  // primary keys). `buildPagedObjectSets` returns `[]` for interfaces and
-  // when there's no work to do, which short-circuits the downstream queries.
+  // primary keys). Empty when there are no rows, which short-circuits the
+  // downstream queries.
   //
   // When a new page loads, only that page's queries fire — old pages hit the
   // dedupeIntervalMs cache since their params are unchanged.

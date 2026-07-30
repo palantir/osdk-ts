@@ -178,7 +178,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should disable queries when objectOrInterfaceType is an interface", () => {
+  it("should enable queries when objectOrInterfaceType is an interface", () => {
     const columnDefinitions: ColumnDefinition<
       TestInterface,
       {},
@@ -196,9 +196,16 @@ describe("useFunctionColumnsData", () => {
         },
       },
     ];
-    vi.mocked(useOsdkFunctions).mockReturnValue([]);
+    vi.mocked(useOsdkFunctions).mockReturnValue([
+      {
+        data: undefined,
+        error: undefined,
+        isLoading: true,
+        lastUpdated: 0,
+      },
+    ] as unknown as UseOsdkFunctionsResult);
 
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useFunctionColumnsData({
         objectOrInterfaceType: TestInterfaceType,
         objects: mockInterfaceObjects,
@@ -206,13 +213,20 @@ describe("useFunctionColumnsData", () => {
       }),
     );
 
-    expect(result.current).toEqual({});
-    // Should call with enabled=false when objectOrInterfaceType is not provided
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [],
-      enabled: false,
-      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
-    });
+    expect(useOsdkFunctions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enabled: true,
+        maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+        queries: [
+          expect.objectContaining({
+            queryDefinition: mockQueryDefinition,
+            options: expect.objectContaining({
+              dependsOnObjects: mockInterfaceObjects,
+            }),
+          }),
+        ],
+      })
+    );
   });
 
   it("should fetch data for function columns", () => {
