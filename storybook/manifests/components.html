@@ -624,7 +624,7 @@ function InteractivePicker({
   initialSelection?: string[];
 }) {
   const [selectedIds, setSelectedIds] = useState&lt;string[]&gt;(
-    initialSelection ?? EMPTY_SELECTED
+    initialSelection ?? EMPTY_SELECTED,
   );
 
   return (
@@ -688,7 +688,7 @@ function WithImpliedAndDisallowedPicker() {
 
   const markingStates = useMemo(
     () =&gt; computeMarkingStates(selectedIds, impliedIds, disallowedIds),
-    [selectedIds, impliedIds, disallowedIds]
+    [selectedIds, impliedIds, disallowedIds],
   );
 
   const noop = useCallback(() =&gt; {}, []);
@@ -1376,7 +1376,7 @@ function createMockExcelMedia(): Media {
             &quot;Content-Type&quot;:
               &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
           },
-        })
+        }),
       ),
     fetchMetadata: () =&gt;
       Promise.resolve({
@@ -1474,7 +1474,7 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_XLSX_URL,
-      &quot;notional-excel-example.xlsx&quot;
+      &quot;notional-excel-example.xlsx&quot;,
     ),
   },
   render: (args: ExcelViewerMediaProps) =&gt; (
@@ -1562,7 +1562,7 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     &lt;ExcelViewer
         media={createMockMediaFromUrl(
           SAMPLE_XLSX_URL,
-          &quot;notional-excel-example.xlsx&quot;
+          &quot;notional-excel-example.xlsx&quot;,
         )} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -2035,7 +2035,7 @@ function ControlledFormStory(): React.ReactElement {
     (fieldKey: string, value: unknown) =&gt; {
       setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   return (
@@ -2047,7 +2047,7 @@ function ControlledFormStory(): React.ReactElement {
             formState,
             (_key, value) =&gt;
               value instanceof File ? `File: ${value.name}` : value,
-            2
+            2,
           )}
         &lt;/pre&gt;
       &lt;/div&gt;
@@ -2134,7 +2134,7 @@ const disabledFieldInitialState: Record&lt;string, unknown&gt; = {
 const CUSTOM_STATUS_OPTIONS = [&quot;Requires approval&quot;, &quot;Ready to submit&quot;];
 
 function renderDisabledCustomField(
-  props: BaseFormFieldProps&lt;unknown&gt;
+  props: BaseFormFieldProps&lt;unknown&gt;,
 ): React.ReactNode {
   const selectedValue = props.value != null ? String(props.value) : undefined;
 
@@ -2168,17 +2168,17 @@ function DisabledFieldsStory(): React.ReactElement {
   const client = useOsdkClient();
   const employeeObjectSet = useMemo(
     () =&gt; client(Employee) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
   const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;(
-    disabledFieldInitialState
+    disabledFieldInitialState,
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
       setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   const disabledFormContent: ReadonlyArray&lt;FormContentItem&gt; = useMemo(
@@ -2313,7 +2313,7 @@ function DisabledFieldsStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -2785,7 +2785,7 @@ function ObjectSetFieldStory(): React.ReactElement {
   // prevent structural assignability, so an assertion is needed here.
   const employeeObjectSet = useMemo(
     () =&gt; client(Employee) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
 
   const objectSetFormContent: ReadonlyArray&lt;FormContentItem&gt; = useMemo(
@@ -2808,7 +2808,7 @@ function ObjectSetFieldStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -3756,7 +3756,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
       client(Employee).where({
         department: &quot;Marketing&quot;,
       }) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
   const scopedObjectSelectFormContent = useMemo(
     (): ReadonlyArray&lt;FormContentItem&gt; =&gt; [
@@ -3771,7 +3771,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
         },
       }),
     ],
-    [marketingEmployees]
+    [marketingEmployees],
   );
 
   return (
@@ -4540,7 +4540,7 @@ function domRectToPdfRect(
   clientRect: DOMRect,
   pageRect: DOMRect,
   pageHeight: number,
-  scale: number
+  scale: number,
 ): PdfRect {
   const x = (clientRect.left - pageRect.left) / scale;
   const width = clientRect.width / scale;
@@ -4646,7 +4646,7 @@ function AnnotationSidebarItem({
       e.stopPropagation();
       onDelete(annotation.id);
     },
-    [onDelete, annotation.id]
+    [onDelete, annotation.id],
   );
 
   const itemStyles: React.CSSProperties = {
@@ -4755,7 +4755,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
         // Read the pdfjs scale factor from the CSS variable
         const scale =
           parseFloat(
-            getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;)
+            getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;),
           ) || 1;
         const pageHeight = pageEl.clientHeight / scale;
 
@@ -4790,7 +4790,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
       container.addEventListener(&quot;mouseup&quot;, handleMouseUp);
       return () =&gt; container.removeEventListener(&quot;mouseup&quot;, handleMouseUp);
     },
-    [annotationModeActive]
+    [annotationModeActive],
   );
 
   return (
@@ -5402,7 +5402,7 @@ return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlag
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {})
+      }, {}),
     );
 
     const table = useReactTable({
@@ -5674,7 +5674,7 @@ export const ErrorState: Story = {
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {})
+      }, {}),
     );
 
     const table = useReactTable({
@@ -6306,7 +6306,7 @@ function WithValidationStory() {
       const visibleCount = columns.filter((c) =&gt; c.isVisible).length;
       return visibleCount &gt;= 2;
     },
-    []
+    [],
   );
 
   return (
@@ -6657,7 +6657,7 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Unpin Column&quot;);
     await waitFor(() =&gt;
-      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;false&quot;)
+      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;false&quot;),
     );
     await expect(args.onColumnsPinnedChanged).toHaveBeenCalled();
 
@@ -6665,14 +6665,14 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Pin column&quot;);
     await waitFor(() =&gt;
-      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;)
+      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;),
     );
 
     // Assert that pinned cells have an opaque background
     // and matches its row background color.
     const pinnedCell = await waitFor(() =&gt; {
       const cell = canvasElement.querySelector&lt;HTMLElement&gt;(
-        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;
+        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;,
       );
       if (cell == null) {
         throw new Error(&quot;no left-pinned body cell rendered&quot;);
@@ -6686,7 +6686,7 @@ export const WithDefaultColumnPinning: Story = {
     const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
     await expect(pinnedCellBg).not.toBe(&quot;rgba(0, 0, 0, 0)&quot;);
     await expect(pinnedCellBg).toBe(
-      getComputedStyle(pinnedRow).backgroundColor
+      getComputedStyle(pinnedRow).backgroundColor,
     );
   },
 };
@@ -6738,27 +6738,27 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
     // Header for the RDP column renders once the filtered rows load.
     await canvas.findByText(&quot;Manager&quot;);
     await waitFor(() =&gt;
-      expect(canvas.getAllByRole(&quot;row&quot;).length).toBeGreaterThan(1)
+      expect(canvas.getAllByRole(&quot;row&quot;).length).toBeGreaterThan(1),
     );
 
     // defaultOrderBy seeds an ascending sort on the derived managerName column.
     await getColumnHeader(canvas, &quot;managerName&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;),
     );
 
     // Sorting an RDP column flips direction through the same header menu.
     await openHeaderMenu(canvas, &quot;managerName&quot;);
     await clickHeaderMenuItem(&quot;Sort descending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;desc&quot;),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, &quot;managerName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;),
     );
   },
   parameters: {
@@ -6877,8 +6877,8 @@ const columnDefinitions: ColumnDefinition&lt;Employee, {}, SeniorityFunctions&gt
     // At least one row should resolve a computed seniority value.
     await waitFor(() =&gt;
       expect(
-        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length
-      ).toBeGreaterThan(0)
+        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length,
+      ).toBeGreaterThan(0),
     );
   },
 };
@@ -6979,11 +6979,11 @@ export const WithCustomColumn: Story = {
 
     // Wait for rows (and their action buttons) to render.
     await expect(
-      (await canvas.findAllByRole(&quot;button&quot;, { name: &quot;View&quot; })).length
+      (await canvas.findAllByRole(&quot;button&quot;, { name: &quot;View&quot; })).length,
     ).toBeGreaterThan(0);
     await expect(canvas.getByText(&quot;Actions&quot;)).toBeInTheDocument();
     await expect(
-      canvas.getAllByRole(&quot;button&quot;, { name: &quot;Edit&quot; }).length
+      canvas.getAllByRole(&quot;button&quot;, { name: &quot;Edit&quot; }).length,
     ).toBeGreaterThan(0);
   },
 };
@@ -7104,11 +7104,11 @@ export const WithCustomRenderers: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.getByRole(&quot;link&quot;, { name: &quot;Employee Name&quot; })
+      canvas.getByRole(&quot;link&quot;, { name: &quot;Employee Name&quot; }),
     ).toBeInTheDocument();
     await expect(canvas.getByText(&quot;Employment Status&quot;)).toBeInTheDocument();
     await expect(
-      canvas.getAllByText(/^(Active|Inactive)$/u).length
+      canvas.getAllByText(/^(Active|Inactive)$/u).length,
     ).toBeGreaterThan(0);
   },
 };
@@ -7585,7 +7585,7 @@ const SAMPLE_IMAGE_DATA_URL = createSampleImageDataUrl();
 function createMockMedia(
   mimeType: string,
   fetchFn: () =&gt; Promise&lt;Response&gt;,
-  fileName: string
+  fileName: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -7622,7 +7622,7 @@ function createExcelMedia(): Media {
   return createMockMedia(
     &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
     () =&gt; Promise.resolve(new Response(buffer)),
-    &quot;employees.xlsx&quot;
+    &quot;employees.xlsx&quot;,
   );
 }
 
@@ -7634,7 +7634,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;image/png&quot;,
       () =&gt; fetch(SAMPLE_IMAGE_DATA_URL),
-      &quot;overview.png&quot;
+      &quot;overview.png&quot;,
     ),
   },
   markdown: {
@@ -7642,7 +7642,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;text/markdown&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-      &quot;overview.md&quot;
+      &quot;overview.md&quot;,
     ),
   },
   video: {
@@ -7650,7 +7650,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;video/mp4&quot;,
       () =&gt; fetch(SAMPLE_VIDEO_URL),
-      &quot;example.mp4&quot;
+      &quot;example.mp4&quot;,
     ),
   },
   email: {
@@ -7658,7 +7658,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;message/rfc822&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_EMAIL)),
-      &quot;overview.eml&quot;
+      &quot;overview.eml&quot;,
     ),
   },
   excel: {
@@ -7670,7 +7670,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;application/xml&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
-      &quot;overview.xml&quot;
+      &quot;overview.xml&quot;,
     ),
   },
   tiff: {
@@ -7678,7 +7678,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;image/tiff&quot;,
       () =&gt; fetch(SAMPLE_TIFF_URL),
-      &quot;multi-page-tiff.tiff&quot;
+      &quot;multi-page-tiff.tiff&quot;,
     ),
   },
   unsupported: {
@@ -7686,7 +7686,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;application/octet-stream&quot;,
       () =&gt; Promise.resolve(new Response(&quot;Unsupported sample&quot;)),
-      &quot;overview.bin&quot;
+      &quot;overview.bin&quot;,
     ),
   },
 };
@@ -7699,10 +7699,10 @@ type OverviewApplyAction = Parameters&lt;
 
 function applyOverviewAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
-  applyAction: OverviewApplyAction
+  applyAction: OverviewApplyAction,
 ): ReturnType&lt;OverviewApplyAction&gt; {
   return applyAction(
-    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0],
   );
 }
 
@@ -7751,7 +7751,7 @@ function ViewersTab({
 }: ViewersTabProps): React.ReactElement {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
-    MEDIA_EMPLOYEE_PK
+    MEDIA_EMPLOYEE_PK,
   );
 
   const selectedMockMedia = MOCK_VIEWER_MEDIA_BY_TYPE[selectedViewerType];
@@ -7799,11 +7799,11 @@ function FormsTab(): React.ReactElement {
   const handleSubmit = useCallback(
     (
       formState: FormState&lt;typeof actionDefinition&gt;,
-      applyAction: OverviewApplyAction
+      applyAction: OverviewApplyAction,
     ) =&gt; {
       return applyOverviewAction(formState, applyAction);
     },
-    []
+    [],
   );
 
   return (
@@ -7825,14 +7825,14 @@ function ComponentOverview(): React.ReactElement {
       const tab = event.currentTarget.dataset.tab as TabId;
       setActiveTab(tab);
     },
-    []
+    [],
   );
 
   const handleViewerTypeChange = useCallback(
     (event: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
       setSelectedViewerType(event.currentTarget.value as ViewerTypeId);
     },
-    []
+    [],
   );
 
   return (
@@ -8110,7 +8110,7 @@ return &lt;ObjectTable objectType={Employee} objectSet={employeeObjectSet} /&gt;
     // Wait for the (MSW-mocked) rows to load.
     await canvas.findAllByText(&quot;Marketing Manager&quot;);
     await expect(
-      canvas.getAllByText(&quot;Marketing Manager&quot;).length
+      canvas.getAllByText(&quot;Marketing Manager&quot;).length,
     ).toBeGreaterThan(1);
     await expect(canvas.queryByText(&quot;Content Manager&quot;)).not.toBeInTheDocument();
   },
@@ -8348,11 +8348,11 @@ export const CustomColumnWidths: Story = {
     // Drag the resize handle to widen the column.
     await dragResizeHandle(fullNameHeader, 120);
     await waitFor(() =&gt;
-      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250)
+      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250),
     );
     await expect(args.onColumnResize).toHaveBeenCalledWith(
       &quot;fullName&quot;,
-      expect.any(Number)
+      expect.any(Number),
     );
 
     // Double-clicking the handle resets the column to its configured width.
@@ -8448,7 +8448,7 @@ return (
     const canvas = within(canvasElement);
 
     await expect(
-      await canvas.findByText(&quot;No saved views found.&quot;)
+      await canvas.findByText(&quot;No saved views found.&quot;),
     ).toBeInTheDocument();
     await expect(canvas.queryByText(TARGET_DATA)).not.toBeInTheDocument();
   },
@@ -8503,7 +8503,7 @@ return (
         &quot;data-highlight-row&quot;:
           rowData.locationCity === &quot;New York&quot; ? &quot;true&quot; : undefined,
       }),
-      []
+      [],
     );
 
     return (
@@ -8538,12 +8538,12 @@ return (
     // New York employees carry the highlight attribute...
     await expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
       &quot;data-highlight-row&quot;,
-      &quot;true&quot;
+      &quot;true&quot;,
     );
 
     // ...while non–New York employees do not.
     await expect(
-      rowContaining(canvas.getByText(&quot;Charlotte Weber&quot;))
+      rowContaining(canvas.getByText(&quot;Charlotte Weber&quot;)),
     ).not.toHaveAttribute(&quot;data-highlight-row&quot;);
   },
 };
@@ -8583,7 +8583,7 @@ export const DisableAllHeaderMenuFeatures: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: /Open header menu/iu })
+      canvas.queryByRole(&quot;button&quot;, { name: /Open header menu/iu }),
     ).not.toBeInTheDocument();
   },
 };
@@ -8683,7 +8683,7 @@ import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
         &quot;data-highlight-row&quot;:
           rowData.locationCity === &quot;New York&quot; ? &quot;true&quot; : undefined,
       }),
-      []
+      [],
     );
 
     return (
@@ -8843,7 +8843,7 @@ This is a **sample markdown** document rendered by the DocumentViewer.
 function createMockMedia(
   mimeType: string,
   fetchFn: () =&gt; Promise&lt;Response&gt;,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -8872,25 +8872,25 @@ const imageBlob = createSampleImageBlob();
 const mockPdfMedia = createMockMedia(
   &quot;application/pdf&quot;,
   () =&gt; fetch(SAMPLE_PDF_URL),
-  &quot;document.pdf&quot;
+  &quot;document.pdf&quot;,
 );
 
 const mockImageMedia = createMockMedia(
   &quot;image/png&quot;,
   () =&gt; Promise.resolve(new Response(imageBlob)),
-  &quot;photo.png&quot;
+  &quot;photo.png&quot;,
 );
 
 const mockMarkdownMedia = createMockMedia(
   &quot;text/markdown&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-  &quot;readme.md&quot;
+  &quot;readme.md&quot;,
 );
 
 const mockVideoMedia = createMockMedia(
   &quot;video/mp4&quot;,
   () =&gt; fetch(SAMPLE_VIDEO_URL),
-  &quot;example.mp4&quot;
+  &quot;example.mp4&quot;,
 );
 
 const SAMPLE_EML = `From: Alice &lt;alice@example.com&gt;
@@ -8905,7 +8905,7 @@ Content-Type: text/html; charset=utf-8
 const mockEmailMedia = createMockMedia(
   &quot;message/rfc822&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_EML)),
-  &quot;message.eml&quot;
+  &quot;message.eml&quot;,
 );
 
 const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
@@ -8919,7 +8919,7 @@ const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
 const mockXmlMedia = createMockMedia(
   &quot;application/xml&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
-  &quot;data.xml&quot;
+  &quot;data.xml&quot;,
 );
 
 function createMockExcelMedia(): Media {
@@ -8934,7 +8934,7 @@ function createMockExcelMedia(): Media {
   return createMockMedia(
     &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
     () =&gt; Promise.resolve(new Response(buf)),
-    &quot;report.xlsx&quot;
+    &quot;report.xlsx&quot;,
   );
 }
 
@@ -8943,13 +8943,13 @@ const mockExcelMedia = createMockExcelMedia();
 const mockTiffMedia = createMockMedia(
   &quot;image/tiff&quot;,
   () =&gt; fetch(SAMPLE_TIFF_URL),
-  &quot;multi-page-tiff.tiff&quot;
+  &quot;multi-page-tiff.tiff&quot;,
 );
 
 const mockUnsupportedMedia = createMockMedia(
   &quot;application/octet-stream&quot;,
   () =&gt; Promise.resolve(new Response(&quot;&quot;)),
-  &quot;data.bin&quot;
+  &quot;data.bin&quot;,
 );
 
 const meta: Meta&lt;DocumentViewerProps&gt; = {
@@ -9107,7 +9107,7 @@ export const TiffWithPdfConversion: Story = {
             return new HttpResponse(buffer, {
               headers: { &quot;Content-Type&quot;: &quot;application/pdf&quot; },
             });
-          }
+          },
         ),
         // Mock MIO transform API: get status
         http.get(&quot;*/api/v2/mediasets/*/items/*/transformationJobs/*&quot;, () =&gt; {
@@ -9537,7 +9537,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -9600,25 +9600,25 @@ return (
         expect.objectContaining({
           columnId: &quot;fullName&quot;,
           newValue: &quot;Ahmed Williamson&quot;,
-        })
-      )
+        }),
+      ),
     );
 
     // Dropdown edit (department, column 3) — visible once the row is focused.
     const departmentCombobox = await within(cellsOf()[3]).findByRole(
-      &quot;combobox&quot;
+      &quot;combobox&quot;,
     );
     await userEvent.click(departmentCombobox);
     await userEvent.click(
-      await screen.findByRole(&quot;option&quot;, { name: &quot;Engineering&quot; })
+      await screen.findByRole(&quot;option&quot;, { name: &quot;Engineering&quot; }),
     );
     await waitFor(() =&gt;
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({
           columnId: &quot;department&quot;,
           newValue: &quot;Engineering&quot;,
-        })
-      )
+        }),
+      ),
     );
 
     // Date edit (firstFullTimeStartDate, column 5) — focusing opens the
@@ -9628,14 +9628,14 @@ return (
     await userEvent.click(await screen.findByRole(&quot;button&quot;, { name: &quot;Today&quot; }));
     await waitFor(() =&gt;
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
-        expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; })
-      )
+        expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; }),
+      ),
     );
 
     // Cancel exits edit mode; the &quot;Edit Table&quot; button returns.
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Cancel&quot; }));
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; })
+      await canvas.findByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; }),
     ).toBeInTheDocument();
   },
 };
@@ -9747,7 +9747,7 @@ export const EditableWithValidation: Story = {
       // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         return true;
-      }
+      },
     ),
   },
   parameters: {
@@ -9868,10 +9868,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;Validation error&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;Validation error&quot;)).toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; }),
     ).toBeDisabled();
 
     // Correcting the value clears the error and re-enables Submit Edits.
@@ -9881,10 +9881,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =&gt;
-      expect(canvas.queryByText(&quot;Validation error&quot;)).not.toBeInTheDocument()
+      expect(canvas.queryByText(&quot;Validation error&quot;)).not.toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; }),
     ).toBeEnabled();
 
     // Restore the original value
@@ -9893,7 +9893,7 @@ return (
     await userEvent.type(nameInput, TARGET_DATA);
     await userEvent.tab();
     await waitFor(() =&gt;
-      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument()
+      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument(),
     );
   },
 };
@@ -9907,7 +9907,7 @@ export const WithSubmitEditsButton: Story = {
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         await new Promise((resolve) =&gt; setTimeout(resolve, 1000));
         return true;
-      }
+      },
     ),
   } as any,
   parameters: {
@@ -10053,9 +10053,9 @@ return (
     await waitFor(
       () =&gt;
         expect(
-          canvas.getByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; })
+          canvas.getByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; }),
         ).toBeInTheDocument(),
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   },
 };
@@ -10158,12 +10158,12 @@ return (
 
     // jobTitle (column 1) is editable only for the Senior Product Manager.
     const editableCell = within(
-      rowContaining(canvas.getByText(&quot;Margaret Jackson&quot;))
+      rowContaining(canvas.getByText(&quot;Margaret Jackson&quot;)),
     ).getAllByRole(&quot;cell&quot;);
     await expect(editableCell[1]).toHaveAttribute(&quot;data-editable&quot;, &quot;true&quot;);
 
     const nonEditableCell = within(
-      rowContaining(canvas.getByText(TARGET_DATA))
+      rowContaining(canvas.getByText(TARGET_DATA)),
     ).getAllByRole(&quot;cell&quot;);
     await expect(nonEditableCell[1]).not.toHaveAttribute(&quot;data-editable&quot;);
 
@@ -10173,7 +10173,7 @@ return (
     void fireEvent.click(await within(opRow).findByRole(&quot;combobox&quot;));
     await expect(await screen.findAllByRole(&quot;option&quot;)).toHaveLength(2);
     await expect(
-      screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
+      screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
     ).not.toBeInTheDocument();
     await userEvent.keyboard(&quot;{Escape}&quot;);
 
@@ -10182,15 +10182,15 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     void fireEvent.click(await within(ahmedRow).findByRole(&quot;combobox&quot;));
     await expect(
-      await screen.findByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
+      await screen.findByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
     ).toBeInTheDocument();
 
     // Close the dropdown so the story ends with no popup open.
     await userEvent.keyboard(&quot;{Escape}&quot;);
     await waitFor(() =&gt;
       expect(
-        screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
-      ).not.toBeInTheDocument()
+        screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
+      ).not.toBeInTheDocument(),
     );
   },
 };
@@ -10235,7 +10235,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -10399,7 +10399,7 @@ return (
           // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
           async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
             return true;
-          }
+          },
         )}
         objectType={Employee} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -10789,7 +10789,7 @@ export const Default: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
     return (
       &lt;div style={SIDEBAR_STYLE}&gt;
@@ -10835,7 +10835,7 @@ export const IntegerNumberRangeRounding: Story = {
   render: ({ objectType: _ot, objectSet: _os, ...args }) =&gt; {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [employeeNumberFilter],
-      []
+      [],
     );
     return (
       &lt;div style={SIDEBAR_STYLE}&gt;
@@ -10856,12 +10856,12 @@ function WithObjectSetStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       client(Employee).where({
         department: &quot;Marketing&quot;,
       }),
-    [client]
+    [client],
   );
 
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [teamFilter, locationCityFilter],
-    []
+    [],
   );
 
   return (
@@ -10925,7 +10925,7 @@ function AddFilterModeStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         isVisible: false,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
-    []
+    [],
   );
 
   return (
@@ -10979,7 +10979,7 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -11154,7 +11154,7 @@ export const WithSorting: Story = {
 function CollapsiblePanelStory(
   args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
     onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  }
+  },
 ) {
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
@@ -11201,7 +11201,7 @@ export const CollapsiblePanel: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;CollapsiblePanelStory
@@ -11237,7 +11237,7 @@ export const KeywordSearch: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -11264,7 +11264,7 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
   const withColorMap = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11283,7 +11283,7 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11355,7 +11355,7 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
   const withRenderValue = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11378,7 +11378,7 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         renderValue: (value: string) =&gt; value.toUpperCase(),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11497,7 +11497,7 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         ),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11542,7 +11542,7 @@ export const WithRenderValueAsReactNode: Story = {
 };
 
 function WithListogramDisplayModesStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   const fullDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11556,7 +11556,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;full&quot; },
       },
     ],
-    []
+    [],
   );
   const countDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11570,7 +11570,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;count&quot; },
       },
     ],
-    []
+    [],
   );
   const minimalDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11584,7 +11584,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11685,7 +11685,7 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
     ],
-    []
+    [],
   );
   const withoutCounts = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -11708,7 +11708,7 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         showCount: false,
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11774,7 +11774,7 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11826,11 +11826,11 @@ export const WithCheckbox: Story = {
         })
         .map((row) =&gt; {
           const label = expectedDepartmentOrder.find((name) =&gt;
-            row.textContent?.includes(name)
+            row.textContent?.includes(name),
           );
           if (label == null) {
             throw new Error(
-              `Unable to identify department row from &quot;${row.textContent}&quot;`
+              `Unable to identify department row from &quot;${row.textContent}&quot;`,
             );
           }
           return label;
@@ -11842,16 +11842,16 @@ export const WithCheckbox: Story = {
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
     await waitFor(() =&gt;
       expect(
-        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
-      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;)
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }),
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
 
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
     await waitFor(() =&gt;
       expect(
-        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
-      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;)
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }),
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
   },
@@ -11872,7 +11872,7 @@ function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -11931,11 +11931,11 @@ export const WithBelowFoldSelection: Story = {
     const renderedDepartments = () =&gt;
       canvas.getAllByRole(&quot;button&quot;, { name: departmentRowName }).map((row) =&gt; {
         const label = allDepartments.find((name) =&gt;
-          row.textContent?.includes(name)
+          row.textContent?.includes(name),
         );
         if (label == null) {
           throw new Error(
-            `Unable to identify department row from &quot;${row.textContent}&quot;`
+            `Unable to identify department row from &quot;${row.textContent}&quot;`,
           );
         }
         return label;
@@ -11963,7 +11963,7 @@ export const WithBelowFoldSelection: Story = {
     await canvas.findByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; });
     await expect(renderedDepartments()).toEqual(initialCollapsedOrder);
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; }),
     ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;);
 
     // Unselect the below-fold &quot;Sales&quot;: it is no longer selected, so it drops
@@ -11974,15 +11974,15 @@ export const WithBelowFoldSelection: Story = {
 
     // Expand with &quot;View all (N)&quot; to reach &quot;Sales&quot; again, then re-select it.
     await userEvent.click(
-      canvas.getByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u })
+      canvas.getByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u }),
     );
     await canvas.findByRole(&quot;button&quot;, { name: &quot;View less&quot; });
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; }));
     await waitFor(() =&gt;
       expect(canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; })).toHaveAttribute(
         &quot;aria-pressed&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
 
     // &quot;View less&quot; collapses back to the initial state: the head plus the
@@ -11990,10 +11990,10 @@ export const WithBelowFoldSelection: Story = {
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;View less&quot; }));
     await canvas.findByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u });
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: &quot;View less&quot; })
+      canvas.queryByRole(&quot;button&quot;, { name: &quot;View less&quot; }),
     ).toBeNull();
     await waitFor(() =&gt;
-      expect(renderedDepartments()).toEqual(initialCollapsedOrder)
+      expect(renderedDepartments()).toEqual(initialCollapsedOrder),
     );
   },
 };
@@ -12012,11 +12012,11 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   return (
@@ -12129,7 +12129,7 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -12138,7 +12138,7 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -12233,7 +12233,7 @@ export const WithStaticValues: Story = {
 function FullFeaturedStory(
   args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
     onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  }
+  },
 ) {
   const [filterClause, setFilterClause] = useState&lt;
     WhereClause&lt;Employee&gt; | undefined
@@ -12251,11 +12251,11 @@ function FullFeaturedStory(
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   const argsOnReset = args.onReset;
@@ -12270,7 +12270,7 @@ function FullFeaturedStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -12339,7 +12339,7 @@ export const FullFeatured: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
@@ -12348,7 +12348,7 @@ export const FullFeatured: Story = {
 };
 
 function WithLinkedPropertyFiltersStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   const client = useOsdkClient();
   const objectSet = useMemo(() =&gt; client(Employee), [client]);
@@ -12378,7 +12378,7 @@ function WithLinkedPropertyFiltersStory(
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -12387,7 +12387,7 @@ function WithLinkedPropertyFiltersStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -12550,7 +12550,7 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -12689,7 +12689,7 @@ function CustomNameContainsFilter({
         customState: { value },
       });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   const handleClear = useCallback(() =&gt; {
@@ -12766,7 +12766,7 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -12775,7 +12775,7 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -13036,7 +13036,7 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
     (clause: WhereClause&lt;Employee&gt;) =&gt; {
       setFilterClause(clause);
     },
-    []
+    [],
   );
 
   return (
@@ -13159,7 +13159,7 @@ function ResetGateMirror({
   }, [initialFilterStates]);
 
   const [mirror, setMirror] = useState&lt;Map&lt;string, FilterState&gt;&gt;(
-    () =&gt; new Map(initialMirror)
+    () =&gt; new Map(initialMirror),
   );
 
   const argsOnFilterStateChanged = storyArgs.onFilterStateChanged;
@@ -13172,7 +13172,7 @@ function ResetGateMirror({
       });
       argsOnFilterStateChanged?.(definition, newState);
     },
-    [argsOnFilterStateChanged]
+    [argsOnFilterStateChanged],
   );
 
   const argsOnReset = storyArgs.onReset;
@@ -13209,7 +13209,7 @@ function ResetGateMirror({
 }
 
 function WithResetButtonEmptyInitialStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   return &lt;ResetGateMirror storyArgs={args} /&gt;;
 }
@@ -13240,7 +13240,7 @@ export const WithResetButtonEmptyInitial: Story = {
 };
 
 function WithResetButtonNonEmptyInitialStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   return (
     &lt;ResetGateMirror
@@ -13318,7 +13318,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -13352,7 +13352,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
               <pre><code>const IntegerNumberRangeRounding = () =&gt; {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [employeeNumberFilter],
-      []
+      [],
     );
 
     return (
@@ -13563,7 +13563,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -13601,7 +13601,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -13829,7 +13829,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -14183,7 +14183,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) =&gt; setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   return (
     &lt;span className={styles.inlineFieldGroup}&gt;
@@ -14212,11 +14212,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) =&gt; setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   const handleRemove = useCallback(
     () =&gt; clearFilterState(filterKey),
-    [filterKey, clearFilterState]
+    [filterKey, clearFilterState],
   );
   return (
     &lt;FilterPopover
@@ -14523,7 +14523,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 function createMockImageMedia(
   dataUrl: string,
   mimeType: string,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: async () =&gt; {
@@ -14797,7 +14797,7 @@ export const WithContextMenu: Story = {
     // Clicking outside the menu closes it.
     await userEvent.click(canvas.getByText(&quot;Right click on any cell&quot;));
     await waitFor(() =&gt;
-      expect(screen.queryByText(&quot;Cell Value:&quot;)).not.toBeInTheDocument()
+      expect(screen.queryByText(&quot;Cell Value:&quot;)).not.toBeInTheDocument(),
     );
   },
 };
@@ -14873,7 +14873,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent(&quot;onRowClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -14882,7 +14882,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent(&quot;onColumnHeaderClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -14892,7 +14892,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent(&quot;onRowSelectionChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -14901,7 +14901,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent(&quot;onOrderByChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -14909,7 +14909,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent(&quot;onColumnVisibilityChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -14917,7 +14917,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent(&quot;onColumnsPinnedChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -14925,7 +14925,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -14997,7 +14997,7 @@ export const EventListeners: Story = {
     const fullNameHeader = await getColumnHeader(canvas, &quot;fullName&quot;);
     await userEvent.click(within(fullNameHeader).getByText(&quot;Name&quot;));
     await waitFor(() =&gt;
-      expect(args.onColumnHeaderClick).toHaveBeenCalledWith(&quot;fullName&quot;)
+      expect(args.onColumnHeaderClick).toHaveBeenCalledWith(&quot;fullName&quot;),
     );
 
     // onRowSelectionChanged: toggling a row checkbox (selectionMode &quot;multiple&quot;).
@@ -15028,7 +15028,7 @@ export const EventListeners: Story = {
     await userEvent.click(removeButtons[0]);
     await userEvent.click(await screen.findByRole(&quot;button&quot;, { name: &quot;Apply&quot; }));
     await waitFor(() =&gt;
-      expect(args.onColumnVisibilityChanged).toHaveBeenCalled()
+      expect(args.onColumnVisibilityChanged).toHaveBeenCalled(),
     );
 
     // Reset the row selection so the story does not end with a checked row.
@@ -15122,7 +15122,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent(&quot;onRowClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -15131,7 +15131,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent(&quot;onColumnHeaderClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -15141,7 +15141,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent(&quot;onRowSelectionChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -15150,7 +15150,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent(&quot;onOrderByChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -15158,7 +15158,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent(&quot;onColumnVisibilityChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -15166,7 +15166,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent(&quot;onColumnsPinnedChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -15174,7 +15174,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -15315,12 +15315,12 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   makeMessage(&quot;user&quot;, &quot;What can you help me with?&quot;),
   makeMessage(
     &quot;assistant&quot;,
-    &quot;I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?&quot;
+    &quot;I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?&quot;,
   ),
   makeMessage(&quot;user&quot;, &quot;Can you summarize the latest sales report?&quot;),
   makeMessage(
     &quot;assistant&quot;,
-    &quot;Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?&quot;
+    &quot;Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?&quot;,
   ),
 ];
 
@@ -15340,7 +15340,7 @@ function InteractiveChat(
   &gt; &amp; {
     initialMessages?: UIMessage[];
     simulateError?: boolean;
-  }
+  },
 ) {
   const { initialMessages = [], simulateError = false, ...rest } = props;
   const [messages, setMessages] = React.useState&lt;UIMessage[]&gt;(initialMessages);
@@ -15350,7 +15350,7 @@ function InteractiveChat(
   const [error, setError] = React.useState&lt;Error | undefined&gt;(
     simulateError
       ? new Error(&quot;Connection timed out. Please try again.&quot;)
-      : undefined
+      : undefined,
   );
   const abortRef = React.useRef(false);
 
@@ -16362,16 +16362,16 @@ export const Default: Story = {
 
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Sort ascending&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Sort ascending&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Sort descending&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Sort descending&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Pin column&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Pin column&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     // Dismiss the menu so the story is left in a clean state.
@@ -16695,7 +16695,7 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -16728,7 +16728,7 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -16761,7 +16761,7 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -16910,7 +16910,7 @@ export const Default: Story = {
   render: () =&gt; {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
-      MEDIA_EMPLOYEE_PK
+      MEDIA_EMPLOYEE_PK,
     );
 
     if (isLoading || !employee?.employeeDocuments) {
@@ -16970,7 +16970,7 @@ const employee = useOsdkObject(Employee, employeePk);
               <pre><code>const Default = () =&gt; {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
-    MEDIA_EMPLOYEE_PK
+    MEDIA_EMPLOYEE_PK,
   );
 
   if (isLoading || !employee?.employeeDocuments) {
@@ -17093,11 +17093,11 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(
   SAMPLE_PDF_URL,
-  &quot;compressed.tracemonkey-pldi-09.pdf&quot;
+  &quot;compressed.tracemonkey-pldi-09.pdf&quot;,
 );
 const mockBookmarkedMedia = createMockMedia(
   BOOKMARKED_PDF_URL,
-  &quot;pdf-example-bookmarks.pdf&quot;
+  &quot;pdf-example-bookmarks.pdf&quot;,
 );
 
 const meta: Meta&lt;PdfViewerMediaProps&gt; = {
@@ -19015,7 +19015,7 @@ export const SingleSelection: Story = {
 
     // No top-level &quot;Select all rows&quot; checkbox in single-selection mode.
     await expect(
-      canvas.queryByRole(&quot;checkbox&quot;, { name: /Select all rows/u })
+      canvas.queryByRole(&quot;checkbox&quot;, { name: /Select all rows/u }),
     ).not.toBeInTheDocument();
 
     // Selecting the first row checks it and notifies the consumer.
@@ -19124,7 +19124,7 @@ return (
   },
   render: (args) =&gt; {
     const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;(
-      args.selectedRows ?? []
+      args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState&lt;boolean&gt;(false);
     const handleRowSelectionChanged = useCallback(
@@ -19136,7 +19136,7 @@ return (
         setSelectedRows(change.selectedRows.map((r) =&gt; r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -19188,23 +19188,23 @@ return (
     await userEvent.click((await rowCheckboxes())[0]);
     await waitFor(() =&gt; expect(args.onRowSelectionChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;1 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;1 employees&quot;)).toBeInTheDocument(),
     );
 
     await userEvent.click((await rowCheckboxes())[1]);
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;2 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;2 employees&quot;)).toBeInTheDocument(),
     );
 
     // Clearing resets the controlled selection back to zero.
     await userEvent.click(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; }),
     );
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;0 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;0 employees&quot;)).toBeInTheDocument(),
     );
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; })
+      canvas.queryByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; }),
     ).not.toBeInTheDocument();
   },
 };
@@ -19261,7 +19261,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -19322,13 +19322,13 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     await waitFor(() =&gt; expect(args.onFocusedRowChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument()
+      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument(),
     );
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
 
     // Clicking outside the table clears focus via onFocusedRowChanged(null).
@@ -19336,8 +19336,8 @@ return (
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;false&quot;
-      )
+        &quot;false&quot;,
+      ),
     );
 
     // Re-focus, then the explicit &quot;Clear focus&quot; button also resets it.
@@ -19345,15 +19345,15 @@ return (
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Clear focus&quot; }));
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;false&quot;
-      )
+        &quot;false&quot;,
+      ),
     );
   },
 };
@@ -19421,7 +19421,7 @@ return (
               
               <pre><code>const ControlledSelection = () =&gt; {
     const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;(
-      args.selectedRows ?? []
+      args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState&lt;boolean&gt;(false);
     const handleRowSelectionChanged = useCallback(
@@ -19433,7 +19433,7 @@ return (
         setSelectedRows(change.selectedRows.map((r) =&gt; r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -19492,7 +19492,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -19660,21 +19660,21 @@ export const WithDefaultSorting: Story = {
 
     await getColumnHeader(canvas, &quot;fullName&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;),
     );
 
     // Switch to ascending.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;asc&quot;),
     );
 
     // Sorting descending again returns to the default sort state.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort descending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;),
     );
   },
 };
@@ -19705,14 +19705,14 @@ return (
   },
   render: (args) =&gt; {
     const [orderBy, setOrderBy] = useState&lt;any&gt;(
-      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }]
+      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }],
     );
     const handleOrderByChanged = useCallback(
       (newOrderBy: any) =&gt; {
         args.onOrderByChanged?.(newOrderBy);
         setOrderBy(newOrderBy);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -19750,14 +19750,14 @@ return (
 
     await waitFor(() =&gt; expect(args.onOrderByChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;fullName (desc)&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;fullName (desc)&quot;)).toBeInTheDocument(),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;fullName (asc)&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;fullName (asc)&quot;)).toBeInTheDocument(),
     );
   },
 };
@@ -19814,14 +19814,14 @@ return (
               
               <pre><code>const ControlledSorting = () =&gt; {
     const [orderBy, setOrderBy] = useState&lt;any&gt;(
-      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }]
+      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }],
     );
     const handleOrderByChanged = useCallback(
       (newOrderBy: any) =&gt; {
         args.onOrderByChanged?.(newOrderBy);
         setOrderBy(newOrderBy);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -20406,7 +20406,7 @@ type StoryApplyAction&lt;Q extends ActionDefinition&lt;unknown&gt;&gt; = Paramet
 interface UseActionFormSubmissionOptions&lt;Q extends ActionDefinition&lt;unknown&gt;&gt; {
   applyStoryAction: (
     formState: FormState&lt;Q&gt;,
-    applyAction: StoryApplyAction&lt;Q&gt;
+    applyAction: StoryApplyAction&lt;Q&gt;,
   ) =&gt; Promise&lt;ActionEditResponse | undefined&gt;;
   onSubmit?: StoryOnSubmit&lt;Q&gt;;
 }
@@ -20518,36 +20518,36 @@ function handleSuccess(result: ActionEditResponse | undefined): void {
 
 function applyUpdateEmployeeStoryAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
-  applyAction: UpdateEmployeeApplyAction
+  applyAction: UpdateEmployeeApplyAction,
 ): ReturnType&lt;UpdateEmployeeApplyAction&gt; {
   // ActionForm passes coerced form values to custom submit handlers at runtime.
   // The callback type currently exposes metadata-shaped ActionParameters, so the
   // story uses the callback&#39;s parameter type to keep the example wired to the
   // real apply path while preserving type safety.
   return applyAction(
-    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0],
   );
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState&lt;typeof generatedFieldsActionDefinition&gt;,
-  applyAction: GeneratedFieldsApplyAction
+  applyAction: GeneratedFieldsApplyAction,
 ): ReturnType&lt;GeneratedFieldsApplyAction&gt; {
   // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
   // using the same applyAction path even though the callback type is metadata-shaped.
   return applyAction(
-    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0],
   );
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState&lt;typeof unsupportedFieldsActionDefinition&gt;,
-  applyAction: UnsupportedFieldsApplyAction
+  applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType&lt;UnsupportedFieldsApplyAction&gt; {
   // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
   // through the real applyAction path so the response panel shows true results.
   return applyAction(
-    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0],
   );
 }
 
@@ -20609,7 +20609,7 @@ function useActionFormSubmission&lt;Q extends ActionDefinition&lt;unknown&gt;&gt
         throw error;
       }
     },
-    [applyStoryAction, onSubmit]
+    [applyStoryAction, onSubmit],
   );
 
   const handleStoryError: StoryOnError&lt;Q&gt; = useCallback((error) =&gt; {
@@ -20842,7 +20842,7 @@ export const SubmitSuccess: Story = {
 
     await waitFor(() =&gt; expect(successSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByText(&quot;Submit succeeded.&quot;)
+      await canvas.findByText(&quot;Submit succeeded.&quot;),
     ).toBeInTheDocument();
     await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
@@ -20871,7 +20871,7 @@ export const SubmitFailure: Story = {
     await waitFor(() =&gt; expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText(&quot;Submit failed.&quot;)).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/u)
+      await canvas.findByText(/Demo submission failed/u),
     ).toBeInTheDocument();
   },
   parameters: {
@@ -20923,7 +20923,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) =&gt; {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu })
+      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu }),
     ).toBeDisabled();
   },
 };
@@ -20948,7 +20948,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() =&gt; expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu })
+      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu }),
     ).toBeDisabled();
   },
   parameters: {
@@ -20991,8 +20991,8 @@ export const CustomSubmitHandler: Story = {
 
     await waitFor(() =&gt;
       expect(customSubmitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ fullName: &quot;Grace Hopper&quot; })
-      )
+        expect.objectContaining({ fullName: &quot;Grace Hopper&quot; }),
+      ),
     );
   },
   parameters: {
@@ -21777,7 +21777,7 @@ function InteractivePicker({
   initialSelection?: string[];
 }) {
   const [selectedIds, setSelectedIds] = useState&lt;string[]&gt;(
-    initialSelection ?? EMPTY_SELECTED
+    initialSelection ?? EMPTY_SELECTED,
   );
 
   return (
@@ -21841,7 +21841,7 @@ function WithImpliedAndDisallowedPicker() {
 
   const markingStates = useMemo(
     () =&gt; computeMarkingStates(selectedIds, impliedIds, disallowedIds),
-    [selectedIds, impliedIds, disallowedIds]
+    [selectedIds, impliedIds, disallowedIds],
   );
 
   const noop = useCallback(() =&gt; {}, []);
@@ -22529,7 +22529,7 @@ function createMockExcelMedia(): Media {
             &quot;Content-Type&quot;:
               &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
           },
-        })
+        }),
       ),
     fetchMetadata: () =&gt;
       Promise.resolve({
@@ -22627,7 +22627,7 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_XLSX_URL,
-      &quot;notional-excel-example.xlsx&quot;
+      &quot;notional-excel-example.xlsx&quot;,
     ),
   },
   render: (args: ExcelViewerMediaProps) =&gt; (
@@ -22715,7 +22715,7 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
     &lt;ExcelViewer
         media={createMockMediaFromUrl(
           SAMPLE_XLSX_URL,
-          &quot;notional-excel-example.xlsx&quot;
+          &quot;notional-excel-example.xlsx&quot;,
         )} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
@@ -23188,7 +23188,7 @@ function ControlledFormStory(): React.ReactElement {
     (fieldKey: string, value: unknown) =&gt; {
       setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   return (
@@ -23200,7 +23200,7 @@ function ControlledFormStory(): React.ReactElement {
             formState,
             (_key, value) =&gt;
               value instanceof File ? `File: ${value.name}` : value,
-            2
+            2,
           )}
         &lt;/pre&gt;
       &lt;/div&gt;
@@ -23287,7 +23287,7 @@ const disabledFieldInitialState: Record&lt;string, unknown&gt; = {
 const CUSTOM_STATUS_OPTIONS = [&quot;Requires approval&quot;, &quot;Ready to submit&quot;];
 
 function renderDisabledCustomField(
-  props: BaseFormFieldProps&lt;unknown&gt;
+  props: BaseFormFieldProps&lt;unknown&gt;,
 ): React.ReactNode {
   const selectedValue = props.value != null ? String(props.value) : undefined;
 
@@ -23321,17 +23321,17 @@ function DisabledFieldsStory(): React.ReactElement {
   const client = useOsdkClient();
   const employeeObjectSet = useMemo(
     () =&gt; client(Employee) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
   const [formState, setFormState] = useState&lt;Record&lt;string, unknown&gt;&gt;(
-    disabledFieldInitialState
+    disabledFieldInitialState,
   );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) =&gt; {
       setFormState((prev) =&gt; ({ ...prev, [fieldKey]: value }));
     },
-    []
+    [],
   );
 
   const disabledFormContent: ReadonlyArray&lt;FormContentItem&gt; = useMemo(
@@ -23466,7 +23466,7 @@ function DisabledFieldsStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -23938,7 +23938,7 @@ function ObjectSetFieldStory(): React.ReactElement {
   // prevent structural assignability, so an assertion is needed here.
   const employeeObjectSet = useMemo(
     () =&gt; client(Employee) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
 
   const objectSetFormContent: ReadonlyArray&lt;FormContentItem&gt; = useMemo(
@@ -23961,7 +23961,7 @@ function ObjectSetFieldStory(): React.ReactElement {
         },
       }),
     ],
-    [employeeObjectSet]
+    [employeeObjectSet],
   );
 
   return (
@@ -24909,7 +24909,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
       client(Employee).where({
         department: &quot;Marketing&quot;,
       }) as ObjectSet&lt;ObjectTypeDefinition&gt;,
-    [client]
+    [client],
   );
   const scopedObjectSelectFormContent = useMemo(
     (): ReadonlyArray&lt;FormContentItem&gt; =&gt; [
@@ -24924,7 +24924,7 @@ function ScopedObjectSelectStory(): React.ReactElement {
         },
       }),
     ],
-    [marketingEmployees]
+    [marketingEmployees],
   );
 
   return (
@@ -25693,7 +25693,7 @@ function domRectToPdfRect(
   clientRect: DOMRect,
   pageRect: DOMRect,
   pageHeight: number,
-  scale: number
+  scale: number,
 ): PdfRect {
   const x = (clientRect.left - pageRect.left) / scale;
   const width = clientRect.width / scale;
@@ -25799,7 +25799,7 @@ function AnnotationSidebarItem({
       e.stopPropagation();
       onDelete(annotation.id);
     },
-    [onDelete, annotation.id]
+    [onDelete, annotation.id],
   );
 
   const itemStyles: React.CSSProperties = {
@@ -25908,7 +25908,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
         // Read the pdfjs scale factor from the CSS variable
         const scale =
           parseFloat(
-            getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;)
+            getComputedStyle(pageEl).getPropertyValue(&quot;--scale-factor&quot;),
           ) || 1;
         const pageHeight = pageEl.clientHeight / scale;
 
@@ -25943,7 +25943,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
       container.addEventListener(&quot;mouseup&quot;, handleMouseUp);
       return () =&gt; container.removeEventListener(&quot;mouseup&quot;, handleMouseUp);
     },
-    [annotationModeActive]
+    [annotationModeActive],
   );
 
   return (
@@ -26555,7 +26555,7 @@ return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlag
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {})
+      }, {}),
     );
 
     const table = useReactTable({
@@ -26827,7 +26827,7 @@ export const ErrorState: Story = {
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {})
+      }, {}),
     );
 
     const table = useReactTable({
@@ -27459,7 +27459,7 @@ function WithValidationStory() {
       const visibleCount = columns.filter((c) =&gt; c.isVisible).length;
       return visibleCount &gt;= 2;
     },
-    []
+    [],
   );
 
   return (
@@ -27871,7 +27871,7 @@ const SAMPLE_IMAGE_DATA_URL = createSampleImageDataUrl();
 function createMockMedia(
   mimeType: string,
   fetchFn: () =&gt; Promise&lt;Response&gt;,
-  fileName: string
+  fileName: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -27908,7 +27908,7 @@ function createExcelMedia(): Media {
   return createMockMedia(
     &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
     () =&gt; Promise.resolve(new Response(buffer)),
-    &quot;employees.xlsx&quot;
+    &quot;employees.xlsx&quot;,
   );
 }
 
@@ -27920,7 +27920,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;image/png&quot;,
       () =&gt; fetch(SAMPLE_IMAGE_DATA_URL),
-      &quot;overview.png&quot;
+      &quot;overview.png&quot;,
     ),
   },
   markdown: {
@@ -27928,7 +27928,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;text/markdown&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-      &quot;overview.md&quot;
+      &quot;overview.md&quot;,
     ),
   },
   video: {
@@ -27936,7 +27936,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;video/mp4&quot;,
       () =&gt; fetch(SAMPLE_VIDEO_URL),
-      &quot;example.mp4&quot;
+      &quot;example.mp4&quot;,
     ),
   },
   email: {
@@ -27944,7 +27944,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;message/rfc822&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_EMAIL)),
-      &quot;overview.eml&quot;
+      &quot;overview.eml&quot;,
     ),
   },
   excel: {
@@ -27956,7 +27956,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;application/xml&quot;,
       () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
-      &quot;overview.xml&quot;
+      &quot;overview.xml&quot;,
     ),
   },
   tiff: {
@@ -27964,7 +27964,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;image/tiff&quot;,
       () =&gt; fetch(SAMPLE_TIFF_URL),
-      &quot;multi-page-tiff.tiff&quot;
+      &quot;multi-page-tiff.tiff&quot;,
     ),
   },
   unsupported: {
@@ -27972,7 +27972,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
     media: createMockMedia(
       &quot;application/octet-stream&quot;,
       () =&gt; Promise.resolve(new Response(&quot;Unsupported sample&quot;)),
-      &quot;overview.bin&quot;
+      &quot;overview.bin&quot;,
     ),
   },
 };
@@ -27985,10 +27985,10 @@ type OverviewApplyAction = Parameters&lt;
 
 function applyOverviewAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
-  applyAction: OverviewApplyAction
+  applyAction: OverviewApplyAction,
 ): ReturnType&lt;OverviewApplyAction&gt; {
   return applyAction(
-    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;OverviewApplyAction&gt;[0],
   );
 }
 
@@ -28037,7 +28037,7 @@ function ViewersTab({
 }: ViewersTabProps): React.ReactElement {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
-    MEDIA_EMPLOYEE_PK
+    MEDIA_EMPLOYEE_PK,
   );
 
   const selectedMockMedia = MOCK_VIEWER_MEDIA_BY_TYPE[selectedViewerType];
@@ -28085,11 +28085,11 @@ function FormsTab(): React.ReactElement {
   const handleSubmit = useCallback(
     (
       formState: FormState&lt;typeof actionDefinition&gt;,
-      applyAction: OverviewApplyAction
+      applyAction: OverviewApplyAction,
     ) =&gt; {
       return applyOverviewAction(formState, applyAction);
     },
-    []
+    [],
   );
 
   return (
@@ -28111,14 +28111,14 @@ function ComponentOverview(): React.ReactElement {
       const tab = event.currentTarget.dataset.tab as TabId;
       setActiveTab(tab);
     },
-    []
+    [],
   );
 
   const handleViewerTypeChange = useCallback(
     (event: React.ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
       setSelectedViewerType(event.currentTarget.value as ViewerTypeId);
     },
-    []
+    [],
   );
 
   return (
@@ -28393,7 +28393,7 @@ This is a **sample markdown** document rendered by the DocumentViewer.
 function createMockMedia(
   mimeType: string,
   fetchFn: () =&gt; Promise&lt;Response&gt;,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -28422,25 +28422,25 @@ const imageBlob = createSampleImageBlob();
 const mockPdfMedia = createMockMedia(
   &quot;application/pdf&quot;,
   () =&gt; fetch(SAMPLE_PDF_URL),
-  &quot;document.pdf&quot;
+  &quot;document.pdf&quot;,
 );
 
 const mockImageMedia = createMockMedia(
   &quot;image/png&quot;,
   () =&gt; Promise.resolve(new Response(imageBlob)),
-  &quot;photo.png&quot;
+  &quot;photo.png&quot;,
 );
 
 const mockMarkdownMedia = createMockMedia(
   &quot;text/markdown&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-  &quot;readme.md&quot;
+  &quot;readme.md&quot;,
 );
 
 const mockVideoMedia = createMockMedia(
   &quot;video/mp4&quot;,
   () =&gt; fetch(SAMPLE_VIDEO_URL),
-  &quot;example.mp4&quot;
+  &quot;example.mp4&quot;,
 );
 
 const SAMPLE_EML = `From: Alice &lt;alice@example.com&gt;
@@ -28455,7 +28455,7 @@ Content-Type: text/html; charset=utf-8
 const mockEmailMedia = createMockMedia(
   &quot;message/rfc822&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_EML)),
-  &quot;message.eml&quot;
+  &quot;message.eml&quot;,
 );
 
 const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
@@ -28469,7 +28469,7 @@ const SAMPLE_XML = `&lt;?xml version=&quot;1.0&quot;?&gt;
 const mockXmlMedia = createMockMedia(
   &quot;application/xml&quot;,
   () =&gt; Promise.resolve(new Response(SAMPLE_XML)),
-  &quot;data.xml&quot;
+  &quot;data.xml&quot;,
 );
 
 function createMockExcelMedia(): Media {
@@ -28484,7 +28484,7 @@ function createMockExcelMedia(): Media {
   return createMockMedia(
     &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
     () =&gt; Promise.resolve(new Response(buf)),
-    &quot;report.xlsx&quot;
+    &quot;report.xlsx&quot;,
   );
 }
 
@@ -28493,13 +28493,13 @@ const mockExcelMedia = createMockExcelMedia();
 const mockTiffMedia = createMockMedia(
   &quot;image/tiff&quot;,
   () =&gt; fetch(SAMPLE_TIFF_URL),
-  &quot;multi-page-tiff.tiff&quot;
+  &quot;multi-page-tiff.tiff&quot;,
 );
 
 const mockUnsupportedMedia = createMockMedia(
   &quot;application/octet-stream&quot;,
   () =&gt; Promise.resolve(new Response(&quot;&quot;)),
-  &quot;data.bin&quot;
+  &quot;data.bin&quot;,
 );
 
 const meta: Meta&lt;DocumentViewerProps&gt; = {
@@ -28657,7 +28657,7 @@ export const TiffWithPdfConversion: Story = {
             return new HttpResponse(buffer, {
               headers: { &quot;Content-Type&quot;: &quot;application/pdf&quot; },
             });
-          }
+          },
         ),
         // Mock MIO transform API: get status
         http.get(&quot;*/api/v2/mediasets/*/items/*/transformationJobs/*&quot;, () =&gt; {
@@ -29234,7 +29234,7 @@ export const Default: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
     return (
       &lt;div style={SIDEBAR_STYLE}&gt;
@@ -29280,7 +29280,7 @@ export const IntegerNumberRangeRounding: Story = {
   render: ({ objectType: _ot, objectSet: _os, ...args }) =&gt; {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [employeeNumberFilter],
-      []
+      [],
     );
     return (
       &lt;div style={SIDEBAR_STYLE}&gt;
@@ -29301,12 +29301,12 @@ function WithObjectSetStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       client(Employee).where({
         department: &quot;Marketing&quot;,
       }),
-    [client]
+    [client],
   );
 
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [teamFilter, locationCityFilter],
-    []
+    [],
   );
 
   return (
@@ -29370,7 +29370,7 @@ function AddFilterModeStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         isVisible: false,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
-    []
+    [],
   );
 
   return (
@@ -29424,7 +29424,7 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -29599,7 +29599,7 @@ export const WithSorting: Story = {
 function CollapsiblePanelStory(
   args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
     onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  }
+  },
 ) {
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
@@ -29646,7 +29646,7 @@ export const CollapsiblePanel: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;CollapsiblePanelStory
@@ -29682,7 +29682,7 @@ export const KeywordSearch: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -29709,7 +29709,7 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
   const withColorMap = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -29728,7 +29728,7 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -29800,7 +29800,7 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
   const withRenderValue = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -29823,7 +29823,7 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         renderValue: (value: string) =&gt; value.toUpperCase(),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -29942,7 +29942,7 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         ),
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -29987,7 +29987,7 @@ export const WithRenderValueAsReactNode: Story = {
 };
 
 function WithListogramDisplayModesStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   const fullDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -30001,7 +30001,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;full&quot; },
       },
     ],
-    []
+    [],
   );
   const countDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -30015,7 +30015,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;count&quot; },
       },
     ],
-    []
+    [],
   );
   const minimalDefs = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -30029,7 +30029,7 @@ function WithListogramDisplayModesStory(
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -30130,7 +30130,7 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
     ],
-    []
+    [],
   );
   const withoutCounts = useMemo(
     (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [
@@ -30153,7 +30153,7 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         showCount: false,
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -30219,7 +30219,7 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -30271,11 +30271,11 @@ export const WithCheckbox: Story = {
         })
         .map((row) =&gt; {
           const label = expectedDepartmentOrder.find((name) =&gt;
-            row.textContent?.includes(name)
+            row.textContent?.includes(name),
           );
           if (label == null) {
             throw new Error(
-              `Unable to identify department row from &quot;${row.textContent}&quot;`
+              `Unable to identify department row from &quot;${row.textContent}&quot;`,
             );
           }
           return label;
@@ -30287,16 +30287,16 @@ export const WithCheckbox: Story = {
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
     await waitFor(() =&gt;
       expect(
-        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
-      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;)
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }),
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
 
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }));
     await waitFor(() =&gt;
       expect(
-        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; })
-      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;)
+        canvas.getByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; }),
+      ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;false&quot;),
     );
     await expect(visibleDepartmentOrder()).toEqual(expectedDepartmentOrder);
   },
@@ -30317,7 +30317,7 @@ function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt
         filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -30376,11 +30376,11 @@ export const WithBelowFoldSelection: Story = {
     const renderedDepartments = () =&gt;
       canvas.getAllByRole(&quot;button&quot;, { name: departmentRowName }).map((row) =&gt; {
         const label = allDepartments.find((name) =&gt;
-          row.textContent?.includes(name)
+          row.textContent?.includes(name),
         );
         if (label == null) {
           throw new Error(
-            `Unable to identify department row from &quot;${row.textContent}&quot;`
+            `Unable to identify department row from &quot;${row.textContent}&quot;`,
           );
         }
         return label;
@@ -30408,7 +30408,7 @@ export const WithBelowFoldSelection: Story = {
     await canvas.findByRole(&quot;button&quot;, { name: &quot;Marketing 4&quot; });
     await expect(renderedDepartments()).toEqual(initialCollapsedOrder);
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; }),
     ).toHaveAttribute(&quot;aria-pressed&quot;, &quot;true&quot;);
 
     // Unselect the below-fold &quot;Sales&quot;: it is no longer selected, so it drops
@@ -30419,15 +30419,15 @@ export const WithBelowFoldSelection: Story = {
 
     // Expand with &quot;View all (N)&quot; to reach &quot;Sales&quot; again, then re-select it.
     await userEvent.click(
-      canvas.getByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u })
+      canvas.getByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u }),
     );
     await canvas.findByRole(&quot;button&quot;, { name: &quot;View less&quot; });
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; }));
     await waitFor(() =&gt;
       expect(canvas.getByRole(&quot;button&quot;, { name: &quot;Sales 2&quot; })).toHaveAttribute(
         &quot;aria-pressed&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
 
     // &quot;View less&quot; collapses back to the initial state: the head plus the
@@ -30435,10 +30435,10 @@ export const WithBelowFoldSelection: Story = {
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;View less&quot; }));
     await canvas.findByRole(&quot;button&quot;, { name: /^View all \(\d+\)/u });
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: &quot;View less&quot; })
+      canvas.queryByRole(&quot;button&quot;, { name: &quot;View less&quot; }),
     ).toBeNull();
     await waitFor(() =&gt;
-      expect(renderedDepartments()).toEqual(initialCollapsedOrder)
+      expect(renderedDepartments()).toEqual(initialCollapsedOrder),
     );
   },
 };
@@ -30457,11 +30457,11 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   return (
@@ -30574,7 +30574,7 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -30583,7 +30583,7 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -30678,7 +30678,7 @@ export const WithStaticValues: Story = {
 function FullFeaturedStory(
   args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
     onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  }
+  },
 ) {
   const [filterClause, setFilterClause] = useState&lt;
     WhereClause&lt;Employee&gt; | undefined
@@ -30696,11 +30696,11 @@ function FullFeaturedStory(
             return def.key !== filterKey;
           }
           return true;
-        })
+        }),
       );
       argsOnFilterRemoved?.(filterKey);
     },
-    [argsOnFilterRemoved]
+    [argsOnFilterRemoved],
   );
 
   const argsOnReset = args.onReset;
@@ -30715,7 +30715,7 @@ function FullFeaturedStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -30784,7 +30784,7 @@ export const FullFeatured: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
@@ -30793,7 +30793,7 @@ export const FullFeatured: Story = {
 };
 
 function WithLinkedPropertyFiltersStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   const client = useOsdkClient();
   const objectSet = useMemo(() =&gt; client(Employee), [client]);
@@ -30823,7 +30823,7 @@ function WithLinkedPropertyFiltersStory(
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -30832,7 +30832,7 @@ function WithLinkedPropertyFiltersStory(
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -30995,7 +30995,7 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -31134,7 +31134,7 @@ function CustomNameContainsFilter({
         customState: { value },
       });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   const handleClear = useCallback(() =&gt; {
@@ -31211,7 +31211,7 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         },
       },
     ],
-    []
+    [],
   );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
@@ -31220,7 +31220,7 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
       setFilterClause(clause);
       argsOnFilterClauseChanged?.(clause);
     },
-    [argsOnFilterClauseChanged]
+    [argsOnFilterClauseChanged],
   );
 
   return (
@@ -31481,7 +31481,7 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
     (clause: WhereClause&lt;Employee&gt;) =&gt; {
       setFilterClause(clause);
     },
-    []
+    [],
   );
 
   return (
@@ -31604,7 +31604,7 @@ function ResetGateMirror({
   }, [initialFilterStates]);
 
   const [mirror, setMirror] = useState&lt;Map&lt;string, FilterState&gt;&gt;(
-    () =&gt; new Map(initialMirror)
+    () =&gt; new Map(initialMirror),
   );
 
   const argsOnFilterStateChanged = storyArgs.onFilterStateChanged;
@@ -31617,7 +31617,7 @@ function ResetGateMirror({
       });
       argsOnFilterStateChanged?.(definition, newState);
     },
-    [argsOnFilterStateChanged]
+    [argsOnFilterStateChanged],
   );
 
   const argsOnReset = storyArgs.onReset;
@@ -31654,7 +31654,7 @@ function ResetGateMirror({
 }
 
 function WithResetButtonEmptyInitialStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   return &lt;ResetGateMirror storyArgs={args} /&gt;;
 }
@@ -31685,7 +31685,7 @@ export const WithResetButtonEmptyInitial: Story = {
 };
 
 function WithResetButtonNonEmptyInitialStory(
-  args: Partial&lt;EmployeeFilterListProps&gt;
+  args: Partial&lt;EmployeeFilterListProps&gt;,
 ) {
   return (
     &lt;ResetGateMirror
@@ -31763,7 +31763,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -31797,7 +31797,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
               <pre><code>const IntegerNumberRangeRounding = () =&gt; {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion&lt;Employee&gt;[] =&gt; [employeeNumberFilter],
-      []
+      [],
     );
 
     return (
@@ -32008,7 +32008,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -32046,7 +32046,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         departmentFilter,
         locationCityFilter,
       ],
-      []
+      [],
     );
 
     return (
@@ -32274,7 +32274,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
         updateArgs({ collapsed });
         argsOnCollapsedChange?.(collapsed);
       },
-      [updateArgs, argsOnCollapsedChange]
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -32628,7 +32628,7 @@ function InlineFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) =&gt; setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   return (
     &lt;span className={styles.inlineFieldGroup}&gt;
@@ -32657,11 +32657,11 @@ function PopoverFilterField({
 }: FilterToolbarItemProps): React.ReactElement {
   const handleStateChange = useCallback(
     (state: FilterState) =&gt; setFilterState(filterKey, state),
-    [filterKey, setFilterState]
+    [filterKey, setFilterState],
   );
   const handleRemove = useCallback(
     () =&gt; clearFilterState(filterKey),
-    [filterKey, clearFilterState]
+    [filterKey, clearFilterState],
   );
   return (
     &lt;FilterPopover
@@ -32968,7 +32968,7 @@ const sampleImageDataUrl = createSampleImageDataUrl();
 function createMockImageMedia(
   dataUrl: string,
   mimeType: string,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: async () =&gt; {
@@ -33166,12 +33166,12 @@ const SAMPLE_CONVERSATION: UIMessage[] = [
   makeMessage(&quot;user&quot;, &quot;What can you help me with?&quot;),
   makeMessage(
     &quot;assistant&quot;,
-    &quot;I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?&quot;
+    &quot;I can assist you with a wide range of tasks! For example, I can help answer questions, analyze data, write content, brainstorm ideas, and more. What would you like to work on today?&quot;,
   ),
   makeMessage(&quot;user&quot;, &quot;Can you summarize the latest sales report?&quot;),
   makeMessage(
     &quot;assistant&quot;,
-    &quot;Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?&quot;
+    &quot;Based on the Q1 sales report:\n\n- Total revenue: $2.4M (up 12% QoQ)\n- New customers: 148 (up 23%)\n- Average deal size: $16.2K\n- Top performing region: Northeast\n\nThe main growth driver was enterprise expansion deals. Would you like me to dig into any specific area?&quot;,
   ),
 ];
 
@@ -33191,7 +33191,7 @@ function InteractiveChat(
   &gt; &amp; {
     initialMessages?: UIMessage[];
     simulateError?: boolean;
-  }
+  },
 ) {
   const { initialMessages = [], simulateError = false, ...rest } = props;
   const [messages, setMessages] = React.useState&lt;UIMessage[]&gt;(initialMessages);
@@ -33201,7 +33201,7 @@ function InteractiveChat(
   const [error, setError] = React.useState&lt;Error | undefined&gt;(
     simulateError
       ? new Error(&quot;Connection timed out. Please try again.&quot;)
-      : undefined
+      : undefined,
   );
   const abortRef = React.useRef(false);
 
@@ -34351,7 +34351,7 @@ export const Default: Story = {
   render: () =&gt; {
     const { object: employee, isLoading } = useOsdkObject(
       Employee,
-      MEDIA_EMPLOYEE_PK
+      MEDIA_EMPLOYEE_PK,
     );
 
     if (isLoading || !employee?.employeeDocuments) {
@@ -34411,7 +34411,7 @@ const employee = useOsdkObject(Employee, employeePk);
               <pre><code>const Default = () =&gt; {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
-    MEDIA_EMPLOYEE_PK
+    MEDIA_EMPLOYEE_PK,
   );
 
   if (isLoading || !employee?.employeeDocuments) {
@@ -34534,11 +34534,11 @@ function createMockMedia(url: string, filename: string): Media {
 
 const mockMedia = createMockMedia(
   SAMPLE_PDF_URL,
-  &quot;compressed.tracemonkey-pldi-09.pdf&quot;
+  &quot;compressed.tracemonkey-pldi-09.pdf&quot;,
 );
 const mockBookmarkedMedia = createMockMedia(
   BOOKMARKED_PDF_URL,
-  &quot;pdf-example-bookmarks.pdf&quot;
+  &quot;pdf-example-bookmarks.pdf&quot;,
 );
 
 const meta: Meta&lt;PdfViewerMediaProps&gt; = {
@@ -36902,7 +36902,7 @@ type StoryApplyAction&lt;Q extends ActionDefinition&lt;unknown&gt;&gt; = Paramet
 interface UseActionFormSubmissionOptions&lt;Q extends ActionDefinition&lt;unknown&gt;&gt; {
   applyStoryAction: (
     formState: FormState&lt;Q&gt;,
-    applyAction: StoryApplyAction&lt;Q&gt;
+    applyAction: StoryApplyAction&lt;Q&gt;,
   ) =&gt; Promise&lt;ActionEditResponse | undefined&gt;;
   onSubmit?: StoryOnSubmit&lt;Q&gt;;
 }
@@ -37014,36 +37014,36 @@ function handleSuccess(result: ActionEditResponse | undefined): void {
 
 function applyUpdateEmployeeStoryAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
-  applyAction: UpdateEmployeeApplyAction
+  applyAction: UpdateEmployeeApplyAction,
 ): ReturnType&lt;UpdateEmployeeApplyAction&gt; {
   // ActionForm passes coerced form values to custom submit handlers at runtime.
   // The callback type currently exposes metadata-shaped ActionParameters, so the
   // story uses the callback&#39;s parameter type to keep the example wired to the
   // real apply path while preserving type safety.
   return applyAction(
-    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0],
   );
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState&lt;typeof generatedFieldsActionDefinition&gt;,
-  applyAction: GeneratedFieldsApplyAction
+  applyAction: GeneratedFieldsApplyAction,
 ): ReturnType&lt;GeneratedFieldsApplyAction&gt; {
   // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
   // using the same applyAction path even though the callback type is metadata-shaped.
   return applyAction(
-    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0],
   );
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState&lt;typeof unsupportedFieldsActionDefinition&gt;,
-  applyAction: UnsupportedFieldsApplyAction
+  applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType&lt;UnsupportedFieldsApplyAction&gt; {
   // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
   // through the real applyAction path so the response panel shows true results.
   return applyAction(
-    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0]
+    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0],
   );
 }
 
@@ -37105,7 +37105,7 @@ function useActionFormSubmission&lt;Q extends ActionDefinition&lt;unknown&gt;&gt
         throw error;
       }
     },
-    [applyStoryAction, onSubmit]
+    [applyStoryAction, onSubmit],
   );
 
   const handleStoryError: StoryOnError&lt;Q&gt; = useCallback((error) =&gt; {
@@ -37338,7 +37338,7 @@ export const SubmitSuccess: Story = {
 
     await waitFor(() =&gt; expect(successSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByText(&quot;Submit succeeded.&quot;)
+      await canvas.findByText(&quot;Submit succeeded.&quot;),
     ).toBeInTheDocument();
     await expect(await canvas.findByText(/Ada Lovelace/u)).toBeInTheDocument();
   },
@@ -37367,7 +37367,7 @@ export const SubmitFailure: Story = {
     await waitFor(() =&gt; expect(errorSpy).toHaveBeenCalled());
     await expect(await canvas.findByText(&quot;Submit failed.&quot;)).toBeInTheDocument();
     await expect(
-      await canvas.findByText(/Demo submission failed/u)
+      await canvas.findByText(/Demo submission failed/u),
     ).toBeInTheDocument();
   },
   parameters: {
@@ -37419,7 +37419,7 @@ export const SubmitDisabled: Story = {
   play: async ({ canvasElement }) =&gt; {
     const canvas = within(canvasElement);
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu })
+      await canvas.findByRole(&quot;button&quot;, { name: /submit/iu }),
     ).toBeDisabled();
   },
 };
@@ -37444,7 +37444,7 @@ export const SlowCustomSubmit: Story = {
 
     await waitFor(() =&gt; expect(slowSubmitSpy).toHaveBeenCalled());
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu })
+      await canvas.findByRole(&quot;button&quot;, { name: /submitting/iu }),
     ).toBeDisabled();
   },
   parameters: {
@@ -37487,8 +37487,8 @@ export const CustomSubmitHandler: Story = {
 
     await waitFor(() =&gt;
       expect(customSubmitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ fullName: &quot;Grace Hopper&quot; })
-      )
+        expect.objectContaining({ fullName: &quot;Grace Hopper&quot; }),
+      ),
     );
   },
   parameters: {
@@ -38326,7 +38326,7 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Unpin Column&quot;);
     await waitFor(() =&gt;
-      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;false&quot;)
+      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;false&quot;),
     );
     await expect(args.onColumnsPinnedChanged).toHaveBeenCalled();
 
@@ -38334,14 +38334,14 @@ export const WithDefaultColumnPinning: Story = {
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Pin column&quot;);
     await waitFor(() =&gt;
-      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;)
+      expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;),
     );
 
     // Assert that pinned cells have an opaque background
     // and matches its row background color.
     const pinnedCell = await waitFor(() =&gt; {
       const cell = canvasElement.querySelector&lt;HTMLElement&gt;(
-        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;
+        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;,
       );
       if (cell == null) {
         throw new Error(&quot;no left-pinned body cell rendered&quot;);
@@ -38355,7 +38355,7 @@ export const WithDefaultColumnPinning: Story = {
     const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
     await expect(pinnedCellBg).not.toBe(&quot;rgba(0, 0, 0, 0)&quot;);
     await expect(pinnedCellBg).toBe(
-      getComputedStyle(pinnedRow).backgroundColor
+      getComputedStyle(pinnedRow).backgroundColor,
     );
   },
 };
@@ -38407,27 +38407,27 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
     // Header for the RDP column renders once the filtered rows load.
     await canvas.findByText(&quot;Manager&quot;);
     await waitFor(() =&gt;
-      expect(canvas.getAllByRole(&quot;row&quot;).length).toBeGreaterThan(1)
+      expect(canvas.getAllByRole(&quot;row&quot;).length).toBeGreaterThan(1),
     );
 
     // defaultOrderBy seeds an ascending sort on the derived managerName column.
     await getColumnHeader(canvas, &quot;managerName&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;),
     );
 
     // Sorting an RDP column flips direction through the same header menu.
     await openHeaderMenu(canvas, &quot;managerName&quot;);
     await clickHeaderMenuItem(&quot;Sort descending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;desc&quot;),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, &quot;managerName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;managerName&quot;)).toBe(&quot;asc&quot;),
     );
   },
   parameters: {
@@ -38546,8 +38546,8 @@ const columnDefinitions: ColumnDefinition&lt;Employee, {}, SeniorityFunctions&gt
     // At least one row should resolve a computed seniority value.
     await waitFor(() =&gt;
       expect(
-        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length
-      ).toBeGreaterThan(0)
+        canvas.getAllByText(/^(Senior|Mid|Junior|Unknown)$/u).length,
+      ).toBeGreaterThan(0),
     );
   },
 };
@@ -38648,11 +38648,11 @@ export const WithCustomColumn: Story = {
 
     // Wait for rows (and their action buttons) to render.
     await expect(
-      (await canvas.findAllByRole(&quot;button&quot;, { name: &quot;View&quot; })).length
+      (await canvas.findAllByRole(&quot;button&quot;, { name: &quot;View&quot; })).length,
     ).toBeGreaterThan(0);
     await expect(canvas.getByText(&quot;Actions&quot;)).toBeInTheDocument();
     await expect(
-      canvas.getAllByRole(&quot;button&quot;, { name: &quot;Edit&quot; }).length
+      canvas.getAllByRole(&quot;button&quot;, { name: &quot;Edit&quot; }).length,
     ).toBeGreaterThan(0);
   },
 };
@@ -38773,11 +38773,11 @@ export const WithCustomRenderers: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.getByRole(&quot;link&quot;, { name: &quot;Employee Name&quot; })
+      canvas.getByRole(&quot;link&quot;, { name: &quot;Employee Name&quot; }),
     ).toBeInTheDocument();
     await expect(canvas.getByText(&quot;Employment Status&quot;)).toBeInTheDocument();
     await expect(
-      canvas.getAllByText(/^(Active|Inactive)$/u).length
+      canvas.getAllByText(/^(Active|Inactive)$/u).length,
     ).toBeGreaterThan(0);
   },
 };
@@ -39153,7 +39153,7 @@ return &lt;ObjectTable objectType={Employee} objectSet={employeeObjectSet} /&gt;
     // Wait for the (MSW-mocked) rows to load.
     await canvas.findAllByText(&quot;Marketing Manager&quot;);
     await expect(
-      canvas.getAllByText(&quot;Marketing Manager&quot;).length
+      canvas.getAllByText(&quot;Marketing Manager&quot;).length,
     ).toBeGreaterThan(1);
     await expect(canvas.queryByText(&quot;Content Manager&quot;)).not.toBeInTheDocument();
   },
@@ -39391,11 +39391,11 @@ export const CustomColumnWidths: Story = {
     // Drag the resize handle to widen the column.
     await dragResizeHandle(fullNameHeader, 120);
     await waitFor(() =&gt;
-      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250)
+      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250),
     );
     await expect(args.onColumnResize).toHaveBeenCalledWith(
       &quot;fullName&quot;,
-      expect.any(Number)
+      expect.any(Number),
     );
 
     // Double-clicking the handle resets the column to its configured width.
@@ -39491,7 +39491,7 @@ return (
     const canvas = within(canvasElement);
 
     await expect(
-      await canvas.findByText(&quot;No saved views found.&quot;)
+      await canvas.findByText(&quot;No saved views found.&quot;),
     ).toBeInTheDocument();
     await expect(canvas.queryByText(TARGET_DATA)).not.toBeInTheDocument();
   },
@@ -39546,7 +39546,7 @@ return (
         &quot;data-highlight-row&quot;:
           rowData.locationCity === &quot;New York&quot; ? &quot;true&quot; : undefined,
       }),
-      []
+      [],
     );
 
     return (
@@ -39581,12 +39581,12 @@ return (
     // New York employees carry the highlight attribute...
     await expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
       &quot;data-highlight-row&quot;,
-      &quot;true&quot;
+      &quot;true&quot;,
     );
 
     // ...while non–New York employees do not.
     await expect(
-      rowContaining(canvas.getByText(&quot;Charlotte Weber&quot;))
+      rowContaining(canvas.getByText(&quot;Charlotte Weber&quot;)),
     ).not.toHaveAttribute(&quot;data-highlight-row&quot;);
   },
 };
@@ -39626,7 +39626,7 @@ export const DisableAllHeaderMenuFeatures: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: /Open header menu/iu })
+      canvas.queryByRole(&quot;button&quot;, { name: /Open header menu/iu }),
     ).not.toBeInTheDocument();
   },
 };
@@ -39726,7 +39726,7 @@ import { ObjectTable } from "@osdk/react-components-storybook";</code></pre>
         &quot;data-highlight-row&quot;:
           rowData.locationCity === &quot;New York&quot; ? &quot;true&quot; : undefined,
       }),
-      []
+      [],
     );
 
     return (
@@ -39972,7 +39972,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -40035,25 +40035,25 @@ return (
         expect.objectContaining({
           columnId: &quot;fullName&quot;,
           newValue: &quot;Ahmed Williamson&quot;,
-        })
-      )
+        }),
+      ),
     );
 
     // Dropdown edit (department, column 3) — visible once the row is focused.
     const departmentCombobox = await within(cellsOf()[3]).findByRole(
-      &quot;combobox&quot;
+      &quot;combobox&quot;,
     );
     await userEvent.click(departmentCombobox);
     await userEvent.click(
-      await screen.findByRole(&quot;option&quot;, { name: &quot;Engineering&quot; })
+      await screen.findByRole(&quot;option&quot;, { name: &quot;Engineering&quot; }),
     );
     await waitFor(() =&gt;
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({
           columnId: &quot;department&quot;,
           newValue: &quot;Engineering&quot;,
-        })
-      )
+        }),
+      ),
     );
 
     // Date edit (firstFullTimeStartDate, column 5) — focusing opens the
@@ -40063,14 +40063,14 @@ return (
     await userEvent.click(await screen.findByRole(&quot;button&quot;, { name: &quot;Today&quot; }));
     await waitFor(() =&gt;
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
-        expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; })
-      )
+        expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; }),
+      ),
     );
 
     // Cancel exits edit mode; the &quot;Edit Table&quot; button returns.
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Cancel&quot; }));
     await expect(
-      await canvas.findByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; })
+      await canvas.findByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; }),
     ).toBeInTheDocument();
   },
 };
@@ -40182,7 +40182,7 @@ export const EditableWithValidation: Story = {
       // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         return true;
-      }
+      },
     ),
   },
   parameters: {
@@ -40303,10 +40303,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;Validation error&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;Validation error&quot;)).toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; }),
     ).toBeDisabled();
 
     // Correcting the value clears the error and re-enables Submit Edits.
@@ -40316,10 +40316,10 @@ return (
     await userEvent.tab();
 
     await waitFor(() =&gt;
-      expect(canvas.queryByText(&quot;Validation error&quot;)).not.toBeInTheDocument()
+      expect(canvas.queryByText(&quot;Validation error&quot;)).not.toBeInTheDocument(),
     );
     await expect(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Submit Edits&quot; }),
     ).toBeEnabled();
 
     // Restore the original value
@@ -40328,7 +40328,7 @@ return (
     await userEvent.type(nameInput, TARGET_DATA);
     await userEvent.tab();
     await waitFor(() =&gt;
-      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument()
+      expect(canvas.getByDisplayValue(TARGET_DATA)).toBeInTheDocument(),
     );
   },
 };
@@ -40342,7 +40342,7 @@ export const WithSubmitEditsButton: Story = {
       async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
         await new Promise((resolve) =&gt; setTimeout(resolve, 1000));
         return true;
-      }
+      },
     ),
   } as any,
   parameters: {
@@ -40488,9 +40488,9 @@ return (
     await waitFor(
       () =&gt;
         expect(
-          canvas.getByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; })
+          canvas.getByRole(&quot;button&quot;, { name: &quot;Edit Table&quot; }),
         ).toBeInTheDocument(),
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   },
 };
@@ -40593,12 +40593,12 @@ return (
 
     // jobTitle (column 1) is editable only for the Senior Product Manager.
     const editableCell = within(
-      rowContaining(canvas.getByText(&quot;Margaret Jackson&quot;))
+      rowContaining(canvas.getByText(&quot;Margaret Jackson&quot;)),
     ).getAllByRole(&quot;cell&quot;);
     await expect(editableCell[1]).toHaveAttribute(&quot;data-editable&quot;, &quot;true&quot;);
 
     const nonEditableCell = within(
-      rowContaining(canvas.getByText(TARGET_DATA))
+      rowContaining(canvas.getByText(TARGET_DATA)),
     ).getAllByRole(&quot;cell&quot;);
     await expect(nonEditableCell[1]).not.toHaveAttribute(&quot;data-editable&quot;);
 
@@ -40608,7 +40608,7 @@ return (
     void fireEvent.click(await within(opRow).findByRole(&quot;combobox&quot;));
     await expect(await screen.findAllByRole(&quot;option&quot;)).toHaveLength(2);
     await expect(
-      screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
+      screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
     ).not.toBeInTheDocument();
     await userEvent.keyboard(&quot;{Escape}&quot;);
 
@@ -40617,15 +40617,15 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     void fireEvent.click(await within(ahmedRow).findByRole(&quot;combobox&quot;));
     await expect(
-      await screen.findByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
+      await screen.findByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
     ).toBeInTheDocument();
 
     // Close the dropdown so the story ends with no popup open.
     await userEvent.keyboard(&quot;{Escape}&quot;);
     await waitFor(() =&gt;
       expect(
-        screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; })
-      ).not.toBeInTheDocument()
+        screen.queryByRole(&quot;option&quot;, { name: &quot;Finance&quot; }),
+      ).not.toBeInTheDocument(),
     );
   },
 };
@@ -40670,7 +40670,7 @@ return (
         args.onCellValueChanged?.(editInfo as any);
         setLastEdit(editInfo);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -40834,7 +40834,7 @@ return (
           // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
           async (edits: CellEditInfo&lt;Osdk.Instance&lt;Employee&gt;&gt;[]) =&gt; {
             return true;
-          }
+          },
         )}
         objectType={Employee} /&gt;
 &lt;/div&gt;;</code></pre>
@@ -41034,7 +41034,7 @@ export const WithContextMenu: Story = {
     // Clicking outside the menu closes it.
     await userEvent.click(canvas.getByText(&quot;Right click on any cell&quot;));
     await waitFor(() =&gt;
-      expect(screen.queryByText(&quot;Cell Value:&quot;)).not.toBeInTheDocument()
+      expect(screen.queryByText(&quot;Cell Value:&quot;)).not.toBeInTheDocument(),
     );
   },
 };
@@ -41110,7 +41110,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent(&quot;onRowClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -41119,7 +41119,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent(&quot;onColumnHeaderClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -41129,7 +41129,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent(&quot;onRowSelectionChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -41138,7 +41138,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent(&quot;onOrderByChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -41146,7 +41146,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent(&quot;onColumnVisibilityChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -41154,7 +41154,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent(&quot;onColumnsPinnedChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -41162,7 +41162,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -41234,7 +41234,7 @@ export const EventListeners: Story = {
     const fullNameHeader = await getColumnHeader(canvas, &quot;fullName&quot;);
     await userEvent.click(within(fullNameHeader).getByText(&quot;Name&quot;));
     await waitFor(() =&gt;
-      expect(args.onColumnHeaderClick).toHaveBeenCalledWith(&quot;fullName&quot;)
+      expect(args.onColumnHeaderClick).toHaveBeenCalledWith(&quot;fullName&quot;),
     );
 
     // onRowSelectionChanged: toggling a row checkbox (selectionMode &quot;multiple&quot;).
@@ -41265,7 +41265,7 @@ export const EventListeners: Story = {
     await userEvent.click(removeButtons[0]);
     await userEvent.click(await screen.findByRole(&quot;button&quot;, { name: &quot;Apply&quot; }));
     await waitFor(() =&gt;
-      expect(args.onColumnVisibilityChanged).toHaveBeenCalled()
+      expect(args.onColumnVisibilityChanged).toHaveBeenCalled(),
     );
 
     // Reset the row selection so the story does not end with a checked row.
@@ -41359,7 +41359,7 @@ export const EventListeners: Story = {
         setClickedRow(employee);
         setLastEvent(&quot;onRowClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnHeaderClick = useCallback(
@@ -41368,7 +41368,7 @@ export const EventListeners: Story = {
         setClickedColumn(columnId);
         setLastEvent(&quot;onColumnHeaderClick&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleRowSelectionChanged = useCallback(
@@ -41378,7 +41378,7 @@ export const EventListeners: Story = {
         setIsSelectAll(change.isSelectAll);
         setLastEvent(&quot;onRowSelectionChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleOrderByChanged = useCallback(
@@ -41387,7 +41387,7 @@ export const EventListeners: Story = {
         setOrderBy(newOrderBy);
         setLastEvent(&quot;onOrderByChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnVisibilityChanged = useCallback(
@@ -41395,7 +41395,7 @@ export const EventListeners: Story = {
         args.onColumnVisibilityChanged?.(visibilityState);
         setLastEvent(&quot;onColumnVisibilityChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnsPinnedChanged = useCallback(
@@ -41403,7 +41403,7 @@ export const EventListeners: Story = {
         args.onColumnsPinnedChanged?.(pinnedState);
         setLastEvent(&quot;onColumnsPinnedChanged&quot;);
       },
-      [args]
+      [args],
     );
 
     const handleColumnResize = useCallback(
@@ -41411,7 +41411,7 @@ export const EventListeners: Story = {
         args.onColumnResize?.(columnId, newWidth);
         setLastEvent(`onColumnResize (${columnId})`);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -41579,16 +41579,16 @@ export const Default: Story = {
 
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Sort ascending&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Sort ascending&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Sort descending&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Sort descending&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Pin column&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Pin column&quot; }),
     ).toBeInTheDocument();
     await expect(
-      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      screen.getByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     // Dismiss the menu so the story is left in a clean state.
@@ -41746,7 +41746,7 @@ export const HeaderMenuInsideBlueprintDrawer: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -41779,7 +41779,7 @@ export const HeaderMenuInsideBlueprintDialog: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -41812,7 +41812,7 @@ export const HeaderMenuInsideBaseUIDialog: Story = {
 
     await openHeaderMenu(screen, &quot;fullName&quot;);
     await expect(
-      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; })
+      await screen.findByRole(&quot;menuitem&quot;, { name: &quot;Configure Columns&quot; }),
     ).toBeInTheDocument();
 
     await userEvent.keyboard(&quot;{Escape}&quot;);
@@ -41993,7 +41993,7 @@ export const SingleSelection: Story = {
 
     // No top-level &quot;Select all rows&quot; checkbox in single-selection mode.
     await expect(
-      canvas.queryByRole(&quot;checkbox&quot;, { name: /Select all rows/u })
+      canvas.queryByRole(&quot;checkbox&quot;, { name: /Select all rows/u }),
     ).not.toBeInTheDocument();
 
     // Selecting the first row checks it and notifies the consumer.
@@ -42102,7 +42102,7 @@ return (
   },
   render: (args) =&gt; {
     const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;(
-      args.selectedRows ?? []
+      args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState&lt;boolean&gt;(false);
     const handleRowSelectionChanged = useCallback(
@@ -42114,7 +42114,7 @@ return (
         setSelectedRows(change.selectedRows.map((r) =&gt; r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -42166,23 +42166,23 @@ return (
     await userEvent.click((await rowCheckboxes())[0]);
     await waitFor(() =&gt; expect(args.onRowSelectionChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;1 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;1 employees&quot;)).toBeInTheDocument(),
     );
 
     await userEvent.click((await rowCheckboxes())[1]);
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;2 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;2 employees&quot;)).toBeInTheDocument(),
     );
 
     // Clearing resets the controlled selection back to zero.
     await userEvent.click(
-      canvas.getByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; })
+      canvas.getByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; }),
     );
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;0 employees&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;0 employees&quot;)).toBeInTheDocument(),
     );
     await expect(
-      canvas.queryByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; })
+      canvas.queryByRole(&quot;button&quot;, { name: &quot;Clear Selection&quot; }),
     ).not.toBeInTheDocument();
   },
 };
@@ -42239,7 +42239,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -42300,13 +42300,13 @@ return (
     await userEvent.click(canvas.getByText(TARGET_DATA));
     await waitFor(() =&gt; expect(args.onFocusedRowChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument()
+      expect(canvas.getByText(/Ahmed Williams \(#\d+\)/u)).toBeInTheDocument(),
     );
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
 
     // Clicking outside the table clears focus via onFocusedRowChanged(null).
@@ -42314,8 +42314,8 @@ return (
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;false&quot;
-      )
+        &quot;false&quot;,
+      ),
     );
 
     // Re-focus, then the explicit &quot;Clear focus&quot; button also resets it.
@@ -42323,15 +42323,15 @@ return (
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;true&quot;
-      )
+        &quot;true&quot;,
+      ),
     );
     await userEvent.click(canvas.getByRole(&quot;button&quot;, { name: &quot;Clear focus&quot; }));
     await waitFor(() =&gt;
       expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
         &quot;data-focused&quot;,
-        &quot;false&quot;
-      )
+        &quot;false&quot;,
+      ),
     );
   },
 };
@@ -42399,7 +42399,7 @@ return (
               
               <pre><code>const ControlledSelection = () =&gt; {
     const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;(
-      args.selectedRows ?? []
+      args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState&lt;boolean&gt;(false);
     const handleRowSelectionChanged = useCallback(
@@ -42411,7 +42411,7 @@ return (
         setSelectedRows(change.selectedRows.map((r) =&gt; r.$primaryKey));
         setIsSelectAll(change.isSelectAll);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -42470,7 +42470,7 @@ return (
         args.onFocusedRowChanged?.(row);
         setFocusedRow(row);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -42638,21 +42638,21 @@ export const WithDefaultSorting: Story = {
 
     await getColumnHeader(canvas, &quot;fullName&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;),
     );
 
     // Switch to ascending.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;asc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;asc&quot;),
     );
 
     // Sorting descending again returns to the default sort state.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort descending&quot;);
     await waitFor(() =&gt;
-      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;)
+      expect(sortDirectionOf(canvas, &quot;fullName&quot;)).toBe(&quot;desc&quot;),
     );
   },
 };
@@ -42683,14 +42683,14 @@ return (
   },
   render: (args) =&gt; {
     const [orderBy, setOrderBy] = useState&lt;any&gt;(
-      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }]
+      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }],
     );
     const handleOrderByChanged = useCallback(
       (newOrderBy: any) =&gt; {
         args.onOrderByChanged?.(newOrderBy);
         setOrderBy(newOrderBy);
       },
-      [args]
+      [args],
     );
 
     return (
@@ -42728,14 +42728,14 @@ return (
 
     await waitFor(() =&gt; expect(args.onOrderByChanged).toHaveBeenCalled());
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;fullName (desc)&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;fullName (desc)&quot;)).toBeInTheDocument(),
     );
 
     // Restore the seeded ascending sort so the story ends as it started.
     await openHeaderMenu(canvas, &quot;fullName&quot;);
     await clickHeaderMenuItem(&quot;Sort ascending&quot;);
     await waitFor(() =&gt;
-      expect(canvas.getByText(&quot;fullName (asc)&quot;)).toBeInTheDocument()
+      expect(canvas.getByText(&quot;fullName (asc)&quot;)).toBeInTheDocument(),
     );
   },
 };
@@ -42792,14 +42792,14 @@ return (
               
               <pre><code>const ControlledSorting = () =&gt; {
     const [orderBy, setOrderBy] = useState&lt;any&gt;(
-      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }]
+      args.orderBy ?? [{ property: &quot;fullName&quot;, direction: &quot;asc&quot; }],
     );
     const handleOrderByChanged = useCallback(
       (newOrderBy: any) =&gt; {
         args.onOrderByChanged?.(newOrderBy);
         setOrderBy(newOrderBy);
       },
-      [args]
+      [args],
     );
 
     return (
