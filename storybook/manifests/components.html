@@ -6667,6 +6667,27 @@ export const WithDefaultColumnPinning: Story = {
     await waitFor(() =&gt;
       expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;)
     );
+
+    // Assert that pinned cells have an opaque background
+    // and matches its row background color.
+    const pinnedCell = await waitFor(() =&gt; {
+      const cell = canvasElement.querySelector&lt;HTMLElement&gt;(
+        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;
+      );
+      if (cell == null) {
+        throw new Error(&quot;no left-pinned body cell rendered&quot;);
+      }
+      return cell;
+    });
+    const pinnedRow = pinnedCell.closest&lt;HTMLElement&gt;(&quot;[data-row-parity]&quot;);
+    if (pinnedRow == null) {
+      throw new Error(&quot;pinned cell is not inside a row&quot;);
+    }
+    const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
+    await expect(pinnedCellBg).not.toBe(&quot;rgba(0, 0, 0, 0)&quot;);
+    await expect(pinnedCellBg).toBe(
+      getComputedStyle(pinnedRow).backgroundColor
+    );
   },
 };
 
@@ -38314,6 +38335,27 @@ export const WithDefaultColumnPinning: Story = {
     await clickHeaderMenuItem(&quot;Pin column&quot;);
     await waitFor(() =&gt;
       expect(fullNameHeader).toHaveAttribute(&quot;data-pinned&quot;, &quot;left&quot;)
+    );
+
+    // Assert that pinned cells have an opaque background
+    // and matches its row background color.
+    const pinnedCell = await waitFor(() =&gt; {
+      const cell = canvasElement.querySelector&lt;HTMLElement&gt;(
+        &#39;[data-row-parity] [data-pinned=&quot;left&quot;]&#39;
+      );
+      if (cell == null) {
+        throw new Error(&quot;no left-pinned body cell rendered&quot;);
+      }
+      return cell;
+    });
+    const pinnedRow = pinnedCell.closest&lt;HTMLElement&gt;(&quot;[data-row-parity]&quot;);
+    if (pinnedRow == null) {
+      throw new Error(&quot;pinned cell is not inside a row&quot;);
+    }
+    const pinnedCellBg = getComputedStyle(pinnedCell).backgroundColor;
+    await expect(pinnedCellBg).not.toBe(&quot;rgba(0, 0, 0, 0)&quot;);
+    await expect(pinnedCellBg).toBe(
+      getComputedStyle(pinnedRow).backgroundColor
     );
   },
 };
