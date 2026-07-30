@@ -35,9 +35,11 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 
 describe(OntologyIrToFullMetadataConverter, () => {
   describe("getOsdkObjectTypeDatasources", () => {
-    // IR property references are already api names, so the rid->apiName map is
-    // an identity fallback here.
-    const identity: Record<string, string> = {};
+    // IR references are already api names; only these two exist on the object.
+    const propApiNames: Record<string, string> = {
+      name: "name",
+      rating: "rating",
+    };
 
     it("drops redacted datasources", () => {
       const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
@@ -65,22 +67,178 @@ describe(OntologyIrToFullMetadataConverter, () => {
       ];
 
       const result = OntologyIrToFullMetadataConverter
-        .getOsdkObjectTypeDatasources("MyObject", datasources, identity);
+        .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
 
       // Only the non-redacted datasource survives, with a synthesized rid.
       expect(result).toEqual([
         {
           rid: "ri.MyObject.kept",
           definition: {
-            type: "dataset",
-            datasetRid: "kept",
-            propertyMapping: { name: { type: "column", column: "name" } },
+            type: "unsupported",
+            unsupportedType: "datasetV2",
+            properties: ["name"],
           },
         },
       ]);
     });
 
-    it("preserves derived property names and drops the editOnly payload", () => {
+    it("never emits an IR input name as a resource rid", () => {
+      // Every resource identifier below is an input name, not a rid.
+      const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
+        {
+          datasourceName: "ds.dataset",
+          datasource: {
+            type: "datasetV3",
+            datasetV3: {
+              branchId: "master",
+              datasetRid: "Dc3Restaurant",
+              propertyMapping: { name: { type: "column", column: "name_col" } },
+            },
+          },
+        },
+        {
+          datasourceName: "ds.stream",
+          datasource: {
+            type: "streamV2",
+            streamV2: {
+              propertyMapping: { name: "name_col" },
+              retentionPolicy: { type: "none", none: {} },
+              streamLocator: "Dc3RestaurantStream",
+            },
+          },
+        },
+        {
+          datasourceName: "ds.restrictedView",
+          datasource: {
+            type: "restrictedViewV2",
+            restrictedViewV2: {
+              restrictedViewRid: "Dc3RestaurantView",
+              propertyMapping: { name: { type: "column", column: "name_col" } },
+            },
+          },
+        },
+        {
+          datasourceName: "ds.direct",
+          datasource: {
+            type: "direct",
+            direct: {
+              directSourceRid: "Dc3RestaurantSource",
+              propertyMapping: { name: { type: "column", column: "name_col" } },
+              propertySecurityGroups: { groups: [] },
+            },
+          },
+        },
+        {
+          datasourceName: "ds.timeSeries",
+          datasource: {
+            type: "timeSeries",
+            timeSeries: {
+              properties: ["rating"],
+              timeSeriesSyncRid: "Dc3RestaurantSync",
+            },
+          },
+        },
+        {
+          datasourceName: "ds.mediaSetView",
+          datasource: {
+            type: "mediaSetView",
+            mediaSetView: {
+              assumedMarkings: [],
+              clearOnDeleteProperties: [],
+              mediaSetViewLocator: "Dc3RestaurantMedia",
+              properties: ["rating"],
+              uploadProperties: [],
+            },
+          },
+        },
+      ];
+
+      const result = OntologyIrToFullMetadataConverter
+        .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
+
+      // Each degrades to `unsupported`, keeping the variant and its properties.
+      expect(result.map((ds) => ds.definition)).toEqual([
+        {
+          type: "unsupported",
+          unsupportedType: "datasetV3",
+          properties: ["name"],
+        },
+        {
+          type: "unsupported",
+          unsupportedType: "streamV2",
+          properties: ["name"],
+        },
+        {
+          type: "unsupported",
+          unsupportedType: "restrictedViewV2",
+          properties: ["name"],
+        },
+        {
+          type: "unsupported",
+          unsupportedType: "direct",
+          properties: ["name"],
+        },
+        {
+          type: "unsupported",
+          unsupportedType: "timeSeries",
+          properties: ["rating"],
+        },
+        {
+          type: "unsupported",
+          unsupportedType: "mediaSetView",
+          properties: ["rating"],
+        },
+      ]);
+      expect(JSON.stringify(result)).not.toContain("Dc3Restaurant");
+    });
+
+    it("maps the variants that carry a real rid or no rid at all", () => {
+      const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
+        {
+          datasourceName: "ds.table",
+          datasource: {
+            type: "table",
+            table: {
+              branchId: "master",
+              // Unlike the other IR variants, this is a real rid.
+              tableRid: "ri.tables.main.table.1",
+              propertyMapping: { name: { type: "column", column: "name_col" } },
+            },
+          },
+        },
+        {
+          datasourceName: "ds.editsOnly",
+          datasource: {
+            type: "editsOnly",
+            editsOnly: {
+              properties: ["name"],
+              propertySecurityGroups: { groups: [] },
+            },
+          },
+        },
+      ];
+
+      const result = OntologyIrToFullMetadataConverter
+        .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
+
+      expect(result).toEqual([
+        {
+          rid: "ri.MyObject.ds.table",
+          definition: {
+            type: "table",
+            tableRid: "ri.tables.main.table.1",
+            branch: "master",
+            propertyMapping: { name: { type: "column", column: "name_col" } },
+          },
+        },
+        {
+          rid: "ri.MyObject.ds.editsOnly",
+          definition: { type: "editsOnly" },
+        },
+      ]);
+    });
+
+    it("preserves derived property names under the public discriminator", () => {
       const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
         {
           datasourceName: "derived",
@@ -94,39 +252,49 @@ describe(OntologyIrToFullMetadataConverter, () => {
             },
           },
         },
-        {
-          datasourceName: "editOnly",
-          datasource: {
-            type: "datasetV2",
-            datasetV2: {
-              datasetRid: "ds",
-              propertyMapping: { name: { type: "editOnly", editOnly: {} } },
-            },
-          },
-        },
       ];
 
       const result = OntologyIrToFullMetadataConverter
-        .getOsdkObjectTypeDatasources("MyObject", datasources, identity);
+        .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
 
       expect(result).toEqual([
         {
           rid: "ri.MyObject.derived",
           definition: {
             type: "unsupported",
-            unsupportedType: "derived",
+            // Public contract name, not the OMS variant name "derived".
+            unsupportedType: "derivedProperties",
             properties: ["name", "rating"],
           },
         },
+      ]);
+    });
+
+    it("drops property references that are not properties of the object type", () => {
+      const datasources: OntologyIrObjectTypeBlockDataV2["datasources"] = [
         {
-          rid: "ri.MyObject.editOnly",
-          definition: {
-            type: "dataset",
-            datasetRid: "ds",
-            propertyMapping: { name: { type: "editOnly" } },
+          datasourceName: "ds",
+          datasource: {
+            type: "datasetV2",
+            datasetV2: {
+              datasetRid: "ds",
+              propertyMapping: {
+                name: { type: "column", column: "name_col" },
+                notAProperty: { type: "column", column: "orphan_col" },
+              },
+            },
           },
         },
-      ]);
+      ];
+
+      const result = OntologyIrToFullMetadataConverter
+        .getOsdkObjectTypeDatasources("MyObject", datasources, propApiNames);
+
+      expect(result[0].definition).toEqual({
+        type: "unsupported",
+        unsupportedType: "datasetV2",
+        properties: ["name"],
+      });
     });
   });
 
@@ -3276,26 +3444,14 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "datasetRid": "Dc3DistributionCenterProposal",
-                    "propertyMapping": {
-                      "name": {
-                        "column": "name",
-                        "type": "column",
-                      },
-                      "price": {
-                        "column": "price",
-                        "type": "column",
-                      },
-                      "primaryKey_": {
-                        "column": "primaryKey_",
-                        "type": "column",
-                      },
-                      "proposedLocation": {
-                        "column": "proposedLocation",
-                        "type": "column",
-                      },
-                    },
-                    "type": "dataset",
+                    "properties": [
+                      "primaryKey_",
+                      "name",
+                      "price",
+                      "proposedLocation",
+                    ],
+                    "type": "unsupported",
+                    "unsupportedType": "datasetV2",
                   },
                   "rid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposal",
                 },
@@ -3398,26 +3554,14 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "datasetRid": "Dc3DistributionRouteAnalysis",
-                    "propertyMapping": {
-                      "distributionProposal": {
-                        "column": "distributionProposal",
-                        "type": "column",
-                      },
-                      "primaryKey_": {
-                        "column": "primaryKey_",
-                        "type": "column",
-                      },
-                      "restaurant": {
-                        "column": "restaurant",
-                        "type": "column",
-                      },
-                      "timeMinutes": {
-                        "column": "timeMinutes",
-                        "type": "column",
-                      },
-                    },
-                    "type": "dataset",
+                    "properties": [
+                      "primaryKey_",
+                      "distributionProposal",
+                      "restaurant",
+                      "timeMinutes",
+                    ],
+                    "type": "unsupported",
+                    "unsupportedType": "datasetV2",
                   },
                   "rid": "ri.Dc3DistributionRouteAnalysis.Dc3DistributionRouteAnalysis",
                 },
@@ -3510,26 +3654,14 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "datasources": [
                 {
                   "definition": {
-                    "datasetRid": "Dc3Restaurant",
-                    "propertyMapping": {
-                      "location": {
-                        "column": "location",
-                        "type": "column",
-                      },
-                      "name": {
-                        "column": "name",
-                        "type": "column",
-                      },
-                      "primaryKey_": {
-                        "column": "primaryKey_",
-                        "type": "column",
-                      },
-                      "rating": {
-                        "column": "rating",
-                        "type": "column",
-                      },
-                    },
-                    "type": "dataset",
+                    "properties": [
+                      "primaryKey_",
+                      "name",
+                      "location",
+                      "rating",
+                    ],
+                    "type": "unsupported",
+                    "unsupportedType": "datasetV2",
                   },
                   "rid": "ri.Dc3Restaurant.Dc3Restaurant",
                 },

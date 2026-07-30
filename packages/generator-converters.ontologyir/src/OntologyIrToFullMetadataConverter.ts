@@ -837,12 +837,11 @@ export class OntologyIrToFullMetadataConverter {
   /**
    * Convert IR object type datasources to the platform wire format.
    *
-   * The IR carries a stable datasource name rather than a rid, so the wire
-   * `rid` is synthesized following the same `ri.${apiName}.*` convention used
-   * for object and property rids in this converter. IR datasource variants with
-   * no public wire counterpart (`restrictedStream`, `derived`) map to the
-   * `unsupported` datasource, which the wire type provides for exactly this
-   * purpose.
+   * The IR has no datasource rid, so the required wire `rid` is synthesized on
+   * the same `ri.${apiName}.*` convention this converter uses for object and
+   * property rids — it identifies the datasource in the generated metadata but
+   * is not resolvable. Most definitions degrade to `unsupported`; see
+   * `convertIrDatasourceDefinition`.
    */
   static getOsdkObjectTypeDatasources(
     objectApiName: ApiName,
@@ -857,7 +856,7 @@ export class OntologyIrToFullMetadataConverter {
         rid: `ri.${objectApiName}.${ds.datasourceName}`,
         definition: convertIrDatasourceDefinition(
           ds.datasource,
-          propRidToApiName,
+          (key) => propRidToApiName[key],
         ),
       }));
   }

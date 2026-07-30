@@ -244,13 +244,11 @@ export class OntologyBlockDataToFullMetadataConverter {
   /**
    * Convert block-data object type datasources to the platform wire format.
    *
-   * Unlike the IR converter, block-data datasources carry a real `rid`, so it is
-   * used directly. Block-data property references (both `propertyMapping` keys
-   * and `properties` arrays) are property rids, so they are resolved to api names
-   * via `propRidToApiName`, falling back to the raw rid when unmapped. Variants
-   * with no public wire counterpart (`media`, `restrictedStream`, `derived`) map
-   * to the `unsupported` datasource, which the wire type provides for exactly
-   * this purpose.
+   * Unlike the IR converter, block-data carries real rids — both the wrapper
+   * `rid` and the backing resource rids — so they are used directly. Property
+   * rids are resolved to api names via `propRidToApiName`; unresolved references
+   * are dropped rather than emitted raw. See
+   * `convertBlockDataDatasourceDefinition`.
    */
   static getOsdkObjectTypeDatasourcesFromBlockData(
     datasources: ObjectTypeBlockDataV2["datasources"],
@@ -264,7 +262,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         rid: ds.rid,
         definition: convertBlockDataDatasourceDefinition(
           ds.datasource,
-          propRidToApiName,
+          (key) => propRidToApiName[key],
         ),
       }));
   }

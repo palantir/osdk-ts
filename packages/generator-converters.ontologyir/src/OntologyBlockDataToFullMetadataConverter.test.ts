@@ -20,8 +20,7 @@ import { describe, expect, it } from "vitest";
 import { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToFullMetadataConverter.js";
 
 describe("OntologyBlockDataToFullMetadataConverter", () => {
-  // Block-data property references are property rids; the converter resolves
-  // them to api names, falling back to the raw rid when unmapped.
+  // Block-data references are property rids; unresolved ones are dropped.
   const propRidToApiName: Record<string, string> = {
     "ri.p.pk": "primaryKey",
     "ri.p.name": "name",
@@ -156,7 +155,8 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
         definition: {
           type: "timeSeries",
           timeSeriesSyncRid: "ri.tss.1",
-          properties: ["name", "ri.p.unmapped"],
+          // "ri.p.unmapped" is not a property of the object type, so it drops.
+          properties: ["name"],
         },
       },
       {
@@ -213,7 +213,7 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
     expect(result.map((ds) => ds.rid)).toEqual(["ri.ds.kept"]);
   });
 
-  it("preserves backed property names for derived datasources", () => {
+  it("preserves derived property names under the public discriminator", () => {
     const datasources: ObjectTypeBlockDataV2["datasources"] = [
       {
         rid: "ri.ds.derived",
@@ -221,9 +221,8 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
           type: "derived",
           derived: {
             definition: {
-              // `deleted` is the simplest valid derived definition; the
-              // linked/aggregated variants read names off `propertyTypeMapping`
-              // keys instead (both routed through `derivedPropertyNames`).
+              // `deleted` is the simplest variant; linked/aggregated read their
+              // names off `propertyTypeMapping` keys instead.
               type: "deleted",
               deleted: { propertyTypes: ["ri.p.pk", "ri.p.unmapped"] },
             },
@@ -240,9 +239,10 @@ describe("OntologyBlockDataToFullMetadataConverter", () => {
         rid: "ri.ds.derived",
         definition: {
           type: "unsupported",
-          unsupportedType: "derived",
-          // Names are resolved to api names, unmapped rids fall back to the rid.
-          properties: ["primaryKey", "ri.p.unmapped"],
+          // Public contract name, not the OMS variant name "derived".
+          unsupportedType: "derivedProperties",
+          // "ri.p.unmapped" does not resolve, so it drops.
+          properties: ["primaryKey"],
         },
       },
     ]);
