@@ -122,29 +122,15 @@ async function setup() {
 
 await setup();
 
-/**
- * @param {string} testAppDir
- */
-/**
- * Runs attw over a generated package.
- *
- * The ontology metadata entrypoint is checked separately so that
- * `false-export-default` can be ignored for it alone, rather than package wide.
- * attw models the entrypoint's `.json` as a CJS file using `module.exports =`
- * and so objects to the `export default` in the ESM shim, but a json module
- * really does hand a bundler and Node's ESM loader the object as the default
- * export, so the shim is right and the rule is a false positive here. Every
- * other rule, and every other entrypoint, stays fully checked.
- */
 async function checkTypes(packageDir) {
   const opts = { stdout: "inherit", stderr: "inherit" };
 
   await $(
-    opts
+    opts,
   )`attw --pack ${packageDir} --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
 
   await $(
-    opts
+    opts,
   )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
 }
 
