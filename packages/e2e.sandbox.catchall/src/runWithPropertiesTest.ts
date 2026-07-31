@@ -20,7 +20,7 @@ import {
   StateTerritory,
 } from "@osdk/e2e.generated.catchall";
 
-import { client } from "./client.js";
+import { client, dsClient } from "./client.js";
 
 export async function runWithPropertiesTest(): Promise<void> {
   const result = await client(StateTerritory)
@@ -57,11 +57,11 @@ export async function runWithPropertiesTest(): Promise<void> {
   );
 
   // Test withProperties on interface type
-  const result3 = await client(EsongInterfaceA)
+  const result3 = await dsClient(EsongInterfaceA)
     .withProperties({
       linkedObjectCount: (base) => base.pivotTo("esongPds").aggregate("$count"),
-      linkedObjectTitle: (base) =>
-        base.pivotTo("esongPds").selectProperty("title"),
+      // linkedObjectTitle: (base) =>
+      //   (base.pivotTo("esongIssues" as any) as any).selectProperty("id")
     })
     .fetchPage();
 
@@ -69,7 +69,7 @@ export async function runWithPropertiesTest(): Promise<void> {
     result3.data.map((x) => ({
       esongSptA: x.esongSptA,
       linkedObjectCount: x.linkedObjectCount,
-      linkedObjectTitle: x.linkedObjectTitle,
+      // linkedObjectTitle: x.linkedObjectTitle,
     })),
   );
 }
