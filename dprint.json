@@ -47,6 +47,7 @@
     "packages/maker-import/",
     "packages/api/",
     "packages/functions/",
+    "packages/agents/",
     "packages/unit-testing/",
     "packages/aip-core/",
     "packages/foundry-config-json/",

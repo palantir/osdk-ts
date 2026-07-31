@@ -333,6 +333,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/agents",
       "@osdk/unit-testing",
     ],
     {
@@ -1387,7 +1388,9 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
-      excludePackages: ["@osdk/maker"],
+      // @osdk/agents ships a single type and has no tests, so it has no test
+      // script and needs no vitest config.
+      excludePackages: ["@osdk/maker", "@osdk/agents"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(
