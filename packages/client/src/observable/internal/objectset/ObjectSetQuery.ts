@@ -61,9 +61,8 @@ export class ObjectSetQuery extends BaseListQuery<
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
   // Set when the object set resolves to an interface, so rows can be projected
-  // to the interface view unless the caller asked for the object type.
+  // to the interface view.
   #interfaceApiName: string | undefined;
-  #resolveToObjectType: boolean;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -112,7 +111,6 @@ export class ObjectSetQuery extends BaseListQuery<
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
 
     this.#interfaceApiName = ObjectSetQuery.#findInterfaceApiName(baseWire);
-    this.#resolveToObjectType = opts.resolveToObjectType === true;
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -235,11 +233,14 @@ export class ObjectSetQuery extends BaseListQuery<
 
   /**
    * Projects a row to the interface view when this object set resolves to an
-   * interface, mirroring `InterfaceListQuery.wrapObject` so `observeObjectSet`
-   * and `observeList` agree on row shape.
+   * interface, so `observeObjectSet` and `observeList` agree on row shape.
+   *
+   * `InterfaceListQuery` is handed its interface api name explicitly, since
+   * `observeList` takes a type; an object set carries no such parameter, so the
+   * interface has to be read back off the wire shape.
    */
   #wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
-    if (this.#interfaceApiName == null || this.#resolveToObjectType) {
+    if (this.#interfaceApiName == null) {
       return object;
     }
     return object.$as(this.#interfaceApiName);
