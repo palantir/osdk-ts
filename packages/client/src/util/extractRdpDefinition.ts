@@ -45,6 +45,33 @@ export function hasWithProperties(objectSet: ObjectSet): boolean {
 }
 
 /* @internal
+ * An interface link can target another interface, so the type a pivotTo chain lands on is not
+ * guaranteed to be an object type. Selecting a property across such a link is unsupported, so say
+ * that outright instead of surfacing it as a missing object definition.
+ */
+async function getSelectedPropertyObjectDefinition(
+  clientCtx: MinimalClient,
+  apiName: string,
+) {
+  try {
+    return await clientCtx.ontologyProvider.getObjectDefinition(apiName);
+  } catch (e) {
+    let isInterface = false;
+    try {
+      await clientCtx.ontologyProvider.getInterfaceDefinition(apiName);
+      isInterface = true;
+    } catch {
+      // Not an interface either, so the original lookup failure is the real error.
+    }
+    invariant(
+      !isInterface,
+      `Runtime Derived Properties are not supported for a property selected across a link that targets an interface ('${apiName}')`,
+    );
+    throw e;
+  }
+}
+
+/* @internal
  * Returns a tuple of the derived property definitions and the object type that the derived property is defined on.
  */
 async function extractRdpDefinitionInternal(
@@ -156,7 +183,8 @@ async function extractRdpDefinitionInternal(
             ) {
               return { definitions: {} };
             }
-            const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+            const objDef = await getSelectedPropertyObjectDefinition(
+              clientCtx,
               operationLevelObjectType,
             );
 
