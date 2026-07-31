@@ -19,8 +19,8 @@ import {
   ONTOLOGY_METADATA_DMTS_PATH,
   ONTOLOGY_METADATA_JSON_PATH,
 } from "@osdk/generator";
-import { writeFile } from "fs/promises";
-import { join } from "path";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export async function generatePackageJson(options: {
   packageName: string;
@@ -69,10 +69,6 @@ export async function generatePackageJson(options: {
         types: "./cjs/index.d.ts",
         default: "./cjs/index.js",
       },
-      // The json is the only real artifact and is format neutral, so both
-      // conditions share it. The types cannot be shared: `require()` of a json
-      // module yields the object itself (`export =`) while `import` sees a
-      // default export.
       "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
         require: {
           types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,

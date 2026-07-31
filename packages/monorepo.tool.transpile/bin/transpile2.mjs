@@ -313,8 +313,6 @@ async function transpileWithBabel(format, target) {
     ".d.mts.map",
     ".d.cts.map",
     ".css",
-    // data assets, e.g. the generated ontology metadata. Format neutral, so a
-    // single copy backs both the import and require conditions.
     ".json",
   ];
 

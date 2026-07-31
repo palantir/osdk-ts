@@ -24,7 +24,6 @@ import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePacka
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 
-// declared above the top level await below, which runs setup() eagerly
 const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
 
 async function setup() {
