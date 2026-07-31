@@ -46,6 +46,7 @@ interface RunArgs {
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  unstableFeatures: boolean;
 }
 
 export async function run({
@@ -62,6 +63,7 @@ export async function run({
   osdkRegistryUrl,
   corsProxy,
   scopes,
+  unstableFeatures,
 }: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
@@ -131,9 +133,10 @@ export async function run({
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    unstableFeatures,
   };
   const processFiles = function (dir: string) {
-    fs.readdirSync(dir).forEach(function (file) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -180,6 +183,23 @@ export async function run({
     });
   };
   processFiles(root);
+
+  if (unstableFeatures && osdkPackage != null) {
+    const packageJsonPath = path.join(root, "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+    packageJson.scripts = {
+      ...packageJson.scripts,
+      postinstall: "./node_modules/.bin/osdk unstable branch sync",
+    };
+    packageJson.devDependencies = {
+      "@osdk/cli": "latest",
+      ...packageJson.devDependencies,
+    };
+    fs.writeFileSync(
+      packageJsonPath,
+      JSON.stringify(packageJson, undefined, 2)
+    );
+  }
 
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
