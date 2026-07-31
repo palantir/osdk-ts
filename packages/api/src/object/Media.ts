@@ -36,11 +36,11 @@ export interface Media {
    * const equipment = await client(Equipment).fetchOne(12345);
    * const fullMetadata = await equipment.trainingMaterial?.fetchFullMetadata?.();
    * if (fullMetadata?.itemMetadata.type === "document") {
-   *   console.log(fullMetadata.itemMetadata.pages);
+   *   const pageCount = fullMetadata.itemMetadata.pages;
    * }
    * ```
    * @returns a `MediaFullMetadata` whose `itemMetadata` narrows on `itemMetadata.type` to expose
-   * variant-specific fields
+   * schema-specific fields
    */
   fetchFullMetadata?(): Promise<MediaFullMetadata>;
   /**
