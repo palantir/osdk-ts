@@ -60,6 +60,10 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+  // Set when the object set resolves to an interface, so rows can be projected
+  // to the interface view unless the caller asked for the object type.
+  #interfaceApiName: string | undefined;
+  #resolveToObjectType: boolean;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -106,6 +110,9 @@ export class ObjectSetQuery extends BaseListQuery<
 
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+
+    this.#interfaceApiName = ObjectSetQuery.#findInterfaceApiName(baseWire);
+    this.#resolveToObjectType = opts.resolveToObjectType === true;
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -199,6 +206,43 @@ export class ObjectSetQuery extends BaseListQuery<
       return wire.interfaceType;
     }
     return undefined;
+  }
+
+  /**
+   * The interface this object set resolves to, or undefined if it resolves to
+   * an object type (or to something we cannot decide, such as a union of
+   * mixed types -- in which case rows are left as-is).
+   *
+   * Kept separate from `#extractTypeFromWireObjectSet` so the projection can
+   * see through the single-child wrappers a caller may have applied
+   * (`client(SomeInterface).where(...)`) without changing how the result type
+   * api name is derived elsewhere.
+   */
+  static #findInterfaceApiName(wire: WireObjectSet): string | undefined {
+    switch (wire.type) {
+      case "interfaceBase":
+        return wire.interfaceType;
+      case "base":
+        return undefined;
+      case "filter":
+      case "withProperties":
+      case "nearestNeighbors":
+        return ObjectSetQuery.#findInterfaceApiName(wire.objectSet);
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * Projects a row to the interface view when this object set resolves to an
+   * interface, mirroring `InterfaceListQuery.wrapObject` so `observeObjectSet`
+   * and `observeList` agree on row shape.
+   */
+  #wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
+    if (this.#interfaceApiName == null || this.#resolveToObjectType) {
+      return object;
+    }
+    return object.$as(this.#interfaceApiName);
   }
 
   /**
@@ -520,7 +564,9 @@ export class ObjectSetQuery extends BaseListQuery<
     totalCount?: string;
   }): ObjectSetPayload {
     return {
-      resolvedList: params.resolvedData,
+      resolvedList: params.resolvedData?.map((obj: ObjectHolder) =>
+        this.#wrapObject(obj),
+      ),
       isOptimistic: params.isOptimistic,
       fetchMore: this.fetchMore,
       hasMore: this.nextPageToken != null,
