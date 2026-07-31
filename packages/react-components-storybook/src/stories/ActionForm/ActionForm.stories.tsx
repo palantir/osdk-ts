@@ -332,27 +332,19 @@ function UpdateEmployeeActionFormStory({
 }
 
 function DefaultActionFormStory(): React.ReactElement {
-  const { handleStoryError, handleStorySubmit, submission } =
-    useActionFormSubmission({
-      applyStoryAction: applyGeneratedFieldsStoryAction,
-    });
+  const { handleStoryError, handleStorySubmit } = useActionFormSubmission({
+    applyStoryAction: applyGeneratedFieldsStoryAction,
+  });
 
   return (
-    <FormStoryLayout
-      output={
-        <SubmissionOutputPanel
-          idleMessage="Submit the form to see the action response."
-          snapshot={submission}
-        />
-      }
-    >
+    <div className="osdkFormCard" style={{ marginInline: "auto" }}>
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={true}
       />
-    </FormStoryLayout>
+    </div>
   );
 }
 

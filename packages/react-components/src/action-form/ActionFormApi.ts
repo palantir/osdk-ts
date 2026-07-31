@@ -38,13 +38,14 @@ import type {
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
       /**
-       * Current form values (controlled mode). Provide together with
-       * `onFormStateChange`; omit both for uncontrolled mode.
+       * The current form values.
+       * If provided, the form state is controlled.
        */
       formState: FormState<Q>;
       /**
-       * Called with a state updater whenever a field value changes. Required
-       * in controlled mode.
+       * Called when a field value changes, with a state updater.
+       * Required when the form state is controlled; also fires in
+       * uncontrolled mode so callers can observe changes.
        */
       onFormStateChange: (
         updater: (prevState: FormState<Q>) => FormState<Q>,
@@ -60,6 +61,10 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
 interface ActionFormConfigProps<
   Q extends ActionDefinition<unknown>,
 > extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled"> {
+  /**
+   * The OSDK action definition. Its parameters drive the rendered fields
+   * and the submission.
+   */
   actionDefinition: Q;
 
   /**
@@ -157,14 +162,24 @@ export interface FormSectionDefinition {
  * OSDK data fetching.
  *
  * Uses a discriminated union so that controlled mode (`formState` provided)
- * always requires `onFieldValueChange`, and uncontrolled mode omits both.
+ * always requires `onFieldValueChange`; uncontrolled mode omits `formState`
+ * (`onFieldValueChange` stays optional).
  * `onSubmit` receives the current form state so callers can access values
  * even in uncontrolled mode.
  */
 export type BaseFormProps = BaseFormCommonProps &
   (
     | {
+        /**
+         * The current field values keyed by field key.
+         * If provided, the form state is controlled.
+         */
         formState: Record<string, unknown>;
+        /**
+         * Called when a field value changes.
+         * Required when the form state is controlled; also fires in
+         * uncontrolled mode so callers can observe changes.
+         */
         onFieldValueChange: (fieldKey: string, value: unknown) => void;
       }
     | {
@@ -174,12 +189,19 @@ export type BaseFormProps = BaseFormCommonProps &
   );
 
 interface BaseFormCommonProps {
+  /** Title shown in the form header. Omit to hide the header. */
   formTitle?: string;
+  /** The fields and sections to render, in order. */
   formContent: ReadonlyArray<FormContentItem>;
+  /** Called when the form is submitted with valid values. Receives the current form state. */
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
+  /** Whether the submit button is disabled. Default `false`. */
   isSubmitDisabled?: boolean;
+  /** Whether a submission is in progress. Shows the submit button in a pending state. Default `false`. */
   isPending?: boolean;
+  /** Whether the form is loading its fields. Shows a skeleton placeholder. Default `false`. */
   isLoading?: boolean;
+  /** Additional CSS class name for the root element. */
   className?: string;
   /** Label for the submit button. Default `"Submit"`. */
   submitButtonText?: string;
