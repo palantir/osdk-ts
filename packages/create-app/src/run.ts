@@ -196,10 +196,7 @@ export async function run({
       "@osdk/cli": "latest",
       ...packageJson.devDependencies,
     };
-    fs.writeFileSync(
-      packageJsonPath,
-      JSON.stringify(packageJson, undefined, 2)
-    );
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
   }
 
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });

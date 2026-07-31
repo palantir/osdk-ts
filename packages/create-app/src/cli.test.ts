@@ -246,11 +246,11 @@ describe("--unstableFeatures flag", () => {
 
   const readProject = (project: string) => {
     const root = path.join(process.cwd(), project);
+    const pkgPath = path.join(root, "package.json");
+    const clientPath = path.join(root, "src", "client.ts");
     return {
-      packageJson: JSON.parse(
-        fs.readFileSync(path.join(root, "package.json"), "utf-8")
-      ),
-      clientTs: fs.readFileSync(path.join(root, "src", "client.ts"), "utf-8"),
+      packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
+      clientTs: fs.readFileSync(clientPath, "utf-8"),
     };
   };
 
