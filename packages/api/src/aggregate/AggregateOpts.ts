@@ -21,7 +21,18 @@ import type {
   UnorderedAggregationClause,
 } from "./AggregationsClause.js";
 
+/**
+ * Controls whether the backend is allowed to return an approximate aggregation
+ * result. `"REQUIRE_ACCURATE"` forces an exact computation (which may fail or be
+ * rejected when limits are exceeded), while `"ALLOW_APPROXIMATE"` permits the
+ * backend to return an approximate result.
+ */
+export type AggregationAccuracyRequest =
+  | "REQUIRE_ACCURATE"
+  | "ALLOW_APPROXIMATE";
+
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
   $select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
   $groupBy?: GroupByClause<Q>;
+  $accuracy?: AggregationAccuracyRequest;
 };
