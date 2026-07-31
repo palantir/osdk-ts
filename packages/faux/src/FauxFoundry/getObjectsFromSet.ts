@@ -135,6 +135,18 @@ export function getObjectsFromSet(
           }),
         );
 
+        // Interface-projected objects carry an explicit allow-list of the
+        // properties to serialize ($propsToReturn); anything outside it is
+        // dropped when the response is built. Derived values have to ride
+        // along in that list or they never reach the wire.
+        if (obj.$propsToReturn) {
+          return {
+            ...obj,
+            ...extra,
+            $propsToReturn: { ...obj.$propsToReturn, ...extra },
+          };
+        }
+
         return { ...obj, ...extra };
       });
     }
@@ -234,6 +246,13 @@ export function getDerivedPropertyValue(
   switch (def.type) {
     case "selection": {
       return getDerivedPropertySelection(ds, obj, def);
+    }
+    // A derived property that selects a property of the object itself, with no
+    // link traversal -- what `base.selectProperty(x)` emits. For an interface
+    // base set `obj` is already interface-shaped, so the interface's property
+    // api name is the right key.
+    case "property": {
+      return obj[def.apiName];
     }
   }
   throw new Error(
