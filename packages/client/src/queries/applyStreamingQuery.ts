@@ -19,12 +19,7 @@ import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
-// Streaming query execution is not currently supported in the TypeScript OSDK:
-// the `streamingExecute` callable was dropped from the generated
-// `@osdk/foundry.functions` SDK at 2.67.0, so this helper can no longer call it
-// and throws instead. The underlying platform endpoint may still exist as an
-// SSE (`text/event-stream`) operation; if the generated SDK regains a streaming
-// callable, this helper should be reimplemented against it.
+// Streaming query execution is not currently supported in the TypeScript OSDK
 export function applyStreamingQuery<
   QD extends QueryDefinition<any>,
   P extends QueryParameterType<CompileTimeMetadata<QD>["parameters"]>,
