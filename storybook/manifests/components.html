@@ -16087,13 +16087,13 @@ export const MinimalContent: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;MultiColumnSortDialog&quot; component.
-  29 | ];
-  30 |
-&gt; 31 | const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
+  35 | ];
+  36 |
+&gt; 37 | const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
      | ^
-  32 |   title: &quot;Components/ObjectTable/Building Blocks/MultiColumnSortDialog&quot;,
-  33 |   component: MultiColumnSortDialog,
-  34 |   tags: [&quot;beta&quot;],
+  38 |   title: &quot;Components/ObjectTable/Building Blocks/MultiColumnSortDialog&quot;,
+  39 |   component: MultiColumnSortDialog,
+  40 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx:
 /*
@@ -16118,12 +16118,18 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const SAMPLE_COLUMNS: MultiColumnSortDialogProps[&quot;columnOptions&quot;] = [
-  { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true },
-  { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true },
-  { id: &quot;jobTitle&quot;, name: &quot;Job Title&quot;, canSort: true },
-  { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true },
-  { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true },
-  { id: &quot;location&quot;, name: &quot;Location&quot;, canSort: false },
+  { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;jobTitle&quot;, name: &quot;Job Title&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true, dataType: &quot;timestamp&quot; },
+  {
+    id: &quot;yearsOfService&quot;,
+    name: &quot;Years of Service&quot;,
+    canSort: true,
+    dataType: &quot;integer&quot;,
+  },
+  { id: &quot;location&quot;, name: &quot;Location&quot;, canSort: false, dataType: &quot;string&quot; },
 ];
 
 const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
@@ -16138,6 +16144,8 @@ const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
     currentSorting: [
       { id: &quot;fullName&quot;, desc: false },
       { id: &quot;department&quot;, desc: true },
+      { id: &quot;yearsOfService&quot;, desc: true },
+      { id: &quot;startDate&quot;, desc: false },
     ],
   },
   argTypes: {
@@ -16159,7 +16167,6 @@ const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
     columnOptions: {
       description:
         &quot;Available columns to sort by. Only columns with `canSort: true` appear in the add menu.&quot;,
-      control: false,
     },
     currentSorting: {
       description: &quot;Current sorting state from TanStack Table&quot;,
@@ -16191,13 +16198,14 @@ const [isOpen, setIsOpen] = useState(false);
   isOpen={isOpen}
   onClose={() =&gt; setIsOpen(false)}
   columnOptions={[
-    { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true },
-    { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true },
-    { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true },
+    { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true, dataType: &quot;string&quot; },
+    { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true, dataType: &quot;string&quot; },
+    { id: &quot;yearsOfService&quot;, name: &quot;Years of Service&quot;, canSort: true, dataType: &quot;integer&quot; },
+    { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true, dataType: &quot;timestamp&quot; },
   ]}
   currentSorting={[
     { id: &quot;fullName&quot;, desc: false },
-    { id: &quot;department&quot;, desc: true },
+    { id: &quot;yearsOfService&quot;, desc: true },
   ]}
   onApply={(sorting) =&gt; console.log(&quot;Applied:&quot;, sorting)}
 /&gt;`,
@@ -16245,6 +16253,8 @@ const [isOpen, setIsOpen] = useState(false);
     currentSorting={[
       { id: &quot;fullName&quot;, desc: false },
       { id: &quot;department&quot;, desc: true },
+      { id: &quot;yearsOfService&quot;, desc: true },
+      { id: &quot;startDate&quot;, desc: false },
     ]} /&gt;;</code></pre>
             </div>
         </div>
@@ -33938,13 +33948,13 @@ export const MinimalContent: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;MultiColumnSortDialog&quot; component.
-  29 | ];
-  30 |
-&gt; 31 | const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
+  35 | ];
+  36 |
+&gt; 37 | const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
      | ^
-  32 |   title: &quot;Components/ObjectTable/Building Blocks/MultiColumnSortDialog&quot;,
-  33 |   component: MultiColumnSortDialog,
-  34 |   tags: [&quot;beta&quot;],
+  38 |   title: &quot;Components/ObjectTable/Building Blocks/MultiColumnSortDialog&quot;,
+  39 |   component: MultiColumnSortDialog,
+  40 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ObjectTable/MultiColumnSortDialog.stories.tsx:
 /*
@@ -33969,12 +33979,18 @@ import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { fn } from &quot;storybook/test&quot;;
 
 const SAMPLE_COLUMNS: MultiColumnSortDialogProps[&quot;columnOptions&quot;] = [
-  { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true },
-  { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true },
-  { id: &quot;jobTitle&quot;, name: &quot;Job Title&quot;, canSort: true },
-  { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true },
-  { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true },
-  { id: &quot;location&quot;, name: &quot;Location&quot;, canSort: false },
+  { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;jobTitle&quot;, name: &quot;Job Title&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true, dataType: &quot;string&quot; },
+  { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true, dataType: &quot;timestamp&quot; },
+  {
+    id: &quot;yearsOfService&quot;,
+    name: &quot;Years of Service&quot;,
+    canSort: true,
+    dataType: &quot;integer&quot;,
+  },
+  { id: &quot;location&quot;, name: &quot;Location&quot;, canSort: false, dataType: &quot;string&quot; },
 ];
 
 const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
@@ -33989,6 +34005,8 @@ const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
     currentSorting: [
       { id: &quot;fullName&quot;, desc: false },
       { id: &quot;department&quot;, desc: true },
+      { id: &quot;yearsOfService&quot;, desc: true },
+      { id: &quot;startDate&quot;, desc: false },
     ],
   },
   argTypes: {
@@ -34010,7 +34028,6 @@ const meta: Meta&lt;MultiColumnSortDialogProps&gt; = {
     columnOptions: {
       description:
         &quot;Available columns to sort by. Only columns with `canSort: true` appear in the add menu.&quot;,
-      control: false,
     },
     currentSorting: {
       description: &quot;Current sorting state from TanStack Table&quot;,
@@ -34042,13 +34059,14 @@ const [isOpen, setIsOpen] = useState(false);
   isOpen={isOpen}
   onClose={() =&gt; setIsOpen(false)}
   columnOptions={[
-    { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true },
-    { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true },
-    { id: &quot;department&quot;, name: &quot;Department&quot;, canSort: true },
+    { id: &quot;fullName&quot;, name: &quot;Full Name&quot;, canSort: true, dataType: &quot;string&quot; },
+    { id: &quot;email&quot;, name: &quot;Email&quot;, canSort: true, dataType: &quot;string&quot; },
+    { id: &quot;yearsOfService&quot;, name: &quot;Years of Service&quot;, canSort: true, dataType: &quot;integer&quot; },
+    { id: &quot;startDate&quot;, name: &quot;Start Date&quot;, canSort: true, dataType: &quot;timestamp&quot; },
   ]}
   currentSorting={[
     { id: &quot;fullName&quot;, desc: false },
-    { id: &quot;department&quot;, desc: true },
+    { id: &quot;yearsOfService&quot;, desc: true },
   ]}
   onApply={(sorting) =&gt; console.log(&quot;Applied:&quot;, sorting)}
 /&gt;`,
@@ -34096,6 +34114,8 @@ const [isOpen, setIsOpen] = useState(false);
     currentSorting={[
       { id: &quot;fullName&quot;, desc: false },
       { id: &quot;department&quot;, desc: true },
+      { id: &quot;yearsOfService&quot;, desc: true },
+      { id: &quot;startDate&quot;, desc: false },
     ]} /&gt;;</code></pre>
             </div>
         </div>
