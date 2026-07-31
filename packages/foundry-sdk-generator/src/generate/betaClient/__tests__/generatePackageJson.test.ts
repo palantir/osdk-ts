@@ -36,10 +36,7 @@ describe("generatePackageJson", () => {
       packageName: "@my/generated-sdk",
       packageVersion: "1.2.3",
       packagePath,
-      dependencies: [{
-        dependencyName: "@osdk/foundry.ontologies",
-        dependencyVersion: "^2.63.0",
-      }],
+      dependencies: [],
       peerDependencies: [{
         dependencyName: "@osdk/client",
         dependencyVersion: "^2.0.0",
@@ -88,9 +85,7 @@ describe("generatePackageJson", () => {
                     }
                 }
             },
-            "dependencies": {
-                "@osdk/foundry.ontologies": "^2.63.0"
-            },
+            "dependencies": {},
             "peerDependencies": {
                 "@osdk/client": "^2.0.0"
             },

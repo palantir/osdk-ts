@@ -37,7 +37,7 @@ import * as semver from "semver";
 const rootPackageJson = JSON.parse(
   await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
-    "utf8",
+    "utf-8",
   ),
 );
 
@@ -491,13 +491,6 @@ const archetypeRules = archetypes(
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
-    // Codegen drops the ontology metadata under src/generatedNoCheck and
-    // transpile copies it into build/, so the subpath resolves out of build/
-    // like everything else. The json is the only real artifact: it is format
-    // neutral, so both conditions point at the one copy. The types differ
-    // though -- `require()` of a json module yields the object itself, which
-    // only `export =` (a .d.cts) describes, while `import` sees a default
-    // export. Letting the resolver pick beats baking one answer in at codegen.
     extraExports: {
       "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
         import: {
@@ -727,7 +720,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               file: context.getPackageJsonPath(),
               fixer: () => {
                 // always refetch in fixer since another fixer may have already changed the file
-                let packageJson = context.getPackageJson();
+                const packageJson = context.getPackageJson();
                 if (packageJson[d]) {
                   packageJson[d] = {
                     ...packageJson[d],
@@ -751,7 +744,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
             file: context.getPackageJsonPath(),
             fixer: () => {
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:~") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -779,7 +772,7 @@ const disallowWorkspaceCaret = createRuleFactory({
             file: context.getPackageJsonPath(),
             fixer: () => {
               // always refetch in fixer since another fixer may have already changed the file
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -861,7 +854,7 @@ async function dirExists(dirPath) {
   try {
     const stat = await fs.stat(dirPath);
     return stat.isDirectory();
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -931,7 +924,7 @@ const ourExportsConvention = createRuleFactory({
       for (
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
-          encoding: "utf8",
+          encoding: "utf-8",
           recursive: true,
         })
       ) {
@@ -941,7 +934,7 @@ const ourExportsConvention = createRuleFactory({
         const fullPath = path.join(q.parentPath, q.name);
         const rel = path.relative(publicPath, fullPath);
         const b = rel.replace(/\.ts$/, "");
-        expectedExports.exports["./" + b] = makeExport(b);
+        expectedExports.exports[`./${b}`] = makeExport(b);
       }
     }
 
@@ -1039,7 +1032,7 @@ const setWorkspaceDepRangeForPrereleases = createRuleFactory({
             `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
           file: packageJsonPath,
           fixer: () => {
-            let updated = context.getPackageJson();
+            const updated = context.getPackageJson();
             if (updated[depField]?.[depName] === current) {
               updated[depField][depName] = expected;
               context.host.writeJson(packageJsonPath, updated);
@@ -1065,7 +1058,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
     `pnpm exec dprint fmt --stdin foo.${ext}`,
     {
       input: contents,
-      encoding: "utf8",
+      encoding: "utf-8",
       shell: true,
     },
   );
@@ -1115,7 +1108,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
             }
             : {}
         ),
-        ...(opts.extraTsConfigCompilerOptions ?? {}),
+        ...opts.extraTsConfigCompilerOptions,
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -1243,8 +1236,7 @@ function standardPackageRules(shared, options) {
     if (!options.output.browser) {
       return DELETE_SCRIPT_ENTRY;
     }
-    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
-      + buildCssSuffix;
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${buildCssSuffix}`;
   };
 
   if (options.minimalChangesOnly) {

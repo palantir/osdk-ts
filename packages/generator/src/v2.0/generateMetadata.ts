@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import path from "path";
+import path from "node:path";
+
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
@@ -53,16 +54,9 @@ export async function generateOntologyMetadataTypeFile(
   );
 }
 
-/**
- * The metadata itself. This is the only artifact with runtime content; the
- * files below exist solely to give it a type.
- */
 export const ONTOLOGY_METADATA_JSON_PATH =
   "UNSTABLE_DO_NOT_USE/ontology-metadata.json";
 
-/**
- * Type shim for `import`, where a JSON module's default export is the object.
- */
 export const ONTOLOGY_METADATA_DMTS_PATH =
   "UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts";
 
@@ -84,14 +78,15 @@ ${exportStatement}
 `;
 }
 
-export async function generateOntologyMetadataJSONFile(
-  { fs, outDir, ontology }: GenerateContext,
-): Promise<void> {
+export async function generateOntologyMetadataJSONFile({
+  fs,
+  outDir,
+  ontology,
+}: GenerateContext): Promise<void> {
   const writeAsset = fs.writeAsset ?? fs.writeFile;
-  await fs.mkdir(
-    path.dirname(path.join(outDir, ONTOLOGY_METADATA_JSON_PATH)),
-    { recursive: true },
-  );
+  await fs.mkdir(path.dirname(path.join(outDir, ONTOLOGY_METADATA_JSON_PATH)), {
+    recursive: true,
+  });
   await writeAsset(
     path.join(outDir, ONTOLOGY_METADATA_JSON_PATH),
     JSON.stringify(ontology.raw, null, 4),
@@ -100,15 +95,10 @@ export async function generateOntologyMetadataJSONFile(
     path.join(outDir, ONTOLOGY_METADATA_DMTS_PATH),
     await formatTs(getTypeShim("module")),
   );
-  const exportEquals = await formatTs(
-    getTypeShim("commonjs"),
-  );
+  const exportEquals = await formatTs(getTypeShim("commonjs"));
   await writeAsset(
     path.join(outDir, ONTOLOGY_METADATA_DCTS_PATH),
     exportEquals,
   );
-  await writeAsset(
-    path.join(outDir, ONTOLOGY_METADATA_DTS_PATH),
-    exportEquals,
-  );
+  await writeAsset(path.join(outDir, ONTOLOGY_METADATA_DTS_PATH), exportEquals);
 }

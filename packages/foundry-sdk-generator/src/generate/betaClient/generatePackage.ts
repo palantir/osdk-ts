@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { mkdir, writeFile } from "node:fs/promises";
+import path, { dirname, isAbsolute, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { resolveDependenciesFromFindUp } from "@osdk/generator-utils";
-import { mkdir, writeFile } from "fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { dirname, isAbsolute, join } from "path";
+
 import type { SlsLogger } from "../../logging/index.js";
 import type { OntologyInfo } from "../../ontologyMetadata/ontologyMetadataResolver.js";
 import { USER_AGENT } from "../../utils/UserAgent.js";
@@ -32,10 +33,6 @@ import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
   "@osdk/client": undefined,
-  // the ontology metadata type shims reference OntologyFullMetadata, so it has
-  // to be resolvable from the generated package or those types silently widen
-  // to `any` under the usual skipLibCheck.
-  "@osdk/foundry.ontologies": undefined,
 };
 
 export async function generatePackage(
@@ -117,7 +114,7 @@ export async function generatePackage(
     );
 
     compilerOutput[type] = compileInMemory(inMemoryFileSystem, type);
-    compilerOutput[type].diagnostics.forEach(d => {
+    compilerOutput[type].diagnostics.forEach((d) => {
       logger.error("Error compiling generated file", {
         params: { moduleType: type },
         unsafeParams: {
@@ -136,18 +133,15 @@ export async function generatePackage(
     await mkdir(join(packagePath, "cjs"), { recursive: true });
 
     for (const [path, contents] of Object.entries(compilerOutput[type].files)) {
-      const newPath = path.replace(
-        packagePath,
-        join(packagePath, type),
-      );
+      const newPath = path.replace(packagePath, join(packagePath, type));
       await mkdir(dirname(newPath), { recursive: true });
       await writeFile(newPath, contents, { flag: "w" });
     }
 
-    void await writeFile(
+    void (await writeFile(
       join(packagePath, type, "package.json"),
       JSON.stringify({ type: type === "esm" ? "module" : "commonjs" }),
-    );
+    ));
   }
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });

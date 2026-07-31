@@ -14,10 +14,6 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-// Hand written declaration files are already declarations. They must be copied
-// rather than compiled: isolatedDeclaration would re-emit `foo.d.ts` as
-// `foo.d.d.ts`, and babel has no value-level code to transform. Declared above
-// the top level await below, which runs the command handler eagerly.
 const declarationFileEndings = [".d.ts", ".d.mts", ".d.cts"];
 
 await yargs(hideBin(process.argv))
