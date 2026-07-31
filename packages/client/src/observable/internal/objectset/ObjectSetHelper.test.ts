@@ -15,13 +15,17 @@
  */
 
 import type { DerivedProperty, ObjectSet } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import { Store } from "../Store.js";
+import { createDefer, mockObserver } from "../testUtils.js";
+
+const defer = createDefer();
 
 describe("ObjectSetHelper RDP canonicalization", () => {
   let client: Client;
@@ -111,5 +115,145 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     });
 
     expect(query.rdpConfig).toBeUndefined();
+  });
+});
+
+describe("ObjectSetQuery interface projection", () => {
+  let client: Client;
+  let store: Store;
+  let fauxFoundry: FauxFoundry;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+    fauxFoundry = testSetup.fauxFoundry;
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  // Employee implements FooInterface: fooSpt -> fullName, fooIdp -> office.
+  // `class` is a base-only property, so it has no interface property id.
+  const withProperties: DerivedProperty.Clause<typeof FooInterface> = {
+    derivedFoo: (b) => b.selectProperty("fooSpt"),
+  };
+
+  async function observeRow(
+    resolveToObjectType?: boolean,
+  ): Promise<Record<string, unknown>> {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Employee 1",
+      office: "NYC",
+      class: "Engineering",
+    });
+
+    const sub = mockObserver<ObjectSetPayload | undefined>();
+    defer(
+      store.objectSets.observe(
+        {
+          baseObjectSet: client(FooInterface) as unknown as ObjectSet<any>,
+          withProperties,
+          ...(resolveToObjectType ? { resolveToObjectType } : {}),
+        },
+        sub,
+      ),
+    );
+
+    await vi.waitFor(
+      () => {
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      },
+      { timeout: 5000 },
+    );
+
+    const payload = sub.next.mock.calls.at(-1)?.[0];
+    const resolved = payload!.resolvedList!;
+    expect(resolved).toHaveLength(1);
+    return resolved[0] as unknown as Record<string, unknown>;
+  }
+
+  describe("interface-projected rows (default)", () => {
+    it("returns rows as the interface view", async () => {
+      const row = await observeRow();
+      expect(row.$apiName).toBe("FooInterface");
+    });
+
+    it("keys shared properties by their interface property id", async () => {
+      const row = await observeRow();
+      expect(row.fooSpt).toBe("Employee 1");
+    });
+
+    it("returns derived properties", async () => {
+      const row = await observeRow();
+      expect(row.derivedFoo).toBe("Employee 1");
+    });
+  });
+
+  describe("resolveToObjectType: true", () => {
+    it("returns rows as the concrete object", async () => {
+      const row = await observeRow(true);
+      expect(row.$apiName).toBe("Employee");
+      // keyed by the object type's own property api name, not the interface's
+      expect(row.fullName).toBe("Employee 1");
+      expect(row.fooSpt).toBeUndefined();
+    });
+
+    it("does not fetch base properties the interface does not map", async () => {
+      const row = await observeRow(true);
+      // `class` exists on Employee but is not mapped by FooInterface, so the
+      // interface response never carried it. Unlike observeList, this path has
+      // no reload step to fill in the rest of the object, so asking for the
+      // object type surfaces the concrete keys of what was fetched -- not the
+      // full object.
+      expect(row.class).toBeUndefined();
+    });
+
+    it("returns derived properties", async () => {
+      const row = await observeRow(true);
+      expect(row.derivedFoo).toBe("Employee 1");
+    });
+  });
+
+  describe("casting between object and interface keeps derived values", () => {
+    it("keeps them in both directions", async () => {
+      const interfaceRow = await observeRow();
+      expect(interfaceRow.derivedFoo).toBe("Employee 1");
+
+      // interface -> object
+      const asObject = (
+        interfaceRow as unknown as {
+          $as: (t: string) => Record<string, unknown>;
+        }
+      ).$as("Employee");
+      expect(asObject.$apiName).toBe("Employee");
+      expect(asObject.derivedFoo).toBe("Employee 1");
+
+      // object -> interface, back again
+      const asInterface = (
+        asObject as unknown as {
+          $as: (t: string) => Record<string, unknown>;
+        }
+      ).$as("FooInterface");
+      expect(asInterface.$apiName).toBe("FooInterface");
+      expect(asInterface.derivedFoo).toBe("Employee 1");
+    });
   });
 });

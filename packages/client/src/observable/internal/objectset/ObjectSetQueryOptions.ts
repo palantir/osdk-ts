@@ -56,6 +56,24 @@ export interface ObserveObjectSetOptions<
   select?: readonly PropertyKeys<Q>[];
 
   /**
+   * When the object set resolves to an interface type, return the full
+   * concrete object instances instead of interface views.
+   *
+   * By default an interface object set yields rows narrowed to the
+   * interface's properties, keyed by the interface's property api names --
+   * matching `observeList`. With `resolveToObjectType: true` the underlying
+   * object is returned instead, keyed by the object type's own property api
+   * names.
+   *
+   * Derived (RDP) values are present either way.
+   *
+   * Only has an effect when the object set resolves to an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
