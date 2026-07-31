@@ -57,6 +57,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "react-components": "packages/react-components/oxlint.config.ts",
   "client.unstable": "packages/client.unstable/oxlint.config.ts",
   "client.unstable.tpsa": "packages/client.unstable.tpsa/oxlint.config.ts",
+  "client.unstable.seed": "packages/client.unstable.seed/oxlint.config.ts",
   "client": "packages/client/oxlint.config.ts",
   "maker": "packages/maker/oxlint.config.ts",
   "maker-experimental": "packages/maker-experimental/oxlint.config.ts",
