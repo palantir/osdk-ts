@@ -40,7 +40,6 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-import { convertIrDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 
 // Type definitions for optional function discovery dependencies
@@ -788,12 +787,10 @@ export class OntologyIrToFullMetadataConverter {
         status: this.convertObjectTypeStatus(object.status),
         properties,
         rid: `ri.${object.apiName}`,
-        aliases: fullObject.entityMetadata?.aliases ?? [],
-        datasources: this.getOsdkObjectTypeDatasources(
-          object.apiName,
-          fullObject.datasources,
-          propRidToApiName,
-        ),
+        // TODO: aliases and datasources are not yet derived from the IR; to be
+        // implemented later.
+        aliases: [],
+        datasources: [],
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -832,33 +829,6 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     return result;
-  }
-
-  /**
-   * Convert IR object type datasources to the platform wire format.
-   *
-   * The IR has no datasource rid, so the required wire `rid` is synthesized on
-   * the same `ri.${apiName}.*` convention this converter uses for object and
-   * property rids — it identifies the datasource in the generated metadata but
-   * is not resolvable. Backing resource input names are handled similarly; see
-   * `convertIrDatasourceDefinition`.
-   */
-  static getOsdkObjectTypeDatasources(
-    objectApiName: ApiName,
-    datasources: OntologyIrObjectTypeBlockDataV2["datasources"],
-    propRidToApiName: Record<string, string>,
-  ): Ontologies.ObjectTypeDatasource[] {
-    // Redacted datasources are dropped: the public wire type has no `redacted`
-    // field, so emitting them would leak backing rids/metadata.
-    return datasources
-      .filter((ds) => ds.redacted !== true)
-      .map((ds) => ({
-        rid: `ri.${objectApiName}.${ds.datasourceName}`,
-        definition: convertIrDatasourceDefinition(
-          ds.datasource,
-          (key) => propRidToApiName[key],
-        ),
-      }));
   }
 
   /**

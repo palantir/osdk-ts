@@ -33,7 +33,6 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import { hash } from "node:crypto";
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
-import { convertBlockDataDatasourceDefinition } from "./convertDatasourceDefinition.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
@@ -190,11 +189,10 @@ export class OntologyBlockDataToFullMetadataConverter {
         status: this.convertObjectTypeStatusFromBlockData(object.status),
         properties,
         rid,
-        aliases: fullObject.entityMetadata?.aliases ?? [],
-        datasources: this.getOsdkObjectTypeDatasourcesFromBlockData(
-          fullObject.datasources,
-          propRidToApiName,
-        ),
+        // TODO: aliases and datasources are not yet derived from the block
+        // data; to be implemented later.
+        aliases: [],
+        datasources: [],
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -239,32 +237,6 @@ export class OntologyBlockDataToFullMetadataConverter {
     }
 
     return result;
-  }
-
-  /**
-   * Convert block-data object type datasources to the platform wire format.
-   *
-   * Unlike the IR converter, block-data carries real rids — both the wrapper
-   * `rid` and the backing resource rids — so they are used directly. Property
-   * rids are resolved to api names via `propRidToApiName`; unresolved references
-   * are dropped rather than emitted raw. See
-   * `convertBlockDataDatasourceDefinition`.
-   */
-  static getOsdkObjectTypeDatasourcesFromBlockData(
-    datasources: ObjectTypeBlockDataV2["datasources"],
-    propRidToApiName: Record<string, string>,
-  ): Ontologies.ObjectTypeDatasource[] {
-    // Redacted datasources are dropped: the public wire type has no `redacted`
-    // field
-    return datasources
-      .filter((ds) => ds.redacted !== true)
-      .map((ds) => ({
-        rid: ds.rid,
-        definition: convertBlockDataDatasourceDefinition(
-          ds.datasource,
-          (key) => propRidToApiName[key],
-        ),
-      }));
   }
 
   static getLinkMappingsFromBlockData(
