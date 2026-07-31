@@ -83,8 +83,7 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "*.d.ts",
-    "bin/postinstall.mjs"
+    "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
