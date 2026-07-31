@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrStructFieldConditionalValidationBlock,
-} from "@osdk/client.unstable";
+import type { OntologyIrStructFieldConditionalValidationBlock } from "@osdk/client.unstable";
 import { describe, expect, it } from "vitest";
 
-import type {
-  ActionParameterConfiguration,
-} from "../../api/action/ActionParameterConfiguration.js";
+import type { ActionParameterConfiguration } from "../../api/action/ActionParameterConfiguration.js";
 import type { ActionType } from "../../api/action/ActionType.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import { extractAllowedValues } from "../../api/defineOntology.js";
