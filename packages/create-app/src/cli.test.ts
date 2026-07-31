@@ -259,9 +259,8 @@ describe("--unstableFeatures flag", () => {
     await cli(argsFor(project, ["--unstableFeatures", "true"]));
     const { packageJson, clientTs } = readProject(project);
 
-    expect(packageJson.scripts.postinstall).toBe(
-      "./node_modules/.bin/osdk unstable branch sync"
-    );
+    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    expect(packageJson.scripts.postinstall).toBe(postinstall);
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
     expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
     expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
