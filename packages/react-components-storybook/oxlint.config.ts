@@ -85,7 +85,13 @@ export default defineConfig({
         "**/.storybook/main.mjs",
       ],
       rules: {
-        "storybook/no-uninstalled-addons": "error",
+        "storybook/no-uninstalled-addons": [
+          "error",
+          {
+            packageJsonLocation: new URL("package.json", import.meta.url)
+              .pathname,
+          },
+        ],
       },
     },
   ],
