@@ -1,5 +1,27 @@
 # @osdk/maker-experimental
 
+## 0.43.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- d349c0b: Support presets for imports
+- e0cbc70: Add propertiesV2 to imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-converters.preview@0.31.0
+
 ## 0.42.0
 
 ### Minor Changes

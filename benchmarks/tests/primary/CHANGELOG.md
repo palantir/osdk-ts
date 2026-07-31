@@ -1,5 +1,12 @@
 # @osdk/benchmarks.primary
 
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+
 ## 0.44.0
 
 ### Patch Changes

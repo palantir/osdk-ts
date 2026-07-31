@@ -1,5 +1,12 @@
 # @osdk/react-devtools
 
+## 0.18.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- cd1c9ed: Upgrade vitest devDependency to v3 to align with the rest of the repo and enable v8 coverage collection.
+
 ## 0.17.0
 
 ### Minor Changes

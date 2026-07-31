@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.19.0
+
+### Minor Changes
+
+- 21f7434: Fix EditBatch/WriteableClient `update` rejecting interface (and object) edits whose types have array-valued properties.
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+
 ## 1.18.0
 
 ### Minor Changes
