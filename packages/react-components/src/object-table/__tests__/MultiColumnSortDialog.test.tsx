@@ -94,15 +94,15 @@ describe(MultiColumnSortDialog, () => {
             columnOptions={[
               { id: "a", name: "Col A", canSort: true, dataType },
             ]}
-          />
+          />,
         );
 
         expect(
           getSortToggle("Col A").querySelector(
-            `svg[data-icon="${expectedIcon}"]`
-          )
+            `svg[data-icon="${expectedIcon}"]`,
+          ),
         ).toBeTruthy();
-      }
+      },
     );
 
     it("keeps the type's icon family when toggling direction", () => {
@@ -115,19 +115,19 @@ describe(MultiColumnSortDialog, () => {
           columnOptions={[
             { id: "a", name: "Col A", canSort: true, dataType: "integer" },
           ]}
-        />
+        />,
       );
 
       expect(
-        getSortToggle("Col A").querySelector('svg[data-icon="sort-numerical"]')
+        getSortToggle("Col A").querySelector('svg[data-icon="sort-numerical"]'),
       ).toBeTruthy();
 
       fireEvent.click(getSortToggle("Col A"));
 
       expect(
         getSortToggle("Col A").querySelector(
-          'svg[data-icon="sort-numerical-desc"]'
-        )
+          'svg[data-icon="sort-numerical-desc"]',
+        ),
       ).toBeTruthy();
     });
 
@@ -152,21 +152,21 @@ describe(MultiColumnSortDialog, () => {
               dataType: "timestamp",
             },
           ]}
-        />
+        />,
       );
 
       expect(
         getSortToggle("Name").querySelector(
-          'svg[data-icon="sort-alphabetical"]'
-        )
+          'svg[data-icon="sort-alphabetical"]',
+        ),
       ).toBeTruthy();
       expect(
         getSortToggle("Age").querySelector(
-          'svg[data-icon="sort-numerical-desc"]'
-        )
+          'svg[data-icon="sort-numerical-desc"]',
+        ),
       ).toBeTruthy();
       expect(
-        getSortToggle("Hired At").querySelector('svg[data-icon="sort-asc"]')
+        getSortToggle("Hired At").querySelector('svg[data-icon="sort-asc"]'),
       ).toBeTruthy();
     });
   });

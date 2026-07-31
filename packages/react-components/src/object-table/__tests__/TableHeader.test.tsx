@@ -89,17 +89,17 @@ async function openMultiSortDialog(columnId: string): Promise<void> {
   fireEvent.click(
     screen.getByRole("button", {
       name: `Open header menu for column with id=${columnId}`,
-    })
+    }),
   );
 
   const multiSortItem = await waitFor(() =>
-    screen.getByRole("menuitem", { name: "Sort on multiple columns" })
+    screen.getByRole("menuitem", { name: "Sort on multiple columns" }),
   );
 
   fireEvent.click(multiSortItem);
 
   await waitFor(() =>
-    expect(screen.getByText("Sort on Multiple Columns")).toBeTruthy()
+    expect(screen.getByText("Sort on Multiple Columns")).toBeTruthy(),
   );
 }
 
@@ -122,19 +122,21 @@ describe(TableHeader, () => {
           { id: "age", desc: true },
           { id: "hiredAt", desc: false },
         ]}
-      />
+      />,
     );
 
     await openMultiSortDialog("name");
 
     expect(
-      getSortToggle("Name").querySelector('svg[data-icon="sort-alphabetical"]')
+      getSortToggle("Name").querySelector('svg[data-icon="sort-alphabetical"]'),
     ).toBeTruthy();
     expect(
-      getSortToggle("Age").querySelector('svg[data-icon="sort-numerical-desc"]')
+      getSortToggle("Age").querySelector(
+        'svg[data-icon="sort-numerical-desc"]',
+      ),
     ).toBeTruthy();
     expect(
-      getSortToggle("Hired At").querySelector('svg[data-icon="sort-asc"]')
+      getSortToggle("Hired At").querySelector('svg[data-icon="sort-asc"]'),
     ).toBeTruthy();
   });
 });

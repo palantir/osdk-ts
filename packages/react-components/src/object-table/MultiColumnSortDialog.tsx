@@ -151,7 +151,7 @@ function MultiColumnSortDialogInner({
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => {
       const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
-        item.dataType
+        item.dataType,
       );
 
       return {

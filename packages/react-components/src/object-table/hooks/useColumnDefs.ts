@@ -204,7 +204,7 @@ function getDefaultColumns<
  * columns), so both yield `undefined`.
  */
 function getDataType(
-  property: ObjectMetadata.Property | undefined
+  property: ObjectMetadata.Property | undefined,
 ): string | undefined {
   return typeof property?.type === "string" && property.type.length > 0
     ? property.type
