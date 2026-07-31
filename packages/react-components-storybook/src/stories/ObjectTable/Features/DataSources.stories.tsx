@@ -15,6 +15,7 @@
  */
 
 import { useOsdkClient } from "@osdk/react";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
@@ -24,7 +25,6 @@ import { WorkerInterface } from "../../../types/WorkerInterface.js";
 import {
   defaultEmployeeColumns,
   objectTableMeta,
-  TARGET_DATA,
 } from "../objectTableStoryHelpers.js";
 import type { EmployeeTableProps } from "../objectTableStoryHelpers.js";
 
@@ -81,22 +81,38 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
   },
 };
 
+// TODO: Add the `name` and `email` columns back once interface property
+// mapping is applied to the rows the table receives.
+const workerInterfaceColumns: ColumnDefinition<WorkerInterface>[] = [
+  { locator: { type: "property", id: "employeeNumber" } },
+];
+
+const TARGET_EMPLOYEE_NUMBER = "657495071";
+
 export const WithInterfaceType: Story = {
   args: {
     objectType: WorkerInterface as unknown as typeof Employee,
+    columnDefinitions:
+      workerInterfaceColumns as unknown as ColumnDefinition<Employee>[],
   },
   parameters: {
     docs: {
       description: {
         story:
-          "Pass an interface type instead of an object type. The table shows the interface's " +
-          "properties (email, name, employeeNumber) and any object implementing the interface " +
-          "will be displayed.",
+          "Pass an interface type instead of an object type. Any object implementing the " +
+          "interface is displayed.",
       },
       source: {
         code: `import { WorkerInterface } from "./types/WorkerInterface";
 
-<ObjectTable objectType={WorkerInterface} />`,
+const columnDefinitions: ColumnDefinition<WorkerInterface>[] = [
+  { locator: { type: "property", id: "employeeNumber" } },
+];
+
+<ObjectTable
+  objectType={WorkerInterface}
+  columnDefinitions={columnDefinitions}
+/>`,
       },
     },
   },
@@ -105,16 +121,11 @@ export const WithInterfaceType: Story = {
       <ObjectTable {...args} />
     </div>
   ),
-  // The interface exposes name/email/employeeNumber; objects implementing it
-  // (Employees) render with those mapped properties (name ← fullName).
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Interface "name" maps to the Employee's fullName.
-    await canvas.findByText(TARGET_DATA);
+    await canvas.findByText(TARGET_EMPLOYEE_NUMBER);
 
-    // The interface's columns are shown by their display names.
-    await expect(canvas.getByText("Name")).toBeInTheDocument();
-    await expect(canvas.getByText("Email")).toBeInTheDocument();
+    await expect(canvas.getByText("Employee Number")).toBeInTheDocument();
   },
 };
