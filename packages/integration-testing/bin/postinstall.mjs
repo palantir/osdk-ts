@@ -2,12 +2,14 @@
 // @ts-check
 
 const main = async () => {
+  let postinstall;
   try {
-    const { postinstall } = await import("../build/esm/scripts/postinstall");
-    await postinstall();
+    const exported = await import("../build/esm/scripts/postinstall.js");
+    postinstall = exported.postinstall;
   } catch {
     // no-op
   }
+  await postinstall?.();
 };
 
 main();
