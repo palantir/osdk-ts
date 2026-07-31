@@ -77,7 +77,7 @@ describe("FoundryCliService", () => {
   /** Attached to a discoverer, so health reads report UNDISCOVERED. */
   const scriptedService = (
     script: string,
-    config: Partial<ScriptedServiceConfig> = {}
+    config: Partial<ScriptedServiceConfig> = {},
   ): ScriptedService => {
     const built = new ScriptedService({ projectPath, script, ...config });
     built.attach({
@@ -92,7 +92,7 @@ describe("FoundryCliService", () => {
     // nothing consumes the read end, the child blocks in write() forever and
     // never reaches exit.
     service = scriptedService(
-      `process.stdout.write("x".repeat(${OVERFLOWS_PIPE_BUFFER}))`
+      `process.stdout.write("x".repeat(${OVERFLOWS_PIPE_BUFFER}))`,
     );
 
     await service.start();
@@ -105,7 +105,7 @@ describe("FoundryCliService", () => {
   it("still captures stderr from a service that floods stdout", async () => {
     service = scriptedService(
       `process.stderr.write("the-interesting-part");` +
-        `process.stdout.write("x".repeat(${OVERFLOWS_PIPE_BUFFER}))`
+        `process.stdout.write("x".repeat(${OVERFLOWS_PIPE_BUFFER}))`,
     );
 
     await service.start();
@@ -113,7 +113,7 @@ describe("FoundryCliService", () => {
     await vi.waitFor(
       () =>
         expect(service?.getCapturedStderr()).toContain("the-interesting-part"),
-      { timeout: 10_000 }
+      { timeout: 10_000 },
     );
   });
 
@@ -133,13 +133,13 @@ describe("FoundryCliService", () => {
       `process.on("SIGINT", () => {});` +
         `process.stderr.write("handler-installed");` +
         `setInterval(() => {}, 1000)`,
-      { stopGraceMs: 250 }
+      { stopGraceMs: 250 },
     );
     await service.start();
     // `spawn` fires before node has evaluated -e, so signalling now would race
     // the handler's registration and kill the child outright.
     await vi.waitFor(() =>
-      expect(service?.getCapturedStderr()).toContain("handler-installed")
+      expect(service?.getCapturedStderr()).toContain("handler-installed"),
     );
 
     await service.stop();

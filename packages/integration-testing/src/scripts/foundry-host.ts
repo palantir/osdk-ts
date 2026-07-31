@@ -33,7 +33,7 @@ export interface FoundryCliInstallPathsOptions {
 
 export const getArtifactPlatform = (
   platform: NodeJS.Platform = process.platform,
-  arch: string = process.arch
+  arch: string = process.arch,
 ): ArtifactPlatform => {
   switch (`${platform}-${arch}`) {
     case "linux-x64":
@@ -49,7 +49,7 @@ export const getArtifactPlatform = (
     default:
       invariant(
         false,
-        `The Foundry CLI is not published for ${platform}-${arch}`
+        `The Foundry CLI is not published for ${platform}-${arch}`,
       );
   }
 };
@@ -85,7 +85,7 @@ const parseConfiguredHost = (value: string): string | undefined => {
 };
 
 export const resolveFoundryHost = async (
-  options: ResolveBearerTokenOptions = {}
+  options: ResolveBearerTokenOptions = {},
 ): Promise<string> => {
   const env = options.env ?? process.env;
   const envValue = env.FOUNDRY_EXTERNAL_HOST ?? env.FOUNDRY_HOSTNAME;
@@ -101,7 +101,7 @@ export const resolveFoundryHost = async (
   invariant(
     gitRemoteHost !== undefined,
     "Cannot resolve the Foundry host. Please set FOUNDRY_EXTERNAL_HOST or " +
-      "FOUNDRY_HOSTNAME, or configure a git remote pointing at Foundry."
+      "FOUNDRY_HOSTNAME, or configure a git remote pointing at Foundry.",
   );
   return gitRemoteHost;
 };

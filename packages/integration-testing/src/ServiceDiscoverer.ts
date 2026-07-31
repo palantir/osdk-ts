@@ -54,10 +54,10 @@ export class ServiceDiscoverer {
   async refresh(): Promise<ComponentDiscovery[]> {
     const fileNames = await fs.readdir(this.#basePath);
     const discoveries = await Promise.all(
-      fileNames.map((fileName) => this.#read(fileName))
+      fileNames.map((fileName) => this.#read(fileName)),
     );
     return discoveries.filter(
-      (discovery): discovery is ComponentDiscovery => discovery !== undefined
+      (discovery): discovery is ComponentDiscovery => discovery !== undefined,
     );
   }
 

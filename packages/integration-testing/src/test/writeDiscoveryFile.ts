@@ -32,7 +32,7 @@ import { discoveryFileName } from "../utils/service.js";
 export const writeDiscoveryFile = async (
   projectDir: string,
   name: ServiceName,
-  discovery: Partial<ComponentDiscovery> & Pick<ComponentDiscovery, "url">
+  discovery: Partial<ComponentDiscovery> & Pick<ComponentDiscovery, "url">,
 ): Promise<void> => {
   const dir = join(projectDir, ".palantir");
   await mkdir(dir, { recursive: true });
@@ -44,6 +44,6 @@ export const writeDiscoveryFile = async (
   await writeFile(
     join(dir, discoveryFileName(name)),
     JSON.stringify(contents, null, 2),
-    "utf-8"
+    "utf-8",
   );
 };

@@ -23,7 +23,7 @@ import root from "../../oxlint.config.ts";
 // code authored against the oxc toolchain and needs no carve-outs, but the
 // package also carries a conjure-generated tree under src/generated/cli (the
 // com.palantir.foundry-cli `cli-api` service, emitted by
-// scripts/generateConjure.sh). This repo treats src/generated/ as first-class
+// `pnpm run generateConjure`). This repo treats src/generated/ as first-class
 // checked-in source (only src/generatedNoCheck{,2}/ are excluded), so this
 // config re-includes it the way @osdk/client.unstable and
 // @osdk/client.unstable.tpsa do: the inherited Ultracite preset ignores
@@ -39,7 +39,7 @@ import root from "../../oxlint.config.ts";
 export default defineConfig({
   extends: [root],
   ignorePatterns: (root.ignorePatterns ?? []).filter(
-    (p) => p !== "**/generated"
+    (p) => p !== "**/generated",
   ),
   rules: {
     // The generated barrels (`export * as ...` in index.ts and the per-service

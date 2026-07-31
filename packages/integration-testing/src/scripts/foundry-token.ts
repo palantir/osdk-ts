@@ -36,7 +36,7 @@ const parseGitRemoteToken = (gitRemote: string): string | undefined => {
 };
 
 const resolveFoundryToken = async (
-  options: ResolveBearerTokenOptions = {}
+  options: ResolveBearerTokenOptions = {},
 ): Promise<string | undefined> => {
   const env = options.env ?? process.env;
   if (env.JEMMA) {
@@ -58,13 +58,13 @@ const resolveFoundryToken = async (
     gitRemote !== undefined,
     "Warning: Git remote url not set.\n" +
       "Please ensure the following environment variables are set " +
-      "[FOUNDRY_HOSTNAME, FOUNDRY_USERNAME, FOUNDRY_TOKEN]"
+      "[FOUNDRY_HOSTNAME, FOUNDRY_USERNAME, FOUNDRY_TOKEN]",
   );
   return parseGitRemoteToken(gitRemote);
 };
 
 export const getFoundryToken = async (
-  options: ResolveBearerTokenOptions = {}
+  options: ResolveBearerTokenOptions = {},
 ): Promise<string> => {
   const token = await resolveFoundryToken(options);
   invariant(token !== undefined, "Could not resolve token");

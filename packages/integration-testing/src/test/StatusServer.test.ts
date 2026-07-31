@@ -72,7 +72,7 @@ describe("StatusServer", () => {
       ready: false,
     });
     await expect(statusServer.getServiceStatuses()).rejects.toThrow(
-      /not discovered yet/u
+      "not discovered yet",
     );
   });
 

@@ -33,10 +33,10 @@ export interface StubStatusServer {
  * an empty array — when nothing has reported yet.
  */
 export const startStubStatusServer = async (
-  initialStatuses: ServiceStatus[] = []
+  initialStatuses: ServiceStatus[] = [],
 ): Promise<StubStatusServer> => {
   const statuses = new Map<ServiceName, ServiceStatus>(
-    initialStatuses.map((status) => [status.service, status])
+    initialStatuses.map((status) => [status.service, status]),
   );
   let healthy = true;
 

@@ -88,7 +88,7 @@ export class StatusServer extends FoundryCliService {
     const baseUrl = this.getContext().discoverer.get("STATUS_SERVER")?.url;
     invariant(
       baseUrl,
-      "Cannot get service status because the status server is not discovered yet"
+      "Cannot get service status because the status server is not discovered yet",
     );
     this.#inFlight ??= StatusService.getStatus({ baseUrl, servicePath: "" })
       .catch(() => undefined)
@@ -100,7 +100,7 @@ export class StatusServer extends FoundryCliService {
   }
 
   async getServiceStatus(
-    name: ServiceName
+    name: ServiceName,
   ): Promise<ServiceStatus | undefined> {
     const statuses = await this.getServiceStatuses();
     return statuses.find(({ service }) => service === name);

@@ -37,7 +37,7 @@ export interface CliServiceLauncherConfig {
 
 const formatError = (
   service: FoundryCliService,
-  health: ServiceHealth
+  health: ServiceHealth,
 ): string => {
   const parts: string[] = [];
   if (health.message != null && health.message.length > 0) {
@@ -95,7 +95,7 @@ export class CliServiceLauncher {
     }
     invariant(
       existing === undefined,
-      `A different ${service.name} service is already registered`
+      `A different ${service.name} service is already registered`,
     );
     this.#services.set(service.name, service);
     service.attach({
@@ -112,7 +112,7 @@ export class CliServiceLauncher {
     await this.#ensureDiscovering();
     this.#assertAcyclic();
     const results = await Promise.allSettled(
-      [...this.#services.values()].map((service) => this.#start(service))
+      [...this.#services.values()].map((service) => this.#start(service)),
     );
     const failed = results.find((result) => result.status === "rejected");
     if (failed !== undefined) {
@@ -152,7 +152,7 @@ export class CliServiceLauncher {
 
   async #startImmediate(service: FoundryCliService): Promise<void> {
     await Promise.all(
-      this.#prerequisites(service).map((dependency) => this.#start(dependency))
+      this.#prerequisites(service).map((dependency) => this.#start(dependency)),
     );
     await service.start();
     await this.waitUntilReady(service);
@@ -185,7 +185,7 @@ export class CliServiceLauncher {
         Date.now() < deadline,
         () =>
           `${service.name} is not ready (${current.state}) within ` +
-          `${service.getReadyTimeoutMs()}ms${formatError(service, current)}`
+          `${service.getReadyTimeoutMs()}ms${formatError(service, current)}`,
       );
       await setTimeout(HEALTH_POLL_INTERVAL_MS);
       await this.#discoverer.refresh();
@@ -197,16 +197,16 @@ export class CliServiceLauncher {
   async checkHealth(): Promise<ServiceHealth[]> {
     await this.#discoverer.refresh();
     return Promise.all(
-      [...this.#services.values()].map((service) => service.checkHealth())
+      [...this.#services.values()].map((service) => service.checkHealth()),
     );
   }
 
   async checkDependencies(
-    service: FoundryCliService
+    service: FoundryCliService,
   ): Promise<ServiceHealth[]> {
     await this.#discoverer.refresh();
     return Promise.all(
-      service.dependencies.map((dependency) => dependency.checkHealth())
+      service.dependencies.map((dependency) => dependency.checkHealth()),
     );
   }
 
@@ -255,7 +255,7 @@ export class CliServiceLauncher {
     const settled = new Set<ServiceName>();
     const visit = (
       service: FoundryCliService,
-      walkedPath: ServiceName[]
+      walkedPath: ServiceName[],
     ): void => {
       if (settled.has(service.name)) {
         return;
@@ -267,7 +267,7 @@ export class CliServiceLauncher {
           `Dependency cycle between services: ${[
             ...walkedPath.slice(cycleStart),
             service.name,
-          ].join(" -> ")}`
+          ].join(" -> ")}`,
       );
       for (const dependency of this.#prerequisites(service)) {
         visit(dependency, [...walkedPath, service.name]);

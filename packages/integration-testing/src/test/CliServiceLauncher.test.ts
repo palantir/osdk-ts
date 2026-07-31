@@ -74,7 +74,7 @@ describe("CliServiceLauncher", () => {
       stateWhenStarted?: ServiceState;
       readyTimeoutMs?: number;
       message?: string;
-    } = {}
+    } = {},
   ): StubService =>
     new StubService(name, {
       projectPath: projectDir,
@@ -120,7 +120,7 @@ describe("CliServiceLauncher", () => {
     });
 
     await expect(launcher.start()).rejects.toThrow(
-      /STATUS_SERVER is already running/u
+      "STATUS_SERVER is already running",
     );
   });
 
@@ -146,14 +146,14 @@ describe("CliServiceLauncher", () => {
 
     const shared = stubService("PLATFORM_API_PROXY", { startLog });
     launch.register(
-      stubService("ONTOLOGY", { startLog, dependencies: [shared] })
+      stubService("ONTOLOGY", { startLog, dependencies: [shared] }),
     );
     launch.register(stubService("APP", { startLog, dependencies: [shared] }));
 
     await launch.start();
 
     expect(
-      startLog.filter((name) => name === "PLATFORM_API_PROXY")
+      startLog.filter((name) => name === "PLATFORM_API_PROXY"),
     ).toHaveLength(1);
     expect(startLog.indexOf("PLATFORM_API_PROXY")).toBe(0);
   });
@@ -168,7 +168,7 @@ describe("CliServiceLauncher", () => {
     launch.register(dependent);
 
     await expect(launch.start()).rejects.toThrow(
-      /PLATFORM_API_PROXY is not ready \(FAILED\)/u
+      "PLATFORM_API_PROXY is not ready (FAILED)",
     );
     // The dependent is never started once its dependency failed.
     expect(dependent.isStarted()).toBe(false);
@@ -181,10 +181,10 @@ describe("CliServiceLauncher", () => {
       stubService("APP", {
         stateWhenStarted: "PREPARING",
         readyTimeoutMs: 300,
-      })
+      }),
     );
 
-    await expect(launch.start()).rejects.toThrow(/within 300ms/u);
+    await expect(launch.start()).rejects.toThrow("within 300ms");
   });
 
   it("says why a service failed, not just that it did", async () => {
@@ -194,13 +194,13 @@ describe("CliServiceLauncher", () => {
       stubService("APP", {
         stateWhenStarted: "FAILED",
         message: "port 8080 already in use",
-      })
+      }),
     );
 
     // The whole point of capturing a service's own explanation is that it
     // reaches the error a caller actually sees.
     await expect(launch.start()).rejects.toThrow(
-      /APP is not ready \(FAILED\): port 8080 already in use/u
+      "APP is not ready (FAILED): port 8080 already in use",
     );
   });
 
@@ -212,11 +212,11 @@ describe("CliServiceLauncher", () => {
         stateWhenStarted: "PREPARING",
         message: "still importing the ontology",
         readyTimeoutMs: 300,
-      })
+      }),
     );
 
     await expect(launch.start()).rejects.toThrow(
-      /within 300ms: still importing the ontology/u
+      "within 300ms: still importing the ontology",
     );
   });
 
@@ -235,7 +235,7 @@ describe("CliServiceLauncher", () => {
     launcher.register(ontology);
 
     await expect(launcher.start()).rejects.toThrow(
-      /STATUS_SERVER is not ready/u
+      "STATUS_SERVER is not ready",
     );
 
     expect(ontology.isStarted()).toBe(false);
@@ -251,7 +251,7 @@ describe("CliServiceLauncher", () => {
       }),
     });
     await expect(launcher.start()).rejects.toThrow(
-      /Dependency cycle between services: STATUS_SERVER -> ONTOLOGY -> STATUS_SERVER/u
+      "Dependency cycle between services: STATUS_SERVER -> ONTOLOGY -> STATUS_SERVER",
     );
   });
 
@@ -265,7 +265,7 @@ describe("CliServiceLauncher", () => {
     launch.register(second);
 
     await expect(launch.start()).rejects.toThrow(
-      /Dependency cycle between services/u
+      "Dependency cycle between services",
     );
   });
 
@@ -288,7 +288,7 @@ describe("CliServiceLauncher", () => {
       expect.arrayContaining([
         expect.objectContaining({ service: "STATUS_SERVER", ready: true }),
         expect.objectContaining({ service: "ONTOLOGY", ready: true }),
-      ])
+      ]),
     );
   });
 

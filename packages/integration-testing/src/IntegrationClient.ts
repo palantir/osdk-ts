@@ -70,7 +70,7 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
   const { baseUrl, metadata, fetchFn } = config;
   const builder = new SeedBuilder(metadata);
   const seedClientFunction = async <T = void>(
-    seed: SeedFunction<T> | SeedOutput
+    seed: SeedFunction<T> | SeedOutput,
   ): Promise<T> => {
     let result;
     if (typeof seed === "function") {
@@ -88,7 +88,7 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
         servicePath: "/api",
         fetchFn,
       },
-      seed
+      seed,
     );
     return res;
   };
@@ -127,7 +127,7 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
   };
   return Object.defineProperties<SeedClient>(
     seedClientFunction as SeedClient,
-    Object.getOwnPropertyDescriptors(seedClientUtils)
+    Object.getOwnPropertyDescriptors(seedClientUtils),
   );
 }
 
@@ -138,7 +138,7 @@ export type IntegrationClientConfig = {
 };
 
 export async function createIntegrationClient(
-  config: IntegrationClientConfig
+  config: IntegrationClientConfig,
 ): Promise<IntegrationClient> {
   const { baseUrl, metadata, caCertPath } = config;
   const agent = new Agent({
@@ -160,7 +160,7 @@ export async function createIntegrationClient(
     metadata.ontology.rid,
     () => Promise.resolve("integration-client-token"),
     {},
-    fetchWithCert
+    fetchWithCert,
   );
   const mockClient = createMockClient();
   const clientInternal = ((def: ClientArg) => {
@@ -185,7 +185,7 @@ export async function createIntegrationClient(
       whenQuery: {
         value: mockClient.whenQuery.bind(undefined),
       },
-    }
+    },
   );
   const seed = createSeedClient({
     baseUrl,

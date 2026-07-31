@@ -23,7 +23,7 @@ import type { ServiceStatus as _ServiceStatus } from "../__components.js";
  * Return the current status of all services.
  */
 export async function getStatus(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<Array<_ServiceStatus>> {
   return conjureFetch(ctx, `/status`, "GET");
 }

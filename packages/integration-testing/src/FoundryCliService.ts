@@ -137,7 +137,7 @@ export abstract class FoundryCliService {
     invariant(
       context !== undefined,
       `${this.name} is not registered with a CliServiceLauncher, so it has ` +
-        `no discoverer or status server to consult`
+        `no discoverer or status server to consult`,
     );
     return context;
   }
@@ -153,7 +153,7 @@ export abstract class FoundryCliService {
     await this.getContext().discoverer.refresh();
     invariant(
       !(await this.checkHealth()).ready,
-      `${this.name} is already running; stop it before starting a new one`
+      `${this.name} is already running; stop it before starting a new one`,
     );
     await this.#spawn();
   }
@@ -183,9 +183,9 @@ export abstract class FoundryCliService {
             `Failed to spawn ${this.name} via ${this.#foundryCliPath}`,
             {
               cause: error,
-            }
-          )
-        )
+            },
+          ),
+        ),
       );
     });
   }

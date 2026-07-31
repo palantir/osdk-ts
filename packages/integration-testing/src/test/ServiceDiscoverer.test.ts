@@ -48,13 +48,13 @@ describe("ServiceDiscoverer", () => {
 
   it("names discovery files the way the CLI writes them", () => {
     expect(discoveryFileName("STATUS_SERVER")).toBe(
-      ".status-server-discovery.json"
+      ".status-server-discovery.json",
     );
     expect(discoveryFileName("PLATFORM_API_PROXY")).toBe(
-      ".platform-api-proxy-discovery.json"
+      ".platform-api-proxy-discovery.json",
     );
     expect(serviceNameFromFileName(".ontology-discovery.json")).toBe(
-      "ONTOLOGY"
+      "ONTOLOGY",
     );
   });
 
@@ -121,7 +121,7 @@ describe("ServiceDiscoverer", () => {
   it("rejects a discovery record with no url", async () => {
     await writeDiscoveryFile(projectDir, "APP", { url: "" });
 
-    await expect(discoverer.start()).rejects.toThrow(/Service URL not found/u);
+    await expect(discoverer.start()).rejects.toThrow("Service URL not found");
   });
 
   it("skips a record that is still being written, and picks it up after", async () => {

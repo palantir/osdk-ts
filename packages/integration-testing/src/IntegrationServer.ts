@@ -47,12 +47,12 @@ export type IntegrationServerConfig = {
 };
 
 const transformMetadata = (
-  metadata: OntologyFullMetadata
+  metadata: OntologyFullMetadata,
 ): PreviewOntologyFullMetadata => {
   const transformed =
     PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
       EMPTY_ONTOLOGY_BLOCK_DATA,
-      metadata
+      metadata,
     );
   return {
     ...transformed,
@@ -78,7 +78,7 @@ export interface IntegrationServer {
 }
 
 export async function createIntegrationServer(
-  config: IntegrationServerConfig
+  config: IntegrationServerConfig,
 ): Promise<IntegrationServer> {
   const {
     metadata,
@@ -107,7 +107,7 @@ export async function createIntegrationServer(
       metadataPath,
       readyTimeoutMs,
       foundryCliPath,
-    })
+    }),
   );
 
   return {

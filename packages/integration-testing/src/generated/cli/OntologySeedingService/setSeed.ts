@@ -30,7 +30,7 @@ import type {
  */
 export async function setSeed(
   ctx: ConjureContext,
-  seed: _OntologySeed
+  seed: _OntologySeed,
 ): Promise<_SetSeedResponse> {
   return conjureFetch(ctx, `/seed`, "PUT", seed);
 }

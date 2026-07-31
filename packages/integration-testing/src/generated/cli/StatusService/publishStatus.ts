@@ -25,7 +25,7 @@ import type { ServiceStatus as _ServiceStatus } from "../__components.js";
  */
 export async function publishStatus(
   ctx: ConjureContext,
-  status: _ServiceStatus
+  status: _ServiceStatus,
 ): Promise<void> {
   return conjureFetch(ctx, `/status`, "POST", status);
 }

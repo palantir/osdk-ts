@@ -40,7 +40,7 @@ describe("createIntegrationServer", () => {
 
   const runDirs = async (): Promise<string[]> =>
     (await readdir(projectPath)).filter((entry) =>
-      entry.startsWith(".test-run-")
+      entry.startsWith(".test-run-"),
     );
 
   it("writes the transformed metadata into its own run directory", async () => {
@@ -52,7 +52,7 @@ describe("createIntegrationServer", () => {
     const [run, ...rest] = await runDirs();
     expect(rest).toEqual([]);
     const written: unknown = JSON.parse(
-      await readFile(join(projectPath, run, "ontology-metadata.json"), "utf-8")
+      await readFile(join(projectPath, run, "ontology-metadata.json"), "utf-8"),
     );
     expect(written).toMatchObject({ ontology: { apiName: "ontology" } });
   });
@@ -74,7 +74,7 @@ describe("createIntegrationServer", () => {
     expect(runs).toHaveLength(2);
     for (const run of runs) {
       await expect(
-        readFile(join(projectPath, run, "ontology-metadata.json"))
+        readFile(join(projectPath, run, "ontology-metadata.json")),
       ).resolves.toBeDefined();
     }
   });

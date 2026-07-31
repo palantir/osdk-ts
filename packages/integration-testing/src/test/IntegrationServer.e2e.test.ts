@@ -54,7 +54,11 @@ describe.skipIf(foundryVersion === undefined)(
     });
 
     it("discovers the running ontology service", () => {
-      expect(server.getOntologyUrl()).toMatch(/^https?:\/\//u);
+      const url = server.getOntologyUrl();
+      invariant(url, "the ontology service published no url");
+
+      // The service serves TLS — see the CA certificate it publishes below.
+      expect(new URL(url).protocol).toBe("https:");
     });
 
     it("exposes the ontology service's CA certificate", async () => {
@@ -62,7 +66,7 @@ describe.skipIf(foundryVersion === undefined)(
       invariant(caCertPath, "the ontology service published no CA cert path");
 
       await expect(readFile(caCertPath, "utf-8")).resolves.toContain(
-        "-----BEGIN CERTIFICATE-----"
+        "-----BEGIN CERTIFICATE-----",
       );
     });
 
@@ -73,5 +77,5 @@ describe.skipIf(foundryVersion === undefined)(
       // Round-trips an empty seed through the live seeding endpoint.
       await expect(seed(() => {})).resolves.toBeUndefined();
     });
-  }
+  },
 );

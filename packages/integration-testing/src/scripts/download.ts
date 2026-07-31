@@ -34,11 +34,11 @@ const INSTALL_BAT_PATH = "/code/api/extension/install-bat";
 const fetchInstallScript = async (
   foundryUrl: string,
   token: string,
-  isWindows: boolean
+  isWindows: boolean,
 ): Promise<string> => {
   const url = new URL(
     isWindows ? INSTALL_BAT_PATH : INSTALL_SCRIPT_PATH,
-    foundryUrl
+    foundryUrl,
   );
   consola.start(`Fetching the Foundry CLI installer from ${url.href}`);
   const response = await fetch(url, {
@@ -48,7 +48,7 @@ const fetchInstallScript = async (
     response.ok,
     () =>
       `Failed to fetch the Foundry CLI installer from ${url.href}: ` +
-      `${response.status} ${response.statusText}`
+      `${response.status} ${response.statusText}`,
   );
   return await response.text();
 };
@@ -57,7 +57,7 @@ const run = async (
   command: string,
   args: string[],
   env: NodeJS.ProcessEnv,
-  stdin?: string
+  stdin?: string,
 ): Promise<void> => {
   await new Promise<void>((fulfil, reject) => {
     const child = spawn(command, args, {
@@ -82,12 +82,12 @@ const run = async (
 
 const runInstallScript = async (
   script: string,
-  env: NodeJS.ProcessEnv
+  env: NodeJS.ProcessEnv,
 ): Promise<void> => await run("bash", ["-s", "--"], env, script);
 
 const runInstallBat = async (
   script: string,
-  env: NodeJS.ProcessEnv
+  env: NodeJS.ProcessEnv,
 ): Promise<void> => {
   const batPath = join(tmpdir(), `install-foundry-${process.pid}.bat`);
   await writeFile(batPath, script);
@@ -104,7 +104,7 @@ const runInstallBat = async (
  * when the installed CLI does not end up on PATH.
  */
 export const installFoundryCli = async (
-  options: ResolveBearerTokenOptions = {}
+  options: ResolveBearerTokenOptions = {},
 ): Promise<void> => {
   const env = options.env ?? process.env;
   const isWindows = process.platform === "win32";

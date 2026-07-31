@@ -91,10 +91,10 @@ describe("example", () => {
       isbn: "000-0-00-000000-1",
     });
     await expect(
-      integration.client(Book).fetchOne(added.id)
+      integration.client(Book).fetchOne(added.id),
     ).resolves.toMatchObject({ isbn: added.isbn });
     await expect(
-      integration.client(Book).fetchOne(bookRef.id)
+      integration.client(Book).fetchOne(bookRef.id),
     ).resolves.toMatchObject({ isbn: bookRef.isbn });
   });
 });

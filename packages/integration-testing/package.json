@@ -34,6 +34,7 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "generateConjure": "node ./bin/generateConjure.mjs",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "postinstall": "node ./bin/postinstall.mjs",
     "test": "vitest run --pool=forks",

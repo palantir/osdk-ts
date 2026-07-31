@@ -29,7 +29,7 @@ export interface GitRemoteOptions {
  * when git fails or no remote is configured.
  */
 export const readGitRemoteUrl = async (
-  options: GitRemoteOptions = {}
+  options: GitRemoteOptions = {},
 ): Promise<string | undefined> => {
   const env = options.env ?? process.env;
   const cwd = options.cwd ?? env.INIT_CWD ?? process.cwd();
@@ -37,7 +37,7 @@ export const readGitRemoteUrl = async (
     const { stdout } = await execFileAsync(
       "git",
       ["config", "remote.origin.url"],
-      { cwd }
+      { cwd },
     );
     const gitRemote = stdout.trim();
     return gitRemote.length === 0 ? undefined : gitRemote;

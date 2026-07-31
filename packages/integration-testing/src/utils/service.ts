@@ -29,11 +29,11 @@ const SERVICE_NAMES_BY_FILE_NAME = new Map<string, ServiceName>(
   Object.entries(SERVICE_FILE_NAMES).map(([name, stem]) => [
     stem,
     name as ServiceName,
-  ])
+  ]),
 );
 
 export const serviceNameFromFileName = (
-  fileName: string
+  fileName: string,
 ): ServiceName | undefined => {
   const name = fileName.match(/^\.?(?<name>.+)-discovery\.json$/u)?.groups
     ?.name;
