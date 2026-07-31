@@ -22,6 +22,7 @@ import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { extractObjectOrInterfaceType } from "../../../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -61,8 +62,10 @@ export class ObjectSetQuery extends BaseListQuery<
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
   // Set when the object set resolves to an interface, so rows can be projected
-  // to the interface view.
+  // to the interface view. Seeded from the wire shape, then confirmed against
+  // the ontology on the first fetch.
   #interfaceApiName: string | undefined;
+  #resultTypeResolved = false;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -110,7 +113,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
 
-    this.#interfaceApiName = ObjectSetQuery.#findInterfaceApiName(baseWire);
+    this.#interfaceApiName = ObjectSetQuery.#seedInterfaceApiName(baseWire);
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -207,28 +210,47 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   /**
-   * The interface this object set resolves to, or undefined if it resolves to
-   * an object type (or to something we cannot decide, such as a union of
-   * mixed types -- in which case rows are left as-is).
+   * Seeds `#interfaceApiName` synchronously, so a payload emitted from a warm
+   * cache before the first fetch is not briefly shaped as the object type.
    *
-   * Kept separate from `#extractTypeFromWireObjectSet` so the projection can
-   * see through the single-child wrappers a caller may have applied
-   * (`client(SomeInterface).where(...)`) without changing how the result type
-   * api name is derived elsewhere.
+   * Only reads shapes it can decide without the ontology, and deliberately
+   * declines when a pivot is involved: the result there is the link target, not
+   * the source, which needs `extractObjectOrInterfaceType` to resolve.
+   * `#resolveResultType` corrects this on the first fetch.
    */
-  static #findInterfaceApiName(wire: WireObjectSet): string | undefined {
+  static #seedInterfaceApiName(wire: WireObjectSet): string | undefined {
     switch (wire.type) {
       case "interfaceBase":
         return wire.interfaceType;
-      case "base":
-        return undefined;
       case "filter":
       case "withProperties":
       case "nearestNeighbors":
-        return ObjectSetQuery.#findInterfaceApiName(wire.objectSet);
+        return ObjectSetQuery.#seedInterfaceApiName(wire.objectSet);
       default:
         return undefined;
     }
+  }
+
+  /**
+   * Resolves what this object set actually returns, using the same helper
+   * `fetchInterfacePage` uses. Unlike the sync seed it walks link traversals,
+   * narrowing, and union/intersect/subtract via the ontology, so a pivot onto
+   * an interface projects and a pivot onto an object type does not.
+   *
+   * Runs once per query, on the first fetch.
+   */
+  async #resolveResultType(): Promise<void> {
+    if (this.#resultTypeResolved) {
+      return;
+    }
+    this.#resultTypeResolved = true;
+
+    const def = await extractObjectOrInterfaceType(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#composedObjectSet),
+    );
+    this.#interfaceApiName =
+      def?.type === "interface" ? def.apiName : undefined;
   }
 
   /**
@@ -237,7 +259,7 @@ export class ObjectSetQuery extends BaseListQuery<
    *
    * `InterfaceListQuery` is handed its interface api name explicitly, since
    * `observeList` takes a type; an object set carries no such parameter, so the
-   * interface has to be read back off the wire shape.
+   * interface has to be resolved from the object set itself.
    */
   #wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
     if (this.#interfaceApiName == null) {
@@ -260,6 +282,8 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    await this.#resolveResultType();
+
     if (
       this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0 &&
