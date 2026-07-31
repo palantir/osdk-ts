@@ -1,0 +1,47 @@
+import{j as i}from"./iframe-DiGNclSn.js";import{O as p}from"./object-table-Dg4mcHgY.js";import{E as c}from"./Employee-BAk2o20h.js";import{d as l,o as u,T as d,a as y}from"./objectTableStoryHelpers-Pg3hFT-k.js";import"./preload-helper-_nBZMF1N.js";import"./Table-BCuhh6ge.js";import"./index-DPWCSEHO.js";import"./Dialog-B-fkT72x.js";import"./cross-CbAhiqWN.js";import"./svgIconContainer-BxPJUld6.js";import"./useBaseUiId-D12Lp3G0.js";import"./InternalBackdrop-C1s96-Aj.js";import"./composite-DkuYOO8L.js";import"./index-bfAA9M0x.js";import"./index-DBnYr8W-.js";import"./index-CDg3Jdzj.js";import"./useEventCallback-CnfDq7zw.js";import"./SkeletonBar-DHet2gQG.js";import"./LoadingCell-B5g6mc64.js";import"./ColumnConfigDialog-DUtURtyg.js";import"./DraggableList-5PwJhooe.js";import"./search-CgbFJOiA.js";import"./Input-CGFWWoCB.js";import"./useControlled-BPiHfNKi.js";import"./isEqual-CA7oPY6d.js";import"./isObject-Dy1fxxDP.js";import"./Button-ByuxmoUQ.js";import"./ActionButton-D_77xKTc.js";import"./Checkbox-D7knJomp.js";import"./useValueChanged-CaCE8fH4.js";import"./CollapsiblePanel-D2GcFen2.js";import"./MultiColumnSortDialog-CK2RNh5E.js";import"./MenuTrigger-CoQLOQ4w.js";import"./CompositeItem-BIK6e8lr.js";import"./ToolbarRootContext-CEQ97Tgl.js";import"./getDisabledMountTransitionStyles-C5v_7uXE.js";import"./getPseudoElementBounds-DXECebKL.js";import"./chevron-down-DGDtildZ.js";import"./index-BeDKwvOI.js";import"./error-rMD5wQqr.js";import"./BaseCbacBanner-DgW9P053.js";import"./makeExternalStore-Bv-o0CiQ.js";import"./Tooltip-CAPXE57O.js";import"./PopoverPopup-DmoA5dgd.js";import"./toNumber-BV9q2Ild.js";import"./useOsdkClient-r4NaY58R.js";import"./tick-CFMgnZ5l.js";import"./DropdownField-CUyp9SOg.js";import"./withOsdkMetrics-DSL5Vxy9.js";const{expect:e,screen:t,userEvent:T,within:f}=__STORYBOOK_MODULE_TEST__,ue={...u,title:"Components/ObjectTable"},n={args:{objectType:c,columnDefinitions:l},parameters:{docs:{description:{story:"Minimal setup showing Employee data with default column definitions."},source:{code:"<ObjectTable objectType={Employee} />"}}},render:o=>i.jsx("div",{className:"object-table-container",style:{height:"600px"},children:i.jsx(p,{...o})}),play:async({canvasElement:o})=>{const a=f(o);await a.findByText(d),await y(a,"fullName"),await e(await t.findByRole("menuitem",{name:"Sort ascending"})).toBeInTheDocument(),await e(t.getByRole("menuitem",{name:"Sort descending"})).toBeInTheDocument(),await e(t.getByRole("menuitem",{name:"Pin column"})).toBeInTheDocument(),await e(t.getByRole("menuitem",{name:"Configure Columns"})).toBeInTheDocument(),await T.keyboard("{Escape}")}};var m,r,s;n.parameters={...n.parameters,docs:{...(m=n.parameters)==null?void 0:m.docs,source:{originalSource:`{
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Minimal setup showing Employee data with default column definitions."
+      },
+      source: {
+        code: \`<ObjectTable objectType={Employee} />\`
+      }
+    }
+  },
+  render: args => <div className="object-table-container" style={{
+    height: "600px"
+  }}>
+      <ObjectTable {...args} />
+    </div>,
+  // Loads data, then opens a column header menu to confirm the default,
+  // out-of-the-box header features are all present.
+  play: async ({
+    canvasElement
+  }) => {
+    const canvas = within(canvasElement);
+
+    // Wait for the (MSW-mocked) rows to load.
+    await canvas.findByText(TARGET_DATA);
+    await openHeaderMenu(canvas, "fullName");
+    await expect(await screen.findByRole("menuitem", {
+      name: "Sort ascending"
+    })).toBeInTheDocument();
+    await expect(screen.getByRole("menuitem", {
+      name: "Sort descending"
+    })).toBeInTheDocument();
+    await expect(screen.getByRole("menuitem", {
+      name: "Pin column"
+    })).toBeInTheDocument();
+    await expect(screen.getByRole("menuitem", {
+      name: "Configure Columns"
+    })).toBeInTheDocument();
+
+    // Dismiss the menu so the story is left in a clean state.
+    await userEvent.keyboard("{Escape}");
+  }
+}`,...(s=(r=n.parameters)==null?void 0:r.docs)==null?void 0:s.source}}};const de=["Default"];export{n as Default,de as __namedExportsOrder,ue as default};
