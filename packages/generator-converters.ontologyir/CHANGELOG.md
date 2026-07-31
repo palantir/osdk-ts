@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.52.0
+
+### Minor Changes
+
+- eab0750: Write extended props to interface full metadata
+
+### Patch Changes
+
+- @osdk/client.unstable@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

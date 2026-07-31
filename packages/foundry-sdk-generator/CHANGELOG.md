@@ -1,5 +1,23 @@
 # @osdk/foundry-sdk-generator
 
+## 2.52.0
+
+### Minor Changes
+
+- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./UNSTABLE_DO_NOT_USE/ontology-metadata` subpath export.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/generator@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-utils@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

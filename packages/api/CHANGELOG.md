@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.52.0
+
+### Minor Changes
+
+- 5d92381: Reject unknown top-level keys in `aggregate()` options (e.g. a misspelled group-by key or a non-existent `$orderBy`). These were previously accepted by the type checker and silently ignored at runtime.
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
 ## 2.51.0
 
 ### Minor Changes

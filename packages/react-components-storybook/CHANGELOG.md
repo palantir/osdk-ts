@@ -1,5 +1,16 @@
 # @osdk/react-components-storybook
 
+## 0.42.0
+
+### Minor Changes
+
+- d1038c9: Re-organize ObjectTable features
+- 86e1f85: Fit markdown table width to parent container width
+
+### Patch Changes
+
+- @osdk/faux@0.39.0
+
 ## 0.41.0
 
 ### Patch Changes

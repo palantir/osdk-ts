@@ -1,5 +1,12 @@
 # @osdk/react-sdk-docs
 
+## 0.13.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- 9ef0982: Fix empty {} placeholder for interface action parameters in docs
+
 ## 0.12.0
 
 ### Minor Changes

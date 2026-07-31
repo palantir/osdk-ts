@@ -1,5 +1,19 @@
 # @osdk/react-components
 
+## 0.44.0
+
+### Minor Changes
+
+- 55e201f: Replace the ObjectTable docs "Base component" export list with a generated `BaseTableProps` reference table, and document the previously undocumented `BaseTableProps` members
+- 2cff51b: Add internal useDebouncedCallback, useGatedValue, useDeepEqual, and useOnUnmount hooks
+- ac64665: Show type-aware sort icons in the ObjectTable multi-column sort dialog
+- 0fcdfd2: Add an `ObjectTableOverview.md` one-pager (usage, a direct `ObjectTableProps` props reference, and the styling/`Style API` token table) rendered by the Storybook ObjectTable Docs page, and reorder `ObjectTableProps` so the props reference reads `objectType`, `objectSet`, `columnDefinitions` first and then groups the remaining props by feature (data source, filtering, columns, sorting, selection, focus, editing, interactions, display).
+- 85de734: Make the `ObjectTable` column-header sort icon reflect the column's property type: A→Z for text, 1→9 for numbers, and a plain ascending/descending arrow for dates and other types, instead of always showing the alphabetical icon
+- 716b42b: Remove the deprecated `@osdk/react-components-styles` package, whose tokens have been merged into `@osdk/react-components`.
+- d400416: Make the ListogramInput "View all (N)" button a two-way toggle so it collapses back to "View less"
+- 42a094b: Document in `table.css` why `--osdk-table-cell-bg` must stay undeclared (declaring `inherit` at `:root` turns sticky pinned cells transparent) and sanction the nested-primitive token-scoping pattern in the styling guidelines
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
 ## 0.43.0
 
 ### Minor Changes

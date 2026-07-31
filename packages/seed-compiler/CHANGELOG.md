@@ -1,5 +1,12 @@
 # @osdk/seed-compiler
 
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [fc3e4b9]
+  - @osdk/seed-helpers@0.23.0
+
 ## 0.8.0
 
 ### Minor Changes
