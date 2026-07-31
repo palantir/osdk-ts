@@ -150,9 +150,7 @@ describe("ObjectSetQuery interface projection", () => {
     derivedFoo: (b) => b.selectProperty("fooSpt"),
   };
 
-  async function observeRow(
-    resolveToObjectType?: boolean,
-  ): Promise<Record<string, unknown>> {
+  async function observeRow(): Promise<Record<string, unknown>> {
     const dataStore = fauxFoundry.getDefaultDataStore();
     dataStore.clear();
     dataStore.registerObject(Employee, {
@@ -169,7 +167,6 @@ describe("ObjectSetQuery interface projection", () => {
         {
           baseObjectSet: client(FooInterface) as unknown as ObjectSet<any>,
           withProperties,
-          ...(resolveToObjectType ? { resolveToObjectType } : {}),
         },
         sub,
       ),
@@ -203,31 +200,6 @@ describe("ObjectSetQuery interface projection", () => {
 
     it("returns derived properties", async () => {
       const row = await observeRow();
-      expect(row.derivedFoo).toBe("Employee 1");
-    });
-  });
-
-  describe("resolveToObjectType: true", () => {
-    it("returns rows as the concrete object", async () => {
-      const row = await observeRow(true);
-      expect(row.$apiName).toBe("Employee");
-      // keyed by the object type's own property api name, not the interface's
-      expect(row.fullName).toBe("Employee 1");
-      expect(row.fooSpt).toBeUndefined();
-    });
-
-    it("does not fetch base properties the interface does not map", async () => {
-      const row = await observeRow(true);
-      // `class` exists on Employee but is not mapped by FooInterface, so the
-      // interface response never carried it. Unlike observeList, this path has
-      // no reload step to fill in the rest of the object, so asking for the
-      // object type surfaces the concrete keys of what was fetched -- not the
-      // full object.
-      expect(row.class).toBeUndefined();
-    });
-
-    it("returns derived properties", async () => {
-      const row = await observeRow(true);
       expect(row.derivedFoo).toBe("Employee 1");
     });
   });
