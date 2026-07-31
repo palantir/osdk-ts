@@ -26,7 +26,7 @@ import {
   type IntegrationClient,
   type IntegrationServer,
 } from "@osdk/integration-testing";
-import { createSeedWithMetadata, type SeedRef } from "@osdk/seed-helpers";
+import { createSeedWithMetadata } from "@osdk/seed-helpers";
 import { describe, expect, test as baseTest } from "vitest";
 
 /**
@@ -49,7 +49,6 @@ const {
 const test = baseTest.extend<{
   server: IntegrationServer;
   integration: IntegrationClient;
-  book: SeedRef<Book>;
 }>({
   // Worker-scoped: starting a local ontology is expensive, so one is shared by
   // every test in the worker. Each worker gets its own project directory —
@@ -72,40 +71,30 @@ const test = baseTest.extend<{
     },
     { scope: "worker" },
   ],
-  // Test-scoped: resets the shared ontology to `baseSeed` before each test that
-  // asks for a `book`, which is what keeps tests independent of each other.
-  book: async ({ integration }, use) => {
-    await integration.seed.set(baseSeed);
-    await use(bookRef);
-  },
 });
 
 describe("example", () => {
-  test("lists books (mocked query)", async ({ integration, book }) => {
+  test("lists books (mocked query)", async ({ integration }) => {
+    await integration.seed.set(baseSeed);
     // The local ontology cannot run functions, so queries are stubbed.
-    integration.client.whenQuery(rentedBooks).thenReturn([book]);
-
+    integration.client.whenQuery(rentedBooks).thenReturn([bookRef]);
     const res = await integration.client(rentedBooks).executeFunction();
-
     expect(res.length).toBe(1);
-    expect(res.at(0)).toBe(book);
+    expect(res.at(0)).toBe(bookRef);
   });
 
-  test("adds a book on top of the fixture", async ({ integration, book }) => {
-    // `create` adds to the current seed rather than replacing it, so the
-    // fixture's book is still there afterwards.
+  test("adds a book on top of the fixture", async ({ integration }) => {
     const added = await integration.seed.create(Book, {
       id: randomUUID(),
       title: "Title",
       author: "Author",
       isbn: "000-0-00-000000-1",
     });
-
     await expect(
       integration.client(Book).fetchOne(added.id)
     ).resolves.toMatchObject({ isbn: added.isbn });
     await expect(
-      integration.client(Book).fetchOne(book.id)
-    ).resolves.toMatchObject({ isbn: book.isbn });
+      integration.client(Book).fetchOne(bookRef.id)
+    ).resolves.toMatchObject({ isbn: bookRef.isbn });
   });
 });
