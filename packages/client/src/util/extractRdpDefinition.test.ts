@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
+import type { InterfaceMetadata, ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
@@ -69,9 +69,21 @@ describe("extractRdpDefinition", () => {
             links: {
               testInterfaceLink: {
                 targetTypeApiName: "SecondType",
+                targetType: "object",
                 multiplicity: false,
-              },
+              } satisfies InterfaceMetadata.Link<any, any>,
+              testInterfaceToInterfaceLink: {
+                targetTypeApiName: "OtherTestInterface",
+                targetType: "interface",
+                multiplicity: false,
+              } satisfies InterfaceMetadata.Link<any, any>,
             },
+          };
+        } else if (interfaceType === "OtherTestInterface") {
+          return {
+            type: "interface",
+            apiName: "OtherTestInterface",
+            links: {},
           };
         } else {
           throw new Error(
@@ -507,6 +519,34 @@ describe("extractRdpDefinition", () => {
         },
       }
     `,
+    );
+  });
+
+  it("throws when a selected property is across an interface-to-interface link", async () => {
+    const interfaceToInterfaceObjectSet: ObjectSet = {
+      type: "withProperties",
+      objectSet: { type: "base", objectType: "TestInterface" },
+      derivedProperties: {
+        myRdp: {
+          type: "selection",
+          objectSet: {
+            type: "interfaceLinkSearchAround",
+            objectSet: { type: "methodInput" },
+            interfaceLink: "testInterfaceToInterfaceLink",
+          },
+          operation: {
+            type: "collectList",
+            selectedPropertyApiName: "testProperty",
+            limit: 100,
+          },
+        },
+      },
+    };
+
+    await expect(
+      extractRdpDefinition(mockClientCtx, interfaceToInterfaceObjectSet),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Runtime Derived Properties are not supported for a property selected across a link that targets an interface ('OtherTestInterface')]`,
     );
   });
 
