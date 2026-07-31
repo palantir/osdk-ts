@@ -84,15 +84,18 @@ const TestInterfaceType = {
   apiName: "TestInterface",
 } as const satisfies InterfaceDefinition;
 
-function lastOsdkObjectsOptions() {
-  const calls = vi.mocked(useOsdkObjects).mock.calls;
+function lastObjectSetOptions() {
+  const calls = vi.mocked(useObjectSet).mock.calls;
   return calls[calls.length - 1]?.[1];
 }
 
 describe(useObjectTableData, () => {
   beforeEach(() => {
-    vi.mocked(useOsdkObjects).mockClear();
-    vi.mocked(useObjectSet).mockClear();
+    // mockReset (not mockClear) so per-test mockReturnValue overrides don't
+    // leak into later tests; it restores the vi.mock factory implementations.
+    vi.mocked(useOsdkObjects).mockReset();
+    vi.mocked(useObjectSet).mockReset();
+    vi.mocked(useFunctionColumnsData).mockReset();
   });
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
@@ -107,16 +110,30 @@ describe(useObjectTableData, () => {
     };
   };
 
-  const fakeClient = {} as unknown as Client;
+  /**
+   * The object set `useObjectTableData` derives from the type via `client()`
+   * when no `objectSet` prop is supplied. The marker keeps it distinguishable
+   * from `mockObjectSet` under the deep equality `toHaveBeenCalledWith` uses.
+   */
+  const derivedObjectSet = {
+    $objectSetInternals: {
+      def: TestObjectType,
+    },
+    __source: "derived-from-client",
+  } as unknown as ObjectSet<TestObject>;
+
+  const clientFn = vi.fn(() => derivedObjectSet);
+  const fakeClient = clientFn as unknown as Client;
   const wrapper = createWrapper(fakeClient);
 
   const mockObjectSet = {
     $objectSetInternals: {
       def: TestObjectType,
     },
+    __source: "provided-prop",
   } as unknown as ObjectSet<TestObject>;
 
-  it("calls useOsdkObjects with filter clause and orderBy provided", () => {
+  it("calls useObjectSet with filter clause and orderBy provided", () => {
     const filterClause = {
       name: "John",
     } as unknown as WhereClause<TestObject>;
@@ -136,8 +153,8 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useOsdkObjects).toHaveBeenLastCalledWith(
-      TestObjectType,
+    expect(useObjectSet).toHaveBeenLastCalledWith(
+      derivedObjectSet,
       expect.objectContaining({
         where: filterClause,
         orderBy: { name: "asc" },
@@ -145,7 +162,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
+  it("calls useObjectSet without withProperties when no columnDefinitions provided", () => {
     renderHook(
       () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
       {
@@ -153,8 +170,8 @@ describe(useObjectTableData, () => {
       },
     );
 
-    expect(useOsdkObjects).toHaveBeenLastCalledWith(
-      TestObjectType,
+    expect(useObjectSet).toHaveBeenLastCalledWith(
+      derivedObjectSet,
       expect.objectContaining({
         withProperties: undefined,
         pageSize: 50,
@@ -162,7 +179,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("calls useOsdkObjects without withProperties when columnDefinitions have no RDP columns", () => {
+  it("calls useObjectSet without withProperties when columnDefinitions have no RDP columns", () => {
     const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
       {
         locator: { type: "property", id: "name" as TestObjectKeys },
@@ -183,8 +200,8 @@ describe(useObjectTableData, () => {
       },
     );
 
-    expect(useOsdkObjects).toHaveBeenLastCalledWith(
-      TestObjectType,
+    expect(useObjectSet).toHaveBeenLastCalledWith(
+      derivedObjectSet,
       expect.objectContaining({
         withProperties: undefined,
         pageSize: 50,
@@ -192,7 +209,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("extracts RDP creators and passes them to useOsdkObjects", () => {
+  it("extracts RDP creators and passes them to useObjectSet", () => {
     const mockRdpCreator1 = vi.fn() as unknown as DerivedProperty.Creator<
       TestObject,
       SimplePropertyDef
@@ -240,8 +257,8 @@ describe(useObjectTableData, () => {
       },
     );
 
-    expect(useOsdkObjects).toHaveBeenLastCalledWith(
-      TestObjectType,
+    expect(useObjectSet).toHaveBeenLastCalledWith(
+      derivedObjectSet,
       expect.objectContaining({
         withProperties: { rdp1: mockRdpCreator1, rdp2: mockRdpCreator2 },
       }),
@@ -274,11 +291,11 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstWithProperties = lastOsdkObjectsOptions()?.withProperties;
+    const firstWithProperties = lastObjectSetOptions()?.withProperties;
 
     rerender({ colDefs: columnDefinitions });
 
-    expect(lastOsdkObjectsOptions()?.withProperties).toBe(firstWithProperties);
+    expect(lastObjectSetOptions()?.withProperties).toBe(firstWithProperties);
   });
 
   it("updates withProperties when columnDefinitions change", () => {
@@ -317,7 +334,7 @@ describe(useObjectTableData, () => {
       },
     );
 
-    expect(lastOsdkObjectsOptions()?.withProperties).toEqual({
+    expect(lastObjectSetOptions()?.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
 
@@ -331,12 +348,12 @@ describe(useObjectTableData, () => {
 
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
-    expect(lastOsdkObjectsOptions()?.withProperties).toEqual({
+    expect(lastObjectSetOptions()?.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
   });
 
-  it("returns useOsdkObjects result structure", () => {
+  it("returns useObjectSet result structure", () => {
     const { result } = renderHook(
       () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
       {
@@ -350,22 +367,24 @@ describe(useObjectTableData, () => {
     expect(result.current).toHaveProperty("fetchMore");
   });
 
-  it("when no objectSet provided, only enables useOsdkObjects", () => {
+  it("when no objectSet provided, derives one from the type and only enables useObjectSet", () => {
     renderHook(
       () => useObjectTableData({ objectOrInterfaceType: TestObjectType }),
       { wrapper },
     );
 
-    expect(useOsdkObjects).toHaveBeenCalledWith(
-      TestObjectType,
+    expect(clientFn).toHaveBeenCalledWith(TestObjectType);
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      derivedObjectSet,
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
       }),
     );
 
-    expect(useObjectSet).toHaveBeenCalledWith(
-      undefined,
+    expect(useOsdkObjects).toHaveBeenCalledWith(
+      TestObjectType,
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
@@ -392,7 +411,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
-      expect.anything(),
+      mockObjectSet,
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
@@ -456,7 +475,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
-      expect.anything(),
+      mockObjectSet,
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
@@ -475,7 +494,7 @@ describe(useObjectTableData, () => {
       { $primaryKey: "2", $apiName: "TestObject", name: "Object 2" },
     ];
 
-    vi.mocked(useOsdkObjects).mockReturnValue({
+    vi.mocked(useObjectSet).mockReturnValue({
       data: mockBaseData,
       isLoading: false,
       error: undefined,
@@ -644,7 +663,7 @@ describe(useObjectTableData, () => {
   });
 
   describe("streamUpdates", () => {
-    it("forwards streamUpdates to useOsdkObjects when no objectSet is provided", () => {
+    it("forwards streamUpdates to useObjectSet when no objectSet is provided", () => {
       renderHook(
         () =>
           useObjectTableData({
@@ -654,8 +673,8 @@ describe(useObjectTableData, () => {
         { wrapper },
       );
 
-      expect(useOsdkObjects).toHaveBeenCalledWith(
-        TestObjectType,
+      expect(useObjectSet).toHaveBeenCalledWith(
+        derivedObjectSet,
         expect.objectContaining({ streamUpdates: true }),
       );
     });
@@ -672,7 +691,7 @@ describe(useObjectTableData, () => {
       );
 
       expect(useObjectSet).toHaveBeenCalledWith(
-        expect.anything(),
+        mockObjectSet,
         expect.objectContaining({ streamUpdates: true }),
       );
     });
@@ -688,7 +707,7 @@ describe(useObjectTableData, () => {
         expect.objectContaining({ streamUpdates: undefined }),
       );
       expect(useObjectSet).toHaveBeenCalledWith(
-        undefined,
+        derivedObjectSet,
         expect.objectContaining({ streamUpdates: undefined }),
       );
     });

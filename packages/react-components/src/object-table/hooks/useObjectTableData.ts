@@ -25,6 +25,7 @@ import type {
 } from "@osdk/api";
 import {
   useObjectSet,
+  useOsdkClient,
   type UseOsdkListResult,
   useOsdkObjects,
 } from "@osdk/react";
@@ -92,8 +93,9 @@ export interface UseObjectTableDataResult<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
 /**
- * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
- * based on whether an objectSet prop is provided.
+ * Loads the rows for an ObjectTable via `useObjectSet`, using the `objectSet`
+ * prop when supplied and otherwise an object set derived from
+ * `objectOrInterfaceType`.
  * It extracts RDP locators from columnDefinitions and applies withProperties
  * to return data containing the derived properties.
  */
@@ -118,6 +120,7 @@ export function useObjectTableData<
   Q,
   RDPs
 > {
+  const client = useOsdkClient();
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -159,24 +162,37 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  // Use the caller's objectSet whenever provided (object or interface types), else fetch
-  // by type. For an interface objectSet, rows carry interface-declared props (+ withProperties)
-  // only, not the full underlying object — see the objectSet prop docs.
-  const shouldUseObjectSet = !!objectSet;
+  /**
+   * All data fetching now goes through `useObjectSet`; when no `objectSet` prop
+   * is supplied we derive one from the type.
+   * TODO: Remove `shouldUseObjectSet` and the `useOsdkObjects` call below.
+   */
+  const shouldUseObjectSet = true;
 
-  const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? (objectSet as ObjectSet<Q, RDPs>) : (undefined as any),
-    {
-      ...(objectSetOptions as ObjectSetOptions<Q>),
-      withProperties: withProperties as WithProperties<Q, RDPs>,
-      where: filter,
-      orderBy,
-      pageSize,
-      enabled: shouldUseObjectSet,
-      dedupeIntervalMs,
-      streamUpdates,
-    },
-  );
+  /**
+   * `client()` is overloaded on ObjectTypeDefinition / InterfaceDefinition and
+   * does not accept the ObjectOrInterfaceDefinition union, so narrow before
+   * calling it. Both branches build the same base object set.
+   * TODO: Fix type def of client() param and its return types.
+   */
+  const objectSetFromObjectType = (
+    objectOrInterfaceType.type === "object"
+      ? client(objectOrInterfaceType)
+      : client(objectOrInterfaceType)
+  ) as ObjectSet<Q>;
+
+  const os: ObjectSet<Q> = objectSet ?? objectSetFromObjectType;
+
+  const objectSetResult = useObjectSet(os, {
+    ...(objectSetOptions as ObjectSetOptions<Q>),
+    withProperties: withProperties as WithProperties<Q, RDPs>,
+    where: filter,
+    orderBy,
+    pageSize,
+    enabled: shouldUseObjectSet,
+    dedupeIntervalMs,
+    streamUpdates,
+  });
 
   const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {
     withProperties,
