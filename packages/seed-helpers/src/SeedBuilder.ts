@@ -419,8 +419,14 @@ export class SeedBuilder {
 export function createSeedWithMetadata<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
   fn: SeedFunction<T>,
-): [SeedOutput, T] {
+): {
+  output: SeedOutput;
+  context: T;
+} {
   const sb = new SeedBuilder(ontologyMetadata);
-  const result = fn(sb);
-  return [sb.build(), result];
+  const context = fn(sb);
+  return {
+    output: sb.build(),
+    context,
+  };
 }

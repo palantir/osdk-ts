@@ -34,7 +34,10 @@ import { describe, expect, test as baseTest } from "vitest";
  * `seed.set`, which replaces the ontology's contents — so the same primary keys
  * can be re-applied instead of having to be unique per test.
  */
-const [baseSeed, { bookRef }] = createSeedWithMetadata(om, (seed) => ({
+const {
+  output: baseSeed,
+  context: { bookRef },
+} = createSeedWithMetadata(om, (seed) => ({
   bookRef: seed.create(Book, {
     id: randomUUID(),
     title: "Example Book",
