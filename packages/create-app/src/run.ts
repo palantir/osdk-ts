@@ -46,7 +46,8 @@ interface RunArgs {
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
-  unstableFeatures: boolean;
+  /** Opt-in gate for unstable/experimental features; defaults to `false`. */
+  unstableFeatures?: boolean;
 }
 
 export async function run({
@@ -63,7 +64,7 @@ export async function run({
   osdkRegistryUrl,
   corsProxy,
   scopes,
-  unstableFeatures,
+  unstableFeatures = false,
 }: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
