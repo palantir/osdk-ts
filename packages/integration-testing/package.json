@@ -47,8 +47,8 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
-    "@osdk/unit-testing": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "@osdk/unit-testing": "workspace:~",
     "conjure-lite": "^0.7.3",
     "consola": "^3.4.2",
     "semver": "^7.7.2",
