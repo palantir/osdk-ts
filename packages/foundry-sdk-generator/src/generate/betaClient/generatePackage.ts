@@ -79,7 +79,7 @@ export async function generatePackage(
     `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
     hostFs,
     packagePath,
-    undefined, // commonjs by default
+    "module",
     ontologyInfo.externalObjects,
     ontologyInfo.externalInterfaces,
     new Map(),
