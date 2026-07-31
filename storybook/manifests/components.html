@@ -20327,13 +20327,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  382 | }
-  383 |
-&gt; 384 | const meta = {
+  374 | }
+  375 |
+&gt; 376 | const meta = {
       | ^
-  385 |   title: &quot;Components/ActionForm/Usage&quot;,
-  386 |   component: UpdateEmployeeActionFormStory,
-  387 |   tags: [&quot;beta&quot;],
+  377 |   title: &quot;Components/ActionForm/Usage&quot;,
+  378 |   component: UpdateEmployeeActionFormStory,
+  379 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/ActionForm.stories.tsx:
 /*
@@ -20670,27 +20670,19 @@ function UpdateEmployeeActionFormStory({
 }
 
 function DefaultActionFormStory(): React.ReactElement {
-  const { handleStoryError, handleStorySubmit, submission } =
-    useActionFormSubmission({
-      applyStoryAction: applyGeneratedFieldsStoryAction,
-    });
+  const { handleStoryError, handleStorySubmit } = useActionFormSubmission({
+    applyStoryAction: applyGeneratedFieldsStoryAction,
+  });
 
   return (
-    &lt;FormStoryLayout
-      output={
-        &lt;SubmissionOutputPanel
-          idleMessage=&quot;Submit the form to see the action response.&quot;
-          snapshot={submission}
-        /&gt;
-      }
-    &gt;
+    &lt;div className=&quot;osdkFormCard&quot; style={{ marginInline: &quot;auto&quot; }}&gt;
       &lt;ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={true}
       /&gt;
-    &lt;/FormStoryLayout&gt;
+    &lt;/div&gt;
   );
 }
 
@@ -36833,13 +36825,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  382 | }
-  383 |
-&gt; 384 | const meta = {
+  374 | }
+  375 |
+&gt; 376 | const meta = {
       | ^
-  385 |   title: &quot;Components/ActionForm/Usage&quot;,
-  386 |   component: UpdateEmployeeActionFormStory,
-  387 |   tags: [&quot;beta&quot;],
+  377 |   title: &quot;Components/ActionForm/Usage&quot;,
+  378 |   component: UpdateEmployeeActionFormStory,
+  379 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/ActionForm.stories.tsx:
 /*
@@ -37176,27 +37168,19 @@ function UpdateEmployeeActionFormStory({
 }
 
 function DefaultActionFormStory(): React.ReactElement {
-  const { handleStoryError, handleStorySubmit, submission } =
-    useActionFormSubmission({
-      applyStoryAction: applyGeneratedFieldsStoryAction,
-    });
+  const { handleStoryError, handleStorySubmit } = useActionFormSubmission({
+    applyStoryAction: applyGeneratedFieldsStoryAction,
+  });
 
   return (
-    &lt;FormStoryLayout
-      output={
-        &lt;SubmissionOutputPanel
-          idleMessage=&quot;Submit the form to see the action response.&quot;
-          snapshot={submission}
-        /&gt;
-      }
-    &gt;
+    &lt;div className=&quot;osdkFormCard&quot; style={{ marginInline: &quot;auto&quot; }}&gt;
       &lt;ActionForm
         actionDefinition={generatedFieldsActionDefinition}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={true}
       /&gt;
-    &lt;/FormStoryLayout&gt;
+    &lt;/div&gt;
   );
 }
 
