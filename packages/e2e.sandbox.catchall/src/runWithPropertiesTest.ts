@@ -60,8 +60,9 @@ export async function runWithPropertiesTest(): Promise<void> {
   const result3 = await dsClient(EsongInterfaceA)
     .withProperties({
       linkedObjectCount: (base) => base.pivotTo("esongPds").aggregate("$count"),
-      // linkedObjectTitle: (base) =>
-      //   (base.pivotTo("esongIssues" as any) as any).selectProperty("id")
+      // TODO: Remove as any after updating the generated ontology
+      linkedObjectTitle: (base) =>
+        (base.pivotTo("esongIssues" as any) as any).selectProperty("id"),
     })
     .fetchPage();
 
@@ -69,7 +70,7 @@ export async function runWithPropertiesTest(): Promise<void> {
     result3.data.map((x) => ({
       esongSptA: x.esongSptA,
       linkedObjectCount: x.linkedObjectCount,
-      // linkedObjectTitle: x.linkedObjectTitle,
+      linkedObjectTitle: x.linkedObjectTitle,
     })),
   );
 }
