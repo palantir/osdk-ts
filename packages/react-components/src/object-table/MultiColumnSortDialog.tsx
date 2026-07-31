@@ -150,9 +150,6 @@ function MultiColumnSortDialogInner({
 
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => {
-      // Match the direction glyphs to the column's property type the same way
-      // the table header does: A→Z for text, 1→9 for numbers, plain
-      // ascending/descending arrows for dates and everything else.
       const { asc: SortAscendingIcon, desc: SortDescendingIcon } = getSortIcons(
         item.dataType
       );

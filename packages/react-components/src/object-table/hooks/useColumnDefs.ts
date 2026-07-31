@@ -188,8 +188,6 @@ function getDefaultColumns<
       accessorKey: key,
       header: property.displayName ?? key,
       meta: {
-        // Surfaced so type-aware rendering works for default columns too, not
-        // just explicit columnDefinitions.
         dataType: getDataType(property),
       },
     };

@@ -114,9 +114,6 @@ describe(TableHeader, () => {
     cleanup();
   });
 
-  // The multi-sort dialog only knows a column's property type because
-  // `columnOptions` forwards `meta.dataType`; without that the dialog falls back
-  // to directional icons for every column.
   it("forwards each column's data type to the multi-sort dialog's icons", async () => {
     render(
       <TestTableHeader

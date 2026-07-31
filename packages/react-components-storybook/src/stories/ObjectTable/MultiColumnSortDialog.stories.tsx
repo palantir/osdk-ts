@@ -19,8 +19,6 @@ import { MultiColumnSortDialog } from "@osdk/react-components/experimental/objec
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
-// `dataType` drives the sort icon shown next to each selected column: A→Z for
-// text, 1→9 for numbers, plain arrows for dates and everything else.
 const SAMPLE_COLUMNS: MultiColumnSortDialogProps["columnOptions"] = [
   { id: "fullName", name: "Full Name", canSort: true, dataType: "string" },
   { id: "email", name: "Email", canSort: true, dataType: "string" },
@@ -70,8 +68,7 @@ const meta: Meta<MultiColumnSortDialogProps> = {
     },
     columnOptions: {
       description:
-        "Available columns to sort by. Only columns with `canSort: true` appear in the add menu. `dataType` (the column's OSDK property type) selects the sort icon: `sort-alphabetical` for text, `sort-numerical` for numbers, plain arrows otherwise.",
-      control: false,
+        "Available columns to sort by. Only columns with `canSort: true` appear in the add menu.",
     },
     currentSorting: {
       description: "Current sorting state from TanStack Table",
