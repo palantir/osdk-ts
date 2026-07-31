@@ -15,7 +15,7 @@
  */
 
 import type { DerivedProperty, ObjectSet } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Office } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -24,6 +24,7 @@ import { createClient } from "../../../createClient.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import { Store } from "../Store.js";
 import { createDefer, mockObserver } from "../testUtils.js";
+import type { ObjectSetQueryOptions } from "./ObjectSetQueryOptions.js";
 
 const defer = createDefer();
 
@@ -150,7 +151,7 @@ describe("ObjectSetQuery interface projection", () => {
     derivedFoo: (b) => b.selectProperty("fooSpt"),
   };
 
-  async function observeRow(): Promise<Record<string, unknown>> {
+  function registerEmployee(): void {
     const dataStore = fauxFoundry.getDefaultDataStore();
     dataStore.clear();
     dataStore.registerObject(Employee, {
@@ -160,20 +161,18 @@ describe("ObjectSetQuery interface projection", () => {
       office: "NYC",
       class: "Engineering",
     });
+  }
 
+  async function observeRows(
+    options: ObjectSetQueryOptions,
+  ): Promise<Array<Record<string, unknown>>> {
     const sub = mockObserver<ObjectSetPayload | undefined>();
-    defer(
-      store.objectSets.observe(
-        {
-          baseObjectSet: client(FooInterface) as unknown as ObjectSet<any>,
-          withProperties,
-        },
-        sub,
-      ),
-    );
+    defer(store.objectSets.observe(options, sub));
 
     await vi.waitFor(
       () => {
+        // Inside waitFor so a thrown fetch is the reported failure, not a timeout.
+        expect(sub.error).not.toHaveBeenCalled();
         expect(sub.next).toHaveBeenLastCalledWith(
           expect.objectContaining({ status: "loaded" }),
         );
@@ -182,9 +181,17 @@ describe("ObjectSetQuery interface projection", () => {
     );
 
     const payload = sub.next.mock.calls.at(-1)?.[0];
-    const resolved = payload!.resolvedList!;
-    expect(resolved).toHaveLength(1);
-    return resolved[0] as unknown as Record<string, unknown>;
+    return payload!.resolvedList! as unknown as Array<Record<string, unknown>>;
+  }
+
+  async function observeRow(): Promise<Record<string, unknown>> {
+    registerEmployee();
+    const rows = await observeRows({
+      baseObjectSet: client(FooInterface) as unknown as ObjectSet<any>,
+      withProperties,
+    });
+    expect(rows).toHaveLength(1);
+    return rows[0];
   }
 
   describe("interface-projected rows (default)", () => {
@@ -201,6 +208,53 @@ describe("ObjectSetQuery interface projection", () => {
     it("returns derived properties", async () => {
       const row = await observeRow();
       expect(row.derivedFoo).toBe("Employee 1");
+    });
+  });
+
+  describe("declines to project when the result type isn't decidable", () => {
+    it("leaves a plain object set as concrete objects", async () => {
+      registerEmployee();
+
+      const rows = await observeRows({ baseObjectSet: client(Employee) });
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].$apiName).toBe("Employee");
+    });
+
+    it("loads an intersect of plain object sets", async () => {
+      registerEmployee();
+
+      const rows = await observeRows({
+        baseObjectSet: client(Employee),
+        intersect: [client(Employee).where({ employeeId: 1 })],
+      });
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].$apiName).toBe("Employee");
+    });
+
+    it("keeps pivoted rows as the link target type", async () => {
+      const dataStore = fauxFoundry.getDefaultDataStore();
+      dataStore.clear();
+      const office = dataStore.registerObject(Office, {
+        $apiName: "Office",
+        officeId: "nyc",
+        name: "NYC",
+      });
+      const employee = dataStore.registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Employee 1",
+      });
+      dataStore.registerLink(employee, "officeLink", office, "occupants");
+
+      const rows = await observeRows({
+        baseObjectSet: client(Employee),
+        pivotTo: "officeLink",
+      });
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].$apiName).toBe("Office");
     });
   });
 
