@@ -129,6 +129,11 @@ export const generateCommand: CommandModule<{}, TypescriptGenerateArgs> = {
           description: "Skip updating package.json with OSDK dependencies",
           default: false,
         },
+        generateOntologyMetadata: {
+          type: "boolean",
+          description: "Export ontology metadata JSON",
+          default: false,
+        },
       } as const)
       .group(
         ["ontologyPath", "outDir", "version"],

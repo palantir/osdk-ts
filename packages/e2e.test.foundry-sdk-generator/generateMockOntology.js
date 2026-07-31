@@ -97,13 +97,14 @@ async function setup() {
     ...baseArgs,
     packageName: "@test-app2-beta/osdk",
     beta: true,
+    exportOntologyMetadata: true,
   });
 
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
 
   await checkTypes(path.join(testApp2Dir, "osdk"));
-  await checkTypes(path.join(testApp2BetaDir, "osdk"));
+  await checkTypes(path.join(testApp2BetaDir, "osdk"), true);
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -121,16 +122,17 @@ async function setup() {
 
 await setup();
 
-async function checkTypes(packageDir) {
+async function checkTypes(packageDir, checkMetadata = false) {
   const opts = { stdout: "inherit", stderr: "inherit" };
 
   await $(
     opts,
   )`attw --pack ${packageDir} --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
-
-  await $(
-    opts,
-  )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
+  if (checkMetadata) {
+    await $(
+      opts,
+    )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
+  }
 }
 
 async function rmRf(testAppDir) {

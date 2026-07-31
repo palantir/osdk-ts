@@ -35,11 +35,12 @@ export async function generateClientSdkVersionTwoPointZero(
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
-  externalObjects: Map<string, string> = new Map(),
-  externalInterfaces: Map<string, string> = new Map(),
-  externalSpts: Map<string, string> = new Map(),
+  externalObjects: Map<string, string> = new Map<string, string>(),
+  externalInterfaces: Map<string, string> = new Map<string, string>(),
+  externalSpts: Map<string, string> = new Map<string, string>(),
   forInternalUse: boolean = false,
   fixedVersionQueryTypes: string[] = [],
+  exportOntologyMetadata: boolean = false,
 ): Promise<void> {
   const importExt = ".js"; // turns out you can always use the extension
 
@@ -67,7 +68,7 @@ export async function generateClientSdkVersionTwoPointZero(
   };
 
   await generateRootIndexTsFile(ctx);
-  await generateOntologyMetadataJSONFile(ctx);
+  if (exportOntologyMetadata) await generateOntologyMetadataJSONFile(ctx);
   await generateOntologyMetadataTypeFile(ctx, userAgent);
   await generatePerObjectDataFiles(ctx);
   await generatePerInterfaceDataFiles(ctx);

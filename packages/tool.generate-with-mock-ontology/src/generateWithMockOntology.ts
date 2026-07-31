@@ -87,6 +87,7 @@ export async function generateWithMockOntology(): Promise<void> {
       ...baseArgs,
       packageName: "@test-app2/osdk",
       beta: false,
+      exportOntologyMetadata: true,
     });
 
     await safeStat(testApp2Dir, "should exist");

@@ -45,6 +45,7 @@ export async function generatePackage(
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
     branch: string | undefined;
+    exportOntologyMetadata: boolean | undefined;
   },
   logger: SlsLogger,
 ): Promise<void> {
@@ -84,6 +85,7 @@ export async function generatePackage(
     new Map(),
     false,
     ontologyInfo.fixedVersionQueryTypes,
+    options.exportOntologyMetadata,
   );
 
   // actually write file plus save contents
