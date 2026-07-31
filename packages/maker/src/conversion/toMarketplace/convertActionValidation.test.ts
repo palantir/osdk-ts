@@ -70,9 +70,9 @@ describe("convertActionValidation", () => {
       status: "experimental",
     } satisfies ActionType;
 
-    expect(
-      convertActionValidation(action).parameterValidations.items,
-    ).toEqual({
+    const validation =
+      convertActionValidation(action).parameterValidations.items;
+    expect(validation).toEqual({
       defaultValidation: {
         display: {
           renderHint: { type: "dropdown", dropdown: {} },
@@ -94,6 +94,9 @@ describe("convertActionValidation", () => {
       },
       conditionalOverrides: [],
       structFieldValidations: { label: structFieldValidation },
+    });
+    expect(validation.structFieldValidations).toEqual({
+      label: structFieldValidation,
     });
   });
 });

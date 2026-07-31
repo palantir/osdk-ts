@@ -666,6 +666,14 @@ export function extractAllowedValues(
   ridGenerator: OntologyRidGenerator,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
+    case "struct":
+      return {
+        type: "struct",
+        struct: {
+          type: "delegateToAllowedStructFieldValues",
+          delegateToAllowedStructFieldValues: {},
+        },
+      };
     case "oneOf":
       return {
         type: "oneOf",

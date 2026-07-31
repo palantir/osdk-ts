@@ -1,5 +1,7 @@
 ---
+"@osdk/client.unstable": minor
 "@osdk/maker": minor
+"@osdk/maker-experimental": minor
 ---
 
-Add support for serializing struct action parameter validations.
+Add struct action parameter validation types and serialization support.

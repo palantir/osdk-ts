@@ -171,7 +171,8 @@ export function convertActionValidation(
                   action.parameters,
                 ),
               ) ?? [],
-            structFieldValidations: {},
+            structFieldValidations:
+              p.validation.structFieldValidations ?? {},
           },
         ];
       }),
