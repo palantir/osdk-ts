@@ -31,6 +31,8 @@ import type {
   InterfaceParameterConstraintShape,
   InterfacePropertyTypeInputShape,
   InterfaceTypeInputShape,
+  InputPreset,
+  InputShapeResolver,
   LinkTypeInputShape,
   LinkTypeIntermediaryShape,
   LinkTypeManyToManyInputShape,
@@ -44,10 +46,17 @@ import type {
 import type {
   BlockShapes,
   OntologyRidGenerator,
+  ReadableId,
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
 import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
+
+interface ImportedBlockShapes extends BlockShapes {
+  inputPresets: Map<ReadableId, InputPreset>;
+}
+
+export type LinkTypeIdsByApiName = Readonly<Record<string, string>>;
 
 function createLocalizedAbout(
   fallbackTitle: string,
@@ -69,16 +78,23 @@ function createLocalizedAbout(
 export function getImportedShapes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-): BlockShapes {
-  const blockShapes: BlockShapes = {
+  linkTypeIdsByApiName: LinkTypeIdsByApiName = {},
+): ImportedBlockShapes {
+  const blockShapes: ImportedBlockShapes = {
     inputShapes: new Map(),
+    inputPresets: new Map(),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
     inputMappings: [],
   };
 
   extractImportedObjectTypes(importedBlockData, ridGenerator, blockShapes);
-  extractImportedLinkTypes(importedBlockData, ridGenerator, blockShapes);
+  extractImportedLinkTypes(
+    importedBlockData,
+    ridGenerator,
+    blockShapes,
+    linkTypeIdsByApiName,
+  );
   extractImportedInterfaceTypes(importedBlockData, ridGenerator, blockShapes);
   extractImportedSharedPropertyTypes(
     importedBlockData,
@@ -93,7 +109,7 @@ export function getImportedShapes(
 function extractImportedObjectTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
   const propertyReadableIds = ridGenerator.getPropertyTypeRids().inverse();
@@ -128,6 +144,7 @@ function extractImportedObjectTypes(
       type: "objectType",
       objectType: inputShape,
     });
+    addApiNamePreset(blockShapes, readableId, objectType.objectType.apiName!);
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -171,6 +188,7 @@ function extractImportedObjectTypes(
         type: "property",
         property: propInputShape,
       });
+      addApiNamePreset(blockShapes, propReadableId, propertyType.apiName!);
 
       blockShapes.inputShapeMetadata.set(propReadableId, {
         isOptional: false,
@@ -185,7 +203,8 @@ function extractImportedObjectTypes(
 function extractImportedLinkTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
+  linkTypeIdsByApiName: LinkTypeIdsByApiName,
 ): void {
   const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
 
@@ -293,6 +312,15 @@ function extractImportedLinkTypes(
       type: "linkType",
       linkType: linkInputShape,
     });
+    const linkTypeId = linkTypeIdsByApiName[linkType.linkType.id];
+    if (linkTypeId !== undefined) {
+      addPreset(blockShapes, readableId, {
+        type: "linkTypeIdResolver",
+        linkTypeIdResolver: {
+          linkTypeIdWithoutOntologyPrefix: linkTypeId,
+        },
+      });
+    }
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -306,7 +334,7 @@ function extractImportedLinkTypes(
 function extractImportedInterfaceTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   const knownIdentifiers = importedBlockData.knownIdentifiers;
 
@@ -372,6 +400,7 @@ function extractImportedInterfaceTypes(
       type: "interfaceType",
       interfaceType: inputShape,
     });
+    addApiNamePreset(blockShapes, interfaceReadableId, interfaceType.apiName);
 
     // Generate SPT input shapes
     for (const [_sptRid, propEntry] of Object.entries(
@@ -394,6 +423,7 @@ function extractImportedInterfaceTypes(
           },
         },
       });
+      addApiNamePreset(blockShapes, sptReadableId, spt.apiName);
       blockShapes.inputShapeMetadata.set(sptReadableId, {
         isOptional: false,
         isAccessedInReconcile: true,
@@ -439,6 +469,11 @@ function extractImportedInterfaceTypes(
         type: "interfacePropertyType",
         interfacePropertyType: propInputShape,
       });
+      addApiNamePreset(
+        blockShapes,
+        propReadableId,
+        property.interfaceDefinedPropertyType.apiName,
+      );
     }
 
     // Generate interface link type input shapes
@@ -482,6 +517,11 @@ function extractImportedInterfaceTypes(
         type: "interfaceLinkType",
         interfaceLinkType: linkInputShape,
       });
+      addApiNamePreset(
+        blockShapes,
+        linkReadableId,
+        interfaceLinkType.metadata.apiName,
+      );
     }
 
     // Generate interface action type constraint input shapes
@@ -521,6 +561,11 @@ function extractImportedInterfaceTypes(
         type: "interfaceActionTypeConstraint",
         interfaceActionTypeConstraint: constraintInputShape,
       });
+      addApiNamePreset(
+        blockShapes,
+        constraintReadableId,
+        actionTypeConstraint.metadata.apiName,
+      );
 
       // Generate interface parameter constraint input shapes
       for (const [paramRid, paramConstraint] of Object.entries(
@@ -549,6 +594,7 @@ function extractImportedInterfaceTypes(
           type: "interfaceParameterConstraint",
           interfaceParameterConstraint: paramInputShape,
         });
+        addApiNamePreset(blockShapes, paramReadableId, paramDisplayApiName);
       }
     }
   }
@@ -557,7 +603,7 @@ function extractImportedInterfaceTypes(
 function extractImportedSharedPropertyTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   for (const [_rid, sptBlock] of Object.entries(
     importedBlockData.sharedPropertyTypes,
@@ -580,6 +626,7 @@ function extractImportedSharedPropertyTypes(
       type: "sharedPropertyType",
       sharedPropertyType: inputShape,
     });
+    addApiNamePreset(blockShapes, readableId, spt.apiName);
 
     blockShapes.inputShapeMetadata.set(readableId, {
       isOptional: false,
@@ -601,7 +648,7 @@ function extractImportedSharedPropertyTypes(
 function extractImportedActionTypes(
   importedBlockData: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  blockShapes: BlockShapes,
+  blockShapes: ImportedBlockShapes,
 ): void {
   for (const [_rid, actionTypeBlock] of Object.entries(
     importedBlockData.actionTypes ?? {},
@@ -636,6 +683,7 @@ function extractImportedActionTypes(
       type: "action",
       action: actionShape,
     });
+    addApiNamePreset(blockShapes, actionReadableId, actionApiName);
 
     // Generate parameter input shapes
     const parameters = (actionTypeBlock.actionType as ActionType).metadata
@@ -665,9 +713,37 @@ function extractImportedActionTypes(
           type: "actionParameter",
           actionParameter: parameterShape,
         });
+        addApiNamePreset(blockShapes, paramReadableId, parameterId);
       }
     }
   }
+}
+
+function addApiNamePreset(
+  blockShapes: ImportedBlockShapes,
+  readableId: ReadableId,
+  apiName: string,
+): void {
+  addPreset(blockShapes, readableId, {
+    type: "apiNameResolver",
+    apiNameResolver: { apiName },
+  });
+}
+
+function addPreset(
+  blockShapes: ImportedBlockShapes,
+  readableId: ReadableId,
+  resolver: InputShapeResolver,
+): void {
+  blockShapes.inputPresets.set(readableId, {
+    value: {
+      type: "fromSource",
+      fromSource: { resolver },
+    },
+    exportCompatibility: "COMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: false,
+  });
 }
 
 function getObjectTypeBlockId(
