@@ -22,11 +22,11 @@ import type { MinimalClientParams } from "./MinimalClientContext.js";
 export function createMinimalClientHelper(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   ...args: typeof createMinimalClient extends (
     metadata: MinimalClientParams["metadata"],
     baseUrl: string,
-    tokenProvider: () => Promise<string>,
+    tokenProvider: () => string | Promise<string>,
     ...args: infer A
   ) => any
     ? A

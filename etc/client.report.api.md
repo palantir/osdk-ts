@@ -122,7 +122,7 @@ export { CompileTimeMetadata }
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
 // @public
-export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
+export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => string | Promise<string>, options?: {
     	logger?: Logger
     	UNSTABLE_DO_NOT_USE_BRANCH?: string
     	headers?: Record<string, string>
@@ -132,7 +132,7 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // @public
-export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
+export function createPlatformClient(baseUrl: string, tokenProvider: () => string | Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
 export { DerivedProperty }
 

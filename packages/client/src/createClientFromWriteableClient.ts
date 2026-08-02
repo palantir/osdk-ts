@@ -32,7 +32,7 @@ export function createClientFromWriteableClient(
     transactionId?: string;
     baseUrl?: string;
     ontologyRid?: string | Promise<string>;
-    tokenProvider?: () => Promise<string>;
+    tokenProvider?: () => string | Promise<string>;
   },
 ): Client {
   const ctx = writeableClient[additionalContext];

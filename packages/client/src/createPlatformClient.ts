@@ -31,7 +31,7 @@ export interface PlatformClient extends SharedClientContext {}
  */
 export function createPlatformClient(
   baseUrl: string,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   options: undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): PlatformClient {

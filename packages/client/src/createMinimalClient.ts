@@ -37,7 +37,7 @@ import { USER_AGENT } from "./util/UserAgent.js";
 export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
   baseUrl: string,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   options: OntologyCachingOptions & {
     logger?: Logger;
     transactionId?: string;

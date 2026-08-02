@@ -111,7 +111,7 @@ export function createClientInternal(
   subscribeConnectionFn: CreateSubscriptionConnectionFn | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   options:
     | {
         logger?: Logger;
@@ -408,7 +408,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  * @param baseUrl - The base URL of the Foundry stack (e.g. `"https://example.palantirfoundry.com"`).
  * @param ontologyRid - The ontology RID to scope the client to. May be provided directly or as a `Promise`
  *   that resolves to the RID. Typically the generated `$ontologyRid` export from your generated SDK is passed here.
- * @param tokenProvider - A function returning a `Promise` that resolves to a bearer token used to authenticate
+ * @param tokenProvider - A function returning a bearer token or a `Promise` that resolves to one, used to authenticate
  *   requests. Typically the OAuth client returned by `createPublicOauthClient` or `createConfidentialOauthClient`
  *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
  *   manage tokens yourself.
@@ -438,7 +438,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
 export const createClient: (
   baseUrl: string,
   ontologyRid: string | Promise<string>,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   options?:
     | {
         logger?: Logger;

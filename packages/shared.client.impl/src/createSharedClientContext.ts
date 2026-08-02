@@ -28,7 +28,7 @@ export const USER_AGENT_HEADER = "Fetch-User-Agent";
 
 export function createSharedClientContext(
   baseUrl: string,
-  tokenProvider: () => Promise<string>,
+  tokenProvider: () => string | Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
   customHeaders?: Record<string, string>,
@@ -42,6 +42,8 @@ export function createSharedClientContext(
     parsedBaseUrl.pathname += "/";
   }
   const normalizedBaseUrl = parsedBaseUrl.toString();
+  const asyncTokenProvider = (): Promise<string> =>
+    Promise.resolve().then(tokenProvider);
 
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
@@ -54,7 +56,7 @@ export function createSharedClientContext(
         }
       }
 
-      const token = await tokenProvider();
+      const token = await asyncTokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
 
       const customUserAgent = customHeaders
@@ -104,6 +106,6 @@ export function createSharedClientContext(
   return {
     baseUrl: normalizedBaseUrl,
     fetch: fetchWrapper,
-    tokenProvider,
+    tokenProvider: asyncTokenProvider,
   };
 }
