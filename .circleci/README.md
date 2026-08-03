@@ -137,6 +137,39 @@ than just relocating it.
   asset URLs are absolute. The Actions gh-pages preview is unchanged and still
   serves that need.
 
+## Test results
+
+The `test` and `storybook-interaction-tests` jobs emit JUnit XML, which gives
+CircleCI a Tests tab with individual test names and durations, surfaces failures
+at the top of the job instead of buried in ~38 packages of console output, and
+enables flaky-test detection. Both upload with `when: always` — a failing run is
+exactly when the report is worth having.
+
+Three things make it work, and all three are load-bearing:
+
+- **Turbo's argument passthrough** adds the reporter to every package at once.
+  Each `test` script is a bare `vitest run`, so `turbo run test -- --reporter=…`
+  reaches all of them with no package-level config. Paths are relative to each
+  task's cwd, so reports land per package and cannot collide on disk. Local
+  `pnpm test` never passes the flags, so developer runs are untouched.
+- **`turbo.json` declares `"outputs": ["reports/**"]`** on `test`. Without it a
+  cache hit replays the logs and writes no file, and the upload is silently
+  empty. Verified both ways.
+- **`reports/` is gitignored.** Turbo folds untracked, non-ignored files into a
+  package's input hash, so leaving the XML visible makes every test task a cache
+  miss on the run after it emits a report. Also verified.
+
+`scripts/collect-test-results.sh` gathers the per-package reports into one
+directory, because `store_test_results` takes a path rather than a glob. On the
+way through it prefixes each `classname` with its package: vitest sets classname
+to the package-relative file path, and 13 paths are duplicated across packages
+(`src/junk.test.ts` is in both `@osdk/api` and `@osdk/version-updater`).
+Unprefixed, CircleCI would merge unrelated tests and flaky detection would read
+"passed here, failed there" as one flaky test.
+
+Note pnpm 10 does **not** forward arguments after a `--` separator, so the
+Storybook invocation passes them directly after the script name.
+
 ## Asking "did this change?"
 
 Two different questions, two different tools, and mixing them up causes real
@@ -231,22 +264,8 @@ Two known costs of that shape, both accepted:
 - Run the full Node matrix only on `main` and just 18 + 24 (the supported
   boundaries) on PRs. Halves the matrix cost, but it is a real coverage
   reduction.
-- Emit JUnit XML and wire up `store_test_results` for CircleCI's test summary,
-  flaky-test detection, and per-test timings. Cheaper than it looks: every
-  package's `test` script is a bare `vitest run`, so turbo's argument
-  passthrough covers all of them at once with no package changes —
-
-  ```sh
-  pnpm exec turbo run test -- --reporter=default \
-                              --reporter=junit \
-                              --outputFile.junit=reports/junit.xml
-  ```
-
-  Each package writes into its own `reports/`, and local `pnpm test` never
-  passes those flags, so developer runs are unaffected. The catch is that
-  `turbo.json`'s `test` task declares no `outputs`, so on a cache hit the XML
-  would not be materialized and `store_test_results` would silently upload
-  nothing. It needs `"outputs": ["reports/**"]` first.
+- Split the base-branch build out of `bundle-size` so the two measurements can
+  run concurrently instead of one after the other.
 
 ## Validating changes to this config
 

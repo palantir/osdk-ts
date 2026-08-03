@@ -9,6 +9,11 @@ node_modules/
 /coverage/
 packages/*/coverage/
 
+# JUnit XML written by CI test runs. Must stay ignored: turbo folds untracked,
+# non-ignored files into a package's input hash, so leaving these visible makes
+# every test task a cache miss on the run after it emits a report.
+reports/
+
 # Misc
 .DS_Store
 .env

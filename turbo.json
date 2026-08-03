@@ -267,7 +267,11 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["^transpileEsm"]
+      "dependsOn": ["^transpileEsm"],
+      /* CI appends a JUnit reporter to this task. Declaring the output is what
+         makes a cache hit restore the XML; without it turbo replays the logs
+         and writes no file, so the report upload would silently be empty. */
+      "outputs": ["reports/**"]
     },
 
     "updateSnapshots": {

@@ -411,12 +411,16 @@ jobs:
       - run:
           name: Run this container's share of the tests
           command: |
+            # Every package's `test` script is a bare `vitest run`, so turbo's
+            # passthrough adds the JUnit reporter to all of them at once. Paths
+            # are relative to each task's cwd, so reports land per package.
+            junit=(--reporter=default --reporter=junit --outputFile.junit=reports/junit.xml)
             case "$CIRCLE_NODE_INDEX" in
               0)
-                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
+                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS -- "${junit[@]}"
                 ;;
               1)
-                pnpm exec turbo run test --filter=@osdk/react-components
+                pnpm exec turbo run test --filter=@osdk/react-components -- "${junit[@]}"
                 ;;
               *)
                 # Blueprint's config has a live example of this going wrong: its
@@ -427,6 +431,15 @@ jobs:
                 exit 1
                 ;;
             esac
+      - run:
+          # `when: always` because a failing test run is exactly when these are
+          # worth having.
+          name: Collect JUnit reports
+          when: always
+          command: .circleci/scripts/collect-test-results.sh /tmp/test-results
+      - store_test_results:
+          path: /tmp/test-results
+          when: always
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
 
@@ -597,9 +610,24 @@ jobs:
           command: pnpm --filter @osdk/react-components-storybook exec playwright install --with-deps chromium
       - run:
           # Vitest browser mode runs each story's play function in headless
-          # Chromium.
+          # Chromium. This is the flakiest suite in the pipeline, so it is the
+          # one that benefits most from CircleCI's flaky-test detection.
+          #
+          # Note the arguments follow the script name directly: pnpm 10 does not
+          # forward anything after a `--` separator.
           name: Run interaction tests
-          command: pnpm --filter @osdk/react-components-storybook test-storybook
+          command: |
+            pnpm --filter @osdk/react-components-storybook run test-storybook \
+              --reporter=default \
+              --reporter=junit \
+              --outputFile.junit=reports/junit.xml
+      - run:
+          name: Collect JUnit reports
+          when: always
+          command: .circleci/scripts/collect-test-results.sh /tmp/test-results
+      - store_test_results:
+          path: /tmp/test-results
+          when: always
 
   # ---------------------------------------------------------------------------
   # PR-only reporting and guards
