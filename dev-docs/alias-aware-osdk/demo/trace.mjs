@@ -120,7 +120,7 @@ const walk = (node) => {
 // and query names have no body to read them from, so those come from the path.
 const PATH_PATTERNS = [
   [/\/action(?:Type)?s\/([^/?]+)/, 1, "action"],
-  [/\/quer(?:yType|ie)s\/([^/?]+)/, 1, "query"],
+  [/\/(?:queryTypes|queries)\/([^/?]+)/, 1, "query"],
 ];
 
 note(1, "ontology", $ontologyRid);
