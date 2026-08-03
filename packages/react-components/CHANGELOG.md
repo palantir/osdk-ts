@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.45.0
+
+### Minor Changes
+
+- 5d63ff0: Add an `ActionFormOverview.md` one-pager (usage, an `ActionFormProps` props reference, a `Style API` token summary, and an Advanced section covering `BaseForm`) rendered by the Storybook ActionForm Docs page.
+
 ## 0.44.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @osdk/generator
 
+## 2.53.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+
 ## 2.52.0
 
 ### Patch Changes

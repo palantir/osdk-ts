@@ -1,5 +1,16 @@
 # @osdk/seed-compiler
 
+## 0.10.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/seed-helpers@0.24.0
+
 ## 0.9.0
 
 ### Patch Changes
