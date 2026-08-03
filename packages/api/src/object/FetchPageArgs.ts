@@ -19,7 +19,10 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
-import type { ApplyModifiersArg } from "../ontology/PropertyModifiers.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 
 export type NullabilityAdherence = false | "throw" | "drop";
 export namespace NullabilityAdherence {
@@ -127,6 +130,14 @@ export interface FetchPageArgs<
   $pageSize?: number;
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  /**
+   * Best-effort load level applied to every property without listing them:
+   * reducers and struct main values where defined, other properties unchanged.
+   * A per-property `$applyModifiers` entry wins. Does not narrow the result type.
+   *
+   * @experimental
+   */
+  $defaultLoadLevel?: PropertyModifierValue;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
    * @default false
