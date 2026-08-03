@@ -45,8 +45,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/unit-testing": "workspace:~",
     "conjure-lite": "^0.7.3",
     "consola": "^3.4.2",
@@ -79,7 +79,6 @@
     "build/esm",
     "build/browser",
     "build/types",
-    "bin",
     "CHANGELOG.md",
     "package.json",
     "templates",
