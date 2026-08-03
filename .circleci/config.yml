@@ -1,0 +1,640 @@
+version: 2.1
+
+# ------------------------------------------------------------------------------
+# This pipeline mirrors the pull-request half of .github/workflows/ci.yml and
+# runs alongside it. GitHub Actions remains the source of truth for releases and
+# for the currently-required status checks; nothing here publishes anything.
+#
+# The one place this deliberately diverges is Storybook: instead of the
+# build-twice / force-push-to-gh-pages flow the Actions workflows use, Storybook
+# is built once and shared with Chromatic through a CircleCI workspace.
+# See .circleci/README.md.
+# ------------------------------------------------------------------------------
+
+parameters:
+  run-chromatic:
+    description: >
+      Run only the Storybook build and Chromatic snapshot, skipping the rest of
+      CI. Set from the "Trigger Pipeline" UI or the API when you want to refresh
+      a baseline without paying for a full CI run.
+    type: boolean
+    default: false
+
+aliases:
+  - &ci-environment
+    DO_NOT_TRACK: "1"
+    TURBO_TELEMETRY_DISABLED: "1"
+    # Let corepack fetch the pinned pnpm without prompting for confirmation.
+    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+    PNPM_STORE_DIR: /home/circleci/.pnpm-store
+
+  # Packages that pull in Vite 7 or Storybook and therefore need Node 20+. They
+  # sit out the Node 18 leg of the test matrix.
+  - &node-18-excludes >-
+    --filter=!@osdk/create-app.template.*
+    --filter=!@osdk/create-widget.template.*
+    --filter=!@osdk/widget.vite-plugin
+    --filter=!@osdk/examples.*
+    --filter=!@psdk/examples.*
+    --filter=!@osdk/e2e.sandbox.todowidget
+    --filter=!@osdk/ontology-explorer-app
+    --filter=!@osdk/react-components-storybook
+
+executors:
+  node:
+    parameters:
+      node-version:
+        description: >
+          cimg/node image tag. Major-only tags float to the latest patch, which
+          is what actions/setup-node already does for `node-version: 24`.
+        type: string
+        default: "24"
+      resource-class:
+        type: string
+        default: large
+    docker:
+      - image: cimg/node:<< parameters.node-version >>
+    resource_class: << parameters.resource-class >>
+    environment: *ci-environment
+
+  # The e2e job publishes to a throwaway registry, which the GitHub Actions
+  # workflow models as a service container.
+  node-with-verdaccio:
+    docker:
+      - image: cimg/node:24
+      - image: verdaccio/verdaccio:6
+    resource_class: large
+    environment: *ci-environment
+
+commands:
+  activate-pnpm:
+    description: Make the repo's pinned pnpm available on PATH.
+    steps:
+      - run:
+          name: Activate pnpm
+          command: |
+            # The corepack bundled with cimg/node can be too old to verify the
+            # signatures of current pnpm releases, so refresh it before enabling.
+            sudo npm install --global --silent corepack@latest
+            sudo corepack enable
+            pnpm --version
+
+  install-deps:
+    description: Restore the pnpm store and install the workspace.
+    steps:
+      - restore_cache:
+          name: Restore pnpm store
+          keys:
+            - v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - v1-pnpm-store-{{ arch }}-
+      - run:
+          name: Install dependencies
+          command: pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+
+  save-pnpm-store:
+    description: >
+      Persist the pnpm store. Only the build job does this: the key is content
+      addressed by the lockfile, so one writer per pipeline is enough and it
+      avoids every root job uploading the same multi-gigabyte store in parallel.
+    steps:
+      - run:
+          name: Prune pnpm store
+          command: pnpm store prune --store-dir "$PNPM_STORE_DIR"
+      - save_cache:
+          name: Save pnpm store
+          key: v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - /home/circleci/.pnpm-store
+
+  restore-turbo-cache:
+    description: >
+      Restore a scoped turbo cache. Each scope keeps its own warm cache across
+      runs, then falls back to this pipeline's build cache (the cold-start path)
+      and finally to any previous build cache.
+    parameters:
+      scope:
+        type: string
+    steps:
+      - restore_cache:
+          name: Restore turbo cache (<< parameters.scope >>)
+          keys:
+            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Revision }}
+            - turbo-{{ arch }}-<< parameters.scope >>-
+            - turbo-{{ arch }}-build-{{ .Revision }}
+            - turbo-{{ arch }}-build-
+
+  save-turbo-cache:
+    parameters:
+      scope:
+        type: string
+    steps:
+      - save_cache:
+          name: Save turbo cache (<< parameters.scope >>)
+          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Revision }}
+          paths:
+            - .turbo/cache
+
+  detect-infra-changes:
+    description: >
+      Set $TURBO_FORCE for the rest of the job. When repo infrastructure
+      changes, build with --force so the run cannot silently rely on stale
+      cached artifacts and mask a broken task dependency.
+    steps:
+      - run:
+          name: Detect infra changes
+          command: |
+            force=""
+            if files=$(.circleci/scripts/changed-files.sh); then
+              if printf '%s\n' "$files" | grep -qE '^(turbo\.json|package\.json|pnpm-workspace\.yaml|pnpm-lock\.yaml|config/tsconfig\.base\.json|babel\.config\.mjs|dprint\.json|\.circleci/config\.yml|\.github/workflows/(ci|release)\.yml)$'; then
+                echo "Infrastructure changed; forcing a clean build."
+                force="--force"
+              fi
+            else
+              echo "Base commit unknown; forcing a clean build."
+              force="--force"
+            fi
+            echo "export TURBO_FORCE='$force'" >> "$BASH_ENV"
+
+  verify-working-tree-clean:
+    description: Fail if a build step modified or generated files.
+    steps:
+      - run:
+          name: Verify nothing changed
+          command: git diff --exit-code
+      - run:
+          name: Verify nothing added
+          command: |
+            untracked="$(git ls-files --others --exclude-standard)"
+            if [ -n "$untracked" ]; then
+              echo "Build produced unexpected untracked files:"
+              echo "$untracked"
+              exit 1
+            fi
+
+  halt-unless-pull-request:
+    description: >
+      End the job successfully when this is not a pull-request build. CircleCI
+      builds every push, but these checks only mean something on a PR.
+    steps:
+      - run:
+          name: Skip unless this is a pull request
+          command: |
+            case "${CIRCLE_BRANCH:-}" in
+              main | next | release/*)
+                echo "Branch '${CIRCLE_BRANCH}' is not a pull request; skipping."
+                circleci-agent step halt
+                # `halt` stops the job after this step, not this shell, so
+                # leave explicitly rather than falling through to the next line.
+                exit 0
+                ;;
+            esac
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Checks that gate a pull request
+  # ---------------------------------------------------------------------------
+
+  changesets:
+    executor:
+      name: node
+      resource-class: medium
+    steps:
+      - checkout
+      - halt-unless-pull-request
+      - run:
+          name: Skip release PRs
+          command: |
+            case "${CIRCLE_BRANCH:-}" in
+              changeset-release/*)
+                echo "Release PR; no changeset expected."
+                circleci-agent step halt
+                exit 0
+                ;;
+            esac
+      - activate-pnpm
+      - install-deps
+      - run:
+          name: Check for changesets
+          command: |
+            # Explicit refspec so the remote-tracking ref exists regardless of
+            # how checkout configured the remote's default refspec.
+            git fetch origin "+refs/heads/main:refs/remotes/origin/main"
+            pnpm exec changeset status --since=origin/main
+
+  # Build all artifacts once on a single Node version. tsc/babel/esbuild emit
+  # identical output regardless of the host Node version (the build target comes
+  # from tsconfig/tsup, not the runtime), so a build matrix would produce the
+  # same bytes four times. Node 18 syntax compatibility is proven by the test
+  # matrix below. The turbo cache populated here is what the other jobs consume.
+  build:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - save-pnpm-store
+      - restore-turbo-cache:
+          scope: build
+      - detect-infra-changes
+      - run:
+          name: Build all artifacts
+          command: pnpm exec turbo run transpile transpileTypes $TURBO_FORCE
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: build
+
+  # The Node-version-independent checks are split across three jobs rather than
+  # one, because on a single container typecheck, lint, cspell and the API
+  # checks contend for CPU and serialize. Each restores the build cache, so
+  # transpile/transpileTypes are cache hits rather than recompiles.
+
+  typecheck:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: typecheck
+      - run:
+          # Materialize build/{esm,cjs,browser,types} before check-attw packs
+          # them, so it cannot race the tasks that produce them.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Typecheck and API checks
+          command: pnpm exec turbo run typecheck check-attw check-api check-bundle check-gen-props
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: typecheck
+
+  lint:
+    executor:
+      name: node
+      resource-class: large
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: lint
+      - run:
+          # lint dependsOn ^transpileTypes for type-aware rules, so the
+          # dependencies' .d.ts files have to exist first.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Lint and monorepolint
+          command: pnpm exec turbo run lint //#check-mrl
+          no_output_timeout: 20m
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: lint
+
+  cspell:
+    executor:
+      name: node
+      resource-class: medium
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - run:
+          # A single whole-repo pass, which supersedes the per-package
+          # check-spelling task, so we do not run both.
+          name: Check spelling
+          command: pnpm exec turbo run ci:cspell
+
+  # The load-bearing matrix: run the suites against the artifacts the build job
+  # produced, under every supported Node version. This is what actually proves
+  # the published packages run on Node 18 and up.
+  test:
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      node-version: << parameters.node-version >>
+      resource-class: xlarge
+    environment:
+      NODE_18_EXCLUDES: *node-18-excludes
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      # Keyed per Node version: turbo's hash does not encode the Node runtime,
+      # so a shared cache could restore another leg's result and defeat the
+      # whole point of the matrix.
+      - restore-turbo-cache:
+          scope: test-node<< parameters.node-version >>
+      - run:
+          name: Select package filters for this Node version
+          command: |
+            if [ "<< parameters.node-version >>" = "18" ]; then
+              echo "export TURBO_FILTERS=\"$NODE_18_EXCLUDES\"" >> "$BASH_ENV"
+            else
+              echo "export TURBO_FILTERS=" >> "$BASH_ENV"
+            fi
+      - run:
+          # `turbo run test` only depends on ^transpileEsm, but some suites also
+          # consume their dependencies' other build outputs (verify-cjs/esm, the
+          # webpack bundling test). Running transpile + transpileTypes restores
+          # all of build/{esm,cjs,browser,types} from the build job's cache, and
+          # because transpile dependsOn codegen it also regenerates the sources
+          # under generatedNoCheck/ that tests import but codegen does not cache.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
+      - run:
+          # @osdk/react-components is excluded here and run on its own below: it
+          # has a large happy-dom suite, and when it competes with the other ~80
+          # test processes for CPU its vitest main thread is starved enough to
+          # trip the worker RPC timeout on the slowest leg.
+          name: Test (excluding react-components)
+          command: pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
+      - run:
+          name: Test react-components (isolated)
+          command: pnpm exec turbo run test --filter=@osdk/react-components
+      - save-turbo-cache:
+          scope: test-node<< parameters.node-version >>
+
+  # Build the app/site packages that have no transpile/typecheck task; `turbo
+  # run build` is what proves they still compile. Runs in parallel with the test
+  # matrix so the slow app builds stay off the tests' critical path.
+  build-apps:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: apps
+      - detect-infra-changes
+      - run:
+          name: Build apps and sites
+          command: pnpm exec turbo run build $TURBO_FORCE
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: apps
+
+  e2e:
+    executor: node-with-verdaccio
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          name: Transpile
+          command: pnpm exec turbo transpile
+      - run:
+          name: Wait for Verdaccio
+          command: |
+            for _ in $(seq 1 30); do
+              if curl --silent --fail http://localhost:4873/ >/dev/null; then
+                echo "Verdaccio is up."
+                exit 0
+              fi
+              sleep 2
+            done
+            echo "Verdaccio did not come up in time." >&2
+            exit 1
+      - run:
+          name: Setup Verdaccio
+          command: |
+            npx npm-auth-to-token -u verdaccio -p fake -e fake@palantir.com -r http://localhost:4873
+            npm config set registry http://localhost:4873
+      - run:
+          name: Faux release
+          command: pnpm exec changeset version
+      - run:
+          name: Faux publish
+          command: pnpm publish -r --no-git-checks
+
+  # ---------------------------------------------------------------------------
+  # Storybook
+  # ---------------------------------------------------------------------------
+
+  # Build Storybook exactly once. The result goes to the workspace for the
+  # chromatic job, and to artifacts so a build is downloadable even when
+  # Chromatic is unavailable (fork PRs get no project token).
+  build-storybook:
+    executor:
+      name: node
+      resource-class: xlarge
+    environment:
+      # Chromatic serves each build at its own domain root, so override the
+      # gh-pages-oriented default base path baked into .storybook/main.ts.
+      STORYBOOK_BASE_PATH: /
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: storybook
+      - run:
+          name: Build Storybook's workspace dependencies
+          command: pnpm exec turbo run transpileBrowser --filter='@osdk/react-components-storybook^...'
+      - run:
+          # --stats-json emits preview-stats.json, the module graph TurboSnap
+          # reads to work out which stories a commit can actually reach.
+          name: Build Storybook with TurboSnap stats
+          command: pnpm --filter @osdk/react-components-storybook run build-stats
+      - persist_to_workspace:
+          root: .
+          paths:
+            - packages/react-components-storybook/storybook-static
+      - store_artifacts:
+          path: packages/react-components-storybook/storybook-static
+          destination: storybook-static
+      - save-turbo-cache:
+          scope: storybook
+
+  chromatic:
+    executor:
+      name: node
+      resource-class: medium
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      # Only pnpm itself is needed here (for `pnpm dlx`); the Storybook this
+      # publishes arrived prebuilt through the workspace.
+      - activate-pnpm
+      - run:
+          name: Publish to Chromatic
+          command: .circleci/scripts/chromatic.sh
+
+  storybook-interaction-tests:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - checkout
+      - run:
+          name: Skip unless component packages changed
+          command: |
+            if files=$(.circleci/scripts/changed-files.sh); then
+              if ! printf '%s\n' "$files" | grep -qE '^packages/(react-components|react-components-storybook)/'; then
+                echo "No component package changes; skipping interaction tests."
+                circleci-agent step halt
+                exit 0
+              fi
+            else
+              echo "Base commit unknown; running the tests rather than risk skipping a relevant change."
+            fi
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: storybook
+      - run:
+          # The stories import the browser build of the workspace packages they
+          # render, so those must be transpiled first.
+          name: Transpile story dependencies
+          command: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
+      - run:
+          name: Install Playwright Chromium
+          command: pnpm --filter @osdk/react-components-storybook exec playwright install --with-deps chromium
+      - run:
+          # Vitest browser mode runs each story's play function in headless
+          # Chromium.
+          name: Run interaction tests
+          command: pnpm --filter @osdk/react-components-storybook test-storybook
+
+  # ---------------------------------------------------------------------------
+  # PR-only reporting and guards
+  # ---------------------------------------------------------------------------
+
+  bundle-size:
+    executor:
+      name: node
+      resource-class: large
+    steps:
+      - checkout
+      - halt-unless-pull-request
+      - activate-pnpm
+      - install-deps
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          name: Build and measure this PR
+          command: |
+            pnpm exec turbo transpile
+            npx size-limit --json > /tmp/current.json || true
+      - run:
+          # The base checkout below replaces the working tree with a commit that
+          # predates these scripts, so keep a copy outside it.
+          name: Stash the CI scripts
+          command: cp -R .circleci /tmp/ci
+      - run:
+          name: Build and measure the base branch
+          command: |
+            git fetch origin "+refs/heads/main:refs/remotes/origin/main"
+            base="$(git merge-base HEAD origin/main)"
+            echo "Comparing against $base"
+            git checkout --detach --force "$base"
+            pnpm exec turbo clean
+            pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+            pnpm exec turbo transpile
+            npx size-limit --json > /tmp/base.json || true
+      - run:
+          name: Comment with the comparison
+          command: |
+            node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
+            /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
+
+  # Fork PRs cannot be trusted to modify install-time or CI configuration,
+  # because either would execute attacker-controlled code with our credentials.
+  fork-guard:
+    executor:
+      name: node
+      resource-class: small
+    steps:
+      - checkout
+      # `halt` ends the job after the current step rather than interrupting the
+      # running shell, so it gets a step to itself. Folding this into the step
+      # below would run the guard on in-repo PRs too, and fail any of them that
+      # legitimately touch CI config.
+      - run:
+          name: Skip unless this is a fork pull request
+          command: |
+            # CIRCLE_PR_REPONAME is only populated for pull requests opened from
+            # a fork; for in-repo PRs and pushes we trust the author.
+            if [ -z "${CIRCLE_PR_REPONAME:-}" ]; then
+              echo "Not a fork pull request; nothing to guard."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Guard install-time config from fork PRs
+          command: .circleci/scripts/fork-guard.sh
+
+  # Single fan-in check. CircleCI does not run a job whose upstream failed, so
+  # unlike the Actions equivalent this needs no per-job result inspection:
+  # reaching this job at all means everything it requires passed or halted.
+  ci-all:
+    executor:
+      name: node
+      resource-class: small
+    steps:
+      - run:
+          name: All required jobs succeeded
+          command: echo "CircleCI PR pipeline is green."
+
+workflows:
+  ci:
+    unless: << pipeline.parameters.run-chromatic >>
+    jobs:
+      - changesets
+      - fork-guard
+      - cspell
+      - e2e
+      - bundle-size
+      - storybook-interaction-tests
+      - build
+      - typecheck:
+          requires: [build]
+      - lint:
+          requires: [build]
+      - build-apps:
+          requires: [build]
+      - test:
+          matrix:
+            parameters:
+              # Every LTS since the 2.0 GA, which means 18.x and up.
+              node-version: ["18", "20", "22", "24"]
+          requires: [build]
+      - build-storybook:
+          requires: [build]
+      - chromatic:
+          requires: [build-storybook]
+      - ci-all:
+          # chromatic is deliberately absent: a visual diff is a review signal,
+          # and a Chromatic outage should not be able to block a merge.
+          requires:
+            - build
+            - build-apps
+            - build-storybook
+            - typecheck
+            - lint
+            - cspell
+            - test
+            - e2e
+            - fork-guard
+            - changesets
+            - storybook-interaction-tests
+
+  # Refresh a Chromatic baseline without paying for the whole pipeline.
+  chromatic-on-demand:
+    when: << pipeline.parameters.run-chromatic >>
+    jobs:
+      - build
+      - build-storybook:
+          requires: [build]
+      - chromatic:
+          requires: [build-storybook]

@@ -8,6 +8,7 @@ blockquote
 blockquotes
 Canonicalizer
 Canonicalizers
+cimg
 codegen
 commitish
 Cpath
@@ -35,6 +36,7 @@ retryable
 revals
 rsort
 semver
+shellcheck
 streamutils
 struct
 structs
