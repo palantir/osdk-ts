@@ -91,11 +91,20 @@ commands:
           name: Install dependencies
           command: pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
 
+  attach-deps:
+    description: >
+      Take node_modules from the workspace instead of reinstalling. Jobs
+      downstream of `build` also pick up its turbo cache this way, so their
+      build artifacts come from this pipeline rather than from a guess at some
+      earlier pipeline's cache key.
+    steps:
+      - attach_workspace:
+          at: .
+
   save-pnpm-store:
     description: >
-      Persist the pnpm store. Only the build job does this: the key is content
-      addressed by the lockfile, so one writer per pipeline is enough and it
-      avoids every root job uploading the same multi-gigabyte store in parallel.
+      Persist the pnpm store. Only the install job does this: the key is content
+      addressed by the lockfile, so one writer per pipeline is enough.
     steps:
       - run:
           name: Prune pnpm store
@@ -194,6 +203,33 @@ jobs:
   # Checks that gate a pull request
   # ---------------------------------------------------------------------------
 
+  # The only job that installs. Everything else attaches the result, which
+  # trades one ~1.1 GB workspace upload for fifteen fewer installs.
+  #
+  # Note this hands a single install to all four legs of the Node test matrix.
+  # That is safe for the native dependencies here because they are all N-API
+  # (`@swc/core`, `@parcel/watcher`, the oxc/rolldown/lightningcss bindings),
+  # whose ABI is stable across Node majors. `canvas` is the one node-gyp
+  # dependency whose prebuild is keyed to the installing Node version, but
+  # nothing imports it and it never compiles a binary here. If a matrix leg ever
+  # fails to load a native module, that assumption is what broke.
+  install:
+    executor:
+      name: node
+      resource-class: large
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - save-pnpm-store
+      - persist_to_workspace:
+          root: .
+          paths:
+            # pnpm hoists almost everything to the root; only three packages
+            # have their own node_modules.
+            - node_modules
+            - packages/*/node_modules
+
   changesets:
     executor:
       name: node
@@ -212,7 +248,7 @@ jobs:
                 ;;
             esac
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - run:
           name: Check for changesets
           command: |
@@ -233,8 +269,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
-      - save-pnpm-store
+      - attach-deps
       - restore-turbo-cache:
           scope: build
       - detect-infra-changes
@@ -244,6 +279,16 @@ jobs:
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: build
+      # Hand this pipeline's build outputs to every downstream job. The turbo
+      # cache travels rather than the raw build/ directories: it is the
+      # compressed form of the same artifacts, and it keeps `turbo run` a cache
+      # hit in the consumer jobs. That matters because `transpile` dependsOn
+      # `codegen`, whose generated sources turbo does not cache — dropping the
+      # turbo call downstream would leave those missing.
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .turbo/cache
 
   # The Node-version-independent checks are split across three jobs rather than
   # one, because on a single container typecheck, lint, cspell and the API
@@ -257,7 +302,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: typecheck
       - run:
@@ -275,11 +320,13 @@ jobs:
   lint:
     executor:
       name: node
-      resource-class: large
+      # oxlint/oxfmt are Rust and scale across cores, so this is not the same
+      # job it would be under ESLint.
+      resource-class: xlarge
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: lint
       - run:
@@ -302,7 +349,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - run:
           # A single whole-repo pass, which supersedes the per-package
           # check-spelling task, so we do not run both.
@@ -325,7 +372,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       # Keyed per Node version: turbo's hash does not encode the Node runtime,
       # so a shared cache could restore another leg's result and defeat the
       # whole point of the matrix.
@@ -375,7 +422,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: apps
       - detect-infra-changes
@@ -391,7 +438,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: build
       - run:
@@ -437,7 +484,9 @@ jobs:
   build-storybook:
     executor:
       name: node
-      resource-class: xlarge
+      # Rollup's bundle phase is largely single-threaded; the parallel part
+      # (transpiling deps) is cache hits.
+      resource-class: large
     environment:
       # Chromatic serves each build at its own domain root, so override the
       # gh-pages-oriented default base path baked into .storybook/main.ts.
@@ -445,7 +494,7 @@ jobs:
     steps:
       - checkout
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: storybook
       - run:
@@ -475,11 +524,15 @@ jobs:
   chromatic:
     executor:
       name: node
-      resource-class: medium
+      # Uploads a prebuilt directory; no compute of its own.
+      resource-class: small
     steps:
       - checkout
-      - attach_workspace:
-          at: .
+      # A workspace attach is all-or-nothing, so this pulls node_modules and the
+      # turbo cache too even though the job needs neither. That is the price of
+      # installing once; if the attach ever dominates this job's runtime, the
+      # fix is to give it its own workspace root rather than to reinstall.
+      - attach-deps
       # Only pnpm itself is needed here (for `pnpm dlx`); the Storybook this
       # publishes arrived prebuilt through the workspace.
       - activate-pnpm
@@ -506,7 +559,7 @@ jobs:
               echo "Base commit unknown; running the tests rather than risk skipping a relevant change."
             fi
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: storybook
       - run:
@@ -535,7 +588,7 @@ jobs:
       - checkout
       - halt-unless-pull-request
       - activate-pnpm
-      - install-deps
+      - attach-deps
       - restore-turbo-cache:
           scope: build
       - run:
@@ -549,16 +602,39 @@ jobs:
           name: Stash the CI scripts
           command: cp -R .circleci /tmp/ci
       - run:
-          name: Build and measure the base branch
+          # Written to a file because CircleCI cache keys cannot interpolate a
+          # value computed at runtime, but they can checksum a file.
+          name: Resolve the base commit
           command: |
             git fetch origin "+refs/heads/main:refs/remotes/origin/main"
-            base="$(git merge-base HEAD origin/main)"
-            echo "Comparing against $base"
-            git checkout --detach --force "$base"
+            git merge-base HEAD origin/main > /tmp/base-sha
+            echo "Comparing against $(cat /tmp/base-sha)"
+      - restore_cache:
+          # The base measurement only depends on the base commit, so it is
+          # identical for every push to a PR. Without this, each push pays for
+          # a full cold rebuild of the whole repo to recompute the same numbers.
+          name: Restore the base-branch measurement
+          keys:
+            - size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+      - run:
+          name: Build and measure the base branch
+          command: |
+            if [ -s /tmp/base.json ]; then
+              echo "Base measurement restored from cache; skipping the base build."
+              exit 0
+            fi
+            git checkout --detach --force "$(cat /tmp/base-sha)"
             pnpm exec turbo clean
             pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
             pnpm exec turbo transpile
             npx size-limit --json > /tmp/base.json || true
+      - save_cache:
+          # An empty file means the measurement failed; -s above rejects it on
+          # the next run, so a bad result cannot pin itself in place.
+          name: Save the base-branch measurement
+          key: size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          paths:
+            - /tmp/base.json
       - run:
           name: Comment with the comparison
           command: |
@@ -606,13 +682,22 @@ workflows:
   ci:
     unless: << pipeline.parameters.run-chromatic >>
     jobs:
-      - changesets
+      - install
+      # The only job that needs no node_modules, so it stays a true root and
+      # fails fast on an untrusted fork PR.
       - fork-guard
-      - cspell
-      - e2e
-      - bundle-size
-      - storybook-interaction-tests
-      - build
+      - changesets:
+          requires: [install]
+      - cspell:
+          requires: [install]
+      - e2e:
+          requires: [install]
+      - bundle-size:
+          requires: [install]
+      - storybook-interaction-tests:
+          requires: [install]
+      - build:
+          requires: [install]
       - typecheck:
           requires: [build]
       - lint:
@@ -649,7 +734,9 @@ workflows:
   chromatic-on-demand:
     when: << pipeline.parameters.run-chromatic >>
     jobs:
-      - build
+      - install
+      - build:
+          requires: [install]
       - build-storybook:
           requires: [build]
       - chromatic:

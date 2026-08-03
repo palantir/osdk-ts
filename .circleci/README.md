@@ -155,12 +155,50 @@ devDependency. Adding it to `package.json` made pnpm re-resolve enough of the
 workspace to pull ~1000 lines of unrelated version drift (including
 `@osdk/foundry.*` 2.60 → 2.71) into the lockfile. That bump deserves its own PR.
 
+## Performance shape
+
+Resource classes are deliberate, not uniform:
+
+| Class  | Jobs                                                                                 | Why                                                                                           |
+| ------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| xlarge | `build`, `typecheck`, `lint`, `build-apps`, `test` ×4, `storybook-interaction-tests` | Genuinely parallel work. `lint` is here because oxlint/oxfmt are Rust and scale across cores. |
+| large  | `install`, `e2e`, `bundle-size`, `build-storybook`                                   | I/O bound, or single-threaded at the point that matters (Rollup's bundle phase).              |
+| medium | `changesets`, `cspell`                                                               | Short, mostly single-task.                                                                    |
+| small  | `chromatic`, `fork-guard`, `ci-all`                                                  | An upload, a `git diff`, and an `echo`.                                                       |
+
+Three things keep the cost down:
+
+- **One install.** `install` is the only job that runs `pnpm install`; every
+  other job attaches `node_modules` from the workspace. That trades a ~1.1 GB
+  upload for fifteen fewer installs. The one exception is `bundle-size`, which
+  must reinstall against the base commit's lockfile.
+- **The turbo cache travels through the workspace.** `build` persists
+  `.turbo/cache`, so downstream jobs get _this_ pipeline's artifacts instead of
+  guessing at an earlier pipeline's cache key. The `save_cache`/`restore_cache`
+  chain stays for cross-pipeline warmth.
+- **The `bundle-size` base measurement is cached** on the base commit SHA. It is
+  identical for every push to a PR, so only the first push pays for the base
+  rebuild.
+
+Two known costs of that shape, both accepted:
+
+- `chromatic` attaches the whole workspace (attach is all-or-nothing) despite
+  needing only `storybook-static`. If that dominates its runtime, give it a
+  separate workspace root rather than reinstalling.
+- A single install serves all four Node legs of the test matrix. Safe here
+  because the native dependencies are N-API, whose ABI is stable across Node
+  majors; `canvas` is the one node-gyp package whose prebuild is Node-version
+  specific, and nothing imports it. A "cannot load native module" failure on one
+  matrix leg would mean that assumption broke.
+
 ## Possible follow-ups
 
-- Persist `node_modules` to the workspace after one install instead of
-  installing per job, as Blueprint does. Skipped here because this workspace is
-  much larger than Blueprint's and the pnpm symlink farm is awkward to persist;
-  the current shape mirrors what Actions already does.
+- Persist the raw `packages/*/build` directories and drop the `turbo run transpile transpileTypes` restore step from consumer jobs entirely. Not done
+  yet because `transpile` dependsOn `codegen`, whose generated sources turbo
+  does not cache — validating that nothing goes missing needs a real run.
+- Run the full Node matrix only on `main` and just 18 + 24 (the supported
+  boundaries) on PRs. Halves the matrix cost, but it is a real coverage
+  reduction.
 - Split the test matrix across containers with `parallelism` if the Node legs
   become the critical path.
 - Emit JUnit XML from vitest and wire up `store_test_results` for CircleCI's
