@@ -23,6 +23,7 @@ import {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   createDefaultParameterOrdering,
   createParameters,
+  createStructFieldValues,
   defineAction,
   kebab,
   validateActionParameters,
@@ -79,7 +80,8 @@ export function defineCreateOrModifyObjectAction(
   );
   parameters.forEach((p) => {
     // create prefilled parameters for object type properties unless overridden
-    if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
+    const property = getProperty(def.objectType, p.id);
+    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
       p.defaultValue = {
         type: "objectParameterPropertyValue",
         objectParameterPropertyValue: {
@@ -116,7 +118,7 @@ export function defineCreateOrModifyObjectAction(
             ),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],

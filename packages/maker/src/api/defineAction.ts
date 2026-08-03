@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
   ParameterId,
@@ -61,7 +62,10 @@ import {
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
-import { getPropertyKeys } from "./object/objectPropertyHelpers.js";
+import {
+  getProperty,
+  getPropertyKeys,
+} from "./object/objectPropertyHelpers.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -375,6 +379,72 @@ export function createParameters(
       };
     }),
   ];
+}
+
+export function createStructFieldValues(
+  def: ActionTypeUserDefinition,
+  parameters: Array<ActionParameter>,
+): OntologyIrAddObjectRule["structFieldValues"] {
+  return Object.fromEntries(
+    parameters.flatMap((parameter) => {
+      const property = getProperty(def.objectType, parameter.id);
+      if (property === undefined || !isStruct(property.type)) {
+        return [];
+      }
+
+      invariant(
+        typeof parameter.type === "object" &&
+          (parameter.type.type === "struct" ||
+            parameter.type.type === "structList"),
+        `Parameter ${parameter.id} for struct property ${parameter.id} must have a struct parameter type`,
+      );
+      const expectedType = property.array ? "structList" : "struct";
+      invariant(
+        parameter.type.type === expectedType,
+        `Parameter ${parameter.id} must have type ${expectedType} to match its property`,
+      );
+
+      const propertyFieldApiNames = Object.keys(property.type.structDefinition);
+      const parameterFieldApiNames = Object.keys(
+        parameter.type.type === "struct"
+          ? parameter.type.struct.structFieldTypes
+          : parameter.type.structList.structFieldTypes,
+      );
+      invariant(
+        propertyFieldApiNames.length === parameterFieldApiNames.length &&
+          propertyFieldApiNames.every((field) =>
+            parameterFieldApiNames.includes(field),
+          ),
+        `Parameter ${parameter.id} fields must exactly match its struct property fields`,
+      );
+
+      return [
+        [
+          parameter.id,
+          Object.fromEntries(
+            propertyFieldApiNames.map((fieldApiName) => [
+              fieldApiName,
+              property.array
+                ? {
+                    type: "structListParameterFieldValue",
+                    structListParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  }
+                : {
+                    type: "structParameterFieldValue",
+                    structParameterFieldValue: {
+                      parameterId: parameter.id,
+                      structFieldApiName: fieldApiName,
+                    },
+                  },
+            ]),
+          ),
+        ],
+      ];
+    }),
+  );
 }
 
 function getTargetParameters(
