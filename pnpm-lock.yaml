@@ -4328,23 +4328,14 @@ importers:
 
   packages/integration-testing:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:~
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:~
-        version: link:../client
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.70.0
-      '@osdk/generator-converters.ontologyir':
-        specifier: workspace:^
-        version: link:../generator-converters.ontologyir
       '@osdk/generator-converters.preview':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator-converters.preview
       '@osdk/seed-helpers':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../seed-helpers
       '@osdk/unit-testing':
         specifier: workspace:~
@@ -4371,6 +4362,12 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.52.11
         version: 7.52.11(@types/node@26.1.1)
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
