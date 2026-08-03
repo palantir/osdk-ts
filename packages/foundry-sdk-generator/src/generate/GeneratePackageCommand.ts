@@ -185,7 +185,7 @@ export class GeneratePackageCommand implements
           );
         },
       })
-      .option("exportOntologyMetadata", {
+      .option("disableOntologyMetadataExport", {
         boolean: true,
         demandOption: false,
         hidden: false,
@@ -274,7 +274,7 @@ export class GeneratePackageCommand implements
                   ?? false,
               packageRid: args.packageRid,
               branch: args.branch,
-              exportOntologyMetadata: args.exportOntologyMetadata,
+              exportOntologyMetadata: !args.disableOntologyMetadataExport,
             },
             logger,
           ));

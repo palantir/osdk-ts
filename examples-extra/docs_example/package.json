@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --beta true --ontologyPath ontology.json --version dev --internal",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --beta true --ontologyPath ontology.json --version dev --internal --disableOntologyMetadataExport",
     "dev": "vite",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
