@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -129,9 +130,13 @@ export interface NihalbAggTest extends $ObjectTypeDefinition {
 
 export const NihalbAggTest = {
   type: 'object',
-  apiName: 'NihalbAggTest',
+  get apiName() {
+    return $resolveObjectType('NihalbAggTest') as 'NihalbAggTest';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'primaryKey_',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('NihalbAggTest') as 'primaryKey_';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.90e16605-0483-4694-ae58-968abd46bd8d',

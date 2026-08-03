@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Office } from '../objects/Office.js';
 
@@ -64,6 +65,8 @@ export interface deleteOffice extends ActionDefinition<deleteOffice.Signatures> 
 export const deleteOffice: deleteOffice = {
   apiName: 'deleteOffice',
   type: 'action',
-  unsanitizedApiName: 'delete-office',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-office') as 'delete-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

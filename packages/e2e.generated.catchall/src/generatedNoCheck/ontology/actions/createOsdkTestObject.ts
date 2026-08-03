@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOsdkTestObject {
@@ -88,6 +89,8 @@ export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObj
 export const createOsdkTestObject: createOsdkTestObject = {
   apiName: 'createOsdkTestObject',
   type: 'action',
-  unsanitizedApiName: 'create-osdk-test-object',
+  get unsanitizedApiName() {
+    return $resolveAction('create-osdk-test-object') as 'create-osdk-test-object';
+  },
   osdkMetadata: $osdkMetadata,
 };

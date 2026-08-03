@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -69,6 +70,8 @@ export interface changeSalary extends ActionDefinition<changeSalary.Signatures> 
 export const changeSalary: changeSalary = {
   apiName: 'changeSalary',
   type: 'action',
-  unsanitizedApiName: 'change-salary',
+  get unsanitizedApiName() {
+    return $resolveAction('change-salary') as 'change-salary';
+  },
   osdkMetadata: $osdkMetadata,
 };

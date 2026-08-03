@@ -22,6 +22,7 @@ describe("generateClientSdkPackage", () => {
     const versions = {
       osdkApiVersion: "^99.9.9",
       osdkClientVersion: "^88.8.8",
+      osdkAliasesVersion: "^77.7.7",
       osdkClientApiVersion: "^66.6.6",
       areTheTypesWrongVersion: "^0.15.2",
       tslibVersion: "^2.6.2",
@@ -54,6 +55,7 @@ describe("generateClientSdkPackage", () => {
               "module": "./dist/module/index.js",
               "name": "foo",
               "peerDependencies": {
+                "@osdk/aliases": "^77.7.7",
                 "@osdk/api": "^99.9.9",
                 "@osdk/client": "^88.8.8",
               },

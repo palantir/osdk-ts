@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createEmployeeTest {
@@ -13,6 +14,7 @@ export namespace createEmployeeTest {
   export type ParamsDefinition = {
     employee_number: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
@@ -54,16 +56,21 @@ export interface createEmployeeTest extends ActionDefinition<createEmployeeTest.
     rid: 'ri.actions.main.action-type.bf65fdab-3a54-4935-af97-448f101b1d27';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-employee-test';
 
     signatures: createEmployeeTest.Signatures;
   };
   apiName: 'createEmployeeTest';
   type: 'action';
+  unsanitizedApiName: 'create-employee-test';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createEmployeeTest: createEmployeeTest = {
   apiName: 'createEmployeeTest',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-employee-test') as 'create-employee-test';
+  },
   osdkMetadata: $osdkMetadata,
 };

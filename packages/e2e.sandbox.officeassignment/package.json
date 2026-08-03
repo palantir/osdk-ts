@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/aliases": "workspace:~",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
@@ -48,6 +49,7 @@
     "tiny-invariant": "^1.3.3"
   },
   "peerDependencies": {
+    "@osdk/aliases": "workspace:^",
     "@osdk/api": "workspace:^",
     "@osdk/client": "workspace:^"
   },

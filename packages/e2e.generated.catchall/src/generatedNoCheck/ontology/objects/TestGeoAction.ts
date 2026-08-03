@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -107,9 +108,13 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
 
 export const TestGeoAction = {
   type: 'object',
-  apiName: 'TestGeoAction',
+  get apiName() {
+    return $resolveObjectType('TestGeoAction') as 'TestGeoAction';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'geoPk',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('TestGeoAction') as 'geoPk';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

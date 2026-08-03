@@ -45,6 +45,7 @@
     "packages/maker/",
     "packages/maker-experimental/",
     "packages/maker-import/",
+    "packages/aliases/",
     "packages/api/",
     "packages/functions/",
     "packages/unit-testing/",

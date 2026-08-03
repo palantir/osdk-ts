@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -131,9 +132,13 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
 
 export const FintrafficAis = {
   type: 'object',
-  apiName: 'FintrafficAis',
+  get apiName() {
+    return $resolveObjectType('FintrafficAis') as 'FintrafficAis';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'mmsi',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('FintrafficAis') as 'mmsi';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

@@ -1,0 +1,67 @@
+// Installs the ALIASES_JSON_FILE layer. MUST be first: `$ontologyRid` is resolved
+// eagerly when the generated SDK's module graph initializes, so any import of
+// @osdk/client.test.ontology that runs before this line reads the packaged file.
+import "../../../packages/aliases/build/esm/public/node.js";
+
+import { createClient } from "../../../packages/client/build/esm/index.js";
+import {
+  Employee,
+  FooInterface,
+  addOne,
+  editTodo,
+} from "../../../packages/client.test.ontology/build/esm/index.js";
+import {
+  LegacyFauxFoundry,
+  recordRequests,
+  startNodeApiServer,
+} from "../../../packages/shared.test/build/esm/index.js";
+
+const { $ontologyRid } = await import(
+  "../../../packages/client.test.ontology/build/esm/generatedNoCheck/OntologyMetadata.js"
+);
+
+const { apiServer, fauxFoundry, auth } = startNodeApiServer(
+  new LegacyFauxFoundry(),
+);
+const recorder = recordRequests(apiServer);
+const client = createClient(fauxFoundry.baseUrl, $ontologyRid, auth);
+
+async function attempt(label, fn) {
+  recorder.clear();
+  let outcome = "ok";
+  try {
+    await fn();
+  } catch (e) {
+    outcome = "server rejected it";
+  }
+  for (const r of recorder.requests) {
+    console.log(`  ${label.padEnd(11)} ${r.method} ${r.path}`);
+    if (r.body !== undefined) {
+      console.log(`              ${JSON.stringify(r.body)}`);
+    }
+  }
+  console.log(`              -> ${outcome}\n`);
+}
+
+console.log(`ontologyRid   ${$ontologyRid}`);
+console.log(`objectType    ${Employee.apiName}`);
+console.log(`primaryKey    ${Employee.primaryKeyApiName}`);
+console.log(`interface     ${FooInterface.apiName}`);
+console.log(`action        ${editTodo.unsanitizedApiName ?? editTodo.apiName}`);
+console.log(`query         ${addOne.apiName} @ ${addOne.version}\n`);
+
+await attempt("object", () =>
+  client(Employee)
+    .where({ fullName: { $eq: "John Doe" } })
+    .fetchPage({ $select: ["fullName"] }));
+
+await attempt("fetchOne", () => client(Employee).fetchOne(50030));
+
+await attempt("interface", () => client(FooInterface).fetchPage());
+
+await attempt("action", () =>
+  client(editTodo).applyAction({ id: 1, text: "hi" }));
+
+await attempt("query", () => client(addOne).executeFunction({ n: 2 }));
+
+apiServer.close();

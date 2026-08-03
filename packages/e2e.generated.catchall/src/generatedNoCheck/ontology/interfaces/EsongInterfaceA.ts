@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { EsongPds } from '../objects/EsongPds.js';
 import type {
@@ -69,7 +70,9 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
 
 export const EsongInterfaceA = {
   type: 'interface',
-  apiName: 'EsongInterfaceA',
+  get apiName() {
+    return $resolveInterfaceType('EsongInterfaceA') as 'EsongInterfaceA';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673',

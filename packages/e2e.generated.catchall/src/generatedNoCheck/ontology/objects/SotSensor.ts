@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -115,9 +116,13 @@ export interface SotSensor extends $ObjectTypeDefinition {
 
 export const SotSensor = {
   type: 'object',
-  apiName: 'SotSensor',
+  get apiName() {
+    return $resolveObjectType('SotSensor') as 'SotSensor';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'seriesId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('SotSensor') as 'seriesId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

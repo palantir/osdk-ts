@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -123,9 +124,13 @@ export interface ScenarioTestOsdk extends $ObjectTypeDefinition {
 
 export const ScenarioTestOsdk = {
   type: 'object',
-  apiName: 'ScenarioTestOsdk',
+  get apiName() {
+    return $resolveObjectType('ScenarioTestOsdk') as 'ScenarioTestOsdk';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'primaryKey_',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('ScenarioTestOsdk') as 'primaryKey_';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ec8dc938-1a0b-45cd-96fd-68752f1ab199',

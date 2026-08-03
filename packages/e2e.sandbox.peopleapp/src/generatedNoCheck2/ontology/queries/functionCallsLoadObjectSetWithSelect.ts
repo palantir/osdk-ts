@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -34,9 +35,13 @@ export interface functionCallsLoadObjectSetWithSelect
 }
 
 export const functionCallsLoadObjectSetWithSelect: functionCallsLoadObjectSetWithSelect = {
-  apiName: 'functionCallsLoadObjectSetWithSelect',
   type: 'query',
-  version: '0.2.0',
+  get apiName() {
+    return $resolveQuery('functionCallsLoadObjectSetWithSelect') as 'functionCallsLoadObjectSetWithSelect';
+  },
+  get version() {
+    return $resolveQueryVersion('functionCallsLoadObjectSetWithSelect') as '0.2.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

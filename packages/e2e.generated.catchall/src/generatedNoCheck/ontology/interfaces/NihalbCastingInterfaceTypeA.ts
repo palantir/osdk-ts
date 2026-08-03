@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { NihalbCastingLinkedObjectTypeA } from '../objects/NihalbCastingLinkedObjectTypeA.js';
 import type {
@@ -69,7 +70,9 @@ export interface NihalbCastingInterfaceTypeA extends $InterfaceDefinition {
 
 export const NihalbCastingInterfaceTypeA = {
   type: 'interface',
-  apiName: 'NihalbCastingInterfaceTypeA',
+  get apiName() {
+    return $resolveInterfaceType('NihalbCastingInterfaceTypeA') as 'NihalbCastingInterfaceTypeA';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.daed91f9-ee83-4e6c-bfc7-a17c8ff9433c',

@@ -46,6 +46,7 @@ export async function generatePerQueryDataFilesV2(
     fixedVersionQueryTypes,
     importExt = "",
     forInternalUse = false,
+    aliases,
   }: Pick<
     GenerateContext,
     | "fs"
@@ -54,6 +55,7 @@ export async function generatePerQueryDataFilesV2(
     | "ontology"
     | "forInternalUse"
     | "fixedVersionQueryTypes"
+    | "aliases"
   >,
   v2: boolean,
 ): Promise<void> {
@@ -62,6 +64,7 @@ export async function generatePerQueryDataFilesV2(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.queryTypes).map(async query => {
+      aliases.addQuery(query);
       await generateV2QueryFile(
         fs,
         outDir,
@@ -131,6 +134,9 @@ async function generateV2QueryFile(
     query.fullApiName,
   );
 
+  const wireApiName = JSON.stringify(baseProps.apiName);
+  const wireVersion = JSON.stringify(baseProps.version);
+
   const typeRefs = query.raw.typeReferences ?? {};
   const customTypesNs = generateCustomTypesNamespace(ontology, typeRefs);
   const typeRefNames = buildTypeRefNames(typeRefs, true);
@@ -141,6 +147,7 @@ async function generateV2QueryFile(
         import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound} from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
+        import { $resolveQuery, $resolveQueryVersion } from "@osdk/aliases";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}
@@ -229,11 +236,15 @@ async function generateV2QueryFile(
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${
       stringify(baseProps, {
+        "apiName": () => undefined,
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,
+        "version": () => undefined,
       })
     },
+    get apiName() { return $resolveQuery(${wireApiName}) as ${wireApiName}; },
+    get version() { return $resolveQueryVersion(${wireApiName}) as ${wireVersion}; },
     isFixedVersion: ${isUsingFixedVersion},
     osdkMetadata: $osdkMetadata
         };

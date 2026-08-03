@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createExampleInterface {
@@ -73,6 +74,8 @@ export interface createExampleInterface extends ActionDefinition<createExampleIn
 export const createExampleInterface: createExampleInterface = {
   apiName: 'createExampleInterface',
   type: 'action',
-  unsanitizedApiName: 'create-example-interface',
+  get unsanitizedApiName() {
+    return $resolveAction('create-example-interface') as 'create-example-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

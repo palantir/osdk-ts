@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -89,6 +90,8 @@ export interface changeFavoritePlace extends ActionDefinition<changeFavoritePlac
 export const changeFavoritePlace: changeFavoritePlace = {
   apiName: 'changeFavoritePlace',
   type: 'action',
-  unsanitizedApiName: 'change-favorite-place',
+  get unsanitizedApiName() {
+    return $resolveAction('change-favorite-place') as 'change-favorite-place';
+  },
   osdkMetadata: $osdkMetadata,
 };

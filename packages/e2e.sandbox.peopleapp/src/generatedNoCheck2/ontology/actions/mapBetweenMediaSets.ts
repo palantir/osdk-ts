@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -89,6 +90,8 @@ export interface mapBetweenMediaSets extends ActionDefinition<mapBetweenMediaSet
 export const mapBetweenMediaSets: mapBetweenMediaSets = {
   apiName: 'mapBetweenMediaSets',
   type: 'action',
-  unsanitizedApiName: 'map-between-media-sets',
+  get unsanitizedApiName() {
+    return $resolveAction('map-between-media-sets') as 'map-between-media-sets';
+  },
   osdkMetadata: $osdkMetadata,
 };

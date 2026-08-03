@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Office } from '../objects/Office.js';
 
@@ -14,18 +15,21 @@ export namespace editOffice {
   export type ParamsDefinition = {
     location: {
       description: undefined;
+      displayName: 'Location';
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     Office: {
       description: undefined;
+      displayName: 'Office';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Office>;
@@ -73,16 +77,21 @@ export interface editOffice extends ActionDefinition<editOffice.Signatures> {
     rid: 'ri.actions.main.action-type.ae41d87b-933d-4983-ad91-fce7f4ff9f59';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'edit-office';
 
     signatures: editOffice.Signatures;
   };
   apiName: 'editOffice';
   type: 'action';
+  unsanitizedApiName: 'edit-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const editOffice: editOffice = {
   apiName: 'editOffice',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('edit-office') as 'edit-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

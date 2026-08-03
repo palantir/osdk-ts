@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
 
 export const MnayanOsdkMediaObject = {
   type: 'object',
-  apiName: 'MnayanOsdkMediaObject',
+  get apiName() {
+    return $resolveObjectType('MnayanOsdkMediaObject') as 'MnayanOsdkMediaObject';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MnayanOsdkMediaObject') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

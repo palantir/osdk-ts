@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -71,6 +72,8 @@ export interface Todo extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Todo';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -85,6 +88,18 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'confirm';
     };
     implements: ['TodoLike'];
+    interfaceImplementations: {
+      TodoLike: {
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'title';
+        };
+        isComplete: {
+          type: 'localProperty';
+          propertyApiName: 'isComplete';
+        };
+      };
+    };
     interfaceMap: {
       TodoLike: {
         name: 'title';
@@ -143,8 +158,14 @@ export interface Todo extends $ObjectTypeDefinition {
 
 export const Todo = {
   type: 'object',
-  apiName: 'Todo',
+  get apiName() {
+    return $resolveObjectType('Todo') as 'Todo';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Todo') as 'id';
+  },
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf',
   },

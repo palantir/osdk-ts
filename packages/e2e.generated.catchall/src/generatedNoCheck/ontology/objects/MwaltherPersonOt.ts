@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -202,9 +203,13 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
 
 export const MwaltherPersonOt = {
   type: 'object',
-  apiName: 'MwaltherPersonOt',
+  get apiName() {
+    return $resolveObjectType('MwaltherPersonOt') as 'MwaltherPersonOt';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MwaltherPersonOt') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4ee4fa8d-e080-4317-be09-5e900223f4d5',

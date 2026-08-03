@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -95,9 +96,13 @@ export interface WeatherStation extends $ObjectTypeDefinition {
 
 export const WeatherStation = {
   type: 'object',
-  apiName: 'WeatherStation',
+  get apiName() {
+    return $resolveObjectType('WeatherStation') as 'WeatherStation';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'stationId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('WeatherStation') as 'stationId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -93,7 +94,11 @@ export interface MwaltherTestIdp extends $InterfaceDefinition {
 
 export const MwaltherTestIdp = {
   type: 'interface',
-  apiName: 'com.palantirfoundry.swirl.esong.MwaltherTestIdp',
+  get apiName() {
+    return $resolveInterfaceType(
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp',
+    ) as 'com.palantirfoundry.swirl.esong.MwaltherTestIdp';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3',

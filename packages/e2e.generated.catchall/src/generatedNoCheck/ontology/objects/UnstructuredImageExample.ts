@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
 
 export const UnstructuredImageExample = {
   type: 'object',
-  apiName: 'UnstructuredImageExample',
+  get apiName() {
+    return $resolveObjectType('UnstructuredImageExample') as 'UnstructuredImageExample';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'mediaItemRid',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('UnstructuredImageExample') as 'mediaItemRid';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

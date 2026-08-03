@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 import type { Person } from '../objects/Person.js';
@@ -138,6 +139,8 @@ export interface actionTakesAllParameterTypes extends ActionDefinition<actionTak
 export const actionTakesAllParameterTypes: actionTakesAllParameterTypes = {
   apiName: 'actionTakesAllParameterTypes',
   type: 'action',
-  unsanitizedApiName: 'actionTakesAllParameterTypes',
+  get unsanitizedApiName() {
+    return $resolveAction('actionTakesAllParameterTypes') as 'actionTakesAllParameterTypes';
+  },
   osdkMetadata: $osdkMetadata,
 };

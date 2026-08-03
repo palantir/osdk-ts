@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { NihalbCastingLinkedObjectTypeA } from './NihalbCastingLinkedObjectTypeA.js';
@@ -120,9 +121,13 @@ export interface NihalbCastingObjectTypeC extends $ObjectTypeDefinition {
 
 export const NihalbCastingObjectTypeC = {
   type: 'object',
-  apiName: 'NihalbCastingObjectTypeC',
+  get apiName() {
+    return $resolveObjectType('NihalbCastingObjectTypeC') as 'NihalbCastingObjectTypeC';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'primaryKey_',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('NihalbCastingObjectTypeC') as 'primaryKey_';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.cf0cc2e5-f032-4659-9f5a-aec285317898',

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 
@@ -78,6 +79,8 @@ export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
 export const setTaskBody: setTaskBody = {
   apiName: 'setTaskBody',
   type: 'action',
-  unsanitizedApiName: 'setTaskBody',
+  get unsanitizedApiName() {
+    return $resolveAction('setTaskBody') as 'setTaskBody';
+  },
   osdkMetadata: $osdkMetadata,
 };

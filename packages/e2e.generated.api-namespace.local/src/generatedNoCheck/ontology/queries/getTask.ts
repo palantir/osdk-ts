@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Task as $Imported$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
@@ -51,9 +52,13 @@ export interface getTask extends QueryDefinition<getTask.Signature>, VersionBoun
 }
 
 export const getTask: getTask = {
-  apiName: 'getTask',
   type: 'query',
-  version: '0',
+  get apiName() {
+    return $resolveQuery('getTask') as 'getTask';
+  },
+  get version() {
+    return $resolveQueryVersion('getTask') as '0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

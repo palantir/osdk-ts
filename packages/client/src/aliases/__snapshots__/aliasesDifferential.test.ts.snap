@@ -1,0 +1,275 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`alias-aware OSDK differential suite > modes > records a stable packaged trace 1`] = `
+[
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata?preview=true",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface?preview=true",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "objectSet": {
+          "objectType": "Employee",
+          "type": "base",
+        },
+        "type": "filter",
+        "where": {
+          "field": "employeeId",
+          "type": "eq",
+          "value": 50030,
+        },
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "objectSet": {
+          "objectType": "Employee",
+          "type": "base",
+        },
+        "type": "filter",
+        "where": {
+          "field": "startDate",
+          "type": "gt",
+          "value": "2000-01-01",
+        },
+      },
+      "select": [],
+      "selectV2": [
+        {
+          "apiName": "fullName",
+          "type": "property",
+        },
+      ],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "link": "lead",
+        "objectSet": {
+          "objectType": "Employee",
+          "type": "base",
+        },
+        "type": "searchAround",
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/actionTypes/createOffice",
+  },
+  {
+    "body": {
+      "options": {
+        "mode": "VALIDATE_AND_EXECUTE",
+        "returnEdits": "NONE",
+      },
+      "parameters": {
+        "address": "123 Main Street",
+        "capacity": 100,
+        "officeId": "NYC",
+      },
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/actions/createOffice/apply",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/queryTypes/addOne?version=0.0.9",
+  },
+  {
+    "body": {
+      "parameters": {
+        "n": 2,
+      },
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/queries/addOne/execute?version=0.0.9",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "interfaceType": "FooInterface",
+        "type": "interfaceBase",
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjectsMultipleObjectTypes?preview=true",
+  },
+]
+`;
+
+exports[`alias-aware OSDK differential suite > modes > records a stable remapped trace 1`] = `
+[
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/objectTypes/foo.bar.Employee/fullMetadata?preview=true&branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/interfaceTypes/foo.bar.FooInterface?preview=true&branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "objectSet": {
+          "objectType": "foo.bar.Employee",
+          "type": "base",
+        },
+        "type": "filter",
+        "where": {
+          "field": "employeeId",
+          "type": "eq",
+          "value": 50030,
+        },
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/objectSets/loadObjects?branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "objectSet": {
+          "objectType": "foo.bar.Employee",
+          "type": "base",
+        },
+        "type": "filter",
+        "where": {
+          "field": "startDate",
+          "type": "gt",
+          "value": "2000-01-01",
+        },
+      },
+      "select": [],
+      "selectV2": [
+        {
+          "apiName": "fullName",
+          "type": "property",
+        },
+      ],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/objectSets/loadObjects?branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "link": "lead",
+        "objectSet": {
+          "objectType": "foo.bar.Employee",
+          "type": "base",
+        },
+        "type": "searchAround",
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/objectSets/loadObjects?branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/actionTypes/foo.bar.createOffice?branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": {
+      "options": {
+        "mode": "VALIDATE_AND_EXECUTE",
+        "returnEdits": "NONE",
+      },
+      "parameters": {
+        "address": "123 Main Street",
+        "capacity": 100,
+        "officeId": "NYC",
+      },
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/actions/foo.bar.createOffice/apply?branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": undefined,
+    "method": "GET",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/queryTypes/foo.bar.addOne?version=0.0.10",
+  },
+  {
+    "body": {
+      "parameters": {
+        "n": 2,
+      },
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/queries/foo.bar.addOne/execute?version=0.0.10&branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+  {
+    "body": {
+      "excludeRid": true,
+      "loadPropertySecurities": false,
+      "objectSet": {
+        "interfaceType": "foo.bar.FooInterface",
+        "type": "interfaceBase",
+      },
+      "pageSize": 1,
+      "select": [],
+      "selectV2": [],
+      "snapshot": false,
+    },
+    "method": "POST",
+    "path": "/api/v2/ontologies/ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b/objectSets/loadObjectsMultipleObjectTypes?preview=true&branch=ri.ontology.main.branch.c0000000-0000-0000-0000-00000000000c",
+  },
+]
+`;

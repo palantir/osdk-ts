@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,18 +15,21 @@ export namespace modifyTeam {
   export type ParamsDefinition = {
     department: {
       description: undefined;
+      displayName: 'Department';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     team: {
       description: undefined;
+      displayName: 'Team';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -73,16 +77,21 @@ export interface modifyTeam extends ActionDefinition<modifyTeam.Signatures> {
     rid: 'ri.actions.main.action-type.3558f5f6-74d4-4d9d-8925-c002b13258f2';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-team';
 
     signatures: modifyTeam.Signatures;
   };
   apiName: 'modifyTeam';
   type: 'action';
+  unsanitizedApiName: 'modify-team';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyTeam: modifyTeam = {
   apiName: 'modifyTeam',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-team') as 'modify-team';
+  },
   osdkMetadata: $osdkMetadata,
 };

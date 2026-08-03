@@ -43,6 +43,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/aliases": "workspace:~",
     "@osdk/api": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters": "workspace:~",

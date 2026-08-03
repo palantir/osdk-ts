@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -131,6 +132,8 @@ export interface ThreadsEmbeddedPdfChunk extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ThreadsEmbeddedPdfChunk';
+  primaryKeyApiName: 'chunkId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: ThreadsEmbeddedPdfChunk.ObjectSet;
     props: ThreadsEmbeddedPdfChunk.Props;
@@ -243,8 +246,14 @@ export interface ThreadsEmbeddedPdfChunk extends $ObjectTypeDefinition {
 
 export const ThreadsEmbeddedPdfChunk = {
   type: 'object',
-  apiName: 'ThreadsEmbeddedPdfChunk',
+  get apiName() {
+    return $resolveObjectType('ThreadsEmbeddedPdfChunk') as 'ThreadsEmbeddedPdfChunk';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('ThreadsEmbeddedPdfChunk') as 'chunkId';
+  },
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.17be51b8-9929-43a9-83c7-f105c44eb168',
   },

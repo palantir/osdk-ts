@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person } from '../interfaces/Person.js';
 
@@ -74,6 +75,8 @@ export interface modifyPersonFafe32 extends ActionDefinition<modifyPersonFafe32.
 export const modifyPersonFafe32: modifyPersonFafe32 = {
   apiName: 'modifyPersonFafe32',
   type: 'action',
-  unsanitizedApiName: 'modify-person-fafe32',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-person-fafe32') as 'modify-person-fafe32';
+  },
   osdkMetadata: $osdkMetadata,
 };

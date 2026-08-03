@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Todo } from './Todo.js';
@@ -90,9 +91,13 @@ export interface Person extends $ObjectTypeDefinition {
 
 export const Person = {
   type: 'object',
-  apiName: 'Person',
+  get apiName() {
+    return $resolveObjectType('Person') as 'Person';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'email',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Person') as 'email';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

@@ -16,6 +16,7 @@
 
 import * as ts from "typescript";
 import { describe, expect, it } from "vitest";
+import { AliasesCollector } from "../aliases/AliasesCollector.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
@@ -28,6 +29,7 @@ describe("generatePerQueryDataFiles", () => {
 
     await generatePerQueryDataFilesV2(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: TodoWireOntology,
@@ -50,6 +52,7 @@ describe("generatePerQueryDataFiles", () => {
       export { returnsTodo } from './queries/returnsTodo.js';
       ",
         "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+      import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -97,14 +100,19 @@ describe("generatePerQueryDataFiles", () => {
       }
 
       export const getCount: getCount = {
-        apiName: 'getCount',
         type: 'query',
-        version: '1.1.0',
+        get apiName() {
+          return $resolveQuery('getCount') as 'getCount';
+        },
+        get version() {
+          return $resolveQueryVersion('getCount') as '1.1.0';
+        },
         isFixedVersion: false,
         osdkMetadata: $osdkMetadata,
       };
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+      import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
@@ -158,9 +166,13 @@ describe("generatePerQueryDataFiles", () => {
       }
 
       export const returnsTodo: returnsTodo = {
-        apiName: 'returnsTodo',
         type: 'query',
-        version: '3.2.0',
+        get apiName() {
+          return $resolveQuery('returnsTodo') as 'returnsTodo';
+        },
+        get version() {
+          return $resolveQueryVersion('returnsTodo') as '3.2.0';
+        },
         isFixedVersion: false,
         osdkMetadata: $osdkMetadata,
       };
@@ -232,6 +244,7 @@ describe("generatePerQueryDataFiles", () => {
 
     await generatePerQueryDataFilesV2(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
@@ -302,6 +315,7 @@ describe("generatePerQueryDataFiles", () => {
 
     await generatePerQueryDataFilesV2(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
@@ -425,6 +439,7 @@ describe("generatePerQueryDataFiles", () => {
     expect(helper.getFiles()["/foo/ontology/queries/doThing.ts"])
       .toMatchInlineSnapshot(`
         "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -594,9 +609,13 @@ describe("generatePerQueryDataFiles", () => {
         }
 
         export const doThing: doThing = {
-          apiName: 'doThing',
           type: 'query',
-          version: '0',
+          get apiName() {
+            return $resolveQuery('doThing') as 'doThing';
+          },
+          get version() {
+            return $resolveQueryVersion('doThing') as '0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
@@ -610,6 +629,7 @@ describe("generatePerQueryDataFiles", () => {
 
     await generatePerQueryDataFilesV2(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
@@ -685,6 +705,7 @@ describe("generatePerQueryDataFiles", () => {
     expect(helper.getFiles()["/foo/ontology/queries/queryWithRecursiveType.ts"])
       .toMatchInlineSnapshot(`
         "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -750,9 +771,13 @@ describe("generatePerQueryDataFiles", () => {
         }
 
         export const queryWithRecursiveType: queryWithRecursiveType = {
-          apiName: 'queryWithRecursiveType',
           type: 'query',
-          version: '1.0.0',
+          get apiName() {
+            return $resolveQuery('queryWithRecursiveType') as 'queryWithRecursiveType';
+          },
+          get version() {
+            return $resolveQueryVersion('queryWithRecursiveType') as '1.0.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
@@ -766,6 +791,7 @@ describe("generatePerQueryDataFiles", () => {
 
     await generatePerQueryDataFilesV2(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
@@ -892,6 +918,7 @@ describe("generatePerQueryDataFiles", () => {
     )
       .toMatchInlineSnapshot(`
         "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -990,9 +1017,13 @@ describe("generatePerQueryDataFiles", () => {
         }
 
         export const queryWithMultipleTypeRefs: queryWithMultipleTypeRefs = {
-          apiName: 'queryWithMultipleTypeRefs',
           type: 'query',
-          version: '1.0.0',
+          get apiName() {
+            return $resolveQuery('queryWithMultipleTypeRefs') as 'queryWithMultipleTypeRefs';
+          },
+          get version() {
+            return $resolveQueryVersion('queryWithMultipleTypeRefs') as '1.0.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };

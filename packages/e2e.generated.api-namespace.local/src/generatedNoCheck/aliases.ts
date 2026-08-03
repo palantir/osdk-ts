@@ -1,0 +1,93 @@
+import type { AliasesFile } from '@osdk/aliases';
+
+// An explicit annotation rather than `satisfies`: consumers build with
+// --isolatedDeclarations, under which `satisfies` is not an explicit type
+// and emits TS9010.
+export const $packagedAliases: AliasesFile = {
+  defaults: {
+    actions: {
+      setTaskBody: {
+        apiName: 'setTaskBody',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+      },
+    },
+    custom: {},
+    datasets: {},
+    egressConnections: {},
+    interfaces: {
+      'com.example.local.SomeInterface': {
+        apiName: 'com.example.local.SomeInterface',
+        id: {
+          rid: 'idk2',
+        },
+        links: {},
+        properties: {
+          'com.example.dep.spt': {
+            apiName: 'com.example.dep.spt',
+            id: {
+              rid: 'idk',
+            },
+          },
+        },
+      },
+    },
+    mediasets: {},
+    models: {},
+    objects: {
+      Thing: {
+        apiName: 'Thing',
+        id: {
+          rid: 'ridForThing',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          body: {
+            apiName: 'body',
+          },
+          id: {
+            apiName: 'id',
+          },
+        },
+      },
+      UsesForeignSpt: {
+        apiName: 'UsesForeignSpt',
+        id: {
+          rid: 'theRid',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          body: {
+            apiName: 'body',
+          },
+          id: {
+            apiName: 'id',
+          },
+        },
+      },
+    },
+    ontologies: {
+      'ri.ontology.main.ontology.dep': {
+        branch: null,
+        id: {
+          rid: 'ri.ontology.main.ontology.dep',
+        },
+      },
+    },
+    queries: {
+      getTask: {
+        apiName: 'getTask',
+        id: {
+          rid: 'ri.a.b.c',
+          version: '0',
+        },
+        version: '0',
+      },
+    },
+    streams: {},
+  },
+  version: 1,
+};

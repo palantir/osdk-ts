@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace modifyPerson {
@@ -83,6 +84,8 @@ export interface modifyPerson extends ActionDefinition<modifyPerson.Signatures> 
 export const modifyPerson: modifyPerson = {
   apiName: 'modifyPerson',
   type: 'action',
-  unsanitizedApiName: 'modify-person',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-person') as 'modify-person';
+  },
   osdkMetadata: $osdkMetadata,
 };

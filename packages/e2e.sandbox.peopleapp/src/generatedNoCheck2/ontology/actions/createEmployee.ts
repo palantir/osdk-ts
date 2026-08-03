@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createEmployee {
@@ -278,6 +279,8 @@ export interface createEmployee extends ActionDefinition<createEmployee.Signatur
 export const createEmployee: createEmployee = {
   apiName: 'createEmployee',
   type: 'action',
-  unsanitizedApiName: 'create-employee',
+  get unsanitizedApiName() {
+    return $resolveAction('create-employee') as 'create-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

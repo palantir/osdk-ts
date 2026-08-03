@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoTask } from '../objects/ExampleEw03osdkTodoTask.js';
 
@@ -14,6 +15,7 @@ export namespace exampleEw03DeleteOsdkTodoTask {
   export type ParamsDefinition = {
     osdkTodoTask: {
       description: undefined;
+      displayName: 'Osdk Todo Task';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleEw03osdkTodoTask>;
@@ -58,16 +60,21 @@ export interface exampleEw03DeleteOsdkTodoTask extends ActionDefinition<exampleE
     rid: 'ri.actions.main.action-type.84cd3ff8-870b-4c74-886b-e2fabdc5bcec';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'example-ew03-delete-osdk-todo-task';
 
     signatures: exampleEw03DeleteOsdkTodoTask.Signatures;
   };
   apiName: 'exampleEw03DeleteOsdkTodoTask';
   type: 'action';
+  unsanitizedApiName: 'example-ew03-delete-osdk-todo-task';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const exampleEw03DeleteOsdkTodoTask: exampleEw03DeleteOsdkTodoTask = {
   apiName: 'exampleEw03DeleteOsdkTodoTask',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('example-ew03-delete-osdk-todo-task') as 'example-ew03-delete-osdk-todo-task';
+  },
   osdkMetadata: $osdkMetadata,
 };

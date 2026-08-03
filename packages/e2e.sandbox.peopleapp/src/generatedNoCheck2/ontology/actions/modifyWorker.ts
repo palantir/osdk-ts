@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Worker } from '../interfaces/Worker.js';
 
@@ -84,6 +85,8 @@ export interface modifyWorker extends ActionDefinition<modifyWorker.Signatures> 
 export const modifyWorker: modifyWorker = {
   apiName: 'modifyWorker',
   type: 'action',
-  unsanitizedApiName: 'modify-worker',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-worker') as 'modify-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };

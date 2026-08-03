@@ -139,9 +139,9 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     export const ${object.shortApiName}
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
-      apiName: "${object.fullApiName}",
+      get apiName() { return $resolveObjectType("${object.fullApiName}") as "${object.fullApiName}"; },
       osdkMetadata: $osdkMetadata,
-      primaryKeyApiName: "${definition.primaryKeyApiName}",
+      get primaryKeyApiName() { return $resolvePrimaryKey("${object.fullApiName}") as "${definition.primaryKeyApiName}"; },
       primaryKeyType: "${definition.primaryKeyType}",
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",

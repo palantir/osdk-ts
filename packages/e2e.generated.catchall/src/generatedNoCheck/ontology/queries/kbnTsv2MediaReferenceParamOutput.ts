@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -49,9 +50,13 @@ export interface kbnTsv2MediaReferenceParamOutput
 }
 
 export const kbnTsv2MediaReferenceParamOutput: kbnTsv2MediaReferenceParamOutput = {
-  apiName: 'kbnTsv2MediaReferenceParamOutput',
   type: 'query',
-  version: '1.0.0',
+  get apiName() {
+    return $resolveQuery('kbnTsv2MediaReferenceParamOutput') as 'kbnTsv2MediaReferenceParamOutput';
+  },
+  get version() {
+    return $resolveQueryVersion('kbnTsv2MediaReferenceParamOutput') as '1.0.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

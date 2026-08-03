@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createWorker {
@@ -13,24 +14,28 @@ export namespace createWorker {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employeeNumber: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     worker_type: {
       description: undefined;
+      displayName: 'Worker Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
@@ -76,16 +81,21 @@ export interface createWorker extends ActionDefinition<createWorker.Signatures> 
     rid: 'ri.actions.main.action-type.e4c1ab71-a36a-44b4-9334-392604a81438';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-worker';
 
     signatures: createWorker.Signatures;
   };
   apiName: 'createWorker';
   type: 'action';
+  unsanitizedApiName: 'create-worker';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createWorker: createWorker = {
   apiName: 'createWorker',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-worker') as 'create-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };

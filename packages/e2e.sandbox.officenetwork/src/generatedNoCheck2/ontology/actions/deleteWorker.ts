@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Worker } from '../interfaces/Worker.js';
 
@@ -14,6 +15,7 @@ export namespace deleteWorker {
   export type ParamsDefinition = {
     Worker: {
       description: undefined;
+      displayName: 'Worker';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<Worker>;
@@ -50,16 +52,21 @@ export interface deleteWorker extends ActionDefinition<deleteWorker.Signatures> 
     rid: 'ri.actions.main.action-type.556053de-16d1-41bd-8dde-908899ad0af9';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-worker';
 
     signatures: deleteWorker.Signatures;
   };
   apiName: 'deleteWorker';
   type: 'action';
+  unsanitizedApiName: 'delete-worker';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteWorker: deleteWorker = {
   apiName: 'deleteWorker',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-worker') as 'delete-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
 
 export const BuilderDeploymentState = {
   type: 'object',
-  apiName: 'BuilderDeploymentState',
+  get apiName() {
+    return $resolveObjectType('BuilderDeploymentState') as 'BuilderDeploymentState';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'skuId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('BuilderDeploymentState') as 'skuId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

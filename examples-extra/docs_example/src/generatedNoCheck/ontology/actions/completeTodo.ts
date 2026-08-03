@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 
@@ -88,6 +89,8 @@ export interface completeTodo extends ActionDefinition<completeTodo.Signatures> 
 export const completeTodo: completeTodo = {
   apiName: 'completeTodo',
   type: 'action',
-  unsanitizedApiName: 'completeTodo',
+  get unsanitizedApiName() {
+    return $resolveAction('completeTodo') as 'completeTodo';
+  },
   osdkMetadata: $osdkMetadata,
 };

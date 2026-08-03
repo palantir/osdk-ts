@@ -15,6 +15,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@osdk/aliases": "workspace:~",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/legacy-client": "^2.5.6",
@@ -23,6 +24,7 @@
     "swr": "^2.3.6"
   },
   "peerDependencies": {
+    "@osdk/aliases": "workspace:^",
     "@osdk/api": "workspace:^",
     "@osdk/client": "workspace:^"
   },

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,12 +15,14 @@ export namespace addEmployeeAttachment {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employee_file: {
       description: undefined;
+      displayName: 'Employee File';
       multiplicity: false;
       nullable: false;
       type: 'attachment';
@@ -64,16 +67,21 @@ export interface addEmployeeAttachment extends ActionDefinition<addEmployeeAttac
     rid: 'ri.actions.main.action-type.f0db7733-e549-4ce5-8ff5-d2a6d0e4ba17';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'add-employee-attachment';
 
     signatures: addEmployeeAttachment.Signatures;
   };
   apiName: 'addEmployeeAttachment';
   type: 'action';
+  unsanitizedApiName: 'add-employee-attachment';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const addEmployeeAttachment: addEmployeeAttachment = {
   apiName: 'addEmployeeAttachment',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('add-employee-attachment') as 'add-employee-attachment';
+  },
   osdkMetadata: $osdkMetadata,
 };

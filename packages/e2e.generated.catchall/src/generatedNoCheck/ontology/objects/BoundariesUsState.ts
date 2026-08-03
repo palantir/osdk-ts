@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -127,9 +128,13 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
 
 export const BoundariesUsState = {
   type: 'object',
-  apiName: 'BoundariesUsState',
+  get apiName() {
+    return $resolveObjectType('BoundariesUsState') as 'BoundariesUsState';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'usState',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('BoundariesUsState') as 'usState';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Assignment } from './Assignment.js';
@@ -163,9 +164,13 @@ export interface Floor extends $ObjectTypeDefinition {
 
 export const Floor = {
   type: 'object',
-  apiName: 'Floor',
+  get apiName() {
+    return $resolveObjectType('Floor') as 'Floor';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'floorId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Floor') as 'floorId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.eafe2bc2-26d3-4d05-a01a-a563c4b538a5',

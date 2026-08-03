@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -127,9 +128,13 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
 
 export const NbaPlayer = {
   type: 'object',
-  apiName: 'NbaPlayer',
+  get apiName() {
+    return $resolveObjectType('NbaPlayer') as 'NbaPlayer';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('NbaPlayer') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

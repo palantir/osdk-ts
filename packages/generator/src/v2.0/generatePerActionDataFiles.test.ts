@@ -16,6 +16,7 @@
 
 import * as path from "node:path";
 import { describe, expect, it } from "vitest";
+import { AliasesCollector } from "../aliases/AliasesCollector.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
@@ -28,6 +29,7 @@ describe(generatePerActionDataFiles, () => {
     const sanitizedOntology = { ...TodoWireOntology, actionTypes: {} };
     await generatePerActionDataFiles(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         outDir: BASE_PATH,
         ontology: enhanceOntology({
@@ -50,6 +52,7 @@ describe(generatePerActionDataFiles, () => {
     const sanitizedOntology = TodoWireOntology;
     await generatePerActionDataFiles(
       {
+        aliases: new AliasesCollector(),
         fs: helper.minimalFiles,
         outDir: path.join(BASE_PATH, "..", ".."),
         ontology: enhanceOntology({

@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
@@ -74,9 +75,13 @@ export interface getEmployeeDaysSinceStart
 }
 
 export const getEmployeeDaysSinceStart: getEmployeeDaysSinceStart = {
-  apiName: 'getEmployeeDaysSinceStart',
   type: 'query',
-  version: '0.1.0',
+  get apiName() {
+    return $resolveQuery('getEmployeeDaysSinceStart') as 'getEmployeeDaysSinceStart';
+  },
+  get version() {
+    return $resolveQueryVersion('getEmployeeDaysSinceStart') as '0.1.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

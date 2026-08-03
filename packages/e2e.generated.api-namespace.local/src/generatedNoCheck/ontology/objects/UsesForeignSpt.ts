@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -91,9 +92,13 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
 
 export const UsesForeignSpt = {
   type: 'object',
-  apiName: 'UsesForeignSpt',
+  get apiName() {
+    return $resolveObjectType('UsesForeignSpt') as 'UsesForeignSpt';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('UsesForeignSpt') as 'id';
+  },
   primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'theRid',

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -7,6 +8,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$Person = {};
@@ -72,7 +74,9 @@ export interface Person extends $InterfaceDefinition {
 
 export const Person = {
   type: 'interface',
-  apiName: 'Person',
+  get apiName() {
+    return $resolveInterfaceType('Person') as 'Person';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a',

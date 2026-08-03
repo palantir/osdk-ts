@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoTask } from '../objects/ExampleEw03osdkTodoTask.js';
 
@@ -152,6 +153,8 @@ export interface exampleEw03CreateOsdkTodoTask extends ActionDefinition<exampleE
 export const exampleEw03CreateOsdkTodoTask: exampleEw03CreateOsdkTodoTask = {
   apiName: 'exampleEw03CreateOsdkTodoTask',
   type: 'action',
-  unsanitizedApiName: 'example-ew03-create-osdk-todo-task',
+  get unsanitizedApiName() {
+    return $resolveAction('example-ew03-create-osdk-todo-task') as 'example-ew03-create-osdk-todo-task';
+  },
   osdkMetadata: $osdkMetadata,
 };

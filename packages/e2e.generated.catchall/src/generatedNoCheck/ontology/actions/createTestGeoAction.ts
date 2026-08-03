@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createTestGeoAction {
@@ -88,6 +89,8 @@ export interface createTestGeoAction extends ActionDefinition<createTestGeoActio
 export const createTestGeoAction: createTestGeoAction = {
   apiName: 'createTestGeoAction',
   type: 'action',
-  unsanitizedApiName: 'create-test-geo-action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-test-geo-action') as 'create-test-geo-action';
+  },
   osdkMetadata: $osdkMetadata,
 };

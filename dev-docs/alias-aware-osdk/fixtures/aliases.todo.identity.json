@@ -1,0 +1,113 @@
+{
+  "defaults": {
+    "actions": {
+      "deleteTodos": {
+        "apiName": "deleteTodos",
+        "id": {
+          "rid": "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      },
+      "markTodoCompleted": {
+        "apiName": "markTodoCompleted",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      }
+    },
+    "custom": {},
+    "datasets": {},
+    "egressConnections": {},
+    "interfaces": {
+      "SomeInterface": {
+        "apiName": "SomeInterface",
+        "id": {
+          "rid": "idk"
+        },
+        "links": {},
+        "properties": {
+          "SomeProperty": {
+            "apiName": "SomeProperty",
+            "id": {
+              "rid": "idk2"
+            }
+          }
+        }
+      }
+    },
+    "mediasets": {},
+    "models": {},
+    "objects": {
+      "Person": {
+        "apiName": "Person",
+        "id": {
+          "rid": "ridForPerson"
+        },
+        "links": {
+          "Todos": {
+            "apiName": "Todos"
+          }
+        },
+        "primaryKeyApiName": "email",
+        "properties": {
+          "email": {
+            "apiName": "email"
+          }
+        }
+      },
+      "Todo": {
+        "apiName": "Todo",
+        "id": {
+          "rid": "ridForTodo"
+        },
+        "links": {
+          "Assignee": {
+            "apiName": "Assignee"
+          }
+        },
+        "primaryKeyApiName": "id",
+        "properties": {
+          "array": {
+            "apiName": "array"
+          },
+          "body": {
+            "apiName": "body"
+          },
+          "complete": {
+            "apiName": "complete"
+          },
+          "id": {
+            "apiName": "id"
+          }
+        }
+      }
+    },
+    "ontologies": {
+      "ridHere": {
+        "branch": null,
+        "id": {
+          "rid": "ridHere"
+        }
+      }
+    },
+    "queries": {
+      "getCount": {
+        "apiName": "getCount",
+        "id": {
+          "rid": "rid.query.1",
+          "version": "1.1.0"
+        },
+        "version": "1.1.0"
+      },
+      "returnsTodo": {
+        "apiName": "returnsTodo",
+        "id": {
+          "rid": "rid.query.2",
+          "version": "3.2.0"
+        },
+        "version": "3.2.0"
+      }
+    },
+    "streams": {}
+  },
+  "version": 1
+}

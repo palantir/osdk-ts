@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createMediaObject {
@@ -78,6 +79,8 @@ export interface createMediaObject extends ActionDefinition<createMediaObject.Si
 export const createMediaObject: createMediaObject = {
   apiName: 'createMediaObject',
   type: 'action',
-  unsanitizedApiName: 'create-media-object',
+  get unsanitizedApiName() {
+    return $resolveAction('create-media-object') as 'create-media-object';
+  },
   osdkMetadata: $osdkMetadata,
 };

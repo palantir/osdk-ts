@@ -23,6 +23,9 @@ process.env.PACKAGE_API_VERSION = await readPackageVersion("packages/api");
 process.env.PACKAGE_CLIENT_VERSION = await readPackageVersion(
   "packages/client",
 );
+process.env.PACKAGE_ALIASES_VERSION = await readPackageVersion(
+  "packages/aliases",
+);
 
 process.env.PACKAGE_CLI_VERSION = await readPackageVersion("packages/cli");
 process.env.TARGET ??= "node";
@@ -39,6 +42,7 @@ const config = function(api) {
           "PACKAGE_VERSION",
           "PACKAGE_API_VERSION",
           "PACKAGE_CLIENT_VERSION",
+          "PACKAGE_ALIASES_VERSION",
           "PACKAGE_CLI_VERSION",
           "TARGET",
           "MODE",

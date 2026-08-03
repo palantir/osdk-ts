@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createTodo {
@@ -13,18 +14,21 @@ export namespace createTodo {
   export type ParamsDefinition = {
     is_complete: {
       description: undefined;
+      displayName: 'Is Complete';
       multiplicity: false;
       nullable: false;
       type: 'boolean';
     };
     location: {
       description: undefined;
+      displayName: 'location';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     Todo: {
       description: undefined;
+      displayName: 'Todo';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -85,16 +89,21 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
     rid: 'ri.actions.main.action-type.1913052f-0395-4643-9d37-62fc7f74289d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-todo';
 
     signatures: createTodo.Signatures;
   };
   apiName: 'createTodo';
   type: 'action';
+  unsanitizedApiName: 'create-todo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTodo: createTodo = {
   apiName: 'createTodo',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-todo') as 'create-todo';
+  },
   osdkMetadata: $osdkMetadata,
 };

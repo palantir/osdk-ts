@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { CollateralConcernList } from './CollateralConcernList.js';
 import type {
@@ -88,7 +89,11 @@ export interface CollateralConcernCandidate extends $InterfaceDefinition {
 
 export const CollateralConcernCandidate = {
   type: 'interface',
-  apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
+  get apiName() {
+    return $resolveInterfaceType(
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
+    ) as 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c',

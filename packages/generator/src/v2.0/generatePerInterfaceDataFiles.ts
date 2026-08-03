@@ -23,7 +23,7 @@ import { wireInterfaceTypeV2ToSdkObjectConst } from "./wireInterfaceTypeV2ToSdkO
 
 /** @internal */
 export async function generatePerInterfaceDataFiles(
-  { fs, outDir, ontology, importExt, forInternalUse }: GenerateContext,
+  { fs, outDir, ontology, importExt, forInternalUse, aliases }: GenerateContext,
 ) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");
   await fs.mkdir(interfacesDir, {
@@ -32,6 +32,7 @@ export async function generatePerInterfaceDataFiles(
 
   for (const obj of Object.values(ontology.interfaceTypes)) {
     if (obj instanceof ForeignType) continue;
+    aliases.addInterface(obj);
     const relPath = path.join(
       ".",
       "ontology",
@@ -45,6 +46,7 @@ export async function generatePerInterfaceDataFiles(
         import type { PropertyDef as $PropertyDef } from "${
         forInternalUse ? "@osdk/api" : "@osdk/client"
       }";
+        import { $resolveInterfaceType } from "@osdk/aliases";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
       ${
         wireInterfaceTypeV2ToSdkObjectConst(

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace moveOffice {
@@ -117,6 +118,8 @@ export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
 export const moveOffice: moveOffice = {
   apiName: 'moveOffice',
   type: 'action',
-  unsanitizedApiName: 'move-office',
+  get unsanitizedApiName() {
+    return $resolveAction('move-office') as 'move-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

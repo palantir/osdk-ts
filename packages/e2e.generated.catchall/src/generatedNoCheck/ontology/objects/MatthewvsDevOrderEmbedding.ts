@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -107,9 +108,13 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
 
 export const MatthewvsDevOrderEmbedding = {
   type: 'object',
-  apiName: 'MatthewvsDevOrderEmbedding',
+  get apiName() {
+    return $resolveObjectType('MatthewvsDevOrderEmbedding') as 'MatthewvsDevOrderEmbedding';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'orderId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MatthewvsDevOrderEmbedding') as 'orderId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

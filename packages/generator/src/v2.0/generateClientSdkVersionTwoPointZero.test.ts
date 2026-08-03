@@ -565,15 +565,253 @@ describe("generator", () => {
         tweakedFilesForSnapshotConsistency(helper.getFiles()),
       ).toMatchInlineSnapshot(`
         {
-          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+          "/foo/OntologyMetadata.ts": "import { registerPackagedAliases, $resolveOntologyBranch, $resolveOntologyRid } from '@osdk/aliases';
+        import { $packagedAliases } from './aliases.js';
+
+        registerPackagedAliases('ridHere', $packagedAliases);
+
+        export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
-        export const $ontologyRid = 'ridHere';
+        export const $ontologyRid: string = $resolveOntologyRid('ridHere');
         /**
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branch: string | undefined = undefined;
+        export const $branch: string | undefined = $resolveOntologyBranch('ridHere');
+        ",
+          "/foo/aliases.json": "{
+          "defaults": {
+            "actions": {
+              "deleteTodos": {
+                "apiName": "deleteTodos",
+                "id": {
+                  "rid": "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2"
+                }
+              },
+              "markTodoCompleted": {
+                "apiName": "markTodoCompleted",
+                "id": {
+                  "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+                }
+              }
+            },
+            "custom": {},
+            "datasets": {},
+            "egressConnections": {},
+            "interfaces": {
+              "SomeInterface": {
+                "apiName": "SomeInterface",
+                "id": {
+                  "rid": "idk"
+                },
+                "links": {},
+                "properties": {
+                  "SomeProperty": {
+                    "apiName": "SomeProperty",
+                    "id": {
+                      "rid": "idk2"
+                    }
+                  }
+                }
+              }
+            },
+            "mediasets": {},
+            "models": {},
+            "objects": {
+              "Person": {
+                "apiName": "Person",
+                "id": {
+                  "rid": "ridForPerson"
+                },
+                "links": {
+                  "Todos": {
+                    "apiName": "Todos"
+                  }
+                },
+                "primaryKeyApiName": "email",
+                "properties": {
+                  "email": {
+                    "apiName": "email"
+                  }
+                }
+              },
+              "Todo": {
+                "apiName": "Todo",
+                "id": {
+                  "rid": "ridForTodo"
+                },
+                "links": {
+                  "Assignee": {
+                    "apiName": "Assignee"
+                  }
+                },
+                "primaryKeyApiName": "id",
+                "properties": {
+                  "array": {
+                    "apiName": "array"
+                  },
+                  "body": {
+                    "apiName": "body"
+                  },
+                  "complete": {
+                    "apiName": "complete"
+                  },
+                  "id": {
+                    "apiName": "id"
+                  }
+                }
+              }
+            },
+            "ontologies": {
+              "ridHere": {
+                "branch": null,
+                "id": {
+                  "rid": "ridHere"
+                }
+              }
+            },
+            "queries": {
+              "getCount": {
+                "apiName": "getCount",
+                "id": {
+                  "rid": "rid.query.1",
+                  "version": "1.1.0"
+                },
+                "version": "1.1.0"
+              },
+              "returnsTodo": {
+                "apiName": "returnsTodo",
+                "id": {
+                  "rid": "rid.query.2",
+                  "version": "3.2.0"
+                },
+                "version": "3.2.0"
+              }
+            },
+            "streams": {}
+          },
+          "version": 1
+        }
+        ",
+          "/foo/aliases.ts": "import type { AliasesFile } from '@osdk/aliases';
+
+        // An explicit annotation rather than \`satisfies\`: consumers build with
+        // --isolatedDeclarations, under which \`satisfies\` is not an explicit type
+        // and emits TS9010.
+        export const $packagedAliases: AliasesFile = {
+          defaults: {
+            actions: {
+              deleteTodos: {
+                apiName: 'deleteTodos',
+                id: {
+                  rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2',
+                },
+              },
+              markTodoCompleted: {
+                apiName: 'markTodoCompleted',
+                id: {
+                  rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2',
+                },
+              },
+            },
+            custom: {},
+            datasets: {},
+            egressConnections: {},
+            interfaces: {
+              SomeInterface: {
+                apiName: 'SomeInterface',
+                id: {
+                  rid: 'idk',
+                },
+                links: {},
+                properties: {
+                  SomeProperty: {
+                    apiName: 'SomeProperty',
+                    id: {
+                      rid: 'idk2',
+                    },
+                  },
+                },
+              },
+            },
+            mediasets: {},
+            models: {},
+            objects: {
+              Person: {
+                apiName: 'Person',
+                id: {
+                  rid: 'ridForPerson',
+                },
+                links: {
+                  Todos: {
+                    apiName: 'Todos',
+                  },
+                },
+                primaryKeyApiName: 'email',
+                properties: {
+                  email: {
+                    apiName: 'email',
+                  },
+                },
+              },
+              Todo: {
+                apiName: 'Todo',
+                id: {
+                  rid: 'ridForTodo',
+                },
+                links: {
+                  Assignee: {
+                    apiName: 'Assignee',
+                  },
+                },
+                primaryKeyApiName: 'id',
+                properties: {
+                  array: {
+                    apiName: 'array',
+                  },
+                  body: {
+                    apiName: 'body',
+                  },
+                  complete: {
+                    apiName: 'complete',
+                  },
+                  id: {
+                    apiName: 'id',
+                  },
+                },
+              },
+            },
+            ontologies: {
+              ridHere: {
+                branch: null,
+                id: {
+                  rid: 'ridHere',
+                },
+              },
+            },
+            queries: {
+              getCount: {
+                apiName: 'getCount',
+                id: {
+                  rid: 'rid.query.1',
+                  version: '1.1.0',
+                },
+                version: '1.1.0',
+              },
+              returnsTodo: {
+                apiName: 'returnsTodo',
+                id: {
+                  rid: 'rid.query.2',
+                  version: '3.2.0',
+                },
+                version: '3.2.0',
+              },
+            },
+            streams: {},
+          },
+          version: 1,
+        };
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -597,6 +835,7 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/client';
+        import { $resolveAction } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -670,7 +909,9 @@ describe("generator", () => {
         export const deleteTodos: deleteTodos = {
           apiName: 'deleteTodos',
           type: 'action',
-          unsanitizedApiName: 'deleteTodos',
+          get unsanitizedApiName() {
+            return $resolveAction('deleteTodos') as 'deleteTodos';
+          },
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -682,6 +923,7 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/client';
+        import { $resolveAction } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -760,13 +1002,16 @@ describe("generator", () => {
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'markTodoCompleted',
           type: 'action',
-          unsanitizedApiName: 'markTodoCompleted',
+          get unsanitizedApiName() {
+            return $resolveAction('markTodoCompleted') as 'markTodoCompleted';
+          },
           osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveInterfaceType } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         import type {
@@ -837,7 +1082,9 @@ describe("generator", () => {
 
         export const SomeInterface = {
           type: 'interface',
-          apiName: 'SomeInterface',
+          get apiName() {
+            return $resolveInterfaceType('SomeInterface') as 'SomeInterface';
+          },
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'idk',
@@ -848,6 +1095,7 @@ describe("generator", () => {
         export { Todo } from './objects/Todo.js';
         ",
           "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
@@ -937,9 +1185,13 @@ describe("generator", () => {
 
         export const Person = {
           type: 'object',
-          apiName: 'Person',
+          get apiName() {
+            return $resolveObjectType('Person') as 'Person';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'email',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('Person') as 'email';
+          },
           primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
@@ -947,6 +1199,7 @@ describe("generator", () => {
         } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
@@ -1072,9 +1325,13 @@ describe("generator", () => {
 
         export const Todo = {
           type: 'object',
-          apiName: 'Todo',
+          get apiName() {
+            return $resolveObjectType('Todo') as 'Todo';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'id',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('Todo') as 'id';
+          },
           primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
@@ -1085,6 +1342,7 @@ describe("generator", () => {
         export { returnsTodo } from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -1132,14 +1390,19 @@ describe("generator", () => {
         }
 
         export const getCount: getCount = {
-          apiName: 'getCount',
           type: 'query',
-          version: '1.1.0',
+          get apiName() {
+            return $resolveQuery('getCount') as 'getCount';
+          },
+          get version() {
+            return $resolveQueryVersion('getCount') as '1.1.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1193,9 +1456,13 @@ describe("generator", () => {
         }
 
         export const returnsTodo: returnsTodo = {
-          apiName: 'returnsTodo',
           type: 'query',
-          version: '3.2.0',
+          get apiName() {
+            return $resolveQuery('returnsTodo') as 'returnsTodo';
+          },
+          get version() {
+            return $resolveQueryVersion('returnsTodo') as '3.2.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
@@ -1263,15 +1530,253 @@ describe("generator", () => {
     expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`
         {
-          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+          "/foo/OntologyMetadata.ts": "import { registerPackagedAliases, $resolveOntologyBranch, $resolveOntologyRid } from '@osdk/aliases';
+        import { $packagedAliases } from './aliases.js';
+
+        registerPackagedAliases('ridHere', $packagedAliases);
+
+        export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: '' };
 
-        export const $ontologyRid = 'ridHere';
+        export const $ontologyRid: string = $resolveOntologyRid('ridHere');
         /**
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branch: string | undefined = undefined;
+        export const $branch: string | undefined = $resolveOntologyBranch('ridHere');
+        ",
+          "/foo/aliases.json": "{
+          "defaults": {
+            "actions": {
+              "foo.bar.deleteTodos": {
+                "apiName": "foo.bar.deleteTodos",
+                "id": {
+                  "rid": "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2"
+                }
+              },
+              "foo.bar.markTodoCompleted": {
+                "apiName": "foo.bar.markTodoCompleted",
+                "id": {
+                  "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+                }
+              }
+            },
+            "custom": {},
+            "datasets": {},
+            "egressConnections": {},
+            "interfaces": {
+              "foo.bar.SomeInterface": {
+                "apiName": "foo.bar.SomeInterface",
+                "id": {
+                  "rid": "idk"
+                },
+                "links": {},
+                "properties": {
+                  "foo.bar.SomeProperty": {
+                    "apiName": "foo.bar.SomeProperty",
+                    "id": {
+                      "rid": "idk2"
+                    }
+                  }
+                }
+              }
+            },
+            "mediasets": {},
+            "models": {},
+            "objects": {
+              "foo.bar.Person": {
+                "apiName": "foo.bar.Person",
+                "id": {
+                  "rid": "ridForPerson"
+                },
+                "links": {
+                  "Todos": {
+                    "apiName": "Todos"
+                  }
+                },
+                "primaryKeyApiName": "email",
+                "properties": {
+                  "email": {
+                    "apiName": "email"
+                  }
+                }
+              },
+              "foo.bar.Todo": {
+                "apiName": "foo.bar.Todo",
+                "id": {
+                  "rid": "ridForTodo"
+                },
+                "links": {
+                  "Assignee": {
+                    "apiName": "Assignee"
+                  }
+                },
+                "primaryKeyApiName": "id",
+                "properties": {
+                  "array": {
+                    "apiName": "array"
+                  },
+                  "body": {
+                    "apiName": "body"
+                  },
+                  "complete": {
+                    "apiName": "complete"
+                  },
+                  "id": {
+                    "apiName": "id"
+                  }
+                }
+              }
+            },
+            "ontologies": {
+              "ridHere": {
+                "branch": null,
+                "id": {
+                  "rid": "ridHere"
+                }
+              }
+            },
+            "queries": {
+              "foo.bar.getCount": {
+                "apiName": "foo.bar.getCount",
+                "id": {
+                  "rid": "rid.query.1",
+                  "version": "1.1.0"
+                },
+                "version": "1.1.0"
+              },
+              "foo.bar.returnsTodo": {
+                "apiName": "foo.bar.returnsTodo",
+                "id": {
+                  "rid": "rid.query.2",
+                  "version": "3.2.0"
+                },
+                "version": "3.2.0"
+              }
+            },
+            "streams": {}
+          },
+          "version": 1
+        }
+        ",
+          "/foo/aliases.ts": "import type { AliasesFile } from '@osdk/aliases';
+
+        // An explicit annotation rather than \`satisfies\`: consumers build with
+        // --isolatedDeclarations, under which \`satisfies\` is not an explicit type
+        // and emits TS9010.
+        export const $packagedAliases: AliasesFile = {
+          defaults: {
+            actions: {
+              'foo.bar.deleteTodos': {
+                apiName: 'foo.bar.deleteTodos',
+                id: {
+                  rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2',
+                },
+              },
+              'foo.bar.markTodoCompleted': {
+                apiName: 'foo.bar.markTodoCompleted',
+                id: {
+                  rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2',
+                },
+              },
+            },
+            custom: {},
+            datasets: {},
+            egressConnections: {},
+            interfaces: {
+              'foo.bar.SomeInterface': {
+                apiName: 'foo.bar.SomeInterface',
+                id: {
+                  rid: 'idk',
+                },
+                links: {},
+                properties: {
+                  'foo.bar.SomeProperty': {
+                    apiName: 'foo.bar.SomeProperty',
+                    id: {
+                      rid: 'idk2',
+                    },
+                  },
+                },
+              },
+            },
+            mediasets: {},
+            models: {},
+            objects: {
+              'foo.bar.Person': {
+                apiName: 'foo.bar.Person',
+                id: {
+                  rid: 'ridForPerson',
+                },
+                links: {
+                  Todos: {
+                    apiName: 'Todos',
+                  },
+                },
+                primaryKeyApiName: 'email',
+                properties: {
+                  email: {
+                    apiName: 'email',
+                  },
+                },
+              },
+              'foo.bar.Todo': {
+                apiName: 'foo.bar.Todo',
+                id: {
+                  rid: 'ridForTodo',
+                },
+                links: {
+                  Assignee: {
+                    apiName: 'Assignee',
+                  },
+                },
+                primaryKeyApiName: 'id',
+                properties: {
+                  array: {
+                    apiName: 'array',
+                  },
+                  body: {
+                    apiName: 'body',
+                  },
+                  complete: {
+                    apiName: 'complete',
+                  },
+                  id: {
+                    apiName: 'id',
+                  },
+                },
+              },
+            },
+            ontologies: {
+              ridHere: {
+                branch: null,
+                id: {
+                  rid: 'ridHere',
+                },
+              },
+            },
+            queries: {
+              'foo.bar.getCount': {
+                apiName: 'foo.bar.getCount',
+                id: {
+                  rid: 'rid.query.1',
+                  version: '1.1.0',
+                },
+                version: '1.1.0',
+              },
+              'foo.bar.returnsTodo': {
+                apiName: 'foo.bar.returnsTodo',
+                id: {
+                  rid: 'rid.query.2',
+                  version: '3.2.0',
+                },
+                version: '3.2.0',
+              },
+            },
+            streams: {},
+          },
+          version: 1,
+        };
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -1295,6 +1800,7 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/api';
+        import { $resolveAction } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1368,7 +1874,9 @@ describe("generator", () => {
         export const deleteTodos: deleteTodos = {
           apiName: 'foo.bar.deleteTodos',
           type: 'action',
-          unsanitizedApiName: 'foo.bar.deleteTodos',
+          get unsanitizedApiName() {
+            return $resolveAction('foo.bar.deleteTodos') as 'foo.bar.deleteTodos';
+          },
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1380,6 +1888,7 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/api';
+        import { $resolveAction } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1458,13 +1967,16 @@ describe("generator", () => {
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'foo.bar.markTodoCompleted',
           type: 'action',
-          unsanitizedApiName: 'foo.bar.markTodoCompleted',
+          get unsanitizedApiName() {
+            return $resolveAction('foo.bar.markTodoCompleted') as 'foo.bar.markTodoCompleted';
+          },
           osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
+        import { $resolveInterfaceType } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         import type {
@@ -1535,7 +2047,9 @@ describe("generator", () => {
 
         export const SomeInterface = {
           type: 'interface',
-          apiName: 'foo.bar.SomeInterface',
+          get apiName() {
+            return $resolveInterfaceType('foo.bar.SomeInterface') as 'foo.bar.SomeInterface';
+          },
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'idk',
@@ -1546,6 +2060,7 @@ describe("generator", () => {
         export { Todo } from './objects/Todo.js';
         ",
           "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
@@ -1635,9 +2150,13 @@ describe("generator", () => {
 
         export const Person = {
           type: 'object',
-          apiName: 'foo.bar.Person',
+          get apiName() {
+            return $resolveObjectType('foo.bar.Person') as 'foo.bar.Person';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'email',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('foo.bar.Person') as 'email';
+          },
           primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
@@ -1645,6 +2164,7 @@ describe("generator", () => {
         } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
@@ -1770,9 +2290,13 @@ describe("generator", () => {
 
         export const Todo = {
           type: 'object',
-          apiName: 'foo.bar.Todo',
+          get apiName() {
+            return $resolveObjectType('foo.bar.Todo') as 'foo.bar.Todo';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'id',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('foo.bar.Todo') as 'id';
+          },
           primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
@@ -1783,6 +2307,7 @@ describe("generator", () => {
         export { returnsTodo } from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -1830,14 +2355,19 @@ describe("generator", () => {
         }
 
         export const getCount: getCount = {
-          apiName: 'foo.bar.getCount',
           type: 'query',
-          version: '1.1.0',
+          get apiName() {
+            return $resolveQuery('foo.bar.getCount') as 'foo.bar.getCount';
+          },
+          get version() {
+            return $resolveQueryVersion('foo.bar.getCount') as '1.1.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -1891,9 +2421,13 @@ describe("generator", () => {
         }
 
         export const returnsTodo: returnsTodo = {
-          apiName: 'foo.bar.returnsTodo',
           type: 'query',
-          version: '3.2.0',
+          get apiName() {
+            return $resolveQuery('foo.bar.returnsTodo') as 'foo.bar.returnsTodo';
+          },
+          get version() {
+            return $resolveQueryVersion('foo.bar.returnsTodo') as '3.2.0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
@@ -2005,6 +2539,7 @@ describe("generator", () => {
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
           "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+          import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$com$example$dep$Task } from '@com.example.dep/osdk';
@@ -2057,9 +2592,13 @@ describe("generator", () => {
           }
 
           export const getTask: getTask = {
-            apiName: 'getTask',
             type: 'query',
-            version: '0',
+            get apiName() {
+              return $resolveQuery('getTask') as 'getTask';
+            },
+            get version() {
+              return $resolveQueryVersion('getTask') as '0';
+            },
             isFixedVersion: false,
             osdkMetadata: $osdkMetadata,
           };
@@ -2087,6 +2626,7 @@ describe("generator", () => {
       expect(helper.getFiles()["/foo/ontology/objects/UsesForeignSpt.ts"])
         .toMatchInlineSnapshot(`
           "import type { PropertyDef as $PropertyDef } from '@osdk/api';
+          import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import type {
@@ -2179,9 +2719,13 @@ describe("generator", () => {
 
           export const UsesForeignSpt = {
             type: 'object',
-            apiName: 'UsesForeignSpt',
+            get apiName() {
+              return $resolveObjectType('UsesForeignSpt') as 'UsesForeignSpt';
+            },
             osdkMetadata: $osdkMetadata,
-            primaryKeyApiName: 'id',
+            get primaryKeyApiName() {
+              return $resolvePrimaryKey('UsesForeignSpt') as 'id';
+            },
             primaryKeyType: 'integer',
             internalDoNotUseMetadata: {
               rid: 'theRid',
@@ -2218,6 +2762,7 @@ describe("generator", () => {
             ApplyActionOptions,
             ApplyBatchActionOptions,
           } from '@osdk/api';
+          import { $resolveAction } from '@osdk/aliases';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
           import type { Task as $Imported$com$example$dep$Task } from '@com.example.dep/osdk';
 
@@ -2290,7 +2835,9 @@ describe("generator", () => {
           export const setTaskBody: setTaskBody = {
             apiName: 'setTaskBody',
             type: 'action',
-            unsanitizedApiName: 'setTaskBody',
+            get unsanitizedApiName() {
+              return $resolveAction('setTaskBody') as 'setTaskBody';
+            },
             osdkMetadata: $osdkMetadata,
           };
           "
@@ -2333,15 +2880,195 @@ describe("generator", () => {
         tweakedFilesForSnapshotConsistency(helper.getFiles()),
       ).toMatchInlineSnapshot(`
         {
-          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+          "/foo/OntologyMetadata.ts": "import { registerPackagedAliases, $resolveOntologyBranch, $resolveOntologyRid } from '@osdk/aliases';
+        import { $packagedAliases } from './aliases.js';
+
+        registerPackagedAliases('ridHere', $packagedAliases);
+
+        export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
-        export const $ontologyRid = 'ridHere';
+        export const $ontologyRid: string = $resolveOntologyRid('ridHere');
         /**
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branch: string | undefined = undefined;
+        export const $branch: string | undefined = $resolveOntologyBranch('ridHere');
+        ",
+          "/foo/aliases.json": "{
+          "defaults": {
+            "actions": {},
+            "custom": {},
+            "datasets": {},
+            "egressConnections": {},
+            "interfaces": {},
+            "mediasets": {},
+            "models": {},
+            "objects": {
+              "Person": {
+                "apiName": "Person",
+                "id": {
+                  "rid": "ridForPerson"
+                },
+                "links": {
+                  "Todos": {
+                    "apiName": "Todos"
+                  }
+                },
+                "primaryKeyApiName": "email",
+                "properties": {
+                  "email": {
+                    "apiName": "email"
+                  }
+                }
+              },
+              "Todo": {
+                "apiName": "Todo",
+                "id": {
+                  "rid": "ridForTodo"
+                },
+                "links": {
+                  "Assignee": {
+                    "apiName": "Assignee"
+                  }
+                },
+                "primaryKeyApiName": "id",
+                "properties": {
+                  "array": {
+                    "apiName": "array"
+                  },
+                  "body": {
+                    "apiName": "body"
+                  },
+                  "complete": {
+                    "apiName": "complete"
+                  },
+                  "id": {
+                    "apiName": "id"
+                  }
+                }
+              }
+            },
+            "ontologies": {
+              "ridHere": {
+                "branch": null,
+                "id": {
+                  "rid": "ridHere"
+                }
+              }
+            },
+            "queries": {
+              "getCount": {
+                "apiName": "getCount",
+                "id": {
+                  "rid": "rid.query.1",
+                  "version": "1.1.0"
+                },
+                "version": "1.1.0"
+              },
+              "returnsTodo": {
+                "apiName": "returnsTodo",
+                "id": {
+                  "rid": "rid.query.2",
+                  "version": "0"
+                },
+                "version": "0"
+              }
+            },
+            "streams": {}
+          },
+          "version": 1
+        }
+        ",
+          "/foo/aliases.ts": "import type { AliasesFile } from '@osdk/aliases';
+
+        // An explicit annotation rather than \`satisfies\`: consumers build with
+        // --isolatedDeclarations, under which \`satisfies\` is not an explicit type
+        // and emits TS9010.
+        export const $packagedAliases: AliasesFile = {
+          defaults: {
+            actions: {},
+            custom: {},
+            datasets: {},
+            egressConnections: {},
+            interfaces: {},
+            mediasets: {},
+            models: {},
+            objects: {
+              Person: {
+                apiName: 'Person',
+                id: {
+                  rid: 'ridForPerson',
+                },
+                links: {
+                  Todos: {
+                    apiName: 'Todos',
+                  },
+                },
+                primaryKeyApiName: 'email',
+                properties: {
+                  email: {
+                    apiName: 'email',
+                  },
+                },
+              },
+              Todo: {
+                apiName: 'Todo',
+                id: {
+                  rid: 'ridForTodo',
+                },
+                links: {
+                  Assignee: {
+                    apiName: 'Assignee',
+                  },
+                },
+                primaryKeyApiName: 'id',
+                properties: {
+                  array: {
+                    apiName: 'array',
+                  },
+                  body: {
+                    apiName: 'body',
+                  },
+                  complete: {
+                    apiName: 'complete',
+                  },
+                  id: {
+                    apiName: 'id',
+                  },
+                },
+              },
+            },
+            ontologies: {
+              ridHere: {
+                branch: null,
+                id: {
+                  rid: 'ridHere',
+                },
+              },
+            },
+            queries: {
+              getCount: {
+                apiName: 'getCount',
+                id: {
+                  rid: 'rid.query.1',
+                  version: '1.1.0',
+                },
+                version: '1.1.0',
+              },
+              returnsTodo: {
+                apiName: 'returnsTodo',
+                id: {
+                  rid: 'rid.query.2',
+                  version: '0',
+                },
+                version: '0',
+              },
+            },
+            streams: {},
+          },
+          version: 1,
+        };
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2362,6 +3089,7 @@ describe("generator", () => {
         export { Todo } from './objects/Todo.js';
         ",
           "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
@@ -2451,9 +3179,13 @@ describe("generator", () => {
 
         export const Person = {
           type: 'object',
-          apiName: 'Person',
+          get apiName() {
+            return $resolveObjectType('Person') as 'Person';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'email',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('Person') as 'email';
+          },
           primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
@@ -2461,6 +3193,7 @@ describe("generator", () => {
         } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
@@ -2586,9 +3319,13 @@ describe("generator", () => {
 
         export const Todo = {
           type: 'object',
-          apiName: 'Todo',
+          get apiName() {
+            return $resolveObjectType('Todo') as 'Todo';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'id',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('Todo') as 'id';
+          },
           primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
@@ -2599,6 +3336,7 @@ describe("generator", () => {
         export { returnsTodo } from './queries/returnsTodo.js';
         ",
           "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -2646,14 +3384,19 @@ describe("generator", () => {
         }
 
         export const getCount: getCount = {
-          apiName: 'getCount',
           type: 'query',
-          version: '1.1.0',
+          get apiName() {
+            return $resolveQuery('getCount') as 'getCount';
+          },
+          get version() {
+            return $resolveQueryVersion('getCount') as '1.1.0';
+          },
           isFixedVersion: true,
           osdkMetadata: $osdkMetadata,
         };
         ",
           "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
@@ -2707,9 +3450,13 @@ describe("generator", () => {
         }
 
         export const returnsTodo: returnsTodo = {
-          apiName: 'returnsTodo',
           type: 'query',
-          version: '0',
+          get apiName() {
+            return $resolveQuery('returnsTodo') as 'returnsTodo';
+          },
+          get version() {
+            return $resolveQueryVersion('returnsTodo') as '0';
+          },
           isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
@@ -2738,15 +3485,155 @@ describe("generator", () => {
     expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`
         {
-          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+          "/foo/OntologyMetadata.ts": "import { registerPackagedAliases, $resolveOntologyBranch, $resolveOntologyRid } from '@osdk/aliases';
+        import { $packagedAliases } from './aliases.js';
+
+        registerPackagedAliases('ri.ontology.main.ontology.dep', $packagedAliases);
+
+        export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: '' };
 
-        export const $ontologyRid = 'ri.ontology.main.ontology.dep';
+        export const $ontologyRid: string = $resolveOntologyRid('ri.ontology.main.ontology.dep');
         /**
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branch: string | undefined = 'someRidHere';
+        export const $branch: string | undefined = $resolveOntologyBranch('ri.ontology.main.ontology.dep');
+        ",
+          "/foo/aliases.json": "{
+          "defaults": {
+            "actions": {},
+            "custom": {},
+            "datasets": {},
+            "egressConnections": {},
+            "interfaces": {
+              "com.example.dep.SomeInterface": {
+                "apiName": "com.example.dep.SomeInterface",
+                "id": {
+                  "rid": "idk2"
+                },
+                "links": {},
+                "properties": {
+                  "com.example.dep.spt": {
+                    "apiName": "com.example.dep.spt",
+                    "id": {
+                      "rid": "idk"
+                    }
+                  },
+                  "com.example.dep.spt2": {
+                    "apiName": "com.example.dep.spt2",
+                    "id": {
+                      "rid": "idk"
+                    }
+                  }
+                }
+              }
+            },
+            "mediasets": {},
+            "models": {},
+            "objects": {
+              "com.example.dep.Task": {
+                "apiName": "com.example.dep.Task",
+                "id": {
+                  "rid": "ridForTask"
+                },
+                "links": {},
+                "primaryKeyApiName": "taskId",
+                "properties": {
+                  "body": {
+                    "apiName": "body"
+                  },
+                  "taskId": {
+                    "apiName": "taskId"
+                  }
+                }
+              }
+            },
+            "ontologies": {
+              "ri.ontology.main.ontology.dep": {
+                "branch": {
+                  "rid": "someRidHere"
+                },
+                "id": {
+                  "rid": "ri.ontology.main.ontology.dep"
+                }
+              }
+            },
+            "queries": {},
+            "streams": {}
+          },
+          "version": 1
+        }
+        ",
+          "/foo/aliases.ts": "import type { AliasesFile } from '@osdk/aliases';
+
+        // An explicit annotation rather than \`satisfies\`: consumers build with
+        // --isolatedDeclarations, under which \`satisfies\` is not an explicit type
+        // and emits TS9010.
+        export const $packagedAliases: AliasesFile = {
+          defaults: {
+            actions: {},
+            custom: {},
+            datasets: {},
+            egressConnections: {},
+            interfaces: {
+              'com.example.dep.SomeInterface': {
+                apiName: 'com.example.dep.SomeInterface',
+                id: {
+                  rid: 'idk2',
+                },
+                links: {},
+                properties: {
+                  'com.example.dep.spt': {
+                    apiName: 'com.example.dep.spt',
+                    id: {
+                      rid: 'idk',
+                    },
+                  },
+                  'com.example.dep.spt2': {
+                    apiName: 'com.example.dep.spt2',
+                    id: {
+                      rid: 'idk',
+                    },
+                  },
+                },
+              },
+            },
+            mediasets: {},
+            models: {},
+            objects: {
+              'com.example.dep.Task': {
+                apiName: 'com.example.dep.Task',
+                id: {
+                  rid: 'ridForTask',
+                },
+                links: {},
+                primaryKeyApiName: 'taskId',
+                properties: {
+                  body: {
+                    apiName: 'body',
+                  },
+                  taskId: {
+                    apiName: 'taskId',
+                  },
+                },
+              },
+            },
+            ontologies: {
+              'ri.ontology.main.ontology.dep': {
+                branch: {
+                  rid: 'someRidHere',
+                },
+                id: {
+                  rid: 'ri.ontology.main.ontology.dep',
+                },
+              },
+            },
+            queries: {},
+            streams: {},
+          },
+          version: 1,
+        };
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2764,6 +3651,7 @@ describe("generator", () => {
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveInterfaceType } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         import type {
@@ -2838,7 +3726,9 @@ describe("generator", () => {
 
         export const SomeInterface = {
           type: 'interface',
-          apiName: 'com.example.dep.SomeInterface',
+          get apiName() {
+            return $resolveInterfaceType('com.example.dep.SomeInterface') as 'com.example.dep.SomeInterface';
+          },
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'idk2',
@@ -2848,6 +3738,7 @@ describe("generator", () => {
           "/foo/ontology/objects.ts": "export { Task } from './objects/Task.js';
         ",
           "/foo/ontology/objects/Task.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import type {
@@ -2940,9 +3831,13 @@ describe("generator", () => {
 
         export const Task = {
           type: 'object',
-          apiName: 'com.example.dep.Task',
+          get apiName() {
+            return $resolveObjectType('com.example.dep.Task') as 'com.example.dep.Task';
+          },
           osdkMetadata: $osdkMetadata,
-          primaryKeyApiName: 'taskId',
+          get primaryKeyApiName() {
+            return $resolvePrimaryKey('com.example.dep.Task') as 'taskId';
+          },
           primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForTask',

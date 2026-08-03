@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -55,6 +56,8 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ExampleObjects';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: ExampleObjects.ObjectSet;
     props: ExampleObjects.Props;
@@ -69,6 +72,18 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ExampleInterface'];
+    interfaceImplementations: {
+      ExampleInterface: {
+        id: {
+          type: 'localProperty';
+          propertyApiName: 'primaryKey_';
+        };
+        type: {
+          type: 'localProperty';
+          propertyApiName: 'type';
+        };
+      };
+    };
     interfaceMap: {
       ExampleInterface: {
         id: 'primaryKey_';
@@ -111,8 +126,14 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
 
 export const ExampleObjects = {
   type: 'object',
-  apiName: 'ExampleObjects',
+  get apiName() {
+    return $resolveObjectType('ExampleObjects') as 'ExampleObjects';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('ExampleObjects') as 'primaryKey_';
+  },
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9bd216ec-22a2-48dc-8c61-63db7c4e1fc8',
   },

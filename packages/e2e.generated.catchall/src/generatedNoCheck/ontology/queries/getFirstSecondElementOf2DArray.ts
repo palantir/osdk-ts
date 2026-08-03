@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -57,9 +58,13 @@ export interface getFirstSecondElementOf2DArray
 }
 
 export const getFirstSecondElementOf2DArray: getFirstSecondElementOf2DArray = {
-  apiName: 'getFirstSecondElementOf2DArray',
   type: 'query',
-  version: '1.0.0',
+  get apiName() {
+    return $resolveQuery('getFirstSecondElementOf2DArray') as 'getFirstSecondElementOf2DArray';
+  },
+  get version() {
+    return $resolveQueryVersion('getFirstSecondElementOf2DArray') as '1.0.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

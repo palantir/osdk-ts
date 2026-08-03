@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
@@ -386,9 +387,13 @@ export interface queryTakesAllParameterTypes
  * description of the query that takes all parameter types
  */
 export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
-  apiName: 'queryTakesAllParameterTypes',
   type: 'query',
-  version: 'version',
+  get apiName() {
+    return $resolveQuery('queryTakesAllParameterTypes') as 'queryTakesAllParameterTypes';
+  },
+  get version() {
+    return $resolveQueryVersion('queryTakesAllParameterTypes') as 'version';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

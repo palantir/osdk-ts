@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,22 +15,30 @@ export namespace addStructToEmployee {
   export type ParamsDefinition = {
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     latest_venture: {
       description: undefined;
+      displayName: 'Latest Venture ';
       multiplicity: false;
       nullable: false;
-      type: ActionMetadata.DataType.Struct<{ venture: 'string'; days: 'integer' }>;
+      type: ActionMetadata.DataType.Struct<{
+        venture: { type: 'string'; nullable: true };
+        days: { type: 'integer'; nullable: true };
+      }>;
     };
   };
 
   export interface Params {
     readonly employee: ActionParam.ObjectType<Employee>;
 
-    readonly latest_venture: ActionParam.StructType<{ venture: 'string'; days: 'integer' }>;
+    readonly latest_venture: ActionParam.StructType<{
+      venture: { type: 'string'; nullable: true };
+      days: { type: 'integer'; nullable: true };
+    }>;
   }
 
   // Represents a fqn of the action
@@ -48,7 +57,7 @@ export namespace addStructToEmployee {
 
 /**
  * @param {ActionParam.ObjectType<Employee>} employee
- * @param {ActionParam.StructType<{"venture":"string","days":"integer"}>} latest_venture
+ * @param {ActionParam.StructType<{"venture":{"type":"string","nullable":true},"days":{"type":"integer","nullable":true}}>} latest_venture
  */
 export interface addStructToEmployee extends ActionDefinition<addStructToEmployee.Signatures> {
   __DefinitionMetadata?: {
@@ -64,16 +73,21 @@ export interface addStructToEmployee extends ActionDefinition<addStructToEmploye
     rid: 'ri.actions.main.action-type.9441fc5f-6bf1-41d0-9934-0296d841f509';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'add-struct-to-employee';
 
     signatures: addStructToEmployee.Signatures;
   };
   apiName: 'addStructToEmployee';
   type: 'action';
+  unsanitizedApiName: 'add-struct-to-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const addStructToEmployee: addStructToEmployee = {
   apiName: 'addStructToEmployee',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('add-struct-to-employee') as 'add-struct-to-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

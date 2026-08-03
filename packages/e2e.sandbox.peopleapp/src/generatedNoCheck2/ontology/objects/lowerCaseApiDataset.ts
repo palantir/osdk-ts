@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -91,9 +92,13 @@ export interface lowerCaseApiDataset extends $ObjectTypeDefinition {
 
 export const lowerCaseApiDataset = {
   type: 'object',
-  apiName: 'lowerCaseApiDataset',
+  get apiName() {
+    return $resolveObjectType('lowerCaseApiDataset') as 'lowerCaseApiDataset';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'primaryKey_',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('lowerCaseApiDataset') as 'primaryKey_';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.11923958-97ff-42a5-80e7-16f34e620d1c',

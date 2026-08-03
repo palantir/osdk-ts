@@ -197,7 +197,9 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
 
       export const Bar = {
         type: "interface",
-        apiName: "Bar",
+        get apiName() {
+          return $resolveInterfaceType("Bar") as "Bar";
+        },
         osdkMetadata: $osdkMetadata,
         internalDoNotUseMetadata: {
           rid: "BarRid",
@@ -302,7 +304,9 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
 
       export const Foo = {
         type: "interface",
-        apiName: "Foo",
+        get apiName() {
+          return $resolveInterfaceType("Foo") as "Foo";
+        },
         osdkMetadata: $osdkMetadata,
         internalDoNotUseMetadata: {
           rid: "FooRid",
@@ -418,7 +422,9 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
 
       export const Foo = {
         type: "interface",
-        apiName: "Foo",
+        get apiName() {
+          return $resolveInterfaceType("Foo") as "Foo";
+        },
         osdkMetadata: $osdkMetadata,
         internalDoNotUseMetadata: {
           rid: "FooRid",
@@ -522,7 +528,9 @@ describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
 
       export const Foo = {
         type: "interface",
-        apiName: "Foo",
+        get apiName() {
+          return $resolveInterfaceType("Foo") as "Foo";
+        },
         osdkMetadata: $osdkMetadata,
         internalDoNotUseMetadata: {
           rid: "FooRid",

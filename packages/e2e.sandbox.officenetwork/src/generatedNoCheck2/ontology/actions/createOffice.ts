@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOffice {
@@ -13,12 +14,14 @@ export namespace createOffice {
   export type ParamsDefinition = {
     location: {
       description: undefined;
+      displayName: 'Location';
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -63,16 +66,21 @@ export interface createOffice extends ActionDefinition<createOffice.Signatures> 
     rid: 'ri.actions.main.action-type.1149ae48-9a4a-45f1-92ba-90e046f7b3c7';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-office';
 
     signatures: createOffice.Signatures;
   };
   apiName: 'createOffice';
   type: 'action';
+  unsanitizedApiName: 'create-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOffice: createOffice = {
   apiName: 'createOffice',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-office') as 'create-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

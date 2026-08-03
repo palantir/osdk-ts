@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -232,9 +233,13 @@ export interface ReducerTest extends $ObjectTypeDefinition {
 
 export const ReducerTest = {
   type: 'object',
-  apiName: 'ReducerTest',
+  get apiName() {
+    return $resolveObjectType('ReducerTest') as 'ReducerTest';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'primaryKey_',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('ReducerTest') as 'primaryKey_';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4069c2c9-9497-45ec-8fa2-02caf0c261e9',

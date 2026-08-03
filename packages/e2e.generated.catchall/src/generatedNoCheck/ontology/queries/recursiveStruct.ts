@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -89,9 +90,13 @@ export interface recursiveStruct
 }
 
 export const recursiveStruct: recursiveStruct = {
-  apiName: 'recursiveStruct',
   type: 'query',
-  version: '2.0.1',
+  get apiName() {
+    return $resolveQuery('recursiveStruct') as 'recursiveStruct';
+  },
+  get version() {
+    return $resolveQueryVersion('recursiveStruct') as '2.0.1';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

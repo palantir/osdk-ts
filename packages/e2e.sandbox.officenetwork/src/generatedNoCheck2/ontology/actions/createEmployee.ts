@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createEmployee {
@@ -13,132 +14,154 @@ export namespace createEmployee {
   export type ParamsDefinition = {
     ad_username: {
       description: undefined;
+      displayName: 'Ad Username';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     business_area: {
       description: undefined;
+      displayName: 'Business Area';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     business_title: {
       description: undefined;
+      displayName: 'Business Title';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     department: {
       description: undefined;
+      displayName: 'Department';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     email_primary_work: {
       description: undefined;
+      displayName: 'Email Primary Work';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employee_number: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     first_full_time_start_date: {
       description: undefined;
+      displayName: 'First Full Time Start Date';
       multiplicity: false;
       nullable: false;
       type: 'datetime';
     };
     first_intern_start_date: {
       description: undefined;
+      displayName: 'First Intern Start Date';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     full_name: {
       description: undefined;
+      displayName: 'Full Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     job_profile: {
       description: undefined;
+      displayName: 'Job Profile';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     job_title: {
       description: undefined;
+      displayName: 'Job Title';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     lead_employee_number: {
       description: undefined;
+      displayName: 'Lead Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     location_city: {
       description: undefined;
+      displayName: 'Location City';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     location_country: {
       description: undefined;
+      displayName: 'Location Country';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     location_name: {
       description: undefined;
+      displayName: 'Location Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     location_region: {
       description: undefined;
+      displayName: 'Location Region';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     location_type: {
       description: undefined;
+      displayName: 'Location Type';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     mentor_employee_number: {
       description: undefined;
+      displayName: 'Mentor Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     preferred_name_first: {
       description: undefined;
+      displayName: 'Preferred Name First';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     preferred_name_last: {
       description: undefined;
+      displayName: 'Preferred Name Last';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     team: {
       description: undefined;
+      displayName: 'Team';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     worker_type: {
       description: undefined;
+      displayName: 'Worker Type';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -243,16 +266,21 @@ export interface createEmployee extends ActionDefinition<createEmployee.Signatur
     rid: 'ri.actions.main.action-type.685e6665-54a3-47c9-968e-544fa5e1107d';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-employee';
 
     signatures: createEmployee.Signatures;
   };
   apiName: 'createEmployee';
   type: 'action';
+  unsanitizedApiName: 'create-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createEmployee: createEmployee = {
   apiName: 'createEmployee',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-employee') as 'create-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

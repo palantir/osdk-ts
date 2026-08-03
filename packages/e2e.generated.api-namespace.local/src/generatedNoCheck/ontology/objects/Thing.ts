@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface Thing extends $ObjectTypeDefinition {
 
 export const Thing = {
   type: 'object',
-  apiName: 'Thing',
+  get apiName() {
+    return $resolveObjectType('Thing') as 'Thing';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Thing') as 'id';
+  },
   primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ridForThing',

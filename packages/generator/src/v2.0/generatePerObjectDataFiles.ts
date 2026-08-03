@@ -35,6 +35,7 @@ export async function generatePerObjectDataFiles(
   await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const obj of Object.values(ontology.objectTypes)) {
     if (obj instanceof ForeignType) continue;
+    ctx.aliases.addObject(obj);
     const relPath = path.join(
       ".",
       "ontology",
@@ -51,6 +52,7 @@ export async function generatePerObjectDataFiles(
           ? "@osdk/api"
           : "@osdk/client"
       }";
+        import { $resolveObjectType, $resolvePrimaryKey } from "@osdk/aliases";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         ${wireObjectTypeV2ToSdkObjectConstV2(obj.raw, ctx, relPath)}

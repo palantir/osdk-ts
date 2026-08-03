@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoProject } from '../objects/ExampleEw03osdkTodoProject.js';
 
@@ -113,6 +114,8 @@ export interface exampleEw03CreateOsdkTodoProject
 export const exampleEw03CreateOsdkTodoProject: exampleEw03CreateOsdkTodoProject = {
   apiName: 'exampleEw03CreateOsdkTodoProject',
   type: 'action',
-  unsanitizedApiName: 'example-ew03-create-osdk-todo-project',
+  get unsanitizedApiName() {
+    return $resolveAction('example-ew03-create-osdk-todo-project') as 'example-ew03-create-osdk-todo-project';
+  },
   osdkMetadata: $osdkMetadata,
 };

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -7,12 +8,13 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$TodoLike = {};
 
 export namespace TodoLike {
-  export type PropertyKeys = 'name' | 'isComplete';
+  export type PropertyKeys = 'isComplete' | 'name';
 
   export interface Props {
     /**
@@ -72,7 +74,9 @@ export interface TodoLike extends $InterfaceDefinition {
 
 export const TodoLike = {
   type: 'interface',
-  apiName: 'TodoLike',
+  get apiName() {
+    return $resolveInterfaceType('TodoLike') as 'TodoLike';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0',

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -91,9 +92,13 @@ export interface StructPerson extends $ObjectTypeDefinition {
 
 export const StructPerson = {
   type: 'object',
-  apiName: 'StructPerson',
+  get apiName() {
+    return $resolveObjectType('StructPerson') as 'StructPerson';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'name',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('StructPerson') as 'name';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

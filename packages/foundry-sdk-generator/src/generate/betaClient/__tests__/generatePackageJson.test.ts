@@ -41,6 +41,9 @@ describe("generatePackageJson", () => {
         dependencyVersion: "^2.63.0",
       }],
       peerDependencies: [{
+        dependencyName: "@osdk/aliases",
+        dependencyVersion: "^2.0.0",
+      }, {
         dependencyName: "@osdk/client",
         dependencyVersion: "^2.0.0",
       }],
@@ -86,6 +89,7 @@ describe("generatePackageJson", () => {
                 "@osdk/foundry.ontologies": "^2.63.0"
             },
             "peerDependencies": {
+                "@osdk/aliases": "^2.0.0",
                 "@osdk/client": "^2.0.0"
             },
             "type": "commonjs"

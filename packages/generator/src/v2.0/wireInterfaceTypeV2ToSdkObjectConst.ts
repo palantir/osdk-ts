@@ -220,7 +220,7 @@ ${
 
     export const ${interfaceDef.shortApiName} = {
       type: "interface",
-      apiName: "${interfaceDef.fullApiName}",
+      get apiName() { return $resolveInterfaceType("${interfaceDef.fullApiName}") as "${interfaceDef.fullApiName}"; },
       osdkMetadata: $osdkMetadata,
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",

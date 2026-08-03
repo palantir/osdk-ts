@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createTodo {
@@ -64,6 +65,8 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
 export const createTodo: createTodo = {
   apiName: 'createTodo',
   type: 'action',
-  unsanitizedApiName: 'create-todo',
+  get unsanitizedApiName() {
+    return $resolveAction('create-todo') as 'create-todo';
+  },
   osdkMetadata: $osdkMetadata,
 };

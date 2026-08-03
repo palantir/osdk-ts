@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Worker } from '../interfaces/Worker.js';
 
@@ -14,18 +15,21 @@ export namespace modifyWorker {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     Worker: {
       description: undefined;
+      displayName: 'Worker';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<Worker>;
@@ -68,16 +72,21 @@ export interface modifyWorker extends ActionDefinition<modifyWorker.Signatures> 
     rid: 'ri.actions.main.action-type.0b1e5427-b2c5-46f6-8d1f-980a69ca6dae';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-worker';
 
     signatures: modifyWorker.Signatures;
   };
   apiName: 'modifyWorker';
   type: 'action';
+  unsanitizedApiName: 'modify-worker';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyWorker: modifyWorker = {
   apiName: 'modifyWorker',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-worker') as 'modify-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };
