@@ -364,6 +364,10 @@ jobs:
   # Build the app/site packages that have no transpile/typecheck task; `turbo
   # run build` is what proves they still compile. Runs in parallel with the test
   # matrix so the slow app builds stay off the tests' critical path.
+  #
+  # Storybook is excluded and built by build-storybook instead. Both jobs run
+  # `turbo run build`, so leaving it in would build the same Storybook twice per
+  # pipeline and race two jobs on one cache key.
   build-apps:
     executor:
       name: node
@@ -377,7 +381,7 @@ jobs:
       - detect-infra-changes
       - run:
           name: Build apps and sites
-          command: pnpm exec turbo run build $TURBO_FORCE
+          command: pnpm exec turbo run build --filter='!@osdk/react-components-storybook' $TURBO_FORCE
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: apps
@@ -421,9 +425,15 @@ jobs:
   # Storybook
   # ---------------------------------------------------------------------------
 
-  # Build Storybook exactly once. The result goes to the workspace for the
-  # chromatic job, and to artifacts so a build is downloadable even when
+  # Build Storybook exactly once per pipeline. The result goes to the workspace
+  # for the chromatic job, and to artifacts so a build is downloadable even when
   # Chromatic is unavailable (fork PRs get no project token).
+  #
+  # This goes through turbo rather than calling `storybook build` directly, so
+  # the package's declared `storybook-static/**` output is cached. A PR that
+  # touches nothing in Storybook's dependency graph is a cache hit and pays
+  # nothing — which is a transitively correct answer to "does this need
+  # rebuilding?", unlike a hand-written changed-paths guard.
   build-storybook:
     executor:
       name: node
@@ -439,13 +449,19 @@ jobs:
       - restore-turbo-cache:
           scope: storybook
       - run:
-          name: Build Storybook's workspace dependencies
+          # The storybook package's turbo `build` only declares
+          # @osdk/react-components#transpileBrowser, and root `transpileBrowser`
+          # has no `^transpileBrowser`, so the graph does not cascade to the
+          # other workspace deps the stories import (@osdk/react, @osdk/client,
+          # @osdk/faux, …). Materialize them from the build job's cache first.
+          name: Restore story dependencies from cache
           command: pnpm exec turbo run transpileBrowser --filter='@osdk/react-components-storybook^...'
       - run:
-          # --stats-json emits preview-stats.json, the module graph TurboSnap
-          # reads to work out which stories a commit can actually reach.
+          # The package's `build` script passes --stats-json, which emits the
+          # preview-stats.json that TurboSnap reads to work out which stories a
+          # commit can actually reach.
           name: Build Storybook with TurboSnap stats
-          command: pnpm --filter @osdk/react-components-storybook run build-stats
+          command: pnpm exec turbo run build --filter=@osdk/react-components-storybook
       - persist_to_workspace:
           root: .
           paths:

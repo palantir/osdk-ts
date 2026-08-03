@@ -35,22 +35,11 @@ if [ ! -d "$BUILD_DIR" ]; then
   exit 1
 fi
 
-# Chromatic only *warns* when the stats file is absent and then silently
-# snapshots everything, which quietly turns TurboSnap off and multiplies the
-# snapshot bill. Treat it as a hard error so the regression is visible.
-if [ ! -f "$STATS_FILE" ]; then
-  echo "TurboSnap stats file missing: $STATS_FILE" >&2
-  echo "Storybook must be built with --stats-json (see the build-stats script)." >&2
-  exit 1
-fi
-
 args=(
   --storybook-build-dir "$BUILD_DIR"
   # Chromatic runs from the repo root but Storybook is built one level down.
   # Without this, TurboSnap cannot map changed git paths onto stats entries.
   --storybook-base-dir "$STORYBOOK_DIR"
-  --only-changed
-  --trace-changed
   --zip
   --output-file "$OUTPUT_FILE"
   # Automated branches have no reviewer to look at visual diffs.
@@ -58,15 +47,33 @@ args=(
 )
 
 if [ "${CIRCLE_BRANCH:-}" = "main" ]; then
-  # main *is* the baseline: accept whatever landed so the next PR diffs against
-  # the current state of the world rather than against a stale accepted build.
+  # main is the baseline, and it is the one branch a fork PR can never build,
+  # so it gets a complete run: every story re-rendered, nothing inherited.
+  # TurboSnap here would let unchanged stories coast indefinitely, so a
+  # rendering shift caused by a dependency or environment change rather than
+  # by a source edit would never be captured. --auto-accept-changes then makes
+  # whatever landed the new baseline, so the next PR diffs against reality.
   args+=(--auto-accept-changes)
 else
+  # PRs pay only for what they touched. TurboSnap walks the Vite module graph
+  # in preview-stats.json from the changed files up to the stories that
+  # transitively import them, so an unrelated PR snapshots nothing.
+  args+=(--only-changed --trace-changed)
   # Visual changes are a review signal, not a build break — Chromatic's own
   # "UI Tests" check on the PR carries that. Genuinely broken stories still
   # fail this job, because Chromatic exits non-zero on component errors
   # regardless of this flag.
   args+=(--exit-zero-on-changes)
+
+  # Chromatic only *warns* when the stats file is absent and then silently
+  # snapshots everything, which quietly turns TurboSnap off and multiplies the
+  # bill. Treat it as a hard error so the regression is visible. Only the
+  # TurboSnap path needs it; the full run on main does not read it.
+  if [ ! -f "$STATS_FILE" ]; then
+    echo "TurboSnap stats file missing: $STATS_FILE" >&2
+    echo "Storybook must be built with --stats-json (see the package's build script)." >&2
+    exit 1
+  fi
 fi
 
 echo "Running chromatic@$CHROMATIC_CLI_VERSION ${args[*]}"

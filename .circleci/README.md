@@ -97,17 +97,29 @@ part of `turbo run build`. So:
 
 ### After (here, on CircleCI)
 
-- Storybook is built **once**, in `build-storybook`, and handed to `chromatic`
-  through a CircleCI workspace — Blueprint's pattern.
+- Storybook is built **once per pipeline**, in `build-storybook`, and handed to
+  `chromatic` through a CircleCI workspace — Blueprint's pattern. `build-apps`
+  excludes the package so the two jobs cannot build it twice.
+- That build goes through `turbo run build`, so the package's declared
+  `storybook-static/**` output is cached. A PR touching nothing in Storybook's
+  dependency graph is a cache hit and pays nothing.
 - Chromatic hosts the built Storybook per commit, which removes the reason to
   force-push to `gh-pages` at all.
-- **TurboSnap** (`--only-changed`) snapshots only the stories a commit can
-  actually reach, using the `preview-stats.json` that the new `build-stats`
-  script emits via `storybook build --stats-json`.
 - Visual diffs are reported by Chromatic's own PR check plus a sticky comment
   with the build link, hosted Storybook link, and snapshot counts.
-- On `main`, `--auto-accept-changes` keeps the baseline current so the next PR
-  diffs against reality rather than a stale accepted build.
+
+The two branches behave differently on purpose:
+
+|           | `main`                                                                                                                                                                                                        | Pull requests                                           |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Snapshots | All ~196 stories                                                                                                                                                                                              | Only what TurboSnap reaches                             |
+| Flags     | `--auto-accept-changes`                                                                                                                                                                                       | `--only-changed --trace-changed --exit-zero-on-changes` |
+| Why       | The baseline, and the one branch a fork can never build. A full run catches rendering shifts caused by a dependency or environment change rather than a source edit — which TurboSnap, by design, lets coast. | Pays only for what the PR touched.                      |
+
+Budget accordingly: a full run is ~196 snapshots — one per story, per viewport,
+per browser — so `main` costs that per merge. If that turns out to be too much,
+the lever is adding `--only-changed` to the `main` path too and scheduling a
+periodic full rebuild instead — not removing the PR runs.
 
 One detail worth calling out: **TurboSnap does not work under Actions' standard
 `pull_request` trigger**, because that trigger builds an ephemeral merge commit
