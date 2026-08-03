@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.20.0
+
+### Minor Changes
+
+- feaf298: Add `Aliases.dataset`, `Aliases.mediaset`, and `Aliases.stream` APIs for resolving dataset, media set, and stream aliases
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+
 ## 1.19.0
 
 ### Minor Changes
