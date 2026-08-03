@@ -274,6 +274,7 @@ async function generateClientSdk(
       process.env.PACKAGE_CLI_VERSION!,
       args.externalObjects,
       args.externalInterfaces,
+      !args.disableOntologyMetadataExport,
     );
     return true;
   } catch (e) {
@@ -362,6 +363,10 @@ async function generateSourceFiles(
     args.packageType,
     args.externalObjects,
     args.externalInterfaces,
+    undefined, // externalSpts
+    undefined, // forInternalUse
+    undefined, // fixedVersionQueryTypes
+    !args.disableOntologyMetadataExport,
   );
 }
 

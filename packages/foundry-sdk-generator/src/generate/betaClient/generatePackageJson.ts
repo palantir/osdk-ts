@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { writeFile } from "fs/promises";
-import { join } from "path";
 import {
-  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
   ONTOLOGY_METADATA_JSON_PATH,
-} from "./generateOntologyMetadata.js";
+} from "@osdk/generator";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export async function generatePackageJson(options: {
   packageName: string;
@@ -69,8 +70,14 @@ export async function generatePackageJson(options: {
         default: "./cjs/index.js",
       },
       "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
-        types: `./${ONTOLOGY_METADATA_DTS_PATH}`,
-        default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        require: {
+          types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
+        import: {
+          types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+          default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+        },
       },
     },
     dependencies: packageDeps,

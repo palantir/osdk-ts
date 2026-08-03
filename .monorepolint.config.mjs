@@ -37,7 +37,7 @@ import * as semver from "semver";
 const rootPackageJson = JSON.parse(
   await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
-    "utf8",
+    "utf-8",
   ),
 );
 
@@ -491,6 +491,22 @@ const archetypeRules = archetypes(
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    extraExports: {
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        import: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+        require: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+      },
+    },
     // Migrated to the oxc toolchain; carries a nested oxlint config (its
     // src/index.ts barrel re-exports the generated ontology, tripping
     // oxc/no-barrel-file once the module graph is resolvable).
@@ -704,7 +720,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               file: context.getPackageJsonPath(),
               fixer: () => {
                 // always refetch in fixer since another fixer may have already changed the file
-                let packageJson = context.getPackageJson();
+                const packageJson = context.getPackageJson();
                 if (packageJson[d]) {
                   packageJson[d] = {
                     ...packageJson[d],
@@ -728,7 +744,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
             file: context.getPackageJsonPath(),
             fixer: () => {
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:~") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -756,7 +772,7 @@ const disallowWorkspaceCaret = createRuleFactory({
             file: context.getPackageJsonPath(),
             fixer: () => {
               // always refetch in fixer since another fixer may have already changed the file
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -838,7 +854,7 @@ async function dirExists(dirPath) {
   try {
     const stat = await fs.stat(dirPath);
     return stat.isDirectory();
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -847,7 +863,8 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExports?: string[]
+ *   cssExports?: string[],
+ *   extraExports?: Record<string, unknown>
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -907,7 +924,7 @@ const ourExportsConvention = createRuleFactory({
       for (
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
-          encoding: "utf8",
+          encoding: "utf-8",
           recursive: true,
         })
       ) {
@@ -917,7 +934,7 @@ const ourExportsConvention = createRuleFactory({
         const fullPath = path.join(q.parentPath, q.name);
         const rel = path.relative(publicPath, fullPath);
         const b = rel.replace(/\.ts$/, "");
-        expectedExports.exports["./" + b] = makeExport(b);
+        expectedExports.exports[`./${b}`] = makeExport(b);
       }
     }
 
@@ -925,6 +942,14 @@ const ourExportsConvention = createRuleFactory({
     const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
       expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
+    }
+
+    // escape hatch for subpaths this convention can't derive from src/public,
+    // e.g. generated data assets. also must come before the wildcard.
+    for (
+      const [subpath, target] of Object.entries(options.extraExports ?? {})
+    ) {
+      expectedExports.exports[subpath] = target;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -1007,7 +1032,7 @@ const setWorkspaceDepRangeForPrereleases = createRuleFactory({
             `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
           file: packageJsonPath,
           fixer: () => {
-            let updated = context.getPackageJson();
+            const updated = context.getPackageJson();
             if (updated[depField]?.[depName] === current) {
               updated[depField][depName] = expected;
               context.host.writeJson(packageJsonPath, updated);
@@ -1033,7 +1058,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
     `pnpm exec dprint fmt --stdin foo.${ext}`,
     {
       input: contents,
-      encoding: "utf8",
+      encoding: "utf-8",
       shell: true,
     },
   );
@@ -1083,7 +1108,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
             }
             : {}
         ),
-        ...(opts.extraTsConfigCompilerOptions ?? {}),
+        ...opts.extraTsConfigCompilerOptions,
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -1170,6 +1195,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
+ * @property { Record<string, unknown> } [extraExports]
  * @property { string[] } [attwExcludeEntrypoints]
  * @property { string } [typecheckProject]
  */
@@ -1210,8 +1236,7 @@ function standardPackageRules(shared, options) {
     if (!options.output.browser) {
       return DELETE_SCRIPT_ENTRY;
     }
-    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
-      + buildCssSuffix;
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${buildCssSuffix}`;
   };
 
   if (options.minimalChangesOnly) {
@@ -1335,6 +1360,7 @@ function standardPackageRules(shared, options) {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
         cssExports,
+        extraExports: options.extraExports,
       },
     }),
     packageEntry({

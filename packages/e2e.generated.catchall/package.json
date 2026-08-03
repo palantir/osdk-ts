@@ -17,6 +17,16 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+      "import": {
+        "types": "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+        "default": "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+      },
+      "require": {
+        "types": "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+        "default": "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+      }
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -40,7 +50,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/client": "workspace:~"
+    "@osdk/client": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:^",
