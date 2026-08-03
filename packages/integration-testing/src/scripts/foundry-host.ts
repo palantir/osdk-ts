@@ -91,7 +91,7 @@ export const resolveFoundryHost = async (
   const envValue = env.FOUNDRY_EXTERNAL_HOST ?? env.FOUNDRY_HOSTNAME;
   if (envValue) {
     const configured = parseConfiguredHost(envValue);
-    if (typeof configured !== "undefined") {
+    if (configured) {
       return configured;
     }
   }

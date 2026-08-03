@@ -100,8 +100,7 @@ const runInstallBat = async (
 
 /**
  * Installs the Foundry CLI by running the installer the stack serves, with the
- * resolved stack url and token injected as `FOUNDRY_URL` and `TOKEN`. Warns
- * when the installed CLI does not end up on PATH.
+ * resolved stack url and token injected as `FOUNDRY_URL` and `TOKEN`.
  */
 export const installFoundryCli = async (
   options: ResolveBearerTokenOptions = {},

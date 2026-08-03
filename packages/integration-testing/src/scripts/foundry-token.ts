@@ -32,7 +32,8 @@ const parseGitRemoteToken = (gitRemote: string): string | undefined => {
   } catch {
     return undefined;
   }
-  return url.password || url.username || undefined;
+  const encodedToken = url.password || url.username;
+  return encodedToken.length ? decodeURIComponent(encodedToken) : undefined;
 };
 
 const resolveFoundryToken = async (
