@@ -120,6 +120,11 @@ commands:
       Restore a scoped turbo cache. Each scope keeps its own warm cache across
       runs, then falls back to this pipeline's build cache (the cold-start path)
       and finally to any previous build cache.
+
+      Keys carry CIRCLE_NODE_INDEX so that parallel containers within one job do
+      not race to write the same key — a save_cache against an existing key is a
+      silent no-op, which would mean only one container's results ever persist.
+      Jobs without `parallelism` always run at index 0.
     parameters:
       scope:
         type: string
@@ -127,10 +132,11 @@ commands:
       - restore_cache:
           name: Restore turbo cache (<< parameters.scope >>)
           keys:
-            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Revision }}
-            - turbo-{{ arch }}-<< parameters.scope >>-
-            - turbo-{{ arch }}-build-{{ .Revision }}
-            - turbo-{{ arch }}-build-
+            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+            # `build` is never parallel, so its cache is always written at index 0.
+            - turbo-{{ arch }}-build-0-{{ .Revision }}
+            - turbo-{{ arch }}-build-0-
 
   save-turbo-cache:
     parameters:
@@ -139,7 +145,7 @@ commands:
     steps:
       - save_cache:
           name: Save turbo cache (<< parameters.scope >>)
-          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Revision }}
+          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
           paths:
             - .turbo/cache
 
@@ -367,6 +373,13 @@ jobs:
       name: node
       node-version: << parameters.node-version >>
       resource-class: xlarge
+    # Two containers per Node version. Container 1 runs @osdk/react-components
+    # alone: it has a large happy-dom suite, and when it competes with the other
+    # ~80 test processes for CPU its vitest main thread is starved enough to
+    # trip the worker RPC timeout. Running it serially after the others (what
+    # the Actions workflow does) avoids the contention but pays for it in wall
+    # clock; its own container avoids the contention *and* runs concurrently.
+    parallelism: 2
     environment:
       NODE_18_EXCLUDES: *node-18-excludes
     steps:
@@ -396,15 +409,24 @@ jobs:
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
       - run:
-          # @osdk/react-components is excluded here and run on its own below: it
-          # has a large happy-dom suite, and when it competes with the other ~80
-          # test processes for CPU its vitest main thread is starved enough to
-          # trip the worker RPC timeout on the slowest leg.
-          name: Test (excluding react-components)
-          command: pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
-      - run:
-          name: Test react-components (isolated)
-          command: pnpm exec turbo run test --filter=@osdk/react-components
+          name: Run this container's share of the tests
+          command: |
+            case "$CIRCLE_NODE_INDEX" in
+              0)
+                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
+                ;;
+              1)
+                pnpm exec turbo run test --filter=@osdk/react-components
+                ;;
+              *)
+                # Blueprint's config has a live example of this going wrong: its
+                # parallelism is 6 but the case has no branch for index 3, so one
+                # container silently runs nothing. Fail loudly instead.
+                echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
+                echo "\`parallelism\` and this case statement have to agree." >&2
+                exit 1
+                ;;
+            esac
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
 

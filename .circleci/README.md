@@ -159,12 +159,12 @@ workspace to pull ~1000 lines of unrelated version drift (including
 
 Resource classes are deliberate, not uniform:
 
-| Class  | Jobs                                                                                 | Why                                                                                           |
-| ------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| xlarge | `build`, `typecheck`, `lint`, `build-apps`, `test` ×4, `storybook-interaction-tests` | Genuinely parallel work. `lint` is here because oxlint/oxfmt are Rust and scale across cores. |
-| large  | `install`, `e2e`, `bundle-size`, `build-storybook`                                   | I/O bound, or single-threaded at the point that matters (Rollup's bundle phase).              |
-| medium | `changesets`, `cspell`                                                               | Short, mostly single-task.                                                                    |
-| small  | `chromatic`, `fork-guard`, `ci-all`                                                  | An upload, a `git diff`, and an `echo`.                                                       |
+| Class  | Jobs                                                                                                 | Why                                                                                           |
+| ------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| xlarge | `build`, `typecheck`, `lint`, `build-apps`, `test` ×4 (×2 containers), `storybook-interaction-tests` | Genuinely parallel work. `lint` is here because oxlint/oxfmt are Rust and scale across cores. |
+| large  | `install`, `e2e`, `bundle-size`, `build-storybook`                                                   | I/O bound, or single-threaded at the point that matters (Rollup's bundle phase).              |
+| medium | `changesets`, `cspell`                                                                               | Short, mostly single-task.                                                                    |
+| small  | `chromatic`, `fork-guard`, `ci-all`                                                                  | An upload, a `git diff`, and an `echo`.                                                       |
 
 Three things keep the cost down:
 
@@ -179,6 +179,16 @@ Three things keep the cost down:
 - **The `bundle-size` base measurement is cached** on the base commit SHA. It is
   identical for every push to a PR, so only the first push pays for the base
   rebuild.
+
+Against that, one deliberate cost increase: the `test` job runs
+`parallelism: 2`, so the matrix is 8 containers rather than 4. Container 1 runs
+`@osdk/react-components` alone. That suite is large enough that competing with
+the other ~80 test processes starves its vitest main thread and trips the worker
+RPC timeout; the Actions workflow works around it by running it serially after
+everything else. Its own container removes the contention outright and runs it
+concurrently. If the extra containers prove too expensive, the lever is moving
+that half into its own job so it can take a smaller resource class — with
+`parallelism` every container in a job shares one class.
 
 Two known costs of that shape, both accepted:
 
@@ -199,10 +209,22 @@ Two known costs of that shape, both accepted:
 - Run the full Node matrix only on `main` and just 18 + 24 (the supported
   boundaries) on PRs. Halves the matrix cost, but it is a real coverage
   reduction.
-- Split the test matrix across containers with `parallelism` if the Node legs
-  become the critical path.
-- Emit JUnit XML from vitest and wire up `store_test_results` for CircleCI's
-  test-summary UI. Requires vitest reporter config that does not exist yet.
+- Emit JUnit XML and wire up `store_test_results` for CircleCI's test summary,
+  flaky-test detection, and per-test timings. Cheaper than it looks: every
+  package's `test` script is a bare `vitest run`, so turbo's argument
+  passthrough covers all of them at once with no package changes —
+
+  ```sh
+  pnpm exec turbo run test -- --reporter=default \
+                              --reporter=junit \
+                              --outputFile.junit=reports/junit.xml
+  ```
+
+  Each package writes into its own `reports/`, and local `pnpm test` never
+  passes those flags, so developer runs are unaffected. The catch is that
+  `turbo.json`'s `test` task declares no `outputs`, so on a cache hit the XML
+  would not be materialized and `store_test_results` would silently upload
+  nothing. It needs `"outputs": ["reports/**"]` first.
 
 ## Validating changes to this config
 
