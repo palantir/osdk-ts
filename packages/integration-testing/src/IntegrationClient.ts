@@ -164,19 +164,19 @@ export async function createIntegrationClient(
   );
   const mockClient = createMockClient();
   const clientInternal = ((def: ClientArg) => {
-    if (def.type === "query") {
-      return mockClient(def);
+    switch (def.type) {
+      case "query":
+        return mockClient(def);
+      case "action":
+        return realClient(def);
+      case "interface":
+        return realClient(def);
+      case "object":
+        return realClient(def);
+      case "experiment":
+      default:
+        return realClient(def);
     }
-    if (def.type === "action") {
-      return realClient(def);
-    }
-    if (def.type === "interface") {
-      return realClient(def);
-    }
-    if (def.type === "object") {
-      return realClient(def);
-    }
-    return realClient(def);
   }) as Client;
   const client = Object.defineProperties<LocalOntologyClient>(
     clientInternal as LocalOntologyClient,
