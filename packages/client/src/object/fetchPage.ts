@@ -249,9 +249,9 @@ export async function fetchStaticRidPage<
     {
       objectSet: {
         type: "static",
-        objects: [...rids],
+        objects: rids as string[],
       },
-      select: args?.$select ? [...args.$select] : [],
+      select: (args?.$select as string[] | undefined) ?? [],
       selectV2: [],
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
