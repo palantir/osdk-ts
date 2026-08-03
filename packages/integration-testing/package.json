@@ -45,8 +45,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
+    "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/unit-testing": "workspace:~",
     "conjure-lite": "^0.7.3",
@@ -56,9 +55,9 @@
     "undici": "^6.28.0"
   },
   "peerDependencies": {
-    "@osdk/generator-converters.ontologyir": "workspace:^",
-    "@osdk/generator-converters.preview": "workspace:^",
-    "@osdk/seed-helpers": "workspace:^"
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
+    "@osdk/seed-helpers": "workspace:*"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
@@ -80,6 +79,7 @@
     "build/esm",
     "build/browser",
     "build/types",
+    "bin",
     "CHANGELOG.md",
     "package.json",
     "templates",
