@@ -85,6 +85,7 @@ export {
   getBusInterface,
   getBusInterfaceSet,
   getFirstSecondElementOf2DArray,
+  getFriends,
   getNamesOfCustomersFromCountry,
   getTodoCount,
   identity2DArray,

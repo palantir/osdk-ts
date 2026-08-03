@@ -3863,6 +3863,13 @@
             "dataType": {
               "type": "boolean"
             }
+          },
+          "assigneeEmail": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Foreign key to the assigned Person's email",
+            "displayName": "Assignee Email"
           }
         },
         "status": "ACTIVE",
@@ -3882,7 +3889,8 @@
           "displayName": "Assignee",
           "objectTypeApiName": "Person",
           "status": "ACTIVE",
-          "foreignKeyPropertyApiName": "email"
+          "foreignKeyPropertyApiName": "assigneeEmail",
+          "linkTypeRid": "ri.ontology.main.link-type.0f9d43a2-6c33-4c9d-8d2b-3d1f5a4e91c7"
         }
       ]
     },
@@ -3917,14 +3925,23 @@
           "displayName": "Todos",
           "objectTypeApiName": "Todo",
           "status": "ACTIVE",
-          "foreignKeyPropertyApiName": "id"
+          "linkTypeRid": "ri.ontology.main.link-type.0f9d43a2-6c33-4c9d-8d2b-3d1f5a4e91c7"
         },
         {
           "apiName": "Friends",
           "cardinality": "MANY",
           "displayName": "Friends",
           "objectTypeApiName": "Person",
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "linkTypeRid": "ri.ontology.main.link-type.6b1e0d84-2f57-4a1e-9c0b-8ad3f21e5b46"
+        },
+        {
+          "apiName": "FriendOf",
+          "cardinality": "MANY",
+          "displayName": "Friend Of",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+          "linkTypeRid": "ri.ontology.main.link-type.6b1e0d84-2f57-4a1e-9c0b-8ad3f21e5b46"
         }
       ]
     },
@@ -6037,6 +6054,25 @@
       "rid": "query.rid2",
       "version": "0.1.2"
     },
+    "getFriends": {
+      "apiName": "getFriends",
+      "parameters": {
+        "person": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Person",
+            "objectTypeApiName": "Person"
+          },
+          "required": true
+        }
+      },
+      "output": {
+        "type": "objectSet",
+        "objectTypeApiName": "Person"
+      },
+      "rid": "query.rid3",
+      "version": "0.1.2"
+    },
     "getNamesOfCustomersFromCountry": {
       "apiName": "getNamesOfCustomersFromCountry",
       "output": {
@@ -6825,7 +6861,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name of Foo"
+          "description": "Name of Foo",
+          "required": false
         },
         "description": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6834,7 +6871,8 @@
             "type": "string"
           },
           "displayName": "Description",
-          "description": "Description of Description"
+          "description": "Description of Description",
+          "required": false
         },
         "deprecatedName": {
           "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
@@ -6887,7 +6925,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name of Foo"
+          "description": "Name of Foo",
+          "required": false
         },
         "description": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6896,7 +6935,8 @@
             "type": "string"
           },
           "displayName": "Description",
-          "description": "Description of Description"
+          "description": "Description of Description",
+          "required": false
         },
         "inheritedDescription": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6905,7 +6945,8 @@
             "type": "string"
           },
           "displayName": "Inherited Description",
-          "description": "Description property we inherited from some parent interface"
+          "description": "Description property we inherited from some parent interface",
+          "required": false
         },
         "deprecatedName": {
           "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
@@ -6965,7 +7006,8 @@
             "type": "integer"
           },
           "displayName": "Jersey Number",
-          "description": "Jersey Number"
+          "description": "Jersey Number",
+          "required": false
         },
         "athleteId": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6974,7 +7016,8 @@
             "type": "string"
           },
           "displayName": "Athlete ID",
-          "description": "Athlete ID"
+          "description": "Athlete ID",
+          "required": true
         },
         "name22": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -6983,7 +7026,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name"
+          "description": "Name",
+          "required": false
         }
       },
       "allProperties": {
@@ -6994,7 +7038,8 @@
             "type": "integer"
           },
           "displayName": "Jersey Number",
-          "description": "Jersey Number"
+          "description": "Jersey Number",
+          "required": false
         },
         "athleteId": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -7003,7 +7048,8 @@
             "type": "string"
           },
           "displayName": "Athlete ID",
-          "description": "Athlete ID"
+          "description": "Athlete ID",
+          "required": true
         },
         "name22": {
           "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
@@ -7012,7 +7058,8 @@
             "type": "string"
           },
           "displayName": "Name",
-          "description": "Name"
+          "description": "Name",
+          "required": false
         }
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
@@ -7257,7 +7304,8 @@
           "apiName": "objectDescription",
           "dataType": {
             "type": "string"
-          }
+          },
+          "required": false
         }
       },
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
