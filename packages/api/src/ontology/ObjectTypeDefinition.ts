@@ -179,6 +179,13 @@ export namespace ObjectMetadata {
 export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
+  /**
+   * The code-facing api name, set when this definition has been alias-remapped
+   * so that code generated against one stack can run against another. When
+   * present, `apiName` is the name used on the wire and `localApiName` is the
+   * name reported back to user code (`$apiName`, `$objectType`, ...).
+   */
+  localApiName?: string;
   primaryKeyApiName?: string;
   primaryKeyType?: PrimaryKeyTypes;
   osdkMetadata?: OsdkMetadata;

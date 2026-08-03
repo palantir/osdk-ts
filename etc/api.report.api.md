@@ -1728,6 +1728,7 @@ export interface ObjectTypeDefinition {
     __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
     	// (undocumented)
     apiName: string;
+    	localApiName?: string;
     	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)

@@ -35,6 +35,9 @@ import type {
   Model,
   ModelResource,
   ModelValue,
+  ObjectType,
+  ObjectTypeResource,
+  ObjectTypeValue,
   ResolvedAliases,
   ResourcesFile,
   Source,
@@ -64,6 +67,7 @@ function loadPublishedAliases(): ResolvedAliases {
     datasets: loadPublishedDatasets(aliasesFile.defaults.datasets),
     mediasets: loadPublishedMediasets(aliasesFile.defaults.mediasets),
     streams: loadPublishedStreams(aliasesFile.defaults.streams),
+    objects: loadPublishedObjects(aliasesFile.defaults.objects),
   };
   return cachedPublishedAliases;
 }
@@ -84,6 +88,7 @@ function loadPreviewAliases(): ResolvedAliases {
     datasets: loadPreviewDatasets(resourcesFile.resources.datasets),
     mediasets: loadPreviewMediasets(resourcesFile.resources.mediasets),
     streams: loadPreviewStreams(resourcesFile.resources.streams),
+    objects: loadPreviewObjects(resourcesFile.resources.objects),
   };
 }
 
@@ -191,6 +196,30 @@ function loadPreviewMediasets(
       .filter(
         (mediaset): mediaset is MediasetResource & { alias: string } =>
           mediaset.alias != null,
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
+  );
+}
+
+function loadPublishedObjects(
+  objects: Record<string, ObjectTypeValue> | undefined,
+): Record<string, ObjectType> {
+  return Object.fromEntries<ObjectType>(
+    Object.entries(objects ?? {}).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ]),
+  );
+}
+
+function loadPreviewObjects(
+  objects: ObjectTypeResource[] | undefined,
+): Record<string, ObjectType> {
+  return Object.fromEntries<ObjectType>(
+    (objects ?? [])
+      .filter(
+        (object): object is ObjectTypeResource & { alias: string } =>
+          object.alias != null,
       )
       .map(({ alias, identifier }) => [alias, identifier]),
   );

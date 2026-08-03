@@ -63,6 +63,7 @@ import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
+import { registerObjectTypeAlias } from "./ontology/objectTypeAliases.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
@@ -186,6 +187,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
             ? { invoke: ExperimentFns<T> }
             : never {
     if (o.type === "object" || o.type === "interface") {
+      registerObjectTypeAlias(clientCtx, o);
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       return new ActionInvoker(clientCtx, o) as T extends ActionDefinition<any>

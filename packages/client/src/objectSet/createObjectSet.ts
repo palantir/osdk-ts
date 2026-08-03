@@ -53,6 +53,7 @@ import {
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
+import { registerObjectTypeAlias } from "../ontology/objectTypeAliases.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
@@ -107,6 +108,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   clientCtx: MinimalClient,
   objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
+  registerObjectTypeAlias(clientCtx, objectType);
+
   // `aggregate<Q, any>` is an instantiation expression; binding it inline as
   // `(aggregate<Q, any>).bind(...)` is valid TS but trips oxfmt's parser, so the
   // instantiation is hoisted to a local (behavior-identical).

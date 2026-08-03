@@ -104,8 +104,11 @@ const basePropDefs = {
   $objectSpecifier: {
     get(this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
+      // Built from `rawObj.$apiName` rather than the definition so that an
+      // alias-remapped object type yields a specifier naming the code-facing
+      // type, consistent with `$apiName`/`$objectType`.
       return createObjectSpecifierFromPrimaryKey(
-        this[ObjectDefRef],
+        { type: "object", apiName: rawObj.$apiName },
         rawObj.$primaryKey,
       );
     },

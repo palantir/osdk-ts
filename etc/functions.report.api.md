@@ -42,6 +42,8 @@ declare namespace Aliases {
         Mediaset,
         model,
         Model,
+        objectType,
+        ObjectType,
         source,
         Source,
         stream,
@@ -269,6 +271,15 @@ export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefi
     	// (undocumented)
     type: "object";
 }
+
+// @public
+interface ObjectType {
+    	// (undocumented)
+    apiName: string;
+}
+
+// @public
+function objectType<Q extends ObjectTypeDefinition>(definition: Q): Q;
 
 // @public (undocumented)
 export interface PlatformNotification {

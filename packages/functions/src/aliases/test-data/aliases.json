@@ -63,6 +63,18 @@
           "rid": "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444"
         }
       }
+    },
+    "objects": {
+      "Employee": {
+        "id": {
+          "apiName": "com.example.PublishedEmployee"
+        }
+      },
+      "Office": {
+        "id": {
+          "apiName": "com.example.PublishedOffice"
+        }
+      }
     }
   },
   "version": 1

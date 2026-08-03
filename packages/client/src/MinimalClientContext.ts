@@ -19,6 +19,7 @@ import type { SharedClientContext } from "@osdk/shared.client2";
 
 import type { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import type { ObjectTypeAliases } from "./ontology/objectTypeAliases.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 import type { CreateSubscriptionConnectionFn } from "./SubscriptionConnection.js";
 
@@ -53,6 +54,12 @@ export interface MinimalClient extends SharedClientContext {
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
   narrowTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
+  /**
+   * Bound<->local object type api names for alias-remapped definitions.
+   * Populated as aliased definitions are handed to the client.
+   * @internal
+   */
+  objectTypeAliases: ObjectTypeAliases;
 }
 
 export type MinimalClientParams = {

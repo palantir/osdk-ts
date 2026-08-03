@@ -16,6 +16,7 @@
 
 import * as fs from "fs";
 
+import { Employee, Office } from "@osdk/client.test.ontology";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { custom } from "./custom.js";
@@ -28,6 +29,7 @@ import {
 import { resetPublishedCache } from "./loaders.js";
 import { mediaset } from "./mediaset.js";
 import { model } from "./model.js";
+import { objectType } from "./objectType.js";
 import { source } from "./source.js";
 import { stream } from "./stream.js";
 import { AliasEnvironment } from "./types.js";
@@ -240,6 +242,48 @@ describe("published mode aliases", () => {
       );
       expect(result2.rid).toBe(
         "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444",
+      );
+    });
+  });
+
+  describe("objectType", () => {
+    it("rebinds apiName and records the local name", () => {
+      const result = objectType(Employee);
+      expect(result.apiName).toBe("com.example.PublishedEmployee");
+      expect(result.localApiName).toBe("Employee");
+    });
+
+    it("preserves the rest of the definition", () => {
+      const result = objectType(Employee);
+      expect(result.type).toBe("object");
+      expect(result.primaryKeyApiName).toBe(Employee.primaryKeyApiName);
+      expect(result.primaryKeyType).toBe(Employee.primaryKeyType);
+      expect(result.osdkMetadata).toBe(Employee.osdkMetadata);
+    });
+
+    it("does not mutate the definition it was given", () => {
+      objectType(Employee);
+      expect(Employee.apiName).toBe("Employee");
+      expect(Employee).not.toHaveProperty("localApiName");
+    });
+
+    it("drops the generated-stack object type rid", () => {
+      expect(Employee).toHaveProperty("internalDoNotUseMetadata");
+      expect(objectType(Employee)).not.toHaveProperty(
+        "internalDoNotUseMetadata",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(objectType(Employee).apiName).toBe(
+        "com.example.PublishedEmployee",
+      );
+      expect(objectType(Office).apiName).toBe("com.example.PublishedOffice");
+    });
+
+    it("throws on an object type with no alias", () => {
+      expect(() => objectType({ type: "object", apiName: "Unmapped" })).toThrow(
+        "Object type alias 'Unmapped' not found. Available aliases: [Employee, Office]",
       );
     });
   });
@@ -464,6 +508,44 @@ describe("live preview mode aliases", () => {
     it("excludes streams with null or missing alias", () => {
       expect(() => stream("some-random-lookup")).toThrow(
         "Available aliases: [previewStreamAlias, anotherPreviewStream]",
+      );
+    });
+  });
+
+  describe("objectType", () => {
+    it("rebinds apiName and records the local name", () => {
+      const result = objectType(Employee);
+      expect(result.apiName).toBe("com.example.PreviewEmployee");
+      expect(result.localApiName).toBe("Employee");
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(objectType(Employee).apiName).toBe("com.example.PreviewEmployee");
+      expect(objectType(Office).apiName).toBe("com.example.PreviewOffice");
+    });
+
+    it("excludes object types with null or missing alias", () => {
+      expect(() => objectType({ type: "object", apiName: "Unmapped" })).toThrow(
+        "Available aliases: [Employee, Office]",
+      );
+    });
+
+    it("throws when resources.json has no objects section", () => {
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' not found. Available aliases: []",
       );
     });
   });

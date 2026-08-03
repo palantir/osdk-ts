@@ -116,6 +116,35 @@
         "verbs": []
       }
     ],
+    "objects": [
+      {
+        "identifier": {
+          "apiName": "com.example.PreviewEmployee"
+        },
+        "verbs": [],
+        "alias": "Employee"
+      },
+      {
+        "identifier": {
+          "apiName": "com.example.PreviewOffice"
+        },
+        "verbs": [],
+        "alias": "Office"
+      },
+      {
+        "identifier": {
+          "apiName": "com.example.PreviewUnaliased"
+        },
+        "verbs": [],
+        "alias": null
+      },
+      {
+        "identifier": {
+          "apiName": "com.example.PreviewNoAliasField"
+        },
+        "verbs": []
+      }
+    ],
     "custom": {
       "previewCustomAlias": "previewCustomValue",
       "anotherPreviewCustom": "anotherPreviewValue"

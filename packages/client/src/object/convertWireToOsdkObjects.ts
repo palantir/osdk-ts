@@ -31,6 +31,10 @@ import invariant from "tiny-invariant";
 
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  describeObjectType,
+  toLocalObjectType,
+} from "../ontology/objectTypeAliases.js";
 import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
@@ -154,7 +158,10 @@ export async function convertWireToOsdkObjects(
         ? objectDefsByApiName[rawObj.$apiName]
         : await client.ontologyProvider.getObjectDefinition(rawObj.$apiName)
     ) as FetchedObjectTypeDefinition;
-    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
+    invariant(
+      objectDef,
+      `Missing definition for ${describeObjectType(client, rawObj.$apiName)}`,
+    );
 
     const interfaceToObjMapping =
       interfaceApiName && isInterfaceScoped
@@ -195,6 +202,17 @@ export async function convertWireToOsdkObjects(
       );
     } else if (strictNonNull === "drop" && !conforming) {
       continue;
+    }
+
+    // If this object type was reached through an alias-remapped definition, the
+    // wire carries the bound api name but user code expects the code-facing one.
+    // Rewrite what we hand out while leaving `objectDef` bound, so follow-up
+    // requests (timeseries, media, cipherText, links) still address the real
+    // object type on this stack.
+    const localApiName = toLocalObjectType(client, rawObj.$apiName);
+    if (localApiName !== rawObj.$apiName) {
+      rawObj.$apiName = localApiName;
+      rawObj.$objectType = localApiName;
     }
 
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(

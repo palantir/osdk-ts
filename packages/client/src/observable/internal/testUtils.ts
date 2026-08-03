@@ -41,6 +41,7 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { createObjectTypeAliases } from "../../ontology/objectTypeAliases.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -204,6 +205,7 @@ export function createClientMockHelper(): MockClientHelper {
     requestContext: {},
     logger,
     narrowTypeInterfaceOrObjectMapping: {},
+    objectTypeAliases: createObjectTypeAliases(),
   };
   client.fetchMetadata = vitest.fn();
 

@@ -38,6 +38,16 @@ export interface Stream {
   rid: string;
 }
 
+/**
+ * The object type an alias resolves to on the stack we are talking to.
+ *
+ * `apiName` is the "bound" name, i.e. the object type as it exists here, which
+ * may differ from the "local" name that the SDK was generated with.
+ */
+export interface ObjectType {
+  apiName: string;
+}
+
 export interface ResolvedAliases {
   custom: Record<string, string>;
   models: Record<string, Model>;
@@ -45,6 +55,7 @@ export interface ResolvedAliases {
   datasets: Record<string, Dataset>;
   mediasets: Record<string, Mediaset>;
   streams: Record<string, Stream>;
+  objects: Record<string, ObjectType>;
 }
 
 // Environment
@@ -85,12 +96,31 @@ export interface StreamResource {
   alias?: string | null;
 }
 
+export interface ObjectTypeResource {
+  identifier: ObjectTypeIdentifier;
+  verbs: string[];
+  alias?: string | null;
+  /**
+   * Reserved for property api name remapping (local -> bound). Not yet applied.
+   */
+  properties?: Record<string, ObjectTypeIdentifier>;
+  /**
+   * Reserved for link api name remapping (local -> bound). Not yet applied.
+   */
+  links?: Record<string, ObjectTypeIdentifier>;
+}
+
 export interface ResourceScopes {
   custom: Record<string, string>;
   models: ModelResource[];
   datasets: DatasetResource[];
   mediasets: MediasetResource[];
   streams: StreamResource[];
+  /**
+   * Optional: absent in `resources.json` files written before object type
+   * aliasing existed.
+   */
+  objects?: ObjectTypeResource[];
 }
 
 export interface FunctionEgress {
@@ -144,6 +174,19 @@ export interface StreamValue {
   id: StreamIdentifier;
 }
 
+/**
+ * The "bound" object type an alias points at, i.e. its api name on this stack.
+ * Unlike the other resource identifiers this is an api name rather than a rid,
+ * because api names are what the OSDK puts on the wire.
+ */
+export interface ObjectTypeIdentifier {
+  apiName: string;
+}
+
+export interface ObjectTypeValue {
+  id: ObjectTypeIdentifier;
+}
+
 export interface DefaultAliases {
   custom: Record<string, string>;
   models: Record<string, ModelValue>;
@@ -151,6 +194,11 @@ export interface DefaultAliases {
   datasets: Record<string, DatasetValue>;
   mediasets: Record<string, MediasetValue>;
   streams: Record<string, StreamValue>;
+  /**
+   * Optional: absent in `aliases.json` files written before object type
+   * aliasing existed.
+   */
+  objects?: Record<string, ObjectTypeValue>;
 }
 
 export interface AliasesFile {
