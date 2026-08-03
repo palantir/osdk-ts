@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Assignment } from './Assignment.js';
@@ -250,9 +251,13 @@ export interface StatusUpdate extends $ObjectTypeDefinition {
 
 export const StatusUpdate = {
   type: 'object',
-  apiName: 'StatusUpdate',
+  get apiName() {
+    return $resolveObjectType('StatusUpdate') as 'StatusUpdate';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'statusUpdateId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('StatusUpdate') as 'statusUpdateId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.586dc2cc-44d2-4a82-8831-bd529c6f2042',

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -1440,9 +1441,13 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
 
 export const GraphqlFormatting = {
   type: 'object',
-  apiName: 'GraphqlFormatting',
+  get apiName() {
+    return $resolveObjectType('GraphqlFormatting') as 'GraphqlFormatting';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'stringPlain',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('GraphqlFormatting') as 'stringPlain';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',

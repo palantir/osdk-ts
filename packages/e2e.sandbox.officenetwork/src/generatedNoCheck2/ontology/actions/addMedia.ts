@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,12 +15,14 @@ export namespace addMedia {
   export type ParamsDefinition = {
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employee_media: {
       description: undefined;
+      displayName: 'Employee Media';
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';
@@ -72,16 +75,21 @@ export interface addMedia extends ActionDefinition<addMedia.Signatures> {
     rid: 'ri.actions.main.action-type.43aadae8-9dc7-4085-8cb9-de6634d31e1f';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'add-media';
 
     signatures: addMedia.Signatures;
   };
   apiName: 'addMedia';
   type: 'action';
+  unsanitizedApiName: 'add-media';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const addMedia: addMedia = {
   apiName: 'addMedia',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('add-media') as 'add-media';
+  },
   osdkMetadata: $osdkMetadata,
 };

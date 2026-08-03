@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -85,6 +86,8 @@ export interface addStructToEmployee extends ActionDefinition<addStructToEmploye
 export const addStructToEmployee: addStructToEmployee = {
   apiName: 'addStructToEmployee',
   type: 'action',
-  unsanitizedApiName: 'add-struct-to-employee',
+  get unsanitizedApiName() {
+    return $resolveAction('add-struct-to-employee') as 'add-struct-to-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

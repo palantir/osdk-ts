@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOffice {
@@ -117,6 +118,8 @@ export interface createOffice extends ActionDefinition<createOffice.Signatures> 
 export const createOffice: createOffice = {
   apiName: 'createOffice',
   type: 'action',
-  unsanitizedApiName: 'create-office',
+  get unsanitizedApiName() {
+    return $resolveAction('create-office') as 'create-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

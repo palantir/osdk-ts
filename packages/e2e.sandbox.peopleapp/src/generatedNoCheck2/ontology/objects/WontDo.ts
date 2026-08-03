@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -121,9 +122,13 @@ export interface WontDo extends $ObjectTypeDefinition {
 
 export const WontDo = {
   type: 'object',
-  apiName: 'WontDo',
+  get apiName() {
+    return $resolveObjectType('WontDo') as 'WontDo';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'wontDoName',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('WontDo') as 'wontDoName';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.0f6f78a8-c31c-43d3-8de9-b7df7a98d232',

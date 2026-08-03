@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createLowerCase {
@@ -13,6 +14,7 @@ export namespace createLowerCase {
   export type ParamsDefinition = {
     IdParam: {
       description: undefined;
+      displayName: 'Id Param';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -54,16 +56,21 @@ export interface createLowerCase extends ActionDefinition<createLowerCase.Signat
     rid: 'ri.actions.main.action-type.0ede6e39-734c-4c2e-910f-1cb6037d6785';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-lower-case';
 
     signatures: createLowerCase.Signatures;
   };
   apiName: 'createLowerCase';
   type: 'action';
+  unsanitizedApiName: 'create-lower-case';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createLowerCase: createLowerCase = {
   apiName: 'createLowerCase',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-lower-case') as 'create-lower-case';
+  },
   osdkMetadata: $osdkMetadata,
 };

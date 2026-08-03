@@ -220,9 +220,11 @@ async function generateClientSdk(
         if (args.internal) {
           dependencyVersions.osdkApiVersion = "workspace:~";
           dependencyVersions.osdkClientVersion = "workspace:~";
+          dependencyVersions.osdkAliasesVersion = "workspace:~";
           dependencyVersions.osdkLegacyClientVersion = "workspace:~";
           dependencyVersions.osdkApiPeerVersion = "workspace:^";
           dependencyVersions.osdkClientPeerVersion = "workspace:^";
+          dependencyVersions.osdkAliasesPeerVersion = "workspace:^";
         }
 
         const expectedDeps = getExpectedDependencies(dependencyVersions);
@@ -240,6 +242,7 @@ async function generateClientSdk(
           {
             "@osdk/client": dependencyVersions.osdkClientVersion,
             "@osdk/api": dependencyVersions.osdkApiVersion,
+            "@osdk/aliases": dependencyVersions.osdkAliasesVersion,
           },
           {
             "@osdk/client":
@@ -248,6 +251,9 @@ async function generateClientSdk(
             "@osdk/api":
               dependencyVersions.osdkApiPeerVersion ??
               dependencyVersions.osdkApiVersion,
+            "@osdk/aliases":
+              dependencyVersions.osdkAliasesPeerVersion ??
+              dependencyVersions.osdkAliasesVersion,
           },
         );
 
@@ -308,9 +314,11 @@ export async function getDependencyVersions(): Promise<{
   areTheTypesWrongVersion: string;
   osdkApiVersion: string;
   osdkClientVersion: string;
+  osdkAliasesVersion: string;
   osdkLegacyClientVersion: string;
   osdkApiPeerVersion?: string;
   osdkClientPeerVersion?: string;
+  osdkAliasesPeerVersion?: string;
 }> {
   const ourPackageJsonPath = await getOurPackageJsonPath();
 
@@ -324,6 +332,7 @@ export async function getDependencyVersions(): Promise<{
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
+  const osdkAliasesVersion = `^${process.env.PACKAGE_ALIASES_VERSION}`;
   const osdkLegacyClientVersion = `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
 
   return {
@@ -332,6 +341,7 @@ export async function getDependencyVersions(): Promise<{
     areTheTypesWrongVersion,
     osdkApiVersion,
     osdkClientVersion,
+    osdkAliasesVersion,
     osdkLegacyClientVersion,
   };
 }
@@ -362,7 +372,24 @@ async function generateSourceFiles(
     args.packageType,
     args.externalObjects,
     args.externalInterfaces,
+    new Map(),
+    false,
+    [],
+    await findEnclosingPackageName(args.outDir),
   );
+}
+
+// Identifies the SDK in the alias registry. Two SDKs generated from the same
+// ontology (`e2e.generated.api-namespace.local` and `.dep`) must not share an id.
+async function findEnclosingPackageName(
+  outDir: string,
+): Promise<string | undefined> {
+  const packageJsonPath = await findUp("package.json", { cwd: outDir });
+  if (!packageJsonPath) return undefined;
+  const { name } = JSON.parse(
+    await fs.promises.readFile(packageJsonPath, "utf-8"),
+  );
+  return typeof name === "string" ? name : undefined;
 }
 
 // If the user passed us `dev` as our version, we use that for both our generated package version AND the cli version.

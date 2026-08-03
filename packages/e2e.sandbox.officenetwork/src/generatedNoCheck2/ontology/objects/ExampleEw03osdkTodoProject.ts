@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoTask } from './ExampleEw03osdkTodoTask.js';
@@ -76,6 +77,8 @@ export interface ExampleEw03osdkTodoProject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ExampleEw03osdkTodoProject';
+  primaryKeyApiName: 'pk';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: ExampleEw03osdkTodoProject.ObjectSet;
     props: ExampleEw03osdkTodoProject.Props;
@@ -142,8 +145,14 @@ export interface ExampleEw03osdkTodoProject extends $ObjectTypeDefinition {
 
 export const ExampleEw03osdkTodoProject = {
   type: 'object',
-  apiName: 'ExampleEw03osdkTodoProject',
+  get apiName() {
+    return $resolveObjectType('ExampleEw03osdkTodoProject') as 'ExampleEw03osdkTodoProject';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('ExampleEw03osdkTodoProject') as 'pk';
+  },
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.fd5bdc1a-eef1-47ab-8b14-c8155d2890a8',
   },

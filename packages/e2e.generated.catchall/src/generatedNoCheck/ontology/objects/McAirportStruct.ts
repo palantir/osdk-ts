@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -121,9 +122,13 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
 
 export const McAirportStruct = {
   type: 'object',
-  apiName: 'McAirportStruct',
+  get apiName() {
+    return $resolveObjectType('McAirportStruct') as 'McAirportStruct';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'airportName',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('McAirportStruct') as 'airportName';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

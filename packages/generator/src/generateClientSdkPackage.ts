@@ -50,6 +50,10 @@ export async function generateClientSdkPackage(
       packageType,
       externalObjects,
       externalInterfaces,
+      new Map(),
+      false,
+      [],
+      packageName,
     );
 
     await fs.promises.mkdir(outDir, { recursive: true });
@@ -137,16 +141,22 @@ export interface DependencyVersions {
   areTheTypesWrongVersion: string;
   osdkApiVersion: string;
   osdkClientVersion: string;
+  osdkAliasesVersion?: string;
   osdkApiPeerVersion?: string;
   osdkClientPeerVersion?: string;
+  osdkAliasesPeerVersion?: string;
 }
 
 export function getExpectedDependencies(
   {
     osdkApiVersion,
     osdkClientVersion,
+    // callers that predate alias-aware generation do not pin a range; the
+    // registry is module level so the host decides which copy wins anyway
+    osdkAliasesVersion = "*",
     osdkApiPeerVersion = osdkApiVersion,
     osdkClientPeerVersion = osdkClientVersion,
+    osdkAliasesPeerVersion = osdkAliasesVersion,
   }: DependencyVersions,
 ): {
   devDependencies: Record<string, string>;
@@ -157,6 +167,7 @@ export function getExpectedDependencies(
       "@osdk/api": osdkApiVersion,
     },
     peerDependencies: {
+      "@osdk/aliases": osdkAliasesPeerVersion,
       "@osdk/api": osdkApiPeerVersion,
       "@osdk/client": osdkClientPeerVersion,
     },

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -116,9 +117,13 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
 
 export const RhemmingsObjectWithGtsrProperty2 = {
   type: 'object',
-  apiName: 'RhemmingsObjectWithGtsrProperty2',
+  get apiName() {
+    return $resolveObjectType('RhemmingsObjectWithGtsrProperty2') as 'RhemmingsObjectWithGtsrProperty2';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('RhemmingsObjectWithGtsrProperty2') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

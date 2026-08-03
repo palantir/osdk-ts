@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -171,9 +172,13 @@ export interface MasonMovie extends $ObjectTypeDefinition {
 
 export const MasonMovie = {
   type: 'object',
-  apiName: 'MasonMovie',
+  get apiName() {
+    return $resolveObjectType('MasonMovie') as 'MasonMovie';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'movie',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MasonMovie') as 'movie';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d',

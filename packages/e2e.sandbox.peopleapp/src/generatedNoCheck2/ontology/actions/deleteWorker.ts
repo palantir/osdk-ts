@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Worker } from '../interfaces/Worker.js';
 
@@ -64,6 +65,8 @@ export interface deleteWorker extends ActionDefinition<deleteWorker.Signatures> 
 export const deleteWorker: deleteWorker = {
   apiName: 'deleteWorker',
   type: 'action',
-  unsanitizedApiName: 'delete-worker',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-worker') as 'delete-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };

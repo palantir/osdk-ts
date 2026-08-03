@@ -331,6 +331,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "oxc migrated libraries with check-api",
     [
+      "@osdk/aliases",
       "@osdk/api",
       "@osdk/functions",
       "@osdk/unit-testing",

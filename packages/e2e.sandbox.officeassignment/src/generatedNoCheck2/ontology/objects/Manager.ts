@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Assignment } from './Assignment.js';
@@ -144,9 +145,13 @@ export interface Manager extends $ObjectTypeDefinition {
 
 export const Manager = {
   type: 'object',
-  apiName: 'Manager',
+  get apiName() {
+    return $resolveObjectType('Manager') as 'Manager';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'managerId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Manager') as 'managerId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a63ba05c-d155-4a05-9e06-aed231a64571',

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Assignment } from '../objects/Assignment.js';
 
@@ -92,6 +93,8 @@ export interface endAssignment extends ActionDefinition<endAssignment.Signatures
 export const endAssignment: endAssignment = {
   apiName: 'endAssignment',
   type: 'action',
-  unsanitizedApiName: 'end-assignment',
+  get unsanitizedApiName() {
+    return $resolveAction('end-assignment') as 'end-assignment';
+  },
   osdkMetadata: $osdkMetadata,
 };

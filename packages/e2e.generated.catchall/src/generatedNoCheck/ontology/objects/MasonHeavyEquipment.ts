@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -943,9 +944,13 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
 
 export const MasonHeavyEquipment = {
   type: 'object',
-  apiName: 'MasonHeavyEquipment',
+  get apiName() {
+    return $resolveObjectType('MasonHeavyEquipment') as 'MasonHeavyEquipment';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MasonHeavyEquipment') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2',

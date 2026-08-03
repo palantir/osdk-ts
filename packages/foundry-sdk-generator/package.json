@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/aliases": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/client.unstable": "workspace:*",

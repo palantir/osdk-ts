@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
 
 export const DherlihyComplexObject = {
   type: 'object',
-  apiName: 'DherlihyComplexObject',
+  get apiName() {
+    return $resolveObjectType('DherlihyComplexObject') as 'DherlihyComplexObject';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('DherlihyComplexObject') as 'id';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

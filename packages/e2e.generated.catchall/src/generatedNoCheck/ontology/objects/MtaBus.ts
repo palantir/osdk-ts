@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -107,9 +108,13 @@ export interface MtaBus extends $ObjectTypeDefinition {
 
 export const MtaBus = {
   type: 'object',
-  apiName: 'MtaBus',
+  get apiName() {
+    return $resolveObjectType('MtaBus') as 'MtaBus';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'vehicleId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('MtaBus') as 'vehicleId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

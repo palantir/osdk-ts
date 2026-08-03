@@ -23,28 +23,40 @@ const ExpectedOsdkVersion = "2.52.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataFile(
-  { fs, outDir, ontology, ontologyApiNamespace }: GenerateContext,
+  { fs, outDir, ontology, ontologyApiNamespace, importExt = "", sdkId }:
+    GenerateContext,
   userAgent: string,
 ): Promise<void> {
+  const sourceOntologyRid = JSON.stringify(ontology.ontology.rid);
+
+  // Every generated const imports $osdkMetadata from this file, so registering
+  // here guarantees the packaged aliases are in the registry before any
+  // resolver getter can fire -- including through a deep import.
+  const aliasImports = ["registerPackagedAliases"];
+  if (ontologyApiNamespace == null) {
+    aliasImports.push("$resolveOntologyBranch", "$resolveOntologyRid");
+  }
+
   await fs.writeFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `
+      import { ${aliasImports.join(", ")} } from "@osdk/aliases";
+      import { $packagedAliases } from "./aliases${importExt}";
+
+      registerPackagedAliases(${JSON.stringify(sdkId)}, $packagedAliases);
+
       export type $ExpectedClientVersion = "${ExpectedOsdkVersion}";
       export const $osdkMetadata = { extraUserAgent: "${userAgent}" };
       ${
         ontologyApiNamespace == null
           ? `
-        export const $ontologyRid = "${ontology.ontology.rid}";
+        export const $ontologyRid: string = $resolveOntologyRid(${sourceOntologyRid});
         /**
          * The RID of the Foundry branch this SDK was generated against, or
          * \`undefined\` if it was generated against the main branch.
          */
-        export const $branch: string | undefined = ${
-            ontology.raw.branch != null
-              ? `"${ontology.raw.branch.rid}"`
-              : "undefined"
-          };
+        export const $branch: string | undefined = $resolveOntologyBranch(${sourceOntologyRid});
         `
           : ""
       }

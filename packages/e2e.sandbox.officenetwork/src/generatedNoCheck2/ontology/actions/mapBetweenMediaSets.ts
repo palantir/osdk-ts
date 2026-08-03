@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,18 +15,21 @@ export namespace mapBetweenMediaSets {
   export type ParamsDefinition = {
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employee_documents: {
       description: undefined;
+      displayName: 'employeeDocuments';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     employee_media: {
       description: undefined;
+      displayName: 'Employee Media';
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';
@@ -73,16 +77,21 @@ export interface mapBetweenMediaSets extends ActionDefinition<mapBetweenMediaSet
     rid: 'ri.actions.main.action-type.d023c57d-fd92-440b-8906-721f660630ee';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'map-between-media-sets';
 
     signatures: mapBetweenMediaSets.Signatures;
   };
   apiName: 'mapBetweenMediaSets';
   type: 'action';
+  unsanitizedApiName: 'map-between-media-sets';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const mapBetweenMediaSets: mapBetweenMediaSets = {
   apiName: 'mapBetweenMediaSets',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('map-between-media-sets') as 'map-between-media-sets';
+  },
   osdkMetadata: $osdkMetadata,
 };

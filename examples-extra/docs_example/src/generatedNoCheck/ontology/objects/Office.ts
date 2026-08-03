@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -129,9 +130,13 @@ export interface Office extends $ObjectTypeDefinition {
 
 export const Office = {
   type: 'object',
-  apiName: 'Office',
+  get apiName() {
+    return $resolveObjectType('Office') as 'Office';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'officeId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Office') as 'officeId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45',

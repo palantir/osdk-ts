@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Assignment } from '../objects/Assignment.js';
 
@@ -193,6 +194,8 @@ export interface recordStatusUpdate extends ActionDefinition<recordStatusUpdate.
 export const recordStatusUpdate: recordStatusUpdate = {
   apiName: 'recordStatusUpdate',
   type: 'action',
-  unsanitizedApiName: 'record-status-update',
+  get unsanitizedApiName() {
+    return $resolveAction('record-status-update') as 'record-status-update';
+  },
   osdkMetadata: $osdkMetadata,
 };

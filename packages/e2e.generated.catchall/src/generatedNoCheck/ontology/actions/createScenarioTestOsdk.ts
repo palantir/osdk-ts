@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createScenarioTestOsdk {
@@ -78,6 +79,8 @@ export interface createScenarioTestOsdk extends ActionDefinition<createScenarioT
 export const createScenarioTestOsdk: createScenarioTestOsdk = {
   apiName: 'createScenarioTestOsdk',
   type: 'action',
-  unsanitizedApiName: 'create-scenario-test-osdk',
+  get unsanitizedApiName() {
+    return $resolveAction('create-scenario-test-osdk') as 'create-scenario-test-osdk';
+  },
   osdkMetadata: $osdkMetadata,
 };

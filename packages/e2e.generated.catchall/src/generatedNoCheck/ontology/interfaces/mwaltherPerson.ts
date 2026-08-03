@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -73,7 +74,9 @@ export interface mwaltherPerson extends $InterfaceDefinition {
 
 export const mwaltherPerson = {
   type: 'interface',
-  apiName: 'mwaltherPerson',
+  get apiName() {
+    return $resolveInterfaceType('mwaltherPerson') as 'mwaltherPerson';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7',

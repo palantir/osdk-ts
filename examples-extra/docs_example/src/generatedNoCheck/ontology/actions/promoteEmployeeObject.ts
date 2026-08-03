@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -96,6 +97,8 @@ export interface promoteEmployeeObject extends ActionDefinition<promoteEmployeeO
 export const promoteEmployeeObject: promoteEmployeeObject = {
   apiName: 'promoteEmployeeObject',
   type: 'action',
-  unsanitizedApiName: 'promote-employee-object',
+  get unsanitizedApiName() {
+    return $resolveAction('promote-employee-object') as 'promote-employee-object';
+  },
   osdkMetadata: $osdkMetadata,
 };

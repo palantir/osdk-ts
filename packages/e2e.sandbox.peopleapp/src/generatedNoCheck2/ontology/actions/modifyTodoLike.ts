@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { TodoLike } from '../interfaces/TodoLike.js';
 
@@ -94,6 +95,8 @@ export interface modifyTodoLike extends ActionDefinition<modifyTodoLike.Signatur
 export const modifyTodoLike: modifyTodoLike = {
   apiName: 'modifyTodoLike',
   type: 'action',
-  unsanitizedApiName: 'modify-todo-like',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-todo-like') as 'modify-todo-like';
+  },
   osdkMetadata: $osdkMetadata,
 };

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createStructPersonOpiTeam {
@@ -108,6 +109,8 @@ export interface createStructPersonOpiTeam extends ActionDefinition<createStruct
 export const createStructPersonOpiTeam: createStructPersonOpiTeam = {
   apiName: 'createStructPersonOpiTeam',
   type: 'action',
-  unsanitizedApiName: 'create-struct-person-opi-team',
+  get unsanitizedApiName() {
+    return $resolveAction('create-struct-person-opi-team') as 'create-struct-person-opi-team';
+  },
   osdkMetadata: $osdkMetadata,
 };

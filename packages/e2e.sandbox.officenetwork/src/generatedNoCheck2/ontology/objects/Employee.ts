@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Office } from './Office.js';
@@ -189,7 +190,7 @@ export namespace Employee {
      *   display name: 'Latest Venture '
      */
     readonly latestVenture:
-      | { venture: $PropType['string'] | undefined; days: $PropType['integer'] | undefined }
+      | { days: $PropType['integer'] | undefined; venture: $PropType['string'] | undefined }
       | undefined;
     /**
      * @experimental
@@ -316,6 +317,8 @@ export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
+  primaryKeyApiName: 'employeeNumber';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -330,6 +333,32 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'person';
     };
     implements: ['Person', 'Worker'];
+    interfaceImplementations: {
+      Person: {
+        email: {
+          type: 'localProperty';
+          propertyApiName: 'emailPrimaryWork';
+        };
+        employeeNumber: {
+          type: 'localProperty';
+          propertyApiName: 'employeeNumber';
+        };
+      };
+      Worker: {
+        email: {
+          type: 'localProperty';
+          propertyApiName: 'emailPrimaryWork';
+        };
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'fullName';
+        };
+        employeeNumber: {
+          type: 'localProperty';
+          propertyApiName: 'employeeNumber';
+        };
+      };
+    };
     interfaceMap: {
       Person: {
         email: 'emailPrimaryWork';
@@ -610,8 +639,14 @@ export interface Employee extends $ObjectTypeDefinition {
 
 export const Employee = {
   type: 'object',
-  apiName: 'Employee',
+  get apiName() {
+    return $resolveObjectType('Employee') as 'Employee';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Employee') as 'employeeNumber';
+  },
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64',
   },

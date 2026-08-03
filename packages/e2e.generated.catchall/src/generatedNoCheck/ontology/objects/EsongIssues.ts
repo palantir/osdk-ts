@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { EsongPds } from './EsongPds.js';
@@ -238,9 +239,13 @@ export interface EsongIssues extends $ObjectTypeDefinition {
 
 export const EsongIssues = {
   type: 'object',
-  apiName: 'EsongIssues',
+  get apiName() {
+    return $resolveObjectType('EsongIssues') as 'EsongIssues';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'id',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('EsongIssues') as 'id';
+  },
   primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { OsdkTestObject } from '../objects/OsdkTestObject.js';
 
@@ -64,6 +65,8 @@ export interface deleteOsdkTestObject extends ActionDefinition<deleteOsdkTestObj
 export const deleteOsdkTestObject: deleteOsdkTestObject = {
   apiName: 'deleteOsdkTestObject',
   type: 'action',
-  unsanitizedApiName: 'delete-osdk-test-object',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-osdk-test-object') as 'delete-osdk-test-object';
+  },
   osdkMetadata: $osdkMetadata,
 };

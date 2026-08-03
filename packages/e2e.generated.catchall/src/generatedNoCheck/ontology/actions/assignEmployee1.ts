@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 import type { Venture } from '../objects/Venture.js';
@@ -87,6 +88,8 @@ export interface assignEmployee1 extends ActionDefinition<assignEmployee1.Signat
 export const assignEmployee1: assignEmployee1 = {
   apiName: 'assignEmployee1',
   type: 'action',
-  unsanitizedApiName: 'assign-employee-1',
+  get unsanitizedApiName() {
+    return $resolveAction('assign-employee-1') as 'assign-employee-1';
+  },
   osdkMetadata: $osdkMetadata,
 };

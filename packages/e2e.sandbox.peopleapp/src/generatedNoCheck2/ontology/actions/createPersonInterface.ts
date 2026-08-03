@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createPersonInterface {
@@ -93,6 +94,8 @@ export interface createPersonInterface extends ActionDefinition<createPersonInte
 export const createPersonInterface: createPersonInterface = {
   apiName: 'createPersonInterface',
   type: 'action',
-  unsanitizedApiName: 'create-person-interface',
+  get unsanitizedApiName() {
+    return $resolveAction('create-person-interface') as 'create-person-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

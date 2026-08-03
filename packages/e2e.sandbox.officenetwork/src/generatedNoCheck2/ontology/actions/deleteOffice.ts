@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Office } from '../objects/Office.js';
 
@@ -14,6 +15,7 @@ export namespace deleteOffice {
   export type ParamsDefinition = {
     Office: {
       description: undefined;
+      displayName: 'Office';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Office>;
@@ -50,16 +52,21 @@ export interface deleteOffice extends ActionDefinition<deleteOffice.Signatures> 
     rid: 'ri.actions.main.action-type.72b40fca-42b6-4e09-99d1-a3d701808ce7';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-office';
 
     signatures: deleteOffice.Signatures;
   };
   apiName: 'deleteOffice';
   type: 'action';
+  unsanitizedApiName: 'delete-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteOffice: deleteOffice = {
   apiName: 'deleteOffice',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-office') as 'delete-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

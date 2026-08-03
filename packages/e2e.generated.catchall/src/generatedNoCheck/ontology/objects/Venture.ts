@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
@@ -104,9 +105,13 @@ export interface Venture extends $ObjectTypeDefinition {
 
 export const Venture = {
   type: 'object',
-  apiName: 'Venture',
+  get apiName() {
+    return $resolveObjectType('Venture') as 'Venture';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'ventureId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Venture') as 'ventureId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',

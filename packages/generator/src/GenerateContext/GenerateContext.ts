@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import type { AliasesCollector } from "../aliases/AliasesCollector.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import type { EnhancedOntologyDefinition } from "./EnhancedOntologyDefinition.js";
 
 export interface GenerateContext {
   ontology: EnhancedOntologyDefinition;
+
+  /**
+   * Accumulates the source-environment wire api names of every entity that gets
+   * generated. Written out last, by `generateAliasesFile`.
+   */
+  aliases: AliasesCollector;
+
+  /**
+   * Identifies this SDK in the alias registry. Two SDKs over the same ontology
+   * are the normal case, so this has to distinguish them: the registry rejects
+   * one id registering two different alias files.
+   */
+  sdkId: string;
 
   importExt?: string;
   fs: MinimalFs;

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoTask } from '../objects/ExampleEw03osdkTodoTask.js';
 
@@ -14,48 +15,56 @@ export namespace exampleEw03CreateOsdkTodoTask {
   export type ParamsDefinition = {
     assigned_to: {
       description: undefined;
+      displayName: 'Assigned To';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     description: {
       description: undefined;
+      displayName: 'Description';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     due_date: {
       description: undefined;
+      displayName: 'Due Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     osdkTodoTask: {
       description: undefined;
+      displayName: 'Osdk Todo Task';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleEw03osdkTodoTask>;
     };
     project_id: {
       description: undefined;
+      displayName: 'Project Id';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     start_date: {
       description: undefined;
+      displayName: 'Start Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     status: {
       description: undefined;
+      displayName: 'Status';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     title: {
       description: undefined;
+      displayName: 'Title';
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -131,16 +140,21 @@ export interface exampleEw03CreateOsdkTodoTask extends ActionDefinition<exampleE
     rid: 'ri.actions.main.action-type.9bcd1484-de72-4c5d-8432-e2b876eacaf1';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'example-ew03-create-osdk-todo-task';
 
     signatures: exampleEw03CreateOsdkTodoTask.Signatures;
   };
   apiName: 'exampleEw03CreateOsdkTodoTask';
   type: 'action';
+  unsanitizedApiName: 'example-ew03-create-osdk-todo-task';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const exampleEw03CreateOsdkTodoTask: exampleEw03CreateOsdkTodoTask = {
   apiName: 'exampleEw03CreateOsdkTodoTask',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('example-ew03-create-osdk-todo-task') as 'example-ew03-create-osdk-todo-task';
+  },
   osdkMetadata: $osdkMetadata,
 };

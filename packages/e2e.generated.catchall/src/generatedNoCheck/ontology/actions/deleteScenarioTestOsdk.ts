@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ScenarioTestOsdk } from '../objects/ScenarioTestOsdk.js';
 
@@ -64,6 +65,8 @@ export interface deleteScenarioTestOsdk extends ActionDefinition<deleteScenarioT
 export const deleteScenarioTestOsdk: deleteScenarioTestOsdk = {
   apiName: 'deleteScenarioTestOsdk',
   type: 'action',
-  unsanitizedApiName: 'delete-scenario-test-osdk',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-scenario-test-osdk') as 'delete-scenario-test-osdk';
+  },
   osdkMetadata: $osdkMetadata,
 };

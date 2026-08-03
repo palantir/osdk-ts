@@ -36,6 +36,7 @@ import {
 import { generatePackageJson } from "./generatePackageJson.js";
 
 const betaPeerDependencies: { [key: string]: string | undefined } = {
+  "@osdk/aliases": undefined,
   "@osdk/client": undefined,
 };
 
@@ -96,6 +97,7 @@ export async function generatePackage(
     new Map(),
     false,
     ontologyInfo.fixedVersionQueryTypes,
+    options.packageName,
   );
 
   await generateOntologyMetadata({
@@ -163,6 +165,16 @@ export async function generatePackage(
       join(packagePath, type, "package.json"),
       JSON.stringify({ type: type === "esm" ? "module" : "commonjs" }),
     );
+  }
+
+  // `tsc` ignores non-source roots, so JSON the generator emits (aliases.json)
+  // never appears in compilerOutput. Write it once, at the package root, where
+  // it stays a single rewritable artifact rather than one copy per module format.
+  for (const [filePath, fileContents] of Object.entries(inMemoryFileSystem)) {
+    if (!filePath.endsWith(".json")) continue;
+    if (path.basename(filePath) === "package.json") continue;
+    await mkdir(dirname(filePath), { recursive: true });
+    await writeFile(filePath, fileContents, { flag: "w" });
   }
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });

@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -65,9 +66,13 @@ export interface identity2DArray
 }
 
 export const identity2DArray: identity2DArray = {
-  apiName: 'identity2DArray',
   type: 'query',
-  version: '1.1.0',
+  get apiName() {
+    return $resolveQuery('identity2DArray') as 'identity2DArray';
+  },
+  get version() {
+    return $resolveQueryVersion('identity2DArray') as '1.1.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

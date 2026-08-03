@@ -56,7 +56,7 @@ function isTestFile(relativePath) {
   const segments = relativePath.split(path.sep);
   return segments.some(s =>
     s.includes(".test.") || s.includes(".test") || s === "testUtils"
-    || s.startsWith("testUtils.")
+    || s.startsWith("testUtils.") || s === "test-data" || s === "__fixtures__"
   );
 }
 
@@ -164,6 +164,7 @@ async function transpileWithTsup(format, target) {
     PACKAGE_VERSION,
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
+    PACKAGE_ALIASES_VERSION,
     PACKAGE_CLI_VERSION,
   ] = await Promise.all([
     import("tsup"),
@@ -171,6 +172,7 @@ async function transpileWithTsup(format, target) {
     Promise.resolve(pkgJson.version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
+    readPackageVersion("packages/aliases"),
     readPackageVersion("packages/cli"),
   ]);
 
@@ -231,6 +233,7 @@ async function transpileWithTsup(format, target) {
       PACKAGE_VERSION,
       PACKAGE_API_VERSION,
       PACKAGE_CLIENT_VERSION,
+      PACKAGE_ALIASES_VERSION,
       PACKAGE_CLI_VERSION,
       TARGET: target,
       MODE: process.env.production ? "production" : "development",
@@ -255,6 +258,38 @@ async function transpileWithTsup(format, target) {
       })),
     ],
   });
+
+  await copyJsonAssets(path.resolve("src"), path.resolve(outDir));
+}
+
+/**
+ * Neither transpile pipeline knows what to do with a `.json` file, so JSON that
+ * generated code ships alongside its modules (`generatedNoCheck/aliases.json`)
+ * would never reach `build/`. The bundler path needs an explicit copy; the babel
+ * path gets there through `fileEndingsToCopy`.
+ *
+ * @param {string} inDir
+ * @param {string} outDir
+ */
+async function copyJsonAssets(inDir, outDir) {
+  for (
+    const f of await readdir(inDir, {
+      recursive: true,
+      withFileTypes: true,
+      encoding: "utf-8",
+    })
+  ) {
+    if (f.isDirectory()) continue;
+    if (!f.name.endsWith(".json")) continue;
+
+    const fullFilePath = path.join(f.parentPath, f.name);
+    const relative = path.relative(inDir, fullFilePath);
+    if (isTestFile(relative)) continue;
+
+    const destPath = path.join(outDir, relative);
+    await mkdir(path.dirname(destPath), { recursive: true });
+    await copyFile(fullFilePath, destPath);
+  }
 }
 
 /**
@@ -282,12 +317,14 @@ async function transpileWithBabel(format, target) {
     PACKAGE_VERSION,
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
+    PACKAGE_ALIASES_VERSION,
     PACKAGE_CLI_VERSION,
   ] = await Promise.all([
     import("@babel/core"),
     readFile("package.json", "utf-8").then(f => JSON.parse(f).version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
+    readPackageVersion("packages/aliases"),
     readPackageVersion("packages/cli"),
   ]);
 
@@ -295,6 +332,7 @@ async function transpileWithBabel(format, target) {
     PACKAGE_VERSION,
     PACKAGE_API_VERSION,
     PACKAGE_CLIENT_VERSION,
+    PACKAGE_ALIASES_VERSION,
     PACKAGE_CLI_VERSION,
     TARGET: target,
     MODE: process.env.production ? "production" : "development",
@@ -306,6 +344,7 @@ async function transpileWithBabel(format, target) {
     ".d.mts",
     ".d.mts.map",
     ".css",
+    ".json",
   ];
 
   const extMap = {
@@ -370,6 +409,7 @@ async function transpileWithBabel(format, target) {
             "PACKAGE_VERSION",
             "PACKAGE_API_VERSION",
             "PACKAGE_CLIENT_VERSION",
+            "PACKAGE_ALIASES_VERSION",
             "PACKAGE_CLI_VERSION",
             "TARGET",
             "MODE",

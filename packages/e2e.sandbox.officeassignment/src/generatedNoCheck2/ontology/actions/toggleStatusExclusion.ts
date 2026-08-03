@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { StatusUpdate } from '../objects/StatusUpdate.js';
 
@@ -92,6 +93,8 @@ export interface toggleStatusExclusion extends ActionDefinition<toggleStatusExcl
 export const toggleStatusExclusion: toggleStatusExclusion = {
   apiName: 'toggleStatusExclusion',
   type: 'action',
-  unsanitizedApiName: 'toggle-status-exclusion',
+  get unsanitizedApiName() {
+    return $resolveAction('toggle-status-exclusion') as 'toggle-status-exclusion';
+  },
   osdkMetadata: $osdkMetadata,
 };

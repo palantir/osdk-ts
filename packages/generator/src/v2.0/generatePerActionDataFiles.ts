@@ -39,6 +39,7 @@ export async function generatePerActionDataFiles(
     importExt = "",
     ontology: enhancedOntology,
     forInternalUse = false,
+    aliases,
   }: Pick<
     GenerateContext,
     | "fs"
@@ -46,6 +47,7 @@ export async function generatePerActionDataFiles(
     | "importExt"
     | "ontology"
     | "forInternalUse"
+    | "aliases"
   >,
 ): Promise<void> {
   const outDir = path.join(rootOutDir, "ontology", "actions");
@@ -53,6 +55,7 @@ export async function generatePerActionDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(enhancedOntology.actionTypes).map(async (action) => {
+      aliases.addAction(action);
       const currentFilePath = path.join(
         "ontology",
         "actions",
@@ -241,6 +244,12 @@ export async function generatePerActionDataFiles(
       }
 
       function createV2Object() {
+        // `apiName` is the sanitized TS identifier and stays literal; the wire
+        // name lives on `unsanitizedApiName`, which is what applyAction reads,
+        // so that is the one that has to resolve through the alias file.
+        const wireApiName = JSON.stringify(
+          action.unsanitizedApiName ?? action.fullApiName,
+        );
         return `  export const ${action.shortApiName}: ${action.shortApiName} =
         {
           ${
@@ -251,8 +260,10 @@ export async function generatePerActionDataFiles(
             "parameters": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
+            "unsanitizedApiName": () => undefined,
           })
         },
+          get unsanitizedApiName() { return $resolveAction(${wireApiName}) as ${wireApiName}; },
           osdkMetadata: $osdkMetadata
         }
         `;
@@ -333,6 +344,7 @@ export async function generatePerActionDataFiles(
             ApplyActionOptions,
             ApplyBatchActionOptions,
           } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
+          import { $resolveAction } from "@osdk/aliases";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

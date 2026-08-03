@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
@@ -296,9 +297,13 @@ export interface Assignment extends $ObjectTypeDefinition {
 
 export const Assignment = {
   type: 'object',
-  apiName: 'Assignment',
+  get apiName() {
+    return $resolveObjectType('Assignment') as 'Assignment';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'assignmentId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('Assignment') as 'assignmentId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.6720b526-a510-456d-b328-73bfeb8471d7',

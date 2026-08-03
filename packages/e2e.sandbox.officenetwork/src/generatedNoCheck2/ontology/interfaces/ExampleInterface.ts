@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -7,6 +8,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$ExampleInterface = {};
@@ -72,7 +74,9 @@ export interface ExampleInterface extends $InterfaceDefinition {
 
 export const ExampleInterface = {
   type: 'interface',
-  apiName: 'ExampleInterface',
+  get apiName() {
+    return $resolveInterfaceType('ExampleInterface') as 'ExampleInterface';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.05598367-c4f3-455b-b050-12f6c90041db',

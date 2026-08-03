@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 
@@ -14,6 +15,7 @@ export namespace deleteTodo {
   export type ParamsDefinition = {
     todo: {
       description: undefined;
+      displayName: 'Todo';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Todo>;
@@ -50,16 +52,21 @@ export interface deleteTodo extends ActionDefinition<deleteTodo.Signatures> {
     rid: 'ri.actions.main.action-type.83a9d1a9-4132-4837-ae84-c9973a3a2e1e';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-todo';
 
     signatures: deleteTodo.Signatures;
   };
   apiName: 'deleteTodo';
   type: 'action';
+  unsanitizedApiName: 'delete-todo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteTodo: deleteTodo = {
   apiName: 'deleteTodo',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-todo') as 'delete-todo';
+  },
   osdkMetadata: $osdkMetadata,
 };

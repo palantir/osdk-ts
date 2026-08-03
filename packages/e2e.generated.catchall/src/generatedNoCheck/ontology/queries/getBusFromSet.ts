@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { bus_1 } from '../interfaces/bus_1.js';
@@ -49,9 +50,13 @@ export interface getBusFromSet extends QueryDefinition<getBusFromSet.Signature>,
 }
 
 export const getBusFromSet: getBusFromSet = {
-  apiName: 'getBusFromSet',
   type: 'query',
-  version: '0.14.0',
+  get apiName() {
+    return $resolveQuery('getBusFromSet') as 'getBusFromSet';
+  },
+  get version() {
+    return $resolveQueryVersion('getBusFromSet') as '0.14.0';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

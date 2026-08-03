@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -123,9 +124,13 @@ export interface CipherTextTest extends $ObjectTypeDefinition {
 
 export const CipherTextTest = {
   type: 'object',
-  apiName: 'CipherTextTest',
+  get apiName() {
+    return $resolveObjectType('CipherTextTest') as 'CipherTextTest';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'pk',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('CipherTextTest') as 'pk';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.583bebf4-2a64-4af4-8c86-8068ef5a5371',

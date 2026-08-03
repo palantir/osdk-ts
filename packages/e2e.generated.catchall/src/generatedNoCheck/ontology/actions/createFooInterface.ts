@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createFooInterface {
@@ -63,6 +64,8 @@ export interface createFooInterface extends ActionDefinition<createFooInterface.
 export const createFooInterface: createFooInterface = {
   apiName: 'createFooInterface',
   type: 'action',
-  unsanitizedApiName: 'create-foo-interface',
+  get unsanitizedApiName() {
+    return $resolveAction('create-foo-interface') as 'create-foo-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

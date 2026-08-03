@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 
@@ -64,6 +65,8 @@ export interface deleteTodo extends ActionDefinition<deleteTodo.Signatures> {
 export const deleteTodo: deleteTodo = {
   apiName: 'deleteTodo',
   type: 'action',
-  unsanitizedApiName: 'delete-todo',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-todo') as 'delete-todo';
+  },
   osdkMetadata: $osdkMetadata,
 };

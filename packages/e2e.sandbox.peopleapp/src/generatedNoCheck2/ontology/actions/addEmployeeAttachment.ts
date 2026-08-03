@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -79,6 +80,8 @@ export interface addEmployeeAttachment extends ActionDefinition<addEmployeeAttac
 export const addEmployeeAttachment: addEmployeeAttachment = {
   apiName: 'addEmployeeAttachment',
   type: 'action',
-  unsanitizedApiName: 'add-employee-attachment',
+  get unsanitizedApiName() {
+    return $resolveAction('add-employee-attachment') as 'add-employee-attachment';
+  },
   osdkMetadata: $osdkMetadata,
 };

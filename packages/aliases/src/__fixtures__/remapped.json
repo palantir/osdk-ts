@@ -1,0 +1,113 @@
+{
+  "defaults": {
+    "actions": {
+      "deleteTodos": {
+        "apiName": "foo.bar.deleteTodos",
+        "id": {
+          "rid": "ri.ontology.main.action-type.b0000000-0000-0000-0000-000000000002"
+        }
+      },
+      "markTodoCompleted": {
+        "apiName": "foo.bar.markTodoCompleted",
+        "id": {
+          "rid": "ri.ontology.main.action-type.b0000000-0000-0000-0000-000000000001"
+        }
+      }
+    },
+    "custom": {},
+    "datasets": {},
+    "egressConnections": {},
+    "interfaces": {
+      "SomeInterface": {
+        "apiName": "foo.bar.SomeInterface",
+        "id": {
+          "rid": "ri.ontology.main.interface.b0000000-0000-0000-0000-000000000010"
+        },
+        "links": {},
+        "properties": {
+          "SomeProperty": {
+            "apiName": "foo.bar.SomeProperty",
+            "id": {
+              "rid": "ri.ontology.main.shared-property-type.b0000000-0000-0000-0000-000000000011"
+            }
+          }
+        }
+      }
+    },
+    "mediasets": {},
+    "models": {},
+    "objects": {
+      "Person": {
+        "apiName": "foo.bar.Person",
+        "id": {
+          "rid": "ri.ontology.main.object-type.b0000000-0000-0000-0000-000000000021"
+        },
+        "links": {
+          "Todos": {
+            "apiName": "assignedTodos"
+          }
+        },
+        "primaryKeyApiName": "emailAddress",
+        "properties": {
+          "email": {
+            "apiName": "emailAddress"
+          }
+        }
+      },
+      "Todo": {
+        "apiName": "foo.bar.Todo",
+        "id": {
+          "rid": "ri.ontology.main.object-type.b0000000-0000-0000-0000-000000000020"
+        },
+        "links": {
+          "Assignee": {
+            "apiName": "assignedPerson"
+          }
+        },
+        "primaryKeyApiName": "todoId",
+        "properties": {
+          "array": {
+            "apiName": "tags"
+          },
+          "body": {
+            "apiName": "text"
+          },
+          "complete": {
+            "apiName": "isComplete"
+          },
+          "id": {
+            "apiName": "todoId"
+          }
+        }
+      }
+    },
+    "ontologies": {
+      "ridHere": {
+        "branch": null,
+        "id": {
+          "rid": "ri.ontology.main.ontology.b0000000-0000-0000-0000-00000000000b"
+        }
+      }
+    },
+    "queries": {
+      "getCount": {
+        "apiName": "foo.bar.getCount",
+        "id": {
+          "rid": "ri.function-registry.main.function.b0000000-0000-0000-0000-000000000030",
+          "version": "1.1.0"
+        },
+        "version": "1.1.0"
+      },
+      "returnsTodo": {
+        "apiName": "foo.bar.returnsTodo",
+        "id": {
+          "rid": "ri.function-registry.main.function.b0000000-0000-0000-0000-000000000031",
+          "version": "3.2.1"
+        },
+        "version": "3.2.1"
+      }
+    },
+    "streams": {}
+  },
+  "version": 1
+}

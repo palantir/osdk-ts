@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createWorker {
@@ -93,6 +94,8 @@ export interface createWorker extends ActionDefinition<createWorker.Signatures> 
 export const createWorker: createWorker = {
   apiName: 'createWorker',
   type: 'action',
-  unsanitizedApiName: 'create-worker',
+  get unsanitizedApiName() {
+    return $resolveAction('create-worker') as 'create-worker';
+  },
   osdkMetadata: $osdkMetadata,
 };

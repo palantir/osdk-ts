@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleObjects } from '../objects/ExampleObjects.js';
 
@@ -14,6 +15,7 @@ export namespace deleteExampleObjects {
   export type ParamsDefinition = {
     ExampleObjects: {
       description: undefined;
+      displayName: 'Example Objects';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleObjects>;
@@ -50,16 +52,21 @@ export interface deleteExampleObjects extends ActionDefinition<deleteExampleObje
     rid: 'ri.actions.main.action-type.e1698e4f-b789-478a-97bb-8da0865a2513';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-example-objects';
 
     signatures: deleteExampleObjects.Signatures;
   };
   apiName: 'deleteExampleObjects';
   type: 'action';
+  unsanitizedApiName: 'delete-example-objects';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteExampleObjects: deleteExampleObjects = {
   apiName: 'deleteExampleObjects',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-example-objects') as 'delete-example-objects';
+  },
   osdkMetadata: $osdkMetadata,
 };

@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -65,7 +66,9 @@ export interface OsdkTestInterface extends $InterfaceDefinition {
 
 export const OsdkTestInterface = {
   type: 'interface',
-  apiName: 'OsdkTestInterface',
+  get apiName() {
+    return $resolveInterfaceType('OsdkTestInterface') as 'OsdkTestInterface';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab',

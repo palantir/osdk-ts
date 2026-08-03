@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { TodoLike } from '../interfaces/TodoLike.js';
 
@@ -14,24 +15,28 @@ export namespace modifyTodoLike {
   export type ParamsDefinition = {
     isComplete: {
       description: undefined;
+      displayName: 'isComplete';
       multiplicity: false;
       nullable: true;
       type: 'boolean';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     todo_like_type: {
       description: undefined;
+      displayName: 'TodoLike Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
     };
     TodoLike: {
       description: undefined;
+      displayName: 'TodoLike';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<TodoLike>;
@@ -77,16 +82,21 @@ export interface modifyTodoLike extends ActionDefinition<modifyTodoLike.Signatur
     rid: 'ri.actions.main.action-type.353f4e63-0d68-4d9c-9afd-66150ec24e04';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-todo-like';
 
     signatures: modifyTodoLike.Signatures;
   };
   apiName: 'modifyTodoLike';
   type: 'action';
+  unsanitizedApiName: 'modify-todo-like';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyTodoLike: modifyTodoLike = {
   apiName: 'modifyTodoLike',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-todo-like') as 'modify-todo-like';
+  },
   osdkMetadata: $osdkMetadata,
 };

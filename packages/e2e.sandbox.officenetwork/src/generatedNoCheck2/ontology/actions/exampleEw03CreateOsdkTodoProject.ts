@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleEw03osdkTodoProject } from '../objects/ExampleEw03osdkTodoProject.js';
 
@@ -14,24 +15,28 @@ export namespace exampleEw03CreateOsdkTodoProject {
   export type ParamsDefinition = {
     budget: {
       description: undefined;
+      displayName: 'Budget';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     description: {
       description: undefined;
+      displayName: 'Description';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     name: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     osdkTodoProject: {
       description: undefined;
+      displayName: 'Osdk Todo Project';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<ExampleEw03osdkTodoProject>;
@@ -96,16 +101,21 @@ export interface exampleEw03CreateOsdkTodoProject
     rid: 'ri.actions.main.action-type.5750778f-3abd-4076-8ece-0b80c096f499';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'example-ew03-create-osdk-todo-project';
 
     signatures: exampleEw03CreateOsdkTodoProject.Signatures;
   };
   apiName: 'exampleEw03CreateOsdkTodoProject';
   type: 'action';
+  unsanitizedApiName: 'example-ew03-create-osdk-todo-project';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const exampleEw03CreateOsdkTodoProject: exampleEw03CreateOsdkTodoProject = {
   apiName: 'exampleEw03CreateOsdkTodoProject',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('example-ew03-create-osdk-todo-project') as 'example-ew03-create-osdk-todo-project';
+  },
   osdkMetadata: $osdkMetadata,
 };

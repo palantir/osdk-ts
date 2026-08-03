@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -79,6 +80,8 @@ export interface assignLead extends ActionDefinition<assignLead.Signatures> {
 export const assignLead: assignLead = {
   apiName: 'assignLead',
   type: 'action',
-  unsanitizedApiName: 'assign-lead',
+  get unsanitizedApiName() {
+    return $resolveAction('assign-lead') as 'assign-lead';
+  },
   osdkMetadata: $osdkMetadata,
 };

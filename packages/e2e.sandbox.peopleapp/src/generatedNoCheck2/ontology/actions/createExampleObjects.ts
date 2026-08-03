@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createExampleObjects {
@@ -68,6 +69,8 @@ export interface createExampleObjects extends ActionDefinition<createExampleObje
 export const createExampleObjects: createExampleObjects = {
   apiName: 'createExampleObjects',
   type: 'action',
-  unsanitizedApiName: 'create-example-objects',
+  get unsanitizedApiName() {
+    return $resolveAction('create-example-objects') as 'create-example-objects';
+  },
   osdkMetadata: $osdkMetadata,
 };

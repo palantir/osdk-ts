@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -53,6 +54,8 @@ export interface WontDo extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'WontDo';
+  primaryKeyApiName: 'wontDoName';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: WontDo.ObjectSet;
     props: WontDo.Props;
@@ -67,6 +70,18 @@ export interface WontDo extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['TodoLike'];
+    interfaceImplementations: {
+      TodoLike: {
+        name: {
+          type: 'localProperty';
+          propertyApiName: 'wontDoName';
+        };
+        isComplete: {
+          type: 'localProperty';
+          propertyApiName: 'isComplete';
+        };
+      };
+    };
     interfaceMap: {
       TodoLike: {
         name: 'wontDoName';
@@ -107,8 +122,14 @@ export interface WontDo extends $ObjectTypeDefinition {
 
 export const WontDo = {
   type: 'object',
-  apiName: 'WontDo',
+  get apiName() {
+    return $resolveObjectType('WontDo') as 'WontDo';
+  },
   osdkMetadata: $osdkMetadata,
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('WontDo') as 'wontDoName';
+  },
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.0f6f78a8-c31c-43d3-8de9-b7df7a98d232',
   },

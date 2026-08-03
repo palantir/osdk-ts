@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createUnstructuredImageExample {
@@ -78,6 +79,8 @@ export interface createUnstructuredImageExample extends ActionDefinition<createU
 export const createUnstructuredImageExample: createUnstructuredImageExample = {
   apiName: 'createUnstructuredImageExample',
   type: 'action',
-  unsanitizedApiName: 'create-unstructured-image-example',
+  get unsanitizedApiName() {
+    return $resolveAction('create-unstructured-image-example') as 'create-unstructured-image-example';
+  },
   osdkMetadata: $osdkMetadata,
 };

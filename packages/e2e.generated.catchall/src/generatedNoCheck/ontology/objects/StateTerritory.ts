@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type { Country_1 } from './Country_1.js';
@@ -104,9 +105,13 @@ export interface StateTerritory extends $ObjectTypeDefinition {
 
 export const StateTerritory = {
   type: 'object',
-  apiName: 'StateTerritory',
+  get apiName() {
+    return $resolveObjectType('StateTerritory') as 'StateTerritory';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'airportStateName',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('StateTerritory') as 'airportStateName';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',

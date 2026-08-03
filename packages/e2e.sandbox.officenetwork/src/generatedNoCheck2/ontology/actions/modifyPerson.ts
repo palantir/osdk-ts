@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace modifyPerson {
@@ -13,18 +14,21 @@ export namespace modifyPerson {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employeeNumber: {
       description: undefined;
+      displayName: 'Employee Number';
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     person_type: {
       description: undefined;
+      displayName: 'Person Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
@@ -67,16 +71,21 @@ export interface modifyPerson extends ActionDefinition<modifyPerson.Signatures> 
     rid: 'ri.actions.main.action-type.76528413-40a3-4718-98d4-aba385a815a2';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-person';
 
     signatures: modifyPerson.Signatures;
   };
   apiName: 'modifyPerson';
   type: 'action';
+  unsanitizedApiName: 'modify-person';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyPerson: modifyPerson = {
   apiName: 'modifyPerson',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-person') as 'modify-person';
+  },
   osdkMetadata: $osdkMetadata,
 };

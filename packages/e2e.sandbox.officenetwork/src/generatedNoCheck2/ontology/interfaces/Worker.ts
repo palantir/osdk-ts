@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -7,12 +8,13 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$Worker = {};
 
 export namespace Worker {
-  export type PropertyKeys = 'email' | 'name' | 'employeeNumber';
+  export type PropertyKeys = 'email' | 'employeeNumber' | 'name';
 
   export interface Props {
     /**
@@ -80,7 +82,9 @@ export interface Worker extends $InterfaceDefinition {
 
 export const Worker = {
   type: 'interface',
-  apiName: 'Worker',
+  get apiName() {
+    return $resolveInterfaceType('Worker') as 'Worker';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198',

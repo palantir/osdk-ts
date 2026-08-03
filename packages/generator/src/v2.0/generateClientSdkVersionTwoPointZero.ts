@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { AliasesCollector } from "../aliases/AliasesCollector.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { generateAliasesFile } from "./generateAliasesFile.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 import { generatePerInterfaceDataFiles } from "./generatePerInterfaceDataFiles.js";
@@ -37,6 +39,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalSpts: Map<string, string> = new Map(),
   forInternalUse: boolean = false,
   fixedVersionQueryTypes: string[] = [],
+  sdkId: string = ontology.ontology.rid,
 ): Promise<void> {
   const importExt = ".js"; // turns out you can always use the extension
 
@@ -54,8 +57,13 @@ export async function generateClientSdkVersionTwoPointZero(
     externalSpts,
   });
 
+  const aliases = new AliasesCollector();
+  aliases.addOntology(enhancedOntology.raw);
+
   const ctx: GenerateContext = {
     ontology: enhancedOntology,
+    aliases,
+    sdkId,
     importExt,
     fs,
     outDir,
@@ -69,4 +77,7 @@ export async function generateClientSdkVersionTwoPointZero(
   await generatePerInterfaceDataFiles(ctx);
   await generatePerActionDataFiles(ctx);
   await generatePerQueryDataFilesV2(ctx, true);
+
+  // Last: every other generator contributes to the collector.
+  await generateAliasesFile(ctx);
 }

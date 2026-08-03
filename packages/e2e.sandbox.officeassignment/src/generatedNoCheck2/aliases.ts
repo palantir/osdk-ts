@@ -1,0 +1,276 @@
+import type { AliasesFile } from '@osdk/aliases';
+
+// An explicit annotation rather than `satisfies`: consumers build with
+// --isolatedDeclarations, under which `satisfies` is not an explicit type
+// and emits TS9010.
+export const $packagedAliases: AliasesFile = {
+  defaults: {
+    actions: {
+      'end-assignment': {
+        apiName: 'end-assignment',
+        id: {
+          rid: 'ri.actions.main.action-type.c48066c1-30e5-443d-824c-7ae4631c87c1',
+        },
+      },
+      'record-status-update': {
+        apiName: 'record-status-update',
+        id: {
+          rid: 'ri.actions.main.action-type.603fc1ee-9432-41c3-9249-8b192dc5f2c3',
+        },
+      },
+      'toggle-status-exclusion': {
+        apiName: 'toggle-status-exclusion',
+        id: {
+          rid: 'ri.actions.main.action-type.f577dd07-fada-4ada-bb57-d240c13e1dbb',
+        },
+      },
+      'update-assignment': {
+        apiName: 'update-assignment',
+        id: {
+          rid: 'ri.actions.main.action-type.2a3aeb47-9da0-4b3b-a2fc-506144d36ab6',
+        },
+      },
+    },
+    custom: {},
+    datasets: {},
+    egressConnections: {},
+    interfaces: {},
+    mediasets: {},
+    models: {},
+    objects: {
+      Assignment: {
+        apiName: 'Assignment',
+        id: {
+          rid: 'ri.ontology.main.object-type.6720b526-a510-456d-b328-73bfeb8471d7',
+        },
+        links: {
+          employee: {
+            apiName: 'employee',
+          },
+          floor: {
+            apiName: 'floor',
+          },
+          manager: {
+            apiName: 'manager',
+          },
+          office: {
+            apiName: 'office',
+          },
+          statusUpdate: {
+            apiName: 'statusUpdate',
+          },
+        },
+        primaryKeyApiName: 'assignmentId',
+        properties: {
+          assignmentId: {
+            apiName: 'assignmentId',
+          },
+          assignmentStatus: {
+            apiName: 'assignmentStatus',
+          },
+          assignmentType: {
+            apiName: 'assignmentType',
+          },
+          employeeId: {
+            apiName: 'employeeId',
+          },
+          endDate: {
+            apiName: 'endDate',
+          },
+          floorId: {
+            apiName: 'floorId',
+          },
+          function: {
+            apiName: 'function',
+          },
+          managerId: {
+            apiName: 'managerId',
+          },
+          officeId: {
+            apiName: 'officeId',
+          },
+          startDate: {
+            apiName: 'startDate',
+          },
+          tenureDays: {
+            apiName: 'tenureDays',
+          },
+          title: {
+            apiName: 'title',
+          },
+        },
+      },
+      Employee: {
+        apiName: 'Employee',
+        id: {
+          rid: 'ri.ontology.main.object-type.679d471d-610f-4d7c-915f-c67060c5d4c0',
+        },
+        links: {
+          assignments: {
+            apiName: 'assignments',
+          },
+        },
+        primaryKeyApiName: 'employeeId',
+        properties: {
+          email: {
+            apiName: 'email',
+          },
+          employeeId: {
+            apiName: 'employeeId',
+          },
+          fullName: {
+            apiName: 'fullName',
+          },
+          homeRegion: {
+            apiName: 'homeRegion',
+          },
+          joinedDate: {
+            apiName: 'joinedDate',
+          },
+        },
+      },
+      Floor: {
+        apiName: 'Floor',
+        id: {
+          rid: 'ri.ontology.main.object-type.eafe2bc2-26d3-4d05-a01a-a563c4b538a5',
+        },
+        links: {
+          assignments: {
+            apiName: 'assignments',
+          },
+          office: {
+            apiName: 'office',
+          },
+        },
+        primaryKeyApiName: 'floorId',
+        properties: {
+          deskCapacity: {
+            apiName: 'deskCapacity',
+          },
+          floorId: {
+            apiName: 'floorId',
+          },
+          isExcluded: {
+            apiName: 'isExcluded',
+          },
+          name: {
+            apiName: 'name',
+          },
+          officeId: {
+            apiName: 'officeId',
+          },
+        },
+      },
+      Manager: {
+        apiName: 'Manager',
+        id: {
+          rid: 'ri.ontology.main.object-type.a63ba05c-d155-4a05-9e06-aed231a64571',
+        },
+        links: {
+          assignments: {
+            apiName: 'assignments',
+          },
+        },
+        primaryKeyApiName: 'managerId',
+        properties: {
+          email: {
+            apiName: 'email',
+          },
+          fullName: {
+            apiName: 'fullName',
+          },
+          managerId: {
+            apiName: 'managerId',
+          },
+          title: {
+            apiName: 'title',
+          },
+        },
+      },
+      Office: {
+        apiName: 'Office',
+        id: {
+          rid: 'ri.ontology.main.object-type.a8feaba1-2c21-4aaa-9533-f76eac796c55',
+        },
+        links: {
+          assignments: {
+            apiName: 'assignments',
+          },
+          floors: {
+            apiName: 'floors',
+          },
+        },
+        primaryKeyApiName: 'officeId',
+        properties: {
+          city: {
+            apiName: 'city',
+          },
+          name: {
+            apiName: 'name',
+          },
+          officeId: {
+            apiName: 'officeId',
+          },
+          region: {
+            apiName: 'region',
+          },
+        },
+      },
+      StatusUpdate: {
+        apiName: 'StatusUpdate',
+        id: {
+          rid: 'ri.ontology.main.object-type.586dc2cc-44d2-4a82-8831-bd529c6f2042',
+        },
+        links: {
+          assignment: {
+            apiName: 'assignment',
+          },
+        },
+        primaryKeyApiName: 'statusUpdateId',
+        properties: {
+          assignmentId: {
+            apiName: 'assignmentId',
+          },
+          comment: {
+            apiName: 'comment',
+          },
+          isExcluded: {
+            apiName: 'isExcluded',
+          },
+          recordedBy: {
+            apiName: 'recordedBy',
+          },
+          statusUpdateId: {
+            apiName: 'statusUpdateId',
+          },
+          timestamp: {
+            apiName: 'timestamp',
+          },
+          timestampEpochMs: {
+            apiName: 'timestampEpochMs',
+          },
+          type: {
+            apiName: 'type',
+          },
+          typeValue: {
+            apiName: 'typeValue',
+          },
+          value: {
+            apiName: 'value',
+          },
+        },
+      },
+    },
+    ontologies: {
+      'ri.ontology.main.ontology.5a277e05-5cdb-4766-bbd1-22a4ba8d6433': {
+        branch: null,
+        id: {
+          rid: 'ri.ontology.main.ontology.5a277e05-5cdb-4766-bbd1-22a4ba8d6433',
+        },
+      },
+    },
+    queries: {},
+    streams: {},
+  },
+  version: 1,
+};

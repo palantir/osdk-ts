@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { OsdkTestObject } from '../objects/OsdkTestObject.js';
 
@@ -79,6 +80,8 @@ export interface editOsdkTestObject extends ActionDefinition<editOsdkTestObject.
 export const editOsdkTestObject: editOsdkTestObject = {
   apiName: 'editOsdkTestObject',
   type: 'action',
-  unsanitizedApiName: 'edit-osdk-test-object',
+  get unsanitizedApiName() {
+    return $resolveAction('edit-osdk-test-object') as 'edit-osdk-test-object';
+  },
   osdkMetadata: $osdkMetadata,
 };

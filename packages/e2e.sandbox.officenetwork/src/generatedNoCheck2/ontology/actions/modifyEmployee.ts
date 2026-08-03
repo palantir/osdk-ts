@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,180 +15,213 @@ export namespace modifyEmployee {
   export type ParamsDefinition = {
     adUsername: {
       description: undefined;
+      displayName: 'Ad Username';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     businessArea: {
       description: undefined;
+      displayName: 'Business Area';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     businessTitle: {
       description: undefined;
+      displayName: 'Business Title';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     department: {
       description: undefined;
+      displayName: 'Department';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     emailPrimaryWork: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     employeeDocuments: {
       description: undefined;
+      displayName: 'employeeDocuments';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     employeeFile: {
       description: undefined;
+      displayName: 'Employee File';
       multiplicity: false;
       nullable: true;
       type: 'attachment';
     };
     employeeMedia: {
       description: undefined;
+      displayName: 'Media';
       multiplicity: false;
       nullable: true;
       type: 'mediaReference';
     };
     favoritePlaceArea: {
       description: undefined;
+      displayName: 'Favorite Place Area';
       multiplicity: false;
       nullable: true;
       type: 'geoshape';
     };
     favPlace: {
       description: undefined;
+      displayName: 'Favorite Place';
       multiplicity: false;
       nullable: true;
       type: 'geohash';
     };
     firstFullTimeStartDate: {
       description: undefined;
+      displayName: 'First Full Time Start Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     firstInternStartDate: {
       description: undefined;
+      displayName: 'First Intern Start Date';
       multiplicity: false;
       nullable: true;
       type: 'datetime';
     };
     fullName: {
       description: undefined;
+      displayName: 'Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     jobProfile: {
       description: undefined;
+      displayName: 'Job Profile';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     jobTitle: {
       description: undefined;
+      displayName: 'Job Title';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     latestVenture: {
       description: undefined;
+      displayName: 'Latest Venture ';
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ venture: 'string'; days: 'integer' }>;
+      type: ActionMetadata.DataType.Struct<{
+        venture: { type: 'string'; nullable: true };
+        days: { type: 'integer'; nullable: true };
+      }>;
     };
     leadEmployeeNumber: {
       description: undefined;
+      displayName: 'Lead Employee Number';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     locationCity: {
       description: undefined;
+      displayName: 'Location City';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationCountry: {
       description: undefined;
+      displayName: 'Location Country';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationName: {
       description: undefined;
+      displayName: 'Location Name';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationRegion: {
       description: undefined;
+      displayName: 'Location Region';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     locationType: {
       description: undefined;
+      displayName: 'Location Type';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     mentorEmployeeNumber: {
       description: undefined;
+      displayName: 'Mentor Employee Number';
       multiplicity: false;
       nullable: true;
       type: 'integer';
     };
     newProperty1: {
       description: undefined;
+      displayName: 'New property 1';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     preferredNameFirst: {
       description: undefined;
+      displayName: 'Preferred Name First';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     preferredNameLast: {
       description: undefined;
+      displayName: 'Preferred Name Last';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     primary_office_id: {
       description: undefined;
+      displayName: 'Primary Office ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     team: {
       description: undefined;
+      displayName: 'Team';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     workerType: {
       description: undefined;
+      displayName: 'Worker Type';
       multiplicity: false;
       nullable: true;
       type: 'string';
@@ -227,7 +261,10 @@ export namespace modifyEmployee {
 
     readonly jobTitle?: ActionParam.PrimitiveType<'string'> | null;
 
-    readonly latestVenture?: ActionParam.StructType<{ venture: 'string'; days: 'integer' }> | null;
+    readonly latestVenture?: ActionParam.StructType<{
+      venture: { type: 'string'; nullable: true };
+      days: { type: 'integer'; nullable: true };
+    }> | null;
 
     readonly leadEmployeeNumber?: ActionParam.PrimitiveType<'integer'> | null;
 
@@ -287,7 +324,7 @@ export namespace modifyEmployee {
  * @param {ActionParam.PrimitiveType<"string">} [fullName]
  * @param {ActionParam.PrimitiveType<"string">} [jobProfile]
  * @param {ActionParam.PrimitiveType<"string">} [jobTitle]
- * @param {ActionParam.StructType<{"venture":"string","days":"integer"}>} [latestVenture]
+ * @param {ActionParam.StructType<{"venture":{"type":"string","nullable":true},"days":{"type":"integer","nullable":true}}>} [latestVenture]
  * @param {ActionParam.PrimitiveType<"integer">} [leadEmployeeNumber]
  * @param {ActionParam.PrimitiveType<"string">} [locationCity]
  * @param {ActionParam.PrimitiveType<"string">} [locationCountry]
@@ -316,16 +353,21 @@ export interface modifyEmployee extends ActionDefinition<modifyEmployee.Signatur
     rid: 'ri.actions.main.action-type.1e59bc2b-4f3a-47d1-82d2-7d0516c7c4ee';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-employee';
 
     signatures: modifyEmployee.Signatures;
   };
   apiName: 'modifyEmployee';
   type: 'action';
+  unsanitizedApiName: 'modify-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyEmployee: modifyEmployee = {
   apiName: 'modifyEmployee',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-employee') as 'modify-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

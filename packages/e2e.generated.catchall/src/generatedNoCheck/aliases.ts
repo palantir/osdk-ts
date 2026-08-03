@@ -1,0 +1,1890 @@
+import type { AliasesFile } from '@osdk/aliases';
+
+// An explicit annotation rather than `satisfies`: consumers build with
+// --isolatedDeclarations, under which `satisfies` is not an explicit type
+// and emits TS9010.
+export const $packagedAliases: AliasesFile = {
+  defaults: {
+    actions: {
+      actionTakesAllParameterTypes: {
+        apiName: 'actionTakesAllParameterTypes',
+        id: {
+          rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2',
+        },
+      },
+      'assign-employee-1': {
+        apiName: 'assign-employee-1',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+      },
+      'create-foo-interface': {
+        apiName: 'create-foo-interface',
+        id: {
+          rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817',
+        },
+      },
+      'create-media-object': {
+        apiName: 'create-media-object',
+        id: {
+          rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92',
+        },
+      },
+      'create-media-via-function': {
+        apiName: 'create-media-via-function',
+        id: {
+          rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92',
+        },
+      },
+      'create-osdk-test-object': {
+        apiName: 'create-osdk-test-object',
+        id: {
+          rid: 'ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb',
+        },
+      },
+      'create-scenario-test-osdk': {
+        apiName: 'create-scenario-test-osdk',
+        id: {
+          rid: 'ri.actions.main.action-type.fddb9db7-30bb-43c0-9026-72794537ca98',
+        },
+      },
+      'create-struct-person': {
+        apiName: 'create-struct-person',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+      },
+      'create-struct-person-opi-team': {
+        apiName: 'create-struct-person-opi-team',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+      },
+      'create-test-geo-action': {
+        apiName: 'create-test-geo-action',
+        id: {
+          rid: 'ri.actions.main.action-type.7558117e-5dd4-461c-9c81-760deb512d32',
+        },
+      },
+      'create-todo': {
+        apiName: 'create-todo',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+      },
+      'create-unstructured-image-example': {
+        apiName: 'create-unstructured-image-example',
+        id: {
+          rid: 'ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85',
+        },
+      },
+      'delete-foo-interface': {
+        apiName: 'delete-foo-interface',
+        id: {
+          rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817',
+        },
+      },
+      'delete-osdk-test-object': {
+        apiName: 'delete-osdk-test-object',
+        id: {
+          rid: 'ri.actions.main.action-type.3858bab4-49c7-4fdf-a780-6ccbc359d817',
+        },
+      },
+      'delete-scenario-test-osdk': {
+        apiName: 'delete-scenario-test-osdk',
+        id: {
+          rid: 'ri.actions.main.action-type.1ba8424e-7997-436d-a53d-471ea776d589',
+        },
+      },
+      'edit-osdk-test-object': {
+        apiName: 'edit-osdk-test-object',
+        id: {
+          rid: 'ri.actions.main.action-type.4a70a939-b2ee-46dd-8099-a290cafa28e1',
+        },
+      },
+      'scenario-osdk-test-action': {
+        apiName: 'scenario-osdk-test-action',
+        id: {
+          rid: 'ri.actions.main.action-type.ed0f3aba-1eed-4d3c-b60f-417971f2b7dc',
+        },
+      },
+    },
+    custom: {},
+    datasets: {},
+    egressConnections: {},
+    interfaces: {
+      Athlete: {
+        apiName: 'Athlete',
+        id: {
+          rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+        },
+        links: {},
+        properties: {
+          athleteId: {
+            apiName: 'athleteId',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7',
+            },
+          },
+          jerseyNumber: {
+            apiName: 'jerseyNumber',
+            id: {
+              rid: 'ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6',
+            },
+          },
+          name22: {
+            apiName: 'name22',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7',
+            },
+          },
+        },
+      },
+      EsongInterfaceA: {
+        apiName: 'EsongInterfaceA',
+        id: {
+          rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673',
+        },
+        links: {
+          esongPds: {
+            apiName: 'esongPds',
+          },
+        },
+        properties: {
+          esongSptA: {
+            apiName: 'esongSptA',
+            id: {
+              rid: 'ri.ontology.main.shared-property.b37450de-4a7b-402c-879f-fa1803ac6a21',
+            },
+          },
+        },
+      },
+      FooInterface: {
+        apiName: 'FooInterface',
+        id: {
+          rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+        },
+        links: {},
+        properties: {
+          deprecatedDescription: {
+            apiName: 'deprecatedDescription',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d8',
+            },
+          },
+          deprecatedName: {
+            apiName: 'deprecatedName',
+            id: {
+              rid: 'ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7',
+            },
+          },
+          description: {
+            apiName: 'description',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7',
+            },
+          },
+          experimentalProperty: {
+            apiName: 'experimentalProperty',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d9',
+            },
+          },
+          inheritedDescription: {
+            apiName: 'inheritedDescription',
+            id: {
+              rid: 'ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7',
+            },
+          },
+          name: {
+            apiName: 'name',
+            id: {
+              rid: 'ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6',
+            },
+          },
+        },
+      },
+      InterfaceNoProps: {
+        apiName: 'InterfaceNoProps',
+        id: {
+          rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+        },
+        links: {},
+        properties: {},
+      },
+      MwaltherPersonV2: {
+        apiName: 'MwaltherPersonV2',
+        id: {
+          rid: 'ri.ontology.main.interface.2fc1336c-6d4d-428f-9a4f-4f3ebfaf860e',
+        },
+        links: {},
+        properties: {
+          mwaltherNam: {
+            apiName: 'mwaltherNam',
+            id: {
+              rid: 'ri.ontology.main.interface-property.3f087600-19f7-47c9-80cd-5037767676d1',
+            },
+          },
+        },
+      },
+      NihalbCastingInterfaceB: {
+        apiName: 'NihalbCastingInterfaceB',
+        id: {
+          rid: 'ri.ontology.main.interface.001b6854-774a-4ba4-9ea7-dedc05901e4f',
+        },
+        links: {
+          nihalbCastingLinkedObjectTypeA: {
+            apiName: 'nihalbCastingLinkedObjectTypeA',
+          },
+        },
+        properties: {
+          interfaceProperty: {
+            apiName: 'interfaceProperty',
+            id: {
+              rid: 'ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038',
+            },
+          },
+        },
+      },
+      NihalbCastingInterfaceTypeA: {
+        apiName: 'NihalbCastingInterfaceTypeA',
+        id: {
+          rid: 'ri.ontology.main.interface.daed91f9-ee83-4e6c-bfc7-a17c8ff9433c',
+        },
+        links: {
+          nihalbCastingLinkedObjectTypeA: {
+            apiName: 'nihalbCastingLinkedObjectTypeA',
+          },
+        },
+        properties: {
+          interfaceProperty: {
+            apiName: 'interfaceProperty',
+            id: {
+              rid: 'ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038',
+            },
+          },
+        },
+      },
+      NihalbCastingLinkedInterfaceTypeA: {
+        apiName: 'NihalbCastingLinkedInterfaceTypeA',
+        id: {
+          rid: 'ri.ontology.main.interface.d3f8faae-48ea-44c6-8d43-687183d586c9',
+        },
+        links: {
+          nihalbCastingInterfaceB: {
+            apiName: 'nihalbCastingInterfaceB',
+          },
+        },
+        properties: {
+          primaryKeyProp: {
+            apiName: 'primaryKeyProp',
+            id: {
+              rid: 'ri.ontology.main.shared-property.f0b380fb-2b4e-4da2-a365-b1a25cf07c6a',
+            },
+          },
+        },
+      },
+      OsdkTestInterface: {
+        apiName: 'OsdkTestInterface',
+        id: {
+          rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab',
+        },
+        links: {},
+        properties: {
+          objectDescription: {
+            apiName: 'objectDescription',
+            id: {
+              rid: 'ri.ontology.main.shared-property.751ed7ee-5d2c-41a1-bf60-9cbef5623f23',
+            },
+          },
+        },
+      },
+      ReducerTestInterface: {
+        apiName: 'ReducerTestInterface',
+        id: {
+          rid: 'ri.ontology.main.interface.ee112779-ed04-44c6-bf84-9543513eb80b',
+        },
+        links: {},
+        properties: {
+          stringFromArrayFromAlreadyReduced: {
+            apiName: 'stringFromArrayFromAlreadyReduced',
+            id: {
+              rid: 'ri.ontology.main.interface-property.524744e2-cac6-4fe9-a112-bdf25fe3ceaa',
+            },
+          },
+          stringFromNonMainValueOfStruct: {
+            apiName: 'stringFromNonMainValueOfStruct',
+            id: {
+              rid: 'ri.ontology.main.interface-property.f73ecda3-ffb0-47f0-b16f-0b894c9a7006',
+            },
+          },
+          stringFromReducedMainValueStructArray: {
+            apiName: 'stringFromReducedMainValueStructArray',
+            id: {
+              rid: 'ri.ontology.main.interface-property.6410cf6b-c991-46bd-9085-799ef71cba2d',
+            },
+          },
+          stringFromSingleMainValue: {
+            apiName: 'stringFromSingleMainValue',
+            id: {
+              rid: 'ri.ontology.main.interface-property.62bf7924-5ebd-4413-821f-f85a17fa2d04',
+            },
+          },
+          structFromMultipleMainValue: {
+            apiName: 'structFromMultipleMainValue',
+            id: {
+              rid: 'ri.ontology.main.interface-property.0c837cd3-91ab-42c2-927d-6c72c3cd817f',
+            },
+          },
+        },
+      },
+      TestAsTypeIltInterface: {
+        apiName: 'TestAsTypeIltInterface',
+        id: {
+          rid: 'ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4',
+        },
+        links: {},
+        properties: {
+          'com.palantir.defense.ontology.collateralConcernName': {
+            apiName: 'com.palantir.defense.ontology.collateralConcernName',
+            id: {
+              rid: 'ri.ontology.main.shared-property.d0ee77e6-8473-4d9a-bec2-0e1ef1f23293',
+            },
+          },
+        },
+      },
+      bus_1: {
+        apiName: 'bus_1',
+        id: {
+          rid: 'ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd',
+        },
+        links: {},
+        properties: {
+          vehicleId_1: {
+            apiName: 'vehicleId_1',
+            id: {
+              rid: 'ri.ontology.main.interface-property.43a9b4ad-6e09-454c-8daf-b2951689157f',
+            },
+          },
+        },
+      },
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate': {
+        apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate',
+        id: {
+          rid: 'ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c',
+        },
+        links: {
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList',
+          },
+        },
+        properties: {
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription',
+            id: {
+              rid: 'ri.ontology.main.shared-property.c9a9f33c-9e31-48a7-9b47-3fb198988fd7',
+            },
+          },
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName',
+            id: {
+              rid: 'ri.ontology.main.shared-property.8dba55dd-b6d8-4f10-b948-dd7edd90326b',
+            },
+          },
+        },
+      },
+      'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList': {
+        apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList',
+        id: {
+          rid: 'ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f',
+        },
+        links: {
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity',
+          },
+        },
+        properties: {
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription',
+            id: {
+              rid: 'ri.ontology.main.shared-property.c5d03cd9-eaae-4872-9385-9e5aeef8eb0e',
+            },
+          },
+          'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName': {
+            apiName: 'com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName',
+            id: {
+              rid: 'ri.ontology.main.shared-property.7c94a726-f81d-417a-80f7-3ea17031693e',
+            },
+          },
+        },
+      },
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {
+        apiName: 'com.palantirfoundry.swirl.esong.MwaltherTestIdp',
+        id: {
+          rid: 'ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3',
+        },
+        links: {},
+        properties: {
+          'com.palantirfoundry.swirl.esong.mwaltherName': {
+            apiName: 'com.palantirfoundry.swirl.esong.mwaltherName',
+            id: {
+              rid: 'ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96',
+            },
+          },
+          idpAge: {
+            apiName: 'idpAge',
+            id: {
+              rid: 'ri.ontology.main.interface-property.b96558a8-0056-4059-9eb1-d72844761dca',
+            },
+          },
+          mwaltherNam: {
+            apiName: 'mwaltherNam',
+            id: {
+              rid: 'ri.ontology.main.interface-property.3f087600-19f7-47c9-80cd-5037767676d1',
+            },
+          },
+          newProperty1: {
+            apiName: 'newProperty1',
+            id: {
+              rid: 'ri.ontology.main.interface-property.4a52af6d-fe87-429e-8998-e836ad82bd4d',
+            },
+          },
+        },
+      },
+      mwaltherPerson: {
+        apiName: 'mwaltherPerson',
+        id: {
+          rid: 'ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7',
+        },
+        links: {},
+        properties: {
+          age: {
+            apiName: 'age',
+            id: {
+              rid: 'ri.ontology.main.interface-property.143eff7c-9f90-420b-bb77-0e43d1923ed2',
+            },
+          },
+          mwaltherName: {
+            apiName: 'mwaltherName',
+            id: {
+              rid: 'ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96',
+            },
+          },
+        },
+      },
+    },
+    mediasets: {},
+    models: {},
+    objects: {
+      BgaoNflPlayer: {
+        apiName: 'BgaoNflPlayer',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          address: {
+            apiName: 'address',
+          },
+          gamesPlayed: {
+            apiName: 'gamesPlayed',
+          },
+          id: {
+            apiName: 'id',
+          },
+          name: {
+            apiName: 'name',
+          },
+          number: {
+            apiName: 'number',
+          },
+          wikiUrl: {
+            apiName: 'wikiUrl',
+          },
+        },
+      },
+      BoundariesUsState: {
+        apiName: 'BoundariesUsState',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'usState',
+        properties: {
+          geometry10M: {
+            apiName: 'geometry10M',
+          },
+          latitude: {
+            apiName: 'latitude',
+          },
+          longitude: {
+            apiName: 'longitude',
+          },
+          name: {
+            apiName: 'name',
+          },
+          usState: {
+            apiName: 'usState',
+          },
+          wikipedia: {
+            apiName: 'wikipedia',
+          },
+        },
+      },
+      BuilderDeploymentState: {
+        apiName: 'BuilderDeploymentState',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'skuId',
+        properties: {
+          currentTimestamp: {
+            apiName: 'currentTimestamp',
+          },
+          date: {
+            apiName: 'date',
+          },
+          skuId: {
+            apiName: 'skuId',
+          },
+        },
+      },
+      CipherTextTest: {
+        apiName: 'CipherTextTest',
+        id: {
+          rid: 'ri.ontology.main.object-type.583bebf4-2a64-4af4-8c86-8068ef5a5371',
+        },
+        links: {},
+        primaryKeyApiName: 'pk',
+        properties: {
+          encrypted: {
+            apiName: 'encrypted',
+          },
+          hashed: {
+            apiName: 'hashed',
+          },
+          pk: {
+            apiName: 'pk',
+          },
+          plaintext: {
+            apiName: 'plaintext',
+          },
+        },
+      },
+      Country_1: {
+        apiName: 'Country_1',
+        id: {
+          rid: 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e',
+        },
+        links: {
+          stateTerritory: {
+            apiName: 'stateTerritory',
+          },
+        },
+        primaryKeyApiName: 'airportCountryName',
+        properties: {
+          airportCountryIsoCode: {
+            apiName: 'airportCountryIsoCode',
+          },
+          airportCountryName: {
+            apiName: 'airportCountryName',
+          },
+        },
+      },
+      DherlihyComplexObject: {
+        apiName: 'DherlihyComplexObject',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          id: {
+            apiName: 'id',
+          },
+          secret: {
+            apiName: 'secret',
+          },
+          seriesId: {
+            apiName: 'seriesId',
+          },
+        },
+      },
+      Employee: {
+        apiName: 'Employee',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {
+          lead: {
+            apiName: 'lead',
+          },
+          peeps: {
+            apiName: 'peeps',
+          },
+          ventures: {
+            apiName: 'ventures',
+          },
+        },
+        primaryKeyApiName: 'id',
+        properties: {
+          adUsername: {
+            apiName: 'adUsername',
+          },
+          businessTitle: {
+            apiName: 'businessTitle',
+          },
+          email: {
+            apiName: 'email',
+          },
+          employeeNumber: {
+            apiName: 'employeeNumber',
+          },
+          favPlace: {
+            apiName: 'favPlace',
+          },
+          firstFullTimeStartDate: {
+            apiName: 'firstFullTimeStartDate',
+          },
+          firstName: {
+            apiName: 'firstName',
+          },
+          id: {
+            apiName: 'id',
+          },
+          jobProfile: {
+            apiName: 'jobProfile',
+          },
+          locationCity: {
+            apiName: 'locationCity',
+          },
+          locationName: {
+            apiName: 'locationName',
+          },
+          locationType: {
+            apiName: 'locationType',
+          },
+        },
+      },
+      EsongIssues: {
+        apiName: 'EsongIssues',
+        id: {
+          rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
+        },
+        links: {
+          esongPds: {
+            apiName: 'esongPds',
+          },
+          esongPdsM2m: {
+            apiName: 'esongPdsM2m',
+          },
+        },
+        primaryKeyApiName: 'id',
+        properties: {
+          createdAt: {
+            apiName: 'createdAt',
+          },
+          id: {
+            apiName: 'id',
+          },
+          label: {
+            apiName: 'label',
+          },
+          numComments: {
+            apiName: 'numComments',
+          },
+          pdsTicket: {
+            apiName: 'pdsTicket',
+          },
+          pdsTicketId: {
+            apiName: 'pdsTicketId',
+          },
+          status: {
+            apiName: 'status',
+          },
+          title: {
+            apiName: 'title',
+          },
+        },
+      },
+      EsongPds: {
+        apiName: 'EsongPds',
+        id: {
+          rid: 'ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d',
+        },
+        links: {
+          esongIssues: {
+            apiName: 'esongIssues',
+          },
+          esongIssuesM2m: {
+            apiName: 'esongIssuesM2m',
+          },
+        },
+        primaryKeyApiName: 'id',
+        properties: {
+          assignee: {
+            apiName: 'assignee',
+          },
+          createdAt: {
+            apiName: 'createdAt',
+          },
+          id: {
+            apiName: 'id',
+          },
+          priority: {
+            apiName: 'priority',
+          },
+          status: {
+            apiName: 'status',
+          },
+          title: {
+            apiName: 'title',
+          },
+        },
+      },
+      FintrafficAis: {
+        apiName: 'FintrafficAis',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'mmsi',
+        properties: {
+          centroid: {
+            apiName: 'centroid',
+          },
+          geometry: {
+            apiName: 'geometry',
+          },
+          mmsi: {
+            apiName: 'mmsi',
+          },
+          name: {
+            apiName: 'name',
+          },
+          seriesId: {
+            apiName: 'seriesId',
+          },
+          shipType: {
+            apiName: 'shipType',
+          },
+          timestamp: {
+            apiName: 'timestamp',
+          },
+        },
+      },
+      GraphqlFormatting: {
+        apiName: 'GraphqlFormatting',
+        id: {
+          rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',
+        },
+        links: {},
+        primaryKeyApiName: 'stringPlain',
+        properties: {
+          arrayBooleans: {
+            apiName: 'arrayBooleans',
+          },
+          arrayEmpty: {
+            apiName: 'arrayEmpty',
+          },
+          arrayFormattedNumbers: {
+            apiName: 'arrayFormattedNumbers',
+          },
+          arrayIntegers: {
+            apiName: 'arrayIntegers',
+          },
+          arrayMixed: {
+            apiName: 'arrayMixed',
+          },
+          arrayOfStructs: {
+            apiName: 'arrayOfStructs',
+          },
+          arrayStrings: {
+            apiName: 'arrayStrings',
+          },
+          attachmentList: {
+            apiName: 'attachmentList',
+          },
+          booleanFormattedFalse: {
+            apiName: 'booleanFormattedFalse',
+          },
+          booleanFormattedTrue: {
+            apiName: 'booleanFormattedTrue',
+          },
+          currency: {
+            apiName: 'currency',
+          },
+          dateIso: {
+            apiName: 'dateIso',
+          },
+          dateLong: {
+            apiName: 'dateLong',
+          },
+          dateMonthYear: {
+            apiName: 'dateMonthYear',
+          },
+          datePatternDmy: {
+            apiName: 'datePatternDmy',
+          },
+          datePatternMdy: {
+            apiName: 'datePatternMdy',
+          },
+          dateRelative: {
+            apiName: 'dateRelative',
+          },
+          dateShort: {
+            apiName: 'dateShort',
+          },
+          doubleBasisPoints: {
+            apiName: 'doubleBasisPoints',
+          },
+          doubleBillionsB: {
+            apiName: 'doubleBillionsB',
+          },
+          doubleCurrencyCompact: {
+            apiName: 'doubleCurrencyCompact',
+          },
+          doubleCurrencyEur: {
+            apiName: 'doubleCurrencyEur',
+          },
+          doubleCurrencyJpy: {
+            apiName: 'doubleCurrencyJpy',
+          },
+          doubleCurrencyUsd: {
+            apiName: 'doubleCurrencyUsd',
+          },
+          doubleCustomUnit: {
+            apiName: 'doubleCustomUnit',
+          },
+          doubleMillionsM: {
+            apiName: 'doubleMillionsM',
+          },
+          doublePerMille: {
+            apiName: 'doublePerMille',
+          },
+          doublePercentage: {
+            apiName: 'doublePercentage',
+          },
+          doublePercentageDecimal: {
+            apiName: 'doublePercentageDecimal',
+          },
+          doublePlain: {
+            apiName: 'doublePlain',
+          },
+          doublePrecision2: {
+            apiName: 'doublePrecision2',
+          },
+          doublePrecision4: {
+            apiName: 'doublePrecision4',
+          },
+          doublePrefixPostfix: {
+            apiName: 'doublePrefixPostfix',
+          },
+          doubleRoundingCeil: {
+            apiName: 'doubleRoundingCeil',
+          },
+          doubleRoundingFloor: {
+            apiName: 'doubleRoundingFloor',
+          },
+          doubleRoundingHalf: {
+            apiName: 'doubleRoundingHalf',
+          },
+          doubleSignificant3: {
+            apiName: 'doubleSignificant3',
+          },
+          doubleThousandsK: {
+            apiName: 'doubleThousandsK',
+          },
+          doubleUnitCelsius: {
+            apiName: 'doubleUnitCelsius',
+          },
+          doubleUnitKilogram: {
+            apiName: 'doubleUnitKilogram',
+          },
+          doubleUnitMeter: {
+            apiName: 'doubleUnitMeter',
+          },
+          durationMilliseconds: {
+            apiName: 'durationMilliseconds',
+          },
+          durationSeconds: {
+            apiName: 'durationSeconds',
+          },
+          geopoint: {
+            apiName: 'geopoint',
+          },
+          geoshape: {
+            apiName: 'geoshape',
+          },
+          integerMinDigits: {
+            apiName: 'integerMinDigits',
+          },
+          integerNoGrouping: {
+            apiName: 'integerNoGrouping',
+          },
+          integerOrdinal1: {
+            apiName: 'integerOrdinal1',
+          },
+          integerPlain: {
+            apiName: 'integerPlain',
+          },
+          integerThousands: {
+            apiName: 'integerThousands',
+          },
+          largeNumber: {
+            apiName: 'largeNumber',
+          },
+          link_: {
+            apiName: 'link_',
+          },
+          longCompact: {
+            apiName: 'longCompact',
+          },
+          longEngineering: {
+            apiName: 'longEngineering',
+          },
+          longPlain: {
+            apiName: 'longPlain',
+          },
+          longScientific: {
+            apiName: 'longScientific',
+          },
+          marking: {
+            apiName: 'marking',
+          },
+          mediaReference: {
+            apiName: 'mediaReference',
+          },
+          negativeCurrency: {
+            apiName: 'negativeCurrency',
+          },
+          negativeNumber: {
+            apiName: 'negativeNumber',
+          },
+          negativePercentage: {
+            apiName: 'negativePercentage',
+          },
+          nullValue: {
+            apiName: 'nullValue',
+          },
+          smallDecimal: {
+            apiName: 'smallDecimal',
+          },
+          stringPlain: {
+            apiName: 'stringPlain',
+          },
+          stringResource: {
+            apiName: 'stringResource',
+          },
+          stringUser: {
+            apiName: 'stringUser',
+          },
+          struct: {
+            apiName: 'struct',
+          },
+          timestampDatetime: {
+            apiName: 'timestampDatetime',
+          },
+          timestampDatetimeShort: {
+            apiName: 'timestampDatetimeShort',
+          },
+          timestampIso: {
+            apiName: 'timestampIso',
+          },
+          timestampNyc: {
+            apiName: 'timestampNyc',
+          },
+          timestampPattern12h: {
+            apiName: 'timestampPattern12h',
+          },
+          timestampPattern24h: {
+            apiName: 'timestampPattern24h',
+          },
+          timestampTimeOnly: {
+            apiName: 'timestampTimeOnly',
+          },
+          timestampTokyo: {
+            apiName: 'timestampTokyo',
+          },
+          timestampUtc: {
+            apiName: 'timestampUtc',
+          },
+          timezoneProperty: {
+            apiName: 'timezoneProperty',
+          },
+          vector: {
+            apiName: 'vector',
+          },
+          zeroValue: {
+            apiName: 'zeroValue',
+          },
+        },
+      },
+      GtfsTripTrackObject: {
+        apiName: 'GtfsTripTrackObject',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'entityId',
+        properties: {
+          entityId: {
+            apiName: 'entityId',
+          },
+          geotimeSeriesReferences: {
+            apiName: 'geotimeSeriesReferences',
+          },
+          timestamp: {
+            apiName: 'timestamp',
+          },
+        },
+      },
+      MasonHeavyEquipment: {
+        apiName: 'MasonHeavyEquipment',
+        id: {
+          rid: 'ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2',
+        },
+        links: {
+          masonHeavyEquipment: {
+            apiName: 'masonHeavyEquipment',
+          },
+        },
+        primaryKeyApiName: 'id',
+        properties: {
+          age: {
+            apiName: 'age',
+          },
+          area: {
+            apiName: 'area',
+          },
+          backupDriverName: {
+            apiName: 'backupDriverName',
+          },
+          badgeId: {
+            apiName: 'badgeId',
+          },
+          classification: {
+            apiName: 'classification',
+          },
+          createdDatetime: {
+            apiName: 'createdDatetime',
+          },
+          driverId: {
+            apiName: 'driverId',
+          },
+          driverName: {
+            apiName: 'driverName',
+          },
+          externalId: {
+            apiName: 'externalId',
+          },
+          fullSize: {
+            apiName: 'fullSize',
+          },
+          id: {
+            apiName: 'id',
+          },
+          internalSize: {
+            apiName: 'internalSize',
+          },
+          isCanonical: {
+            apiName: 'isCanonical',
+          },
+          lastModified: {
+            apiName: 'lastModified',
+          },
+          location: {
+            apiName: 'location',
+          },
+          maker: {
+            apiName: 'maker',
+          },
+          managerName: {
+            apiName: 'managerName',
+          },
+          musicPlayer: {
+            apiName: 'musicPlayer',
+          },
+          resolvedTo: {
+            apiName: 'resolvedTo',
+          },
+          serviceRequirement: {
+            apiName: 'serviceRequirement',
+          },
+          shortId: {
+            apiName: 'shortId',
+          },
+          sidc: {
+            apiName: 'sidc',
+          },
+          site: {
+            apiName: 'site',
+          },
+          supervisorName: {
+            apiName: 'supervisorName',
+          },
+          title: {
+            apiName: 'title',
+          },
+          weight: {
+            apiName: 'weight',
+          },
+        },
+      },
+      MasonMovie: {
+        apiName: 'MasonMovie',
+        id: {
+          rid: 'ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d',
+        },
+        links: {},
+        primaryKeyApiName: 'movie',
+        properties: {
+          class: {
+            apiName: 'class',
+          },
+          class2: {
+            apiName: 'class2',
+          },
+          classAlt: {
+            apiName: 'classAlt',
+          },
+          movie: {
+            apiName: 'movie',
+          },
+          rating: {
+            apiName: 'rating',
+          },
+          topic: {
+            apiName: 'topic',
+          },
+        },
+      },
+      MatthewvsDevOrderEmbedding: {
+        apiName: 'MatthewvsDevOrderEmbedding',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'orderId',
+        properties: {
+          embedding: {
+            apiName: 'embedding',
+          },
+          orderId: {
+            apiName: 'orderId',
+          },
+          orderTitle: {
+            apiName: 'orderTitle',
+          },
+        },
+      },
+      McAirportStruct: {
+        apiName: 'McAirportStruct',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'airportName',
+        properties: {
+          airportName: {
+            apiName: 'airportName',
+          },
+          airportStruct: {
+            apiName: 'airportStruct',
+          },
+          city: {
+            apiName: 'city',
+          },
+          originDate: {
+            apiName: 'originDate',
+          },
+          state: {
+            apiName: 'state',
+          },
+        },
+      },
+      MnayanOsdkMediaObject: {
+        apiName: 'MnayanOsdkMediaObject',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          id: {
+            apiName: 'id',
+          },
+          mediaReference: {
+            apiName: 'mediaReference',
+          },
+          path: {
+            apiName: 'path',
+          },
+        },
+      },
+      MtaBus: {
+        apiName: 'MtaBus',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'vehicleId',
+        properties: {
+          nextStopId: {
+            apiName: 'nextStopId',
+          },
+          positionId: {
+            apiName: 'positionId',
+          },
+          routeId: {
+            apiName: 'routeId',
+          },
+          vehicleId: {
+            apiName: 'vehicleId',
+          },
+        },
+      },
+      MwaltherPersonOt: {
+        apiName: 'MwaltherPersonOt',
+        id: {
+          rid: 'ri.ontology.main.object-type.4ee4fa8d-e080-4317-be09-5e900223f4d5',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          age: {
+            apiName: 'age',
+          },
+          id: {
+            apiName: 'id',
+          },
+          name: {
+            apiName: 'name',
+          },
+        },
+      },
+      NbaPlayer: {
+        apiName: 'NbaPlayer',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          gamesPlayed: {
+            apiName: 'gamesPlayed',
+          },
+          id: {
+            apiName: 'id',
+          },
+          jerseyNumber: {
+            apiName: 'jerseyNumber',
+          },
+          name: {
+            apiName: 'name',
+          },
+          wikiUrl: {
+            apiName: 'wikiUrl',
+          },
+        },
+      },
+      NihalbCastingLinkedObjectTypeA: {
+        apiName: 'NihalbCastingLinkedObjectTypeA',
+        id: {
+          rid: 'ri.ontology.main.object-type.e257ea9e-8127-471f-9253-d641f5585d26',
+        },
+        links: {
+          nihalbCastingObjectTypeA: {
+            apiName: 'nihalbCastingObjectTypeA',
+          },
+          nihalbCastingObjectTypeB: {
+            apiName: 'nihalbCastingObjectTypeB',
+          },
+          nihalbCastingObjectTypeC: {
+            apiName: 'nihalbCastingObjectTypeC',
+          },
+        },
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          foreignKeyProperty: {
+            apiName: 'foreignKeyProperty',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+        },
+      },
+      NihalbCastingObjectTypeA: {
+        apiName: 'NihalbCastingObjectTypeA',
+        id: {
+          rid: 'ri.ontology.main.object-type.47776705-2ee2-4f59-af48-da192cd42456',
+        },
+        links: {
+          nihalbCastingLinkedObjectTypeAs: {
+            apiName: 'nihalbCastingLinkedObjectTypeAs',
+          },
+        },
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          additionalProperty: {
+            apiName: 'additionalProperty',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+        },
+      },
+      NihalbCastingObjectTypeB: {
+        apiName: 'NihalbCastingObjectTypeB',
+        id: {
+          rid: 'ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660',
+        },
+        links: {
+          nihalbCastingLinkedObjectTypeAs: {
+            apiName: 'nihalbCastingLinkedObjectTypeAs',
+          },
+        },
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          additionalProperty: {
+            apiName: 'additionalProperty',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+        },
+      },
+      NihalbCastingObjectTypeC: {
+        apiName: 'NihalbCastingObjectTypeC',
+        id: {
+          rid: 'ri.ontology.main.object-type.cf0cc2e5-f032-4659-9f5a-aec285317898',
+        },
+        links: {
+          nihalbCastingLinkedObjectTypeAs: {
+            apiName: 'nihalbCastingLinkedObjectTypeAs',
+          },
+        },
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          additionalProperty: {
+            apiName: 'additionalProperty',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+        },
+      },
+      ObjectTypeWithAllPropertyTypes: {
+        apiName: 'ObjectTypeWithAllPropertyTypes',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          attachment: {
+            apiName: 'attachment',
+          },
+          attachmentArray: {
+            apiName: 'attachmentArray',
+          },
+          boolean: {
+            apiName: 'boolean',
+          },
+          booleanArray: {
+            apiName: 'booleanArray',
+          },
+          byte: {
+            apiName: 'byte',
+          },
+          byteArray: {
+            apiName: 'byteArray',
+          },
+          date: {
+            apiName: 'date',
+          },
+          dateArray: {
+            apiName: 'dateArray',
+          },
+          dateTime: {
+            apiName: 'dateTime',
+          },
+          dateTimeArray: {
+            apiName: 'dateTimeArray',
+          },
+          decimal: {
+            apiName: 'decimal',
+          },
+          decimalArray: {
+            apiName: 'decimalArray',
+          },
+          double: {
+            apiName: 'double',
+          },
+          doubleArray: {
+            apiName: 'doubleArray',
+          },
+          float: {
+            apiName: 'float',
+          },
+          floatArray: {
+            apiName: 'floatArray',
+          },
+          geoPoint: {
+            apiName: 'geoPoint',
+          },
+          geoPointArray: {
+            apiName: 'geoPointArray',
+          },
+          geoShape: {
+            apiName: 'geoShape',
+          },
+          geoShapeArray: {
+            apiName: 'geoShapeArray',
+          },
+          id: {
+            apiName: 'id',
+          },
+          integer: {
+            apiName: 'integer',
+          },
+          integerArray: {
+            apiName: 'integerArray',
+          },
+          long: {
+            apiName: 'long',
+          },
+          longArray: {
+            apiName: 'longArray',
+          },
+          numericTimeseries: {
+            apiName: 'numericTimeseries',
+          },
+          short: {
+            apiName: 'short',
+          },
+          shortArray: {
+            apiName: 'shortArray',
+          },
+          string: {
+            apiName: 'string',
+          },
+          stringArray: {
+            apiName: 'stringArray',
+          },
+          stringTimeseries: {
+            apiName: 'stringTimeseries',
+          },
+        },
+      },
+      OsdkTestObject: {
+        apiName: 'OsdkTestObject',
+        id: {
+          rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
+        },
+        links: {},
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          description: {
+            apiName: 'description',
+          },
+          osdkObjectName: {
+            apiName: 'osdkObjectName',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+          stringProperty: {
+            apiName: 'stringProperty',
+          },
+          structArray: {
+            apiName: 'structArray',
+          },
+        },
+      },
+      Person: {
+        apiName: 'Person',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {
+          Friends: {
+            apiName: 'Friends',
+          },
+          Todos: {
+            apiName: 'Todos',
+          },
+        },
+        primaryKeyApiName: 'email',
+        properties: {
+          email: {
+            apiName: 'email',
+          },
+        },
+      },
+      ReducerTest: {
+        apiName: 'ReducerTest',
+        id: {
+          rid: 'ri.ontology.main.object-type.4069c2c9-9497-45ec-8fa2-02caf0c261e9',
+        },
+        links: {},
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          integerArray: {
+            apiName: 'integerArray',
+          },
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+          stringArray: {
+            apiName: 'stringArray',
+          },
+          struct: {
+            apiName: 'struct',
+          },
+          structArray: {
+            apiName: 'structArray',
+          },
+          structWithMultipleMain: {
+            apiName: 'structWithMultipleMain',
+          },
+        },
+      },
+      RhemmingsObjectWithGtsrProperty2: {
+        apiName: 'RhemmingsObjectWithGtsrProperty2',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          gtsr: {
+            apiName: 'gtsr',
+          },
+          id: {
+            apiName: 'id',
+          },
+          location: {
+            apiName: 'location',
+          },
+          timestamp: {
+            apiName: 'timestamp',
+          },
+          type: {
+            apiName: 'type',
+          },
+        },
+      },
+      ScenarioTestOsdk: {
+        apiName: 'ScenarioTestOsdk',
+        id: {
+          rid: 'ri.ontology.main.object-type.ec8dc938-1a0b-45cd-96fd-68752f1ab199',
+        },
+        links: {},
+        primaryKeyApiName: 'primaryKey_',
+        properties: {
+          primaryKey_: {
+            apiName: 'primaryKey_',
+          },
+          scenarioRidCreatedOn: {
+            apiName: 'scenarioRidCreatedOn',
+          },
+          string: {
+            apiName: 'string',
+          },
+        },
+      },
+      SotSensor: {
+        apiName: 'SotSensor',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'seriesId',
+        properties: {
+          isEnum: {
+            apiName: 'isEnum',
+          },
+          sensorName: {
+            apiName: 'sensorName',
+          },
+          seriesId: {
+            apiName: 'seriesId',
+          },
+          timeSeriesProperty: {
+            apiName: 'timeSeriesProperty',
+          },
+          wellId: {
+            apiName: 'wellId',
+          },
+        },
+      },
+      StateTerritory: {
+        apiName: 'StateTerritory',
+        id: {
+          rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
+        },
+        links: {
+          country1: {
+            apiName: 'country1',
+          },
+        },
+        primaryKeyApiName: 'airportStateName',
+        properties: {
+          airportStateCode: {
+            apiName: 'airportStateCode',
+          },
+          airportStateName: {
+            apiName: 'airportStateName',
+          },
+          country: {
+            apiName: 'country',
+          },
+        },
+      },
+      StructPerson: {
+        apiName: 'StructPerson',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'name',
+        properties: {
+          address: {
+            apiName: 'address',
+          },
+          name: {
+            apiName: 'name',
+          },
+        },
+      },
+      StructPersonOpisTeam: {
+        apiName: 'StructPersonOpisTeam',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'id',
+        properties: {
+          address: {
+            apiName: 'address',
+          },
+          age: {
+            apiName: 'age',
+          },
+          id: {
+            apiName: 'id',
+          },
+        },
+      },
+      TestGeoAction: {
+        apiName: 'TestGeoAction',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'geoPk',
+        properties: {
+          geoPk: {
+            apiName: 'geoPk',
+          },
+          geoTitle: {
+            apiName: 'geoTitle',
+          },
+          geoshapeProp: {
+            apiName: 'geoshapeProp',
+          },
+        },
+      },
+      Todo: {
+        apiName: 'Todo',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {
+          Assignee: {
+            apiName: 'Assignee',
+          },
+        },
+        primaryKeyApiName: 'id',
+        properties: {
+          body: {
+            apiName: 'body',
+          },
+          complete: {
+            apiName: 'complete',
+          },
+          id: {
+            apiName: 'id',
+          },
+          priority: {
+            apiName: 'priority',
+          },
+          text: {
+            apiName: 'text',
+          },
+        },
+      },
+      UnstructuredImageExample: {
+        apiName: 'UnstructuredImageExample',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'mediaItemRid',
+        properties: {
+          mediaItemRid: {
+            apiName: 'mediaItemRid',
+          },
+          mediaReference: {
+            apiName: 'mediaReference',
+          },
+          path: {
+            apiName: 'path',
+          },
+        },
+      },
+      Venture: {
+        apiName: 'Venture',
+        id: {
+          rid: 'rid.a.b.c.d',
+        },
+        links: {
+          employees: {
+            apiName: 'employees',
+          },
+        },
+        primaryKeyApiName: 'ventureId',
+        properties: {
+          ventureId: {
+            apiName: 'ventureId',
+          },
+          ventureName: {
+            apiName: 'ventureName',
+          },
+          ventureStart: {
+            apiName: 'ventureStart',
+          },
+        },
+      },
+      WeatherStation: {
+        apiName: 'WeatherStation',
+        id: {
+          rid: 'ri.a.b.c.d',
+        },
+        links: {},
+        primaryKeyApiName: 'stationId',
+        properties: {
+          geohash: {
+            apiName: 'geohash',
+          },
+          stationId: {
+            apiName: 'stationId',
+          },
+        },
+      },
+    },
+    ontologies: {
+      'ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e': {
+        branch: null,
+        id: {
+          rid: 'ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e',
+        },
+      },
+    },
+    queries: {
+      getBusFromSet: {
+        apiName: 'getBusFromSet',
+        id: {
+          rid: 'ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-608b7ecc1849',
+          version: '0.14.0',
+        },
+        version: '0.14.0',
+      },
+      getBusId: {
+        apiName: 'getBusId',
+        id: {
+          rid: 'ri.function-registry.main.function.615ebd6c-7494-48ea-8197-0b35a91f2a94',
+          version: '0.13.0',
+        },
+        version: '0.13.0',
+      },
+      getBusInterface: {
+        apiName: 'getBusInterface',
+        id: {
+          rid: 'ri.function-registry.main.function.876cbb9b-8545-4cd1-9513-1340c9363058',
+          version: '0.14.0',
+        },
+        version: '0.14.0',
+      },
+      getBusInterfaceSet: {
+        apiName: 'getBusInterfaceSet',
+        id: {
+          rid: 'ri.function-registry.main.function.93aa9d56-fcb5-4c48-a40f-7d631d6b5800',
+          version: '0.14.0',
+        },
+        version: '0.14.0',
+      },
+      getFirstSecondElementOf2DArray: {
+        apiName: 'getFirstSecondElementOf2DArray',
+        id: {
+          rid: 'ri.function-registry.main.function.0d736075-0c52-409f-93e1-b7cc05963913',
+          version: '1.0.0',
+        },
+        version: '1.0.0',
+      },
+      getNamesOfCustomersFromCountry: {
+        apiName: 'getNamesOfCustomersFromCountry',
+        id: {
+          rid: 'ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda',
+          version: '0.1.1',
+        },
+        version: '0.1.1',
+      },
+      getTodoCount: {
+        apiName: 'getTodoCount',
+        id: {
+          rid: 'query.rid2',
+          version: '0.1.2',
+        },
+        version: '0.1.2',
+      },
+      identity2DArray: {
+        apiName: 'identity2DArray',
+        id: {
+          rid: 'ri.function-registry.main.function.3c154359-8f43-4684-b108-ddb947949349',
+          version: '1.1.0',
+        },
+        version: '1.1.0',
+      },
+      kbnTsv2MediaReferenceParamOutput: {
+        apiName: 'kbnTsv2MediaReferenceParamOutput',
+        id: {
+          rid: 'ri.function-registry.main.function.59264e13-95ca-4e6f-abb7-bcd706b21d46',
+          version: '1.0.0',
+        },
+        version: '1.0.0',
+      },
+      queryTakesAllParameterTypes: {
+        apiName: 'queryTakesAllParameterTypes',
+        id: {
+          rid: 'query.rid',
+          version: 'version',
+        },
+        version: 'version',
+      },
+      recursiveStruct: {
+        apiName: 'recursiveStruct',
+        id: {
+          rid: 'ri.function-registry.main.function.3a82a7fe-abf0-4596-9e06-167583f7987b',
+          version: '2.0.1',
+        },
+        version: '2.0.1',
+      },
+    },
+    streams: {},
+  },
+  version: 1,
+};

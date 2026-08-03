@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -99,9 +100,13 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
 
 export const GtfsTripTrackObject = {
   type: 'object',
-  apiName: 'GtfsTripTrackObject',
+  get apiName() {
+    return $resolveObjectType('GtfsTripTrackObject') as 'GtfsTripTrackObject';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'entityId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('GtfsTripTrackObject') as 'entityId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',

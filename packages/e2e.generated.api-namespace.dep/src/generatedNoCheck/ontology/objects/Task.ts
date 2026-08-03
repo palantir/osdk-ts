@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveObjectType, $resolvePrimaryKey } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import type {
@@ -91,9 +92,13 @@ export interface Task extends $ObjectTypeDefinition {
 
 export const Task = {
   type: 'object',
-  apiName: 'com.example.dep.Task',
+  get apiName() {
+    return $resolveObjectType('com.example.dep.Task') as 'com.example.dep.Task';
+  },
   osdkMetadata: $osdkMetadata,
-  primaryKeyApiName: 'taskId',
+  get primaryKeyApiName() {
+    return $resolvePrimaryKey('com.example.dep.Task') as 'taskId';
+  },
   primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ridForTask',

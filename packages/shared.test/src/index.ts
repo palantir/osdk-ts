@@ -21,6 +21,8 @@ export {
   TypeHelpers,
 } from "@osdk/faux";
 export * as ontologies from "./ontologies/index.js";
+export { recordRequests } from "./recordRequests.js";
+export type { RecordedRequest, RequestRecorder } from "./recordRequests.js";
 export { startNodeApiServer } from "./setupServers.js";
 export type { TestSetup } from "./setupServers.js";
 export * as stubData from "./stubs/index.js";

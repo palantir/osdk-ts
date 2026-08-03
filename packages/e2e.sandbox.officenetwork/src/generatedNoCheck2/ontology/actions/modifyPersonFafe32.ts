@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person } from '../interfaces/Person.js';
 
@@ -14,12 +15,14 @@ export namespace modifyPersonFafe32 {
   export type ParamsDefinition = {
     email: {
       description: undefined;
+      displayName: 'Email';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     Person: {
       description: undefined;
+      displayName: 'Person';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<Person>;
@@ -59,16 +62,21 @@ export interface modifyPersonFafe32 extends ActionDefinition<modifyPersonFafe32.
     rid: 'ri.actions.main.action-type.ef6ee138-e07d-4721-8a22-b8cd2e507997';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-person-fafe32';
 
     signatures: modifyPersonFafe32.Signatures;
   };
   apiName: 'modifyPersonFafe32';
   type: 'action';
+  unsanitizedApiName: 'modify-person-fafe32';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyPersonFafe32: modifyPersonFafe32 = {
   apiName: 'modifyPersonFafe32',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-person-fafe32') as 'modify-person-fafe32';
+  },
   osdkMetadata: $osdkMetadata,
 };

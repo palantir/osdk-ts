@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { FooInterface } from '../interfaces/FooInterface.js';
 
@@ -64,6 +65,8 @@ export interface deleteFooInterface extends ActionDefinition<deleteFooInterface.
 export const deleteFooInterface: deleteFooInterface = {
   apiName: 'deleteFooInterface',
   type: 'action',
-  unsanitizedApiName: 'delete-foo-interface',
+  get unsanitizedApiName() {
+    return $resolveAction('delete-foo-interface') as 'delete-foo-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

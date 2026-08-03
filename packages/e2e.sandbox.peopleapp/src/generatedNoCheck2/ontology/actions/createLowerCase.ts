@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createLowerCase {
@@ -68,6 +69,8 @@ export interface createLowerCase extends ActionDefinition<createLowerCase.Signat
 export const createLowerCase: createLowerCase = {
   apiName: 'createLowerCase',
   type: 'action',
-  unsanitizedApiName: 'create-lower-case',
+  get unsanitizedApiName() {
+    return $resolveAction('create-lower-case') as 'create-lower-case';
+  },
   osdkMetadata: $osdkMetadata,
 };

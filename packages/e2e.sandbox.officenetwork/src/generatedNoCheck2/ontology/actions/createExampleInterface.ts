@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createExampleInterface {
@@ -13,12 +14,14 @@ export namespace createExampleInterface {
   export type ParamsDefinition = {
     example_interface_type: {
       description: undefined;
+      displayName: 'Example Interface Type';
       multiplicity: false;
       nullable: false;
       type: 'objectType';
     };
     type: {
       description: undefined;
+      displayName: 'type';
       multiplicity: false;
       nullable: true;
       type: 'string';
@@ -58,16 +61,21 @@ export interface createExampleInterface extends ActionDefinition<createExampleIn
     rid: 'ri.actions.main.action-type.7f51d3e6-f6c9-4f6b-ae24-5e9513961411';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-example-interface';
 
     signatures: createExampleInterface.Signatures;
   };
   apiName: 'createExampleInterface';
   type: 'action';
+  unsanitizedApiName: 'create-example-interface';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createExampleInterface: createExampleInterface = {
   apiName: 'createExampleInterface',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('create-example-interface') as 'create-example-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

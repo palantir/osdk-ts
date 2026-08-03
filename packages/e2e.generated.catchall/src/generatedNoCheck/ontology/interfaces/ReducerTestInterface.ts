@@ -1,4 +1,5 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
+import { $resolveInterfaceType } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
@@ -104,7 +105,9 @@ export interface ReducerTestInterface extends $InterfaceDefinition {
 
 export const ReducerTestInterface = {
   type: 'interface',
-  apiName: 'ReducerTestInterface',
+  get apiName() {
+    return $resolveInterfaceType('ReducerTestInterface') as 'ReducerTestInterface';
+  },
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.interface.ee112779-ed04-44c6-bf84-9543513eb80b',

@@ -1,0 +1,694 @@
+{
+  "defaults": {
+    "actions": {
+      "actionTakesAttachment": {
+        "apiName": "actionTakesAttachment",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3"
+        }
+      },
+      "actionTakesMedia": {
+        "apiName": "actionTakesMedia",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3"
+        }
+      },
+      "actionTakesObjectSet": {
+        "apiName": "actionTakesObjectSet",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      },
+      "addGeoshape": {
+        "apiName": "addGeoshape",
+        "id": {
+          "rid": "ri.actions.main.action-type.5828bab4-49c7-4fdf-a780-6ccbc359d817"
+        }
+      },
+      "createFooInterface": {
+        "apiName": "createFooInterface",
+        "id": {
+          "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817"
+        }
+      },
+      "createOffice": {
+        "apiName": "createOffice",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1"
+        }
+      },
+      "createOfficeAndEmployee": {
+        "apiName": "createOfficeAndEmployee",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      },
+      "createStructPerson": {
+        "apiName": "createStructPerson",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      },
+      "delete-bar-interface": {
+        "apiName": "delete-bar-interface",
+        "id": {
+          "rid": "ri.actions.main.action-type.3828bab4-4ac7-4fdf-a780-6ccbc359d817"
+        }
+      },
+      "deleteFooInterface": {
+        "apiName": "deleteFooInterface",
+        "id": {
+          "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817"
+        }
+      },
+      "editTodo": {
+        "apiName": "editTodo",
+        "id": {
+          "rid": "ri.ontology.main.action-type.3e394b73-e243-49f1-80c1-44280b8a59f5"
+        }
+      },
+      "moveOffice": {
+        "apiName": "moveOffice",
+        "id": {
+          "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2"
+        }
+      },
+      "promoteEmployee": {
+        "apiName": "promoteEmployee",
+        "id": {
+          "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167"
+        }
+      },
+      "promoteEmployeeObject": {
+        "apiName": "promoteEmployeeObject",
+        "id": {
+          "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168"
+        }
+      }
+    },
+    "custom": {},
+    "datasets": {},
+    "egressConnections": {},
+    "interfaces": {
+      "BarInterface": {
+        "apiName": "BarInterface",
+        "id": {
+          "rid": "ri.interface.main.interface.2"
+        },
+        "links": {
+          "toFoo": {
+            "apiName": "toFoo"
+          }
+        },
+        "properties": {}
+      },
+      "ComplexImplementationInterface": {
+        "apiName": "ComplexImplementationInterface",
+        "id": {
+          "rid": "ri.interface.main.interface.complex-implementation"
+        },
+        "links": {},
+        "properties": {
+          "iLocal": {
+            "apiName": "iLocal",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.iLocal"
+            }
+          },
+          "iReduced": {
+            "apiName": "iReduced",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.iReduced"
+            }
+          },
+          "iStruct": {
+            "apiName": "iStruct",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.iStruct"
+            }
+          },
+          "iStructField": {
+            "apiName": "iStructField",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.iStructField"
+            }
+          }
+        }
+      },
+      "FooInterface": {
+        "apiName": "FooInterface",
+        "id": {
+          "rid": "ri.interface.main.interface.1"
+        },
+        "links": {
+          "toBar": {
+            "apiName": "toBar"
+          }
+        },
+        "properties": {
+          "fooArray": {
+            "apiName": "fooArray",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.interfacePropertyType.2"
+            }
+          },
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "id": {
+              "rid": "ri.interfacePropertyType.main.interfacePropertyType.1"
+            }
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "id": {
+              "rid": "ri.sharedPropertyType.main.sharedPropertyType.1"
+            }
+          }
+        }
+      }
+    },
+    "mediasets": {},
+    "models": {},
+    "objects": {
+      "BgaoNflPlayer": {
+        "apiName": "BgaoNflPlayer",
+        "id": {
+          "rid": "ri.nflplayer"
+        },
+        "links": {},
+        "primaryKeyApiName": "id",
+        "properties": {
+          "address": {
+            "apiName": "address"
+          },
+          "addressArray": {
+            "apiName": "addressArray"
+          },
+          "gamesPlayed": {
+            "apiName": "gamesPlayed"
+          },
+          "id": {
+            "apiName": "id"
+          },
+          "name": {
+            "apiName": "name"
+          },
+          "number": {
+            "apiName": "number"
+          },
+          "wikiUrl": {
+            "apiName": "wikiUrl"
+          }
+        }
+      },
+      "ComplexImplementationObject": {
+        "apiName": "ComplexImplementationObject",
+        "id": {
+          "rid": "ri.ontology.main.object-type.complex-implementation-object"
+        },
+        "links": {},
+        "primaryKeyApiName": "id",
+        "properties": {
+          "arrayValue": {
+            "apiName": "arrayValue"
+          },
+          "id": {
+            "apiName": "id"
+          },
+          "localValue": {
+            "apiName": "localValue"
+          },
+          "multiStruct": {
+            "apiName": "multiStruct"
+          },
+          "nestedStruct": {
+            "apiName": "nestedStruct"
+          }
+        }
+      },
+      "Employee": {
+        "apiName": "Employee",
+        "id": {
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44"
+        },
+        "links": {
+          "lead": {
+            "apiName": "lead"
+          },
+          "officeLink": {
+            "apiName": "officeLink"
+          },
+          "peeps": {
+            "apiName": "peeps"
+          },
+          "visitedOffices": {
+            "apiName": "visitedOffices"
+          }
+        },
+        "primaryKeyApiName": "employeeId",
+        "properties": {
+          "class": {
+            "apiName": "class"
+          },
+          "employeeId": {
+            "apiName": "employeeId"
+          },
+          "employeeLocation": {
+            "apiName": "employeeLocation"
+          },
+          "employeeProfile": {
+            "apiName": "employeeProfile"
+          },
+          "employeeSensor": {
+            "apiName": "employeeSensor"
+          },
+          "employeeStatus": {
+            "apiName": "employeeStatus"
+          },
+          "favoriteRestaurants": {
+            "apiName": "favoriteRestaurants"
+          },
+          "fullName": {
+            "apiName": "fullName"
+          },
+          "office": {
+            "apiName": "office"
+          },
+          "performanceScores": {
+            "apiName": "performanceScores"
+          },
+          "skillSet": {
+            "apiName": "skillSet"
+          },
+          "skillSetEmbedding": {
+            "apiName": "skillSetEmbedding"
+          },
+          "startDate": {
+            "apiName": "startDate"
+          }
+        }
+      },
+      "ObjectWithTimestampPrimaryKey": {
+        "apiName": "ObjectWithTimestampPrimaryKey",
+        "id": {
+          "rid": "ri.ontology.main.object-type.32bb9402-9cab-4705-81bb-edb65a4a6806"
+        },
+        "links": {},
+        "primaryKeyApiName": "timestamp",
+        "properties": {
+          "timestamp": {
+            "apiName": "timestamp"
+          },
+          "value": {
+            "apiName": "value"
+          }
+        }
+      },
+      "Office": {
+        "apiName": "Office",
+        "id": {
+          "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45"
+        },
+        "links": {
+          "occupants": {
+            "apiName": "occupants"
+          }
+        },
+        "primaryKeyApiName": "officeId",
+        "properties": {
+          "capacity": {
+            "apiName": "capacity"
+          },
+          "entrance": {
+            "apiName": "entrance"
+          },
+          "name": {
+            "apiName": "name"
+          },
+          "occupiedArea": {
+            "apiName": "occupiedArea"
+          },
+          "officeId": {
+            "apiName": "officeId"
+          }
+        }
+      },
+      "Person": {
+        "apiName": "Person",
+        "id": {
+          "rid": "ri.person"
+        },
+        "links": {},
+        "primaryKeyApiName": "id",
+        "properties": {
+          "id": {
+            "apiName": "id"
+          },
+          "name": {
+            "apiName": "name"
+          }
+        }
+      },
+      "Task": {
+        "apiName": "Task",
+        "id": {
+          "rid": "ri.task"
+        },
+        "links": {
+          "RP": {
+            "apiName": "RP"
+          },
+          "Todos": {
+            "apiName": "Todos"
+          }
+        },
+        "primaryKeyApiName": "id",
+        "properties": {
+          "id": {
+            "apiName": "id"
+          },
+          "name": {
+            "apiName": "name"
+          }
+        }
+      },
+      "Todo": {
+        "apiName": "Todo",
+        "id": {
+          "rid": "ri.todo"
+        },
+        "links": {},
+        "primaryKeyApiName": "id",
+        "properties": {
+          "id": {
+            "apiName": "id"
+          },
+          "text": {
+            "apiName": "text"
+          }
+        }
+      },
+      "equipment": {
+        "apiName": "equipment",
+        "id": {
+          "rid": "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45"
+        },
+        "links": {},
+        "primaryKeyApiName": "equipmentId",
+        "properties": {
+          "equipmentId": {
+            "apiName": "equipmentId"
+          },
+          "type": {
+            "apiName": "type"
+          }
+        }
+      },
+      "objectTypeWithAllPropertyTypes": {
+        "apiName": "objectTypeWithAllPropertyTypes",
+        "id": {
+          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44"
+        },
+        "links": {
+          "linkedObjectType": {
+            "apiName": "linkedObjectType"
+          }
+        },
+        "primaryKeyApiName": "id",
+        "properties": {
+          "attachment": {
+            "apiName": "attachment"
+          },
+          "attachment2": {
+            "apiName": "attachment2"
+          },
+          "attachmentArray": {
+            "apiName": "attachmentArray"
+          },
+          "boolean": {
+            "apiName": "boolean"
+          },
+          "booleanArray": {
+            "apiName": "booleanArray"
+          },
+          "byte": {
+            "apiName": "byte"
+          },
+          "byteArray": {
+            "apiName": "byteArray"
+          },
+          "cipherText": {
+            "apiName": "cipherText"
+          },
+          "date": {
+            "apiName": "date"
+          },
+          "dateArray": {
+            "apiName": "dateArray"
+          },
+          "dateTime": {
+            "apiName": "dateTime"
+          },
+          "dateTimeArray": {
+            "apiName": "dateTimeArray"
+          },
+          "decimal": {
+            "apiName": "decimal"
+          },
+          "decimalArray": {
+            "apiName": "decimalArray"
+          },
+          "double": {
+            "apiName": "double"
+          },
+          "doubleArray": {
+            "apiName": "doubleArray"
+          },
+          "float": {
+            "apiName": "float"
+          },
+          "floatArray": {
+            "apiName": "floatArray"
+          },
+          "geoPoint": {
+            "apiName": "geoPoint"
+          },
+          "geoPointArray": {
+            "apiName": "geoPointArray"
+          },
+          "geoShape": {
+            "apiName": "geoShape"
+          },
+          "geoShapeArray": {
+            "apiName": "geoShapeArray"
+          },
+          "id": {
+            "apiName": "id"
+          },
+          "integer": {
+            "apiName": "integer"
+          },
+          "integerArray": {
+            "apiName": "integerArray"
+          },
+          "long": {
+            "apiName": "long"
+          },
+          "longArray": {
+            "apiName": "longArray"
+          },
+          "mediaReference": {
+            "apiName": "mediaReference"
+          },
+          "short": {
+            "apiName": "short"
+          },
+          "shortArray": {
+            "apiName": "shortArray"
+          },
+          "string": {
+            "apiName": "string"
+          },
+          "stringArray": {
+            "apiName": "stringArray"
+          },
+          "vector": {
+            "apiName": "vector"
+          }
+        }
+      }
+    },
+    "ontologies": {
+      "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361": {
+        "branch": null,
+        "id": {
+          "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361"
+        }
+      }
+    },
+    "queries": {
+      "acceptsThreeDimensionalAggregationFunction": {
+        "apiName": "acceptsThreeDimensionalAggregationFunction",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "acceptsTwoDimensionalAggregationFunction": {
+        "apiName": "acceptsTwoDimensionalAggregationFunction",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "addOne": {
+        "apiName": "addOne",
+        "id": {
+          "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "incrementPersonAge": {
+        "apiName": "incrementPersonAge",
+        "id": {
+          "rid": "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "incrementPersonAgeComplex": {
+        "apiName": "incrementPersonAgeComplex",
+        "id": {
+          "rid": "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "queryAcceptsInterface": {
+        "apiName": "queryAcceptsInterface",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b35870a-63c7-4d48-8f06-9617c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "queryAcceptsInterfaceObjectSet": {
+        "apiName": "queryAcceptsInterfaceObjectSet",
+        "id": {
+          "rid": "ri.function-registry.main.function.4db06290-aab9-43fd-a22d-608b7ecc1849",
+          "version": "0.14.0"
+        },
+        "version": "0.14.0"
+      },
+      "queryAcceptsMediaReference": {
+        "apiName": "queryAcceptsMediaReference",
+        "id": {
+          "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd4",
+          "version": "0.1.0"
+        },
+        "version": "0.1.0"
+      },
+      "queryAcceptsObject": {
+        "apiName": "queryAcceptsObject",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "queryAcceptsObjectSets": {
+        "apiName": "queryAcceptsObjectSets",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "queryOutputsInterface": {
+        "apiName": "queryOutputsInterface",
+        "id": {
+          "rid": "ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-60sdf7ecc1849",
+          "version": "0.14.0"
+        },
+        "version": "0.14.0"
+      },
+      "queryReturnsMediaReference": {
+        "apiName": "queryReturnsMediaReference",
+        "id": {
+          "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd3",
+          "version": "0.1.0"
+        },
+        "version": "0.1.0"
+      },
+      "queryTypeReturnsArray": {
+        "apiName": "queryTypeReturnsArray",
+        "id": {
+          "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+          "version": "0.1.1"
+        },
+        "version": "0.1.1"
+      },
+      "queryTypeReturnsArrayOfObjects": {
+        "apiName": "queryTypeReturnsArrayOfObjects",
+        "id": {
+          "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+          "version": "0.1.1"
+        },
+        "version": "0.1.1"
+      },
+      "queryTypeReturnsMap": {
+        "apiName": "queryTypeReturnsMap",
+        "id": {
+          "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
+          "version": "0.1.1"
+        },
+        "version": "0.1.1"
+      },
+      "returnsDate": {
+        "apiName": "returnsDate",
+        "id": {
+          "rid": "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "returnsObject": {
+        "apiName": "returnsObject",
+        "id": {
+          "rid": "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "returnsTimestamp": {
+        "apiName": "returnsTimestamp",
+        "id": {
+          "rid": "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
+          "version": "0.0.9"
+        },
+        "version": "0.0.9"
+      },
+      "threeDimensionalAggregationFunction": {
+        "apiName": "threeDimensionalAggregationFunction",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      },
+      "twoDimensionalAggregationFunction": {
+        "apiName": "twoDimensionalAggregationFunction",
+        "id": {
+          "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+          "version": "0.11.0"
+        },
+        "version": "0.11.0"
+      }
+    },
+    "streams": {}
+  },
+  "version": 1
+}

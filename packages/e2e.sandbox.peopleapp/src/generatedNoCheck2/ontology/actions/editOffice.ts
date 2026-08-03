@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Office } from '../objects/Office.js';
 
@@ -89,6 +90,8 @@ export interface editOffice extends ActionDefinition<editOffice.Signatures> {
 export const editOffice: editOffice = {
   apiName: 'editOffice',
   type: 'action',
-  unsanitizedApiName: 'edit-office',
+  get unsanitizedApiName() {
+    return $resolveAction('edit-office') as 'edit-office';
+  },
   osdkMetadata: $osdkMetadata,
 };

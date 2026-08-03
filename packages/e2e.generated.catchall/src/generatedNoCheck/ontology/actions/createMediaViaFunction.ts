@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createMediaViaFunction {
@@ -68,6 +69,8 @@ export interface createMediaViaFunction extends ActionDefinition<createMediaViaF
 export const createMediaViaFunction: createMediaViaFunction = {
   apiName: 'createMediaViaFunction',
   type: 'action',
-  unsanitizedApiName: 'create-media-via-function',
+  get unsanitizedApiName() {
+    return $resolveAction('create-media-via-function') as 'create-media-via-function';
+  },
   osdkMetadata: $osdkMetadata,
 };

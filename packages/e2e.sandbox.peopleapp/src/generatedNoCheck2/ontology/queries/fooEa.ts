@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -32,9 +33,13 @@ export interface fooEa extends QueryDefinition<fooEa.Signature>, VersionBound<$E
 }
 
 export const fooEa: fooEa = {
-  apiName: 'fooEa',
   type: 'query',
-  version: '0.0.3',
+  get apiName() {
+    return $resolveQuery('fooEa') as 'fooEa';
+  },
+  get version() {
+    return $resolveQueryVersion('fooEa') as '0.0.3';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOfficeAndEmployee {
@@ -133,6 +134,8 @@ export interface createOfficeAndEmployee extends ActionDefinition<createOfficeAn
 export const createOfficeAndEmployee: createOfficeAndEmployee = {
   apiName: 'createOfficeAndEmployee',
   type: 'action',
-  unsanitizedApiName: 'create-office-and-employee',
+  get unsanitizedApiName() {
+    return $resolveAction('create-office-and-employee') as 'create-office-and-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

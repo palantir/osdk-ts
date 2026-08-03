@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -87,6 +88,8 @@ export interface addMedia extends ActionDefinition<addMedia.Signatures> {
 export const addMedia: addMedia = {
   apiName: 'addMedia',
   type: 'action',
-  unsanitizedApiName: 'add-media',
+  get unsanitizedApiName() {
+    return $resolveAction('add-media') as 'add-media';
+  },
   osdkMetadata: $osdkMetadata,
 };

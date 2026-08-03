@@ -1,4 +1,5 @@
 import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+import { $resolveQuery, $resolveQueryVersion } from '@osdk/aliases';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
@@ -31,9 +32,13 @@ export interface getTodoCount extends QueryDefinition<getTodoCount.Signature>, V
 }
 
 export const getTodoCount: getTodoCount = {
-  apiName: 'getTodoCount',
   type: 'query',
-  version: '0.1.2',
+  get apiName() {
+    return $resolveQuery('getTodoCount') as 'getTodoCount';
+  },
+  get version() {
+    return $resolveQueryVersion('getTodoCount') as '0.1.2';
+  },
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

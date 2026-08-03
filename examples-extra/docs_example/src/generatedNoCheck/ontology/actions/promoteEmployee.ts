@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace promoteEmployee {
@@ -95,6 +96,8 @@ export interface promoteEmployee extends ActionDefinition<promoteEmployee.Signat
 export const promoteEmployee: promoteEmployee = {
   apiName: 'promoteEmployee',
   type: 'action',
-  unsanitizedApiName: 'promote-employee',
+  get unsanitizedApiName() {
+    return $resolveAction('promote-employee') as 'promote-employee';
+  },
   osdkMetadata: $osdkMetadata,
 };

@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { ExampleInterface } from '../interfaces/ExampleInterface.js';
 
@@ -74,6 +75,8 @@ export interface modifyExampleInterface extends ActionDefinition<modifyExampleIn
 export const modifyExampleInterface: modifyExampleInterface = {
   apiName: 'modifyExampleInterface',
   type: 'action',
-  unsanitizedApiName: 'modify-example-interface',
+  get unsanitizedApiName() {
+    return $resolveAction('modify-example-interface') as 'modify-example-interface';
+  },
   osdkMetadata: $osdkMetadata,
 };

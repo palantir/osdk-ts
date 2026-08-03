@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { $resolveAction } from '@osdk/aliases';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 
@@ -14,18 +15,21 @@ export namespace changeFavoritePlace {
   export type ParamsDefinition = {
     Employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     'favorite-place-area': {
       description: undefined;
+      displayName: 'Favorite Place Area';
       multiplicity: false;
       nullable: false;
       type: 'geoshape';
     };
     favplace: {
       description: undefined;
+      displayName: 'Favorite Place';
       multiplicity: false;
       nullable: false;
       type: 'geohash';
@@ -73,16 +77,21 @@ export interface changeFavoritePlace extends ActionDefinition<changeFavoritePlac
     rid: 'ri.actions.main.action-type.a35f9aa1-a7a1-44bd-99bf-b988bb5bf750';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'change-favorite-place';
 
     signatures: changeFavoritePlace.Signatures;
   };
   apiName: 'changeFavoritePlace';
   type: 'action';
+  unsanitizedApiName: 'change-favorite-place';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const changeFavoritePlace: changeFavoritePlace = {
   apiName: 'changeFavoritePlace',
   type: 'action',
+  get unsanitizedApiName() {
+    return $resolveAction('change-favorite-place') as 'change-favorite-place';
+  },
   osdkMetadata: $osdkMetadata,
 };
