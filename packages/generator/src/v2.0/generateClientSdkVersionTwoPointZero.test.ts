@@ -1986,6 +1986,57 @@ describe("generator", () => {
     });
   });
 
+  describe("exportOntologyMetadata", () => {
+    async function generate(exportOntologyMetadata: boolean) {
+      await generateClientSdkVersionTwoPointZero(
+        TodoWireOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        exportOntologyMetadata,
+      );
+      return helper.getFiles();
+    }
+
+    it("does not write the metadata json when disabled", async () => {
+      const files = await generate(false);
+
+      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`])
+        .toBeUndefined();
+    });
+
+    it("writes the raw metadata as pretty printed json when enabled", async () => {
+      const files = await generate(true);
+      const json =
+        files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.json`];
+
+      expect(JSON.parse(json)).toEqual(TodoWireOntology);
+      expect(json).toContain("\n    \"ontology\": {");
+    });
+
+    it("declares the shim as a default export for esm and export = for cjs", async () => {
+      const files = await generate(true);
+
+      expect(files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts`])
+        .toContain("export default ontologyFullMetadata;");
+
+      // .d.ts is the fallback for resolvers that ignore the mts/cts split, so
+      // it has to keep the `export =` form.
+      for (const ext of ["d.cts", "d.ts"]) {
+        expect(
+          files[`${BASE_PATH}/UNSTABLE_DO_NOT_USE/ontology-metadata.${ext}`],
+        )
+          .toContain("export = ontologyFullMetadata;");
+      }
+    });
+  });
+
   describe("query depends on foreign object", () => {
     it("generates the correct code", async () => {
       await expect(
