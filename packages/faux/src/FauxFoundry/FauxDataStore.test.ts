@@ -115,6 +115,8 @@ describe(FauxDataStore, () => {
           apiName: "Employee",
           description: "Employee",
           displayName: "Employee",
+          aliases: [],
+          datasources: [],
           rid: "ri.Employee",
           icon: {
             color: "#000000",
@@ -178,6 +180,8 @@ describe(FauxDataStore, () => {
           apiName: "Project",
           description: "Project",
           displayName: "Project",
+          aliases: [],
+          datasources: [],
           rid: "ri.Project",
           icon: {
             color: "#0000FF",

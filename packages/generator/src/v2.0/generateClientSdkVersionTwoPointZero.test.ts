@@ -254,6 +254,8 @@ const referencedOntology = {
         "primaryKey": "taskId",
         displayName: "Task",
         pluralDisplayName: "Tasks",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
 
         titleProperty: "taskId",
@@ -409,6 +411,8 @@ const referencingOntology: WireOntologyDefinition = {
         apiName: "Thing",
         displayName: "Thing",
         pluralDisplayName: "Things",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
         primaryKey: "id",
         properties: {
@@ -441,6 +445,8 @@ const referencingOntology: WireOntologyDefinition = {
         apiName: "UsesForeignSpt",
         primaryKey: "id",
         displayName: "Uses Foreign Spt",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", color: "blue", name: "document" },
         pluralDisplayName: "Uses Foreign Spts",
         properties: {

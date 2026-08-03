@@ -24,6 +24,8 @@ export const complexImplementationObjectType: ObjectTypeV2 = {
   apiName: "ComplexImplementationObject",
   displayName: "Complex Implementation Object",
   pluralDisplayName: "Complex Implementation Objects",
+  aliases: [],
+  datasources: [],
   icon: { type: "blueprint", color: "blue", name: "cube" },
   description:
     "Backs ComplexImplementationInterface with one property per impl kind",

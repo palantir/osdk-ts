@@ -35,9 +35,9 @@ type StreamingElement<QD extends QueryDefinition<any>> =
 /**
  * @experimental This feature is experimental and might change in the future.
  *
- * Executes a query as a streaming function, yielding results as they arrive
- * from the server over an NDJSON stream. For queries that return arrays, the
- * stream yields the element type — batches are flattened automatically.
+ * Intended to execute a query as a streaming function, yielding results as
+ * they arrive from the server. Streaming query execution is not currently
+ * supported in the TypeScript OSDK.
  */
 type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
   query: QD,

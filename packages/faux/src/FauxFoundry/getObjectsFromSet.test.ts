@@ -92,6 +92,8 @@ describe(getObjectsFromSet, () => {
         apiName: "Employee",
         description: "Employee",
         displayName: "Employee",
+        aliases: [],
+        datasources: [],
         rid: "ri.Employee",
         icon: {
           color: "#000000",
