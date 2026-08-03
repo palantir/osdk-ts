@@ -25,6 +25,7 @@ import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
   .withProperties({
-    "newPropertyName": (baseObjectSet) =>
+    newPropertyName: (baseObjectSet) =>
       baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-  }).fetchPage();
+  })
+  .fetchPage();

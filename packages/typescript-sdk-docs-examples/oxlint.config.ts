@@ -1,5 +1,5 @@
-/**
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * WARNING: This file is generated automatically by the generateExamples.ts script.
- * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: containsAnyTermTemplate (Variation: #structSubPropertyApiName)
+import { defineConfig } from "oxlint";
 
-import { Employee } from "../../../generatedNoCheck/index.js";
-// Edit this import if your client location differs
-import { client } from "./client.js";
+import root from "../../oxlint.config.ts";
 
-const EmployeeObjectSet = client(Employee).where({
-  contactInfo: { phone: { $containsAnyTerm: "foo bar" } },
+// src/examples/ is generated documentation snippets (via `generate-examples`).
+// They are illustrative code, not hand-written source, so they are exempt from
+// linting (the previous ESLint setup tolerated their patterns too). oxfmt still
+// formats them via `codegen`'s format step.
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: [...(root.ignorePatterns ?? []), "src/examples/"],
 });

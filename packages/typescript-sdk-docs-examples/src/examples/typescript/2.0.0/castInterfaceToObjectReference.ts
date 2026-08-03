@@ -19,9 +19,10 @@
 
 // Example: castInterfaceToObjectReference
 
+import { type Osdk } from "@osdk/client";
+
 import { Employee, HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { type Osdk } from "@osdk/client";
 import { client } from "./client.js";
 try {
   const page = await client(HasAddress).fetchPage();
