@@ -63,6 +63,8 @@ const ontologyMetadataWithObjectType: OntologyFullMetadata = {
             typeClasses: [],
           },
         },
+        aliases: [],
+        datasources: [],
       },
       linkTypes: [],
       implementsInterfaces: [],
@@ -155,7 +157,9 @@ describe("generateOntologyMetadata", () => {
                   "rid": "ri.ontology.main.property.employee-id",
                   "typeClasses": []
                 }
-              }
+              },
+              "aliases": [],
+              "datasources": []
             },
             "linkTypes": [],
             "implementsInterfaces": [],

@@ -166,6 +166,8 @@ export const employeeObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 } as const satisfies ObjectTypeV2;
 
 export const officeObjectType: ObjectTypeV2 = {
@@ -218,6 +220,8 @@ export const officeObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 } as const satisfies ObjectTypeV2;
 
 export const equipmentObjectType: ObjectTypeV2 = {
@@ -246,6 +250,8 @@ export const equipmentObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 };
 
 export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
@@ -274,6 +280,8 @@ export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.32bb9402-9cab-4705-81bb-edb65a4a6806",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 };
 
 export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
@@ -577,6 +585,8 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 };
 
 export const ObjectTypesV2: ObjectTypeV2[] = [
@@ -609,6 +619,8 @@ export const taskObjectType: ObjectTypeV2 = {
     },
   },
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
   rid: "ri.task",
   titleProperty: "name",
 };
@@ -637,6 +649,8 @@ export const todoObjectType: ObjectTypeV2 = {
   },
   rid: "ri.todo",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
   titleProperty: "text",
 };
 
@@ -664,6 +678,8 @@ export const personObjectType: ObjectTypeV2 = {
   },
   rid: "ri.person",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
   titleProperty: "name",
 };
 
@@ -814,5 +830,7 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
   },
   rid: "ri.nflplayer",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
   titleProperty: "name",
 };

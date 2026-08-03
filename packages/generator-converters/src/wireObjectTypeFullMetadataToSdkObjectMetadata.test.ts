@@ -57,6 +57,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         rid: "rid",
         status: "ACTIVE",
         titleProperty: "otherKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);
@@ -137,6 +139,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         status: "INVALID_NOT_IN_API" as any,
         visibility: "INVALID_NOT_IN_API" as any,
         titleProperty: "otherKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);
@@ -172,6 +176,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         rid: "rid",
         status: "ACTIVE",
         titleProperty: "primaryKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);
@@ -231,6 +237,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         rid: "rid",
         status: "ACTIVE",
         titleProperty: "primaryKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);
@@ -296,6 +304,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         rid: "rid",
         status: "ACTIVE",
         titleProperty: "primaryKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);
@@ -343,6 +353,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         rid: "rid",
         status: "ACTIVE",
         titleProperty: "primaryKey",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     }, true);

@@ -189,6 +189,8 @@ export class OntologyBlockDataToFullMetadataConverter {
         status: this.convertObjectTypeStatusFromBlockData(object.status),
         properties,
         rid,
+        aliases: [], // Not available in IR
+        datasources: [], // Not available in IR
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};

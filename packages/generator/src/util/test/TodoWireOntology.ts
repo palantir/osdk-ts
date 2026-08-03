@@ -125,6 +125,8 @@ export const TodoWireOntology: WireOntologyDefinition = {
         },
         status: "ACTIVE",
         rid: "ridForTodo",
+        aliases: [],
+        datasources: [],
       },
       linkTypes: [{
         apiName: "Assignee",
@@ -169,6 +171,8 @@ export const TodoWireOntology: WireOntologyDefinition = {
 
         rid: "ridForPerson",
         status: "ACTIVE",
+        aliases: [],
+        datasources: [],
       },
       linkTypes: [{
         apiName: "Todos",

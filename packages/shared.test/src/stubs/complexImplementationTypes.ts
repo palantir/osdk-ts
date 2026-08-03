@@ -101,6 +101,8 @@ export const complexImplementationObjectType: ObjectTypeV2 = {
   },
   rid: "ri.ontology.main.object-type.complex-implementation-object",
   status: "ACTIVE",
+  aliases: [],
+  datasources: [],
 } as const satisfies ObjectTypeV2;
 
 export const ComplexImplementationInterface: InterfaceType = {

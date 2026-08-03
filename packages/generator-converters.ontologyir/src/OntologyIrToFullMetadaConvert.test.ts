@@ -3174,7 +3174,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3DistributionCenterProposal",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Distribution Center Proposal",
               "icon": {
@@ -3268,7 +3270,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3DistributionRouteAnalysis",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Distribution Route Analysis",
               "icon": {
@@ -3352,7 +3356,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
             ],
             "objectType": {
+              "aliases": [],
               "apiName": "Dc3Restaurant",
+              "datasources": [],
               "description": undefined,
               "displayName": "[DC3] Restaurant",
               "icon": {

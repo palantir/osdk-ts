@@ -19,7 +19,6 @@ import type {
   QueryDefinition,
   QueryMetadata,
 } from "@osdk/api";
-import * as Functions from "@osdk/foundry.functions/Query";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -33,6 +32,7 @@ import {
   remapQueryParams,
   remapQueryResponse,
 } from "./applyQuery.js";
+import { streamingExecute } from "./streamingExecuteQuery.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function* applyStreamingQuery<
@@ -56,7 +56,7 @@ export async function* applyStreamingQuery<
     await client.flushEdits();
   }
 
-  const response = await Functions.streamingExecute(
+  const response = await streamingExecute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, (_) => ({
         finalMethodCall: "applyStreamingQuery",

@@ -787,6 +787,8 @@ export class OntologyIrToFullMetadataConverter {
         status: this.convertObjectTypeStatus(object.status),
         properties,
         rid: `ri.${object.apiName}`,
+        aliases: [], // Not available in IR
+        datasources: [], // Not available in IR
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};

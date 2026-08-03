@@ -125,6 +125,8 @@ describe(getObjectsFromSet, () => {
         },
         status: "ACTIVE",
         titleProperty: "id",
+        aliases: [],
+        datasources: [],
       },
       sharedPropertyTypeMapping: {},
     });

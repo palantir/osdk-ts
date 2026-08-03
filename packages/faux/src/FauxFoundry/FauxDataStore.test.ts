@@ -148,6 +148,8 @@ describe(FauxDataStore, () => {
           },
           status: "ACTIVE",
           titleProperty: "id",
+          aliases: [],
+          datasources: [],
         },
         sharedPropertyTypeMapping: {},
       } as const;
@@ -211,6 +213,8 @@ describe(FauxDataStore, () => {
           },
           status: "ACTIVE",
           titleProperty: "name",
+          aliases: [],
+          datasources: [],
         },
         sharedPropertyTypeMapping: {},
       } as const;
