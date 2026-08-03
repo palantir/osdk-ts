@@ -137,18 +137,40 @@ than just relocating it.
   asset URLs are absolute. The Actions gh-pages preview is unchanged and still
   serves that need.
 
+## Asking "did this change?"
+
+Two different questions, two different tools, and mixing them up causes real
+bugs:
+
+- **"Which files changed?"** — `scripts/changed-files.sh`. Use it for questions
+  genuinely about paths: did anyone touch CI config, did the lockfile move
+  without a manifest. `fork-guard` and the infra-change detection use this.
+- **"Does this package need rebuilding or retesting?"** — `scripts/is-affected.sh`,
+  which asks turbo's package graph via `--filter='<pkg>...[<ref>]'`. A path
+  pattern is transitively blind: a change to `@osdk/client` reaches a story
+  through imports, and no glob over `packages/react-components*` would ever see
+  it. `storybook-interaction-tests` uses this.
+
+Both build on `scripts/base-ref.sh` and both fail open — an unresolvable base
+means do the work, because skipping a job we needed is far worse than running
+one we did not.
+
+Worth knowing: any root-level file change (including `.circleci/**`) marks
+turbo's root package `//` as changed. That is harmless for the scoped filter
+above, but a bare `--affected` would behave surprisingly on a CI-config PR.
+
 ## Notes on the mirror
 
 Where CircleCI has no direct equivalent of an Actions feature:
 
-| Actions                                       | Here                                                                                                                                                                   |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `github.event.pull_request.base.sha`          | `scripts/changed-files.sh`, which resolves the merge-base with `main` (and deepens a shallow clone if it has to). Exits 2 when it cannot, and every caller fails open. |
-| `if:` job conditions on event payload         | In-job guards that call `circleci-agent step halt`, which ends the job **successfully**. That keeps `ci-all` reachable.                                                |
-| Job `outputs` (`build.outputs.infra_changed`) | `build-apps` re-runs the same cheap `git diff` rather than threading a value between jobs.                                                                             |
-| `services:` container                         | A second image in the job's `docker:` list (`e2e` + verdaccio), plus an explicit readiness poll.                                                                       |
-| Matrix `node-version: 18`                     | `cimg/node:18`. Major-only tags float to the latest patch, which is what `actions/setup-node` already does.                                                            |
-| `actions/cache` `restore-keys`                | `restore_cache` with an ordered `keys:` list. The scoped-turbo-cache fallback chain is the same as `ci.yml`'s.                                                         |
+| Actions                                       | Here                                                                                                                                                              |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `github.event.pull_request.base.sha`          | `scripts/base-ref.sh`, which resolves the merge-base with `main` (and deepens a shallow clone if it has to). Exits 2 when it cannot, and every caller fails open. |
+| `if:` job conditions on event payload         | In-job guards that call `circleci-agent step halt`, which ends the job **successfully**. That keeps `ci-all` reachable.                                           |
+| Job `outputs` (`build.outputs.infra_changed`) | `build-apps` re-runs the same cheap `git diff` rather than threading a value between jobs.                                                                        |
+| `services:` container                         | A second image in the job's `docker:` list (`e2e` + verdaccio), plus an explicit readiness poll.                                                                  |
+| Matrix `node-version: 18`                     | `cimg/node:18`. Major-only tags float to the latest patch, which is what `actions/setup-node` already does.                                                       |
+| `actions/cache` `restore-keys`                | `restore_cache` with an ordered `keys:` list. The scoped-turbo-cache fallback chain is the same as `ci.yml`'s.                                                    |
 
 `chromatic` is invoked with a pinned `pnpm dlx chromatic@<version>` rather than a
 devDependency. Adding it to `package.json` made pnpm re-resolve enough of the

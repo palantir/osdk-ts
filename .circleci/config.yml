@@ -568,20 +568,23 @@ jobs:
       resource-class: xlarge
     steps:
       - checkout
-      - run:
-          name: Skip unless component packages changed
-          command: |
-            if files=$(.circleci/scripts/changed-files.sh); then
-              if ! printf '%s\n' "$files" | grep -qE '^packages/(react-components|react-components-storybook)/'; then
-                echo "No component package changes; skipping interaction tests."
-                circleci-agent step halt
-                exit 0
-              fi
-            else
-              echo "Base commit unknown; running the tests rather than risk skipping a relevant change."
-            fi
       - activate-pnpm
       - attach-deps
+      - run:
+          # Asks turbo's package graph rather than matching paths. A change to
+          # @osdk/client can reach a story through imports, and no glob over
+          # `packages/react-components*` would ever see it. is-affected.sh fails
+          # open, so an unresolvable base runs the tests.
+          #
+          # This needs node_modules to invoke turbo, so unlike the other guards
+          # it cannot run before the workspace attach.
+          name: Skip unless Storybook's dependency graph changed
+          command: |
+            if ! .circleci/scripts/is-affected.sh @osdk/react-components-storybook; then
+              echo "Skipping interaction tests."
+              circleci-agent step halt
+              exit 0
+            fi
       - restore-turbo-cache:
           scope: storybook
       - run:
@@ -628,8 +631,7 @@ jobs:
           # value computed at runtime, but they can checksum a file.
           name: Resolve the base commit
           command: |
-            git fetch origin "+refs/heads/main:refs/remotes/origin/main"
-            git merge-base HEAD origin/main > /tmp/base-sha
+            .circleci/scripts/base-ref.sh > /tmp/base-sha
             echo "Comparing against $(cat /tmp/base-sha)"
       - restore_cache:
           # The base measurement only depends on the base commit, so it is
