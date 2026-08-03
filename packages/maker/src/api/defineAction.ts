@@ -750,7 +750,7 @@ export function extractAllowedValuesFromActionParameterType(
         return { type: "objectSetRid" };
       case "struct":
       case "structList":
-        throw new Error("Structs are not supported yet");
+        return { type: "struct" };
       default:
         throw new Error(
           `Inferred allowed values for ${type.type} not yet supported. Please explicitly provide allowed values.`,
