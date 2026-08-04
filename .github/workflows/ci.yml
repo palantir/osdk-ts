@@ -333,9 +333,12 @@ jobs:
       # worker RPC timeout ("Timeout calling onTaskUpdate") on the slowest matrix
       # leg. Running it isolated keeps the runner uncontended for it.
       # The other --filter exclusions are Vite 7+/Storybook packages that need Node 20+.
+      # @osdk/e2e.sandbox.catchall is excluded because its only test file
+      # (src/intergration-tests/e2e.test.ts) drives the local-ontology integration
+      # harness, and the current vitest version is not fully supported on Node 18.
       - name: Test (excluding Vite 7/Storybook packages on Node 18, and react-components)
         if: matrix.node == 18
-        run: pnpm exec turbo run test --filter="!@osdk/react-components" --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo run test --filter="!@osdk/react-components" --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook" --filter="!@osdk/e2e.sandbox.catchall"
 
       - name: Test (excluding react-components)
         if: matrix.node != 18
