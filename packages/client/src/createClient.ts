@@ -45,7 +45,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
@@ -350,7 +350,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
             },
           } as any;
 
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait.name:
+        case transformAndWait.name:
           return {
             transformAndWait: async (args: {
               mediaReference: MediaReference;

@@ -42,18 +42,18 @@ export interface TransformOptions {
  *
  * @returns The transformed media content as a Response
  */
-type transformAndWait = (args: {
+type TransformAndWaitFn = (args: {
   mediaReference: MediaReference;
   transformation: MediaTransformation;
   options?: TransformOptions;
 }) => Promise<Response>;
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait: Experiment<
+export const transformAndWait: Experiment<
   "2.8.0",
-  "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
-  { transformAndWait: transformAndWait }
+  "transformAndWait",
+  { transformAndWait: TransformAndWaitFn }
 > = {
-  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
+  name: "transformAndWait",
   type: "experiment",
   version: "2.8.0",
 };

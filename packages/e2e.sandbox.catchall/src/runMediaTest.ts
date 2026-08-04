@@ -22,8 +22,8 @@ import type {
 } from "@osdk/api";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
   type MediaTransformation,
+  transformAndWait,
 } from "@osdk/api/unstable";
 import {
   $Actions,
@@ -401,9 +401,7 @@ async function runTransformAndWaitTest(
   const transformation = imageResize;
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
-  const result = await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
-  ).transformAndWait({
+  const result = await client(transformAndWait).transformAndWait({
     mediaReference,
     transformation,
   });
