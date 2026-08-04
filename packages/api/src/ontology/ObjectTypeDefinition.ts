@@ -55,12 +55,43 @@ export interface ObjectInterfaceCompileDefinition {
   linksType?: any;
 }
 
+/**
+ * Present when an object type has been alias-remapped, so that code generated
+ * against one stack can run against another where the same object type carries
+ * different api names.
+ *
+ * Two vocabularies are in play:
+ *
+ * - **local** - the names the SDK was generated with, i.e. what user code is
+ *   written against. Everything user-visible reports local names.
+ * - **bound** - the names on the stack being talked to. Used on the wire only;
+ *   a bound name should never escape to user code.
+ */
+export interface ObjectTypeAlias {
+  /** The code-facing object type api name. */
+  localApiName: string;
+  /** The object type api name on this stack, used on the wire. */
+  boundApiName: string;
+  /**
+   * Property api name remapping, keyed by local name with the bound name as the
+   * value. Properties absent from this record are not remapped.
+   */
+  properties?: Record</* local */ string, /* bound */ string>;
+}
+
 export interface VersionBound<V extends VersionString<any, any, any>> {
   __expectedClientVersion?: V;
 }
 
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   type: "object";
+  /**
+   * Set when this object type has been alias-remapped. When present, everything
+   * on this metadata - `apiName`, `properties` keys, `primaryKeyApiName`,
+   * `titleProperty`, `links` keys - is in the local vocabulary, and
+   * {@link ObjectTypeAlias} carries the bound names needed for the wire.
+   */
+  alias?: ObjectTypeAlias;
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
   links: Record<string, ObjectMetadata.Link<any, any>>;
@@ -180,12 +211,11 @@ export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
   /**
-   * The code-facing api name, set when this definition has been alias-remapped
-   * so that code generated against one stack can run against another. When
-   * present, `apiName` is the name used on the wire and `localApiName` is the
-   * name reported back to user code (`$apiName`, `$objectType`, ...).
+   * Set when this definition has been alias-remapped. `apiName` and the property
+   * names in requests are bound (wire) names; user-visible names are local. See
+   * {@link ObjectTypeAlias}.
    */
-  localApiName?: string;
+  alias?: ObjectTypeAlias;
   primaryKeyApiName?: string;
   primaryKeyType?: PrimaryKeyTypes;
   osdkMetadata?: OsdkMetadata;

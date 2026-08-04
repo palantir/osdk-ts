@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { AggregationClause } from "@osdk/api";
+import type { AggregationClause, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregationV2 } from "@osdk/foundry.ontologies";
+
+import { toWirePropName } from "./toWirePropName.js";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
@@ -32,7 +34,7 @@ export function splitAggregationKey(key: string): {
 /** @internal */
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,
->(select: AC) {
+>(select: AC, objectOrInterface?: ObjectOrInterfaceDefinition) {
   return Object.entries(select).flatMap<AggregationV2>(
     ([propAndMetric, aggregationType]) => {
       if (propAndMetric === "$count") {
@@ -45,6 +47,10 @@ export function modernToLegacyAggregationClause<
 
       const { property, metric } = splitAggregationKey(propAndMetric);
 
+      // `name` stays in the local vocabulary: it is our own label for the
+      // metric and comes back verbatim on the response, where
+      // legacyToModernSingleAggregationResult matches it against the caller's
+      // select keys. Only `field` names a real property, so only it is bound.
       return [
         {
           type: metric as
@@ -58,7 +64,10 @@ export function modernToLegacyAggregationClause<
             | "exactDistinct",
           name: `${property}.${metric}`,
           direction: directionFieldMap(aggregationType),
-          field: property,
+          field:
+            objectOrInterface == null
+              ? property
+              : toWirePropName(property, objectOrInterface),
         },
       ];
     },

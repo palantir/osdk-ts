@@ -247,10 +247,23 @@ describe("published mode aliases", () => {
   });
 
   describe("objectType", () => {
-    it("rebinds apiName and records the local name", () => {
+    it("rebinds apiName and records both names on the alias", () => {
       const result = objectType(Employee);
       expect(result.apiName).toBe("com.example.PublishedEmployee");
-      expect(result.localApiName).toBe("Employee");
+      expect(result.alias).toMatchObject({
+        localApiName: "Employee",
+        boundApiName: "com.example.PublishedEmployee",
+      });
+    });
+
+    it("carries the property remapping onto the alias", () => {
+      expect(objectType(Employee).alias?.properties).toEqual({
+        fullName: "full_name",
+      });
+    });
+
+    it("omits properties entirely when nothing is remapped", () => {
+      expect(objectType(Office).alias).not.toHaveProperty("properties");
     });
 
     it("preserves the rest of the definition", () => {
@@ -264,7 +277,7 @@ describe("published mode aliases", () => {
     it("does not mutate the definition it was given", () => {
       objectType(Employee);
       expect(Employee.apiName).toBe("Employee");
-      expect(Employee).not.toHaveProperty("localApiName");
+      expect(Employee).not.toHaveProperty("alias");
     });
 
     it("drops the generated-stack object type rid", () => {
@@ -513,10 +526,20 @@ describe("live preview mode aliases", () => {
   });
 
   describe("objectType", () => {
-    it("rebinds apiName and records the local name", () => {
+    it("rebinds apiName and records both names on the alias", () => {
       const result = objectType(Employee);
       expect(result.apiName).toBe("com.example.PreviewEmployee");
-      expect(result.localApiName).toBe("Employee");
+      expect(result.alias).toMatchObject({
+        localApiName: "Employee",
+        boundApiName: "com.example.PreviewEmployee",
+      });
+    });
+
+    it("carries the property remapping onto the alias", () => {
+      expect(objectType(Employee).alias?.properties).toEqual({
+        fullName: "full_name",
+        startDate: "start_date",
+      });
     });
 
     it("selects correct alias from multiple", () => {

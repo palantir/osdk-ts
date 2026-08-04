@@ -122,7 +122,15 @@
           "apiName": "com.example.PreviewEmployee"
         },
         "verbs": [],
-        "alias": "Employee"
+        "alias": "Employee",
+        "properties": {
+          "fullName": {
+            "apiName": "full_name"
+          },
+          "startDate": {
+            "apiName": "start_date"
+          }
+        }
       },
       {
         "identifier": {

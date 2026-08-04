@@ -45,6 +45,10 @@ import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  toBoundProperties,
+  toBoundProperty,
+} from "../ontology/objectTypeAliases.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
@@ -557,7 +561,29 @@ function remapSelectV2(
   }
 
   if (objectOrInterface.type !== "interface") {
-    return selectV2;
+    // Object types carry no namespace qualification, but an alias-remapped one
+    // needs its code-facing property names turned into bound ones.
+    if (objectOrInterface.alias?.properties == null) {
+      return selectV2;
+    }
+    return selectV2.map(
+      (entry): SelectV2Entry =>
+        entry.type === "property"
+          ? {
+              type: "property",
+              apiName: toBoundProperty(objectOrInterface, entry.apiName),
+            }
+          : {
+              ...entry,
+              propertyIdentifier: {
+                type: "property",
+                apiName: toBoundProperty(
+                  objectOrInterface,
+                  entry.propertyIdentifier.apiName,
+                ),
+              },
+            },
+    );
   }
 
   const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
@@ -614,7 +640,7 @@ export function remapPropertyNames(
     });
   }
 
-  return propertyNames;
+  return toBoundProperties(objectOrInterface, propertyNames);
 }
 
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed

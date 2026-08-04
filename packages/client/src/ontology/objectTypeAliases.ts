@@ -14,37 +14,51 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeAlias,
+} from "@osdk/api";
 
+import type { Client } from "../Client.js";
+import { additionalContext } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
- * Bidirectional map between the two names an object type can have when a
- * definition has been alias-remapped:
+ * Object type aliases known to this client, indexed both ways.
  *
- * - `local` is the code-facing api name, i.e. what was generated into the SDK
- *   the code was written against.
- * - `bound` is the api name of the object type on the stack we are talking to.
+ * Two vocabularies are in play:
  *
- * Requests are made with `bound` names; `local` names are what user code sees.
- * A bound name should never escape to user code.
+ * - `local` is what the SDK was generated with, i.e. what user code is written
+ *   against. Everything user-visible reports local names.
+ * - `bound` is what the stack being talked to uses. Wire only; a bound name
+ *   should never escape to user code.
+ *
+ * Populated as alias-remapped definitions are handed to the client, and read by
+ * the ontology provider when it translates fetched metadata into the local
+ * vocabulary.
  *
  * @internal
  */
 export interface ObjectTypeAliases {
-  localToBound: Record<string, string>;
-  boundToLocal: Record<string, string>;
+  byLocal: Record<string, ObjectTypeAlias>;
+  byBound: Record<string, ObjectTypeAlias>;
+  /**
+   * Bumped whenever an alias is recorded, so caches keyed on translated
+   * metadata can tell that their inputs changed.
+   */
+  generation: { value: number };
 }
 
 /** @internal */
 export function createObjectTypeAliases(): ObjectTypeAliases {
-  return { localToBound: {}, boundToLocal: {} };
+  return { byLocal: {}, byBound: {}, generation: { value: 0 } };
 }
 
 /**
- * Records the alias carried by an object type definition, if it has one, so
- * that responses mentioning the bound name can be mapped back to the local
- * name. Definitions without a `localApiName` are ignored.
+ * Records the alias carried by an object type definition, if it has one.
+ * Definitions without an `alias` are ignored, as are aliases that rename
+ * nothing.
  *
  * @internal
  */
@@ -55,12 +69,39 @@ export function registerObjectTypeAlias(
   if (definition.type !== "object") {
     return;
   }
-  const local = definition.localApiName;
-  if (local == null || local === definition.apiName) {
+  const alias = definition.alias;
+  if (alias == null) {
     return;
   }
-  client.objectTypeAliases.localToBound[local] = definition.apiName;
-  client.objectTypeAliases.boundToLocal[definition.apiName] = local;
+  const renamesNothing =
+    alias.localApiName === alias.boundApiName &&
+    (alias.properties == null || Object.keys(alias.properties).length === 0);
+  if (renamesNothing) {
+    return;
+  }
+
+  const existing = client.objectTypeAliases.byBound[alias.boundApiName];
+  client.objectTypeAliases.byLocal[alias.localApiName] = alias;
+  client.objectTypeAliases.byBound[alias.boundApiName] = alias;
+  if (existing !== alias) {
+    client.objectTypeAliases.generation.value++;
+  }
+}
+
+/** @internal */
+export function getAliasByBound(
+  client: MinimalClient,
+  boundApiName: string,
+): ObjectTypeAlias | undefined {
+  return client.objectTypeAliases.byBound[boundApiName];
+}
+
+/** @internal */
+export function getAliasByLocal(
+  client: MinimalClient,
+  localApiName: string,
+): ObjectTypeAlias | undefined {
+  return client.objectTypeAliases.byLocal[localApiName];
 }
 
 /**
@@ -73,7 +114,9 @@ export function toLocalObjectType(
   client: MinimalClient,
   boundApiName: string,
 ): string {
-  return client.objectTypeAliases.boundToLocal[boundApiName] ?? boundApiName;
+  return (
+    client.objectTypeAliases.byBound[boundApiName]?.localApiName ?? boundApiName
+  );
 }
 
 /**
@@ -86,7 +129,114 @@ export function toBoundObjectType(
   client: MinimalClient,
   localApiName: string,
 ): string {
-  return client.objectTypeAliases.localToBound[localApiName] ?? localApiName;
+  return (
+    client.objectTypeAliases.byLocal[localApiName]?.boundApiName ?? localApiName
+  );
+}
+
+/**
+ * Anything that may carry an object type alias: a generated definition handed to
+ * the client, or metadata already translated by the ontology provider.
+ *
+ * @internal
+ */
+export type MaybeAliased =
+  | { alias?: ObjectTypeAlias }
+  | ObjectOrInterfaceDefinition
+  | ObjectMetadata
+  | undefined;
+
+function aliasOf(source: MaybeAliased): ObjectTypeAlias | undefined {
+  return source == null
+    ? undefined
+    : (source as { alias?: ObjectTypeAlias }).alias;
+}
+
+/**
+ * Translates a code-facing property api name into the name to put on the wire.
+ * Properties the alias does not mention are returned unchanged, as are the `$`
+ * prefixed pseudo-properties (`$title`, `$primaryKey`, ...) which the platform
+ * resolves itself.
+ *
+ * @internal
+ */
+export function toBoundProperty(
+  source: MaybeAliased,
+  localPropertyName: string,
+): string {
+  if (localPropertyName.startsWith("$")) {
+    return localPropertyName;
+  }
+  return aliasOf(source)?.properties?.[localPropertyName] ?? localPropertyName;
+}
+
+/**
+ * Translates several property api names at once. Returns the input array
+ * untouched when there is nothing to translate, so callers can use the result
+ * unconditionally without allocating.
+ *
+ * @internal
+ */
+export function toBoundProperties(
+  source: MaybeAliased,
+  localPropertyNames: readonly string[],
+): readonly string[] {
+  const properties = aliasOf(source)?.properties;
+  if (properties == null) {
+    return localPropertyNames;
+  }
+  return localPropertyNames.map((name) => toBoundProperty(source, name));
+}
+
+/**
+ * Inverse of {@link toBoundProperty}, for names arriving from the wire.
+ *
+ * Built per call from the alias rather than stored inverted, because the
+ * inversion is only needed on paths that already iterate a whole object.
+ *
+ * @internal
+ */
+export function toLocalPropertyLookup(
+  source: MaybeAliased,
+): ((boundPropertyName: string) => string) | undefined {
+  const properties = aliasOf(source)?.properties;
+  if (properties == null || Object.keys(properties).length === 0) {
+    return undefined;
+  }
+  const inverted: Record<string, string> = {};
+  for (const [local, bound] of Object.entries(properties)) {
+    inverted[bound] = local;
+  }
+  return (boundPropertyName) =>
+    inverted[boundPropertyName] ?? boundPropertyName;
+}
+
+/**
+ * Local -> bound name resolution for callers that hold a {@link Client} rather
+ * than its internal context, and that write names onto the wire themselves
+ * instead of going through the object set builders (notably `@osdk/functions`'
+ * edit path).
+ *
+ * Exposed as a factory rather than as the context symbol so that neither the
+ * symbol nor `MinimalClient` has to cross a package boundary - re-exported
+ * `unique symbol`s lose their type identity, and the CJS/ESM duplication
+ * described in `createClient.ts` makes symbol equality unreliable.
+ *
+ * @internal
+ */
+export function createAliasResolver(client: Client): {
+  objectType: (localApiName: string) => string;
+  property: (localObjectType: string, localPropertyName: string) => string;
+} {
+  const ctx = client[additionalContext];
+  return {
+    objectType: (localApiName) => toBoundObjectType(ctx, localApiName),
+    property: (localObjectType, localPropertyName) =>
+      toBoundProperty(
+        { alias: getAliasByLocal(ctx, localObjectType) },
+        localPropertyName,
+      ),
+  };
 }
 
 /**
@@ -100,8 +250,8 @@ export function describeObjectType(
   client: MinimalClient,
   boundApiName: string,
 ): string {
-  const local = client.objectTypeAliases.boundToLocal[boundApiName];
-  return local == null
+  const local = client.objectTypeAliases.byBound[boundApiName]?.localApiName;
+  return local == null || local === boundApiName
     ? `'${boundApiName}'`
     : `'${local}' (bound to '${boundApiName}')`;
 }

@@ -52,12 +52,14 @@ export const fetchMetadataInternal = async <
   if (definition.type === "object") {
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
       await client.ontologyProvider.getObjectDefinition(definition.apiName);
-    // Report the code-facing api name so metadata agrees with the objects,
-    // which also present their local name.
+    // The provider rekeys `properties` (and friends) into the local vocabulary
+    // but deliberately leaves `apiName` bound, since that is what identifies the
+    // object type on the wire. `fetchMetadata` is user-facing, so report local.
+    const alias = objectTypeDef.alias;
     return (
-      definition.localApiName == null
+      alias == null
         ? objectTypeDef
-        : { ...objectTypeDef, apiName: definition.localApiName }
+        : { ...objectTypeDef, apiName: alias.localApiName }
     ) as any;
   } else if (definition.type === "interface") {
     return client.ontologyProvider.getInterfaceDefinition(

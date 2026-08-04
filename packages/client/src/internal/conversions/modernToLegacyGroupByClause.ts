@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-import type { AllGroupByValues, GroupByClause, GroupByRange } from "@osdk/api";
+import type {
+  AllGroupByValues,
+  GroupByClause,
+  GroupByRange,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,
 } from "@osdk/foundry.ontologies";
 
+import { toWirePropName } from "./toWirePropName.js";
+
 /** @internal */
 export function modernToLegacyGroupByClause(
   groupByClause: GroupByClause<any> | undefined,
+  objectOrInterface?: ObjectOrInterfaceDefinition,
 ) {
   if (!groupByClause) return [];
 
   return Object.entries(
     groupByClause as Record<string, AllGroupByValues>,
-  ).flatMap<AggregationGroupByV2>(([field, type]) => {
+  ).flatMap<AggregationGroupByV2>(([localField, type]) => {
+    // Translated once here; every branch below emits this same `field`.
+    const field =
+      objectOrInterface == null
+        ? localField
+        : toWirePropName(localField, objectOrInterface);
     if (type === "exact") {
       return [{ type, field }];
     } else if ("$exactWithLimit" in type) {

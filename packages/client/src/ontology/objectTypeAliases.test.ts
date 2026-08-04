@@ -41,7 +41,10 @@ const BOUND_API_NAME = "com.example.BoundEmployee";
 const AliasedEmployee = {
   ...Employee,
   apiName: BOUND_API_NAME,
-  localApiName: "Employee",
+  alias: {
+    localApiName: "Employee",
+    boundApiName: BOUND_API_NAME,
+  },
 } as typeof Employee;
 
 describe("object type aliases", () => {
@@ -132,6 +135,131 @@ describe("object type aliases", () => {
     it("keeps the declared type of the aliased definition", async () => {
       const { data } = await client(AliasedEmployee).fetchPage();
       expectTypeOf(data[0]).branded.toEqualTypeOf<Osdk<typeof Employee>>();
+    });
+  });
+
+  describe("with property names remapped too", () => {
+    const PROPERTY_BOUND_API_NAME = "com.example.RenamedPropsEmployee";
+    // Renames the primary key as well, since `primaryKeyApiName` feeds
+    // `$objectSpecifier`, `fetchOne` and the subscription primary key lookup.
+    const PROPERTY_ALIAS = {
+      employeeId: "b_employeeId",
+      fullName: "b_fullName",
+      office: "b_office",
+    } as const;
+
+    const RenamedPropsEmployee = {
+      ...Employee,
+      apiName: PROPERTY_BOUND_API_NAME,
+      alias: {
+        localApiName: "Employee",
+        boundApiName: PROPERTY_BOUND_API_NAME,
+        properties: PROPERTY_ALIAS,
+      },
+    } as typeof Employee;
+
+    let client: Client;
+
+    beforeAll(() => {
+      const testSetup = startNodeApiServer(
+        new LegacyFauxFoundry(),
+        createClient,
+      );
+      ({ client } = testSetup);
+
+      const source = stubData.employeeObjectWithLinkTypes;
+      const rename = (name: string): string =>
+        (PROPERTY_ALIAS as Record<string, string>)[name] ?? name;
+
+      // The stack knows this object type under bound names throughout: the type
+      // itself, its property keys, its primary key and its title property.
+      testSetup.fauxFoundry.getDefaultOntology().registerObjectType({
+        ...source,
+        objectType: {
+          ...source.objectType,
+          apiName: PROPERTY_BOUND_API_NAME,
+          primaryKey: rename(source.objectType.primaryKey),
+          titleProperty: rename(source.objectType.titleProperty),
+          properties: Object.fromEntries(
+            Object.entries(source.objectType.properties).map(([name, def]) => [
+              rename(name),
+              def,
+            ]),
+          ),
+        },
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+      });
+
+      // Registering a raw server object rather than a creatable one, so
+      // `__title` has to be supplied the way the platform would send it.
+      testSetup.fauxFoundry
+        .getDefaultDataStore()
+        .registerObject(
+          Object.fromEntries([
+            ...Object.entries(stubData.employee1).map(([key, value]) => [
+              key.startsWith("__") ? key : rename(key),
+              value,
+            ]),
+            ["__apiName", PROPERTY_BOUND_API_NAME],
+            ["__title", stubData.employee1.fullName],
+          ]) as typeof stubData.employee1,
+        );
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    it("hands back objects keyed by the code-facing property names", async () => {
+      const { data } = await client(RenamedPropsEmployee).fetchPage();
+
+      expect(data.length).toBe(1);
+      expect(data[0].fullName).toBe(stubData.employee1.fullName);
+      expect(data[0].office).toBe(stubData.employee1.office);
+      // Not remapped, so it passes through untouched.
+      expect(data[0].startDate).toBe(stubData.employee1.startDate);
+      // No bound name should be visible on the object.
+      expect(Object.keys(data[0])).not.toContain("b_fullName");
+    });
+
+    it("filters and selects by the code-facing property names", async () => {
+      const { data } = await client(RenamedPropsEmployee)
+        .where({ fullName: { $eq: stubData.employee1.fullName } })
+        .fetchPage({ $select: ["fullName", "office"] });
+
+      expect(data.length).toBe(1);
+      expect(data[0].fullName).toBe(stubData.employee1.fullName);
+      expect(data[0].office).toBe(stubData.employee1.office);
+    });
+
+    it("resolves a remapped primary key and title", async () => {
+      const { data } = await client(RenamedPropsEmployee).fetchPage();
+
+      expect(data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+      expect(data[0].$objectSpecifier).toBe(
+        `Employee:${stubData.employee1.employeeId}`,
+      );
+      expect(data[0].$title).toBe(stubData.employee1.fullName);
+    });
+
+    it("reports local property names from fetchMetadata", async () => {
+      const metadata = await client.fetchMetadata(RenamedPropsEmployee);
+
+      expect(metadata.apiName).toBe("Employee");
+      expect(Object.keys(metadata.properties)).toContain("fullName");
+      expect(Object.keys(metadata.properties)).not.toContain("b_fullName");
+      expect(metadata.primaryKeyApiName).toBe("employeeId");
+      expect(metadata.titleProperty).toBe("fullName");
+    });
+
+    it("orders by a remapped property", async () => {
+      const { data } = await client(RenamedPropsEmployee).fetchPage({
+        $orderBy: { fullName: "asc" },
+      });
+
+      expect(data.length).toBe(1);
+      expect(data[0].fullName).toBe(stubData.employee1.fullName);
     });
   });
 });

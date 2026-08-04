@@ -276,6 +276,7 @@ export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefi
 interface ObjectType {
     	// (undocumented)
     apiName: string;
+    	properties?: Record<string, string>;
 }
 
 // @public

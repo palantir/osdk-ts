@@ -70,9 +70,14 @@ export function objectType<Q extends ObjectTypeDefinition>(definition: Q): Q {
   const { internalDoNotUseMetadata: _internalDoNotUseMetadata, ...rest } =
     definition as Q & { internalDoNotUseMetadata?: unknown };
 
+  const bound = resolvedAliases.objects[alias];
   return {
     ...rest,
-    apiName: resolvedAliases.objects[alias].apiName,
-    localApiName: alias,
+    apiName: bound.apiName,
+    alias: {
+      localApiName: alias,
+      boundApiName: bound.apiName,
+      ...(bound.properties != null && { properties: bound.properties }),
+    },
   } as Q;
 }

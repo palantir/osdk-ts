@@ -55,8 +55,8 @@ export interface MinimalClient extends SharedClientContext {
   requestContext: RequestContext;
   narrowTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
   /**
-   * Bound<->local object type api names for alias-remapped definitions.
-   * Populated as aliased definitions are handed to the client.
+   * Object type aliases for alias-remapped definitions, populated as those
+   * definitions are handed to the client.
    * @internal
    */
   objectTypeAliases: ObjectTypeAliases;

@@ -53,7 +53,10 @@ import {
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
-import { registerObjectTypeAlias } from "../ontology/objectTypeAliases.js";
+import {
+  registerObjectTypeAlias,
+  toBoundProperty,
+} from "../ontology/objectTypeAliases.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
@@ -193,7 +196,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet,
         propertyIdentifier: {
           type: "property",
-          apiName: property as PropertyApiName,
+          apiName: toBoundProperty(
+            objectType,
+            property as string,
+          ) as PropertyApiName,
         },
         numNeighbors,
         query: nearestNeighborsQuery,

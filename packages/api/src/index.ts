@@ -172,6 +172,7 @@ export type { ObjectSpecifier } from "./ontology/ObjectSpecifier.js";
 export type {
   CompileTimeMetadata,
   ObjectMetadata,
+  ObjectTypeAlias,
   ObjectTypeDefinition,
   PropertyDef,
   VersionBound,

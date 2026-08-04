@@ -85,8 +85,14 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
   ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
+    // An alias-remapped object type answers to both of its names here: callers
+    // passing the generated definition supply the bound name it carries, while
+    // callers passing a string naturally write the local one from their code.
+    const isThisObjectType = (name: string): boolean =>
+      name === objDef.apiName || name === objDef.alias?.localApiName;
+
     if (typeof targetMinDef === "string") {
-      if (targetMinDef === objDef.apiName) {
+      if (isThisObjectType(targetMinDef)) {
         assertInterfaceToOtCastIsPermitted(this, objDef);
         return this[UnderlyingOsdkObject];
       }
@@ -99,7 +105,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
       }
 
       targetInterfaceApiName = targetMinDef;
-    } else if (targetMinDef.apiName === objDef.apiName) {
+    } else if (isThisObjectType(targetMinDef.apiName)) {
       assertInterfaceToOtCastIsPermitted(this, objDef);
       return this[UnderlyingOsdkObject];
     } else {

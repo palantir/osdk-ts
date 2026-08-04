@@ -1494,6 +1494,7 @@ export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
 
 // @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
+    	alias?: ObjectTypeAlias;
     	// Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1722,13 +1723,20 @@ export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
     	__apiName: Q["apiName"] | (Q extends InterfaceDefinition ? CompileTimeMetadata<Q> extends InterfaceMetadata ? NonNullable<CompileTimeMetadata<Q>["implementedBy"]>[number] : never : never)
 };
 
+// @public
+export interface ObjectTypeAlias {
+    	boundApiName: string;
+    	localApiName: string;
+    	properties?: Record<string, string>;
+}
+
 // @public (undocumented)
 export interface ObjectTypeDefinition {
     	// (undocumented)
     __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
+    	alias?: ObjectTypeAlias;
     	// (undocumented)
     apiName: string;
-    	localApiName?: string;
     	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)

@@ -36,6 +36,10 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import {
+  toBoundProperties,
+  toBoundProperty,
+} from "../ontology/objectTypeAliases.js";
 import type { SubscriptionConnection } from "../SubscriptionConnection.js";
 import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
@@ -226,15 +230,29 @@ export class ObjectSetListenerWebsocket {
         objOrInterfaceDef.properties[p].type === "geotimeSeriesReference",
     );
 
+    // The properties were partitioned above against the definition, which is in
+    // the local vocabulary. Everything stored on the subscription is used against
+    // the wire - `requestedProperties` becomes `propertySet` on the subscribe
+    // message, and `primaryKeyPropertyName` indexes raw update payloads - so it
+    // all has to be bound.
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
       primaryKeyPropertyName:
         objOrInterfaceDef.type === "interface"
           ? undefined
-          : objOrInterfaceDef.primaryKeyApiName,
-      requestedProperties: objectProperties,
-      requestedReferenceProperties: referenceProperties,
+          : toBoundProperty(
+              objectType,
+              objOrInterfaceDef.primaryKeyApiName as string,
+            ),
+      requestedProperties: toBoundProperties(
+        objectType,
+        objectProperties,
+      ) as Array<P>,
+      requestedReferenceProperties: toBoundProperties(
+        objectType,
+        referenceProperties,
+      ) as Array<P>,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.

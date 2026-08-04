@@ -36,6 +36,7 @@ import type {
   ModelResource,
   ModelValue,
   ObjectType,
+  ObjectTypeIdentifier,
   ObjectTypeResource,
   ObjectTypeValue,
   ResolvedAliases,
@@ -201,14 +202,37 @@ function loadPreviewMediasets(
   );
 }
 
+/**
+ * Flattens the `{ apiName }` identifiers of a property remapping into plain
+ * bound names. Returns undefined when there is nothing to remap, so the alias
+ * payload stays absent rather than carrying an empty record.
+ */
+function loadObjectProperties(
+  properties: Record<string, ObjectTypeIdentifier> | undefined,
+): Record<string, string> | undefined {
+  if (properties == null) {
+    return undefined;
+  }
+  const entries = Object.entries(properties);
+  if (entries.length === 0) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    entries.map(([local, { apiName }]) => [local, apiName]),
+  );
+}
+
 function loadPublishedObjects(
   objects: Record<string, ObjectTypeValue> | undefined,
 ): Record<string, ObjectType> {
   return Object.fromEntries<ObjectType>(
-    Object.entries(objects ?? {}).map(([alias, { id: identifier }]) => [
-      alias,
-      identifier,
-    ]),
+    Object.entries(objects ?? {}).map(([alias, { id, properties }]) => {
+      const loaded = loadObjectProperties(properties);
+      return [
+        alias,
+        { apiName: id.apiName, ...(loaded != null && { properties: loaded }) },
+      ];
+    }),
   );
 }
 
@@ -221,7 +245,16 @@ function loadPreviewObjects(
         (object): object is ObjectTypeResource & { alias: string } =>
           object.alias != null,
       )
-      .map(({ alias, identifier }) => [alias, identifier]),
+      .map(({ alias, identifier, properties }) => {
+        const loaded = loadObjectProperties(properties);
+        return [
+          alias,
+          {
+            apiName: identifier.apiName,
+            ...(loaded != null && { properties: loaded }),
+          },
+        ];
+      }),
   );
 }
 

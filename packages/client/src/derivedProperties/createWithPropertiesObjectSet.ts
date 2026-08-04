@@ -23,6 +23,7 @@ import type {
 import invariant from "tiny-invariant";
 
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { toWirePropName } from "../internal/conversions/toWirePropName.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 /** @internal */
@@ -118,9 +119,11 @@ export function createWithPropertiesObjectSet<
     },
     selectProperty: (name) => {
       if (fromBaseObjectSet) {
+        // Only the base object set is known to be `objectType`, so this is the
+        // one branch where the alias can be applied safely. See the note below.
         const wrappedObjectSet: DerivedPropertyDefinition = {
           type: "property",
-          apiName: name,
+          apiName: toWirePropName(name as string, objectType),
         };
         const selectorResult: DerivedProperty.Definition<any, any> =
           derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
@@ -132,6 +135,13 @@ export function createWithPropertiesObjectSet<
         objectSet,
         operation: {
           type: "get",
+          // NOTE: not alias-translated. `pivotTo` threads `objectType` through
+          // unchanged, so on a pivoted builder it is the *source* object type
+          // while `name` belongs to the link target. Translating with the wrong
+          // type's alias would be worse than not translating, so properties
+          // selected across a link are left as written until the builder tracks
+          // the pivoted type (part of the link remapping work). The same
+          // staleness already affects interface namespace qualification here.
           selectedPropertyApiName: name,
         },
       };

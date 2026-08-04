@@ -46,6 +46,12 @@ export interface Stream {
  */
 export interface ObjectType {
   apiName: string;
+  /**
+   * Property api name remapping, keyed by the local (code-facing) name with the
+   * bound name as the value. Properties absent from this record are not
+   * remapped.
+   */
+  properties?: Record</* local */ string, /* bound */ string>;
 }
 
 export interface ResolvedAliases {
@@ -101,13 +107,14 @@ export interface ObjectTypeResource {
   verbs: string[];
   alias?: string | null;
   /**
-   * Reserved for property api name remapping (local -> bound). Not yet applied.
+   * Property api name remapping, keyed by the local (code-facing) name.
+   * Properties absent from this record are not remapped.
    */
-  properties?: Record<string, ObjectTypeIdentifier>;
+  properties?: Record</* local */ string, ObjectTypeIdentifier>;
   /**
    * Reserved for link api name remapping (local -> bound). Not yet applied.
    */
-  links?: Record<string, ObjectTypeIdentifier>;
+  links?: Record</* local */ string, ObjectTypeIdentifier>;
 }
 
 export interface ResourceScopes {
@@ -185,6 +192,11 @@ export interface ObjectTypeIdentifier {
 
 export interface ObjectTypeValue {
   id: ObjectTypeIdentifier;
+  /**
+   * Property api name remapping, keyed by the local (code-facing) name.
+   * Properties absent from this record are not remapped.
+   */
+  properties?: Record</* local */ string, ObjectTypeIdentifier>;
 }
 
 export interface DefaultAliases {

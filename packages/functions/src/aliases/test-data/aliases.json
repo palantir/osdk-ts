@@ -68,6 +68,11 @@
       "Employee": {
         "id": {
           "apiName": "com.example.PublishedEmployee"
+        },
+        "properties": {
+          "fullName": {
+            "apiName": "full_name"
+          }
         }
       },
       "Office": {
