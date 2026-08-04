@@ -1388,9 +1388,7 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
-      // @osdk/agents ships a single type and has no tests, so it has no test
-      // script and needs no vitest config.
-      excludePackages: ["@osdk/maker", "@osdk/agents"],
+      excludePackages: ["@osdk/maker"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(
