@@ -41,13 +41,13 @@ export class Subjects {
   }
 
   peek = <KEY extends KnownCacheKey>(
-    cacheKey: KEY
+    cacheKey: KEY,
   ): BehaviorSubject<SubjectPayload<KEY>> | undefined => {
     return this.#cacheKeyToSubject.get(cacheKey);
   };
 
   get = <KEY extends KnownCacheKey>(
-    cacheKey: KEY
+    cacheKey: KEY,
   ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {

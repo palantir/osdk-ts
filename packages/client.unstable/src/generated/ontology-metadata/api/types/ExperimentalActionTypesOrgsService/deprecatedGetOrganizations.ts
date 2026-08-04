@@ -30,7 +30,7 @@ import type {
  */
 export async function deprecatedGetOrganizations(
   ctx: ConjureContext,
-  request: _api_ActionTypeGetOrganizationsRequest
+  request: _api_ActionTypeGetOrganizationsRequest,
 ): Promise<_api_DeprecatedActionTypeGetOrganizationsResponse> {
   return conjureFetch(ctx, `/actions/orgs/get`, "POST", request);
 }

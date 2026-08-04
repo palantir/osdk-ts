@@ -47,7 +47,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           defaultOrderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([
@@ -73,7 +73,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           onOrderByChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -97,7 +97,7 @@ describe("useTableSorting", () => {
             { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
@@ -121,7 +121,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           orderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
@@ -138,7 +138,7 @@ describe("useTableSorting", () => {
         useTableSorting<TestObject>({
           orderBy,
           onOrderByChanged,
-        })
+        }),
       );
     });
 
@@ -157,7 +157,7 @@ describe("useTableSorting", () => {
         useTableSorting<TestObject>({
           orderBy,
           defaultOrderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
@@ -178,7 +178,7 @@ describe("useTableSorting", () => {
           }),
         {
           initialProps: { orderBy },
-        }
+        },
       );
 
       expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);
@@ -214,7 +214,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           onOrderByChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -251,7 +251,7 @@ describe("useTableSorting", () => {
       const { result } = renderHook(() =>
         useTableSorting<TestObject>({
           defaultOrderBy,
-        })
+        }),
       );
 
       expect(result.current.sorting).toEqual([
@@ -269,7 +269,7 @@ describe("useTableSorting", () => {
             { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Add a second sort column
@@ -301,7 +301,7 @@ describe("useTableSorting", () => {
             { property: "email" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Remove the middle sort column
@@ -332,7 +332,7 @@ describe("useTableSorting", () => {
             { property: "age" as PropertyKeys<TestObject>, direction: "asc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Change direction of second column
@@ -363,7 +363,7 @@ describe("useTableSorting", () => {
             { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
           ],
           onOrderByChanged,
-        })
+        }),
       );
 
       // Reorder: age becomes primary, name becomes secondary
@@ -400,7 +400,7 @@ describe("useTableSorting", () => {
           }),
         {
           initialProps: { orderBy: initialOrderBy },
-        }
+        },
       );
 
       expect(result.current.sorting).toEqual([{ id: "name", desc: false }]);

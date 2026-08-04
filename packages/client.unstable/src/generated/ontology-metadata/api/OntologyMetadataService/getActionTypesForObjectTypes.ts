@@ -32,12 +32,12 @@ import type {
  */
 export async function getActionTypesForObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetActionTypesForObjectTypesRequest
+  request: _api_GetActionTypesForObjectTypesRequest,
 ): Promise<_api_GetActionTypesForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/actionTypesForObjectTypes`,
     "PUT",
-    request
+    request,
   );
 }

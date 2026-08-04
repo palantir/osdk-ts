@@ -96,7 +96,7 @@ function isReady<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 >(
-  sub: Subscription<Q, P>
+  sub: Subscription<Q, P>,
 ): sub is Subscription<Q, P> & { temporaryObjectSetId: string } {
   return sub.isReady != null;
 }
@@ -113,13 +113,13 @@ export class ObjectSetListenerWebsocket {
   // FIXME
   static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
     let instance = ObjectSetListenerWebsocket.#instances.get(
-      client.clientCacheKey
+      client.clientCacheKey,
     );
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
       ObjectSetListenerWebsocket.#instances.set(
         client.clientCacheKey,
-        instance
+        instance,
       );
     }
     return instance;
@@ -136,7 +136,7 @@ export class ObjectSetListenerWebsocket {
   #defaultConnectionFactory = async (): Promise<SubscriptionConnection> => {
     const url = constructWebsocketUrl(
       this.#client.baseUrl,
-      await this.#client.ontologyRid
+      await this.#client.ontologyRid,
     );
     const token = await this.#client.tokenProvider();
     return new WebSocket(url, [`Bearer-${token}`]);
@@ -165,7 +165,7 @@ export class ObjectSetListenerWebsocket {
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
     client: MinimalClient,
-    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {}
+    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {},
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
@@ -179,12 +179,12 @@ export class ObjectSetListenerWebsocket {
       {},
       {
         msgPrefix: "<OSW> ",
-      }
+      },
     );
     invariant(
       client.baseUrl.startsWith("https://") ||
         client.baseUrl.startsWith("http://"),
-      "Stack must be a URL"
+      "Stack must be a URL",
     );
   }
 
@@ -196,15 +196,15 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
-    shouldLoadRids: boolean = false
+    shouldLoadRids: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef =
       objectType.type === "object"
         ? await this.#client.ontologyProvider.getObjectDefinition(
-            objectType.apiName
+            objectType.apiName,
           )
         : await this.#client.ontologyProvider.getInterfaceDefinition(
-            objectType.apiName
+            objectType.apiName,
           );
 
     let objectProperties: Array<P> = [];
@@ -217,13 +217,13 @@ export class ObjectSetListenerWebsocket {
     objectProperties = properties.filter(
       (p) =>
         p in objOrInterfaceDef.properties &&
-        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference",
     );
 
     referenceProperties = properties.filter(
       (p) =>
         p in objOrInterfaceDef.properties &&
-        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference",
     );
 
     const sub: Subscription<Q, P> = {
@@ -271,7 +271,7 @@ export class ObjectSetListenerWebsocket {
       ObjectOrInterfaceDefinition,
       never
     >,
-    shouldLoadRids: boolean = false
+    shouldLoadRids: boolean = false,
   ): () => void {
     const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
       listener: fillOutListener(listener),
@@ -362,7 +362,7 @@ export class ObjectSetListenerWebsocket {
             referenceSet: requestedReferenceProperties,
             objectLoadingResponseOptions: { shouldLoadObjectRids: true },
           };
-        }
+        },
       ),
     };
 
@@ -374,7 +374,7 @@ export class ObjectSetListenerWebsocket {
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
     sub: Subscription<Q, any>,
-    newStatus: "done" | "error" = "done"
+    newStatus: "done" | "error" = "done",
   ) {
     if (subscriptionIsDone(sub)) {
       // if we are already done, we don't need to do anything
@@ -430,7 +430,7 @@ export class ObjectSetListenerWebsocket {
           if (process.env.NODE_ENV !== "production") {
             this.#logger?.debug(
               { delay, attempt: this.#backoff.getAttempt() },
-              "Waiting before reconnect"
+              "Waiting before reconnect",
             );
           }
           await new Promise((resolve) => {
@@ -536,10 +536,10 @@ export class ObjectSetListenerWebsocket {
     if (sub == null) return;
 
     const objectUpdates = payload.updates.filter(
-      (update) => update.type === "object"
+      (update) => update.type === "object",
     );
     const referenceUpdates = payload.updates.filter(
-      (update) => update.type === "reference"
+      (update) => update.type === "reference",
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
@@ -562,7 +562,7 @@ export class ObjectSetListenerWebsocket {
           false,
           undefined,
           false,
-          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName)
+          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
@@ -571,7 +571,7 @@ export class ObjectSetListenerWebsocket {
               state: "ADDED_OR_UPDATED" as ObjectState,
             }
           : undefined;
-      })
+      }),
     );
 
     for (const update of osdkObjectsWithReferenceUpdates) {
@@ -588,7 +588,7 @@ export class ObjectSetListenerWebsocket {
     const osdkObjects = await Promise.all(
       objectUpdates.map(async (o) => {
         const keysToDelete = Object.keys(o.object).filter((key) =>
-          sub.requestedReferenceProperties.includes(key)
+          sub.requestedReferenceProperties.includes(key),
         );
         for (const key of keysToDelete) {
           delete o.object[key];
@@ -605,8 +605,8 @@ export class ObjectSetListenerWebsocket {
           false,
           await this.#fetchInterfaceMapping(
             o.object.__apiName,
-            sub.interfaceApiName
-          )
+            sub.interfaceApiName,
+          ),
         )) as Array<Osdk.Instance<any>>;
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
@@ -624,7 +624,7 @@ export class ObjectSetListenerWebsocket {
                 rid,
               }
           : undefined;
-      })
+      }),
     );
 
     for (const osdkObject of osdkObjects) {
@@ -641,7 +641,7 @@ export class ObjectSetListenerWebsocket {
 
   async #fetchInterfaceMapping(
     objectTypeApiName: string,
-    interfaceApiName: string | undefined
+    interfaceApiName: string | undefined,
   ): Promise<Record<string, Record<string, Record<string, string>>>> {
     if (interfaceApiName == null) return {};
     const interfaceMap = (
@@ -666,7 +666,7 @@ export class ObjectSetListenerWebsocket {
   };
 
   #handleMessage_subscribeResponses = (
-    payload: ObjectSetSubscribeResponses
+    payload: ObjectSetSubscribeResponses,
   ) => {
     const { id, responses } = payload;
 
@@ -710,7 +710,7 @@ export class ObjectSetListenerWebsocket {
           } catch (error) {
             this.#logger?.error(
               error,
-              "Error in onOutOfDate or onSuccessfulSubscription callback"
+              "Error in onOutOfDate or onSuccessfulSubscription callback",
             );
             this.#tryCatchOnError(sub, false, error);
           }
@@ -763,7 +763,7 @@ export class ObjectSetListenerWebsocket {
         for (const s of this.#subscriptions.values()) {
           invariant(
             s.status !== "done" && s.status !== "error",
-            "should not have done/error subscriptions still"
+            "should not have done/error subscriptions still",
           );
         }
       }
@@ -781,7 +781,7 @@ export class ObjectSetListenerWebsocket {
   #tryCatchOnError = (
     sub: Subscription<any, any>,
     subscriptionClosed: boolean,
-    error: any
+    error: any,
   ) => {
     try {
       sub.listener.onError({ subscriptionClosed, error });
@@ -789,12 +789,12 @@ export class ObjectSetListenerWebsocket {
       // eslint-disable-next-line no-console
       console.error(
         `Error encountered in an onError callback for an OSDK subscription`,
-        onErrorError
+        onErrorError,
       );
       // eslint-disable-next-line no-console
       console.error(
         `This onError call was triggered by an error in another callback`,
-        error
+        error,
       );
       // eslint-disable-next-line no-console
       console.error(`The subscription has been closed.`, error);
@@ -813,7 +813,7 @@ export function constructWebsocketUrl(baseUrl: string, ontologyRid: string) {
   const base = new URL(baseUrl);
   const url = new URL(
     `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
-    base
+    base,
   );
   url.protocol = url.protocol.replace("https", "wss");
   return url;

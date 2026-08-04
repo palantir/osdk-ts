@@ -69,7 +69,7 @@ beforeAll(() => {
     "https://host.com",
     () => "myAccessToken",
     {},
-    mockFetch
+    mockFetch,
   );
 
   client = createClient(
@@ -77,7 +77,7 @@ beforeAll(() => {
     metadata.ontologyRid,
     () => "",
     undefined,
-    mockFetch
+    mockFetch,
   );
 });
 
@@ -139,7 +139,7 @@ describe("aggregate", () => {
           "id:avg": "unordered",
           $count: "unordered",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -166,7 +166,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(notGrouped.string.approximateDistinct);
@@ -214,15 +214,15 @@ describe("aggregate", () => {
     expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.integer
+      grouped[0].$group.integer,
     );
     expectType<{ startValue: number; endValue: number }>(
-      grouped[0].$group.short
+      grouped[0].$group.short,
     );
     expectType<number | undefined>(grouped[0].$group.float);
     expectType<string | undefined>(grouped[0].$group.dateTime);
     expectType<{ startValue: string; endValue: string }>(
-      grouped[0].$group.date
+      grouped[0].$group.date,
     );
     expectType<boolean | undefined>(grouped[0].$group.boolean);
     expectType<number | undefined>(grouped[0].$group.double);
@@ -358,7 +358,7 @@ describe("aggregate", () => {
           },
           float: { $fixedWidth: 10 },
         },
-      }
+      },
     );
 
     expectType<GroupByClause<objectTypeWithAllPropertyTypes>>({
@@ -401,7 +401,7 @@ describe("aggregate", () => {
           "id:max": "asc",
           $count: "unordered",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -440,7 +440,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(notGrouped.string.approximateDistinct);
@@ -477,7 +477,7 @@ describe("aggregate", () => {
         $groupBy: {
           id: "exact",
         },
-      }
+      },
     );
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -511,7 +511,7 @@ describe("aggregate", () => {
         }),
         method: "POST",
         headers: expect.anything(),
-      }
+      },
     );
 
     expectType<number>(grouped[0].string.approximateDistinct);
@@ -684,8 +684,8 @@ describe("aggregate", () => {
           $select: {
             "id:max": "unordered",
           },
-        }
-      )
+        },
+      ),
     ).rejects.toThrow("Aggregation request failed");
   });
 
@@ -722,8 +722,8 @@ describe("aggregate", () => {
           $groupBy: {
             id: "exact",
           },
-        }
-      )
+        },
+      ),
     ).rejects.toThrow("Aggregation request failed");
   });
 

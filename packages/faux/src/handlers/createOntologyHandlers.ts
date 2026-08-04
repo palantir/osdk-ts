@@ -27,7 +27,7 @@ import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js"
 
 export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   /**
    * Load full Ontology metadata
@@ -47,7 +47,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
       return fauxFoundry
         .getOntology(params.ontologyApiName)
         .getFilteredOntologyMetadata(await request.json());
-    }
+    },
   ),
 
   OntologiesV2.ObjectTypesV2.get(baseUrl, async (req) => {
@@ -80,7 +80,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.QueryTypes.get(baseUrl, async (req) => {
     const queryParams = Object.fromEntries(
-      new URL(req.request.url).searchParams.entries()
+      new URL(req.request.url).searchParams.entries(),
     );
 
     const version = queryParams["version"];
@@ -89,7 +89,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
       .getQueryDef(
         version
           ? `${req.params.queryTypeApiName}:${version}`
-          : req.params.queryTypeApiName
+          : req.params.queryTypeApiName,
       );
   }),
 
@@ -99,7 +99,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
       return fauxFoundry
         .getOntology(params.ontology)
         .getLinkTypeSideV2(params.objectType, params.linkType);
-    }
+    },
   ),
 
   OntologiesV2.ObjectTypesV2.listOutgoingLinkTypes(
@@ -110,7 +110,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
           .getOntology(params.ontology)
           .getObjectTypeFullMetadataOrThrow(params.objectType).linkTypes,
       };
-    }
+    },
   ),
 
   OntologiesV2.OntologyInterfaces.list(baseUrl, async (req) => {
@@ -188,6 +188,6 @@ export const conjureEndpoint: Array<RequestHandler> = [
           [defaultOntologyMetadata.rid]: defaultOntologyForConjure,
         },
       });
-    })
+    }),
   ),
 ];

@@ -75,12 +75,12 @@ function FilterListItemInner<D>({
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
     },
-    [filterKey, onFilterStateChanged]
+    [filterKey, onFilterStateChanged],
   );
 
   const handleToggleSearch = useCallback(() => {
     setSearchState((prev) =>
-      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" }
+      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" },
     );
   }, []);
 
@@ -88,7 +88,7 @@ function FilterListItemInner<D>({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchState({ type: "open", query: e.target.value });
     },
-    []
+    [],
   );
 
   const handleSearchClear = useCallback(() => {
@@ -109,7 +109,7 @@ function FilterListItemInner<D>({
 
   const effectiveState = useMemo(
     () => getEffectiveFilterState(filterState),
-    [filterState]
+    [filterState],
   );
 
   const showExcludeDropdown = supportsExcluding(effectiveState);
@@ -212,5 +212,5 @@ function FilterListItemInner<D>({
 }
 
 export const FilterListItem = memo(
-  FilterListItemInner
+  FilterListItemInner,
 ) as typeof FilterListItemInner;

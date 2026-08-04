@@ -28,13 +28,13 @@ import type {
 export async function getAllConfiguredConstraints(
   ctx: ConjureContext,
   moduleGroupProducer: _constraints_ModuleGroupProducer,
-  pageToken: _constraints_CompassRid | null | undefined
+  pageToken: _constraints_CompassRid | null | undefined,
 ): Promise<_constraints_ConfiguredResourceConstraintsPage> {
   return conjureFetch(
     ctx,
     `/resource-constraints/${moduleGroupProducer}`,
     "GET",
     undefined,
-    { pageToken }
+    { pageToken },
   );
 }

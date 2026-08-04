@@ -85,7 +85,7 @@ describe("useOsdkObject enabled option", () => {
       "MockObject",
       "instance-123",
       { mode: "offline" },
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -98,7 +98,7 @@ describe("useOsdkObject enabled option", () => {
       MockObjectType,
       "pk-222",
       { mode: undefined },
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -110,7 +110,7 @@ describe("useOsdkObject enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockObserveObject).not.toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe("useOsdkObject enabled option", () => {
         useOsdkObject(MockObjectType, "pk-777", {
           $includeAllBaseObjectProperties: true,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);

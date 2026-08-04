@@ -18,7 +18,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 const pdfWorkerUrl = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
+  import.meta.url,
 );
 import { useEffect, useState } from "react";
 
@@ -38,7 +38,7 @@ function toDocumentParams(src: PdfSource): Promise<GetDocumentParams> {
     return src.arrayBuffer().then((data) => ({ data }));
   }
   return Promise.resolve(
-    typeof src === "string" ? { url: src } : { data: src }
+    typeof src === "string" ? { url: src } : { data: src },
   );
 }
 
@@ -59,7 +59,7 @@ interface UsePdfDocumentResult {
 
 export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
   const [document, setDocument] = useState<PDFDocumentProxy | undefined>(
-    undefined
+    undefined,
   );
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -92,7 +92,7 @@ export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
               setError(err instanceof Error ? err : new Error(String(err)));
               setLoading(false);
             }
-          }
+          },
         );
       };
 
@@ -108,7 +108,7 @@ export function usePdfDocument(src: PdfSource): UsePdfDocumentResult {
         void loadingTask?.destroy();
       };
     },
-    [src]
+    [src],
   );
 
   return { document, numPages, loading, error };

@@ -32,7 +32,7 @@ function groupBy<T>(arr: T[], fn: (item: T) => string): Record<string, T[]> {
 // Hopefully this can go away when we can just request the full object properties on first load
 export async function reloadDataAsFullObjects(
   client: Client,
-  data: Osdk.Instance<any>[]
+  data: Osdk.Instance<any>[],
 ): Promise<Osdk.Instance<any>[]> {
   if (data.length === 0) {
     return data;
@@ -62,15 +62,15 @@ export async function reloadDataAsFullObjects(
 
         const result = await client(objectDef as ObjectTypeDefinition)
           .where(
-            where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0]
+            where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
           )
           .fetchPage({ $includeRid: true });
         return [
           apiName,
           Object.fromEntries(result.data.map((x) => [x.$primaryKey, x])),
         ];
-      })
-    )
+      }),
+    ),
   );
 
   return data.map((obj) => {
@@ -78,7 +78,7 @@ export async function reloadDataAsFullObjects(
       objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
     invariant(
       fullObject,
-      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`
+      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
     );
     return fullObject;
   });

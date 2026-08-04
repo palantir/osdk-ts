@@ -35,13 +35,13 @@ export interface SyncDeps {
   getGitBranch: () => Promise<string | undefined>;
   npmDistTags: (pkg: string) => Promise<Record<string, string>>;
   npmInstall: (
-    specs: ReadonlyArray<{ pkg: string; version: string }>
+    specs: ReadonlyArray<{ pkg: string; version: string }>,
   ) => Promise<void>;
 }
 
 export default async function syncCommand(
   args: SyncArgs,
-  overrides: Partial<SyncDeps> = {}
+  overrides: Partial<SyncDeps> = {},
 ): Promise<void> {
   const deps: SyncDeps = {
     cwd: process.cwd(),

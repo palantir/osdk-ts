@@ -47,7 +47,7 @@ function domRectToPdfRect(
   clientRect: DOMRect,
   pageRect: DOMRect,
   pageHeight: number,
-  scale: number
+  scale: number,
 ): PdfRect {
   const x = (clientRect.left - pageRect.left) / scale;
   const width = clientRect.width / scale;
@@ -153,7 +153,7 @@ function AnnotationSidebarItem({
       e.stopPropagation();
       onDelete(annotation.id);
     },
-    [onDelete, annotation.id]
+    [onDelete, annotation.id],
   );
 
   const itemStyles: React.CSSProperties = {
@@ -262,7 +262,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
         // Read the pdfjs scale factor from the CSS variable
         const scale =
           parseFloat(
-            getComputedStyle(pageEl).getPropertyValue("--scale-factor")
+            getComputedStyle(pageEl).getPropertyValue("--scale-factor"),
           ) || 1;
         const pageHeight = pageEl.clientHeight / scale;
 
@@ -297,7 +297,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
       container.addEventListener("mouseup", handleMouseUp);
       return () => container.removeEventListener("mouseup", handleMouseUp);
     },
-    [annotationModeActive]
+    [annotationModeActive],
   );
 
   return (

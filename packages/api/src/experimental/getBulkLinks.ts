@@ -21,7 +21,7 @@ import type { Experiment } from "./Experiment.js";
 
 type getBulkLinksFn = <T extends ObjectOrInterfaceDefinition>(
   objs: Osdk.Instance<T>[],
-  links: string[]
+  links: string[],
 ) => AsyncGenerator<EXPERIMENTAL_BulkLinkResult, void, undefined>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks: Experiment<

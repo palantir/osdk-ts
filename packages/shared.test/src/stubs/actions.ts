@@ -239,7 +239,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     createLazyDoNothingActionImpl([
       [actionRequestCreateOffice, actionResponseCreateOffice],
       [actionRequestCreateOfficeNoReturnEdits, actionResponse],
-    ])
+    ]),
   );
 
   fauxOntology.registerActionType(MoveOffice, moveOfficeImpl);
@@ -251,41 +251,43 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
         actionRequestCreateOfficeAndEmployee,
         actionResponseCreateOfficeAndEmployee,
       ],
-    ])
+    ]),
   );
 
   fauxOntology.registerActionType(
     ActionTakesGeoshape,
-    createLazyDoNothingActionImpl([[actionRequestWithGeoshape, actionResponse]])
+    createLazyDoNothingActionImpl([
+      [actionRequestWithGeoshape, actionResponse],
+    ]),
   );
 
   fauxOntology.registerActionType(
     ActionTakesObjectSet,
     createLazyDoNothingActionImpl([
       [actionRequestWithObjectSet, actionResponse],
-    ])
+    ]),
   );
 
   fauxOntology.registerActionType(
     ActionTakesAttachment,
     (_batch, payload, { attachments }) => {
       const attachment = attachments.getAttachmentMetadataByRid(
-        payload.parameters.attachment as string
+        payload.parameters.attachment as string,
       );
       invariant(attachment, "expected attachment to be real");
-    }
+    },
   );
 
   fauxOntology.registerActionType(
     ActionTakesMedia,
-    createLazyDoNothingActionImpl([[actionRequestMediaUpload, actionResponse]])
+    createLazyDoNothingActionImpl([[actionRequestMediaUpload, actionResponse]]),
   );
 
   fauxOntology.registerActionType(
     ActionTakesInterface,
     createLazyDoNothingActionImpl([
       [actionRequestWithInterface, actionResponse],
-    ])
+    ]),
   );
 
   fauxOntology.registerActionType(
@@ -294,13 +296,13 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
       [actionRequestWithStruct, actionResponse],
       [actionRequestWithStructAcceptNull, actionResponse],
       [actionRequestWithStructAcceptUndefined, actionResponse],
-    ])
+    ]),
   );
 
   fauxOntology.registerActionType(
     ActionCreatesInterface,
     createLazyDoNothingActionImpl([
       [actionRequestWithObjectTypeReference, actionResponse],
-    ])
+    ]),
   );
 }

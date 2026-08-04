@@ -31,10 +31,10 @@ import type { ImportObjectDefinition } from "./types.js";
  * then converts it to an OntologyIrImportedObjectType that is safe to use elsewhere.
  */
 export function defineImportObject(
-  objectDef: ImportObjectDefinition
+  objectDef: ImportObjectDefinition,
 ): ObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
-    objectDef.properties ?? {}
+    objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
     apiName: apiName,
     displayName: convertToDisplayName(apiName),

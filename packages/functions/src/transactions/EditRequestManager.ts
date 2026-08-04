@@ -61,7 +61,7 @@ export class EditRequestManager {
   }
 
   private createInitialPromiseWithTimeout(
-    edit: TransactionEdit
+    edit: TransactionEdit,
   ): Promise<void> {
     return new Promise((resolve) => {
       this.pendingEdits.push(edit);
@@ -85,7 +85,7 @@ export class EditRequestManager {
       await this.client[writeableClientContext].ontologyRid,
       this.client[writeableClientContext].transactionId,
       { edits: copiedEdits },
-      { preview: true }
+      { preview: true },
     );
   }
 

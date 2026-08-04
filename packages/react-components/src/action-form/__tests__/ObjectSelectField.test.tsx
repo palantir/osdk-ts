@@ -55,12 +55,12 @@ vi.stubGlobal(
             devicePixelContentBoxSize: [],
           } as ResizeObserverEntry,
         ],
-        this as ResizeObserver
+        this as ResizeObserver,
       );
     }
     unobserve(): void {}
     disconnect(): void {}
-  }
+  },
 );
 
 vi.mock("@osdk/react", () => ({
@@ -92,7 +92,7 @@ function mockLoadedState(
     error: Error;
     hasMore: boolean;
     fetchMore: (() => Promise<void>) | undefined;
-  }> = {}
+  }> = {},
 ) {
   // The mock return must satisfy UseOsdkListResult which has complex generics.
   // We construct the minimal shape needed by the component at runtime.
@@ -126,14 +126,14 @@ describe("ObjectSelectField", () => {
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
-      })
+      }),
     );
     expect(mockUseObjectSet).toHaveBeenCalledWith(
       undefined,
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
-      })
+      }),
     );
   });
 
@@ -147,14 +147,14 @@ describe("ObjectSelectField", () => {
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
-      })
+      }),
     );
     expect(mockUseOsdkObjects).toHaveBeenCalledWith(
       EMPLOYEE_TYPE,
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
-      })
+      }),
     );
   });
 
@@ -184,7 +184,7 @@ describe("ObjectSelectField", () => {
         EMPLOYEE_TYPE,
         expect.objectContaining({
           enabled: false,
-        })
+        }),
       );
     } finally {
       vi.useRealTimers();
@@ -232,7 +232,7 @@ describe("ObjectSelectField", () => {
     });
     const selectedValue = onChange.mock.calls[0]?.[0];
     expect(selectedValue).toEqual(
-      expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" })
+      expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" }),
     );
   });
 
@@ -360,7 +360,7 @@ function createMockObjectSet(): ObjectSet<typeof EMPLOYEE_TYPE> {
 }
 
 function renderObjectSelect(
-  overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {}
+  overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {},
 ) {
   const props =
     "objectSet" in overrides && overrides.objectSet != null
@@ -379,7 +379,7 @@ function renderObjectSelect(
   return render(
     <ObjectSelectField
       {...(props as Parameters<typeof ObjectSelectField>[0])}
-    />
+    />,
   );
 }
 

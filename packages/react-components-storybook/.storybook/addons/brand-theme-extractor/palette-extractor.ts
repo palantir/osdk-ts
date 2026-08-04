@@ -58,7 +58,7 @@ export interface ExtractedPalette {
  */
 export function autoMapFromPalette(
   palette: ExtractedPalette,
-  colorMode: ThemeColorMode
+  colorMode: ThemeColorMode,
 ): TokenAssignment[] {
   const isDark = colorMode === "dark";
   const brand = rgbToHsl(pickBrandRgb(palette));
@@ -101,18 +101,18 @@ export function autoMapFromPalette(
     { h: hue, s: primarySat, l: primaryL },
     surfaceLum,
     3, // WCAG AA for UI components / large text
-    isDark ? "lighter" : "darker"
+    isDark ? "lighter" : "darker",
   );
   const primaryHex = hslToHex(primaryHsl.h, primaryHsl.s, primaryHsl.l);
   const primaryHoverHex = hslToHex(
     primaryHsl.h,
     primaryHsl.s,
-    clamp(primaryHsl.l + (isDark ? 8 : -8), 4, 96)
+    clamp(primaryHsl.l + (isDark ? 8 : -8), 4, 96),
   );
   const primaryActiveHex = hslToHex(
     primaryHsl.h,
     primaryHsl.s,
-    clamp(primaryHsl.l + (isDark ? 14 : -14), 4, 96)
+    clamp(primaryHsl.l + (isDark ? 14 : -14), 4, 96),
   );
   const primaryFgHex = bestForeground(primaryHex);
 
@@ -124,7 +124,7 @@ export function autoMapFromPalette(
       { h: statusHue, s: isDark ? 68 : 70, l: isDark ? 62 : 46 },
       bgLum,
       3,
-      isDark ? "lighter" : "darker"
+      isDark ? "lighter" : "darker",
     );
     return hslToHex(hsl.h, hsl.s, hsl.l);
   };
@@ -144,7 +144,7 @@ export function autoMapFromPalette(
     valueAssignment("input-bg", inputBgHex),
     valueAssignment(
       "overlay",
-      isDark ? "rgba(0, 0, 0, 0.7)" : "rgba(16, 22, 26, 0.7)"
+      isDark ? "rgba(0, 0, 0, 0.7)" : "rgba(16, 22, 26, 0.7)",
     ),
     valueAssignment("border", borderHex),
     valueAssignment("text", textHex),
@@ -167,7 +167,7 @@ export function autoMapFromPalette(
   const remainingDefaults: TokenAssignment[] = [
     valueAssignment(
       "font-family-mono",
-      "ui-monospace, SFMono-Regular, Menlo, monospace"
+      "ui-monospace, SFMono-Regular, Menlo, monospace",
     ),
     valueAssignment("font-size-xsmall", "11"),
   ];
@@ -186,7 +186,7 @@ export function autoMapFromPalette(
  */
 function pickNeutralAnchorRgb(
   palette: ExtractedPalette,
-  isDark: boolean
+  isDark: boolean,
 ): [number, number, number] {
   const candidates = [
     palette.vibrant,
@@ -308,7 +308,7 @@ function ensureContrast(
   color: Hsl,
   bgLum: number,
   minContrast: number,
-  direction: "lighter" | "darker"
+  direction: "lighter" | "darker",
 ): Hsl {
   const step = direction === "lighter" ? 3 : -3;
   const result = { ...color };

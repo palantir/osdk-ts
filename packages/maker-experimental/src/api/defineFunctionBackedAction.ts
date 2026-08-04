@@ -25,7 +25,7 @@ export type FunctionBackedActionTypeUserDefinition = {
 };
 
 export function defineFunctionBackedAction(
-  def: FunctionBackedActionTypeUserDefinition
+  def: FunctionBackedActionTypeUserDefinition,
 ): ActionType {
   const actionApiName =
     def.apiName ?? `function-action-${kebab(def.functionApiName)}`;

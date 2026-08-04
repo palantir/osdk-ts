@@ -39,12 +39,12 @@ import type {
 export async function updatePendingBlockSetVersionMetadataV3(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_UpdatePendingBlockSetVersionMetadataRequestV3
+  request: _api_UpdatePendingBlockSetVersionMetadataRequestV3,
 ): Promise<_api_UpdatePendingBlockSetVersionMetadataResponseV3> {
   return conjureFetch(
     ctx,
     `/block-sets/v3/pending/version/${blockSetVersionId}/metadata`,
     "PUT",
-    request
+    request,
   );
 }

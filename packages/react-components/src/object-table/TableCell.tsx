@@ -32,7 +32,7 @@ interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
   renderCellContextMenu?: (
     row: TData,
-    cell: Cell<TData, unknown>
+    cell: Cell<TData, unknown>,
   ) => React.ReactNode;
 }
 
@@ -65,7 +65,7 @@ export function TableCell<TData extends RowData>({
   const isEditable = shouldShowEditableCell(
     isCellEditable(columnMeta?.editable, cell.row.original),
     tableMeta?.onCellEdit,
-    tableMeta?.isInEditMode
+    tableMeta?.isInEditMode,
   );
 
   return (
@@ -82,7 +82,7 @@ export function TableCell<TData extends RowData>({
           {
             flexRender(
               cell.column.columnDef.cell,
-              cell.getContext()
+              cell.getContext(),
             ) as ReactNode
           }
         </div>

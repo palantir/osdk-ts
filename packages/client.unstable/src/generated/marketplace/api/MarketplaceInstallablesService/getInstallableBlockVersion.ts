@@ -34,11 +34,11 @@ export async function getInstallableBlockVersion(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetVersionId: _api_BlockSetVersionId,
-  blockVersionId: _api_BlockVersionId
+  blockVersionId: _api_BlockVersionId,
 ): Promise<_api_GetInstallableBlockVersionResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/blockSet/${blockSetVersionId}/block/versions/${blockVersionId}`,
-    "GET"
+    "GET",
   );
 }

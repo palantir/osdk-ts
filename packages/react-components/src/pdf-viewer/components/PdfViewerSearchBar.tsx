@@ -42,7 +42,7 @@ export function PdfViewerSearchBar({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onQueryChange(e.target.value);
     },
-    [onQueryChange]
+    [onQueryChange],
   );
 
   const handleKeyDown = useCallback(
@@ -59,7 +59,7 @@ export function PdfViewerSearchBar({
         onClose();
       }
     },
-    [onNext, onPrev, onClose]
+    [onNext, onPrev, onClose],
   );
 
   const matchDisplay =

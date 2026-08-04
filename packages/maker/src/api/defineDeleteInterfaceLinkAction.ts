@@ -62,7 +62,7 @@ export type DeleteInterfaceLinkActionUserDefinition =
     );
 
 export function defineDeleteInterfaceLinkAction(
-  defInput: DeleteInterfaceLinkActionUserDefinition
+  defInput: DeleteInterfaceLinkActionUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
 
@@ -72,12 +72,12 @@ export function defineDeleteInterfaceLinkAction(
     linkConstraint === undefined ||
       def.from === undefined ||
       def.from.apiName === linkConstraint.from.apiName,
-    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`
+    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
   );
   const from = def.from ?? linkConstraint?.from;
   invariant(
     from !== undefined,
-    `"from" is required when "interfaceLink" is provided as a string (the api name).`
+    `"from" is required when "interfaceLink" is provided as a string (the api name).`,
   );
 
   const interfaceLinkApiName =
@@ -86,29 +86,29 @@ export function defineDeleteInterfaceLinkAction(
       : def.interfaceLink.apiName;
   const linkApiName = combineApiNamespaceIfMissing(
     namespace,
-    interfaceLinkApiName
+    interfaceLinkApiName,
   );
   const link = from.links.find((l) => l.metadata.apiName === linkApiName);
   invariant(
     link !== undefined,
-    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`
+    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
   );
   invariant(
     link.linkedEntityTypeId.type === "interfaceType",
-    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`
+    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
   );
   const targetApiName = link.linkedEntityTypeId.interfaceType;
   invariant(
     ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined ||
       importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
-    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`
+    `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`,
   );
 
   const sourceId = def.sourceParameter?.id ?? "source";
   const targetId = def.targetParameter?.id ?? "target";
   invariant(
     sourceId !== targetId,
-    `"sourceParameter.id" and "targetParameter.id" must differ, but both resolved to "${sourceId}".`
+    `"sourceParameter.id" and "targetParameter.id" must differ, but both resolved to "${sourceId}".`,
   );
 
   // A delete operates on a single existing link (one source, one target), so
@@ -146,7 +146,7 @@ export function defineDeleteInterfaceLinkAction(
     apiName:
       def.apiName ??
       `delete-interface-link-${kebab(withoutNamespace(from.apiName))}-${kebab(
-        withoutNamespace(interfaceLinkApiName)
+        withoutNamespace(interfaceLinkApiName),
       )}`,
     displayName:
       def.displayName ?? `Delete ${from.displayMetadata.displayName} link`,
@@ -174,7 +174,7 @@ export function defineDeleteInterfaceLinkAction(
       ? {
           validation: convertValidationRule(
             def.actionLevelValidation,
-            parameters
+            parameters,
           ),
         }
       : {}),

@@ -39,11 +39,11 @@ import type {
 export async function getRecommendationsForBlockSetV2(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_GetRecommendationsResponseV2> {
   return conjureFetch(
     ctx,
     `/recommendations-v2/${marketplaceRid}/${blockSetVersionId}`,
-    "GET"
+    "GET",
   );
 }

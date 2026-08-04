@@ -53,7 +53,7 @@ function enqueue<T>(fn: () => Promise<T>): Promise<T> {
   const result = pythonQueue.then(fn, fn);
   pythonQueue = result.then(
     () => {},
-    () => {}
+    () => {},
   );
   return result;
 }
@@ -80,7 +80,7 @@ function outputContainsOntologyEdit(func: FunctionSpec): boolean {
 }
 
 function isOsdkObject(
-  value: unknown
+  value: unknown,
 ): value is { $apiName: string; $primaryKey: unknown } {
   return (
     value != null &&
@@ -93,7 +93,7 @@ function isOsdkObject(
 async function fetchPkPropertyNames(): Promise<Map<string, string>> {
   const response = await fetch(
     withBase("/api/v2/ontologies/ontology/objectTypes"),
-    { headers: { Authorization: LOCAL_RUNTIME_TOKEN } }
+    { headers: { Authorization: LOCAL_RUNTIME_TOKEN } },
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch object types: ${response.status}`);
@@ -115,13 +115,13 @@ async function fetchPkPropertyNames(): Promise<Map<string, string>> {
 
 function wrapObjectLocator(
   obj: { $apiName: string; $primaryKey: unknown },
-  pkNames: Map<string, string>
+  pkNames: Map<string, string>,
 ): unknown {
   const apiName = obj.$apiName;
   const pkProperty = pkNames.get(apiName);
   if (!pkProperty) {
     throw new Error(
-      `No primary key property found for object type "${apiName}"`
+      `No primary key property found for object type "${apiName}"`,
     );
   }
   return {
@@ -169,7 +169,7 @@ function wrapValue(value: unknown, pkNames: Map<string, string>): unknown {
 function transformParametersToLocal(
   parameters: Record<string, unknown>,
   isPython: boolean,
-  pkNames: Map<string, string>
+  pkNames: Map<string, string>,
 ): Record<string, unknown> {
   const transformed: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(parameters)) {
@@ -257,7 +257,7 @@ interface RuntimeSpecs {
 
 function createFunctionLocator(
   functionName: string,
-  specs: RuntimeSpecs
+  specs: RuntimeSpecs,
 ): FunctionLocator {
   const funcSpec = specs?.functions?.find((f) => {
     const locator = f.locator;
@@ -302,7 +302,7 @@ function createFunctionLocator(
 const SPECS_TIMEOUT_MS = 30_000;
 
 async function fetchSpecs(
-  runtime: RuntimeConfig
+  runtime: RuntimeConfig,
 ): Promise<RuntimeSpecs | null> {
   try {
     const response = await fetch(withBase(runtime.specsEndpoint), {
@@ -372,7 +372,7 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
 
 async function postJsonToLocalRuntime(
   url: string,
-  body: unknown
+  body: unknown,
 ): Promise<Response> {
   const response = await fetch(withBase(url), {
     method: "POST",
@@ -386,7 +386,7 @@ async function postJsonToLocalRuntime(
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `Request to ${url} failed: ${response.status} - ${errorText}`
+      `Request to ${url} failed: ${response.status} - ${errorText}`,
     );
   }
 
@@ -400,7 +400,7 @@ interface FunctionDefinition {
 
 async function executeLocalFunction(
   functionDefinition: FunctionDefinition,
-  parameters: Record<string, unknown>
+  parameters: Record<string, unknown>,
 ): Promise<unknown> {
   const functionName =
     functionDefinition.apiName ??
@@ -414,7 +414,7 @@ async function executeLocalFunction(
 
   if (!info) {
     throw new Error(
-      `Function "${functionName}" not found in any local runtime`
+      `Function "${functionName}" not found in any local runtime`,
     );
   }
 
@@ -423,7 +423,7 @@ async function executeLocalFunction(
   const transformedParams = transformParametersToLocal(
     parameters,
     isPython,
-    pkNames
+    pkNames,
   );
 
   // Edit functions are routed through the action endpoint
@@ -431,7 +431,7 @@ async function executeLocalFunction(
   if (info.isEditFunction) {
     await postJsonToLocalRuntime(
       `/api/v2/ontologies/ontology/actions/${functionName}/apply`,
-      { parameters: transformedParams }
+      { parameters: transformedParams },
     );
     return undefined;
   }
@@ -446,7 +446,7 @@ async function executeLocalFunction(
   const execute = async () => {
     const response = await postJsonToLocalRuntime(
       info.runtime.executeEndpoint,
-      requestBody
+      requestBody,
     );
     return transformResponseFromLocal(await response.json());
   };

@@ -34,7 +34,7 @@ export interface InlineShapeConfig<BASE extends ObjectOrInterfaceDefinition> {
   };
   readonly transforms?: {
     readonly [K in PropertyKeys<BASE>]?: (
-      value: PropertyType<BASE, K>
+      value: PropertyType<BASE, K>,
     ) => unknown;
   };
   readonly links?: Record<string, InlineLinkConfig<BASE>>;
@@ -42,7 +42,7 @@ export interface InlineShapeConfig<BASE extends ObjectOrInterfaceDefinition> {
 
 export interface InlineLinkConfig<SOURCE extends ObjectOrInterfaceDefinition> {
   readonly via: (
-    builder: ShapeLinkBuilder<SOURCE, SOURCE>
+    builder: ShapeLinkBuilder<SOURCE, SOURCE>,
   ) => ShapeLinkBuilder<SOURCE, ObjectOrInterfaceDefinition>;
   readonly target: ShapeDefinition<ObjectOrInterfaceDefinition>;
   readonly defer?: boolean;

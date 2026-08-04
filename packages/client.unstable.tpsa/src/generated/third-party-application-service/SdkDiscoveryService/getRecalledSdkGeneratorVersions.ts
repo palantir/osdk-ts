@@ -26,11 +26,11 @@ import type { SdkGeneratorVersion } from "../SdkGeneratorVersion.js";
  */
 export async function getRecalledSdkGeneratorVersions(
   ctx: ConjureContext,
-  sdkGeneratorType: SdkGeneratorType
+  sdkGeneratorType: SdkGeneratorType,
 ): Promise<Array<SdkGeneratorVersion>> {
   return conjureFetch(
     ctx,
     `/sdk-discovery/generator/${sdkGeneratorType}/recalled`,
-    "GET"
+    "GET",
   );
 }

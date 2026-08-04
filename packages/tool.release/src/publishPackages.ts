@@ -41,7 +41,7 @@ export async function publishPackages(
   cwd: string,
   { tag, gitTag = true }: { tag?: string; gitTag?: boolean },
   config: Config,
-  octokit: Octokit
+  octokit: Octokit,
 ): Promise<PublishedResult[]> {
   const releaseTag = tag && tag.length > 0 ? tag : "latest";
   const { packages, tool } = await getPackages(cwd);
@@ -52,7 +52,7 @@ export async function publishPackages(
   const r = await pMap(
     unpublishedPackagesInfo,
     async (pkg) => await publishSinglePackage(pkg, config.access, releaseTag),
-    { concurrency: 4 }
+    { concurrency: 4 },
   );
 
   // need to produce the output to save for future run of create tag/release
@@ -68,8 +68,8 @@ export async function publishPackages(
           })),
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   return r;
@@ -87,12 +87,12 @@ async function execPnpmPublish({
   const result = await execa(
     "pnpm",
     ["publish", "--json", "--tag", "--dry-run", tag, "--no-git-checks"],
-    { cwd }
+    { cwd },
   );
 
   if (result.exitCode !== 0) {
     consola.error(
-      `Failed to publish ${chalk.cyan(cwd)} with error: ${result.stderr}`
+      `Failed to publish ${chalk.cyan(cwd)} with error: ${result.stderr}`,
     );
     return false;
   }
@@ -105,11 +105,11 @@ async function execPnpmPublish({
 async function publishSinglePackage(
   pkg: Package,
   access: AccessType,
-  tag: string
+  tag: string,
 ): Promise<PublishedResult> {
   const { name, version, publishConfig } = pkg.packageJson;
   consola.info(
-    `Publishing ${chalk.cyan(`"${name}"`)} at ${chalk.green(`"${version}"`)}`
+    `Publishing ${chalk.cyan(`"${name}"`)} at ${chalk.green(`"${version}"`)}`,
   );
 
   return {
@@ -120,7 +120,7 @@ async function publishSinglePackage(
 }
 
 export async function packageVersionsOrEmptySet(
-  name: string
+  name: string,
 ): Promise<Set<string>> {
   try {
     return await packageVersionsOrThrow(name);
@@ -140,12 +140,12 @@ async function getUnpublishedPackages(packages: Array<Package>) {
     const versions = await packageVersionsOrEmptySet(name);
     if (versions.has(version)) {
       consola.info(
-        `${name} is being published because our local version (${version}) has not been published on npm`
+        `${name} is being published because our local version (${version}) has not been published on npm`,
       );
       return true;
     } else {
       consola.warn(
-        `${name} is not being published because version ${version} is already published on npm`
+        `${name} is not being published because version ${version} is already published on npm`,
       );
       return false;
     }

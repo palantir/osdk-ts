@@ -306,7 +306,9 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         },
         "linkTypes": [],
         "objectType": {
+          "aliases": [],
           "apiName": "Employee",
+          "datasources": [],
           "description": "A full-time or part-time 
 
  employee of our firm",
@@ -490,7 +492,9 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
         "implementsInterfaces2": {},
         "linkTypes": [],
         "objectType": {
+          "aliases": [],
           "apiName": "Office",
+          "datasources": [],
           "description": "A office in our Company",
           "displayName": "Office",
           "icon": {
@@ -650,7 +654,9 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
           },
         ],
         "objectType": {
+          "aliases": [],
           "apiName": "Employee",
+          "datasources": [],
           "description": "A full-time or part-time 
 
  employee of our firm",
@@ -834,7 +840,9 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "implementsInterfaces2": {},
         "linkTypes": [],
         "objectType": {
+          "aliases": [],
           "apiName": "Office",
+          "datasources": [],
           "description": "A office in our Company",
           "displayName": "Office",
           "icon": {
@@ -1122,7 +1130,9 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
         },
         "linkTypes": [],
         "objectType": {
+          "aliases": [],
           "apiName": "Employee",
+          "datasources": [],
           "description": "A full-time or part-time 
 
  employee of our firm",

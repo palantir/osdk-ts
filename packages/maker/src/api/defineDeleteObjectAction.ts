@@ -26,14 +26,14 @@ import {
 } from "./defineAction.js";
 
 export function defineDeleteObjectAction(
-  defInput: ActionTypeUserDefinition
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
   return defineAction({
     apiName:
       def.apiName ??
       `delete-object-${kebab(
-        def.objectType.apiName.split(".").pop() ?? def.objectType.apiName
+        def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
       )}`,
     displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
     parameters: createParameters(def, {}, new Set([DELETE_OBJECT_PARAMETER])),

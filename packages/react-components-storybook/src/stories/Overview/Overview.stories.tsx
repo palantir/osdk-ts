@@ -176,7 +176,7 @@ const SAMPLE_IMAGE_DATA_URL = createSampleImageDataUrl();
 function createMockMedia(
   mimeType: string,
   fetchFn: () => Promise<Response>,
-  fileName: string
+  fileName: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -213,7 +213,7 @@ function createExcelMedia(): Media {
   return createMockMedia(
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     () => Promise.resolve(new Response(buffer)),
-    "employees.xlsx"
+    "employees.xlsx",
   );
 }
 
@@ -225,7 +225,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "image/png",
       () => fetch(SAMPLE_IMAGE_DATA_URL),
-      "overview.png"
+      "overview.png",
     ),
   },
   markdown: {
@@ -233,7 +233,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "text/markdown",
       () => Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-      "overview.md"
+      "overview.md",
     ),
   },
   video: {
@@ -241,7 +241,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "video/mp4",
       () => fetch(SAMPLE_VIDEO_URL),
-      "example.mp4"
+      "example.mp4",
     ),
   },
   email: {
@@ -249,7 +249,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "message/rfc822",
       () => Promise.resolve(new Response(SAMPLE_EMAIL)),
-      "overview.eml"
+      "overview.eml",
     ),
   },
   excel: {
@@ -261,7 +261,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "application/xml",
       () => Promise.resolve(new Response(SAMPLE_XML)),
-      "overview.xml"
+      "overview.xml",
     ),
   },
   tiff: {
@@ -269,7 +269,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "image/tiff",
       () => fetch(SAMPLE_TIFF_URL),
-      "multi-page-tiff.tiff"
+      "multi-page-tiff.tiff",
     ),
   },
   unsupported: {
@@ -277,7 +277,7 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
     media: createMockMedia(
       "application/octet-stream",
       () => Promise.resolve(new Response("Unsupported sample")),
-      "overview.bin"
+      "overview.bin",
     ),
   },
 };
@@ -290,10 +290,10 @@ type OverviewApplyAction = Parameters<
 
 function applyOverviewAction(
   formState: FormState<typeof actionDefinition>,
-  applyAction: OverviewApplyAction
+  applyAction: OverviewApplyAction,
 ): ReturnType<OverviewApplyAction> {
   return applyAction(
-    formState as unknown as Parameters<OverviewApplyAction>[0]
+    formState as unknown as Parameters<OverviewApplyAction>[0],
   );
 }
 
@@ -342,7 +342,7 @@ function ViewersTab({
 }: ViewersTabProps): React.ReactElement {
   const { object: employee, isLoading } = useOsdkObject(
     Employee,
-    MEDIA_EMPLOYEE_PK
+    MEDIA_EMPLOYEE_PK,
   );
 
   const selectedMockMedia = MOCK_VIEWER_MEDIA_BY_TYPE[selectedViewerType];
@@ -390,11 +390,11 @@ function FormsTab(): React.ReactElement {
   const handleSubmit = useCallback(
     (
       formState: FormState<typeof actionDefinition>,
-      applyAction: OverviewApplyAction
+      applyAction: OverviewApplyAction,
     ) => {
       return applyOverviewAction(formState, applyAction);
     },
-    []
+    [],
   );
 
   return (
@@ -416,14 +416,14 @@ function ComponentOverview(): React.ReactElement {
       const tab = event.currentTarget.dataset.tab as TabId;
       setActiveTab(tab);
     },
-    []
+    [],
   );
 
   const handleViewerTypeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedViewerType(event.currentTarget.value as ViewerTypeId);
     },
-    []
+    [],
   );
 
   return (

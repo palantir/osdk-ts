@@ -32,11 +32,11 @@ import type {
  */
 export async function getGranularBlockSetStatisticsV3(
   ctx: ConjureContext,
-  blockSetVersionId: _api_BlockSetVersionId
+  blockSetVersionId: _api_BlockSetVersionId,
 ): Promise<_api_GetGranularBlockSetStatisticsV3Response> {
   return conjureFetch(
     ctx,
     `/block-sets/version/${blockSetVersionId}/granular-statistics-v3`,
-    "GET"
+    "GET",
   );
 }

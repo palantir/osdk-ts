@@ -1,5 +1,8 @@
 import { createClient, type Client } from "@osdk/client";
 import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+{{#if unstableFeatures}}
+import { $branch } from "{{osdkPackage}}";
+{{/if}}
 
 function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
@@ -44,6 +47,8 @@ export const auth: PublicOauthClient = createPublicOauthClient(
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
-const client: Client = createClient(foundryUrl, ontologyRid, auth);
+const client: Client = createClient(foundryUrl, ontologyRid, auth{{#if unstableFeatures}}, {
+  UNSTABLE_DO_NOT_USE_BRANCH: $branch,
+}{{/if}});
 
 export default client;

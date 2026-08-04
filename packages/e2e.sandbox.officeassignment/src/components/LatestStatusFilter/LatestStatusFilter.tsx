@@ -31,7 +31,7 @@ export interface LatestStatusFilterProps {
 function isSelected(
   selections: readonly LatestStatusSelection[],
   type: string,
-  value: string
+  value: string,
 ): boolean {
   return selections.some((s) => s.type === type && s.value === value);
 }
@@ -41,7 +41,7 @@ function isSelected(
  * selected values are OR'd; across types they are combined with the AND/OR toggle.
  */
 export function LatestStatusFilter(
-  props: LatestStatusFilterProps
+  props: LatestStatusFilterProps,
 ): React.JSX.Element {
   const { selections, onChange, composeAcrossTypes, onComposeChange } = props;
 
@@ -49,13 +49,13 @@ export function LatestStatusFilter(
     (type: string, value: string) => {
       if (isSelected(selections, type, value)) {
         onChange(
-          selections.filter((s) => !(s.type === type && s.value === value))
+          selections.filter((s) => !(s.type === type && s.value === value)),
         );
       } else {
         onChange([...selections, { type, value }]);
       }
     },
-    [selections, onChange]
+    [selections, onChange],
   );
 
   const clearAll = React.useCallback(() => onChange([]), [onChange]);

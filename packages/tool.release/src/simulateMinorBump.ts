@@ -59,13 +59,13 @@ export function simulateMinorBump(): void {
       packageJson.version = newVersion;
       fs.writeFileSync(
         packageJsonPath,
-        JSON.stringify(packageJson, null, 2) + "\n"
+        JSON.stringify(packageJson, null, 2) + "\n",
       );
 
       // Add a changeset file that indicates a minor bump happened, write back
       const changesetFileName = `${packageJson.name.replace(
         "/",
-        "-"
+        "-",
       )}-simulatedRelease`;
       const changesetFile = path.join(changesetsDir, changesetFileName + ".md");
 

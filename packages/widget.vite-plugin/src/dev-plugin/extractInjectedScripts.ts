@@ -34,7 +34,7 @@ export interface InjectedScripts {
  * See documentation: https://vite.dev/guide/api-plugin#transformindexhtml
  */
 export async function extractInjectedScripts(
-  server: Pick<ViteDevServer, "transformIndexHtml">
+  server: Pick<ViteDevServer, "transformIndexHtml">,
 ): Promise<InjectedScripts> {
   const result = await server.transformIndexHtml("", "");
   return parseTransformResult(result);
@@ -77,7 +77,7 @@ function visitNode(node: DefaultTreeAdapterTypes.Node): FoundScript[] {
 
 function parseScriptNode(node: DefaultTreeAdapterTypes.Element): FoundScript {
   const srcAttribute = node.attrs?.find(
-    (attribute) => attribute.name === "src"
+    (attribute) => attribute.name === "src",
   );
   return srcAttribute != null
     ? { type: "src", src: srcAttribute.value }
@@ -86,7 +86,7 @@ function parseScriptNode(node: DefaultTreeAdapterTypes.Element): FoundScript {
         content: node.childNodes
           .filter(
             (childNode): childNode is DefaultTreeAdapterTypes.TextNode =>
-              childNode.nodeName === "#text"
+              childNode.nodeName === "#text",
           )
           .map((childNode) => childNode.value.trim())
           .join("\n"),

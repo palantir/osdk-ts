@@ -69,7 +69,7 @@ function getHintForError(parsed: { errorName?: string }): string | undefined {
 export async function publishDevModeSettings(
   server: ViteDevServer,
   manifest: DevModeManifest,
-  res: ServerResponse
+  res: ServerResponse,
 ): Promise<void> {
   try {
     const foundryConfig = await loadFoundryConfig("widgetSet");
@@ -88,30 +88,30 @@ export async function publishDevModeSettings(
       foundryUrl,
       widgetSetRid,
       manifest,
-      server.config.mode
+      server.config.mode,
     );
     if (settingsResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
         `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
-        responseContent
+        responseContent,
       );
     }
 
     const enableResponse = await enableDevMode(foundryUrl, server.config.mode);
     if (enableResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`
+        `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
       );
       const responseContent = await enableResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
-        responseContent
+        responseContent,
       );
     }
 
@@ -124,13 +124,13 @@ export async function publishDevModeSettings(
           ? null
           : new URL(
               `workspace/custom-widgets/preview/${widgetSetRid}`,
-              foundryUrl
+              foundryUrl,
             ).toString(),
-      })
+      }),
     );
   } catch (error: unknown) {
     server.config.logger.error(
-      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`
+      `Failed to start dev mode: ${error as Error}\n\n${inspect(error)}`,
     );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
@@ -140,7 +140,7 @@ export async function publishDevModeSettings(
         error: inspect(error),
         response: error instanceof ResponseError ? error.response : undefined,
         hint: error instanceof ResponseError ? error.hint : undefined,
-      })
+      }),
     );
   }
 }

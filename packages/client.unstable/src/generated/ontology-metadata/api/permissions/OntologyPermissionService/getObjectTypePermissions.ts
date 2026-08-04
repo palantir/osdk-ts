@@ -24,7 +24,7 @@ import type { GetObjectTypePermissionsResponse as _api_permissions_GetObjectType
  */
 export async function getObjectTypePermissions(
   ctx: ConjureContext,
-  objectTypeRid: _api_ObjectTypeRid
+  objectTypeRid: _api_ObjectTypeRid,
 ): Promise<_api_permissions_GetObjectTypePermissionsResponse> {
   return conjureFetch(ctx, `/permissions/objectType/${objectTypeRid}`, "GET");
 }

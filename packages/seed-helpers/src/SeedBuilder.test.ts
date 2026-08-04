@@ -36,14 +36,14 @@ function newBuilder(): SeedBuilder {
         Employee.apiName,
         Employee.primaryKeyApiName,
         { employeeId: "integer", fullName: "string" },
-        "fullName"
+        "fullName",
       ),
       [Office.apiName]: makeObjectType(
         Office.apiName,
         Office.primaryKeyApiName,
-        { officeId: "string" }
+        { officeId: "string" },
       ),
-    })
+    }),
   );
 }
 
@@ -64,7 +64,7 @@ function makeObjectType(
   apiName: string,
   primaryKey: string,
   properties: Record<string, WireType>,
-  titleProperty: string = primaryKey
+  titleProperty: string = primaryKey,
 ): Ontology.ObjectTypeFullMetadata {
   return {
     objectType: {
@@ -75,7 +75,7 @@ function makeObjectType(
         Object.entries(properties).map(([name, type]) => [
           name,
           { dataType: { type } },
-        ])
+        ]),
       ),
     },
     linkTypes: [],
@@ -86,7 +86,7 @@ function makeObjectType(
 }
 
 function makeMetadata(
-  objectTypes: Record<string, Ontology.ObjectTypeFullMetadata>
+  objectTypes: Record<string, Ontology.ObjectTypeFullMetadata>,
 ): Ontology.OntologyFullMetadata {
   return {
     objectTypes,
@@ -125,7 +125,7 @@ describe("SeedBuilder", () => {
       const sb = newBuilder();
       sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       expect(() =>
-        sb.create(Employee, { employeeId: 1, fullName: "Bob" })
+        sb.create(Employee, { employeeId: 1, fullName: "Bob" }),
       ).toThrow("Employee with primary key 1 already exists.");
     });
   });
@@ -178,7 +178,7 @@ describe("SeedBuilder", () => {
           // @ts-expect-error primary key is excluded from the update props type
           employeeId: 999,
           fullName: "Alicia",
-        })
+        }),
       ).toThrow("Cannot modify primary key employeeId");
     });
   });
@@ -198,13 +198,13 @@ describe("SeedBuilder", () => {
   it("throws when the object type is not in the schema, for create/update/delete", () => {
     const sb = new SeedBuilder(makeMetadata({}));
     expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
-      "Object not found in metadata"
+      "Object not found in metadata",
     );
     expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
-      "Object not found in metadata"
+      "Object not found in metadata",
     );
     expect(() => sb.delete(employeeRef(1))).toThrow(
-      "Object not found in metadata"
+      "Object not found in metadata",
     );
   });
 
@@ -225,7 +225,7 @@ describe("SeedBuilder", () => {
         targetKey: "NYC",
       });
       expect(links[0].name).toBe(
-        ["Employee", "1", "officeLink", "Office", "NYC"].join(":")
+        ["Employee", "1", "officeLink", "Office", "NYC"].join(":"),
       );
     });
 
@@ -406,12 +406,12 @@ describe("SeedBuilder", () => {
       sb.set({
         objects: { Employee: [{ employeeId: 1, fullName: 123 }] },
         links: [],
-      })
+      }),
     ).toThrow(/expects string \(a string\) but got number/u);
 
     const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
     expect(() =>
-      sb.update(ref, { fullName: 123 as unknown as string })
+      sb.update(ref, { fullName: 123 as unknown as string }),
     ).toThrow(/expects string \(a string\) but got number/u);
   });
 });
@@ -443,7 +443,7 @@ describe("createSeed", () => {
       Bad: makeObjectType("Bad", "missingPk", { someOther: "string" }),
     });
     expect(() => createSeedWithMetadata(bad, () => {})).toThrow(
-      /Primary key 'missingPk' is not among the object's properties/u
+      /Primary key 'missingPk' is not among the object's properties/u,
     );
   });
 });

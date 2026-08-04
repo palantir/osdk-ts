@@ -65,7 +65,7 @@ describe(filterObjects, () => {
         type: "startsWith",
         field: "description",
         value: "hello wor",
-      })
+      }),
     ).toEqual([object1]));
 
   it("startsWith with single term prefix", () =>
@@ -74,7 +74,7 @@ describe(filterObjects, () => {
         type: "startsWith",
         field: "description",
         value: "hel",
-      })
+      }),
     ).toEqual([object1, object4]));
 
   it("startsWith returns empty for non-string fields", () =>
@@ -83,7 +83,7 @@ describe(filterObjects, () => {
         type: "startsWith",
         field: "age",
         value: "25",
-      })
+      }),
     ).toEqual([]));
 
   it("properly handles eq", () =>
@@ -92,7 +92,7 @@ describe(filterObjects, () => {
         type: "eq",
         field: "age",
         value: 25,
-      })
+      }),
     ).toEqual([object1, object3]));
 
   it("properly handles gt", () =>
@@ -101,7 +101,7 @@ describe(filterObjects, () => {
         type: "gt",
         field: "age",
         value: 25,
-      })
+      }),
     ).toEqual([object2, object4]));
 
   it("properly handles lt", () =>
@@ -110,7 +110,7 @@ describe(filterObjects, () => {
         type: "lt",
         field: "age",
         value: 30,
-      })
+      }),
     ).toEqual([object1, object3]));
 
   it("properly handles gte", () =>
@@ -119,7 +119,7 @@ describe(filterObjects, () => {
         type: "gte",
         field: "age",
         value: 30,
-      })
+      }),
     ).toEqual([object2, object4]));
 
   it("properly handles lte", () =>
@@ -128,7 +128,7 @@ describe(filterObjects, () => {
         type: "lte",
         field: "age",
         value: 25,
-      })
+      }),
     ).toEqual([object1, object3]));
 
   it("properly handles in", () =>
@@ -137,7 +137,7 @@ describe(filterObjects, () => {
         type: "in",
         field: "age",
         value: [25, 40],
-      })
+      }),
     ).toEqual([object1, object3, object4]));
 
   it("properly handles contains for array fields", () =>
@@ -146,7 +146,7 @@ describe(filterObjects, () => {
         type: "contains",
         field: "tags",
         value: "red",
-      })
+      }),
     ).toEqual([object1, object3]));
 
   it("contains returns empty for non-array fields", () =>
@@ -155,7 +155,7 @@ describe(filterObjects, () => {
         type: "contains",
         field: "name",
         value: "a",
-      })
+      }),
     ).toEqual([]));
 
   it("properly handles and", () =>
@@ -166,7 +166,7 @@ describe(filterObjects, () => {
           { type: "eq", field: "age", value: 25 },
           { type: "startsWith", field: "name", value: "abc" },
         ],
-      })
+      }),
     ).toEqual([object1, object3]));
 
   it("properly handles or", () =>
@@ -177,7 +177,7 @@ describe(filterObjects, () => {
           { type: "eq", field: "age", value: 40 },
           { type: "eq", field: "name", value: "abc" },
         ],
-      })
+      }),
     ).toEqual([object4, object1]));
 
   it("properly handles not", () =>
@@ -185,7 +185,7 @@ describe(filterObjects, () => {
       filterObjects(objects, {
         type: "not",
         value: { type: "eq", field: "age", value: 25 },
-      })
+      }),
     ).toEqual([object2, object4]));
 
   it("properly handles isNull with value true", () =>
@@ -194,7 +194,7 @@ describe(filterObjects, () => {
         type: "isNull",
         field: "nickname",
         value: true,
-      })
+      }),
     ).toEqual([object1, object2, object4]));
 
   it("properly handles isNull with value false", () =>
@@ -203,7 +203,7 @@ describe(filterObjects, () => {
         type: "isNull",
         field: "nickname",
         value: false,
-      })
+      }),
     ).toEqual([object3]));
 
   it("properly handles containsAnyTerm", () =>
@@ -212,7 +212,7 @@ describe(filterObjects, () => {
         type: "containsAnyTerm",
         field: "description",
         value: "hello foo",
-      })
+      }),
     ).toEqual([object1, object2, object4]));
 
   it("containsAnyTerm is case insensitive", () =>
@@ -221,7 +221,7 @@ describe(filterObjects, () => {
         type: "containsAnyTerm",
         field: "description",
         value: "HELLO",
-      })
+      }),
     ).toEqual([object1, object4]));
 
   it("containsAnyTerm returns empty for non-string fields", () =>
@@ -230,7 +230,7 @@ describe(filterObjects, () => {
         type: "containsAnyTerm",
         field: "age",
         value: "25",
-      })
+      }),
     ).toEqual([]));
 
   it("properly handles containsAllTerms", () =>
@@ -239,7 +239,7 @@ describe(filterObjects, () => {
         type: "containsAllTerms",
         field: "description",
         value: "hello world",
-      })
+      }),
     ).toEqual([object1, object4]));
 
   it("containsAllTerms is case insensitive", () =>
@@ -248,7 +248,7 @@ describe(filterObjects, () => {
         type: "containsAllTerms",
         field: "description",
         value: "HELLO WORLD",
-      })
+      }),
     ).toEqual([object1, object4]));
 
   it("containsAllTerms returns empty for non-string fields", () =>
@@ -257,7 +257,7 @@ describe(filterObjects, () => {
         type: "containsAllTerms",
         field: "age",
         value: "25",
-      })
+      }),
     ).toEqual([]));
 
   it("properly handles containsAllTermsInOrder", () =>
@@ -266,7 +266,7 @@ describe(filterObjects, () => {
         type: "containsAllTermsInOrder",
         field: "description",
         value: "hello world",
-      })
+      }),
     ).toEqual([object1]));
 
   it("containsAllTermsInOrder returns empty for non-string fields", () =>
@@ -275,7 +275,7 @@ describe(filterObjects, () => {
         type: "containsAllTermsInOrder",
         field: "age",
         value: "25",
-      })
+      }),
     ).toEqual([]));
 
   it("properly handles containsAllTermsInOrderPrefixLastTerm", () =>
@@ -284,7 +284,7 @@ describe(filterObjects, () => {
         type: "containsAllTermsInOrderPrefixLastTerm",
         field: "description",
         value: "hello wor",
-      })
+      }),
     ).toEqual([object1]));
 
   it("containsAllTermsInOrderPrefixLastTerm with single term prefix", () =>
@@ -293,7 +293,7 @@ describe(filterObjects, () => {
         type: "containsAllTermsInOrderPrefixLastTerm",
         field: "description",
         value: "hel",
-      })
+      }),
     ).toEqual([object1, object4]));
 
   it("containsAllTermsInOrderPrefixLastTerm returns empty for non-string fields", () =>
@@ -302,7 +302,7 @@ describe(filterObjects, () => {
         type: "containsAllTermsInOrderPrefixLastTerm",
         field: "age",
         value: "25",
-      })
+      }),
     ).toEqual([]));
 
   it("throws for propertyIdentifier usage", () =>
@@ -311,6 +311,6 @@ describe(filterObjects, () => {
         type: "eq",
         propertyIdentifier: { type: "property", apiName: "someId" },
         value: 25,
-      })
+      }),
     ).toThrow("propertyIdentifier not supported"));
 });

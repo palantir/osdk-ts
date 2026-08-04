@@ -25,7 +25,7 @@ import type { PropertyAccessEvent } from "../../utils/PropertyAccessTracker.js";
 import { ComponentsPanel } from "./ComponentsPanel.js";
 
 function makeBinding(
-  overrides: Partial<ComponentHookBinding> = {}
+  overrides: Partial<ComponentHookBinding> = {},
 ): ComponentHookBinding {
   return {
     componentId: "c1",
@@ -53,7 +53,7 @@ interface StoreOptions {
 
 function makeStore(
   active: Map<string, ComponentHookBinding[]>,
-  options: StoreOptions = {}
+  options: StoreOptions = {},
 ): MonitorStore {
   const {
     propsById = {},
@@ -99,7 +99,7 @@ describe("ComponentsPanel", () => {
   it("shows an empty state when nothing is mounted", () => {
     render(<ComponentsPanel monitorStore={makeStore(new Map())} />);
     expect(
-      screen.getByText("No OSDK components are mounted yet.")
+      screen.getByText("No OSDK components are mounted yet."),
     ).not.toBeNull();
   });
 
@@ -185,7 +185,7 @@ describe("ComponentsPanel", () => {
   it("marks a clean component Healthy and a noisy one with a warning", () => {
     const activeHealthy = new Map([["c1", [makeBinding()]]]);
     const { unmount } = render(
-      <ComponentsPanel monitorStore={makeStore(activeHealthy)} />
+      <ComponentsPanel monitorStore={makeStore(activeHealthy)} />,
     );
     expect(screen.getByText("Healthy")).not.toBeNull();
     unmount();
@@ -287,7 +287,7 @@ describe("ComponentsPanel", () => {
     // And that count matches the distinct object types shown across the cards.
     fireEvent.click(screen.getByText("ParcelList"));
     const distinctCardTypes = new Set(
-      treeNodes("Parcel").map((el) => el.textContent)
+      treeNodes("Parcel").map((el) => el.textContent),
     );
     expect(distinctCardTypes.size).toBe(1);
   });

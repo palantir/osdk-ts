@@ -43,7 +43,7 @@ export interface Waterfall {
 export class WaterfallDetector {
   constructor(
     private registry: ComponentQueryRegistry,
-    private timeline: EventTimeline
+    private timeline: EventTimeline,
   ) {}
 
   detectWaterfalls(timingThresholdMs: number = 50): Waterfall[] {
@@ -71,7 +71,7 @@ export class WaterfallDetector {
         const linkInWindow = linkTraversals.find(
           (link) =>
             link.timestamp > emissionA.timestamp &&
-            link.timestamp < emissionB.timestamp
+            link.timestamp < emissionB.timestamp,
         );
 
         if (linkInWindow) {
@@ -85,7 +85,7 @@ export class WaterfallDetector {
             code: this.generateLinkWaterfallCode(
               emissionA.subscriptionId,
               emissionB.subscriptionId,
-              linkInWindow.linkName
+              linkInWindow.linkName,
             ),
             details: {
               parentQuery: emissionA.subscriptionId,
@@ -105,7 +105,7 @@ export class WaterfallDetector {
 
     for (const [componentId, bindings] of components) {
       const objectQueries = bindings.filter(
-        (b) => b.hookType === "useOsdkObject"
+        (b) => b.hookType === "useOsdkObject",
       );
       const grouped = new Map<string, ComponentHookBinding[]>();
 
@@ -185,7 +185,7 @@ export class WaterfallDetector {
   private generateLinkWaterfallCode(
     parentQuery: string,
     childQuery: string,
-    linkName: string
+    linkName: string,
   ): string {
     return `
 // ⚠️ WATERFALL DETECTED

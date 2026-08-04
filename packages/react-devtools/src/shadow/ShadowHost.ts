@@ -33,7 +33,7 @@ const MAX_Z_INDEX = 2147483647;
 export function getDevtoolsShadowMount(): HTMLElement {
   const existingHost = document.querySelector<HTMLElement>(`#${HOST_ID}`);
   const existingMount = existingHost?.shadowRoot?.querySelector<HTMLElement>(
-    `[${MOUNT_ATTR}]`
+    `[${MOUNT_ATTR}]`,
   );
   if (existingMount != null) {
     return existingMount;

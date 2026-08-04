@@ -58,7 +58,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
       columnCount === 2
         ? styles.osdkFormSectionGrid
         : styles.osdkFormSectionContent,
-      styles.osdkFormSectionDivider
+      styles.osdkFormSectionDivider,
     );
 
     if (!showTitleBar) {
@@ -104,7 +104,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
         </Collapsible.Panel>
       </Collapsible.Root>
     );
-  }
+  },
 );
 
 interface MinimalSectionProps {

@@ -1,5 +1,43 @@
 # @osdk/maker-experimental
 
+## 0.44.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.preview@0.32.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/maker@0.53.0
+
+## 0.43.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- d349c0b: Support presets for imports
+- e0cbc70: Add propertiesV2 to imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-converters.preview@0.31.0
+
 ## 0.42.0
 
 ### Minor Changes

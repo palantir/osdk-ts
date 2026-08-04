@@ -6,6 +6,11 @@ import {
 } from "@osdk/client";
 import { FOUNDRY_URL{{#if osdkPackage}}, ONTOLOGY_RID{{/if}} } from "./osdkConst";
 import { getValidAuthToken } from "./Auth";
+{{#if osdkPackage}}
+{{#if unstableFeatures}}
+import { $branch } from "{{osdkPackage}}";
+{{/if}}
+{{/if}}
 
 {{#if osdkPackage}}
 /**
@@ -15,6 +20,11 @@ export const client: Client = createClient(
     FOUNDRY_URL, 
     ONTOLOGY_RID, 
     getValidAuthToken,
+{{#if unstableFeatures}}
+    {
+      UNSTABLE_DO_NOT_USE_BRANCH: $branch,
+    },
+{{/if}}
 );
 {{else}}
 /**

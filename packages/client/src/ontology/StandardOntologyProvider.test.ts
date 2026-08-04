@@ -30,7 +30,7 @@ describe(createStandardOntologyProviderFactory, () => {
   beforeAll(() => {
     const testSetup = startNodeApiServer(
       new LegacyFauxFoundry(),
-      createMinimalClientHelper
+      createMinimalClientHelper,
     );
     ({ client } = testSetup);
 

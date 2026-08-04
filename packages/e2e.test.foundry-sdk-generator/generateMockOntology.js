@@ -24,9 +24,11 @@ import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePacka
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { $ } from "execa";
 
+const ONTOLOGY_METADATA_ENTRYPOINT = "./UNSTABLE_DO_NOT_USE/ontology-metadata";
+
 async function setup() {
   const dir = await fs.mkdtemp(
-    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-")
+    path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
   );
 
   const testSetup = startNodeApiServer(new LegacyFauxFoundry(), undefined);
@@ -95,25 +97,19 @@ async function setup() {
     ...baseArgs,
     packageName: "@test-app2-beta/osdk",
     beta: true,
+    exportOntologyMetadata: true,
   });
 
   await safeStat(testApp2Dir, "should exist");
   await safeStat(testApp2BetaDir, "should exist");
 
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2Dir, "osdk")}`;
-
-  await $({
-    stdout: "inherit",
-    stderr: "inherit",
-  })`attw --pack ${path.join(testApp2BetaDir, "osdk")}`;
+  await checkTypes(path.join(testApp2Dir, "osdk"));
+  await checkTypes(path.join(testApp2BetaDir, "osdk"), true);
 
   const finalOutDir = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
     "build",
-    "codegen"
+    "codegen",
   );
 
   await fs.rm(finalOutDir, { recursive: true, force: true });
@@ -126,9 +122,19 @@ async function setup() {
 
 await setup();
 
-/**
- * @param {string} testAppDir
- */
+async function checkTypes(packageDir, checkMetadata = false) {
+  const opts = { stdout: "inherit", stderr: "inherit" };
+
+  await $(
+    opts,
+  )`attw --pack ${packageDir} --exclude-entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT}`;
+  if (checkMetadata) {
+    await $(
+      opts,
+    )`attw --pack ${packageDir} --entrypoints ${ONTOLOGY_METADATA_ENTRYPOINT} --ignore-rules false-export-default`;
+  }
+}
+
 async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });

@@ -60,7 +60,7 @@ interface InnerComboboxProps<
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
-  props: DropdownFieldProps<V, Multiple> & { onBlur?: () => void }
+  props: DropdownFieldProps<V, Multiple> & { onBlur?: () => void },
 ) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
   V,
   Multiple extends boolean = false,
@@ -94,7 +94,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
 
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
-    [itemToKey, resolvedItemToStringLabel]
+    [itemToKey, resolvedItemToStringLabel],
   );
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
@@ -158,7 +158,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   const renderSingleSelectedItemLabel = useCallback(
     (selectedValue: V | null) =>
       selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel]
+    [renderItemLabel],
   );
 
   const handleOpenChange = useCallback(
@@ -173,7 +173,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onBlur?.();
       }
     },
-    [disabled, onBlur]
+    [disabled, onBlur],
   );
 
   const handleClear = useCallback(() => {
@@ -289,7 +289,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   const renderSingleSelectedItemLabel = useCallback(
     (selectedValue: V | null) =>
       selectedValue == null ? null : renderItemLabel(selectedValue),
-    [renderItemLabel]
+    [renderItemLabel],
   );
 
   const handleOpenChange = useCallback(
@@ -299,7 +299,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         onBlur?.();
       }
     },
-    [onBlur]
+    [onBlur],
   );
 
   // Mark the field as touched on every value change so RHF revalidates
@@ -315,7 +315,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         onBlur?.();
       }
     },
-    [onChange, onBlur, isMultiple]
+    [onChange, onBlur, isMultiple],
   );
 
   const handleClear = useCallback(() => {
@@ -335,11 +335,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         return;
       }
       const next = value.filter((v) =>
-        isItemEqual != null ? !isItemEqual(v, itemToRemove) : v !== itemToRemove
+        isItemEqual != null
+          ? !isItemEqual(v, itemToRemove)
+          : v !== itemToRemove,
       );
       (handleValueChange as (v: V[] | V | null) => void)(next);
     },
-    [isMultiple, value, handleValueChange, isItemEqual]
+    [isMultiple, value, handleValueChange, isItemEqual],
   );
 
   const handleDismiss = useCallback(() => {
@@ -360,7 +362,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         </Combobox.Item>
       );
     },
-    [getKey, isMultiple, itemToStringLabel, renderItemLabel]
+    [getKey, isMultiple, itemToStringLabel, renderItemLabel],
   );
 
   return (

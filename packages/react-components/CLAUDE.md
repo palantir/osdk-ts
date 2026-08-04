@@ -102,7 +102,9 @@ For every state change with a built-in default behavior (sort, filter, select, e
 - **NEVER hardcode colors or pixel values.** Every visual property goes through a CSS variable
 - **If a value has no analog in `base.css`, do not inline it.** Flag it as a follow-up for a separate token-addition change. Inlining bypasses theming and accumulates as drift
 - **Use CSS modules** (`<Name>.module.css`) for component-scoped styles
-- **Define a CSS variable for every property a consumer may want to customize.** Defaults go in `src/tokens/<name>.css`. Document new variables in `docs/CSSVariables.md`
+- **Define a CSS variable for every property a consumer may want to customize.** Defaults for your component's own `--osdk-<name>-*` tokens go in `src/tokens/component-tokens/<name>.css` — never in a `.module.css` or a `.tsx`. Document new variables in `docs/CSSVariables.md`
+- **Exception — nested-primitive scoping.** A `.module.css` MAY assign to a token owned by _another_ primitive, scoped to a local class, to restyle that primitive where your component embeds it (e.g. `.osdkEditableCellDropdown { --osdk-select-trigger-bg: var(--osdk-table-cell-input-bg); }`). That's a cascade override, not a new public token, so it stays in the module. Feed it from one of your own tokens where one exists. See CONTRIBUTING.md "Styling Guidelines"
+- **Never let `var(--osdk-x, <fallback>)` substitute for declaring the token** — with one exception: a token whose default is a CSS-wide keyword (`inherit`/`initial`/`unset`) _cannot_ be declared, because `--osdk-x: inherit` at `:root` resolves guaranteed-invalid and makes `var(--osdk-x)` compute to the property's initial value. Keep those defaults in the fallback and comment the token file. See `--osdk-table-cell-bg` in `component-tokens/table.css`
 - **Respect CSS layers** — see `README.md` "CSS Setup" for layer order and how brand overrides plug in
 
 ## Testing
@@ -141,7 +143,7 @@ For every state change with a built-in default behavior (sort, filter, select, e
   import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
   export const MyComponent: typeof _MyComponent = withOsdkMetrics(
     _MyComponent,
-    "MyComponent"
+    "MyComponent",
   );
   ```
 

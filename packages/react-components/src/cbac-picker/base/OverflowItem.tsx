@@ -66,7 +66,7 @@ export const OverflowItem: React.MemoExoticComponent<
       className={classnames(
         styles.overflowItem,
         (isSelected || implied) && styles.overflowItemSelected,
-        disallowed && styles.overflowItemDisabled
+        disallowed && styles.overflowItemDisabled,
       )}
       onClick={isItemDisabled ? undefined : handleClick}
       disabled={showTooltip ? undefined : isItemDisabled}

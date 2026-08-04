@@ -25,7 +25,7 @@ import {
 
 export function useDevToolsClient(
   baseClient: ObservableClient,
-  enabled: boolean
+  enabled: boolean,
 ): {
   client: ObservableClient;
   wrapChildren: ((children: React.ReactNode) => React.ReactNode) | null;
@@ -67,7 +67,7 @@ export function useDevToolsClient(
         ? (children: React.ReactNode): React.ReactNode =>
             currentState.devTools.wrapChildren(children, currentState.monitored)
         : null,
-    [currentState]
+    [currentState],
   );
 
   return { client: wrappedClient, wrapChildren };

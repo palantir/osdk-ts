@@ -75,7 +75,7 @@ describe("useOsdkObjects enabled option", () => {
       {
         wrapper,
         initialProps: { enabled: false },
-      }
+      },
     );
 
     expect(mockObserveList).not.toHaveBeenCalled();
@@ -95,7 +95,7 @@ describe("useOsdkObjects enabled option", () => {
           pageSize: 50,
           enabled: true,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -105,7 +105,7 @@ describe("useOsdkObjects enabled option", () => {
         where: { id: "123" },
         pageSize: 50,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -119,7 +119,7 @@ describe("useOsdkObjects enabled option", () => {
           rids,
           pageSize: 10,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -129,7 +129,7 @@ describe("useOsdkObjects enabled option", () => {
         rids,
         pageSize: 10,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -145,7 +145,7 @@ describe("useOsdkObjects enabled option", () => {
           where,
           pageSize: 5,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -156,7 +156,7 @@ describe("useOsdkObjects enabled option", () => {
         where: expect.anything(),
         pageSize: 5,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -234,7 +234,7 @@ describe("useOsdkObjects enabled option", () => {
         useOsdkObjects(MockObjectType, {
           $includeAllBaseObjectProperties: true,
         }),
-      { wrapper }
+      { wrapper },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -243,7 +243,7 @@ describe("useOsdkObjects enabled option", () => {
         type: MockObjectType,
         $includeAllBaseObjectProperties: true,
       }),
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -276,7 +276,7 @@ describe("useOsdkObjects enabled option", () => {
         initialProps: {
           withProperties: { leadName: () => "a" },
         },
-      }
+      },
     );
 
     expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -296,7 +296,7 @@ describe("useOsdkObjects enabled option", () => {
             pivotTo: "linkedItems",
             resolveToObjectType: true,
           }),
-        { wrapper }
+        { wrapper },
       );
 
       expect(mockObserveList).toHaveBeenCalledTimes(1);
@@ -306,7 +306,7 @@ describe("useOsdkObjects enabled option", () => {
           pivotTo: "linkedItems",
           resolveToObjectType: true,
         }),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -318,7 +318,7 @@ describe("useOsdkObjects enabled option", () => {
           useOsdkObjects(MockInterface, {
             pivotTo: "linkedItems",
           }),
-        { wrapper }
+        { wrapper },
       );
 
       const callArgs = mockObserveList.mock.calls[0][0];

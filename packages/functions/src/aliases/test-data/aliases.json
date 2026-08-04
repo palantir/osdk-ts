@@ -27,6 +27,42 @@
           "rid": "ri.magritte..source.22222222-2222-2222-2222-222222222222"
         }
       }
+    },
+    "datasets": {
+      "myDatasetAlias": {
+        "id": {
+          "rid": "ri.foundry.main.dataset.11111111-1111-1111-1111-111111111111"
+        }
+      },
+      "anotherDatasetAlias": {
+        "id": {
+          "rid": "ri.foundry.main.dataset.22222222-2222-2222-2222-222222222222"
+        }
+      }
+    },
+    "mediasets": {
+      "myMediasetAlias": {
+        "id": {
+          "rid": "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111"
+        }
+      },
+      "anotherMediasetAlias": {
+        "id": {
+          "rid": "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222"
+        }
+      }
+    },
+    "streams": {
+      "myStreamAlias": {
+        "id": {
+          "rid": "ri.foundry.main.dataset.33333333-3333-3333-3333-333333333333"
+        }
+      },
+      "anotherStreamAlias": {
+        "id": {
+          "rid": "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444"
+        }
+      }
     }
   },
   "version": 1

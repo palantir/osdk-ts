@@ -29,13 +29,13 @@ import type { GetNextExecutionAffectedObjectsResponse as _api_registry_GetNextEx
 export async function getNextExecutionAffectedObjects(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_registry_GetNextExecutionAffectedObjectsResponse> {
   return conjureFetch(
     ctx,
     `/registry/v0/getNextExecutionAffectedObjects/${monitorRid}`,
     "GET",
     undefined,
-    { branchRid }
+    { branchRid },
   );
 }

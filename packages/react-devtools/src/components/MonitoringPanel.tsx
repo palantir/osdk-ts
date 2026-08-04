@@ -125,7 +125,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       height: UI_CONSTANTS.DEFAULT_PANEL_HEIGHT,
       collapsed: false,
       dockMode: "floating",
-    }
+    },
   );
 
   const [themePreference, setThemePreference] = usePersistedState<
@@ -134,7 +134,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   const systemPrefersDark = React.useSyncExternalStore(
     subscribeDarkMode,
-    getDarkModeSnapshot
+    getDarkModeSnapshot,
   );
 
   const resolvedTheme = useMemo(
@@ -144,7 +144,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           ? "dark"
           : "light"
         : themePreference,
-    [themePreference, systemPrefersDark]
+    [themePreference, systemPrefersDark],
   );
 
   // Renders inside a shadow root so the bundled Blueprint + devtools CSS can't
@@ -187,15 +187,15 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
             0,
             Math.min(
               window.innerWidth - prev.width,
-              dragStart.current.elemX + deltaX
-            )
+              dragStart.current.elemX + deltaX,
+            ),
           ),
           y: Math.max(
             0,
             Math.min(
               window.innerHeight - prev.height,
-              dragStart.current.elemY + deltaY
-            )
+              dragStart.current.elemY + deltaY,
+            ),
           ),
         }));
       } else if (isResizing.current) {
@@ -209,8 +209,8 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
               UI_CONSTANTS.MIN_DOCKED_BOTTOM_HEIGHT,
               Math.min(
                 UI_CONSTANTS.MAX_DOCKED_BOTTOM_HEIGHT,
-                resizeStart.current.height - deltaY
-              )
+                resizeStart.current.height - deltaY,
+              ),
             );
             return {
               ...prev,
@@ -224,8 +224,8 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
               UI_CONSTANTS.MIN_DOCKED_RIGHT_WIDTH,
               Math.min(
                 UI_CONSTANTS.MAX_DOCKED_RIGHT_WIDTH,
-                resizeStart.current.width - deltaX
-              )
+                resizeStart.current.width - deltaX,
+              ),
             );
             return {
               ...prev,
@@ -242,13 +242,13 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           if (handle.includes("right")) {
             newWidth = Math.max(
               UI_CONSTANTS.MIN_PANEL_WIDTH,
-              resizeStart.current.width + deltaX
+              resizeStart.current.width + deltaX,
             );
           }
           if (handle.includes("left")) {
             newWidth = Math.max(
               UI_CONSTANTS.MIN_PANEL_WIDTH,
-              resizeStart.current.width - deltaX
+              resizeStart.current.width - deltaX,
             );
             newX = resizeStart.current.elemX + deltaX;
             if (newWidth === UI_CONSTANTS.MIN_PANEL_WIDTH) {
@@ -261,13 +261,13 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           if (handle.includes("bottom")) {
             newHeight = Math.max(
               UI_CONSTANTS.MIN_PANEL_HEIGHT,
-              resizeStart.current.height + deltaY
+              resizeStart.current.height + deltaY,
             );
           }
           if (handle.includes("top")) {
             newHeight = Math.max(
               UI_CONSTANTS.MIN_PANEL_HEIGHT,
-              resizeStart.current.height - deltaY
+              resizeStart.current.height - deltaY,
             );
             newY = resizeStart.current.elemY + deltaY;
             if (newHeight === UI_CONSTANTS.MIN_PANEL_HEIGHT) {
@@ -318,7 +318,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       e.preventDefault();
       attachDragListeners();
     },
-    [position, attachDragListeners]
+    [position, attachDragListeners],
   );
 
   const handleResizeMouseDown = useCallback(
@@ -336,7 +336,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       e.stopPropagation();
       attachDragListeners();
     },
-    [position, attachDragListeners]
+    [position, attachDragListeners],
   );
 
   const handleDockToggle = useCallback(() => {
@@ -381,7 +381,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
 
   const windowSize = React.useSyncExternalStore(
     subscribeWindowSize,
-    getWindowSizeSnapshot
+    getWindowSizeSnapshot,
   );
 
   const effectivePosition = useMemo(() => {
@@ -431,7 +431,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
           </div>
         </Tooltip>
       </PortalProvider>,
-      shadowMount
+      shadowMount,
     );
   }
 
@@ -444,7 +444,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       [styles.floating]: position.dockMode === "floating",
       [styles.dockedBottom]: position.dockMode === "docked-bottom",
       [styles.dockedRight]: position.dockMode === "docked-right",
-    }
+    },
   );
   return createPortal(
     <PortalProvider portalContainer={panelEl ?? shadowMount}>
@@ -520,7 +520,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
                     ? "light"
                     : themePreference === "light"
                       ? "auto"
-                      : "dark"
+                      : "dark",
                 )
               }
               title={`Theme: ${themePreference} (click to cycle)`}
@@ -608,7 +608,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         </div>
       </div>
     </PortalProvider>,
-    shadowMount
+    shadowMount,
   );
 };
 

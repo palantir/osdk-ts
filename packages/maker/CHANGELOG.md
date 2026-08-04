@@ -1,5 +1,33 @@
 # @osdk/maker
 
+## 0.53.0
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/typescript-sdk-docs@0.20.0
+  - @osdk/api@2.53.0
+
+## 0.52.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- 7667b67: export interface link constraints
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [9ef0982]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/typescript-sdk-docs@0.19.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+
 ## 0.51.0
 
 ### Minor Changes

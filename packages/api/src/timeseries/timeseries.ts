@@ -121,7 +121,7 @@ export interface TimeSeriesProperty<T extends number | string> {
    * ```
    */
   readonly getAllPoints: (
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
    * Returns an async iterator to load all points
@@ -139,7 +139,7 @@ export interface TimeSeriesProperty<T extends number | string> {
    * ```
    */
   readonly asyncIterPoints: (
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 }
 
@@ -165,7 +165,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    * ```
    */
   readonly getAllValues: (
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
    * Returns an async iterator to load all points
@@ -183,7 +183,7 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    * ```
    */
   readonly asyncIterValues: (
-    query?: TimeSeriesQuery
+    query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
 
   /**

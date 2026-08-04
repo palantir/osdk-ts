@@ -47,7 +47,7 @@ describe("media", () => {
         "application/json",
         "file1.txt",
         stubData.objectWithAllPropertyTypes1.mediaReference.reference
-          .mediaSetViewItem.mediaItemRid
+          .mediaSetViewItem.mediaItemRid,
       );
 
     return () => {
@@ -92,7 +92,7 @@ describe("media", () => {
     const reference = stubData.objectWithAllPropertyTypes1.mediaReference;
     const media = createMediaFromReference(
       client as unknown as MinimalClient,
-      reference
+      reference,
     );
 
     const fullMetadata = await media.fetchFullMetadata?.();

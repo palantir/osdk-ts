@@ -71,7 +71,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       onFilterStateChanged,
       numberRangeState?.minValue,
       numberRangeState?.maxValue,
-    ]
+    ],
   );
 
   const handleRangeChange = useCallback(
@@ -87,22 +87,22 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull, isInteger]
+    [onFilterStateChanged, includeNull, isInteger],
   );
 
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey),
-    [propertyKey]
+    [propertyKey],
   );
 
   const histogramArgs = useMemo(
     () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
-    [aggregateOptions, objectSet, whereClause]
+    [aggregateOptions, objectSet, whereClause],
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    histogramArgs
+    histogramArgs,
   );
 
   const valueCountPairs = useMemo<
@@ -128,12 +128,12 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
-    []
+    [],
   );
 
   const nullCountWhereClause = useMemo(
     () => createNullCountWhereClause<Q>(propertyKey, whereClause),
-    [propertyKey, whereClause]
+    [propertyKey, whereClause],
   );
 
   const nullCountArgs = useMemo(
@@ -142,7 +142,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       aggregate: nullCountAggregateOptions,
       objectSet,
     }),
-    [nullCountWhereClause, nullCountAggregateOptions, objectSet]
+    [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 
   const {
@@ -183,5 +183,5 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const NumberRangeFilterInput: typeof NumberRangeFilterInputInner = memo(
-  NumberRangeFilterInputInner
+  NumberRangeFilterInputInner,
 ) as typeof NumberRangeFilterInputInner;

@@ -23,7 +23,7 @@ import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
-  fauxFoundry
+  fauxFoundry,
 ) => [
   /**
    * Load firstPoint
@@ -38,7 +38,7 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
         .getDataStore(ontologyApiName)
         .getTimeSeriesData(objectType, primaryKey, propertyName)
         .at(0);
-    }
+    },
   ),
 
   /**
@@ -53,7 +53,7 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
         .getDataStore(ontologyApiName)
         .getTimeSeriesData(objectType, primaryKey, propertyName)
         .at(-1);
-    }
+    },
   ),
 
   /**
@@ -72,10 +72,10 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
             objectType,
             primaryKey,
             propertyName,
-            await request.json()
-          )
+            await request.json(),
+          ),
       );
-    }
+    },
   ),
 
   /**
@@ -96,7 +96,7 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
       }
 
       return ret;
-    }
+    },
   ),
 
   /**
@@ -115,9 +115,9 @@ export const createTimeseriesAndGeotimeHandlers: FauxFoundryHandlersFactory = (
             objectType,
             primaryKey,
             propertyName,
-            await request.json()
-          )
+            await request.json(),
+          ),
       );
-    }
+    },
   ),
 ];

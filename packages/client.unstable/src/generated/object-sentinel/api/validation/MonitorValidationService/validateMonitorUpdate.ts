@@ -30,12 +30,12 @@ import type {
 export async function validateMonitorUpdate(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  request: _api_validation_ValidateMonitorUpdateRequest
+  request: _api_validation_ValidateMonitorUpdateRequest,
 ): Promise<_api_validation_ValidateMonitorResponse> {
   return conjureFetch(
     ctx,
     `/validation/v0/${monitorRid}/validate-update`,
     "PUT",
-    request
+    request,
   );
 }

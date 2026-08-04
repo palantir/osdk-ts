@@ -26,11 +26,11 @@ import type {
  */
 export async function getLatestVersion(
   ctx: ConjureContext,
-  versionedObjectSetRid: _api_VersionedObjectSetRid
+  versionedObjectSetRid: _api_VersionedObjectSetRid,
 ): Promise<_api_LatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/versionedObjectSets/${versionedObjectSetRid}/latestVersion`,
-    "GET"
+    "GET",
   );
 }

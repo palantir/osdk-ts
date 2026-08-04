@@ -37,7 +37,7 @@ export interface CodeWorkspacePreviewOptions {
  * production builds and adds nothing to a normal local `npm run dev`.
  */
 export function codeWorkspacePreviewPlugin(
-  options: CodeWorkspacePreviewOptions = {}
+  options: CodeWorkspacePreviewOptions = {},
 ): Plugin {
   const activeMode = options.mode ?? "code-workspaces";
   return {

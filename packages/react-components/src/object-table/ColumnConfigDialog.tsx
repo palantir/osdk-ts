@@ -132,7 +132,7 @@ function ColumnConfigDialogInner({
     (fromIndex: number, toIndex: number) => {
       setVisibleColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
-    []
+    [],
   );
 
   const handleRemoveColumn = useCallback((columnId: string) => {
@@ -154,13 +154,13 @@ function ColumnConfigDialogInner({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     },
-    []
+    [],
   );
 
   const handleSelectAll = useCallback((columns: ColumnItem[]) => {
     setVisibleColumns((prev) => {
       const allSelected = columns.every((col) =>
-        prev.some((v) => v.id === col.id)
+        prev.some((v) => v.id === col.id),
       );
       if (allSelected) {
         // Deselect all filtered columns
@@ -168,7 +168,7 @@ function ColumnConfigDialogInner({
       } else {
         // Select all filtered columns that aren't already selected
         const newColumns = columns.filter(
-          (col) => !prev.some((v) => v.id === col.id)
+          (col) => !prev.some((v) => v.id === col.id),
         );
         return [...prev, ...newColumns];
       }
@@ -183,7 +183,7 @@ function ColumnConfigDialogInner({
     return allColumns.filter(
       (col) =>
         (col.label?.toLowerCase().includes(query) ?? false) ||
-        col.id.toLowerCase().includes(query)
+        col.id.toLowerCase().includes(query),
     );
   }, [allColumns, searchQuery]);
 
@@ -202,7 +202,7 @@ function ColumnConfigDialogInner({
         </ActionButton>
       </>
     ),
-    [onClose, handleApply, isApplyDisabled, labels]
+    [onClose, handleApply, isApplyDisabled, labels],
   );
 
   const dialogTitle = useMemo(
@@ -212,7 +212,7 @@ function ColumnConfigDialogInner({
         {labels.columnConfigTitle}
       </div>
     ),
-    [labels]
+    [labels],
   );
 
   return (
@@ -244,10 +244,10 @@ function ColumnConfigDialogInner({
 
 const getColumnConfig = (
   allColumns: ColumnItem[],
-  visibleColumns: ColumnItem[]
+  visibleColumns: ColumnItem[],
 ): ColumnConfig[] => {
   const hiddenColumns = allColumns.filter(
-    (col) => !visibleColumns.some((v) => v.id === col.id)
+    (col) => !visibleColumns.some((v) => v.id === col.id),
   );
 
   return [
@@ -311,10 +311,10 @@ function AvailableColumnsList({
   const selectedCount = visibleColumns.length;
   const totalCount = filteredColumns.length;
   const allFilteredSelected = filteredColumns.every((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
   const someFilteredSelected = filteredColumns.some((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
 
   const labels = useObjectTableLabels();

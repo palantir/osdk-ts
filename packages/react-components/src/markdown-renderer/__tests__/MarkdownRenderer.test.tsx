@@ -78,10 +78,10 @@ describe("MarkdownRenderer", () => {
 
   it("should apply a custom className", () => {
     const { container } = render(
-      <MarkdownRenderer content="# Test" className="my-custom-class" />
+      <MarkdownRenderer content="# Test" className="my-custom-class" />,
     );
     expect(
-      container.firstElementChild?.classList.contains("my-custom-class")
+      container.firstElementChild?.classList.contains("my-custom-class"),
     ).toBe(true);
   });
 });

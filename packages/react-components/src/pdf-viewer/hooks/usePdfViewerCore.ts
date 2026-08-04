@@ -100,7 +100,7 @@ export function usePdfViewerCore({
     viewerRef,
     document,
     initialScale,
-    initialPage
+    initialPage,
   );
 
   const handleScaleChange = useCallback((newScale: number) => {
@@ -127,13 +127,13 @@ export function usePdfViewerCore({
       setCurrentPage(page);
       syncScrollToPage(page);
     },
-    [syncScrollToPage]
+    [syncScrollToPage],
   );
 
   const portalTargets = usePdfAnnotationPortals(
     pdfViewerRef,
     eventBusRef,
-    document
+    document,
   );
 
   return useMemo(
@@ -167,6 +167,6 @@ export function usePdfViewerCore({
       autoSize,
       setAutoSize,
       portalTargets,
-    ]
+    ],
   );
 }

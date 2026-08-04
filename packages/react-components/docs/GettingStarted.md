@@ -38,7 +38,7 @@ const client = createClient(
   "ri.ontology.main.ontology.{UUID}",
   async () => {
     // return your auth token
-  }
+  },
 );
 
 function App() {

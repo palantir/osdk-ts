@@ -43,13 +43,13 @@ import {
  * ```
  */
 export async function createScenario(
-  client: Client
+  client: Client,
 ): Promise<EXPERIMENTAL_ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
   if (ctx.scenarioRid != null) {
     throw new Error(
-      "createScenario: the supplied client already has an active scenario. Scenarios cannot be nested."
+      "createScenario: the supplied client already has an active scenario. Scenarios cannot be nested.",
     );
   }
 
@@ -57,7 +57,7 @@ export async function createScenario(
     ctx,
     await ctx.ontologyRid,
     ctx.branch != null ? { base: { type: "branch", branch: ctx.branch } } : {},
-    { preview: true }
+    { preview: true },
   );
 
   return buildScenarioClient(client, response.scenarioRid);

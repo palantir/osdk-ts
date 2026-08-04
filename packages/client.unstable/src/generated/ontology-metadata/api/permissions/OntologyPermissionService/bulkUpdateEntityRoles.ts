@@ -30,12 +30,12 @@ import type {
  */
 export async function bulkUpdateEntityRoles(
   ctx: ConjureContext,
-  updateRequest: _api_permissions_BulkUpdateEntityRolesRequest
+  updateRequest: _api_permissions_BulkUpdateEntityRolesRequest,
 ): Promise<_api_permissions_BulkUpdateEntityRolesResponse> {
   return conjureFetch(
     ctx,
     `/permissions/bulkUpdateEntityRoles`,
     "POST",
-    updateRequest
+    updateRequest,
   );
 }

@@ -21,7 +21,7 @@ import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 import { useComponentRegistry } from "./useComponentRegistry.js";
 
 export function useActiveComponents(
-  monitorStore: MonitorStore
+  monitorStore: MonitorStore,
 ): Map<string, ComponentHookBinding[]> {
   const registry = useComponentRegistry(monitorStore);
   const version = registry.getVersion();

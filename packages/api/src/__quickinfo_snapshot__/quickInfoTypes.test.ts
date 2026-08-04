@@ -47,7 +47,7 @@ describe("quickinfo snapshots", () => {
     const surface = probesFile.replace(/\.ts$/u, "");
     it(surface, async () => {
       await expect(
-        allProbes[path.join(probesDir, probesFile)]
+        allProbes[path.join(probesDir, probesFile)],
       ).toMatchFileSnapshot(`./__snapshots__/${surface}.snap`);
     });
   }

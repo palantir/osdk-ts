@@ -70,7 +70,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />
+        <ObjectSetField value={createMockObjectSet()} />,
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);
@@ -206,7 +206,7 @@ describe("ObjectSetField", () => {
       });
 
       const { container } = render(
-        <ObjectSetField value={createMockObjectSet()} />
+        <ObjectSetField value={createMockObjectSet()} />,
       );
       const skeletons = container.querySelectorAll("[aria-hidden='true']");
       expect(skeletons.length).toBeGreaterThan(0);

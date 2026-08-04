@@ -62,7 +62,7 @@ function SortableFilterListItemInner<D>({
       transform: CSS.Transform.toString(transform),
       transition: transition ?? undefined,
     }),
-    [transform, transition]
+    [transform, transition],
   );
 
   return (
@@ -88,5 +88,5 @@ function SortableFilterListItemInner<D>({
 }
 
 export const SortableFilterListItem = memo(
-  SortableFilterListItemInner
+  SortableFilterListItemInner,
 ) as typeof SortableFilterListItemInner;

@@ -57,8 +57,8 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
         errorProps: "stack,cause,properties",
         ignore: "time,hostname,pid",
         destination: new PinoConsoleLogDestination(),
-      })
-    )
+      }),
+    ),
   );
 });
 
@@ -85,7 +85,7 @@ describe("intellisense", () => {
       clientPackagePath,
       "src",
       "intellisense.test.helpers",
-      `${a.task.name}.ts`
+      `${a.task.name}.ts`,
     );
 
     console.log(intellisenseFilePath);
@@ -108,7 +108,7 @@ describe("intellisense", () => {
       offset: 6,
     });
     expect(resp.body?.documentation).toMatchInlineSnapshot(
-      `"(no ontology metadata)"`
+      `"(no ontology metadata)"`,
     );
   });
 
@@ -119,7 +119,7 @@ describe("intellisense", () => {
       offset: 13,
     });
     expect(resp.body?.documentation).toMatchInlineSnapshot(
-      `"description: Geotime series reference of the location of the employee"`
+      `"description: Geotime series reference of the location of the employee"`,
     );
   });
 
@@ -131,7 +131,7 @@ describe("intellisense", () => {
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
     expect(
-      subscribeCompletions.resp.body?.entries.map((e) => e.name)
+      subscribeCompletions.resp.body?.entries.map((e) => e.name),
     ).toContain("subscribe");
 
     const subscribeHover = await tsServer.sendQuickInfoRequest({
@@ -140,7 +140,7 @@ describe("intellisense", () => {
       offset: 28,
     });
     expect(subscribeHover.resp.body?.documentation).toContain(
-      "Request updates when the objects in an object set are added"
+      "Request updates when the objects in an object set are added",
     );
 
     const narrowToTypeHover = await tsServer.sendQuickInfoRequest({
@@ -158,7 +158,7 @@ describe("intellisense", () => {
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
     expect(instanceCompletions.resp.body?.entries.map((e) => e.name)).toEqual(
-      expect.arrayContaining(["$as", "$objectType"])
+      expect.arrayContaining(["$as", "$objectType"]),
     );
   });
 
@@ -216,7 +216,7 @@ describe("intellisense", () => {
         triggerKind: ts.CompletionTriggerKind.Invoked,
       });
       expect(resp.body?.entries.map((e) => e.name)).toContain(
-        "$loadPropertySecurityMetadata"
+        "$loadPropertySecurityMetadata",
       );
 
       const { resp: hover } = await tsServer.sendQuickInfoRequest({
@@ -225,8 +225,8 @@ describe("intellisense", () => {
         offset: 8,
       });
       expect(hover.body?.displayString).toContain(
-        "$loadPropertySecurityMetadata"
+        "$loadPropertySecurityMetadata",
       );
-    }
+    },
   );
 });

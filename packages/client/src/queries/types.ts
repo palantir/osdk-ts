@@ -39,7 +39,7 @@ export type QuerySignature<T extends QueryDefinition<any>> =
   keyof CompileTimeMetadata<T>["parameters"] extends never
     ? () => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>
     : (
-        params: QueryParameterType<CompileTimeMetadata<T>["parameters"]>
+        params: QueryParameterType<CompileTimeMetadata<T>["parameters"]>,
       ) => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>;
 
 export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition>> =

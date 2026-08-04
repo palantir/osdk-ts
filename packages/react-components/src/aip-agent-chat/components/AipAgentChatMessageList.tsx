@@ -57,7 +57,7 @@ export function AipAgentChatMessageList({
 
   const setContainerRef = useChatAutoScroll<HTMLDivElement>(
     scrollSignal,
-    enableAutoScroll
+    enableAutoScroll,
   );
 
   const isEmpty = messages.length === 0 && !isStreaming;
@@ -69,7 +69,7 @@ export function AipAgentChatMessageList({
       className={classNames(
         styles.messageList,
         isEmpty && styles.empty,
-        className
+        className,
       )}
       ref={setContainerRef}
       role={isEmpty ? undefined : "log"}

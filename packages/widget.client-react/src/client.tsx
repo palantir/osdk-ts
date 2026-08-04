@@ -104,14 +104,14 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         config,
         eventId,
         payload,
-        osdkClient
+        osdkClient,
       );
       if (transformResult.type === "passThrough") {
         client.emitEvent(
           eventId,
           transformResult.payload as Parameters<
             FoundryWidgetClient<C>["emitEvent"]
-          >[1]
+          >[1],
         );
         return;
       }
@@ -131,13 +131,13 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           eventId,
           transformedPayload as Parameters<
             FoundryWidgetClient<C>["emitEvent"]
-          >[1]
+          >[1],
         );
       }
 
       void handleAsyncEmitEvent();
     },
-    [osdkClient, config, client]
+    [osdkClient, config, client],
   );
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
           osdkClient,
           config,
           payload.detail.parameters,
-          objectSetCache.current
+          objectSetCache.current,
         );
         setAsyncParameterValues((currentParameters) => ({
           ...currentParameters,
@@ -228,7 +228,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             return { type: aggregatedLoadedState };
           }
         });
-      }
+      },
     );
     client.ready();
 
@@ -237,7 +237,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // eslint-disable-next-line no-console
         console.error(
           "Expected exactly one resize observer entry but received:",
-          entries
+          entries,
         );
         return;
       }
@@ -246,7 +246,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // eslint-disable-next-line no-console
         console.error(
           "Expected exactly one border box size but received:",
-          entry.borderBoxSize
+          entry.borderBoxSize,
         );
         return;
       }

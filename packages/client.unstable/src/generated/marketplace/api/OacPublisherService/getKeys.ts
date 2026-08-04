@@ -26,7 +26,7 @@ import type {
  */
 export async function getKeys(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid
+  marketplaceRid: _api_MarketplaceRid,
 ): Promise<_api_GetKeysResponse> {
   return conjureFetch(ctx, `/oac-publisher/${marketplaceRid}/oac-keys`, "GET");
 }

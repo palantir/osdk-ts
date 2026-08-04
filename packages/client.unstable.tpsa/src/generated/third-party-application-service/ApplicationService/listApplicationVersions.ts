@@ -30,13 +30,13 @@ export async function listApplicationVersions(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
   pageSize: PageSize | undefined,
-  pageToken: ApplicationVersionPageToken | undefined
+  pageToken: ApplicationVersionPageToken | undefined,
 ): Promise<ListApplicationVersionsResponse> {
   return conjureFetch(
     ctx,
     `/applications/${applicationRid}/versions`,
     "GET",
     undefined,
-    { pageSize, pageToken }
+    { pageSize, pageToken },
   );
 }

@@ -34,7 +34,7 @@ import type { EditRequestManager } from "./EditRequestManager.js";
 
 /** @internal */
 export const writeableClientContext: unique symbol = Symbol(
-  "writeableClientContext"
+  "writeableClientContext",
 );
 
 export interface WriteableClientContext {
@@ -52,7 +52,7 @@ export interface WriteMethods<X extends AnyEdit> {
   link: <SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
     source: SOL,
     apiName: A,
-    target: AddLinkTargets<X, SOL, A>
+    target: AddLinkTargets<X, SOL, A>,
   ) => Promise<void>;
 
   unlink: <
@@ -61,20 +61,20 @@ export interface WriteMethods<X extends AnyEdit> {
   >(
     source: SOL,
     apiName: A,
-    target: RemoveLinkTargets<X, SOL, A>
+    target: RemoveLinkTargets<X, SOL, A>,
   ) => Promise<void>;
 
   create: <OTD extends CreatableObjectOrInterfaceTypes<X>>(
     obj: OTD,
-    properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
   ) => Promise<void>;
 
   delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(
-    obj: OL
+    obj: OL,
   ) => Promise<void>;
 
   update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ) => Promise<void>;
 }

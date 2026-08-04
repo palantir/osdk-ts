@@ -75,7 +75,7 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
 }
 
 function convertUserOneToManyLinkDefinition(
-  oneToMany: OneToManyObjectLinkReferenceUserDefinition
+  oneToMany: OneToManyObjectLinkReferenceUserDefinition,
 ): OneToManyObjectLinkReference {
   return {
     ...oneToMany,
@@ -84,7 +84,7 @@ function convertUserOneToManyLinkDefinition(
 }
 
 function convertUserManyToManyLinkDefinition(
-  manyToMany: ManyToManyObjectLinkReferenceUserDefinition
+  manyToMany: ManyToManyObjectLinkReferenceUserDefinition,
 ): ManyToManyObjectLinkReference {
   return {
     ...manyToMany,
@@ -93,7 +93,7 @@ function convertUserManyToManyLinkDefinition(
 }
 
 function convertUserIntermediaryLinkDefinition(
-  intermediary: IntermediaryObjectLinkReferenceUserDefinition
+  intermediary: IntermediaryObjectLinkReferenceUserDefinition,
 ): IntermediaryObjectLinkReference {
   return {
     ...intermediary,
@@ -102,11 +102,11 @@ function convertUserIntermediaryLinkDefinition(
 }
 
 function convertLinkTypeMetadata(
-  metadata: LinkTypeMetadataUserDefinition
+  metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
   invariant(
     isValidApiName(metadata.apiName),
-    `Invalid API name for link: ${metadata.apiName}`
+    `Invalid API name for link: ${metadata.apiName}`,
   );
   return {
     apiName: metadata.apiName,

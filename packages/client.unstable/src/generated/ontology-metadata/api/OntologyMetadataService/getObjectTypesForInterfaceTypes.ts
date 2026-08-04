@@ -27,12 +27,12 @@ import type {
  */
 export async function getObjectTypesForInterfaceTypes(
   ctx: ConjureContext,
-  request: _api_GetObjectTypesForInterfaceTypesRequest
+  request: _api_GetObjectTypesForInterfaceTypesRequest,
 ): Promise<_api_GetObjectTypesForInterfaceTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForInterfaceTypes`,
     "PUT",
-    request
+    request,
   );
 }

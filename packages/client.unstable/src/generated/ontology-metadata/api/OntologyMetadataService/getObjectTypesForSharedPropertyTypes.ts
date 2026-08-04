@@ -27,12 +27,12 @@ import type {
  */
 export async function getObjectTypesForSharedPropertyTypes(
   ctx: ConjureContext,
-  request: _api_GetObjectTypesForSharedPropertyTypesRequest
+  request: _api_GetObjectTypesForSharedPropertyTypesRequest,
 ): Promise<_api_GetObjectTypesForSharedPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/objectTypesForSharedPropertyTypes`,
     "PUT",
-    request
+    request,
   );
 }

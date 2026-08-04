@@ -40,7 +40,7 @@ import type {
 export async function loadPatchableEntities(
   ctx: ConjureContext,
   onBehalfOf: string,
-  request: _api_internal_LoadPatchableEntitiesRequest
+  request: _api_internal_LoadPatchableEntitiesRequest,
 ): Promise<_api_internal_LoadPatchableEntitiesResponse> {
   return conjureFetch(ctx, `/internal/loadPatchableEntities`, "POST", request);
 }

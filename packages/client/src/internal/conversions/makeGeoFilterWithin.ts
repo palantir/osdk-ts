@@ -27,7 +27,7 @@ import { makeGeoFilterPolygon } from "./makeGeoFilterPolygon.js";
 export function makeGeoFilterWithin(
   withinBody: GeoFilterOptions["$within"],
   propertyIdentifier?: PropertyIdentifier,
-  field?: string
+  field?: string,
 ): SearchJsonQueryV2 {
   if (Array.isArray(withinBody)) {
     return makeGeoFilterBbox(withinBody, "$within", propertyIdentifier, field);
@@ -36,7 +36,7 @@ export function makeGeoFilterWithin(
       withinBody.$bbox,
       "$within",
       propertyIdentifier,
-      field
+      field,
     );
   } else if (
     "$distance" in withinBody &&
@@ -68,7 +68,7 @@ export function makeGeoFilterWithin(
       coordinates,
       "withinPolygon",
       propertyIdentifier,
-      field
+      field,
     );
   }
 }

@@ -90,7 +90,7 @@ describe("generateText", () => {
     assertDefined(firstCall, "fetch.mock.calls[0]");
     const [url, init] = firstCall;
     expect(url).toBe(
-      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions"
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions",
     );
     expect(init?.method).toBe("POST");
     const headers = init?.headers as Record<string, string>;
@@ -225,7 +225,7 @@ describe("generateText", () => {
         model,
         prompt: "hi",
         messages: [{ role: "user", content: "also hi" }],
-      })
+      }),
     ).rejects.toThrow(/cannot specify both/u);
   });
 
@@ -238,7 +238,7 @@ describe("generateText", () => {
     const model = foundryModel({ client, model: "gpt-4o" });
 
     await expect(generateText({ model, prompt: "hi" })).rejects.toThrow(
-      /500.*Internal Server Error/u
+      /500.*Internal Server Error/u,
     );
   });
 

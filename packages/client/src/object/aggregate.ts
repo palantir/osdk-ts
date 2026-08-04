@@ -45,7 +45,7 @@ export async function aggregate<
   clientCtx: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);
   const body: AggregateObjectsRequestV2 = {
@@ -74,7 +74,7 @@ export async function aggregate<
       branch: clientCtx.branch,
       transactionId: clientCtx.transactionId,
       scenarioRid: clientCtx.scenarioRid,
-    }
+    },
   );
 
   if (!result.data || !Array.isArray(result.data)) {
@@ -84,7 +84,7 @@ export async function aggregate<
   if (!req.$groupBy) {
     invariant(
       result.data.length === 1,
-      "no group by clause should mean only one data result"
+      "no group by clause should mean only one data result",
     );
 
     return {
@@ -106,7 +106,7 @@ export async function aggregate<
 }
 
 function aggregationToCountResult(
-  entry: ArrayElement<AggregateObjectsResponseV2["data"]>
+  entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
 ): { $count: number } | undefined {
   for (const aggregateResult of entry.metrics) {
     if (aggregateResult.name === "count") {

@@ -28,12 +28,12 @@ import type {
 export async function installBlockSets(
   ctx: ConjureContext,
   installBlockSetsRequest: _api_InstallBlockSetsRequest,
-  onBehalfOf: string | null | undefined
+  onBehalfOf: string | null | undefined,
 ): Promise<_api_InstallBlockSetsResponse> {
   return conjureFetch(
     ctx,
     `/block-set-installation/install`,
     "POST",
-    installBlockSetsRequest
+    installBlockSetsRequest,
   );
 }

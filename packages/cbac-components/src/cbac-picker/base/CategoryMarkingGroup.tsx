@@ -59,7 +59,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
         selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
         disabled: readOnly,
       })),
-    [markings, markingStates, readOnly]
+    [markings, markingStates, readOnly],
   );
 
   const maxVisible = GRID_COLUMNS * VISIBLE_ROWS;
@@ -78,7 +78,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
     (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS)) % GRID_COLUMNS;
 
   const hasActiveOverflow = overflowMarkings.some(
-    (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState)
+    (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState),
   );
 
   return (

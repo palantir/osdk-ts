@@ -25,7 +25,7 @@ import type { PropertyAccessTracker } from "./PropertyAccessTracker.js";
 export interface PropertyAccessTrackerWithAnalysis extends PropertyAccessTracker {
   getAccessedProperties(
     componentId: string,
-    querySignature: string
+    querySignature: string,
   ): Set<string>;
 }
 
@@ -66,24 +66,24 @@ export class UnusedFieldAnalyzer {
     private registry: ComponentQueryRegistry,
     private propertyTracker: PropertyAccessTrackerWithAnalysis | undefined,
     private estimateCacheEntrySize: (data: unknown) => number = (data) =>
-      UnusedFieldAnalyzer.defaultSizeEstimator(data)
+      UnusedFieldAnalyzer.defaultSizeEstimator(data),
   ) {}
 
   analyzeBinding(
     binding: ComponentHookBinding,
-    cacheSnapshot: CacheSnapshot
+    cacheSnapshot: CacheSnapshot,
   ): FieldUsageReport {
     const { componentId, querySignature, componentName } = binding;
 
     const accessed = this.getAccessedProperties(componentId, querySignature);
 
     const cacheEntry = cacheSnapshot.entries?.find(
-      (e) => e.key === querySignature
+      (e) => e.key === querySignature,
     );
     const fetchedProps = cacheEntry?.data ? Object.keys(cacheEntry.data) : [];
 
     const cleanFetched = fetchedProps.filter(
-      (p) => !p.startsWith("$") && p !== "__typename"
+      (p) => !p.startsWith("$") && p !== "__typename",
     );
 
     const unused = cleanFetched.filter((prop) => !accessed.has(prop));
@@ -122,7 +122,7 @@ export class UnusedFieldAnalyzer {
       .filter((b) => !b.unmountedAt);
 
     const analyses = allBindings.map((b) =>
-      this.analyzeBinding(b, cacheSnapshot)
+      this.analyzeBinding(b, cacheSnapshot),
     );
 
     const inefficient = analyses
@@ -139,7 +139,7 @@ export class UnusedFieldAnalyzer {
     const recommendation = this.generateGlobalRecommendation(
       analyses,
       totalWaste,
-      commonUnused
+      commonUnused,
     );
 
     return {
@@ -155,19 +155,19 @@ export class UnusedFieldAnalyzer {
 
   private getAccessedProperties(
     componentId: string,
-    querySignature: string
+    querySignature: string,
   ): Set<string> {
     if (!this.propertyTracker) {
       return new Set<string>();
     }
     return this.propertyTracker.getAccessedProperties(
       componentId,
-      querySignature
+      querySignature,
     );
   }
 
   private findCommonUnusedFields(
-    analyses: FieldUsageReport[]
+    analyses: FieldUsageReport[],
   ): CommonUnusedField[] {
     const fieldCount = new Map<
       string,
@@ -205,7 +205,7 @@ export class UnusedFieldAnalyzer {
 
   private generateSuggestion(
     binding: ComponentHookBinding,
-    usedProps: string[]
+    usedProps: string[],
   ): string {
     const { hookType, queryParams, componentName } = binding;
 
@@ -248,7 +248,7 @@ const { data } = useOsdkObjects(${queryParams.objectType}, {
   private generateGlobalRecommendation(
     analyses: FieldUsageReport[],
     totalWaste: number,
-    commonUnused: CommonUnusedField[]
+    commonUnused: CommonUnusedField[],
   ): string {
     if (analyses.length === 0) {
       return "No queries analyzed yet";
@@ -292,13 +292,13 @@ Continue monitoring as features change.
     if (Array.isArray(data)) {
       return data.reduce<number>(
         (sum, item) => sum + UnusedFieldAnalyzer.defaultSizeEstimator(item),
-        0
+        0,
       );
     }
     if (typeof data === "object") {
       return Object.values(data as Record<string, unknown>).reduce<number>(
         (sum, value) => sum + UnusedFieldAnalyzer.defaultSizeEstimator(value),
-        0
+        0,
       );
     }
     return 100; // Rough estimate for unknowns

@@ -25,6 +25,10 @@ export interface ColumnOption {
   id: string;
   name: string;
   canSort: boolean;
+  /**
+   * The column's underlying property type, i.e. an OSDK `WirePropertyTypes` value
+   */
+  dataType?: string;
 }
 
 export interface CellIdentifier {
@@ -179,7 +183,7 @@ export type EditFieldConfig<TData = unknown> = {
     fieldComponent: K;
     getFieldComponentProps: (
       object: TData,
-      edits?: Record<string, CellEditInfo<TData, unknown>>
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
     ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

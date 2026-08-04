@@ -49,7 +49,7 @@ describe("cipherText", () => {
     const plaintext = await object1.cipherText?.decrypt();
     // See packages/faux/src/handlers/createCipherTextHandlers.ts
     expect(plaintext).toBe(
-      "decrypted:objectTypeWithAllPropertyTypes:1:cipherText"
+      "decrypted:objectTypeWithAllPropertyTypes:1:cipherText",
     );
   });
 });

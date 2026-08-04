@@ -34,7 +34,7 @@ import { withoutNamespace } from "./utils.js";
  */
 export function convertInterfaceType(
   iface: Ontologies.InterfaceType,
-  allInterfaces: Record<string, Ontologies.InterfaceType>
+  allInterfaces: Record<string, Ontologies.InterfaceType>,
 ): InterfaceType {
   const shortName = withoutNamespace(iface.apiName);
 
@@ -65,7 +65,7 @@ export function convertInterfaceType(
         };
       } else {
         consola.warn(
-          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`
+          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`,
         );
       }
     }

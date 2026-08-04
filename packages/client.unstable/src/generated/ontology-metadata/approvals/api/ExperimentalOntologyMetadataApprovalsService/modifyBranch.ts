@@ -28,12 +28,12 @@ import type {
 export async function modifyBranch(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _approvals_api_ModifyOntologyBranchRequest
+  request: _approvals_api_ModifyOntologyBranchRequest,
 ): Promise<_approvals_api_ModifyOntologyBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/approvals/experimental/ontology/${ontologyRid}/modifyBranch`,
     "POST",
-    request
+    request,
   );
 }

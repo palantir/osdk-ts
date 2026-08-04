@@ -103,7 +103,7 @@ export function useObjectTableSnapshot<
 
   const functionLocators = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
-    [columnDefinitions]
+    [columnDefinitions],
   );
 
   const customColumnIds = useMemo(
@@ -111,14 +111,14 @@ export function useObjectTableSnapshot<
       new Set(
         columnDefinitions
           ?.filter((definition) => definition.locator.type === "custom")
-          .map((definition) => String(definition.locator.id)) ?? []
+          .map((definition) => String(definition.locator.id)) ?? [],
       ),
-    [columnDefinitions]
+    [columnDefinitions],
   );
 
   const getSnapshot = useCallback(
     async (
-      options?: ObjectTableSnapshotOptions
+      options?: ObjectTableSnapshotOptions,
     ): Promise<ObjectTableSnapshot<Q, RDPs>> => {
       const rowLimit = options?.rowLimit ?? DEFAULT_SNAPSHOT_ROW_LIMIT;
       const rowLimitExceededError = `Error in getSnapshot: total row count exceeds row limit of ${rowLimit}.`;
@@ -137,7 +137,8 @@ export function useObjectTableSnapshot<
         .getVisibleLeafColumns()
         .filter(
           (column) =>
-            column.id !== SELECTION_COLUMN_ID && !customColumnIds.has(column.id)
+            column.id !== SELECTION_COLUMN_ID &&
+            !customColumnIds.has(column.id),
         )
         .map((column) => {
           const meta = column.columnDef.meta;
@@ -165,7 +166,7 @@ export function useObjectTableSnapshot<
               "$allBaseProperties",
               PropertyKeys<Q>,
               RDPs
-            >
+            >,
           );
           // Bound the in-memory load even when `totalCount` was unavailable for
           // the fail-fast check above: once we've pulled more rows than the
@@ -177,7 +178,7 @@ export function useObjectTableSnapshot<
       }
 
       const visibleFunctionLocators = functionLocators.filter((locator) =>
-        columnIdsSet.has(String(locator.id))
+        columnIdsSet.has(String(locator.id)),
       );
 
       let functionColumnValues: Map<string, Map<string, unknown>> | undefined;
@@ -187,7 +188,7 @@ export function useObjectTableSnapshot<
           client,
           objectOrInterfaceType,
           loadedObjects,
-          pageSize
+          pageSize,
         );
 
         if (pages.length > 0) {
@@ -200,7 +201,7 @@ export function useObjectTableSnapshot<
               client(queryDefinition) as {
                 executeFunction: (params: unknown) => Promise<unknown>;
               }
-            ).executeFunction(params)
+            ).executeFunction(params),
           );
         }
       }
@@ -210,8 +211,8 @@ export function useObjectTableSnapshot<
           object,
           columnIds,
           visibleFunctionLocators,
-          functionColumnValues
-        )
+          functionColumnValues,
+        ),
       );
 
       return { columns, rows, totalCount };
@@ -226,11 +227,11 @@ export function useObjectTableSnapshot<
       pageSize,
       totalCount,
       orderBy,
-    ]
+    ],
   );
 
   return useMemo<ObjectTableHandle<Q, RDPs>>(
     () => ({ getSnapshot }),
-    [getSnapshot]
+    [getSnapshot],
   );
 }

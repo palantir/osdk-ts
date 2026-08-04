@@ -29,12 +29,12 @@ import type {
  */
 export async function bulkLoadObjectTypeSchemaMigrations(
   ctx: ConjureContext,
-  request: _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest
+  request: _api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsRequest,
 ): Promise<_api_schemamigrations_BulkLoadObjectTypeSchemaMigrationsResponse> {
   return conjureFetch(
     ctx,
     `/schemamigrations/load/objecttypes`,
     "PUT",
-    request
+    request,
   );
 }

@@ -52,7 +52,7 @@ export function buildSnapshotRow<
   functionLocators: ReadonlyArray<
     FunctionColumnLocator<Q, RDPs, FunctionColumns>
   >,
-  functionColumnValues: Map<string, Map<string, unknown>> | undefined
+  functionColumnValues: Map<string, Map<string, unknown>> | undefined,
 ): ObjectTableDataRow<Q, RDPs> {
   const cells = new Map<string, unknown>();
 
@@ -62,7 +62,7 @@ export function buildSnapshotRow<
     const columnId = String(locator.id);
     cells.set(
       columnId,
-      functionColumnValues?.get(columnId)?.get(locator.getKey(object))
+      functionColumnValues?.get(columnId)?.get(locator.getKey(object)),
     );
   }
 
@@ -94,7 +94,7 @@ export async function fetchFunctionColumnPage<
 >(
   executeFunction: (params: unknown) => Promise<unknown>,
   locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>,
-  page: PagedObjects<Q, RDPs>
+  page: PagedObjects<Q, RDPs>,
 ): Promise<Map<string, unknown>> {
   const cellsByKey = new Map<string, unknown>();
   try {
@@ -108,7 +108,7 @@ export async function fetchFunctionColumnPage<
       const rawCell = rawResult?.[objectKey];
       cellsByKey.set(
         objectKey,
-        locator.getValue ? locator.getValue(rawCell) : rawCell
+        locator.getValue ? locator.getValue(rawCell) : rawCell,
       );
     }
   } catch (cause) {
@@ -140,9 +140,9 @@ export async function fetchFunctionColumnValues<
   pages: ReadonlyArray<PagedObjects<Q, RDPs>>,
   executeFunction: (
     queryDefinition: QueryDefinition<{}>,
-    params: unknown
+    params: unknown,
   ) => Promise<unknown>,
-  maxConcurrent: number = DEFAULT_MAX_CONCURRENT_REQUESTS
+  maxConcurrent: number = DEFAULT_MAX_CONCURRENT_REQUESTS,
 ): Promise<Map<string, Map<string, unknown>>> {
   const valuesByColumnId = new Map<string, Map<string, unknown>>();
   for (const locator of locators) {
@@ -152,7 +152,7 @@ export async function fetchFunctionColumnValues<
   // Flatten to one task per (locator, page) so concurrency is bounded across
   // every request, not just within a single locator.
   const tasks = locators.flatMap((locator) =>
-    pages.map((page) => ({ columnId: String(locator.id), locator, page }))
+    pages.map((page) => ({ columnId: String(locator.id), locator, page })),
   );
 
   // One entry per task (same index as `tasks`). Each entry is a
@@ -163,8 +163,8 @@ export async function fetchFunctionColumnValues<
     fetchFunctionColumnPage(
       (params) => executeFunction(task.locator.queryDefinition, params),
       task.locator,
-      task.page
-    )
+      task.page,
+    ),
   );
 
   pageMaps.forEach((pageMap, index) => {
@@ -186,7 +186,7 @@ export async function fetchFunctionColumnValues<
 async function mapWithConcurrency<T, R>(
   tasks: ReadonlyArray<T>,
   maxConcurrent: number,
-  execute: (task: T, index: number) => Promise<R>
+  execute: (task: T, index: number) => Promise<R>,
 ): Promise<R[]> {
   // Pre-sized so workers write at their claimed index so input order is preserved.
   const results = new Array<R>(tasks.length);

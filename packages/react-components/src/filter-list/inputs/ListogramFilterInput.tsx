@@ -72,7 +72,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "EXACT_MATCH"
         ? coerceToStringArray(filterState.values)
         : [],
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -92,7 +92,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const sortBy =
@@ -104,7 +104,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     objectSet,
     whereClause,
     linkedFilters,
-    { sortBy, selectedValues, showFilteredOutValues }
+    { sortBy, selectedValues, showFilteredOutValues },
   );
 
   return (
@@ -135,5 +135,5 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const ListogramFilterInput: typeof ListogramFilterInputInner = memo(
-  ListogramFilterInputInner
+  ListogramFilterInputInner,
 ) as typeof ListogramFilterInputInner;

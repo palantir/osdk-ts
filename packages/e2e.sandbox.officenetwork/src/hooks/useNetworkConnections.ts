@@ -24,7 +24,7 @@ interface UseNetworkConnectionsResult {
 }
 
 function getOfficeCoords(
-  office: Office.OsdkInstance | undefined
+  office: Office.OsdkInstance | undefined,
 ): [number, number] | null {
   if (!office?.location) return null;
   return getPointCoords(office.location);
@@ -47,43 +47,43 @@ export function useNetworkConnections({
   const { links: employeeOffice, isLoading: officeLoading } = useLinks(
     selectedEmployee ?? undefined,
     "primaryOffice",
-    { enabled: !!selectedEmployee }
+    { enabled: !!selectedEmployee },
   );
 
   const { links: manager, isLoading: managerLoading } = useLinks(
     selectedEmployee ?? undefined,
     "lead",
-    { enabled: !!selectedEmployee }
+    { enabled: !!selectedEmployee },
   );
 
   const { links: managerOffice, isLoading: managerOfficeLoading } = useLinks(
     manager?.[0],
     "primaryOffice",
-    { enabled: !!manager?.[0] }
+    { enabled: !!manager?.[0] },
   );
 
   const { links: skipLevel, isLoading: skipLoading } = useLinks(
     manager?.[0],
     "lead",
-    { enabled: !!manager?.[0] }
+    { enabled: !!manager?.[0] },
   );
 
   const { links: skipLevelOffice, isLoading: skipOfficeLoading } = useLinks(
     skipLevel?.[0],
     "primaryOffice",
-    { enabled: !!skipLevel?.[0] }
+    { enabled: !!skipLevel?.[0] },
   );
 
   const { links: peers, isLoading: peersLoading } = useLinks(
     manager?.[0],
     "peeps",
-    { enabled: !!manager?.[0] }
+    { enabled: !!manager?.[0] },
   );
 
   const { links: directReports, isLoading: reportsLoading } = useLinks(
     selectedEmployee ?? undefined,
     "peeps",
-    { enabled: !!selectedEmployee }
+    { enabled: !!selectedEmployee },
   );
 
   const connections = React.useMemo((): ConnectionCollection => {
@@ -107,8 +107,8 @@ export function useNetworkConnections({
               "manager",
               empOffice?.primaryKey_ ?? "",
               mgrOffice?.primaryKey_ ?? "",
-              "Reports to"
-            )
+              "Reports to",
+            ),
           );
         }
 
@@ -126,8 +126,8 @@ export function useNetworkConnections({
               "skip-level",
               empOffice?.primaryKey_ ?? "",
               skipOffice?.primaryKey_ ?? "",
-              "Skip-level"
-            )
+              "Skip-level",
+            ),
           );
         }
 
@@ -154,8 +154,8 @@ export function useNetworkConnections({
                     "peer",
                     empOffice?.primaryKey_ ?? "",
                     peerOfficeId,
-                    "Peer"
-                  )
+                    "Peer",
+                  ),
                 );
               }
             }
@@ -182,8 +182,8 @@ export function useNetworkConnections({
                     "report",
                     empOffice?.primaryKey_ ?? "",
                     reportOfficeId,
-                    "Report"
-                  )
+                    "Report",
+                  ),
                 );
               }
             }
@@ -203,8 +203,8 @@ export function useNetworkConnections({
               "manager",
               empOffice?.primaryKey_ ?? "",
               mgrOffice?.primaryKey_ ?? "",
-              "Manager"
-            )
+              "Manager",
+            ),
           );
 
           const skipOffice = skipLevelOffice?.[0];
@@ -217,8 +217,8 @@ export function useNetworkConnections({
                 "manager",
                 mgrOffice?.primaryKey_ ?? "",
                 skipOffice?.primaryKey_ ?? "",
-                "Skip-level"
-              )
+                "Skip-level",
+              ),
             );
           }
         }
@@ -240,8 +240,8 @@ export function useNetworkConnections({
                     "report",
                     empOffice?.primaryKey_ ?? "",
                     reportOfficeId,
-                    report.fullName ?? "Report"
-                  )
+                    report.fullName ?? "Report",
+                  ),
                 );
               }
             }

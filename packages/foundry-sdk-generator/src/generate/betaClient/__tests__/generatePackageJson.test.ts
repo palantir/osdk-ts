@@ -36,10 +36,7 @@ describe("generatePackageJson", () => {
       packageName: "@my/generated-sdk",
       packageVersion: "1.2.3",
       packagePath,
-      dependencies: [{
-        dependencyName: "@osdk/foundry.ontologies",
-        dependencyVersion: "^2.63.0",
-      }],
+      dependencies: [],
       peerDependencies: [{
         dependencyName: "@osdk/client",
         dependencyVersion: "^2.0.0",
@@ -78,13 +75,17 @@ describe("generatePackageJson", () => {
                     "default": "./cjs/index.js"
                 },
                 "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
-                    "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.ts",
-                    "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    "require": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    },
+                    "import": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    }
                 }
             },
-            "dependencies": {
-                "@osdk/foundry.ontologies": "^2.63.0"
-            },
+            "dependencies": {},
             "peerDependencies": {
                 "@osdk/client": "^2.0.0"
             },

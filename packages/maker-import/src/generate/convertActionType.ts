@@ -29,7 +29,7 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
     const mappedType = mapActionParameterType(paramV2.dataType);
     if (!mappedType) {
       consola.warn(
-        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`
+        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`,
       );
       continue;
     }
@@ -57,7 +57,7 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
 }
 
 function mapActionStatus(
-  status: string
+  status: string,
 ): "active" | "experimental" | "example" {
   switch (status) {
     case "ACTIVE":

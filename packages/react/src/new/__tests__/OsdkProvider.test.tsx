@@ -59,14 +59,14 @@ describe("OsdkProvider", () => {
     render(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 0 }}>
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
     expect(createObservableClientMock).toHaveBeenLastCalledWith(
       mockClient,
       expect.any(Function),
-      expectedOptions({ actionDelayMs: 0 })
+      expectedOptions({ actionDelayMs: 0 }),
     );
   });
 
@@ -74,13 +74,13 @@ describe("OsdkProvider", () => {
     render(
       <OsdkProvider client={mockClient}>
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenLastCalledWith(
       mockClient,
       expect.any(Function),
-      expectedOptions()
+      expectedOptions(),
     );
   });
 
@@ -91,13 +91,13 @@ describe("OsdkProvider", () => {
         devMode={{ logLevel: "debug", debug: { refCounts: true } }}
       >
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenLastCalledWith(
       mockClient,
       expect.any(Function),
-      expectedOptions({ logLevel: "debug", refCounts: true })
+      expectedOptions({ logLevel: "debug", refCounts: true }),
     );
   });
 
@@ -105,7 +105,7 @@ describe("OsdkProvider", () => {
     const { rerender } = render(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 250 }}>
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -114,7 +114,7 @@ describe("OsdkProvider", () => {
     rerender(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 250 }}>
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -123,7 +123,7 @@ describe("OsdkProvider", () => {
     rerender(
       <OsdkProvider client={mockClient} devMode={{ actionDelayMs: 0 }}>
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(2);
@@ -136,7 +136,7 @@ describe("OsdkProvider", () => {
         devMode={{ logLevel: "debug", debug: { refCounts: true } }}
       >
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -148,7 +148,7 @@ describe("OsdkProvider", () => {
         devMode={{ logLevel: "debug", debug: { refCounts: true } }}
       >
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(1);
@@ -160,7 +160,7 @@ describe("OsdkProvider", () => {
         devMode={{ logLevel: "trace", debug: { refCounts: true } }}
       >
         <div />
-      </OsdkProvider>
+      </OsdkProvider>,
     );
 
     expect(createObservableClientMock).toHaveBeenCalledTimes(2);

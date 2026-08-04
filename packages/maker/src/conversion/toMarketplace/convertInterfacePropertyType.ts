@@ -26,7 +26,7 @@ import { propertyTypeTypeToOntologyIrInterfaceType } from "./propertyTypeTypeToO
 
 export function convertInterfaceProperty(
   prop: InterfacePropertyType,
-  apiName: string
+  apiName: string,
 ): [string, OntologyIrMarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     return [

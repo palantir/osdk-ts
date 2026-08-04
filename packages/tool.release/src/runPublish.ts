@@ -83,7 +83,7 @@ export async function runPublish({
   const changesetPublishOutput = await getExecOutput(
     publishCommand,
     publishArgs,
-    { cwd }
+    { cwd },
   );
 
   await gitUtils.pushTags();
@@ -94,7 +94,7 @@ export async function runPublish({
   if (tool !== "root") {
     const newTagRegex = /New tag:\s+(@[^/]+\/[^@]+|[^/]+)@([^\s]+)/u;
     const packagesByName = new Map(
-      packages.map((x) => [x.packageJson.name, x])
+      packages.map((x) => [x.packageJson.name, x]),
     );
 
     for (const line of changesetPublishOutput.stdout.split("\n")) {
@@ -107,7 +107,7 @@ export async function runPublish({
       if (pkg === undefined) {
         throw new Error(
           `Package "${pkgName}" not found.` +
-            "This is probably a bug in the action, please open an issue"
+            "This is probably a bug in the action, please open an issue",
         );
       }
       releasedPackages.push(pkg);
@@ -119,15 +119,15 @@ export async function runPublish({
           createRelease(context, {
             pkg,
             tagName: `${pkg.packageJson.name}@${pkg.packageJson.version}`,
-          })
-        )
+          }),
+        ),
       );
     }
   } else {
     if (packages.length === 0) {
       throw new Error(
         `No package found.` +
-          "This is probably a bug in the action, please open an issue"
+          "This is probably a bug in the action, please open an issue",
       );
     }
     const pkg = packages[0];

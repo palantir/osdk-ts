@@ -33,7 +33,7 @@ import type {
 export async function updateJobDraft(
   ctx: ConjureContext,
   jobRid: _api_BlockSetInstallationJobRid,
-  request: _api_UpdateJobDraftRequest
+  request: _api_UpdateJobDraftRequest,
 ): Promise<_api_UpdateJobDraftResponse> {
   return conjureFetch(ctx, `/installation-job-draft/${jobRid}`, "PUT", request);
 }

@@ -33,14 +33,14 @@ function ContainsTextFilterInputInner({
   const value = useMemo(
     () =>
       filterState?.type === "CONTAINS_TEXT" ? filterState.value : undefined,
-    [filterState]
+    [filterState],
   );
 
   const handleChange = useCallback(
     (value: string | undefined) => {
       onFilterStateChanged({ type: "CONTAINS_TEXT", value });
     },
-    [onFilterStateChanged]
+    [onFilterStateChanged],
   );
 
   return (

@@ -27,14 +27,14 @@ describe("ObjectCacheKey", () => {
       "object",
       "Employee",
       1,
-      undefined
+      undefined,
     );
     const keyWithFlag = cacheKeys.get<ObjectCacheKey>(
       "object",
       "Employee",
       1,
       undefined,
-      true
+      true,
     );
 
     expect(keyWithoutFlag).not.toBe(keyWithFlag);
@@ -47,14 +47,14 @@ describe("ObjectCacheKey", () => {
       "object",
       "Employee",
       1,
-      undefined
+      undefined,
     );
     const keyExplicitUndefined = cacheKeys.get<ObjectCacheKey>(
       "object",
       "Employee",
       1,
       undefined,
-      undefined
+      undefined,
     );
 
     expect(keyOmitted).toBe(keyExplicitUndefined);

@@ -30,13 +30,13 @@ export async function listSdks(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
   pageSize: PageSize | undefined,
-  pageToken: ApplicationSdkPageToken | undefined
+  pageToken: ApplicationSdkPageToken | undefined,
 ): Promise<ListApplicationSdksResponse> {
   return conjureFetch(
     ctx,
     `/application-sdks/${applicationRid}`,
     "GET",
     undefined,
-    { pageSize, pageToken }
+    { pageSize, pageToken },
   );
 }

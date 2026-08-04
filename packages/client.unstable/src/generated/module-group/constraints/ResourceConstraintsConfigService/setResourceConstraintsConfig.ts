@@ -30,12 +30,12 @@ export async function setResourceConstraintsConfig(
   ctx: ConjureContext,
   moduleGroupProducer: _constraints_ModuleGroupProducer,
   compassRid: _constraints_CompassRid,
-  resourceConstraintsConfig: _constraints_ResourceConstraintsConfig
+  resourceConstraintsConfig: _constraints_ResourceConstraintsConfig,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/resource-constraints/${moduleGroupProducer}/${compassRid}`,
     "POST",
-    resourceConstraintsConfig
+    resourceConstraintsConfig,
   );
 }

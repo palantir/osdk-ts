@@ -61,7 +61,7 @@ describe("makeMediaTransformation image operations", () => {
             },
           ],
         },
-      })
+      }),
     ).toEqual({
       type: "annotate",
       annotations: [
@@ -91,7 +91,7 @@ describe("makeMediaTransformation image operations", () => {
             },
           ],
         },
-      })
+      }),
     ).toEqual({
       type: "annotate",
       annotations: [
@@ -107,7 +107,7 @@ describe("makeMediaTransformation image operations", () => {
 
   it("converts $contrast equalize", () => {
     expect(
-      convertImageOp({ $contrast: { $contrastType: { $equalize: {} } } })
+      convertImageOp({ $contrast: { $contrastType: { $equalize: {} } } }),
     ).toEqual({ type: "contrast", contrastType: { type: "equalize" } });
   });
 
@@ -115,7 +115,7 @@ describe("makeMediaTransformation image operations", () => {
     expect(
       convertImageOp({
         $contrast: { $contrastType: { $rayleigh: { $sigma: 0.7 } } },
-      })
+      }),
     ).toEqual({
       type: "contrast",
       contrastType: { type: "rayleigh", sigma: 0.7 },
@@ -126,7 +126,7 @@ describe("makeMediaTransformation image operations", () => {
     expect(
       convertImageOp({
         $contrast: { $contrastType: { $binarize: { $threshold: 128 } } },
-      })
+      }),
     ).toEqual({
       type: "contrast",
       contrastType: { type: "binarize", threshold: 128 },
@@ -135,7 +135,7 @@ describe("makeMediaTransformation image operations", () => {
 
   it("converts $contrast binarize without a threshold", () => {
     expect(
-      convertImageOp({ $contrast: { $contrastType: { $binarize: {} } } })
+      convertImageOp({ $contrast: { $contrastType: { $binarize: {} } } }),
     ).toEqual({ type: "contrast", contrastType: { type: "binarize" } });
   });
 
@@ -155,7 +155,7 @@ describe("makeMediaTransformation image operations", () => {
           ],
           $cipherLicenseRid: "ri.cipher.main.license.1",
         },
-      })
+      }),
     ).toEqual({
       type: "encrypt",
       polygons: [
@@ -182,7 +182,7 @@ describe("makeMediaTransformation image operations", () => {
           ],
           $cipherLicenseRid: "ri.cipher.main.license.2",
         },
-      })
+      }),
     ).toEqual({
       type: "decrypt",
       polygons: [

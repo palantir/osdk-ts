@@ -51,7 +51,7 @@ export function Checkbox({
         {...indicatorProps}
         className={classnames(
           styles.osdkCheckboxIndicator,
-          indicatorProps?.className
+          indicatorProps?.className,
         )}
       >
         {/* Color is used as the "fill" attribute on the svg. Icon size is

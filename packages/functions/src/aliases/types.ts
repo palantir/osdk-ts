@@ -26,10 +26,25 @@ export interface Source {
   rid: string;
 }
 
+export interface Dataset {
+  rid: string;
+}
+
+export interface Mediaset {
+  rid: string;
+}
+
+export interface Stream {
+  rid: string;
+}
+
 export interface ResolvedAliases {
   custom: Record<string, string>;
   models: Record<string, Model>;
   sources: Record<string, Source>;
+  datasets: Record<string, Dataset>;
+  mediasets: Record<string, Mediaset>;
+  streams: Record<string, Stream>;
 }
 
 // Environment
@@ -52,9 +67,30 @@ export interface EgressConnection {
   alias?: string | null;
 }
 
+export interface DatasetResource {
+  identifier: DatasetIdentifier;
+  verbs: string[];
+  alias?: string | null;
+}
+
+export interface MediasetResource {
+  identifier: MediasetIdentifier;
+  verbs: string[];
+  alias?: string | null;
+}
+
+export interface StreamResource {
+  identifier: StreamIdentifier;
+  verbs: string[];
+  alias?: string | null;
+}
+
 export interface ResourceScopes {
   custom: Record<string, string>;
   models: ModelResource[];
+  datasets: DatasetResource[];
+  mediasets: MediasetResource[];
+  streams: StreamResource[];
 }
 
 export interface FunctionEgress {
@@ -84,10 +120,37 @@ export interface EgressConnectionValue {
   id: ConnectionIdentifier;
 }
 
+export interface DatasetIdentifier {
+  rid: string;
+}
+
+export interface DatasetValue {
+  id: DatasetIdentifier;
+}
+
+export interface MediasetIdentifier {
+  rid: string;
+}
+
+export interface MediasetValue {
+  id: MediasetIdentifier;
+}
+
+export interface StreamIdentifier {
+  rid: string;
+}
+
+export interface StreamValue {
+  id: StreamIdentifier;
+}
+
 export interface DefaultAliases {
   custom: Record<string, string>;
   models: Record<string, ModelValue>;
   egressConnections: Record<string, EgressConnectionValue>;
+  datasets: Record<string, DatasetValue>;
+  mediasets: Record<string, MediasetValue>;
+  streams: Record<string, StreamValue>;
 }
 
 export interface AliasesFile {

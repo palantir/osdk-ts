@@ -76,7 +76,7 @@ export function useEditableTable<
     >
   >({});
   const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
 
   const clearCellValidationError = useCallback((cellId: string) => {
@@ -93,7 +93,7 @@ export function useEditableTable<
       info: CellEditInfo<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
         unknown
-      >
+      >,
     ) => {
       // If value is changed back to original, remove it from edits. null
       // and undefined are treated as the same empty state so clearing a
@@ -113,7 +113,7 @@ export function useEditableTable<
 
       onCellValueChanged?.(info);
     },
-    [onCellValueChanged]
+    [onCellValueChanged],
   );
 
   const clearEdits = useCallback(() => {

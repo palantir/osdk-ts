@@ -26,18 +26,18 @@ import type {
 export function useComputeMetrics(store: ComputeStore): ComputeMetrics {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(() => store.getSnapshot().metrics, [store]);
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
 export function useComputeRequests(
-  store: ComputeStore
+  store: ComputeStore,
 ): ReadonlyArray<ComputeRequest> {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(() => store.getSnapshot().requests, [store]);
   return useSyncExternalStore(subscribe, getSnapshot);
@@ -46,11 +46,11 @@ export function useComputeRequests(
 export function useComputeRecording(store: ComputeStore): boolean {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(
     () => store.getSnapshot().isRecording,
-    [store]
+    [store],
   );
   return useSyncExternalStore(subscribe, getSnapshot);
 }
@@ -58,25 +58,25 @@ export function useComputeRecording(store: ComputeStore): boolean {
 export function useComputeNetworkPaused(store: ComputeStore): boolean {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(
     () => store.getSnapshot().isNetworkPaused,
-    [store]
+    [store],
   );
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
 export function useComputeLastRecordingEvent(
-  store: ComputeStore
+  store: ComputeStore,
 ): RecordingEvent | undefined {
   const subscribe = useCallback(
     (callback: () => void) => store.subscribe(callback),
-    [store]
+    [store],
   );
   const getSnapshot = useCallback(
     () => store.getSnapshot().lastRecordingEvent,
-    [store]
+    [store],
   );
   return useSyncExternalStore(subscribe, getSnapshot);
 }

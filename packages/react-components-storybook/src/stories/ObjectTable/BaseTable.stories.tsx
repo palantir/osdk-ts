@@ -491,7 +491,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
           ...acc,
           [col.accessorKey]: true,
         };
-      }, {})
+      }, {}),
     );
 
     const table = useReactTable({

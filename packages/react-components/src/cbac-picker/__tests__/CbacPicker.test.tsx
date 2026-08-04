@@ -104,7 +104,7 @@ describe("CbacPicker", () => {
     render(<CbacPicker initialMarkingIds={["m1"]} onChange={onChange} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Clear classification" })
+      screen.getByRole("button", { name: "Clear classification" }),
     );
     expect(onChange).toHaveBeenCalledExactlyOnceWith([]);
   });
@@ -118,7 +118,7 @@ describe("CbacPicker", () => {
           markingIds: ["m9"],
           helperText: "Do not exceed.",
         }}
-      />
+      />,
     );
 
     expect(screen.getByText("Maximum allowed classification")).toBeDefined();

@@ -28,12 +28,12 @@ import { readJsonFile } from "./utils/readJsonFile.js";
 
 export async function applyOntologyAndSeed(
   fauxFoundry: FauxFoundry,
-  ctx: OacContext
+  ctx: OacContext,
 ): Promise<void> {
   const ontology = fauxFoundry.getDefaultOntology();
 
   const ontologyFullMetadata = readJsonFile<OntologyFullMetadata>(
-    ontologyFullMetadataPath(ctx.workDir)
+    ontologyFullMetadataPath(ctx.workDir),
   );
   registerOntologyFullMetadata(ontology, ontologyFullMetadata);
 
@@ -46,8 +46,8 @@ export async function applyOntologyAndSeed(
   } catch (e) {
     ctx.logger.error(
       `Unhandled error from preSeed hook. Ignoring and continuing. ${inspect(
-        e
-      )}`
+        e,
+      )}`,
     );
   }
 

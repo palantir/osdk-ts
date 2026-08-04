@@ -1,5 +1,18 @@
 # @osdk/react-sdk-docs
 
+## 0.14.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+## 0.13.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- 9ef0982: Fix empty {} placeholder for interface action parameters in docs
+
 ## 0.12.0
 
 ### Minor Changes

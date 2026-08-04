@@ -1,5 +1,38 @@
 # @osdk/vite-plugin-oac
 
+## 0.52.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/faux@0.40.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/cli@0.78.0
+  - @osdk/maker@0.53.0
+
+## 0.51.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/faux@0.39.0
+  - @osdk/cli@0.77.0
+  - @osdk/client.unstable@2.52.0
+
 ## 0.50.0
 
 ### Patch Changes

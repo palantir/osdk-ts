@@ -34,13 +34,13 @@ import type {
 export async function getPendingBlockSetVersionDiffSummary(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  granularity: _api_DiffGranularity
+  granularity: _api_DiffGranularity,
 ): Promise<_api_BlockSetVersionDiffSummary> {
   return conjureFetch(
     ctx,
     `/block-sets/v2/pending/version/${blockSetVersionId}/diff/summary`,
     "GET",
     undefined,
-    { granularity }
+    { granularity },
   );
 }

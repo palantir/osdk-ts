@@ -21,14 +21,14 @@ import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 export async function deleteVersion(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  version: string
+  version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const urlObj = new URL(
     `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/${encodeURIComponent(
-      version
+      version,
     )}`,
-    ctx.foundryUrl
+    ctx.foundryUrl,
   );
   urlObj.searchParams.set("preview", "true");
   const url = urlObj.toString();

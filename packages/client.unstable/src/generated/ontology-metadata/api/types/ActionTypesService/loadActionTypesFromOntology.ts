@@ -32,7 +32,7 @@ import type {
  */
 export async function loadActionTypesFromOntology(
   ctx: ConjureContext,
-  request: _api_LoadActionTypesFromOntologyRequest
+  request: _api_LoadActionTypesFromOntologyRequest,
 ): Promise<_api_LoadActionTypesFromOntologyResponse> {
   return conjureFetch(ctx, `/actions/types/loadFromOntology`, "POST", request);
 }

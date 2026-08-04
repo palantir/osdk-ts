@@ -30,7 +30,7 @@ export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<Q>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
-  select: AC
+  select: AC,
 ): AggregationResultsWithoutGroups<Q, AC> {
   const result: Record<string, Record<string, any>> = {};
 

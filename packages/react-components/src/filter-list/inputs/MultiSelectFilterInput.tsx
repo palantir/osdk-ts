@@ -69,7 +69,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "SELECT"
         ? coerceToStringArray(filterState.selectedValues)
         : [],
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -89,7 +89,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const { data, isLoading, error } = useFilterPropertyAggregation(
@@ -98,7 +98,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     objectSet,
     whereClause,
     linkedFilters,
-    { selectedValues, showFilteredOutValues }
+    { selectedValues, showFilteredOutValues },
   );
 
   return (
@@ -125,5 +125,5 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const MultiSelectFilterInput: typeof MultiSelectFilterInputInner = memo(
-  MultiSelectFilterInputInner
+  MultiSelectFilterInputInner,
 ) as typeof MultiSelectFilterInputInner;

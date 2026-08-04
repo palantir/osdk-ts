@@ -1,5 +1,28 @@
 # @osdk/generator-converters
 
+## 2.53.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- @osdk/api@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

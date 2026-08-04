@@ -36,12 +36,12 @@ import type {
  */
 export async function listReleaseManagementTargetNamespaces(
   ctx: ConjureContext,
-  request: _installmanager_api_ListReleaseManagementTargetNamespacesRequest
+  request: _installmanager_api_ListReleaseManagementTargetNamespacesRequest,
 ): Promise<_installmanager_api_ListReleaseManagementTargetNamespacesResponse> {
   return conjureFetch(
     ctx,
     `/install-manager/namespaces/release-management`,
     "POST",
-    request
+    request,
   );
 }

@@ -28,11 +28,11 @@ import type { VersionedApplication } from "../VersionedApplication.js";
 export async function getApplicationVersion(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  applicationVersion: ApplicationVersion
+  applicationVersion: ApplicationVersion,
 ): Promise<VersionedApplication> {
   return conjureFetch(
     ctx,
     `/applications/${applicationRid}/versions/${applicationVersion}`,
-    "GET"
+    "GET",
   );
 }

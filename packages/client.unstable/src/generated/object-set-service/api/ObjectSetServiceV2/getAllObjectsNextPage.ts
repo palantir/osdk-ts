@@ -38,7 +38,7 @@ import type {
 export async function getAllObjectsNextPage(
   ctx: ConjureContext,
   request: _api_GetAllObjectsNextPageRequest,
-  backend: _api_Backend | null | undefined
+  backend: _api_Backend | null | undefined,
 ): Promise<_api_GetAllObjectsNextPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/all/next`, "POST", request);
 }

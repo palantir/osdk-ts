@@ -107,7 +107,7 @@ describe("extractRdpDefinition", () => {
           },
         },
       }
-    `
+    `,
     );
   });
 
@@ -149,7 +149,7 @@ describe("extractRdpDefinition", () => {
 
     const result = await extractRdpDefinition(
       mockClientCtx,
-      objectSetWithMinMax
+      objectSetWithMinMax,
     );
 
     // min/max preserve the aggregated property's type, so the type is captured
@@ -299,7 +299,7 @@ describe("extractRdpDefinition", () => {
 
     const result = await extractRdpDefinition(
       mockClientCtx,
-      RdpWithIntersectionBaseObjectSet
+      RdpWithIntersectionBaseObjectSet,
     );
 
     expect(result).toMatchInlineSnapshot(
@@ -325,7 +325,7 @@ describe("extractRdpDefinition", () => {
           },
         },
       }
-    `
+    `,
     );
   });
 
@@ -342,9 +342,9 @@ describe("extractRdpDefinition", () => {
     };
 
     await expect(
-      extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps)
+      extractRdpDefinition(mockClientCtx, intersectionObjectSetWithNestedRdps),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`
+      `[Error: Invariant failed: Object sets combined using intersect, subtract, or union must not contain any derived property definitions]`,
     );
   });
 
@@ -381,9 +381,9 @@ describe("extractRdpDefinition", () => {
     };
 
     await expect(
-      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet)
+      extractRdpDefinition(mockClientCtx, RdpWithIntersectionBaseObjectSet),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`
+      `[Error: Invariant failed: All object sets in an intersect, subtract, or union must have the same child object type]`,
     );
   });
 });

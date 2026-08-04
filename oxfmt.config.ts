@@ -70,4 +70,9 @@ export default defineConfig({
     "**/build/",
     "**/dist",
   ],
+  // Override Ultracite's `trailingComma: "es5"`. We use "all" so trailing commas
+  // are added to every multi-line comma-separated structure (function params/args
+  // and type parameters included), matching the previous repo setting with dprint-formatted
+  // and industry standards.
+  trailingComma: "all",
 });

@@ -29,12 +29,12 @@ import type {
 export async function validateMarketplaceMavenGroup(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
-  request: _api_ValidateMarketplaceMavenGroupRequest
+  request: _api_ValidateMarketplaceMavenGroupRequest,
 ): Promise<_api_ValidateMarketplaceMavenGroupResponse> {
   return conjureFetch(
     ctx,
     `/marketplace-maven-group/${marketplaceRid}/maven-group/validate`,
     "POST",
-    request
+    request,
   );
 }

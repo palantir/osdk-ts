@@ -49,12 +49,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 
   const allFieldDefinitions = useMemo(
     () => flattenFieldDefinitions(formContent),
-    [formContent]
+    [formContent],
   );
 
   const defaultValues = useMemo(
     () => buildDefaultValues(allFieldDefinitions),
-    [allFieldDefinitions]
+    [allFieldDefinitions],
   );
 
   const {
@@ -107,12 +107,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       clearError();
       onFieldValueChange?.(fieldKey, value);
     },
-    [clearError, onFieldValueChange]
+    [clearError, onFieldValueChange],
   );
 
   const labelByFieldKey = useMemo(
     () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
-    [allFieldDefinitions]
+    [allFieldDefinitions],
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
@@ -162,7 +162,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
           }
           const sectionErrorCount = item.definition.fields.reduce(
             (count, field) => count + (errors[field.fieldKey] != null ? 1 : 0),
-            0
+            0,
           );
           return (
             <FormSection
@@ -207,7 +207,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
  * and the field-key-to-label map for error display.
  */
 function flattenFieldDefinitions(
-  formContent: ReadonlyArray<FormContentItem>
+  formContent: ReadonlyArray<FormContentItem>,
 ): ReadonlyArray<RendererFieldDefinition> {
   const result: RendererFieldDefinition[] = [];
   for (const item of formContent) {
@@ -233,7 +233,7 @@ const FORM_SKELETON = Array.from({ length: SKELETON_FIELD_COUNT }, (_, i) => (
 ));
 
 function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
