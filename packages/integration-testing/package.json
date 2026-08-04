@@ -75,6 +75,7 @@
     "access": "public"
   },
   "files": [
+    "bin/postinstall.mjs",
     "build/cjs",
     "build/esm",
     "build/browser",
