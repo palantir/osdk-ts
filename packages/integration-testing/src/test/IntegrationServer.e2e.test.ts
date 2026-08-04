@@ -33,7 +33,7 @@ const TEST_TIMEOUT_MS = 180_000;
 const foundryInstalled = await checkFoundryCli();
 
 // Exercises the real CLI, so it only runs where `foundry` is installed.
-describe.skipIf(foundryInstalled.result === FoundryCLIInstallation.INSTALLED)(
+describe.runIf(foundryInstalled.result === FoundryCLIInstallation.INSTALLED)(
   "createIntegrationServer (end to end)",
   () => {
     let projectPath: string;
