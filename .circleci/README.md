@@ -9,6 +9,32 @@ Palantir-run precedent for a pnpm monorepo on CircleCI.
 
 [palantir/blueprint]: https://github.com/palantir/blueprint/blob/develop/.circleci/config.yml
 
+## Chromatic is switched off
+
+**Temporary.** Chromatic is commented out in `config.yml` so the rest of the
+pipeline can be exercised on its own. Three blocks are involved and they restore
+together, as one change:
+
+- the `chromatic` job
+- its entry in the `ci` workflow
+- the whole `chromatic-on-demand` workflow, plus the `unless:` line on `ci` that
+  pairs with it
+
+The `unless:` is off because `chromatic-on-demand` is the only other workflow:
+with it commented out, a `run-chromatic=true` trigger would produce a pipeline
+with no workflows, which CircleCI rejects. The `run-chromatic` parameter itself
+stays declared — an unreferenced pipeline parameter is valid — so restoring is a
+pure uncomment.
+
+`build-storybook` deliberately still runs. It is a real check on its own (`turbo run build` is what proves Storybook still compiles) and it has no dependency on
+Chromatic. Two knock-on effects while this is off, both harmless and both left
+alone to keep the restore small: it still persists `storybook-static` to the
+workspace with nothing left to consume it, and it still builds with
+`STORYBOOK_BASE_PATH=/`, so the stored artifact remains non-browsable in place.
+
+Everything under "Set up the Chromatic project" below is moot until this is put
+back.
+
 ## Manual setup a human still has to do
 
 None of the following can be set from a commit. The pipeline is written to

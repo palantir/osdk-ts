@@ -504,21 +504,25 @@ jobs:
       - save-turbo-cache:
           scope: storybook
 
-  chromatic:
-    executor:
-      name: node
-      resource-class: small
-    steps:
-      - checkout
-      # Attaching pulls node_modules and the turbo cache this job does not need;
-      # attach is all-or-nothing. See README "Performance shape".
-      - attach-deps
-      # Only pnpm itself is needed here, for `pnpm dlx`; the Storybook this
-      # publishes arrived prebuilt through the workspace.
-      - activate-pnpm
-      - run:
-          name: Publish to Chromatic
-          command: .circleci/scripts/chromatic.sh
+  # TEMPORARILY DISABLED — see "Chromatic is switched off" in the README.
+  # Restore this job, its entry in the `ci` workflow, and the
+  # `chromatic-on-demand` workflow together; they are one change.
+  #
+  # chromatic:
+  #   executor:
+  #     name: node
+  #     resource-class: small
+  #   steps:
+  #     - checkout
+  #     # Attaching pulls node_modules and the turbo cache this job does not
+  #     # need; attach is all-or-nothing. See README "Performance shape".
+  #     - attach-deps
+  #     # Only pnpm itself is needed here, for `pnpm dlx`; the Storybook this
+  #     # publishes arrived prebuilt through the workspace.
+  #     - activate-pnpm
+  #     - run:
+  #         name: Publish to Chromatic
+  #         command: .circleci/scripts/chromatic.sh
 
   storybook-interaction-tests:
     executor:
@@ -664,7 +668,12 @@ jobs:
 
 workflows:
   ci:
-    unless: << pipeline.parameters.run-chromatic >>
+    # TEMPORARILY DISABLED with the chromatic job. Left off deliberately rather
+    # than kept: `chromatic-on-demand` is the only other workflow, so with it
+    # commented out a run-chromatic=true trigger would yield a pipeline with no
+    # workflows at all, which CircleCI rejects.
+    #
+    # unless: << pipeline.parameters.run-chromatic >>
     jobs:
       - install
       # The only job that needs no node_modules, so it stays a true root and
@@ -696,8 +705,9 @@ workflows:
           requires: [build]
       - build-storybook:
           requires: [build]
-      - chromatic:
-          requires: [build-storybook]
+      # TEMPORARILY DISABLED with the chromatic job.
+      # - chromatic:
+      #     requires: [build-storybook]
       - ci-all:
           # chromatic is deliberately absent: a visual diff is a review signal,
           # and a Chromatic outage should not be able to block a merge.
@@ -714,14 +724,19 @@ workflows:
             - changesets
             - storybook-interaction-tests
 
+  # TEMPORARILY DISABLED with the chromatic job. The `run-chromatic` pipeline
+  # parameter stays declared (an unreferenced parameter is valid) so restoring
+  # this is a pure uncomment.
+  #
   # Refresh a Chromatic baseline without paying for the whole pipeline.
-  chromatic-on-demand:
-    when: << pipeline.parameters.run-chromatic >>
-    jobs:
-      - install
-      - build:
-          requires: [install]
-      - build-storybook:
-          requires: [build]
-      - chromatic:
-          requires: [build-storybook]
+  #
+  # chromatic-on-demand:
+  #   when: << pipeline.parameters.run-chromatic >>
+  #   jobs:
+  #     - install
+  #     - build:
+  #         requires: [install]
+  #     - build-storybook:
+  #         requires: [build]
+  #     - chromatic:
+  #         requires: [build-storybook]
