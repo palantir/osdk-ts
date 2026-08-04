@@ -25,15 +25,15 @@ import {
   createIntegrationServer,
   type IntegrationServer,
 } from "../IntegrationServer.js";
-import { getFoundryVersion } from "../utils/version.js";
+import { checkFoundryCli, FoundryCLIInstallation } from "../utils/version.js";
 import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
 
 const TEST_TIMEOUT_MS = 180_000;
 
-const foundryVersion = await getFoundryVersion();
+const foundryInstalled = await checkFoundryCli();
 
 // Exercises the real CLI, so it only runs where `foundry` is installed.
-describe.skipIf(foundryVersion === undefined)(
+describe.skipIf(foundryInstalled.result === FoundryCLIInstallation.INSTALLED)(
   "createIntegrationServer (end to end)",
   () => {
     let projectPath: string;

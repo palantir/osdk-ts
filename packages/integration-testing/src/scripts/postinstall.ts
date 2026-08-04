@@ -18,24 +18,29 @@ import consola from "consola";
 import invariant from "tiny-invariant";
 
 import {
-  getFoundryVersion,
+  checkFoundryCli,
+  FoundryCLIInstallation,
   MIN_FOUNDRY_CLI_VERSION,
-  versionIsAtMinimum,
 } from "../utils/version.js";
 import { installFoundryCli } from "./download.js";
 
 export const postinstall = async (): Promise<void> => {
-  const foundryVersion = await getFoundryVersion();
-  if (typeof foundryVersion === "string") {
-    invariant(
-      versionIsAtMinimum(foundryVersion, MIN_FOUNDRY_CLI_VERSION),
-      `Foundry CLI (v${foundryVersion}) is installed already, but the minimum required version is ${MIN_FOUNDRY_CLI_VERSION}. Please run "foundry update self" to update foundry cli.`,
-    );
-    consola.info(
-      `✅ Foundry CLI (v${foundryVersion}) is installed already, skipping installation.`,
-    );
-    return;
+  const { result, version } = await checkFoundryCli();
+  switch (result) {
+    case FoundryCLIInstallation.INSTALLED:
+      consola.info(
+        `✅ Foundry CLI (v${version}) is installed already, skipping installation.`,
+      );
+      return;
+    case FoundryCLIInstallation.INCOMPATIBLE_VERSION:
+      invariant(
+        false,
+        `Foundry CLI (v${version}) is installed already, but the minimum required version is ${MIN_FOUNDRY_CLI_VERSION}. Please run "foundry update self" to update foundry cli.`,
+      );
+      return;
+    case FoundryCLIInstallation.NOT_INSTALLED:
+      consola.info(`Foundry CLI not found locally, attempting to install...`);
+      await installFoundryCli();
+      return;
   }
-  consola.info(`Foundry CLI not found locally, attempting to install...`);
-  await installFoundryCli();
 };

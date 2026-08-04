@@ -4,9 +4,15 @@ import {
   Person,
   Todo,
 } from "@osdk/e2e.generated.catchall";
+import {
+  checkFoundryCli,
+  FoundryCLIInstallation,
+} from "@osdk/integration-testing";
 import { expect } from "vitest";
 
 import { createSeed, test } from "./test.fixture.js";
+
+const foundryCliInstalled = await checkFoundryCli();
 
 const baseSeed = createSeed((seed) => {
   const alice = seed.create(Person, {
@@ -37,7 +43,9 @@ const baseSeed = createSeed((seed) => {
   return { alice, bob, charlie, todoItem1, todoItem2 };
 });
 
-test.describe("Local ontology integration tests", () => {
+test.describe.runIf(
+  foundryCliInstalled.result === FoundryCLIInstallation.INSTALLED,
+)("Local ontology integration tests", () => {
   test.beforeEach(async ({ integration }) => {
     await integration.seed.set(baseSeed.output);
   });
@@ -54,7 +62,6 @@ test.describe("Local ontology integration tests", () => {
       page.data.find((v) => v.email === baseSeed.context.charlie.email),
     ).toBeDefined();
   });
-
   test("List all Todos", async ({ integration }) => {
     const page = await integration.client(Todo).fetchPage();
     expect(Number(page.totalCount)).toBe(2);
@@ -65,7 +72,6 @@ test.describe("Local ontology integration tests", () => {
       page.data.find((v) => v.id === baseSeed.context.todoItem2.id),
     ).toBeDefined();
   });
-
   test("Alice and Charlie are friends", async ({ integration }) => {
     const friends = await integration
       .client(Person)
@@ -77,7 +83,6 @@ test.describe("Local ontology integration tests", () => {
       friends.data.find((f) => f.email === baseSeed.context.charlie.email),
     ).toBeDefined();
   });
-
   test("Charlie and Alice are friends", async ({ integration }) => {
     const friends = await integration
       .client(Person)
@@ -89,7 +94,6 @@ test.describe("Local ontology integration tests", () => {
       friends.data.find((f) => f.email === baseSeed.context.alice.email),
     ).toBeDefined();
   });
-
   test("Todo 1 assigned to Bob", async ({ integration }) => {
     const shouldBeBob = await integration
       .client(Todo)
@@ -101,13 +105,11 @@ test.describe("Local ontology integration tests", () => {
       shouldBeBob.data.find((f) => f.email === baseSeed.context.bob.email),
     ).toBeDefined();
   });
-
   test("Mock query", async ({ integration }) => {
     integration.client.whenQuery(getTodoCount).thenReturn(1);
     const res = await integration.client(getTodoCount).executeFunction();
     expect(res).toBe(1);
   });
-
   test("Mock Object Set query", async ({ integration }) => {
     const objectSet = integration.client(Person).where({
       email: {
@@ -119,14 +121,12 @@ test.describe("Local ontology integration tests", () => {
         person: baseSeed.context.bob,
       })
       .thenReturn(objectSet);
-
     const res = await integration
       .client(getFriends)
       .executeFunction({
         person: baseSeed.context.bob,
       })
       .then((v) => v.fetchPage());
-
     expect(Number(res.totalCount)).toBe(2);
     expect(
       res.data.find((v) => v.email === baseSeed.context.alice.email),

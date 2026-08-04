@@ -32,3 +32,5 @@ export type {
 
 export { createIntegrationClient } from "./IntegrationClient.js";
 export { createIntegrationServer } from "./IntegrationServer.js";
+
+export { FoundryCLIInstallation, checkFoundryCli } from "./utils/version.js";

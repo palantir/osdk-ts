@@ -38,3 +38,23 @@ export const MIN_FOUNDRY_CLI_VERSION = "0.200.0";
 
 export const versionIsAtMinimum = (version: string, min: string): boolean =>
   valid(version) != null && valid(min) != null && gte(version, min);
+
+export enum FoundryCLIInstallation {
+  NOT_INSTALLED = "NOT_INSTALLED",
+  INCOMPATIBLE_VERSION = "INCOMPATIBLE_VERSION",
+  INSTALLED = "INSTALLED",
+}
+
+export const checkFoundryCli = async (): Promise<{
+  result: FoundryCLIInstallation;
+  version?: string;
+}> => {
+  const foundryVersion = await getFoundryVersion();
+  if (typeof foundryVersion === "string") {
+    const result = versionIsAtMinimum(foundryVersion, MIN_FOUNDRY_CLI_VERSION)
+      ? FoundryCLIInstallation.INSTALLED
+      : FoundryCLIInstallation.INCOMPATIBLE_VERSION;
+    return { result, version: foundryVersion };
+  }
+  return { result: FoundryCLIInstallation.NOT_INSTALLED };
+};
