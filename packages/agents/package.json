@@ -47,7 +47,6 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
-    "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4"

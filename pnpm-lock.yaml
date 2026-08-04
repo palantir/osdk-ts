@@ -1678,9 +1678,6 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.52.11
         version: 7.52.11(@types/node@26.1.1)
-      '@osdk/functions':
-        specifier: workspace:~
-        version: link:../functions
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
