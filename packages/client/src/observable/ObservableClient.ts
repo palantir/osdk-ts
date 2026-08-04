@@ -58,8 +58,10 @@ import type {
 import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type {
+  FetchObjectSetPageOptions,
   GetObjectsOptions,
   GetObjectsResult,
+  ObjectSetPageResult,
   RetainHandle,
   StoreObjectsOptions,
 } from "./ObservableClient/PageTypes.js";
@@ -572,6 +574,27 @@ export interface ObservableClient extends ObserveLinks {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
+
+  /**
+   * Reads a single page of an object set and returns it as a promise, writing
+   * the returned objects into the object cache.
+   *
+   * Unlike `observeObjectSet` this creates no collection entry and holds no
+   * cursor: the server page token is passed through untouched in both
+   * directions. It exists for callers whose own contract is a
+   * cursor-paginated request/response pair -- who therefore own list
+   * membership themselves -- but who still want one shared object cache.
+   *
+   * Exactly one server request is issued per call; there is no implicit
+   * multi-page draining.
+   */
+  fetchObjectSetPage<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, any> = {},
+  >(
+    baseObjectSet: ObjectSet<T>,
+    options?: FetchObjectSetPageOptions<T, RDPs>,
+  ): Promise<ObjectSetPageResult<T, RDPs>>;
 
   /**
    * Cache-first bulk read by primary key. Cached objects are returned without

@@ -35,8 +35,10 @@ export type {
 export type { Observer } from "../observable/ObservableClient/common.js";
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 export type {
+  FetchObjectSetPageOptions,
   GetObjectsOptions,
   GetObjectsResult,
+  ObjectSetPageResult,
   RetainHandle,
   StoreObjectsOptions,
 } from "../observable/ObservableClient/PageTypes.js";
