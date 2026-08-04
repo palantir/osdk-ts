@@ -334,7 +334,7 @@ jobs:
       # leg. Running it isolated keeps the runner uncontended for it.
       # The other --filter exclusions are Vite 7+/Storybook packages that need Node 20+.
       # @osdk/e2e.sandbox.catchall is excluded because its only test file
-      # (src/intergration-tests/e2e.test.ts) drives the local-ontology integration
+      # (src/integration-tests/e2e.test.ts) drives the local-ontology integration
       # harness, and the current vitest version is not fully supported on Node 18.
       - name: Test (excluding Vite 7/Storybook packages on Node 18, and react-components)
         if: matrix.node == 18
