@@ -223,13 +223,14 @@ export default async function main(
     await fs.promises.mkdir(commandLineOpts.buildDir, { recursive: true });
   }
 
-  const importedLinkTypeIdsByApiName = commandLineOpts.importJson
-    ? getImportedLinkTypeIdsByApiName(
-        JSON.parse(
-          await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
-        ) as ImportedOntologyMetadata,
-      )
-    : undefined;
+  const importedLinkTypeIdsByApiName =
+    commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
+      ? getImportedLinkTypeIdsByApiName(
+          JSON.parse(
+            await fs.promises.readFile(commandLineOpts.importJson, "utf-8"),
+          ) as ImportedOntologyMetadata,
+        )
+      : undefined;
 
   const {
     ontologyIr,
@@ -265,13 +266,20 @@ export default async function main(
       undefined,
       ontologyIr.transitiveImportedOntology,
     );
+  const directlyImportedInterfaceTypes = Object.values(
+    ontologyIr.importedOntology.interfaceTypes,
+  ).map(({ interfaceType }) => interfaceType.apiName);
   const importedMetadataPath = path.join(
     commandLineOpts.buildDir,
     "oac-imported-metadata.json",
   );
   await fs.promises.writeFile(
     importedMetadataPath,
-    JSON.stringify(importedMetadata, null, 2),
+    JSON.stringify(
+      { ...importedMetadata, directlyImportedInterfaceTypes },
+      null,
+      2,
+    ),
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
