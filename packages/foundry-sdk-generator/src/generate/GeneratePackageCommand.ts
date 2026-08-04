@@ -41,7 +41,7 @@ export interface generatePackageCommandArgs {
   sdkPackages?: Map<string, string>;
   packageRid?: string;
   branch?: string;
-  exportOntologyMetadata?: boolean;
+  experimentalOntologyMetadata?: boolean;
 }
 
 export class GeneratePackageCommand implements
@@ -185,10 +185,11 @@ export class GeneratePackageCommand implements
           );
         },
       })
-      .option("disableOntologyMetadataExport", {
+      .option("experimentalOntologyMetadata", {
         boolean: true,
         demandOption: false,
-        hidden: false,
+        description:
+          `EXPERIMENTAL: emit the raw ontology metadata as a ./UNSTABLE_DO_NOT_USE/ontology-metadata subpath export. May change or be removed at any time.`,
         default: false,
       })
       .strict();
@@ -274,7 +275,8 @@ export class GeneratePackageCommand implements
                   ?? false,
               packageRid: args.packageRid,
               branch: args.branch,
-              exportOntologyMetadata: !args.disableOntologyMetadataExport,
+              exportOntologyMetadata: args.experimentalOntologyMetadata
+                ?? false,
             },
             logger,
           ));

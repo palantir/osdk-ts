@@ -98,6 +98,7 @@ export async function generatePackage(
     beta: options.beta,
     packageRid: options.packageRid,
     branch: options.branch,
+    exportOntologyMetadata: options.exportOntologyMetadata ?? false,
   });
 
   const compilerOutput: Record<

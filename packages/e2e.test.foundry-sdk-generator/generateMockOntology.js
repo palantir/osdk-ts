@@ -97,7 +97,7 @@ async function setup() {
     ...baseArgs,
     packageName: "@test-app2-beta/osdk",
     beta: true,
-    exportOntologyMetadata: true,
+    experimentalOntologyMetadata: true,
   });
 
   await safeStat(testApp2Dir, "should exist");

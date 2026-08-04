@@ -26,7 +26,7 @@
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate --disableOntologyMetadataExport && rm -rf src/examples/* && generate-examples && pnpm run format",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate && rm -rf src/examples/* && generate-examples && pnpm run format",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
     "format": "oxfmt -c ../../oxfmt.config.ts .",
     "generateExamples": "rm -rf src/examples/* && generate-examples && pnpm run format",
