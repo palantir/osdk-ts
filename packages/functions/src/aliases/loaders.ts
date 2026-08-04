@@ -39,6 +39,9 @@ import type {
   ObjectTypeIdentifier,
   ObjectTypeResource,
   ObjectTypeValue,
+  Query,
+  QueryResource,
+  QueryValue,
   ResolvedAliases,
   ResourcesFile,
   Source,
@@ -69,6 +72,7 @@ function loadPublishedAliases(): ResolvedAliases {
     mediasets: loadPublishedMediasets(aliasesFile.defaults.mediasets),
     streams: loadPublishedStreams(aliasesFile.defaults.streams),
     objects: loadPublishedObjects(aliasesFile.defaults.objects),
+    queries: loadPublishedQueries(aliasesFile.defaults.queries),
   };
   return cachedPublishedAliases;
 }
@@ -90,6 +94,7 @@ function loadPreviewAliases(): ResolvedAliases {
     mediasets: loadPreviewMediasets(resourcesFile.resources.mediasets),
     streams: loadPreviewStreams(resourcesFile.resources.streams),
     objects: loadPreviewObjects(resourcesFile.resources.objects),
+    queries: loadPreviewQueries(resourcesFile.resources.queries),
   };
 }
 
@@ -255,6 +260,30 @@ function loadPreviewObjects(
           },
         ];
       }),
+  );
+}
+
+function loadPublishedQueries(
+  queries: Record<string, QueryValue> | undefined,
+): Record<string, Query> {
+  return Object.fromEntries<Query>(
+    Object.entries(queries ?? {}).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ]),
+  );
+}
+
+function loadPreviewQueries(
+  queries: QueryResource[] | undefined,
+): Record<string, Query> {
+  return Object.fromEntries<Query>(
+    (queries ?? [])
+      .filter(
+        (query): query is QueryResource & { alias: string } =>
+          query.alias != null,
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
   );
 }
 

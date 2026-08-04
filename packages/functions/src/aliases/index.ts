@@ -19,5 +19,6 @@ export * from "./dataset.js";
 export * from "./mediaset.js";
 export * from "./model.js";
 export * from "./objectType.js";
+export * from "./query.js";
 export * from "./source.js";
 export * from "./stream.js";

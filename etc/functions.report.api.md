@@ -44,6 +44,8 @@ declare namespace Aliases {
         Model,
         objectType,
         ObjectType,
+        query,
+        Query,
         source,
         Source,
         stream,
@@ -304,6 +306,15 @@ export type Principal = {
     	type: "group"
     	id: string
 };
+
+// @public
+interface Query {
+    	// (undocumented)
+    apiName: string;
+}
+
+// @public
+function query<Q extends QueryDefinition<any>>(definition: Q): Q;
 
 export { Range_2 as Range }
 

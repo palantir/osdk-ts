@@ -273,6 +273,12 @@ export type AndWhereClause<
     	$and: WhereClause<T, RDPs>[]
 };
 
+// @public
+export interface ApiNameAlias {
+    	boundApiName: string;
+    	localApiName: string;
+}
+
 // @public (undocumented)
 export type ApplyActionOptions = {
     	$returnEdits?: true
@@ -1724,9 +1730,7 @@ export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
 };
 
 // @public
-export interface ObjectTypeAlias {
-    	boundApiName: string;
-    	localApiName: string;
+export interface ObjectTypeAlias extends ApiNameAlias {
     	properties?: Record<string, string>;
 }
 
@@ -2069,6 +2073,7 @@ export interface QueryDefinition<T = any> {
     //
     // (undocumented)
     __DefinitionMetadata?: QueryCompileTimeMetadata<T> & QueryMetadata;
+    	alias?: ApiNameAlias;
     	// (undocumented)
     apiName: string;
     	// (undocumented)

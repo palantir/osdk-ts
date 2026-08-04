@@ -56,9 +56,9 @@ export interface ObjectInterfaceCompileDefinition {
 }
 
 /**
- * Present when an object type has been alias-remapped, so that code generated
- * against one stack can run against another where the same object type carries
- * different api names.
+ * Present when something has been alias-remapped, so that code generated against
+ * one stack can run against another where the same entity carries a different api
+ * name.
  *
  * Two vocabularies are in play:
  *
@@ -67,11 +67,18 @@ export interface ObjectInterfaceCompileDefinition {
  * - **bound** - the names on the stack being talked to. Used on the wire only;
  *   a bound name should never escape to user code.
  */
-export interface ObjectTypeAlias {
-  /** The code-facing object type api name. */
+export interface ApiNameAlias {
+  /** The code-facing api name. */
   localApiName: string;
-  /** The object type api name on this stack, used on the wire. */
+  /** The api name on this stack, used on the wire. */
   boundApiName: string;
+}
+
+/**
+ * An {@link ApiNameAlias} for an object type, which may additionally remap the
+ * object's property api names.
+ */
+export interface ObjectTypeAlias extends ApiNameAlias {
   /**
    * Property api name remapping, keyed by local name with the bound name as the
    * value. Properties absent from this record are not remapped.

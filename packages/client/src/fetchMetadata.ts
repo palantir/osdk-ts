@@ -70,9 +70,15 @@ export const fetchMetadataInternal = async <
       definition.unsanitizedApiName ?? definition.apiName,
     ) as any;
   } else if (definition.type === "query") {
-    return client.ontologyProvider.getQueryDefinition(
+    const queryDef = await client.ontologyProvider.getQueryDefinition(
       definition.apiName,
       definition.isFixedVersion ? definition.version : undefined,
+    );
+    // As above: the server answers under the bound name, but this is user-facing.
+    return (
+      definition.alias == null
+        ? queryDef
+        : { ...queryDef, apiName: definition.alias.localApiName }
     ) as any;
   } else {
     throw new Error("Not implemented for given definition");

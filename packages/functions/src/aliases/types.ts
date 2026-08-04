@@ -54,6 +54,16 @@ export interface ObjectType {
   properties?: Record</* local */ string, /* bound */ string>;
 }
 
+/**
+ * The query an alias resolves to on the stack we are talking to.
+ *
+ * Unlike object types there is nothing inside a query to remap - parameter and
+ * output names are unaffected - so only the api name is carried.
+ */
+export interface Query {
+  apiName: string;
+}
+
 export interface ResolvedAliases {
   custom: Record<string, string>;
   models: Record<string, Model>;
@@ -62,6 +72,7 @@ export interface ResolvedAliases {
   mediasets: Record<string, Mediaset>;
   streams: Record<string, Stream>;
   objects: Record<string, ObjectType>;
+  queries: Record<string, Query>;
 }
 
 // Environment
@@ -117,6 +128,12 @@ export interface ObjectTypeResource {
   links?: Record</* local */ string, ObjectTypeIdentifier>;
 }
 
+export interface QueryResource {
+  identifier: QueryIdentifier;
+  verbs: string[];
+  alias?: string | null;
+}
+
 export interface ResourceScopes {
   custom: Record<string, string>;
   models: ModelResource[];
@@ -128,6 +145,11 @@ export interface ResourceScopes {
    * aliasing existed.
    */
   objects?: ObjectTypeResource[];
+  /**
+   * Optional: absent in `resources.json` files written before query aliasing
+   * existed.
+   */
+  queries?: QueryResource[];
 }
 
 export interface FunctionEgress {
@@ -199,6 +221,18 @@ export interface ObjectTypeValue {
   properties?: Record</* local */ string, ObjectTypeIdentifier>;
 }
 
+/**
+ * The "bound" query an alias points at, i.e. its api name on this stack. An api
+ * name rather than a rid, because api names are what the OSDK puts on the wire.
+ */
+export interface QueryIdentifier {
+  apiName: string;
+}
+
+export interface QueryValue {
+  id: QueryIdentifier;
+}
+
 export interface DefaultAliases {
   custom: Record<string, string>;
   models: Record<string, ModelValue>;
@@ -211,6 +245,11 @@ export interface DefaultAliases {
    * aliasing existed.
    */
   objects?: Record<string, ObjectTypeValue>;
+  /**
+   * Optional: absent in `aliases.json` files written before query aliasing
+   * existed.
+   */
+  queries?: Record<string, QueryValue>;
 }
 
 export interface AliasesFile {

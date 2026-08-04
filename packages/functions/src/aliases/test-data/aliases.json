@@ -80,6 +80,18 @@
           "apiName": "com.example.PublishedOffice"
         }
       }
+    },
+    "queries": {
+      "returnsObject": {
+        "id": {
+          "apiName": "com.example.publishedReturnsObject"
+        }
+      },
+      "queryAcceptsObject": {
+        "id": {
+          "apiName": "com.example.publishedQueryAcceptsObject"
+        }
+      }
     }
   },
   "version": 1

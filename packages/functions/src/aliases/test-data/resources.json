@@ -156,7 +156,30 @@
     "custom": {
       "previewCustomAlias": "previewCustomValue",
       "anotherPreviewCustom": "anotherPreviewValue"
-    }
+    },
+    "queries": [
+      {
+        "identifier": {
+          "apiName": "com.example.previewReturnsObject"
+        },
+        "verbs": [],
+        "alias": "returnsObject"
+      },
+      {
+        "identifier": {
+          "apiName": "com.example.previewQueryAcceptsObject"
+        },
+        "verbs": [],
+        "alias": "queryAcceptsObject"
+      },
+      {
+        "identifier": {
+          "apiName": "com.example.previewUnaliasedQuery"
+        },
+        "verbs": [],
+        "alias": null
+      }
+    ]
   },
   "egress": {
     "connections": [

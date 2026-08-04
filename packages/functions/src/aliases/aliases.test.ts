@@ -16,7 +16,12 @@
 
 import * as fs from "fs";
 
-import { Employee, Office } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  Office,
+  queryAcceptsObject,
+  returnsObject,
+} from "@osdk/client.test.ontology";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { custom } from "./custom.js";
@@ -30,6 +35,7 @@ import { resetPublishedCache } from "./loaders.js";
 import { mediaset } from "./mediaset.js";
 import { model } from "./model.js";
 import { objectType } from "./objectType.js";
+import { query } from "./query.js";
 import { source } from "./source.js";
 import { stream } from "./stream.js";
 import { AliasEnvironment } from "./types.js";
@@ -297,6 +303,46 @@ describe("published mode aliases", () => {
     it("throws on an object type with no alias", () => {
       expect(() => objectType({ type: "object", apiName: "Unmapped" })).toThrow(
         "Object type alias 'Unmapped' not found. Available aliases: [Employee, Office]",
+      );
+    });
+  });
+
+  describe("query", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = query(returnsObject);
+      expect(result.apiName).toBe("com.example.publishedReturnsObject");
+      expect(result.alias).toEqual({
+        localApiName: "returnsObject",
+        boundApiName: "com.example.publishedReturnsObject",
+      });
+    });
+
+    it("preserves version pinning and metadata", () => {
+      const result = query(returnsObject);
+      expect(result.version).toBe(returnsObject.version);
+      expect(result.isFixedVersion).toBe(returnsObject.isFixedVersion);
+      expect(result.osdkMetadata).toBe(returnsObject.osdkMetadata);
+    });
+
+    it("does not mutate the definition it was given", () => {
+      query(returnsObject);
+      expect(returnsObject.apiName).toBe("returnsObject");
+      expect(returnsObject).not.toHaveProperty("alias");
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(query(returnsObject).apiName).toBe(
+        "com.example.publishedReturnsObject",
+      );
+      expect(query(queryAcceptsObject).apiName).toBe(
+        "com.example.publishedQueryAcceptsObject",
+      );
+    });
+
+    it("throws on a query with no alias", () => {
+      expect(() => query({ type: "query", apiName: "unmapped" })).toThrow(
+        "Query alias 'unmapped' not found. Available aliases: " +
+          "[returnsObject, queryAcceptsObject]",
       );
     });
   });
@@ -569,6 +615,42 @@ describe("live preview mode aliases", () => {
 
       expect(() => objectType(Employee)).toThrow(
         "Object type alias 'Employee' not found. Available aliases: []",
+      );
+    });
+  });
+
+  describe("query", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = query(returnsObject);
+      expect(result.apiName).toBe("com.example.previewReturnsObject");
+      expect(result.alias).toEqual({
+        localApiName: "returnsObject",
+        boundApiName: "com.example.previewReturnsObject",
+      });
+    });
+
+    it("excludes queries with null or missing alias", () => {
+      expect(() => query({ type: "query", apiName: "unmapped" })).toThrow(
+        "Available aliases: [returnsObject, queryAcceptsObject]",
+      );
+    });
+
+    it("throws when resources.json has no queries section", () => {
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => query(returnsObject)).toThrow(
+        "Query alias 'returnsObject' not found. Available aliases: []",
       );
     });
   });

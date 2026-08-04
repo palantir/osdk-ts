@@ -16,7 +16,10 @@
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
+import type {
+  ApiNameAlias,
+  ObjectTypeDefinition,
+} from "./ObjectTypeDefinition.js";
 
 export interface QueryMetadata {
   type: "query";
@@ -37,6 +40,13 @@ export interface QueryCompileTimeMetadata<T> {
 export interface QueryDefinition<T = any> {
   type: "query";
   apiName: string;
+  /**
+   * Set when this definition has been alias-remapped. `apiName` is then the
+   * query's name on the wire, and the code-facing name is
+   * `alias.localApiName`. Unlike object types, nothing inside a query is
+   * remapped - parameter and output names are unaffected.
+   */
+  alias?: ApiNameAlias;
   version?: string;
   isFixedVersion?: boolean;
   osdkMetadata?: OsdkMetadata;
