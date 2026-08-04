@@ -582,7 +582,10 @@ describe("live preview mode aliases", () => {
     });
 
     it("carries the property remapping onto the alias", () => {
+      // The platform writes an entry for every property, including ones whose
+      // name is unchanged, so identity mappings show up here too.
       expect(objectType(Employee).alias?.properties).toEqual({
+        employeeId: "employeeId",
         fullName: "full_name",
         startDate: "start_date",
       });
@@ -591,6 +594,36 @@ describe("live preview mode aliases", () => {
     it("selects correct alias from multiple", () => {
       expect(objectType(Employee).apiName).toBe("com.example.PreviewEmployee");
       expect(objectType(Office).apiName).toBe("com.example.PreviewOffice");
+    });
+
+    it("throws when an entry has no apiName", () => {
+      // Regression: the bound api name is a sibling of `identifier`, not part of
+      // it. Reading the wrong field yielded `apiName: undefined`, which sailed
+      // through to the wire as a missing `objectType` and a 400 from the
+      // platform. It has to fail here instead.
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+            objects: [
+              {
+                identifier: { rid: "ri.ontology.main.object-type.x" },
+                verbs: [],
+                alias: "Employee",
+              },
+            ],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' has no 'apiName'",
+      );
     });
 
     it("excludes object types with null or missing alias", () => {

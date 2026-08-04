@@ -36,9 +36,9 @@ import type {
   ModelResource,
   ModelValue,
   ObjectType,
-  ObjectTypeIdentifier,
   ObjectTypeResource,
   ObjectTypeValue,
+  PropertyIdentifier,
   Query,
   QueryResource,
   QueryValue,
@@ -208,12 +208,33 @@ function loadPreviewMediasets(
 }
 
 /**
- * Flattens the `{ apiName }` identifiers of a property remapping into plain
- * bound names. Returns undefined when there is nothing to remap, so the alias
- * payload stays absent rather than carrying an empty record.
+ * Reads the bound api name off an entry. It is a sibling of the entry's
+ * identifier rather than part of it, so a wrong assumption here would otherwise
+ * surface as an `undefined` object type in a request body and a confusing 400
+ * from the platform - hence failing loudly instead.
+ */
+function requireBoundApiName(
+  kind: string,
+  alias: string,
+  apiName: string | undefined,
+): string {
+  if (typeof apiName !== "string" || apiName === "") {
+    throw new Error(
+      `${kind} alias '${alias}' has no 'apiName'. Every aliased entry must` +
+        ` carry the api name it resolves to on this stack.`,
+    );
+  }
+  return apiName;
+}
+
+/**
+ * Flattens the `{ apiName }` entries of a property remapping into plain bound
+ * names. Returns undefined when there is nothing to remap, so the alias payload
+ * stays absent rather than carrying an empty record.
  */
 function loadObjectProperties(
-  properties: Record<string, ObjectTypeIdentifier> | undefined,
+  alias: string,
+  properties: Record<string, PropertyIdentifier> | undefined,
 ): Record<string, string> | undefined {
   if (properties == null) {
     return undefined;
@@ -223,7 +244,14 @@ function loadObjectProperties(
     return undefined;
   }
   return Object.fromEntries(
-    entries.map(([local, { apiName }]) => [local, apiName]),
+    entries.map(([local, identifier]) => [
+      local,
+      requireBoundApiName(
+        `Property '${local}' of object type`,
+        alias,
+        identifier?.apiName,
+      ),
+    ]),
   );
 }
 
@@ -231,11 +259,14 @@ function loadPublishedObjects(
   objects: Record<string, ObjectTypeValue> | undefined,
 ): Record<string, ObjectType> {
   return Object.fromEntries<ObjectType>(
-    Object.entries(objects ?? {}).map(([alias, { id, properties }]) => {
-      const loaded = loadObjectProperties(properties);
+    Object.entries(objects ?? {}).map(([alias, value]) => {
+      const loaded = loadObjectProperties(alias, value.properties);
       return [
         alias,
-        { apiName: id.apiName, ...(loaded != null && { properties: loaded }) },
+        {
+          apiName: requireBoundApiName("Object type", alias, value.apiName),
+          ...(loaded != null && { properties: loaded }),
+        },
       ];
     }),
   );
@@ -250,12 +281,12 @@ function loadPreviewObjects(
         (object): object is ObjectTypeResource & { alias: string } =>
           object.alias != null,
       )
-      .map(({ alias, identifier, properties }) => {
-        const loaded = loadObjectProperties(properties);
+      .map(({ alias, apiName, properties }) => {
+        const loaded = loadObjectProperties(alias, properties);
         return [
           alias,
           {
-            apiName: identifier.apiName,
+            apiName: requireBoundApiName("Object type", alias, apiName),
             ...(loaded != null && { properties: loaded }),
           },
         ];
@@ -267,9 +298,9 @@ function loadPublishedQueries(
   queries: Record<string, QueryValue> | undefined,
 ): Record<string, Query> {
   return Object.fromEntries<Query>(
-    Object.entries(queries ?? {}).map(([alias, { id: identifier }]) => [
+    Object.entries(queries ?? {}).map(([alias, value]) => [
       alias,
-      identifier,
+      { apiName: requireBoundApiName("Query", alias, value.apiName) },
     ]),
   );
 }
@@ -283,7 +314,10 @@ function loadPreviewQueries(
         (query): query is QueryResource & { alias: string } =>
           query.alias != null,
       )
-      .map(({ alias, identifier }) => [alias, identifier]),
+      .map(({ alias, apiName }) => [
+        alias,
+        { apiName: requireBoundApiName("Query", alias, apiName) },
+      ]),
   );
 }
 

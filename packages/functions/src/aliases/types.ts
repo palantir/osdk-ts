@@ -113,25 +113,42 @@ export interface StreamResource {
   alias?: string | null;
 }
 
+/**
+ * An entry in `resources.objects`.
+ *
+ * Note that the bound api name is `apiName`, a sibling of `identifier` - the
+ * `identifier` holds the object type's rid, consistently with every other
+ * resource kind. The platform writes an entry for every property, including ones
+ * whose name is unchanged.
+ */
 export interface ObjectTypeResource {
   identifier: ObjectTypeIdentifier;
   verbs: string[];
+  /** The local (code-facing) name; the key this entry is looked up by. */
   alias?: string | null;
-  /**
-   * Property api name remapping, keyed by the local (code-facing) name.
-   * Properties absent from this record are not remapped.
-   */
-  properties?: Record</* local */ string, ObjectTypeIdentifier>;
-  /**
-   * Reserved for link api name remapping (local -> bound). Not yet applied.
-   */
-  links?: Record</* local */ string, ObjectTypeIdentifier>;
+  /** The object type's api name on this stack. */
+  apiName?: string;
+  /** Property api names on this stack, keyed by the local name. */
+  properties?: Record</* local */ string, PropertyIdentifier>;
 }
 
+/** The bound api name of a single property, as written in `properties`. */
+export interface PropertyIdentifier {
+  apiName: string;
+}
+
+/**
+ * An entry in `resources.queries`. Same shape as {@link ObjectTypeResource}: the
+ * bound api name sits alongside `identifier`, which carries the function rid and
+ * its version.
+ */
 export interface QueryResource {
   identifier: QueryIdentifier;
   verbs: string[];
+  /** The local (code-facing) name; the key this entry is looked up by. */
   alias?: string | null;
+  /** The query's api name on this stack. */
+  apiName?: string;
 }
 
 export interface ResourceScopes {
@@ -203,34 +220,38 @@ export interface StreamValue {
   id: StreamIdentifier;
 }
 
-/**
- * The "bound" object type an alias points at, i.e. its api name on this stack.
- * Unlike the other resource identifiers this is an api name rather than a rid,
- * because api names are what the OSDK puts on the wire.
- */
 export interface ObjectTypeIdentifier {
-  apiName: string;
+  rid: string;
 }
 
+/**
+ * An entry in `defaults.objects`.
+ *
+ * The api name is a sibling of `id`, mirroring `resources.json`, where the bound
+ * `apiName` sits alongside `identifier`. Unverified against a real `aliases.json`;
+ * the loader raises a clear error if the api name turns out to live elsewhere.
+ */
 export interface ObjectTypeValue {
   id: ObjectTypeIdentifier;
-  /**
-   * Property api name remapping, keyed by the local (code-facing) name.
-   * Properties absent from this record are not remapped.
-   */
-  properties?: Record</* local */ string, ObjectTypeIdentifier>;
+  /** The object type's api name on this stack. */
+  apiName?: string;
+  /** Property api names on this stack, keyed by the local name. */
+  properties?: Record</* local */ string, PropertyIdentifier>;
 }
 
-/**
- * The "bound" query an alias points at, i.e. its api name on this stack. An api
- * name rather than a rid, because api names are what the OSDK puts on the wire.
- */
 export interface QueryIdentifier {
-  apiName: string;
+  rid: string;
+  /**
+   * The version of the function this alias points at. Not currently applied - the
+   * version used on the wire comes from the generated query definition.
+   */
+  version?: string;
 }
 
 export interface QueryValue {
   id: QueryIdentifier;
+  /** The query's api name on this stack. See {@link ObjectTypeValue}. */
+  apiName?: string;
 }
 
 export interface DefaultAliases {
