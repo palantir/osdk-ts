@@ -22,7 +22,7 @@ import type {
 } from "@osdk/client";
 
 /**
- * Declare which resources a function needs access to.
+ * Declare which resources an agent needs access to.
  *
  * For `objects`, `interfaces`, `actions` and `queries`, you may provide either:
  * - A string alias from resources.json (e.g. `"myObject"`)
@@ -58,14 +58,14 @@ export namespace ScopeResources {
 }
 
 /**
- * Declare read-only marking requirements for callers of this function.
+ * Declare read-only marking requirements for callers of this agent.
  */
 export interface ScopeReadAuthorization {
   read: string[];
 }
 
 /**
- * Declare read and write marking requirements for callers of this function.
+ * Declare read and write marking requirements for callers of this agent.
  */
 export interface ScopeReadWriteAuthorization extends ScopeReadAuthorization {
   write: string[];
@@ -87,7 +87,7 @@ export namespace ScopeAuthorization {
 }
 
 /**
- * The scope declaration for a function.
+ * The scope declaration for an agent.
  * Accepts plain object literals or the sentinel/factory helpers from `ScopeResources` and `ReadOnlyAuthorization`.
  */
 export interface Scope {
