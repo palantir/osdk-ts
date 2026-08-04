@@ -68,8 +68,19 @@ import type {
 } from "../ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
+import type {
+  GetObjectsOptions,
+  GetObjectsResult,
+  RetainHandle,
+  StoreObjectsOptions,
+} from "../ObservableClient/PageTypes.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
+import { getObjectsByPrimaryKey } from "./object/getObjectsByPrimaryKey.js";
+import {
+  retainCacheKeys,
+  storeInstances,
+} from "./object/storeInstances.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Rdp } from "./RdpCanonicalizer.js";
 import type { Store } from "./Store.js";
@@ -282,6 +293,27 @@ export class ObservableClientImpl implements ObservableClient {
       // cast to cross typed to untyped barrier
       subFn as unknown as Observer<ObjectSetPayload>,
     );
+  }
+
+  public getObjects<T extends ObjectOrInterfaceDefinition>(
+    apiName: T["apiName"] | T,
+    primaryKeys: ReadonlyArray<PrimaryKeyType<T>>,
+    options?: GetObjectsOptions<T>,
+  ): Promise<GetObjectsResult<T>> {
+    return getObjectsByPrimaryKey(
+      this.__experimentalStore,
+      apiName,
+      primaryKeys,
+      options,
+    );
+  }
+
+  public storeObjects<T extends ObjectOrInterfaceDefinition>(
+    instances: ReadonlyArray<Osdk.Instance<T, any, any, any>>,
+    options?: StoreObjectsOptions<T>,
+  ): RetainHandle {
+    const keys = storeInstances(this.__experimentalStore, instances, options);
+    return retainCacheKeys(this.__experimentalStore, keys);
   }
 
   public invalidateAll(): Promise<void> {

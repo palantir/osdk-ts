@@ -57,6 +57,12 @@ import type {
 } from "./ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
+import type {
+  GetObjectsOptions,
+  GetObjectsResult,
+  RetainHandle,
+  StoreObjectsOptions,
+} from "./ObservableClient/PageTypes.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
 export namespace ObservableClient {
@@ -566,6 +572,28 @@ export interface ObservableClient extends ObserveLinks {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
+
+  /**
+   * Cache-first bulk read by primary key. Cached objects are returned without
+   * a request; misses are batched through the bulk loader and then cached.
+   *
+   * Missing objects resolve to `undefined` in their slot rather than rejecting
+   * the whole call.
+   */
+  getObjects<T extends ObjectOrInterfaceDefinition>(
+    apiName: T["apiName"] | T,
+    primaryKeys: ReadonlyArray<PrimaryKeyType<T>>,
+    options?: GetObjectsOptions<T>,
+  ): Promise<GetObjectsResult<T>>;
+
+  /**
+   * Writes instances the caller already holds into the object cache without
+   * fetching. For callers keeping their own transport.
+   */
+  storeObjects<T extends ObjectOrInterfaceDefinition>(
+    instances: ReadonlyArray<Osdk.Instance<T, any, any, any>>,
+    options?: StoreObjectsOptions<T>,
+  ): RetainHandle;
 
   /**
    * Invalidates the entire cache, forcing all queries to refetch.
