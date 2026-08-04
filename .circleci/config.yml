@@ -1,22 +1,20 @@
 version: 2.1
 
 # ------------------------------------------------------------------------------
-# This pipeline mirrors the pull-request half of .github/workflows/ci.yml and
-# runs alongside it. GitHub Actions remains the source of truth for releases and
-# for the currently-required status checks; nothing here publishes anything.
+# The pull-request half of .github/workflows/ci.yml, running alongside it.
+# Actions stays the source of truth for releases and for the required status
+# checks; nothing here publishes.
 #
-# The one place this deliberately diverges is Storybook: instead of the
-# build-twice / force-push-to-gh-pages flow the Actions workflows use, Storybook
-# is built once and shared with Chromatic through a CircleCI workspace.
-# See .circleci/README.md.
+# Read .circleci/README.md first: it covers the Storybook divergence, the
+# resource-class choices, the Actions features with no CircleCI equivalent, and
+# how test reporting works. Comments here cover only what that file does not.
 # ------------------------------------------------------------------------------
 
 parameters:
   run-chromatic:
     description: >
       Run only the Storybook build and Chromatic snapshot, skipping the rest of
-      CI. Set from the "Trigger Pipeline" UI or the API when you want to refresh
-      a baseline without paying for a full CI run.
+      CI. Refreshes a Chromatic baseline without paying for a full CI run.
     type: boolean
     default: false
 
@@ -44,9 +42,7 @@ executors:
   node:
     parameters:
       node-version:
-        description: >
-          cimg/node image tag. Major-only tags float to the latest patch, which
-          is what actions/setup-node already does for `node-version: 24`.
+        description: cimg/node tag. Major-only tags float to the latest patch.
         type: string
         default: "24"
       resource-class:
@@ -57,8 +53,6 @@ executors:
     resource_class: << parameters.resource-class >>
     environment: *ci-environment
 
-  # The e2e job publishes to a throwaway registry, which the GitHub Actions
-  # workflow models as a service container.
   node-with-verdaccio:
     docker:
       - image: cimg/node:24
@@ -94,12 +88,17 @@ commands:
   attach-deps:
     description: >
       Take node_modules from the workspace instead of reinstalling. Jobs
-      downstream of `build` also pick up its turbo cache this way, so their
-      build artifacts come from this pipeline rather than from a guess at some
-      earlier pipeline's cache key.
+      downstream of `build` pick up its turbo cache this way too.
     steps:
       - attach_workspace:
           at: .
+
+  prepare:
+    description: Check out, put pnpm on PATH, and attach the workspace.
+    steps:
+      - checkout
+      - activate-pnpm
+      - attach-deps
 
   save-pnpm-store:
     description: >
@@ -117,14 +116,13 @@ commands:
 
   restore-turbo-cache:
     description: >
-      Restore a scoped turbo cache. Each scope keeps its own warm cache across
-      runs, then falls back to this pipeline's build cache (the cold-start path)
-      and finally to any previous build cache.
+      Restore a scoped turbo cache, falling back to this pipeline's build cache
+      and then to any earlier build cache.
 
-      Keys carry CIRCLE_NODE_INDEX so that parallel containers within one job do
-      not race to write the same key — a save_cache against an existing key is a
-      silent no-op, which would mean only one container's results ever persist.
-      Jobs without `parallelism` always run at index 0.
+      Keys carry CIRCLE_NODE_INDEX because a save_cache against an existing key
+      is a silent no-op: sharing one key across a job's parallel containers would
+      mean only one container's results ever persist. Jobs without `parallelism`
+      always run at index 0.
     parameters:
       scope:
         type: string
@@ -151,9 +149,8 @@ commands:
 
   detect-infra-changes:
     description: >
-      Set $TURBO_FORCE for the rest of the job. When repo infrastructure
-      changes, build with --force so the run cannot silently rely on stale
-      cached artifacts and mask a broken task dependency.
+      Set $TURBO_FORCE for the rest of the job, so a run cannot silently rely on
+      stale cached artifacts and mask a broken task dependency.
     steps:
       - run:
           name: Detect infra changes
@@ -187,9 +184,7 @@ commands:
             fi
 
   halt-unless-pull-request:
-    description: >
-      End the job successfully when this is not a pull-request build. CircleCI
-      builds every push, but these checks only mean something on a PR.
+    description: End the job successfully when this is not a pull-request build.
     steps:
       - run:
           name: Skip unless this is a pull request
@@ -209,16 +204,9 @@ jobs:
   # Checks that gate a pull request
   # ---------------------------------------------------------------------------
 
-  # The only job that installs. Everything else attaches the result, which
-  # trades one ~1.1 GB workspace upload for fifteen fewer installs.
-  #
-  # Note this hands a single install to all four legs of the Node test matrix.
-  # That is safe for the native dependencies here because they are all N-API
-  # (`@swc/core`, `@parcel/watcher`, the oxc/rolldown/lightningcss bindings),
-  # whose ABI is stable across Node majors. `canvas` is the one node-gyp
-  # dependency whose prebuild is keyed to the installing Node version, but
-  # nothing imports it and it never compiles a binary here. If a matrix leg ever
-  # fails to load a native module, that assumption is what broke.
+  # The only job that installs; everything else attaches the result. One install
+  # serves all four Node legs of the test matrix — see README "Performance shape"
+  # for why that is safe, and what a native-module load failure would mean.
   install:
     executor:
       name: node
@@ -267,15 +255,13 @@ jobs:
   # identical output regardless of the host Node version (the build target comes
   # from tsconfig/tsup, not the runtime), so a build matrix would produce the
   # same bytes four times. Node 18 syntax compatibility is proven by the test
-  # matrix below. The turbo cache populated here is what the other jobs consume.
+  # matrix below.
   build:
     executor:
       name: node
       resource-class: xlarge
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: build
       - detect-infra-changes
@@ -285,30 +271,26 @@ jobs:
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: build
-      # Hand this pipeline's build outputs to every downstream job. The turbo
-      # cache travels rather than the raw build/ directories: it is the
-      # compressed form of the same artifacts, and it keeps `turbo run` a cache
-      # hit in the consumer jobs. That matters because `transpile` dependsOn
-      # `codegen`, whose generated sources turbo does not cache — dropping the
-      # turbo call downstream would leave those missing.
+      # The turbo cache travels to downstream jobs rather than the raw build/
+      # directories: it is the compressed form of the same artifacts, and it
+      # keeps `turbo run` a cache hit in the consumers. That matters because
+      # `transpile` dependsOn `codegen`, whose generated sources turbo does not
+      # cache — dropping the turbo call downstream would leave those missing.
       - persist_to_workspace:
           root: .
           paths:
             - .turbo/cache
 
   # The Node-version-independent checks are split across three jobs rather than
-  # one, because on a single container typecheck, lint, cspell and the API
-  # checks contend for CPU and serialize. Each restores the build cache, so
-  # transpile/transpileTypes are cache hits rather than recompiles.
+  # one, because on a single container typecheck, lint, cspell and the API checks
+  # contend for CPU and serialize.
 
   typecheck:
     executor:
       name: node
       resource-class: xlarge
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: typecheck
       - run:
@@ -326,13 +308,9 @@ jobs:
   lint:
     executor:
       name: node
-      # oxlint/oxfmt are Rust and scale across cores, so this is not the same
-      # job it would be under ESLint.
       resource-class: xlarge
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: lint
       - run:
@@ -353,12 +331,10 @@ jobs:
       name: node
       resource-class: medium
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - run:
-          # A single whole-repo pass, which supersedes the per-package
-          # check-spelling task, so we do not run both.
+          # A whole-repo pass, which supersedes the per-package check-spelling
+          # task, so we do not run both.
           name: Check spelling
           command: pnpm exec turbo run ci:cspell
 
@@ -373,19 +349,13 @@ jobs:
       name: node
       node-version: << parameters.node-version >>
       resource-class: xlarge
-    # Two containers per Node version. Container 1 runs @osdk/react-components
-    # alone: it has a large happy-dom suite, and when it competes with the other
-    # ~80 test processes for CPU its vitest main thread is starved enough to
-    # trip the worker RPC timeout. Running it serially after the others (what
-    # the Actions workflow does) avoids the contention but pays for it in wall
-    # clock; its own container avoids the contention *and* runs concurrently.
+    # Container 1 runs @osdk/react-components alone; see README "Performance
+    # shape" for why, and for the lever if the extra containers cost too much.
     parallelism: 2
     environment:
       NODE_18_EXCLUDES: *node-18-excludes
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       # Keyed per Node version: turbo's hash does not encode the Node runtime,
       # so a shared cache could restore another leg's result and defeat the
       # whole point of the matrix.
@@ -402,18 +372,16 @@ jobs:
       - run:
           # `turbo run test` only depends on ^transpileEsm, but some suites also
           # consume their dependencies' other build outputs (verify-cjs/esm, the
-          # webpack bundling test). Running transpile + transpileTypes restores
-          # all of build/{esm,cjs,browser,types} from the build job's cache, and
-          # because transpile dependsOn codegen it also regenerates the sources
-          # under generatedNoCheck/ that tests import but codegen does not cache.
+          # webpack bundling test). transpile + transpileTypes restores all of
+          # build/{esm,cjs,browser,types}, and because transpile dependsOn
+          # codegen it also regenerates the uncached generatedNoCheck/ sources.
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
       - run:
           name: Run this container's share of the tests
           command: |
-            # Every package's `test` script is a bare `vitest run`, so turbo's
-            # passthrough adds the JUnit reporter to all of them at once. Paths
-            # are relative to each task's cwd, so reports land per package.
+            # Turbo's passthrough adds the JUnit reporter to every package at
+            # once; see README "Test results".
             junit=(--reporter=default --reporter=junit --outputFile.junit=reports/junit.xml)
             case "$CIRCLE_NODE_INDEX" in
               0)
@@ -423,17 +391,14 @@ jobs:
                 pnpm exec turbo run test --filter=@osdk/react-components -- "${junit[@]}"
                 ;;
               *)
-                # Blueprint's config has a live example of this going wrong: its
-                # parallelism is 6 but the case has no branch for index 3, so one
-                # container silently runs nothing. Fail loudly instead.
+                # Fail loudly rather than silently running nothing, which is what
+                # Blueprint's config does today (parallelism 6, no branch for 3).
                 echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
                 echo "\`parallelism\` and this case statement have to agree." >&2
                 exit 1
                 ;;
             esac
       - run:
-          # `when: always` because a failing test run is exactly when these are
-          # worth having.
           name: Collect JUnit reports
           when: always
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
@@ -443,21 +408,16 @@ jobs:
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
 
-  # Build the app/site packages that have no transpile/typecheck task; `turbo
-  # run build` is what proves they still compile. Runs in parallel with the test
-  # matrix so the slow app builds stay off the tests' critical path.
-  #
-  # Storybook is excluded and built by build-storybook instead. Both jobs run
-  # `turbo run build`, so leaving it in would build the same Storybook twice per
-  # pipeline and race two jobs on one cache key.
+  # Build the app/site packages that have no transpile/typecheck task; `turbo run
+  # build` is what proves they still compile. Runs in parallel with the test
+  # matrix so the slow app builds stay off the tests' critical path. Storybook is
+  # excluded because build-storybook builds it instead.
   build-apps:
     executor:
       name: node
       resource-class: xlarge
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: apps
       - detect-infra-changes
@@ -471,9 +431,7 @@ jobs:
   e2e:
     executor: node-with-verdaccio
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: build
       - run:
@@ -507,29 +465,19 @@ jobs:
   # Storybook
   # ---------------------------------------------------------------------------
 
-  # Build Storybook exactly once per pipeline. The result goes to the workspace
+  # Build Storybook exactly once per pipeline; the result goes to the workspace
   # for the chromatic job, and to artifacts so a build is downloadable even when
   # Chromatic is unavailable (fork PRs get no project token).
-  #
-  # This goes through turbo rather than calling `storybook build` directly, so
-  # the package's declared `storybook-static/**` output is cached. A PR that
-  # touches nothing in Storybook's dependency graph is a cache hit and pays
-  # nothing — which is a transitively correct answer to "does this need
-  # rebuilding?", unlike a hand-written changed-paths guard.
   build-storybook:
     executor:
       name: node
-      # Rollup's bundle phase is largely single-threaded; the parallel part
-      # (transpiling deps) is cache hits.
       resource-class: large
     environment:
       # Chromatic serves each build at its own domain root, so override the
       # gh-pages-oriented default base path baked into .storybook/main.ts.
       STORYBOOK_BASE_PATH: /
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - restore-turbo-cache:
           scope: storybook
       - run:
@@ -542,7 +490,7 @@ jobs:
           command: pnpm exec turbo run transpileBrowser --filter='@osdk/react-components-storybook^...'
       - run:
           # The package's `build` script passes --stats-json, which emits the
-          # preview-stats.json that TurboSnap reads to work out which stories a
+          # preview-stats.json TurboSnap reads to work out which stories a
           # commit can actually reach.
           name: Build Storybook with TurboSnap stats
           command: pnpm exec turbo run build --filter=@osdk/react-components-storybook
@@ -559,16 +507,13 @@ jobs:
   chromatic:
     executor:
       name: node
-      # Uploads a prebuilt directory; no compute of its own.
       resource-class: small
     steps:
       - checkout
-      # A workspace attach is all-or-nothing, so this pulls node_modules and the
-      # turbo cache too even though the job needs neither. That is the price of
-      # installing once; if the attach ever dominates this job's runtime, the
-      # fix is to give it its own workspace root rather than to reinstall.
+      # Attaching pulls node_modules and the turbo cache this job does not need;
+      # attach is all-or-nothing. See README "Performance shape".
       - attach-deps
-      # Only pnpm itself is needed here (for `pnpm dlx`); the Storybook this
+      # Only pnpm itself is needed here, for `pnpm dlx`; the Storybook this
       # publishes arrived prebuilt through the workspace.
       - activate-pnpm
       - run:
@@ -580,17 +525,11 @@ jobs:
       name: node
       resource-class: xlarge
     steps:
-      - checkout
-      - activate-pnpm
-      - attach-deps
+      - prepare
       - run:
-          # Asks turbo's package graph rather than matching paths. A change to
-          # @osdk/client can reach a story through imports, and no glob over
-          # `packages/react-components*` would ever see it. is-affected.sh fails
-          # open, so an unresolvable base runs the tests.
-          #
-          # This needs node_modules to invoke turbo, so unlike the other guards
-          # it cannot run before the workspace attach.
+          # Asks turbo's package graph rather than matching paths; see README
+          # "Asking did this change?". Needs node_modules to invoke turbo, so
+          # unlike the other guards it cannot run before the workspace attach.
           name: Skip unless Storybook's dependency graph changed
           command: |
             if ! .circleci/scripts/is-affected.sh @osdk/react-components-storybook; then
@@ -601,8 +540,7 @@ jobs:
       - restore-turbo-cache:
           scope: storybook
       - run:
-          # The stories import the browser build of the workspace packages they
-          # render, so those must be transpiled first.
+          # The stories import the browser build of the packages they render.
           name: Transpile story dependencies
           command: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
       - run:
@@ -610,11 +548,8 @@ jobs:
           command: pnpm --filter @osdk/react-components-storybook exec playwright install --with-deps chromium
       - run:
           # Vitest browser mode runs each story's play function in headless
-          # Chromium. This is the flakiest suite in the pipeline, so it is the
-          # one that benefits most from CircleCI's flaky-test detection.
-          #
-          # Note the arguments follow the script name directly: pnpm 10 does not
-          # forward anything after a `--` separator.
+          # Chromium. Note the arguments follow the script name directly: pnpm 10
+          # does not forward anything after a `--` separator.
           name: Run interaction tests
           command: |
             pnpm --filter @osdk/react-components-storybook run test-storybook \
@@ -662,9 +597,8 @@ jobs:
             .circleci/scripts/base-ref.sh > /tmp/base-sha
             echo "Comparing against $(cat /tmp/base-sha)"
       - restore_cache:
-          # The base measurement only depends on the base commit, so it is
-          # identical for every push to a PR. Without this, each push pays for
-          # a full cold rebuild of the whole repo to recompute the same numbers.
+          # Identical for every push to a PR, so only the first push pays for
+          # the base rebuild.
           name: Restore the base-branch measurement
           keys:
             - size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
@@ -701,10 +635,9 @@ jobs:
       resource-class: small
     steps:
       - checkout
-      # `halt` ends the job after the current step rather than interrupting the
-      # running shell, so it gets a step to itself. Folding this into the step
-      # below would run the guard on in-repo PRs too, and fail any of them that
-      # legitimately touch CI config.
+      # The guard gets a step to itself so `halt` can end the job before it.
+      # Folding these together would run the guard on in-repo PRs too, and fail
+      # any of them that legitimately touch CI config.
       - run:
           name: Skip unless this is a fork pull request
           command: |
@@ -719,8 +652,7 @@ jobs:
           command: .circleci/scripts/fork-guard.sh
 
   # Single fan-in check. CircleCI does not run a job whose upstream failed, so
-  # unlike the Actions equivalent this needs no per-job result inspection:
-  # reaching this job at all means everything it requires passed or halted.
+  # unlike the Actions equivalent this needs no per-job result inspection.
   ci-all:
     executor:
       name: node
