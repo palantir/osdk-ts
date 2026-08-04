@@ -222,7 +222,11 @@ export function toLocalPropertyLookup(
  * `unique symbol`s lose their type identity, and the CJS/ESM duplication
  * described in `createClient.ts` makes symbol equality unreliable.
  *
- * @internal
+ * NOTE: this is re-exported from the `unstable-do-not-use` entrypoint, so it must
+ * not carry an internal-visibility JSDoc tag. `stripInternal` would drop it from
+ * the generated declarations and the declaration rollup would then fail to
+ * resolve the re-export. That check scans the comment text, so avoid even
+ * mentioning the tag by name here.
  */
 export function createAliasResolver(client: Client): {
   objectType: (localApiName: string) => string;
