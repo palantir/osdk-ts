@@ -9,6 +9,10 @@ on:
       - main
       - release/*
       - next
+      # Snapshot-only: the `release` job below is gated to main and release/*, so
+      # pushing this branch publishes a prerelease under the
+      # `next-<branch>` dist-tag without cutting real versions. Drop before merge.
+      - sj/object-type-alias-remapping
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
