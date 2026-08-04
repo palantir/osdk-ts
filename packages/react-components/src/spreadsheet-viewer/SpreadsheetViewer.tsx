@@ -19,20 +19,20 @@ import classnames from "classnames";
 import React, { useCallback } from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
-import { BaseExcelViewer } from "./BaseExcelViewer.js";
-import type {
-  ExcelViewerMediaProps,
-  ParsedSpreadsheet,
-} from "./ExcelViewerApi.js";
+import { BaseSpreadsheetViewer } from "./BaseSpreadsheetViewer.js";
 import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
+import type {
+  SpreadsheetViewerMediaProps,
+  ParsedSpreadsheet,
+} from "./SpreadsheetViewerApi.js";
 
-import styles from "./BaseExcelViewer.module.css";
+import styles from "./BaseSpreadsheetViewer.module.css";
 
-export function ExcelViewer({
+export function SpreadsheetViewer({
   media,
   className,
-  ...excelViewerProps
-}: ExcelViewerMediaProps): React.ReactElement {
+  ...spreadsheetViewerProps
+}: SpreadsheetViewerMediaProps): React.ReactElement {
   const {
     data: spreadsheet,
     loading,
@@ -59,7 +59,10 @@ export function ExcelViewer({
         </div>
       )}
       {spreadsheet != null && (
-        <BaseExcelViewer spreadsheet={spreadsheet} {...excelViewerProps} />
+        <BaseSpreadsheetViewer
+          spreadsheet={spreadsheet}
+          {...spreadsheetViewerProps}
+        />
       )}
     </div>
   );

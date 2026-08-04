@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-// BaseExcelViewer
-export { BaseExcelViewer } from "../../excel-viewer/BaseExcelViewer.js";
+// BaseSpreadsheetViewer
+export { BaseSpreadsheetViewer } from "../../spreadsheet-viewer/BaseSpreadsheetViewer.js";
 export type {
-  BaseExcelViewerProps,
-  ExcelViewerMediaProps,
+  BaseSpreadsheetViewerProps,
+  SpreadsheetViewerMediaProps,
   ParsedSpreadsheet,
   SheetData,
-} from "../../excel-viewer/ExcelViewerApi.js";
+} from "../../spreadsheet-viewer/SpreadsheetViewerApi.js";
 
-// ExcelViewer (Media wrapper)
-import { ExcelViewer as _ExcelViewer } from "../../excel-viewer/ExcelViewer.js";
+// SpreadsheetViewer (Media wrapper)
+import { SpreadsheetViewer as _SpreadsheetViewer } from "../../spreadsheet-viewer/SpreadsheetViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const ExcelViewer: typeof _ExcelViewer = withOsdkMetrics(
-  _ExcelViewer,
-  "ExcelViewer",
+export const SpreadsheetViewer: typeof _SpreadsheetViewer = withOsdkMetrics(
+  _SpreadsheetViewer,
+  "SpreadsheetViewer",
 );

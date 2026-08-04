@@ -15,7 +15,6 @@
 @import "./tokens/component-tokens/dialog.css";
 @import "./tokens/component-tokens/draggable.css";
 @import "./tokens/component-tokens/email-viewer.css";
-@import "./tokens/component-tokens/excel-viewer.css";
 @import "./tokens/component-tokens/file-picker.css";
 @import "./tokens/component-tokens/filter-list.css";
 @import "./tokens/component-tokens/form.css";
@@ -26,6 +25,7 @@
 @import "./tokens/component-tokens/pdf-viewer.css";
 @import "./tokens/component-tokens/radio.css";
 @import "./tokens/component-tokens/select.css";
+@import "./tokens/component-tokens/spreadsheet-viewer.css";
 @import "./tokens/component-tokens/table.css";
 @import "./tokens/component-tokens/timepicker.css";
 @import "./tokens/component-tokens/tooltip.css";

@@ -17,9 +17,12 @@
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 
-import type { BaseExcelViewerProps, SheetData } from "./ExcelViewerApi.js";
+import type {
+  BaseSpreadsheetViewerProps,
+  SheetData,
+} from "./SpreadsheetViewerApi.js";
 
-import styles from "./BaseExcelViewer.module.css";
+import styles from "./BaseSpreadsheetViewer.module.css";
 
 /**
  * Converts a 0-based column index to a spreadsheet column letter (0=A, 1=B, ..., 25=Z, 26=AA).
@@ -78,10 +81,10 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
 );
 SheetTable.displayName = "SheetTable";
 
-export function BaseExcelViewer({
+export function BaseSpreadsheetViewer({
   spreadsheet,
   className,
-}: BaseExcelViewerProps): React.ReactElement {
+}: BaseSpreadsheetViewerProps): React.ReactElement {
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
   const rootClassName = classnames(styles.container, className);
 

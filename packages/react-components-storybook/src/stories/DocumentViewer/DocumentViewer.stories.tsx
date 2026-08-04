@@ -151,7 +151,7 @@ const mockXmlMedia = createMockMedia(
   "data.xml",
 );
 
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const ws = utils.aoa_to_sheet([
     ["Name", "Department", "Salary"],
     ["Alice", "Engineering", "$145,000"],
@@ -167,7 +167,7 @@ function createMockExcelMedia(): Media {
   );
 }
 
-const mockExcelMedia = createMockExcelMedia();
+const mockSpreadsheetMedia = createMockSpreadsheetMedia();
 
 const mockTiffMedia = createMockMedia(
   "image/tiff",
@@ -280,9 +280,9 @@ export const Email: Story = {
   },
 };
 
-export const Excel: Story = {
+export const Spreadsheet: Story = {
   args: {
-    media: mockExcelMedia,
+    media: mockSpreadsheetMedia,
   },
 };
 
