@@ -11,10 +11,26 @@ import type { OntologyFullMetadata } from '@osdk/foundry.ontologies';
 import { SeedClient } from '@osdk/seed-helpers';
 
 // @public (undocumented)
+export const checkFoundryCli: () => Promise<{
+    	result: FoundryCLIInstallation
+    	version?: string
+}>;
+
+// @public (undocumented)
 export function createIntegrationClient(config: IntegrationClientConfig): Promise<IntegrationClient>;
 
 // @public (undocumented)
 export function createIntegrationServer(config: IntegrationServerConfig): Promise<IntegrationServer>;
+
+// @public (undocumented)
+export enum FoundryCLIInstallation {
+    	// (undocumented)
+    INCOMPATIBLE_VERSION = "INCOMPATIBLE_VERSION",
+    	// (undocumented)
+    INSTALLED = "INSTALLED",
+    	// (undocumented)
+    NOT_INSTALLED = "NOT_INSTALLED"
+}
 
 // @public (undocumented)
 export interface IntegrationClient {
