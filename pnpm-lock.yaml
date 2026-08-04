@@ -5239,10 +5239,10 @@ importers:
   packages/seed-helpers:
     dependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
