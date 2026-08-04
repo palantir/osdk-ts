@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import type { FunctionConfig } from "@osdk/functions";
+import type { Scope } from "./scope/types.js";
 
-export interface AgentConfig extends FunctionConfig {
+export interface AgentConfig {
   locator: string;
+  apiName?: string;
+  sources?: string[];
+  /**
+   * @experimental
+   */
+  scope?: Scope;
 }

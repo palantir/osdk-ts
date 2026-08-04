@@ -42,7 +42,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/functions": "workspace:^"
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
