@@ -18,9 +18,9 @@
 export { BaseSpreadsheetViewer } from "../../spreadsheet-viewer/BaseSpreadsheetViewer.js";
 export type {
   BaseSpreadsheetViewerProps,
-  SpreadsheetViewerMediaProps,
   ParsedSpreadsheet,
   SheetData,
+  SpreadsheetViewerMediaProps,
 } from "../../spreadsheet-viewer/SpreadsheetViewerApi.js";
 
 // SpreadsheetViewer (Media wrapper)

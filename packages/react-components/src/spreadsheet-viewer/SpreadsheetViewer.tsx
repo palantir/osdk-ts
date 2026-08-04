@@ -22,8 +22,8 @@ import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseSpreadsheetViewer } from "./BaseSpreadsheetViewer.js";
 import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
 import type {
-  SpreadsheetViewerMediaProps,
   ParsedSpreadsheet,
+  SpreadsheetViewerMediaProps,
 } from "./SpreadsheetViewerApi.js";
 
 import styles from "./BaseSpreadsheetViewer.module.css";

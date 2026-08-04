@@ -19,8 +19,8 @@
 import type { Media } from "@osdk/api";
 import type {
   BaseSpreadsheetViewerProps,
-  SpreadsheetViewerMediaProps,
   ParsedSpreadsheet,
+  SpreadsheetViewerMediaProps,
 } from "@osdk/react-components/experimental/spreadsheet-viewer";
 import {
   BaseSpreadsheetViewer,
