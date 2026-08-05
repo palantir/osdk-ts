@@ -1475,6 +1475,11 @@ function standardPackageRules(shared, options) {
               }\n            },`
               : ""
           }
+              // JUnit XML for CI. Deliberately not passed as a turbo \`--\` arg:
+              // turbo folds passthrough args into its *global* hash, so doing
+              // that makes every task in the run a cache miss, not just \`test\`.
+              reporters: process.env.CI ? ["default", "junit"] : ["default"],
+              outputFile: { junit: "reports/junit.xml" },
               coverage: {
                 include: ["src/**"],
                 // Exclude tests, generated code, and index.ts barrels (no logic).

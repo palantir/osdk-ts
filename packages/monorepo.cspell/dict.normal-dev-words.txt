@@ -44,6 +44,7 @@ structs
 subdependencies
 subdeps
 trackpad
+transpiles
 tsdoc
 typecheck
 typemapping

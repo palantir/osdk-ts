@@ -266,11 +266,18 @@
 
     "test": {
       "outputLogs": "new-only",
-      "env": ["FORCE_COLOR"],
+      /* CI is hashed because each package's vitest config switches on it to add
+         the JUnit reporter. Without it, a cache entry created locally (no XML)
+         could be restored in CI and the report upload would silently be empty.
+
+         The reporter is configured there rather than passed as a turbo `--`
+         arg on purpose: turbo folds passthrough args into its *global* hash, so
+         passing them makes every task in the run a cache miss, not just this
+         one. That cost the test job its entire build cache. */
+      "env": ["FORCE_COLOR", "CI"],
       "dependsOn": ["^transpileEsm"],
-      /* CI appends a JUnit reporter to this task. Declaring the output is what
-         makes a cache hit restore the XML; without it turbo replays the logs
-         and writes no file, so the report upload would silently be empty. */
+      /* Declaring the output is what makes a cache hit restore the XML; without
+         it turbo replays the logs and writes no file. */
       "outputs": ["reports/**"]
     },
 

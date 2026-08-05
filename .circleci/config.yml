@@ -406,17 +406,19 @@ jobs:
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
       - run:
+          # No `--` passthrough here. Each package's vitest config adds the JUnit
+          # reporter when CI is set, because turbo folds passthrough args into
+          # its *global* hash: passing them made every task in this run a cache
+          # miss, so the job rebuilt the whole graph instead of restoring the
+          # build job's cache. See README "Test results".
           name: Run this container's share of the tests
           command: |
-            # Turbo's passthrough adds the JUnit reporter to every package at
-            # once; see README "Test results".
-            junit=(--reporter=default --reporter=junit --outputFile.junit=reports/junit.xml)
             case "$CIRCLE_NODE_INDEX" in
               0)
-                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS -- "${junit[@]}"
+                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
                 ;;
               1)
-                pnpm exec turbo run test --filter=@osdk/react-components -- "${junit[@]}"
+                pnpm exec turbo run test --filter=@osdk/react-components
                 ;;
               *)
                 # Fail loudly rather than silently running nothing, which is what
