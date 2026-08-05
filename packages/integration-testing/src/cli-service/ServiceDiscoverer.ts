@@ -19,9 +19,12 @@ import { join } from "node:path";
 
 import invariant from "tiny-invariant";
 
-import type { ComponentDiscovery, ServiceName } from "./generated/cli/index.js";
-import { isProcessAlive } from "./utils/process.js";
-import { serviceNameFromFileName } from "./utils/service.js";
+import type {
+  ComponentDiscovery,
+  ServiceName,
+} from "../generated/cli/index.js";
+import { isProcessAlive } from "../utils/process.js";
+import { serviceNameFromFileName } from "../utils/service.js";
 
 export type ServiceDiscovererConfig = {
   basePath: string;

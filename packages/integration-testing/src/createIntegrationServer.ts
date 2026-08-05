@@ -22,29 +22,11 @@ import type { PreviewOntologyFullMetadata } from "@osdk/generator-converters.pre
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import invariant from "tiny-invariant";
 
-import { CliServiceLauncher } from "./CliServiceLauncher.js";
-import {
-  createIntegrationClient,
-  type IntegrationClient,
-} from "./IntegrationClient.js";
-import { OntologyServer } from "./OntologyServer.js";
+import { CliServiceLauncher } from "./cli-service/CliServiceLauncher.js";
+import { OntologyServer } from "./cli-service/OntologyServer.js";
+import { createIntegrationClient } from "./createIntegrationClient.js";
+import type { IntegrationServer, IntegrationServerConfig } from "./types.js";
 import { EMPTY_ONTOLOGY_BLOCK_DATA } from "./utils/empty-ontology-block.js";
-
-export type IntegrationServerConfig = {
-  /** Path to a prebuilt ontology metadata JSON. */
-  metadata: OntologyFullMetadata;
-  /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
-  foundryCliPath?: string;
-  /**
-   * Directory to create this server's run directory in. Each server gets its
-   * own `.test-run-*` beneath it, removed on {@link IntegrationServer.stop}, so
-   * servers sharing a `projectPath` stay isolated. Must already exist; defaults
-   * to the working directory.
-   */
-  projectPath?: string;
-  /** How long each service may take to become ready. Defaults to 30_000ms. */
-  readyTimeoutMs?: number;
-};
 
 const transformMetadata = (
   metadata: OntologyFullMetadata,
@@ -68,15 +50,6 @@ const writeMetadata = async (args: {
   const stringified = JSON.stringify(previewMetadata);
   await fs.writeFile(metadataPath, stringified);
 };
-
-export interface IntegrationServer {
-  start(): Promise<void>;
-  stop(): Promise<void>;
-  getOntologyUrl(): string | undefined;
-  getOntologyCaCertPath(): string | undefined;
-  createClient(): Promise<IntegrationClient>;
-}
-
 export async function createIntegrationServer(
   config: IntegrationServerConfig,
 ): Promise<IntegrationServer> {

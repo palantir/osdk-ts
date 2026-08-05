@@ -17,15 +17,15 @@
 import invariant from "tiny-invariant";
 
 import {
+  type ServiceName,
+  type ServiceStatus,
+  StatusService,
+} from "../generated/cli/index.js";
+import {
   FoundryCliService,
   type FoundryServiceConfig,
   type ServiceHealth,
 } from "./FoundryCliService.js";
-import {
-  type ServiceName,
-  type ServiceStatus,
-  StatusService,
-} from "./generated/cli/index.js";
 
 const HEALTH_REQUEST_TIMEOUT_MS = 2_000;
 

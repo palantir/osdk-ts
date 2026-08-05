@@ -20,7 +20,7 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { ServiceDiscoverer } from "../ServiceDiscoverer.js";
+import { ServiceDiscoverer } from "../cli-service/ServiceDiscoverer.js";
 import {
   discoveryFileName,
   serviceNameFromFileName,

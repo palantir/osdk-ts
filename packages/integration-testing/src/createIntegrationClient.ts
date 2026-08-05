@@ -31,20 +31,15 @@ import {
   type SeedFunction,
   type SeedOutput,
 } from "@osdk/seed-helpers";
-import { createMockClient, type MockClient } from "@osdk/unit-testing";
+import { createMockClient } from "@osdk/unit-testing";
 import { fetch as undiciFetch, Agent } from "undici";
 
 import { OntologySeedingService } from "./generated/cli/index.js";
-
-type LocalOntologyClient = Client & {
-  // local ontology does not have the ability to support function queries at the moment.
-  whenQuery: MockClient["whenQuery"];
-};
-
-export interface IntegrationClient {
-  client: LocalOntologyClient;
-  seed: SeedClient;
-}
+import type {
+  IntegrationClient,
+  IntegrationClientConfig,
+  LocalOntologyClient,
+} from "./types.js";
 
 /** The definition kinds accepted by {@link Client}'s call signatures. */
 type ClientArg =
@@ -52,10 +47,8 @@ type ClientArg =
   | InterfaceDefinition
   | ActionDefinition
   | QueryDefinition
-  | Experiment<"2.0.8">
-  | Experiment<"2.1.0">
-  | Experiment<"2.8.0">
-  | Experiment<"2.19.0">;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | Experiment<any>;
 
 type SeedClientConfig = {
   baseUrl: string;
@@ -130,12 +123,6 @@ function createSeedClient(config: SeedClientConfig): SeedClient {
     Object.getOwnPropertyDescriptors(seedClientUtils),
   );
 }
-
-export type IntegrationClientConfig = {
-  baseUrl: string;
-  metadata: Ontology.OntologyFullMetadata;
-  caCertPath?: string;
-};
 
 export async function createIntegrationClient(
   config: IntegrationClientConfig,

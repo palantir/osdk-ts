@@ -23,9 +23,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   FoundryCliService,
   type FoundryServiceConfig,
-} from "../FoundryCliService.js";
-import { ServiceDiscoverer } from "../ServiceDiscoverer.js";
-import { StatusServer } from "../StatusServer.js";
+} from "../cli-service/FoundryCliService.js";
+import { ServiceDiscoverer } from "../cli-service/ServiceDiscoverer.js";
+import { StatusServer } from "../cli-service/StatusServer.js";
 
 interface ScriptedServiceConfig extends FoundryServiceConfig {
   /** Body of the child program, run with `node -e`. */

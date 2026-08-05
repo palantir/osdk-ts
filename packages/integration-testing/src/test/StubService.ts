@@ -19,7 +19,7 @@ import {
   type FoundryServiceConfig,
   type ServiceHealth,
   type ServiceState,
-} from "../FoundryCliService.js";
+} from "../cli-service/FoundryCliService.js";
 import type { ServiceName } from "../generated/cli/index.js";
 
 export interface StubServiceConfig extends FoundryServiceConfig {

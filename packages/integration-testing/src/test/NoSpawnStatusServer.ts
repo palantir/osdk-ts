@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { StatusServer } from "../StatusServer.js";
+import { StatusServer } from "../cli-service/StatusServer.js";
 
 /**
  * A {@link StatusServer} that never spawns the Foundry CLI, for tests that put

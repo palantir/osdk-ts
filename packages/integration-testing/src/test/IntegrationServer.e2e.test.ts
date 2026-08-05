@@ -24,7 +24,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createIntegrationServer,
   type IntegrationServer,
-} from "../IntegrationServer.js";
+} from "../createIntegrationServer.js";
 import { checkFoundryCli, FoundryCLIInstallation } from "../utils/version.js";
 import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
 

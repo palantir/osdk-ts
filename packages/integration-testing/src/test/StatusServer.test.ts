@@ -20,9 +20,9 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { ServiceDiscoverer } from "../cli-service/ServiceDiscoverer.js";
+import { StatusServer } from "../cli-service/StatusServer.js";
 import type { ServiceStatus } from "../generated/cli/index.js";
-import { ServiceDiscoverer } from "../ServiceDiscoverer.js";
-import { StatusServer } from "../StatusServer.js";
 import {
   startStubStatusServer,
   type StubStatusServer,

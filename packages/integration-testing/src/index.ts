@@ -24,13 +24,12 @@
 export type {
   IntegrationClient,
   IntegrationClientConfig,
-} from "./IntegrationClient.js";
-export type {
   IntegrationServer,
   IntegrationServerConfig,
-} from "./IntegrationServer.js";
+  LocalOntologyClient,
+} from "./types.js";
 
-export { createIntegrationClient } from "./IntegrationClient.js";
-export { createIntegrationServer } from "./IntegrationServer.js";
+export { createIntegrationClient } from "./createIntegrationClient.js";
+export { createIntegrationServer } from "./createIntegrationServer.js";
 
 export { FoundryCLIInstallation, checkFoundryCli } from "./utils/version.js";

@@ -20,7 +20,7 @@ import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { createIntegrationServer } from "../IntegrationServer.js";
+import { createIntegrationServer } from "../createIntegrationServer.js";
 import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
 
 /**

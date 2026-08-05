@@ -19,8 +19,8 @@ import { setTimeout } from "node:timers/promises";
 
 import invariant from "tiny-invariant";
 
+import type { ServiceName } from "../generated/cli/index.js";
 import type { FoundryCliService, ServiceHealth } from "./FoundryCliService.js";
-import type { ServiceName } from "./generated/cli/index.js";
 import { ServiceDiscoverer } from "./ServiceDiscoverer.js";
 import { StatusServer } from "./StatusServer.js";
 
@@ -34,25 +34,6 @@ export interface CliServiceLauncherConfig {
   /** Status server to use. One is created if not supplied. */
   statusServer?: StatusServer;
 }
-
-const formatError = (
-  service: FoundryCliService,
-  health: ServiceHealth,
-): string => {
-  const parts: string[] = [];
-  if (health.message != null && health.message.length > 0) {
-    parts.push(health.message);
-  }
-  const exit = service.getExitInfo();
-  if (exit !== undefined) {
-    parts.push(`the process exited (${exit})`);
-  }
-  const stderr = service.getCapturedStderr();
-  if (stderr.length > 0) {
-    parts.push(`stderr:\n${stderr}`);
-  }
-  return parts.length === 0 ? "" : `: ${parts.join("; ")}`;
-};
 
 /**
  * Brings a set of Foundry services. Includes a status server by default.
@@ -279,3 +260,22 @@ export class CliServiceLauncher {
     }
   }
 }
+
+const formatError = (
+  service: FoundryCliService,
+  health: ServiceHealth,
+): string => {
+  const parts: string[] = [];
+  if (health.message != null && health.message.length > 0) {
+    parts.push(health.message);
+  }
+  const exit = service.getExitInfo();
+  if (exit !== undefined) {
+    parts.push(`the process exited (${exit})`);
+  }
+  const stderr = service.getCapturedStderr();
+  if (stderr.length > 0) {
+    parts.push(`stderr:\n${stderr}`);
+  }
+  return parts.length === 0 ? "" : `: ${parts.join("; ")}`;
+};

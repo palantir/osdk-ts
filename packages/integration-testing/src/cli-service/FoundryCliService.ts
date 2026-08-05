@@ -19,7 +19,7 @@ import { once } from "node:events";
 
 import invariant from "tiny-invariant";
 
-import type { ServiceLifecycle, ServiceName } from "./generated/cli/index.js";
+import type { ServiceLifecycle, ServiceName } from "../generated/cli/index.js";
 import type { ServiceDiscoverer } from "./ServiceDiscoverer.js";
 import type { StatusServer } from "./StatusServer.js";
 
