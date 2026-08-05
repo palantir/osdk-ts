@@ -30,30 +30,6 @@ export interface FoundryCliInstallPathsOptions {
   env?: NodeJS.ProcessEnv;
   platform?: NodeJS.Platform;
 }
-
-export const getArtifactPlatform = (
-  platform: NodeJS.Platform = process.platform,
-  arch: string = process.arch,
-): ArtifactPlatform => {
-  switch (`${platform}-${arch}`) {
-    case "linux-x64":
-      return "linux-amd64";
-    case "linux-arm64":
-      return "linux-arm64";
-    case "darwin-x64":
-      return "macos-amd64";
-    case "darwin-arm64":
-      return "macos-arm64";
-    case "win32-x64":
-      return "windows-amd64";
-    default:
-      invariant(
-        false,
-        `The Foundry CLI is not published for ${platform}-${arch}`,
-      );
-  }
-};
-
 const parseGitRemoteHost = (gitRemote: string): string | undefined => {
   try {
     // Strips any userinfo (`https://user:token@host/...`), and the port with it:

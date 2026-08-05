@@ -21,19 +21,17 @@ import { join } from "node:path";
 import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import {
-  createIntegrationServer,
-  type IntegrationServer,
-} from "../createIntegrationServer.js";
-import { checkFoundryCli, FoundryCLIInstallation } from "../utils/version.js";
+import { createIntegrationServer } from "../createIntegrationServer.js";
+import type { IntegrationServer } from "../types.js";
+import { checkFoundryCliVersion } from "../utils/foundry-cli.js";
 import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
 
 const TEST_TIMEOUT_MS = 180_000;
 
-const foundryInstalled = await checkFoundryCli();
+const foundryInstalled = await checkFoundryCliVersion();
 
 // Exercises the real CLI, so it only runs where `foundry` is installed.
-describe.runIf(foundryInstalled.result === FoundryCLIInstallation.INSTALLED)(
+describe.runIf(foundryInstalled.type === "installed")(
   "createIntegrationServer (end to end)",
   () => {
     let projectPath: string;
