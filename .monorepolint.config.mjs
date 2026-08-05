@@ -466,9 +466,11 @@ const archetypeRules = archetypes(
       },
       // Migrated to the oxc toolchain (oxlint + oxfmt). Its `codegen` step
       // reformats freshly-generated documentation examples via `pnpm run format`
-      // (now oxfmt). This is safe on the CI test matrix because codegen is
-      // restored from the Node-24 build cache rather than re-executed per leg
-      // (see #3783), so the Node < 22.18 legs never invoke oxfmt.
+      // (now oxfmt), and oxfmt can't run on Node < 20.19/22.18. This is safe on
+      // CI: the test-matrix leg is the only step that runs on the older Node
+      // versions (every other job runs on Node 24), and on those legs codegen is
+      // restored from the Node-24 build cache rather than re-executed (see #3783),
+      // so its oxfmt format step never runs there.
       oxc: true,
       oxcConfig: "./oxlint.config.ts",
     },
