@@ -6,6 +6,7 @@ import {
   createIntegrationServer,
 } from "@osdk/integration-testing";
 import {
+  type SeedClient,
   type SeedOutput,
   type SeedFunction,
   createSeedWithMetadata,
@@ -37,12 +38,18 @@ export const test = baseTest
     return server;
   })
   .extend(
-    "integration",
+    "seed",
     { scope: "worker" },
-    async ({ server }) => await server.createClient(),
+    async ({ server }) => await server.getSeedClient(),
+  )
+  .extend(
+    "client",
+    { scope: "worker" },
+    async ({ server }) => await server.getClient(),
   ) as TestAPI<{
   server: IntegrationServer;
-  integration: IntegrationClient;
+  client: IntegrationClient;
+  seed: SeedClient;
 }>;
 
 export const createSeed: <T>(fn: SeedFunction<T>) => {

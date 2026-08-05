@@ -26,7 +26,6 @@ export type {
   IntegrationClientConfig,
   IntegrationServer,
   IntegrationServerConfig,
-  LocalOntologyClient,
 } from "./types.js";
 
 export { createIntegrationClient } from "./createIntegrationClient.js";

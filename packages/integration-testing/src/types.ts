@@ -19,15 +19,11 @@ import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { SeedClient } from "@osdk/seed-helpers";
 import type { MockClient } from "@osdk/unit-testing";
 
-export type LocalOntologyClient = Client & {
+export type IntegrationClient = Client & {
   // local ontology does not have the ability to support function queries at the moment.
   whenQuery: MockClient["whenQuery"];
+  clearStubs(): MockClient["clearStubs"];
 };
-
-export interface IntegrationClient {
-  client: LocalOntologyClient;
-  seed: SeedClient;
-}
 
 export interface IntegrationClientConfig {
   baseUrl: string;
@@ -55,6 +51,6 @@ export interface IntegrationServer {
   start(): Promise<void>;
   stop(): Promise<void>;
   getOntologyUrl(): string | undefined;
-  getOntologyCaCertPath(): string | undefined;
-  createClient(): Promise<IntegrationClient>;
+  getSeedClient(): Promise<SeedClient>;
+  getClient(): Promise<IntegrationClient>;
 }

@@ -43,11 +43,11 @@ const baseSeed = createSeed((seed) => {
 test.describe.runIf(foundryProbeResult.type === "installed")(
   "Local ontology integration tests",
   () => {
-    test.beforeEach(async ({ integration }) => {
-      await integration.seed.set(baseSeed.output);
+    test.beforeEach(async ({ seed }) => {
+      await seed.set(baseSeed.output);
     });
-    test("List all people", async ({ integration }) => {
-      const page = await integration.client(Person).fetchPage();
+    test("List all people", async ({ client }) => {
+      const page = await client(Person).fetchPage();
       expect(Number(page.totalCount)).toBe(3);
       expect(
         page.data.find((v) => v.email === baseSeed.context.alice.email),
@@ -59,8 +59,8 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
         page.data.find((v) => v.email === baseSeed.context.charlie.email),
       ).toBeDefined();
     });
-    test("List all Todos", async ({ integration }) => {
-      const page = await integration.client(Todo).fetchPage();
+    test("List all Todos", async ({ client }) => {
+      const page = await client(Todo).fetchPage();
       expect(Number(page.totalCount)).toBe(2);
       expect(
         page.data.find((v) => v.id === baseSeed.context.todoItem1.id),
@@ -69,9 +69,8 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
         page.data.find((v) => v.id === baseSeed.context.todoItem2.id),
       ).toBeDefined();
     });
-    test("Alice and Charlie are friends", async ({ integration }) => {
-      const friends = await integration
-        .client(Person)
+    test("Alice and Charlie are friends", async ({ client }) => {
+      const friends = await client(Person)
         .where({ email: baseSeed.context.alice.email })
         .pivotTo("Friends")
         .fetchPage();
@@ -80,9 +79,8 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
         friends.data.find((f) => f.email === baseSeed.context.charlie.email),
       ).toBeDefined();
     });
-    test("Charlie and Alice are friends", async ({ integration }) => {
-      const friends = await integration
-        .client(Person)
+    test("Charlie and Alice are friends", async ({ client }) => {
+      const friends = await client(Person)
         .where({ email: baseSeed.context.charlie.email })
         .pivotTo("FriendOf")
         .fetchPage();
@@ -91,9 +89,8 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
         friends.data.find((f) => f.email === baseSeed.context.alice.email),
       ).toBeDefined();
     });
-    test("Todo 1 assigned to Bob", async ({ integration }) => {
-      const shouldBeBob = await integration
-        .client(Todo)
+    test("Todo 1 assigned to Bob", async ({ client }) => {
+      const shouldBeBob = await client(Todo)
         .where({ id: baseSeed.context.todoItem1.id })
         .pivotTo("Assignee")
         .fetchPage();
@@ -102,24 +99,23 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
         shouldBeBob.data.find((f) => f.email === baseSeed.context.bob.email),
       ).toBeDefined();
     });
-    test("Mock query", async ({ integration }) => {
-      integration.client.whenQuery(getTodoCount).thenReturn(1);
-      const res = await integration.client(getTodoCount).executeFunction();
+    test("Mock query", async ({ client }) => {
+      client.whenQuery(getTodoCount).thenReturn(1);
+      const res = await client(getTodoCount).executeFunction();
       expect(res).toBe(1);
     });
-    test("Mock Object Set query", async ({ integration }) => {
-      const objectSet = integration.client(Person).where({
+    test("Mock Object Set query", async ({ client }) => {
+      const objectSet = client(Person).where({
         email: {
           $in: [baseSeed.context.alice.email, baseSeed.context.charlie.email],
         },
       });
-      integration.client
+      client
         .whenQuery(getFriends, {
           person: baseSeed.context.bob,
         })
         .thenReturn(objectSet);
-      const res = await integration
-        .client(getFriends)
+      const res = await client(getFriends)
         .executeFunction({
           person: baseSeed.context.bob,
         })

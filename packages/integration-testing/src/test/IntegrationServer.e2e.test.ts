@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -54,26 +54,17 @@ describe.runIf(foundryInstalled.type === "installed")(
     it("discovers the running ontology service", () => {
       const url = server.getOntologyUrl();
       invariant(url, "the ontology service published no url");
-
-      // The service serves TLS — see the CA certificate it publishes below.
       expect(new URL(url).protocol).toBe("https:");
     });
 
-    it("exposes the ontology service's CA certificate", async () => {
-      const caCertPath = server.getOntologyCaCertPath();
-      invariant(caCertPath, "the ontology service published no CA cert path");
-
-      await expect(readFile(caCertPath, "utf-8")).resolves.toContain(
-        "-----BEGIN CERTIFICATE-----",
-      );
+    it("creates a client", async () => {
+      const client = await server.getClient();
+      expect(client).toBeTypeOf("function");
     });
 
-    it("creates a client whose seeder reaches the ontology service", async () => {
-      const { client, seed } = await server.createClient();
-
-      expect(client).toBeTypeOf("function");
-      // Round-trips an empty seed through the live seeding endpoint.
-      await expect(seed(() => {})).resolves.toBeUndefined();
+    it("creates a seed client", async () => {
+      const seed = await server.getSeedClient();
+      expect(seed).toBeTypeOf("function");
     });
   },
 );

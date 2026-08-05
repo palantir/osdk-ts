@@ -20,12 +20,19 @@ import path from "node:path";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { PreviewOntologyFullMetadata } from "@osdk/generator-converters.preview";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
+import type { SeedClient } from "@osdk/seed-helpers";
 import invariant from "tiny-invariant";
+import { Agent, fetch as undiciFetch } from "undici";
 
 import { CliServiceLauncher } from "./cli-service/CliServiceLauncher.js";
 import { OntologyServer } from "./cli-service/OntologyServer.js";
 import { createIntegrationClient } from "./createIntegrationClient.js";
-import type { IntegrationServer, IntegrationServerConfig } from "./types.js";
+import { createSeedClient } from "./createSeedClient.js";
+import type {
+  IntegrationClient,
+  IntegrationServer,
+  IntegrationServerConfig,
+} from "./types.js";
 import { EMPTY_ONTOLOGY_BLOCK_DATA } from "./utils/empty-ontology-block.js";
 
 const transformMetadata = (
@@ -83,7 +90,12 @@ export async function createIntegrationServer(
     }),
   );
 
+  // stateful cache of client and seed client
+  let client: IntegrationClient | undefined;
+  let seedClient: SeedClient | undefined;
+
   return {
+    getOntologyUrl: () => ontology.getUrl(),
     start: async () => {
       await serviceLauncher.start();
     },
@@ -91,16 +103,41 @@ export async function createIntegrationServer(
       await serviceLauncher.stop();
       await fs.rm(testPath, { recursive: true, force: true });
     },
-    getOntologyUrl: () => ontology.getUrl(),
-    getOntologyCaCertPath: () => ontology.getCaCertPath(),
-    createClient: () => {
+    getSeedClient: async () => {
+      if (seedClient !== undefined) return seedClient;
       const baseUrl = ontology.getUrl();
       invariant(baseUrl, "Ontology server is not ready");
-      return createIntegrationClient({
+      const caCertPath = ontology.getCaCertPath();
+      invariant(caCertPath, "Ontology server is not ready");
+      const agent = new Agent({
+        connect: caCertPath
+          ? {
+              ca: await fs.readFile(caCertPath),
+            }
+          : {
+              rejectUnauthorized: false,
+            },
+      });
+      const fetchWithCert = ((input, init) =>
+        undiciFetch(input, {
+          ...init,
+          dispatcher: agent,
+        })) satisfies typeof undiciFetch as unknown as typeof fetch;
+      return (seedClient = createSeedClient({
+        baseUrl,
+        metadata,
+        fetchFn: fetchWithCert,
+      }));
+    },
+    getClient: async () => {
+      if (client !== undefined) return client;
+      const baseUrl = ontology.getUrl();
+      invariant(baseUrl, "Ontology server is not ready");
+      return (client = await createIntegrationClient({
         baseUrl,
         metadata,
         caCertPath: ontology.getCaCertPath(),
-      });
+      }));
     },
   };
 }
