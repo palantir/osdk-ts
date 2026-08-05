@@ -228,13 +228,41 @@ Where CircleCI has no direct equivalent of an Actions feature:
 | `if:` job conditions on event payload         | In-job guards that call `circleci-agent step halt`, which ends the job **successfully**. That keeps `ci-all` reachable.                                           |
 | Job `outputs` (`build.outputs.infra_changed`) | `build-apps` re-runs the same cheap `git diff` rather than threading a value between jobs.                                                                        |
 | `services:` container                         | A second image in the job's `docker:` list (`e2e` + verdaccio), plus an explicit readiness poll.                                                                  |
-| Matrix `node-version: 18`                     | `cimg/node:18`. Major-only tags float to the latest patch, which is what `actions/setup-node` already does.                                                       |
+| Matrix `node-version: 18`                     | `cimg/node:18.20`. Not `cimg/node:18` — see "Node image tags" below.                                                                                              |
 | `actions/cache` `restore-keys`                | `restore_cache` with an ordered `keys:` list. The scoped-turbo-cache fallback chain is the same as `ci.yml`'s.                                                    |
 
 `chromatic` is invoked with a pinned `pnpm dlx chromatic@<version>` rather than a
 devDependency. Adding it to `package.json` made pnpm re-resolve enough of the
 workspace to pull ~1000 lines of unrelated version drift (including
 `@osdk/foundry.*` 2.60 → 2.71) into the lockfile. That bump deserves its own PR.
+
+### Node image tags
+
+**`cimg/node` publishes no bare major tags.** `cimg/node:24` is a 404, not a
+float to the newest 24.x. The tag list has `24.19`, `24.19.0`, `lts`, `current`
+and `-browsers` variants, and nothing matching `^\d+$`.
+
+This is the one place where reasoning by analogy from Actions actively misleads.
+`actions/setup-node` takes `node-version: 24` and _resolves_ it to the newest
+24.x, because it is a version resolver. A Docker tag is a literal string that
+either exists or does not. The first version of this config assumed the former
+and every job failed to pull its image.
+
+So the matrix pins `MAJOR.MINOR` (`18.20`, `20.20`, `22.23`, `24.19`), which is
+the coarsest tag that exists and still floats across patch releases. Two things
+follow:
+
+- These go stale at the minor boundary: `24.19` never becomes `24.20`. Bumping
+  is manual, and there is no Renovate config in this repo to do it for us.
+- The `test` job picks the Node 18 package excludes with a `case` on the major
+  (`18 | 18.*`) rather than an equality test. An equality test against `"18"`
+  would silently stop matching the moment the pinned minor moved, and the Node
+  18 leg would start trying to run the Vite 7 and Storybook packages that need
+  Node 20+.
+
+Blueprint pins exact patches (`cimg/node:24.14.1`). That is the more
+deterministic option and the alternative if a floating patch ever turns CI red
+on its own.
 
 ## Performance shape
 

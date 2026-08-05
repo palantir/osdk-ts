@@ -42,9 +42,13 @@ executors:
   node:
     parameters:
       node-version:
-        description: cimg/node tag. Major-only tags float to the latest patch.
+        # Must be at least MAJOR.MINOR. cimg/node publishes no bare major tags,
+        # so `24` is a 404 rather than a float to the newest 24.x — unlike
+        # actions/setup-node, a docker tag is a literal, not a version range.
+        # MAJOR.MINOR does float across patch releases.
+        description: cimg/node tag, MAJOR.MINOR or more specific.
         type: string
-        default: "24"
+        default: "24.19"
       resource-class:
         type: string
         default: large
@@ -55,7 +59,7 @@ executors:
 
   node-with-verdaccio:
     docker:
-      - image: cimg/node:24
+      - image: cimg/node:24.19
       - image: verdaccio/verdaccio:6
     resource_class: large
     environment: *ci-environment
@@ -364,11 +368,18 @@ jobs:
       - run:
           name: Select package filters for this Node version
           command: |
-            if [ "<< parameters.node-version >>" = "18" ]; then
-              echo "export TURBO_FILTERS=\"$NODE_18_EXCLUDES\"" >> "$BASH_ENV"
-            else
-              echo "export TURBO_FILTERS=" >> "$BASH_ENV"
-            fi
+            # Match the major only. The matrix pins MAJOR.MINOR, so an equality
+            # test against "18" would silently stop applying the excludes the
+            # moment the pinned minor moves, and the Node 18 leg would try to
+            # run the Vite 7 and Storybook packages that need Node 20+.
+            case "<< parameters.node-version >>" in
+              18 | 18.*)
+                echo "export TURBO_FILTERS=\"$NODE_18_EXCLUDES\"" >> "$BASH_ENV"
+                ;;
+              *)
+                echo "export TURBO_FILTERS=" >> "$BASH_ENV"
+                ;;
+            esac
       - run:
           # `turbo run test` only depends on ^transpileEsm, but some suites also
           # consume their dependencies' other build outputs (verify-cjs/esm, the
@@ -700,8 +711,10 @@ workflows:
       - test:
           matrix:
             parameters:
-              # Every LTS since the 2.0 GA, which means 18.x and up.
-              node-version: ["18", "20", "22", "24"]
+              # Every LTS since the 2.0 GA, which means 18.x and up. Pinned to
+              # MAJOR.MINOR because cimg/node has no bare major tags; each one
+              # still floats to the newest patch in its line.
+              node-version: ["18.20", "20.20", "22.23", "24.19"]
           requires: [build]
       - build-storybook:
           requires: [build]
