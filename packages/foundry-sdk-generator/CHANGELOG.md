@@ -1,5 +1,20 @@
 # @osdk/foundry-sdk-generator
 
+## 2.54.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/client@2.54.0
+- @osdk/generator-converters@2.54.0
+- @osdk/generator-utils@2.54.0
+- @osdk/generator@2.54.0
+
 ## 2.53.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/cli.cmd.typescript
 
+## 0.79.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/generator@2.54.0
+- @osdk/cli.common@0.79.0
+
 ## 0.78.0
 
 ### Minor Changes
