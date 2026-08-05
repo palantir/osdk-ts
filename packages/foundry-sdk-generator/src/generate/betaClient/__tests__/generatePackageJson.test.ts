@@ -31,7 +31,7 @@ describe("generatePackageJson", () => {
     await rm(packagePath, { recursive: true, force: true });
   });
 
-  it("emits the ontology metadata subpath export", async () => {
+  it("emits the ontology metadata subpath export when enabled", async () => {
     await generatePackageJson({
       packageName: "@my/generated-sdk",
       packageVersion: "1.2.3",
@@ -44,6 +44,7 @@ describe("generatePackageJson", () => {
       beta: true,
       packageRid: "ri.foundry.main.package.dead-beef",
       branch: "master",
+      exportOntologyMetadata: true,
     });
 
     expect(await readFile(join(packagePath, "package.json"), "utf-8"))
@@ -92,5 +93,28 @@ describe("generatePackageJson", () => {
             "type": "commonjs"
         }"
       `);
+  });
+
+  it("omits the ontology metadata subpath export when disabled", async () => {
+    await generatePackageJson({
+      packageName: "@my/generated-sdk",
+      packageVersion: "1.2.3",
+      packagePath,
+      dependencies: [],
+      peerDependencies: [{
+        dependencyName: "@osdk/client",
+        dependencyVersion: "^2.0.0",
+      }],
+      beta: true,
+      packageRid: "ri.foundry.main.package.dead-beef",
+      branch: "master",
+      exportOntologyMetadata: false,
+    });
+
+    // The shims and json are only written when the flag is on, so advertising
+    // the subpath here would point at files that don't exist.
+    const written = await readFile(join(packagePath, "package.json"), "utf-8");
+    expect(Object.keys(JSON.parse(written).exports)).toEqual(["."]);
+    expect(written).not.toContain("UNSTABLE_DO_NOT_USE/ontology-metadata");
   });
 });

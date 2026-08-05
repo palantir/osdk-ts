@@ -32,5 +32,5 @@ export interface TypescriptGenerateArgs {
   externalInterfaces: Map<string, string>;
   branch?: string;
   skipPackageJsonUpdate?: boolean;
-  disableOntologyMetadataExport?: boolean;
+  experimentalOntologyMetadata?: boolean;
 }

@@ -129,9 +129,12 @@ export const generateCommand: CommandModule<{}, TypescriptGenerateArgs> = {
           description: "Skip updating package.json with OSDK dependencies",
           default: false,
         },
-        disableOntologyMetadataExport: {
+        experimentalOntologyMetadata: {
           type: "boolean",
-          description: "Disables ontology metadata JSON generation",
+          description:
+            "EXPERIMENTAL: emit the raw ontology metadata as a " +
+            "./UNSTABLE_DO_NOT_USE/ontology-metadata subpath export. " +
+            "May change or be removed at any time.",
           default: false,
         },
       } as const)
