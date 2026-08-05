@@ -34,6 +34,11 @@ const modifiedMetadata: Ontologies.OntologyFullMetadata = {
   sharedPropertyTypes: {},
 };
 
+/**
+ * This is a fixture that injects server, seed and client to the testing functions contexts.
+ * We need to initialize the server and client before the tests can consume them, and this
+ * fixture ensures that all of the dependencies are ready before we run the tests.
+ */
 export const test = baseTest
   // eslint-disable no-empty-pattern
   .extend("server", { scope: "worker" }, async ({}, { onCleanup }) => {
