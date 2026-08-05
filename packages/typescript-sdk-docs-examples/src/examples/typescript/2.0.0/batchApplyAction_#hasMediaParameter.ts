@@ -19,14 +19,15 @@
 
 // Example: batchApplyAction (Variation: #hasMediaParameter)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload, MediaReference } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { createAttachmentUpload } from "@osdk/client";
+
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callBatchAction() {
@@ -48,20 +49,23 @@ async function callBatchAction() {
     objectType: Equipment,
     propertyType: "trainingMaterial",
   });
-  const result = await client(documentEquipment).batchApplyAction([
+  const result = await client(documentEquipment).batchApplyAction(
+    [
+      {
+        equipmentId: "mac-1234",
+        documentFile: attachment,
+        instructionalVideo: mediaReference,
+      },
+      {
+        equipmentId: "mac-1234",
+        documentFile: attachment,
+        instructionalVideo: mediaReference,
+      },
+    ],
     {
-      "equipmentId": "mac-1234",
-      "documentFile": attachment,
-      "instructionalVideo": mediaReference,
+      $returnEdits: true,
     },
-    {
-      "equipmentId": "mac-1234",
-      "documentFile": attachment,
-      "instructionalVideo": mediaReference,
-    },
-  ], {
-    $returnEdits: true,
-  });
+  );
   if (result.type === "edits") {
     // use the result object to report back on action results
     const updatedObject = result.editedObjectTypes[0];

@@ -25,8 +25,10 @@ import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
   .withProperties({
-    "derivedPropertyDatetime_min": (baseObjectSet) =>
-      baseObjectSet.pivotTo("lead")
+    derivedPropertyDatetime_min: (baseObjectSet) =>
+      baseObjectSet
+        .pivotTo("lead")
         .selectProperty("startDate")
         .min(baseObjectSet.pivotTo("lead").selectProperty("startDate")),
-  }).fetchPage();
+  })
+  .fetchPage();

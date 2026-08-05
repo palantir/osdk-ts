@@ -19,8 +19,8 @@
 
 // Example: applyAction (Variation: #actionParameterSampleValuesV2)
 
-// Edit this import if your client location differs
 import { refreshData } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {

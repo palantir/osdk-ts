@@ -19,14 +19,15 @@
 
 // Example: applyAction (Variation: #hasMediaParameter)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload, MediaReference } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { createAttachmentUpload } from "@osdk/client";
+
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {
@@ -54,9 +55,9 @@ async function callAction() {
   // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
   const result = await client(documentEquipment).applyAction(
     {
-      "equipmentId": "mac-1234",
-      "documentFile": attachment,
-      "instructionalVideo": mediaReference,
+      equipmentId: "mac-1234",
+      documentFile: attachment,
+      instructionalVideo: mediaReference,
     },
     {
       $returnEdits: true,

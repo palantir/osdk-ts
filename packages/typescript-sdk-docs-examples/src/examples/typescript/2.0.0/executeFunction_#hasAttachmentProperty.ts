@@ -19,12 +19,13 @@
 
 // Example: executeFunction (Variation: #hasAttachmentProperty)
 
-// Edit this import if your client location differs
 import type { Osdk } from "@osdk/client";
+
 import {
   calculateTotal,
   type Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callFunctionWithAttachmentLoaded(

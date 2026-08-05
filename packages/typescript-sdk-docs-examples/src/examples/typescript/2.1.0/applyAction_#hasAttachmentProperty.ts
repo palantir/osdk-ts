@@ -19,10 +19,11 @@
 
 // Example: applyAction (Variation: #hasAttachmentProperty)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
+
 import { documentEquipment } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {
@@ -38,9 +39,9 @@ async function callAction() {
 
   const result = await client(documentEquipment).applyAction(
     {
-      "equipmentId": "mac-1234",
-      "documentType": "invoice",
-      "documentFile": attachment,
+      equipmentId: "mac-1234",
+      documentType: "invoice",
+      documentFile: attachment,
     },
     {
       $returnEdits: true,

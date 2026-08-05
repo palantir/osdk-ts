@@ -464,15 +464,15 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "lib": ["ES2023", "DOM", "ESNEXT.Array"],
       },
-      // NOT migrated to the oxc toolchain in this increment. Its `codegen` step
-      // reformats freshly-generated documentation examples via `pnpm run format`,
-      // and that step runs on every CI test-matrix leg (Node 18-24) because a
-      // generator package, @osdk/osdk-docs-context-generator, depends on this
-      // package's codegen output. oxfmt cannot load the repo's TypeScript
-      // oxfmt.config.ts on Node < 22.18, so the format step must stay on dprint
-      // (which is Node-version-independent). Migrate this package once codegen is
-      // restored from the Node-24 build cache on the matrix (see #3031 follow-up)
-      // rather than re-executed per leg.
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Its `codegen` step
+      // reformats freshly-generated documentation examples via `pnpm run format`
+      // (now oxfmt), and oxfmt can't run on Node < 20.19/22.18. This is safe on
+      // CI: the test-matrix leg is the only step that runs on the older Node
+      // versions (every other job runs on Node 24), and on those legs codegen is
+      // restored from the Node-24 build cache rather than re-executed (see #3783),
+      // so its oxfmt format step never runs there.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype("publishedSandboxes", [

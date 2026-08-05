@@ -20,6 +20,7 @@
 // Example: loadLinkedObjectReference (Variation: ^isLinkManySided)
 
 import { type Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 async function getLinkedEmployee(source: Osdk.Instance<Employee>) {

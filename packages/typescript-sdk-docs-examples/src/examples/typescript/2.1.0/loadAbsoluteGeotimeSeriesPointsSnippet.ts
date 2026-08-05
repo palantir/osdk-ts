@@ -20,6 +20,7 @@
 // Example: loadAbsoluteGeotimeSeriesPointsSnippet
 
 import type { Osdk } from "@osdk/client";
+
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
