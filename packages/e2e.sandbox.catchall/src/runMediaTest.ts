@@ -395,14 +395,12 @@ const slicePdf: MediaTransformation = {
   },
 };
 
-async function runTransformAndWaitTest(
-  mediaReference: MediaReference,
-): Promise<void> {
+async function runTransformAndWaitTest(media: Media): Promise<void> {
   const transformation = imageResize;
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
   const result = await client(transformAndWait).transformAndWait({
-    mediaReference,
+    media,
     transformation,
   });
 
@@ -466,7 +464,7 @@ export async function runMediaTest(): Promise<void> {
   console.log("SUCCESS: Testing Media Query");
 
   console.log("Testing transformAndWait");
-  await runTransformAndWaitTest(result.mediaReference.getMediaReference());
+  await runTransformAndWaitTest(result.mediaReference);
   console.log("SUCCESS: Testing transformAndWait");
 }
 

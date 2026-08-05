@@ -19,7 +19,7 @@ import type {
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
-  MediaReference,
+  Media,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -353,14 +353,14 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         case transformAndWait.name:
           return {
             transformAndWait: async (args: {
-              mediaReference: MediaReference;
+              media: Media;
               transformation: MediaTransformation;
               options?: TransformOptions;
             }) => {
               const { transformAndWaitInternal } =
                 await import("./util/transformAndWaitInternal.js");
               const { mediaSetRid, mediaItemRid, token } =
-                args.mediaReference.reference.mediaSetViewItem;
+                args.media.getMediaReference().reference.mediaSetViewItem;
               return transformAndWaitInternal(
                 clientCtx,
                 mediaSetRid,

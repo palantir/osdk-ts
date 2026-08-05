@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MediaReference } from "../object/Media.js";
+import type { Media } from "../object/Media.js";
 import type { Experiment } from "./Experiment.js";
 import type { MediaTransformation } from "./MediaTransformation.js";
 
@@ -36,14 +36,14 @@ export interface TransformOptions {
  * Submits a transformation job for a media item, polls until completion,
  * and returns the transformed content.
  *
- * @param args.mediaReference - The media reference to transform
+ * @param args.media - The media item to transform
  * @param args.transformation - The {@link MediaTransformation} to apply
  * @param args.options - Polling options (interval and timeout)
  *
  * @returns The transformed media content as a Response
  */
 type TransformAndWaitFn = (args: {
-  mediaReference: MediaReference;
+  media: Media;
   transformation: MediaTransformation;
   options?: TransformOptions;
 }) => Promise<Response>;
