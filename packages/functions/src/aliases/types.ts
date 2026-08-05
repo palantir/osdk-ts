@@ -224,21 +224,6 @@ export interface ObjectTypeIdentifier {
   rid: string;
 }
 
-/**
- * An entry in `defaults.objects`.
- *
- * The api name is a sibling of `id`, mirroring `resources.json`, where the bound
- * `apiName` sits alongside `identifier`. Unverified against a real `aliases.json`;
- * the loader raises a clear error if the api name turns out to live elsewhere.
- */
-export interface ObjectTypeValue {
-  id: ObjectTypeIdentifier;
-  /** The object type's api name on this stack. */
-  apiName?: string;
-  /** Property api names on this stack, keyed by the local name. */
-  properties?: Record</* local */ string, PropertyIdentifier>;
-}
-
 export interface QueryIdentifier {
   rid: string;
   /**
@@ -248,10 +233,44 @@ export interface QueryIdentifier {
   version?: string;
 }
 
+/**
+ * An id carrying an api name.
+ *
+ * Note that `aliases.json` differs from `resources.json` here. In
+ * `resources.json` the `identifier` holds a rid and the bound `apiName` sits
+ * beside it; in `aliases.json` the `id` holds the bound api name itself and
+ * there is no rid.
+ */
+export interface ApiNameId {
+  apiName: string;
+}
+
+export interface QueryApiNameId extends ApiNameId {
+  /**
+   * The version of the function this alias points at. Not currently applied - the
+   * version used on the wire comes from the generated query definition.
+   */
+  version?: string;
+}
+
+/**
+ * An entry in `defaults.objects.<alias>.properties`. Note the extra `id` nesting
+ * relative to `resources.json`, where a property maps straight to `{ apiName }`.
+ */
+export interface PropertyValue {
+  id: ApiNameId;
+}
+
+/** An entry in `defaults.objects`, keyed by the local (code-facing) name. */
+export interface ObjectTypeValue {
+  id: ApiNameId;
+  /** Property api names on this stack, keyed by the local name. */
+  properties?: Record</* local */ string, PropertyValue>;
+}
+
+/** An entry in `defaults.queries`, keyed by the local (code-facing) name. */
 export interface QueryValue {
-  id: QueryIdentifier;
-  /** The query's api name on this stack. See {@link ObjectTypeValue}. */
-  apiName?: string;
+  id: QueryApiNameId;
 }
 
 export interface DefaultAliases {

@@ -263,13 +263,41 @@ describe("published mode aliases", () => {
     });
 
     it("carries the property remapping onto the alias", () => {
+      // In aliases.json each property is wrapped as `{ id: { apiName } }`, unlike
+      // resources.json where it maps straight to `{ apiName }`.
       expect(objectType(Employee).alias?.properties).toEqual({
+        employeeId: "employeeId",
         fullName: "full_name",
       });
     });
 
     it("omits properties entirely when nothing is remapped", () => {
       expect(objectType(Office).alias).not.toHaveProperty("properties");
+    });
+
+    it("throws when an entry's id carries no apiName", () => {
+      // Regression: aliases.json puts the bound name in `id.apiName`, not in a
+      // sibling `apiName`. Reading the wrong field produced `apiName: undefined`
+      // and a 400 from the platform rather than an error here.
+      resetPublishedCache();
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          defaults: {
+            custom: {},
+            models: {},
+            egressConnections: {},
+            datasets: {},
+            mediasets: {},
+            streams: {},
+            objects: { Employee: { id: {} } },
+          },
+          version: 1,
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' has no 'apiName'",
+      );
     });
 
     it("preserves the rest of the definition", () => {

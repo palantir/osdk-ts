@@ -228,13 +228,17 @@ function requireBoundApiName(
 }
 
 /**
- * Flattens the `{ apiName }` entries of a property remapping into plain bound
- * names. Returns undefined when there is nothing to remap, so the alias payload
- * stays absent rather than carrying an empty record.
+ * Flattens a property remapping into plain bound names. Returns undefined when
+ * there is nothing to remap, so the alias payload stays absent rather than
+ * carrying an empty record.
+ *
+ * `readApiName` differs per file: in `resources.json` a property maps straight to
+ * `{ apiName }`, while in `aliases.json` it is wrapped as `{ id: { apiName } }`.
  */
-function loadObjectProperties(
+function loadObjectProperties<T>(
   alias: string,
-  properties: Record<string, PropertyIdentifier> | undefined,
+  properties: Record<string, T> | undefined,
+  readApiName: (value: T) => string | undefined,
 ): Record<string, string> | undefined {
   if (properties == null) {
     return undefined;
@@ -244,12 +248,12 @@ function loadObjectProperties(
     return undefined;
   }
   return Object.fromEntries(
-    entries.map(([local, identifier]) => [
+    entries.map(([local, value]) => [
       local,
       requireBoundApiName(
         `Property '${local}' of object type`,
         alias,
-        identifier?.apiName,
+        readApiName(value),
       ),
     ]),
   );
@@ -260,11 +264,15 @@ function loadPublishedObjects(
 ): Record<string, ObjectType> {
   return Object.fromEntries<ObjectType>(
     Object.entries(objects ?? {}).map(([alias, value]) => {
-      const loaded = loadObjectProperties(alias, value.properties);
+      const loaded = loadObjectProperties(
+        alias,
+        value.properties,
+        (property) => property?.id?.apiName,
+      );
       return [
         alias,
         {
-          apiName: requireBoundApiName("Object type", alias, value.apiName),
+          apiName: requireBoundApiName("Object type", alias, value.id?.apiName),
           ...(loaded != null && { properties: loaded }),
         },
       ];
@@ -282,7 +290,11 @@ function loadPreviewObjects(
           object.alias != null,
       )
       .map(({ alias, apiName, properties }) => {
-        const loaded = loadObjectProperties(alias, properties);
+        const loaded = loadObjectProperties(
+          alias,
+          properties,
+          (property) => property?.apiName,
+        );
         return [
           alias,
           {
@@ -300,7 +312,7 @@ function loadPublishedQueries(
   return Object.fromEntries<Query>(
     Object.entries(queries ?? {}).map(([alias, value]) => [
       alias,
-      { apiName: requireBoundApiName("Query", alias, value.apiName) },
+      { apiName: requireBoundApiName("Query", alias, value.id?.apiName) },
     ]),
   );
 }
