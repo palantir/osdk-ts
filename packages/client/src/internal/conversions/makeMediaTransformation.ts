@@ -38,12 +38,15 @@ import type {
   LayoutAwareExtractionParameters,
   LlmSpec,
   MediaTransformation,
+  OcrLanguage,
   OcrLanguageOrScript,
   OcrOutputFormat,
   OcrParameters,
+  OcrScript,
   PageRange,
   SpreadsheetToTextOperation,
   TranscribeOutputFormat,
+  TranscriptionLanguage,
   VideoOperation,
   VideoToArchiveOperation,
   VideoToAudioOperation,
@@ -51,7 +54,27 @@ import type {
   VideoToTextOperation,
   VlmPreprocessingConfig,
 } from "@osdk/api/unstable";
-import type { Transformation } from "@osdk/foundry.mediasets";
+import type {
+  OcrLanguage as WireOcrLanguage,
+  OcrScript as WireOcrScript,
+  Transformation,
+  TranscriptionLanguage as WireTranscriptionLanguage,
+} from "@osdk/foundry.mediasets";
+import type { IsEqual } from "type-fest";
+
+// hand-copied into `@osdk/api`, which cannot depend on `@osdk/foundry.*`. a narrower copy stays
+// assignable to the wire type, so only an equality check catches a value the platform adds
+type AssertPlatformParity<T extends true> = T;
+
+type _OcrLanguageMatchesPlatform = AssertPlatformParity<
+  IsEqual<OcrLanguage, WireOcrLanguage>
+>;
+type _OcrScriptMatchesPlatform = AssertPlatformParity<
+  IsEqual<OcrScript, WireOcrScript>
+>;
+type _TranscriptionLanguageMatchesPlatform = AssertPlatformParity<
+  IsEqual<TranscriptionLanguage, WireTranscriptionLanguage>
+>;
 
 export function makeMediaTransformation(
   transformation: MediaTransformation,
