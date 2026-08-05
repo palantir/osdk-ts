@@ -1201,388 +1201,14 @@ export const PlainTextEmail: Story = {
   has-info 
   no-story-error"
   role="listitem"
-  aria-label="BaseExcelViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> BaseExcelViewer</h2>
-      <div class="badges">
-        <label for="c-2-components-documentviewer-renderers-excelviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-2-components-documentviewer-renderers-excelviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-2-components-documentviewer-renderers-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">components-documentviewer-renderers-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-2-components-documentviewer-renderers-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-2-components-documentviewer-renderers-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-2-components-documentviewer-renderers-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;BaseExcelViewer&quot; component.
-  160 | }
-  161 |
-&gt; 162 | const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-      | ^
-  163 |   title: &quot;Components/DocumentViewer/Renderers/ExcelViewer&quot;,
-  164 |   component: BaseExcelViewer,
-  165 |   tags: [&quot;beta&quot;],
-
-./src/stories/ExcelViewer/ExcelViewer.stories.tsx:
-/*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/* cspell:words openxmlformats officedocument spreadsheetml */
-
-import type { Media } from &quot;@osdk/api&quot;;
-import type {
-  BaseExcelViewerProps,
-  ExcelViewerMediaProps,
-  ParsedSpreadsheet,
-} from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-import {
-  BaseExcelViewer,
-  ExcelViewer,
-} from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { http, passthrough } from &quot;msw&quot;;
-import { utils, write } from &quot;xlsx-republish&quot;;
-
-const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
-  sheets: [
-    {
-      name: &quot;Employees&quot;,
-      rows: [
-        [&quot;Name&quot;, &quot;Department&quot;, &quot;Title&quot;, &quot;Start Date&quot;, &quot;Salary&quot;],
-        [
-          &quot;Alice Johnson&quot;,
-          &quot;Engineering&quot;,
-          &quot;Senior Engineer&quot;,
-          &quot;2022-03-15&quot;,
-          &quot;$145,000&quot;,
-        ],
-        [
-          &quot;Bob Smith&quot;,
-          &quot;Marketing&quot;,
-          &quot;Marketing Manager&quot;,
-          &quot;2021-07-01&quot;,
-          &quot;$120,000&quot;,
-        ],
-        [
-          &quot;Carol Davis&quot;,
-          &quot;Engineering&quot;,
-          &quot;Staff Engineer&quot;,
-          &quot;2020-01-10&quot;,
-          &quot;$165,000&quot;,
-        ],
-        [&quot;Dave Wilson&quot;, &quot;Sales&quot;, &quot;Account Executive&quot;, &quot;2023-05-20&quot;, &quot;$95,000&quot;],
-        [
-          &quot;Eve Brown&quot;,
-          &quot;Engineering&quot;,
-          &quot;Junior Engineer&quot;,
-          &quot;2024-01-08&quot;,
-          &quot;$90,000&quot;,
-        ],
-      ],
-    },
-    {
-      name: &quot;Departments&quot;,
-      rows: [
-        [&quot;Department&quot;, &quot;Head Count&quot;, &quot;Budget&quot;],
-        [&quot;Engineering&quot;, &quot;3&quot;, &quot;$400,000&quot;],
-        [&quot;Marketing&quot;, &quot;1&quot;, &quot;$120,000&quot;],
-        [&quot;Sales&quot;, &quot;1&quot;, &quot;$95,000&quot;],
-      ],
-    },
-    {
-      name: &quot;Summary&quot;,
-      rows: [
-        [&quot;Metric&quot;, &quot;Value&quot;],
-        [&quot;Total Employees&quot;, &quot;5&quot;],
-        [&quot;Total Budget&quot;, &quot;$615,000&quot;],
-        [&quot;Average Salary&quot;, &quot;$123,000&quot;],
-      ],
-    },
-  ],
-};
-
-const SAMPLE_XLSX_URL = `${import.meta.env.BASE_URL}notional-excel-example.xlsx`;
-
-function createMockMediaFromUrl(url: string, filename: string): Media {
-  const mimeType =
-    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;;
-  return {
-    fetchContents: () =&gt; fetch(url),
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: filename,
-        sizeBytes: 0,
-        mediaType: mimeType,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-excel-file&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-/**
- * Creates a mock .xlsx file as an ArrayBuffer using the xlsx library,
- * then wraps it in a Media mock.
- */
-function createMockExcelMedia(): Media {
-  const workbook = utils.book_new();
-  for (const sheet of SAMPLE_SPREADSHEET.sheets) {
-    const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
-    utils.book_append_sheet(workbook, ws, sheet.name);
-  }
-  const xlsxBuffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
-
-  return {
-    fetchContents: () =&gt;
-      Promise.resolve(
-        new Response(xlsxBuffer, {
-          headers: {
-            &quot;Content-Type&quot;:
-              &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-          },
-        }),
-      ),
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: &quot;report.xlsx&quot;,
-        sizeBytes: xlsxBuffer.byteLength,
-        mediaType:
-          &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType:
-        &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-excel&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-  title: &quot;Components/DocumentViewer/Renderers/ExcelViewer&quot;,
-  component: BaseExcelViewer,
-  tags: [&quot;beta&quot;],
-  args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
-  },
-  render: (args: BaseExcelViewerProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;BaseExcelViewer {...args} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    controls: { expanded: true },
-  },
-  argTypes: {
-    spreadsheet: {
-      description: &quot;Parsed spreadsheet data&quot;,
-      control: false,
-    },
-    className: {
-      description: &quot;Additional CSS class name for the root element&quot;,
-      control: &quot;text&quot;,
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockExcelMedia(),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithSpreadsheet: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code: `import { BaseExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;BaseExcelViewer spreadsheet={parsedSpreadsheet} /&gt;`,
-      },
-    },
-  },
-};
-
-export const SingleSheet: Story = {
-  args: {
-    spreadsheet: {
-      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-    },
-  },
-};
-
-export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockMediaFromUrl(
-      SAMPLE_XLSX_URL,
-      &quot;notional-excel-example.xlsx&quot;,
-    ),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;600px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    msw: {
-      handlers: [
-        http.get(&quot;*/notional-excel-example.xlsx&quot;, () =&gt; passthrough()),
-      ],
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { BaseExcelViewer, ExcelViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Spreadsheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseExcelViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Single Sheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseExcelViewer
-        spreadsheet={{
-          sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-        }} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Real File</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithRealFile = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;ExcelViewer
-        media={createMockMediaFromUrl(
-          SAMPLE_XLSX_URL,
-          &quot;notional-excel-example.xlsx&quot;,
-        )} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
   aria-label="BaseForm">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseForm</h2>
       <div class="badges">
-        <label for="c-3-components-actionform-baseform-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-3-components-actionform-baseform-info" class="badge info as-toggle">1 info</label>
-        <label for="c-3-components-actionform-baseform-stories" class="badge ok as-toggle">29 stories</label>
+        <label for="c-2-components-actionform-baseform-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-2-components-actionform-baseform-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-components-actionform-baseform-stories" class="badge ok as-toggle">29 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/BaseForm.stories.tsx">components-actionform-baseform · ./src/stories/ActionForm/BaseForm.stories.tsx</div>
@@ -1592,9 +1218,9 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-3-components-actionform-baseform-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-3-components-actionform-baseform-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-3-components-actionform-baseform-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-components-actionform-baseform-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-2-components-actionform-baseform-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-components-actionform-baseform-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -4260,9 +3886,9 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseImageViewer</h2>
       <div class="badges">
-        <label for="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ImageViewer/BaseImageViewer.stories.tsx">components-documentviewer-renderers-imageviewer-baseimageviewer · ./src/stories/ImageViewer/BaseImageViewer.stories.tsx</div>
@@ -4272,9 +3898,9 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-4-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-3-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -4458,9 +4084,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BasePdfViewer</h2>
       <div class="badges">
-        <label for="c-5-components-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-5-components-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-5-components-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-4-components-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-4-components-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-4-components-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">components-documentviewer-renderers-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
@@ -4470,9 +4096,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-5-components-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-5-components-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-5-components-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-components-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-4-components-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-components-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -4861,6 +4487,380 @@ export const AnnotationCreator: Story = {
               
               
               <pre><code>const AnnotationCreator = () =&gt; &lt;AnnotationCreatorDemo src={SAMPLE_PDF_URL} /&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="BaseSpreadsheetViewer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> BaseSpreadsheetViewer</h2>
+      <div class="badges">
+        <label for="c-5-components-documentviewer-renderers-spreadsheetviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-5-components-documentviewer-renderers-spreadsheetviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-5-components-documentviewer-renderers-spreadsheetviewer-stories" class="badge ok as-toggle">4 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx">components-documentviewer-renderers-spreadsheetviewer · ./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-5-components-documentviewer-renderers-spreadsheetviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-5-components-documentviewer-renderers-spreadsheetviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-5-components-documentviewer-renderers-spreadsheetviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;BaseSpreadsheetViewer&quot; component.
+  160 | }
+  161 |
+&gt; 162 | const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
+      | ^
+  163 |   title: &quot;Components/DocumentViewer/Renderers/SpreadsheetViewer&quot;,
+  164 |   component: BaseSpreadsheetViewer,
+  165 |   tags: [&quot;beta&quot;],
+
+./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* cspell:words openxmlformats officedocument spreadsheetml */
+
+import type { Media } from &quot;@osdk/api&quot;;
+import type {
+  BaseSpreadsheetViewerProps,
+  ParsedSpreadsheet,
+  SpreadsheetViewerMediaProps,
+} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+import {
+  BaseSpreadsheetViewer,
+  SpreadsheetViewer,
+} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { http, passthrough } from &quot;msw&quot;;
+import { utils, write } from &quot;xlsx-republish&quot;;
+
+const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
+  sheets: [
+    {
+      name: &quot;Employees&quot;,
+      rows: [
+        [&quot;Name&quot;, &quot;Department&quot;, &quot;Title&quot;, &quot;Start Date&quot;, &quot;Salary&quot;],
+        [
+          &quot;Alice Johnson&quot;,
+          &quot;Engineering&quot;,
+          &quot;Senior Engineer&quot;,
+          &quot;2022-03-15&quot;,
+          &quot;$145,000&quot;,
+        ],
+        [
+          &quot;Bob Smith&quot;,
+          &quot;Marketing&quot;,
+          &quot;Marketing Manager&quot;,
+          &quot;2021-07-01&quot;,
+          &quot;$120,000&quot;,
+        ],
+        [
+          &quot;Carol Davis&quot;,
+          &quot;Engineering&quot;,
+          &quot;Staff Engineer&quot;,
+          &quot;2020-01-10&quot;,
+          &quot;$165,000&quot;,
+        ],
+        [&quot;Dave Wilson&quot;, &quot;Sales&quot;, &quot;Account Executive&quot;, &quot;2023-05-20&quot;, &quot;$95,000&quot;],
+        [
+          &quot;Eve Brown&quot;,
+          &quot;Engineering&quot;,
+          &quot;Junior Engineer&quot;,
+          &quot;2024-01-08&quot;,
+          &quot;$90,000&quot;,
+        ],
+      ],
+    },
+    {
+      name: &quot;Departments&quot;,
+      rows: [
+        [&quot;Department&quot;, &quot;Head Count&quot;, &quot;Budget&quot;],
+        [&quot;Engineering&quot;, &quot;3&quot;, &quot;$400,000&quot;],
+        [&quot;Marketing&quot;, &quot;1&quot;, &quot;$120,000&quot;],
+        [&quot;Sales&quot;, &quot;1&quot;, &quot;$95,000&quot;],
+      ],
+    },
+    {
+      name: &quot;Summary&quot;,
+      rows: [
+        [&quot;Metric&quot;, &quot;Value&quot;],
+        [&quot;Total Employees&quot;, &quot;5&quot;],
+        [&quot;Total Budget&quot;, &quot;$615,000&quot;],
+        [&quot;Average Salary&quot;, &quot;$123,000&quot;],
+      ],
+    },
+  ],
+};
+
+const SAMPLE_SPREADSHEET_URL = `${import.meta.env.BASE_URL}notional-spreadsheet-example.xlsx`;
+
+function createMockMediaFromUrl(url: string, filename: string): Media {
+  const mimeType =
+    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;;
+  return {
+    fetchContents: () =&gt; fetch(url),
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 0,
+        mediaType: mimeType,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-spreadsheet-file&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+/**
+ * Creates a mock .xlsx file as an ArrayBuffer using the xlsx library,
+ * then wraps it in a Media mock.
+ */
+function createMockSpreadsheetMedia(): Media {
+  const workbook = utils.book_new();
+  for (const sheet of SAMPLE_SPREADSHEET.sheets) {
+    const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
+    utils.book_append_sheet(workbook, ws, sheet.name);
+  }
+  const xlsxBuffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
+
+  return {
+    fetchContents: () =&gt;
+      Promise.resolve(
+        new Response(xlsxBuffer, {
+          headers: {
+            &quot;Content-Type&quot;:
+              &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+          },
+        }),
+      ),
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: &quot;report.xlsx&quot;,
+        sizeBytes: xlsxBuffer.byteLength,
+        mediaType:
+          &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType:
+        &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-spreadsheet&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
+  title: &quot;Components/DocumentViewer/Renderers/SpreadsheetViewer&quot;,
+  component: BaseSpreadsheetViewer,
+  tags: [&quot;beta&quot;],
+  args: {
+    spreadsheet: SAMPLE_SPREADSHEET,
+  },
+  render: (args: BaseSpreadsheetViewerProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;BaseSpreadsheetViewer {...args} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    controls: { expanded: true },
+  },
+  argTypes: {
+    spreadsheet: {
+      description: &quot;Parsed spreadsheet data&quot;,
+      control: false,
+    },
+    className: {
+      description: &quot;Additional CSS class name for the root element&quot;,
+      control: &quot;text&quot;,
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: StoryObj&lt;SpreadsheetViewerMediaProps&gt; = {
+  args: {
+    media: createMockSpreadsheetMedia(),
+  },
+  render: (args: SpreadsheetViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;SpreadsheetViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `import { SpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+
+&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
+      },
+    },
+  },
+};
+
+export const WithSpreadsheet: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+
+&lt;BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} /&gt;`,
+      },
+    },
+  },
+};
+
+export const SingleSheet: Story = {
+  args: {
+    spreadsheet: {
+      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+};
+
+export const WithRealFile: StoryObj&lt;SpreadsheetViewerMediaProps&gt; = {
+  args: {
+    media: createMockMediaFromUrl(
+      SAMPLE_SPREADSHEET_URL,
+      &quot;notional-spreadsheet-example.xlsx&quot;,
+    ),
+  },
+  render: (args: SpreadsheetViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      &lt;SpreadsheetViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(&quot;*/notional-spreadsheet-example.xlsx&quot;, () =&gt; passthrough()),
+      ],
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { BaseSpreadsheetViewer, SpreadsheetViewer } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;SpreadsheetViewer media={createMockSpreadsheetMedia()} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Spreadsheet</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;BaseSpreadsheetViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Sheet</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;BaseSpreadsheetViewer
+        spreadsheet={{
+          sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Real File</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRealFile = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
+    &lt;SpreadsheetViewer
+        media={createMockMediaFromUrl(
+          SAMPLE_SPREADSHEET_URL,
+          &quot;notional-spreadsheet-example.xlsx&quot;,
+        )} /&gt;
+&lt;/div&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -7460,7 +7460,7 @@ type ViewerTypeId =
   | &quot;markdown&quot;
   | &quot;video&quot;
   | &quot;email&quot;
-  | &quot;excel&quot;
+  | &quot;spreadsheet&quot;
   | &quot;xml&quot;
   | &quot;tiff&quot;
   | &quot;unsupported&quot;;
@@ -7489,7 +7489,7 @@ const VIEWER_OPTIONS: Array&lt;ViewerOption&gt; = [
   { id: &quot;markdown&quot;, label: &quot;Markdown&quot; },
   { id: &quot;video&quot;, label: &quot;Video&quot; },
   { id: &quot;email&quot;, label: &quot;Email&quot; },
-  { id: &quot;excel&quot;, label: &quot;Excel&quot; },
+  { id: &quot;spreadsheet&quot;, label: &quot;Spreadsheet&quot; },
   { id: &quot;xml&quot;, label: &quot;XML&quot; },
   { id: &quot;tiff&quot;, label: &quot;TIFF&quot; },
   { id: &quot;unsupported&quot;, label: &quot;Unsupported&quot; },
@@ -7609,7 +7609,7 @@ function createMockMedia(
   };
 }
 
-function createExcelMedia(): Media {
+function createSpreadsheetMedia(): Media {
   const worksheet = utils.aoa_to_sheet([
     [&quot;Name&quot;, &quot;Department&quot;, &quot;Location&quot;],
     [&quot;Ada Lovelace&quot;, &quot;Engineering&quot;, &quot;London&quot;],
@@ -7661,9 +7661,9 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
       &quot;overview.eml&quot;,
     ),
   },
-  excel: {
+  spreadsheet: {
     fileName: &quot;employees.xlsx&quot;,
-    media: createExcelMedia(),
+    media: createSpreadsheetMedia(),
   },
   xml: {
     fileName: &quot;overview.xml&quot;,
@@ -8922,7 +8922,7 @@ const mockXmlMedia = createMockMedia(
   &quot;data.xml&quot;,
 );
 
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const ws = utils.aoa_to_sheet([
     [&quot;Name&quot;, &quot;Department&quot;, &quot;Salary&quot;],
     [&quot;Alice&quot;, &quot;Engineering&quot;, &quot;$145,000&quot;],
@@ -8938,7 +8938,7 @@ function createMockExcelMedia(): Media {
   );
 }
 
-const mockExcelMedia = createMockExcelMedia();
+const mockSpreadsheetMedia = createMockSpreadsheetMedia();
 
 const mockTiffMedia = createMockMedia(
   &quot;image/tiff&quot;,
@@ -9051,9 +9051,9 @@ export const Email: Story = {
   },
 };
 
-export const Excel: Story = {
+export const Spreadsheet: Story = {
   args: {
-    media: mockExcelMedia,
+    media: mockSpreadsheetMedia,
   },
 };
 
@@ -9261,13 +9261,13 @@ export const WithPdfViewerProps: Story = {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Excel</span>
+                <span class="ex-name">Spreadsheet</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Excel = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
-    &lt;DocumentViewer media={mockExcelMedia} /&gt;
+              <pre><code>const Spreadsheet = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
+    &lt;DocumentViewer media={mockSpreadsheetMedia} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
@@ -22356,388 +22356,14 @@ export const PlainTextEmail: Story = {
   has-info 
   no-story-error"
   role="listitem"
-  aria-label="BaseExcelViewer">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-err"></span> BaseExcelViewer</h2>
-      <div class="badges">
-        <label for="c-error-2-components-documentviewer-renderers-excelviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-2-components-documentviewer-renderers-excelviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-2-components-documentviewer-renderers-excelviewer-stories" class="badge ok as-toggle">4 stories</label>
-      </div>
-    </div>
-    <div class="meta" title="./src/stories/ExcelViewer/ExcelViewer.stories.tsx">components-documentviewer-renderers-excelviewer · ./src/stories/ExcelViewer/ExcelViewer.stories.tsx</div>
-    
-    
-    
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-2-components-documentviewer-renderers-excelviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-2-components-documentviewer-renderers-excelviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-2-components-documentviewer-renderers-excelviewer-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-        <div class="panel panel-err">
-          
-    <div class="note err">
-      <div class="note-title">Prop type error</div>
-      <div class="note-body"><pre><code>No component file found for the &quot;BaseExcelViewer&quot; component.
-  160 | }
-  161 |
-&gt; 162 | const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-      | ^
-  163 |   title: &quot;Components/DocumentViewer/Renderers/ExcelViewer&quot;,
-  164 |   component: BaseExcelViewer,
-  165 |   tags: [&quot;beta&quot;],
-
-./src/stories/ExcelViewer/ExcelViewer.stories.tsx:
-/*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/* cspell:words openxmlformats officedocument spreadsheetml */
-
-import type { Media } from &quot;@osdk/api&quot;;
-import type {
-  BaseExcelViewerProps,
-  ExcelViewerMediaProps,
-  ParsedSpreadsheet,
-} from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-import {
-  BaseExcelViewer,
-  ExcelViewer,
-} from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import { http, passthrough } from &quot;msw&quot;;
-import { utils, write } from &quot;xlsx-republish&quot;;
-
-const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
-  sheets: [
-    {
-      name: &quot;Employees&quot;,
-      rows: [
-        [&quot;Name&quot;, &quot;Department&quot;, &quot;Title&quot;, &quot;Start Date&quot;, &quot;Salary&quot;],
-        [
-          &quot;Alice Johnson&quot;,
-          &quot;Engineering&quot;,
-          &quot;Senior Engineer&quot;,
-          &quot;2022-03-15&quot;,
-          &quot;$145,000&quot;,
-        ],
-        [
-          &quot;Bob Smith&quot;,
-          &quot;Marketing&quot;,
-          &quot;Marketing Manager&quot;,
-          &quot;2021-07-01&quot;,
-          &quot;$120,000&quot;,
-        ],
-        [
-          &quot;Carol Davis&quot;,
-          &quot;Engineering&quot;,
-          &quot;Staff Engineer&quot;,
-          &quot;2020-01-10&quot;,
-          &quot;$165,000&quot;,
-        ],
-        [&quot;Dave Wilson&quot;, &quot;Sales&quot;, &quot;Account Executive&quot;, &quot;2023-05-20&quot;, &quot;$95,000&quot;],
-        [
-          &quot;Eve Brown&quot;,
-          &quot;Engineering&quot;,
-          &quot;Junior Engineer&quot;,
-          &quot;2024-01-08&quot;,
-          &quot;$90,000&quot;,
-        ],
-      ],
-    },
-    {
-      name: &quot;Departments&quot;,
-      rows: [
-        [&quot;Department&quot;, &quot;Head Count&quot;, &quot;Budget&quot;],
-        [&quot;Engineering&quot;, &quot;3&quot;, &quot;$400,000&quot;],
-        [&quot;Marketing&quot;, &quot;1&quot;, &quot;$120,000&quot;],
-        [&quot;Sales&quot;, &quot;1&quot;, &quot;$95,000&quot;],
-      ],
-    },
-    {
-      name: &quot;Summary&quot;,
-      rows: [
-        [&quot;Metric&quot;, &quot;Value&quot;],
-        [&quot;Total Employees&quot;, &quot;5&quot;],
-        [&quot;Total Budget&quot;, &quot;$615,000&quot;],
-        [&quot;Average Salary&quot;, &quot;$123,000&quot;],
-      ],
-    },
-  ],
-};
-
-const SAMPLE_XLSX_URL = `${import.meta.env.BASE_URL}notional-excel-example.xlsx`;
-
-function createMockMediaFromUrl(url: string, filename: string): Media {
-  const mimeType =
-    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;;
-  return {
-    fetchContents: () =&gt; fetch(url),
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: filename,
-        sizeBytes: 0,
-        mediaType: mimeType,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-excel-file&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-/**
- * Creates a mock .xlsx file as an ArrayBuffer using the xlsx library,
- * then wraps it in a Media mock.
- */
-function createMockExcelMedia(): Media {
-  const workbook = utils.book_new();
-  for (const sheet of SAMPLE_SPREADSHEET.sheets) {
-    const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
-    utils.book_append_sheet(workbook, ws, sheet.name);
-  }
-  const xlsxBuffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
-
-  return {
-    fetchContents: () =&gt;
-      Promise.resolve(
-        new Response(xlsxBuffer, {
-          headers: {
-            &quot;Content-Type&quot;:
-              &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-          },
-        }),
-      ),
-    fetchMetadata: () =&gt;
-      Promise.resolve({
-        path: &quot;report.xlsx&quot;,
-        sizeBytes: xlsxBuffer.byteLength,
-        mediaType:
-          &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-      }),
-    getMediaReference: () =&gt; ({
-      mimeType:
-        &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
-      reference: {
-        type: &quot;mediaSetViewItem&quot; as const,
-        mediaSetViewItem: {
-          mediaItemRid: &quot;ri.mio.main.media-item.mock-excel&quot;,
-          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
-          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
-        },
-      },
-    }),
-  };
-}
-
-const meta: Meta&lt;BaseExcelViewerProps&gt; = {
-  title: &quot;Components/DocumentViewer/Renderers/ExcelViewer&quot;,
-  component: BaseExcelViewer,
-  tags: [&quot;beta&quot;],
-  args: {
-    spreadsheet: SAMPLE_SPREADSHEET,
-  },
-  render: (args: BaseExcelViewerProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;BaseExcelViewer {...args} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    controls: { expanded: true },
-  },
-  argTypes: {
-    spreadsheet: {
-      description: &quot;Parsed spreadsheet data&quot;,
-      control: false,
-    },
-    className: {
-      description: &quot;Additional CSS class name for the root element&quot;,
-      control: &quot;text&quot;,
-    },
-  },
-};
-
-export default meta;
-type Story = StoryObj&lt;typeof meta&gt;;
-
-export const Default: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockExcelMedia(),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;500px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `import { ExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;ExcelViewer media={myOsdkMedia} /&gt;`,
-      },
-    },
-  },
-};
-
-export const WithSpreadsheet: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code: `import { BaseExcelViewer } from &quot;@osdk/react-components/experimental/excel-viewer&quot;;
-
-&lt;BaseExcelViewer spreadsheet={parsedSpreadsheet} /&gt;`,
-      },
-    },
-  },
-};
-
-export const SingleSheet: Story = {
-  args: {
-    spreadsheet: {
-      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-    },
-  },
-};
-
-export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
-  args: {
-    media: createMockMediaFromUrl(
-      SAMPLE_XLSX_URL,
-      &quot;notional-excel-example.xlsx&quot;,
-    ),
-  },
-  render: (args: ExcelViewerMediaProps) =&gt; (
-    &lt;div style={{ height: &quot;600px&quot; }}&gt;
-      &lt;ExcelViewer media={args.media} /&gt;
-    &lt;/div&gt;
-  ),
-  parameters: {
-    msw: {
-      handlers: [
-        http.get(&quot;*/notional-excel-example.xlsx&quot;, () =&gt; passthrough()),
-      ],
-    },
-  },
-};
-</code></pre></div>
-    </div>
-        </div>
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import { BaseExcelViewer, ExcelViewer } from "@osdk/react-components-storybook";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Default</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;ExcelViewer media={createMockExcelMedia()} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Spreadsheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseExcelViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Single Sheet</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
-    &lt;BaseExcelViewer
-        spreadsheet={{
-          sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
-        }} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">With Real File</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithRealFile = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
-    &lt;ExcelViewer
-        media={createMockMediaFromUrl(
-          SAMPLE_XLSX_URL,
-          &quot;notional-excel-example.xlsx&quot;,
-        )} /&gt;
-&lt;/div&gt;;</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  has-error 
-  has-info 
-  no-story-error"
-  role="listitem"
   aria-label="BaseForm">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseForm</h2>
       <div class="badges">
-        <label for="c-error-3-components-actionform-baseform-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-3-components-actionform-baseform-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-3-components-actionform-baseform-stories" class="badge ok as-toggle">29 stories</label>
+        <label for="c-error-2-components-actionform-baseform-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-2-components-actionform-baseform-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-2-components-actionform-baseform-stories" class="badge ok as-toggle">29 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/BaseForm.stories.tsx">components-actionform-baseform · ./src/stories/ActionForm/BaseForm.stories.tsx</div>
@@ -22747,9 +22373,9 @@ export const WithRealFile: StoryObj&lt;ExcelViewerMediaProps&gt; = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-3-components-actionform-baseform-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-3-components-actionform-baseform-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-3-components-actionform-baseform-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-2-components-actionform-baseform-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-2-components-actionform-baseform-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-2-components-actionform-baseform-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -25415,9 +25041,9 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseImageViewer</h2>
       <div class="badges">
-        <label for="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ImageViewer/BaseImageViewer.stories.tsx">components-documentviewer-renderers-imageviewer-baseimageviewer · ./src/stories/ImageViewer/BaseImageViewer.stories.tsx</div>
@@ -25427,9 +25053,9 @@ import { Button, Dialog } from "@blueprintjs/core";</code></pre>
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-4-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-3-components-documentviewer-renderers-imageviewer-baseimageviewer-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -25613,9 +25239,9 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BasePdfViewer</h2>
       <div class="badges">
-        <label for="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx">components-documentviewer-renderers-pdfviewer-recipes · ./src/stories/PdfViewer/Recipes/AnnotationCreator/AnnotationCreator.stories.tsx</div>
@@ -25625,9 +25251,9 @@ export const WithErrorCallback: Story = {
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-5-components-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-4-components-documentviewer-renderers-pdfviewer-recipes-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -26016,6 +25642,380 @@ export const AnnotationCreator: Story = {
               
               
               <pre><code>const AnnotationCreator = () =&gt; &lt;AnnotationCreatorDemo src={SAMPLE_PDF_URL} /&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="BaseSpreadsheetViewer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> BaseSpreadsheetViewer</h2>
+      <div class="badges">
+        <label for="c-error-5-components-documentviewer-renderers-spreadsheetviewer-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-5-components-documentviewer-renderers-spreadsheetviewer-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-5-components-documentviewer-renderers-spreadsheetviewer-stories" class="badge ok as-toggle">4 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx">components-documentviewer-renderers-spreadsheetviewer · ./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-5-components-documentviewer-renderers-spreadsheetviewer-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-5-components-documentviewer-renderers-spreadsheetviewer-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-5-components-documentviewer-renderers-spreadsheetviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;BaseSpreadsheetViewer&quot; component.
+  160 | }
+  161 |
+&gt; 162 | const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
+      | ^
+  163 |   title: &quot;Components/DocumentViewer/Renderers/SpreadsheetViewer&quot;,
+  164 |   component: BaseSpreadsheetViewer,
+  165 |   tags: [&quot;beta&quot;],
+
+./src/stories/SpreadsheetViewer/SpreadsheetViewer.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* cspell:words openxmlformats officedocument spreadsheetml */
+
+import type { Media } from &quot;@osdk/api&quot;;
+import type {
+  BaseSpreadsheetViewerProps,
+  ParsedSpreadsheet,
+  SpreadsheetViewerMediaProps,
+} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+import {
+  BaseSpreadsheetViewer,
+  SpreadsheetViewer,
+} from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { http, passthrough } from &quot;msw&quot;;
+import { utils, write } from &quot;xlsx-republish&quot;;
+
+const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
+  sheets: [
+    {
+      name: &quot;Employees&quot;,
+      rows: [
+        [&quot;Name&quot;, &quot;Department&quot;, &quot;Title&quot;, &quot;Start Date&quot;, &quot;Salary&quot;],
+        [
+          &quot;Alice Johnson&quot;,
+          &quot;Engineering&quot;,
+          &quot;Senior Engineer&quot;,
+          &quot;2022-03-15&quot;,
+          &quot;$145,000&quot;,
+        ],
+        [
+          &quot;Bob Smith&quot;,
+          &quot;Marketing&quot;,
+          &quot;Marketing Manager&quot;,
+          &quot;2021-07-01&quot;,
+          &quot;$120,000&quot;,
+        ],
+        [
+          &quot;Carol Davis&quot;,
+          &quot;Engineering&quot;,
+          &quot;Staff Engineer&quot;,
+          &quot;2020-01-10&quot;,
+          &quot;$165,000&quot;,
+        ],
+        [&quot;Dave Wilson&quot;, &quot;Sales&quot;, &quot;Account Executive&quot;, &quot;2023-05-20&quot;, &quot;$95,000&quot;],
+        [
+          &quot;Eve Brown&quot;,
+          &quot;Engineering&quot;,
+          &quot;Junior Engineer&quot;,
+          &quot;2024-01-08&quot;,
+          &quot;$90,000&quot;,
+        ],
+      ],
+    },
+    {
+      name: &quot;Departments&quot;,
+      rows: [
+        [&quot;Department&quot;, &quot;Head Count&quot;, &quot;Budget&quot;],
+        [&quot;Engineering&quot;, &quot;3&quot;, &quot;$400,000&quot;],
+        [&quot;Marketing&quot;, &quot;1&quot;, &quot;$120,000&quot;],
+        [&quot;Sales&quot;, &quot;1&quot;, &quot;$95,000&quot;],
+      ],
+    },
+    {
+      name: &quot;Summary&quot;,
+      rows: [
+        [&quot;Metric&quot;, &quot;Value&quot;],
+        [&quot;Total Employees&quot;, &quot;5&quot;],
+        [&quot;Total Budget&quot;, &quot;$615,000&quot;],
+        [&quot;Average Salary&quot;, &quot;$123,000&quot;],
+      ],
+    },
+  ],
+};
+
+const SAMPLE_SPREADSHEET_URL = `${import.meta.env.BASE_URL}notional-spreadsheet-example.xlsx`;
+
+function createMockMediaFromUrl(url: string, filename: string): Media {
+  const mimeType =
+    &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;;
+  return {
+    fetchContents: () =&gt; fetch(url),
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 0,
+        mediaType: mimeType,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-spreadsheet-file&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+/**
+ * Creates a mock .xlsx file as an ArrayBuffer using the xlsx library,
+ * then wraps it in a Media mock.
+ */
+function createMockSpreadsheetMedia(): Media {
+  const workbook = utils.book_new();
+  for (const sheet of SAMPLE_SPREADSHEET.sheets) {
+    const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
+    utils.book_append_sheet(workbook, ws, sheet.name);
+  }
+  const xlsxBuffer = write(workbook, { type: &quot;array&quot;, bookType: &quot;xlsx&quot; });
+
+  return {
+    fetchContents: () =&gt;
+      Promise.resolve(
+        new Response(xlsxBuffer, {
+          headers: {
+            &quot;Content-Type&quot;:
+              &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+          },
+        }),
+      ),
+    fetchMetadata: () =&gt;
+      Promise.resolve({
+        path: &quot;report.xlsx&quot;,
+        sizeBytes: xlsxBuffer.byteLength,
+        mediaType:
+          &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+      }),
+    getMediaReference: () =&gt; ({
+      mimeType:
+        &quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;,
+      reference: {
+        type: &quot;mediaSetViewItem&quot; as const,
+        mediaSetViewItem: {
+          mediaItemRid: &quot;ri.mio.main.media-item.mock-spreadsheet&quot;,
+          mediaSetRid: &quot;ri.mio.main.media-set.mock-set&quot;,
+          mediaSetViewRid: &quot;ri.mio.main.media-set-view.mock-view&quot;,
+        },
+      },
+    }),
+  };
+}
+
+const meta: Meta&lt;BaseSpreadsheetViewerProps&gt; = {
+  title: &quot;Components/DocumentViewer/Renderers/SpreadsheetViewer&quot;,
+  component: BaseSpreadsheetViewer,
+  tags: [&quot;beta&quot;],
+  args: {
+    spreadsheet: SAMPLE_SPREADSHEET,
+  },
+  render: (args: BaseSpreadsheetViewerProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;BaseSpreadsheetViewer {...args} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    controls: { expanded: true },
+  },
+  argTypes: {
+    spreadsheet: {
+      description: &quot;Parsed spreadsheet data&quot;,
+      control: false,
+    },
+    className: {
+      description: &quot;Additional CSS class name for the root element&quot;,
+      control: &quot;text&quot;,
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: StoryObj&lt;SpreadsheetViewerMediaProps&gt; = {
+  args: {
+    media: createMockSpreadsheetMedia(),
+  },
+  render: (args: SpreadsheetViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;500px&quot; }}&gt;
+      &lt;SpreadsheetViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `import { SpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+
+&lt;SpreadsheetViewer media={myOsdkMedia} /&gt;`,
+      },
+    },
+  },
+};
+
+export const WithSpreadsheet: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `import { BaseSpreadsheetViewer } from &quot;@osdk/react-components/experimental/spreadsheet-viewer&quot;;
+
+&lt;BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} /&gt;`,
+      },
+    },
+  },
+};
+
+export const SingleSheet: Story = {
+  args: {
+    spreadsheet: {
+      sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+    },
+  },
+};
+
+export const WithRealFile: StoryObj&lt;SpreadsheetViewerMediaProps&gt; = {
+  args: {
+    media: createMockMediaFromUrl(
+      SAMPLE_SPREADSHEET_URL,
+      &quot;notional-spreadsheet-example.xlsx&quot;,
+    ),
+  },
+  render: (args: SpreadsheetViewerMediaProps) =&gt; (
+    &lt;div style={{ height: &quot;600px&quot; }}&gt;
+      &lt;SpreadsheetViewer media={args.media} /&gt;
+    &lt;/div&gt;
+  ),
+  parameters: {
+    msw: {
+      handlers: [
+        http.get(&quot;*/notional-spreadsheet-example.xlsx&quot;, () =&gt; passthrough()),
+      ],
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { BaseSpreadsheetViewer, SpreadsheetViewer } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;SpreadsheetViewer media={createMockSpreadsheetMedia()} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Spreadsheet</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSpreadsheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;BaseSpreadsheetViewer spreadsheet={SAMPLE_SPREADSHEET} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Sheet</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSheet = () =&gt; &lt;div style={{ height: &quot;500px&quot; }}&gt;
+    &lt;BaseSpreadsheetViewer
+        spreadsheet={{
+          sheets: [SAMPLE_SPREADSHEET.sheets[0]!],
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Real File</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRealFile = () =&gt; &lt;div style={{ height: &quot;600px&quot; }}&gt;
+    &lt;SpreadsheetViewer
+        media={createMockMediaFromUrl(
+          SAMPLE_SPREADSHEET_URL,
+          &quot;notional-spreadsheet-example.xlsx&quot;,
+        )} /&gt;
+&lt;/div&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -27748,7 +27748,7 @@ type ViewerTypeId =
   | &quot;markdown&quot;
   | &quot;video&quot;
   | &quot;email&quot;
-  | &quot;excel&quot;
+  | &quot;spreadsheet&quot;
   | &quot;xml&quot;
   | &quot;tiff&quot;
   | &quot;unsupported&quot;;
@@ -27777,7 +27777,7 @@ const VIEWER_OPTIONS: Array&lt;ViewerOption&gt; = [
   { id: &quot;markdown&quot;, label: &quot;Markdown&quot; },
   { id: &quot;video&quot;, label: &quot;Video&quot; },
   { id: &quot;email&quot;, label: &quot;Email&quot; },
-  { id: &quot;excel&quot;, label: &quot;Excel&quot; },
+  { id: &quot;spreadsheet&quot;, label: &quot;Spreadsheet&quot; },
   { id: &quot;xml&quot;, label: &quot;XML&quot; },
   { id: &quot;tiff&quot;, label: &quot;TIFF&quot; },
   { id: &quot;unsupported&quot;, label: &quot;Unsupported&quot; },
@@ -27897,7 +27897,7 @@ function createMockMedia(
   };
 }
 
-function createExcelMedia(): Media {
+function createSpreadsheetMedia(): Media {
   const worksheet = utils.aoa_to_sheet([
     [&quot;Name&quot;, &quot;Department&quot;, &quot;Location&quot;],
     [&quot;Ada Lovelace&quot;, &quot;Engineering&quot;, &quot;London&quot;],
@@ -27949,9 +27949,9 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial&lt;
       &quot;overview.eml&quot;,
     ),
   },
-  excel: {
+  spreadsheet: {
     fileName: &quot;employees.xlsx&quot;,
-    media: createExcelMedia(),
+    media: createSpreadsheetMedia(),
   },
   xml: {
     fileName: &quot;overview.xml&quot;,
@@ -28474,7 +28474,7 @@ const mockXmlMedia = createMockMedia(
   &quot;data.xml&quot;,
 );
 
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const ws = utils.aoa_to_sheet([
     [&quot;Name&quot;, &quot;Department&quot;, &quot;Salary&quot;],
     [&quot;Alice&quot;, &quot;Engineering&quot;, &quot;$145,000&quot;],
@@ -28490,7 +28490,7 @@ function createMockExcelMedia(): Media {
   );
 }
 
-const mockExcelMedia = createMockExcelMedia();
+const mockSpreadsheetMedia = createMockSpreadsheetMedia();
 
 const mockTiffMedia = createMockMedia(
   &quot;image/tiff&quot;,
@@ -28603,9 +28603,9 @@ export const Email: Story = {
   },
 };
 
-export const Excel: Story = {
+export const Spreadsheet: Story = {
   args: {
-    media: mockExcelMedia,
+    media: mockSpreadsheetMedia,
   },
 };
 
@@ -28813,13 +28813,13 @@ export const WithPdfViewerProps: Story = {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">Excel</span>
+                <span class="ex-name">Spreadsheet</span>
                 <span class="badge ok">story ok</span>
               </div>
               
               
-              <pre><code>const Excel = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
-    &lt;DocumentViewer media={mockExcelMedia} /&gt;
+              <pre><code>const Spreadsheet = () =&gt; &lt;div style={{ height: &quot;600px&quot;, width: &quot;100%&quot; }}&gt;
+    &lt;DocumentViewer media={mockSpreadsheetMedia} /&gt;
 &lt;/div&gt;;</code></pre>
             </div>
             <div class="note ok">
