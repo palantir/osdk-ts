@@ -6,6 +6,7 @@ BACKCOMPAT
 backlink
 blockquote
 blockquotes
+browsable
 Canonicalizer
 Canonicalizers
 cimg

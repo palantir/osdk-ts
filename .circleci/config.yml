@@ -223,10 +223,27 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            # pnpm hoists almost everything to the root; only three packages
-            # have their own node_modules.
+            # Every workspace package gets its own node_modules, because that is
+            # where pnpm puts the .bin symlinks for its direct dependencies. Miss
+            # one and its scripts fail with "command not found" in every
+            # downstream job — `examples-extra/docs_example` needs
+            # `osdk-unstable-typescript` from @osdk/cli.cmd.typescript this way.
+            #
+            # These globs must stay in sync with `packages:` in
+            # pnpm-workspace.yaml. The size cost is small: per-package
+            # node_modules are symlink farms pointing into the root .pnpm store,
+            # which `node_modules` below already carries.
+            #
+            # pnpm-workspace.yaml also lists `examples-extra/basic/*`, omitted
+            # here because that directory does not exist yet and a glob matching
+            # nothing fails the step. Add it back alongside the first package.
             - node_modules
             - packages/*/node_modules
+            - examples/*/node_modules
+            - examples-extra/*/node_modules
+            - tests/*/node_modules
+            - benchmarks/*/*/node_modules
+            - docs/node_modules
 
   changesets:
     executor:
@@ -696,8 +713,11 @@ workflows:
           requires: [install]
       - e2e:
           requires: [install]
+      # Requires `build`, not `install`: it runs `turbo transpile` itself, so
+      # without the build job's turbo cache that is a cold rebuild of the whole
+      # repo on top of the cold base-branch build it already pays for.
       - bundle-size:
-          requires: [install]
+          requires: [build]
       - storybook-interaction-tests:
           requires: [install]
       - build:
