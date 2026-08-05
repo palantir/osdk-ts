@@ -51,7 +51,7 @@ type ViewerTypeId =
   | "markdown"
   | "video"
   | "email"
-  | "excel"
+  | "spreadsheet"
   | "xml"
   | "tiff"
   | "unsupported";
@@ -80,7 +80,7 @@ const VIEWER_OPTIONS: Array<ViewerOption> = [
   { id: "markdown", label: "Markdown" },
   { id: "video", label: "Video" },
   { id: "email", label: "Email" },
-  { id: "excel", label: "Excel" },
+  { id: "spreadsheet", label: "Spreadsheet" },
   { id: "xml", label: "XML" },
   { id: "tiff", label: "TIFF" },
   { id: "unsupported", label: "Unsupported" },
@@ -200,7 +200,7 @@ function createMockMedia(
   };
 }
 
-function createExcelMedia(): Media {
+function createSpreadsheetMedia(): Media {
   const worksheet = utils.aoa_to_sheet([
     ["Name", "Department", "Location"],
     ["Ada Lovelace", "Engineering", "London"],
@@ -252,9 +252,9 @@ const MOCK_VIEWER_MEDIA_BY_TYPE: Partial<
       "overview.eml",
     ),
   },
-  excel: {
+  spreadsheet: {
     fileName: "employees.xlsx",
-    media: createExcelMedia(),
+    media: createSpreadsheetMedia(),
   },
   xml: {
     fileName: "overview.xml",

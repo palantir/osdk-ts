@@ -21,12 +21,12 @@ import classnames from "classnames";
 import React, { useMemo } from "react";
 
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
-import { ExcelViewer } from "../excel-viewer/ExcelViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
 import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
 import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
 import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
 import { assertUnreachable } from "../shared/assertUnreachable.js";
+import { SpreadsheetViewer } from "../spreadsheet-viewer/SpreadsheetViewer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import type { DocumentViewerProps } from "./DocumentViewerApi.js";
@@ -81,7 +81,7 @@ function getViewerType(
     mimeType ===
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ) {
-    return ViewerType.Excel;
+    return ViewerType.Spreadsheet;
   }
   if (mimeType === "message/rfc822") {
     return ViewerType.Email;
@@ -101,7 +101,7 @@ export function DocumentViewer({
   videoViewerProps,
   tiffRendererProps,
   markdownRendererProps,
-  excelViewerProps,
+  spreadsheetViewerProps,
   emailViewerProps,
   xmlViewerProps,
   fileName,
@@ -166,12 +166,12 @@ export function DocumentViewer({
           {...markdownRendererProps}
         />
       );
-    case ViewerType.Excel:
+    case ViewerType.Spreadsheet:
       return (
-        <ExcelViewer
+        <SpreadsheetViewer
           media={media}
           className={rootClassName}
-          {...excelViewerProps}
+          {...spreadsheetViewerProps}
         />
       );
     case ViewerType.Email:

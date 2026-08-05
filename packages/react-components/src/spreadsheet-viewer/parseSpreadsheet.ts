@@ -18,7 +18,7 @@
 
 import { read, utils } from "xlsx-republish";
 
-import type { ParsedSpreadsheet, SheetData } from "./ExcelViewerApi.js";
+import type { ParsedSpreadsheet, SheetData } from "./SpreadsheetViewerApi.js";
 
 export async function parseSpreadsheetFromResponse(
   response: Response,

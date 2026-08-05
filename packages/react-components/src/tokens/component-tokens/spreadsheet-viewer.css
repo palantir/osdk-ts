@@ -1,0 +1,25 @@
+:root {
+  /* Spreadsheet Viewer - Container */
+  --osdk-spreadsheet-viewer-bg: var(--osdk-background-primary);
+  --osdk-spreadsheet-viewer-border: var(--osdk-surface-border);
+
+  /* Spreadsheet Viewer - Table */
+  --osdk-spreadsheet-viewer-header-bg: var(--osdk-background-secondary);
+  --osdk-spreadsheet-viewer-header-color: var(--osdk-typography-color-muted);
+  --osdk-spreadsheet-viewer-cell-border: var(
+    --osdk-surface-border-color-default
+  );
+  --osdk-spreadsheet-viewer-cell-padding: 2px 6px;
+  --osdk-spreadsheet-viewer-col-min-width: 80px;
+  --osdk-spreadsheet-viewer-row-header-width: 40px;
+
+  /* Spreadsheet Viewer - Sheet Tabs */
+  --osdk-spreadsheet-viewer-tab-bg: var(--osdk-background-secondary);
+  --osdk-spreadsheet-viewer-tab-hover-bg: var(--osdk-background-tertiary);
+  --osdk-spreadsheet-viewer-tab-active-bg: var(--osdk-background-primary);
+  --osdk-spreadsheet-viewer-tab-border: var(--osdk-surface-border);
+  --osdk-spreadsheet-viewer-tab-border-radius: 4px;
+  --osdk-spreadsheet-viewer-tab-padding: 4px 12px;
+  --osdk-spreadsheet-viewer-tab-bar-padding: 4px;
+  --osdk-spreadsheet-viewer-tab-gap: 2px;
+}

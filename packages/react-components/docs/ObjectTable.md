@@ -1273,7 +1273,7 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 
 ## Exporting Data
 
-Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns, rows, and total match count, so you can export to CSV, Excel, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects (with a string error message); otherwise every matching row is loaded.
+Pass a `tableRef` to obtain an `ObjectTableHandle<Q, RDPs>`. Its `getSnapshot()` method loads **all** matching rows and returns a format-agnostic snapshot of the table's columns, rows, and total match count, so you can export to CSV, JSON, the clipboard, or anywhere else. When the total row count exceeds `rowLimit` (default `10_000`), the returned promise rejects (with a string error message); otherwise every matching row is loaded.
 
 The snapshot reflects the table's current column visibility, ordering, and pinning. Property, derived-property, and function-backed columns are all included. Custom-rendered columns have no underlying value and are omitted. Each row exposes a `getValue(columnId)` accessor; cells are the raw value, or the thrown `Error` instance if a function-backed cell failed to load (the promise still resolves with the rest of the snapshot).
 

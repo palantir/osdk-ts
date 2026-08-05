@@ -18,14 +18,14 @@
 
 import type { Media } from "@osdk/api";
 import type {
-  BaseExcelViewerProps,
-  ExcelViewerMediaProps,
+  BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
-} from "@osdk/react-components/experimental/excel-viewer";
+  SpreadsheetViewerMediaProps,
+} from "@osdk/react-components/experimental/spreadsheet-viewer";
 import {
-  BaseExcelViewer,
-  ExcelViewer,
-} from "@osdk/react-components/experimental/excel-viewer";
+  BaseSpreadsheetViewer,
+  SpreadsheetViewer,
+} from "@osdk/react-components/experimental/spreadsheet-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { http, passthrough } from "msw";
 import { utils, write } from "xlsx-republish";
@@ -88,7 +88,7 @@ const SAMPLE_SPREADSHEET: ParsedSpreadsheet = {
   ],
 };
 
-const SAMPLE_XLSX_URL = `${import.meta.env.BASE_URL}notional-excel-example.xlsx`;
+const SAMPLE_SPREADSHEET_URL = `${import.meta.env.BASE_URL}notional-spreadsheet-example.xlsx`;
 
 function createMockMediaFromUrl(url: string, filename: string): Media {
   const mimeType =
@@ -106,7 +106,7 @@ function createMockMediaFromUrl(url: string, filename: string): Media {
       reference: {
         type: "mediaSetViewItem" as const,
         mediaSetViewItem: {
-          mediaItemRid: "ri.mio.main.media-item.mock-excel-file",
+          mediaItemRid: "ri.mio.main.media-item.mock-spreadsheet-file",
           mediaSetRid: "ri.mio.main.media-set.mock-set",
           mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
         },
@@ -119,7 +119,7 @@ function createMockMediaFromUrl(url: string, filename: string): Media {
  * Creates a mock .xlsx file as an ArrayBuffer using the xlsx library,
  * then wraps it in a Media mock.
  */
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const workbook = utils.book_new();
   for (const sheet of SAMPLE_SPREADSHEET.sheets) {
     const ws = utils.aoa_to_sheet(sheet.rows as string[][]);
@@ -150,7 +150,7 @@ function createMockExcelMedia(): Media {
       reference: {
         type: "mediaSetViewItem" as const,
         mediaSetViewItem: {
-          mediaItemRid: "ri.mio.main.media-item.mock-excel",
+          mediaItemRid: "ri.mio.main.media-item.mock-spreadsheet",
           mediaSetRid: "ri.mio.main.media-set.mock-set",
           mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
         },
@@ -159,16 +159,16 @@ function createMockExcelMedia(): Media {
   };
 }
 
-const meta: Meta<BaseExcelViewerProps> = {
-  title: "Components/DocumentViewer/Renderers/ExcelViewer",
-  component: BaseExcelViewer,
+const meta: Meta<BaseSpreadsheetViewerProps> = {
+  title: "Components/DocumentViewer/Renderers/SpreadsheetViewer",
+  component: BaseSpreadsheetViewer,
   tags: ["beta"],
   args: {
     spreadsheet: SAMPLE_SPREADSHEET,
   },
-  render: (args: BaseExcelViewerProps) => (
+  render: (args: BaseSpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
-      <BaseExcelViewer {...args} />
+      <BaseSpreadsheetViewer {...args} />
     </div>
   ),
   parameters: {
@@ -189,21 +189,21 @@ const meta: Meta<BaseExcelViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<ExcelViewerMediaProps> = {
+export const Default: StoryObj<SpreadsheetViewerMediaProps> = {
   args: {
-    media: createMockExcelMedia(),
+    media: createMockSpreadsheetMedia(),
   },
-  render: (args: ExcelViewerMediaProps) => (
+  render: (args: SpreadsheetViewerMediaProps) => (
     <div style={{ height: "500px" }}>
-      <ExcelViewer media={args.media} />
+      <SpreadsheetViewer media={args.media} />
     </div>
   ),
   parameters: {
     docs: {
       source: {
-        code: `import { ExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
+        code: `import { SpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
 
-<ExcelViewer media={myOsdkMedia} />`,
+<SpreadsheetViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -213,9 +213,9 @@ export const WithSpreadsheet: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseExcelViewer } from "@osdk/react-components/experimental/excel-viewer";
+        code: `import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/spreadsheet-viewer";
 
-<BaseExcelViewer spreadsheet={parsedSpreadsheet} />`,
+<BaseSpreadsheetViewer spreadsheet={parsedSpreadsheet} />`,
       },
     },
   },
@@ -229,22 +229,22 @@ export const SingleSheet: Story = {
   },
 };
 
-export const WithRealFile: StoryObj<ExcelViewerMediaProps> = {
+export const WithRealFile: StoryObj<SpreadsheetViewerMediaProps> = {
   args: {
     media: createMockMediaFromUrl(
-      SAMPLE_XLSX_URL,
-      "notional-excel-example.xlsx",
+      SAMPLE_SPREADSHEET_URL,
+      "notional-spreadsheet-example.xlsx",
     ),
   },
-  render: (args: ExcelViewerMediaProps) => (
+  render: (args: SpreadsheetViewerMediaProps) => (
     <div style={{ height: "600px" }}>
-      <ExcelViewer media={args.media} />
+      <SpreadsheetViewer media={args.media} />
     </div>
   ),
   parameters: {
     msw: {
       handlers: [
-        http.get("*/notional-excel-example.xlsx", () => passthrough()),
+        http.get("*/notional-spreadsheet-example.xlsx", () => passthrough()),
       ],
     },
   },
