@@ -17,7 +17,7 @@
 /* cspell:words ifds */
 
 import type { Media } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait } from "@osdk/api/unstable";
+import { transformAndWait } from "@osdk/api/unstable";
 import { useOsdkClient } from "@osdk/react";
 import { useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
@@ -96,11 +96,8 @@ export function useTiffToPdf(
       }
 
       // Step 2: Multi-page TIFF — convert to PDF via MIO transform
-      const mediaReference = currentMedia.getMediaReference();
-      const pdfResponse = await client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
-      ).transformAndWait({
-        mediaReference,
+      const pdfResponse = await client(transformAndWait).transformAndWait({
+        media: currentMedia,
         transformation: {
           $imageToDocument: { $operation: { $createPdf: {} } },
         },

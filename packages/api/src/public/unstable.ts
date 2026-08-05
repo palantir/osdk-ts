@@ -65,7 +65,7 @@ export type {
 } from "../experimental/MediaTransformation.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
 export {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  transformAndWait,
   type TransformOptions,
 } from "../experimental/transformAndWait.js";
 export {
