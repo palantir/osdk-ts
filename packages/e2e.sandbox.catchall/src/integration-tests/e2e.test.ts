@@ -1,6 +1,11 @@
+import { randomUUID } from "crypto";
+
 import {
+  Book,
+  Game,
   getFriends,
   getTodoCount,
+  LibraryItem,
   Person,
   Todo,
 } from "@osdk/e2e.generated.catchall";
@@ -36,8 +41,20 @@ const baseSeed = createSeed((seed) => {
     body: "Do something!",
     complete: false,
   });
+
+  const game1 = seed.create(Game, {
+    id: randomUUID(),
+    title: "Title",
+  });
+
+  const book1 = seed.create(Book, {
+    id: randomUUID(),
+    title: "Title",
+    author: "Author",
+    isbn: "000-0-000000-00-0",
+  });
   seed.link(alice, "Friends", charlie);
-  return { alice, bob, charlie, todoItem1, todoItem2 };
+  return { alice, bob, charlie, todoItem1, todoItem2, game1, book1 };
 });
 
 test.describe.runIf(foundryProbeResult.type === "installed")(
@@ -126,6 +143,29 @@ test.describe.runIf(foundryProbeResult.type === "installed")(
       ).toBeDefined();
       expect(
         res.data.find((v) => v.email === baseSeed.context.charlie.email),
+      ).toBeDefined();
+    });
+    test("fetchPage on Interface", async ({ client }) => {
+      const page = await client(LibraryItem).fetchPage();
+      expect(Number(page.totalCount)).toBe(2);
+      expect(
+        page.data.find((v) => v.id === baseSeed.context.game1.id),
+      ).toBeDefined();
+      expect(
+        page.data.find((v) => v.id === baseSeed.context.book1.id),
+      ).toBeDefined();
+    });
+    test("Object set query on interface", async ({ client }) => {
+      const page = await client(LibraryItem)
+        .where({
+          id: {
+            $eq: baseSeed.context.game1.id,
+          },
+        })
+        .fetchPage();
+      expect(Number(page.totalCount)).toBe(1);
+      expect(
+        page.data.find((v) => v.id === baseSeed.context.game1.id),
       ).toBeDefined();
     });
   },

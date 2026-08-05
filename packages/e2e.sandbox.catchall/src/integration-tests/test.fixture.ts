@@ -13,15 +13,22 @@ import {
 } from "@osdk/seed-helpers";
 import { test as baseTest, type TestAPI } from "vitest";
 
+const filteredObjectTypes = new Set(["Person", "Todo", "Game", "Book"]);
+const filteredInterfaceTypes = new Set(["LibraryItem"]);
+
 const modifiedMetadata: Ontologies.OntologyFullMetadata = {
   ontology: metadata.ontology,
   objectTypes: Object.fromEntries(
-    Object.entries(metadata.objectTypes).filter(
-      ([k]) => k === "Person" || k === "Todo",
+    Object.entries(metadata.objectTypes).filter(([k]) =>
+      filteredObjectTypes.has(k),
     ),
   ),
   actionTypes: {},
-  interfaceTypes: {},
+  interfaceTypes: Object.fromEntries(
+    Object.entries(metadata.interfaceTypes).filter(([k]) =>
+      filteredInterfaceTypes.has(k),
+    ),
+  ),
   queryTypes: {},
   valueTypes: {},
   sharedPropertyTypes: {},

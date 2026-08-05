@@ -28,6 +28,7 @@ export {
   FooInterface,
   TestAsTypeIltInterface,
   InterfaceNoProps,
+  LibraryItem,
   MwaltherPersonV2,
   mwaltherPerson,
   NihalbCastingInterfaceB,
@@ -39,6 +40,7 @@ export {
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
+  Book,
   BoundariesUsState,
   BuilderDeploymentState,
   CipherTextTest,
@@ -48,6 +50,7 @@ export {
   EsongIssues,
   EsongPds,
   FintrafficAis,
+  Game,
   GraphqlFormatting,
   GtfsTripTrackObject,
   MasonHeavyEquipment,
