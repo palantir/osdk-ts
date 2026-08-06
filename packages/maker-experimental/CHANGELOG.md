@@ -1,5 +1,22 @@
 # @osdk/maker-experimental
 
+## 0.45.0
+
+### Minor Changes
+
+- e786c2a: Write direct oac imports to metadata file
+- b336b1d: generate external recs for interface props
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/maker@0.54.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+  - @osdk/generator-converters.preview@0.33.0
+
 ## 0.44.0
 
 ### Minor Changes
