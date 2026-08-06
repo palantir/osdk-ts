@@ -16,42 +16,41 @@
 
 import type { ActionValidationResponse } from "@osdk/api";
 import { isEqual } from "lodash-es";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import { useDebouncedCallback } from "../shared/hooks/useDebouncedCallback.js";
 
-interface ActionFormValidationResult {
-  requestId: number;
+// Balance responsive defaults with avoiding backend validation on every keystroke.
+const VALIDATION_DEBOUNCE_MS = 500;
+
+export interface ActionFormValidationResult {
   response: ActionValidationResponse;
-  sessionKey: string | undefined;
-  /**
-   * The context identity used for this request. Consumers compare it with
-   * their current context before interpreting the response.
-   */
-  validationContext: unknown;
+  formState: Readonly<Record<string, unknown>>;
+  parameters: unknown;
 }
 
 interface UseActionFormValidationOptions {
   enabled: boolean;
   formState: Readonly<Record<string, unknown>>;
-  initialFormState: Readonly<Record<string, unknown>>;
-  sessionKey: string | undefined;
-  /** Replace this reference whenever validation coercion or interpretation changes. */
-  validationContext: unknown;
+  parameters: unknown;
   validateFormState: (
     formState: Readonly<Record<string, unknown>>,
   ) => Promise<ActionValidationResponse | undefined>;
+  onValidationResult: (result: ActionFormValidationResult) => void;
 }
 
-interface UseActionFormValidationResult {
-  cancelValidation: () => void;
-  validationResult: ActionFormValidationResult | undefined;
+interface ValidationRequest {
+  formState: Readonly<Record<string, unknown>>;
+  parameters: unknown;
+}
+
+interface ValidationLifecycle {
+  activeRequest?: ValidationRequest;
+  enabled: boolean;
+  lastRequest?: ValidationRequest;
+  onValidationResult: UseActionFormValidationOptions["onValidationResult"];
+  paused: boolean;
+  validateFormState: UseActionFormValidationOptions["validateFormState"];
 }
 
 /**
@@ -61,152 +60,111 @@ interface UseActionFormValidationResult {
 export function useActionFormValidation({
   enabled,
   formState,
-  initialFormState,
-  sessionKey,
-  validationContext,
+  parameters,
   validateFormState,
-}: UseActionFormValidationOptions): UseActionFormValidationResult {
-  const [validationResult, setValidationResult] =
-    useState<ActionFormValidationResult>();
-  const generationRef = useRef(0);
-  const requestIdRef = useRef(0);
-  const committedFormStateRef = useRef<Readonly<Record<string, unknown>>>();
-  const committedSessionKeyRef = useRef<string>();
-  const committedValidationContextRef = useRef(validationContext);
-  const scheduledSessionKeyRef = useRef<string>();
-  const scheduledValidationContextRef = useRef(validationContext);
-  const lastScheduledFormStateRef = useRef<Readonly<Record<string, unknown>>>();
-  const lastScheduledGenerationRef = useRef<number>();
+  onValidationResult,
+}: UseActionFormValidationOptions): { cancelValidation: () => void } {
+  const lifecycleRef = useRef<ValidationLifecycle>({
+    enabled: false,
+    onValidationResult,
+    paused: false,
+    validateFormState,
+  });
 
   const scheduleValidation = useDebouncedCallback(
-    (
-      nextFormState: Readonly<Record<string, unknown>>,
-      generation: number,
-      requestSessionKey: string | undefined,
-      requestValidationContext: unknown,
-    ) => {
-      void validateFormState(nextFormState).then(
-        (response) => {
-          if (
-            response == null ||
-            generation !== generationRef.current ||
-            requestSessionKey !== committedSessionKeyRef.current ||
-            requestValidationContext !== committedValidationContextRef.current
-          ) {
-            return;
-          }
-          setValidationResult({
-            requestId: ++requestIdRef.current,
+    async (request: ValidationRequest) => {
+      try {
+        const response = await lifecycleRef.current.validateFormState(
+          request.formState,
+        );
+        if (
+          response != null &&
+          lifecycleRef.current.activeRequest === request
+        ) {
+          lifecycleRef.current.onValidationResult({
             response,
-            sessionKey: requestSessionKey,
-            validationContext: requestValidationContext,
+            formState: request.formState,
+            parameters: request.parameters,
           });
-        },
-        () => {
-          // Validation is advisory. Submission errors continue to use onError.
-        },
-      );
+        }
+      } catch {
+        // Validation is advisory. Submission errors continue to use onError.
+      }
     },
-    500,
+    VALIDATION_DEBOUNCE_MS,
     { leading: true, trailing: true },
   );
 
   const cancelValidation = useCallback(() => {
-    ++generationRef.current;
+    lifecycleRef.current.activeRequest = undefined;
+    lifecycleRef.current.paused = true;
     scheduleValidation.cancel();
-    setValidationResult(undefined);
   }, [scheduleValidation]);
 
-  // Invalidate during commit so an earlier promise cannot publish between a
-  // form-state commit and the passive effect that schedules its validation.
-  useLayoutEffect(
-    function invalidateResponsesForCommittedInput() {
-      const hasCommittedInputChanged =
-        committedFormStateRef.current == null ||
-        !isEqual(committedFormStateRef.current, formState);
-      const isCommitOfScheduledFormState =
-        lastScheduledGenerationRef.current === generationRef.current &&
-        scheduledSessionKeyRef.current === sessionKey &&
-        scheduledValidationContextRef.current === validationContext &&
-        lastScheduledFormStateRef.current != null &&
-        isEqual(lastScheduledFormStateRef.current, formState);
-      if (
-        committedSessionKeyRef.current !== sessionKey ||
-        committedValidationContextRef.current !== validationContext ||
-        (hasCommittedInputChanged && !isCommitOfScheduledFormState)
-      ) {
-        ++generationRef.current;
-      }
-      committedFormStateRef.current = formState;
-      committedSessionKeyRef.current = sessionKey;
-      committedValidationContextRef.current = validationContext;
-    },
-    [formState, sessionKey, validationContext],
-  );
+  // Invalidate during commit so a response cannot be consumed between a
+  // displayed-state commit and the passive effect that schedules validation.
+  useLayoutEffect(function invalidateStaleValidationResult() {
+    const lifecycle = lifecycleRef.current;
+    lifecycle.onValidationResult = onValidationResult;
+    lifecycle.validateFormState = validateFormState;
+    const activeRequest = lifecycle.activeRequest;
+    if (
+      activeRequest != null &&
+      (!enabled ||
+        activeRequest.parameters !== parameters ||
+        !isEqual(activeRequest.formState, formState))
+    ) {
+      lifecycle.activeRequest = undefined;
+    }
+  });
 
   useEffect(
     function validateDisplayedFormState() {
-      const hasSessionChanged = scheduledSessionKeyRef.current !== sessionKey;
-      const hasValidationContextChanged =
-        scheduledValidationContextRef.current !== validationContext;
-      scheduledSessionKeyRef.current = sessionKey;
-      scheduledValidationContextRef.current = validationContext;
+      const lifecycle = lifecycleRef.current;
+      const hasBecomeEnabled = enabled && !lifecycle.enabled;
+      lifecycle.enabled = enabled;
 
       if (!enabled) {
         cancelValidation();
-        lastScheduledFormStateRef.current = undefined;
-        lastScheduledGenerationRef.current = undefined;
+        lifecycle.lastRequest = undefined;
         return;
       }
 
-      if (hasSessionChanged) {
-        cancelValidation();
-        lastScheduledFormStateRef.current = initialFormState;
-        const generation = ++generationRef.current;
-        lastScheduledGenerationRef.current = generation;
-        scheduleValidation(
-          initialFormState,
-          generation,
-          sessionKey,
-          validationContext,
-        );
-        return;
-      }
-
+      const lastRequest = lifecycle.lastRequest;
       if (
-        !hasValidationContextChanged &&
-        lastScheduledFormStateRef.current != null &&
-        lastScheduledGenerationRef.current === generationRef.current &&
-        isEqual(lastScheduledFormStateRef.current, formState)
+        !hasBecomeEnabled &&
+        lastRequest != null &&
+        lastRequest.parameters === parameters &&
+        isEqual(lastRequest.formState, formState)
       ) {
-        return;
+        if (lifecycle.paused) {
+          return;
+        }
+        lifecycle.activeRequest = lastRequest;
+        return () => {
+          if (lifecycle.activeRequest === lastRequest) {
+            lifecycle.activeRequest = undefined;
+          }
+        };
       }
-      lastScheduledFormStateRef.current = formState;
-      const generation = ++generationRef.current;
-      lastScheduledGenerationRef.current = generation;
-      scheduleValidation(formState, generation, sessionKey, validationContext);
-    },
-    [
-      cancelValidation,
-      enabled,
-      formState,
-      initialFormState,
-      scheduleValidation,
-      sessionKey,
-      validationContext,
-    ],
-  );
 
-  useEffect(
-    function invalidateValidationOnUnmount() {
-      const activeGenerationRef = generationRef;
-      return function invalidateValidationRequests() {
-        ++activeGenerationRef.current;
-        scheduleValidation.cancel();
+      const request: ValidationRequest = {
+        formState,
+        parameters,
+      };
+      lifecycle.activeRequest = request;
+      lifecycle.lastRequest = request;
+      lifecycle.paused = false;
+      scheduleValidation(request);
+
+      return () => {
+        if (lifecycle.activeRequest === request) {
+          lifecycle.activeRequest = undefined;
+        }
       };
     },
-    [scheduleValidation],
+    [cancelValidation, enabled, formState, parameters, scheduleValidation],
   );
 
-  return { cancelValidation, validationResult };
+  return { cancelValidation };
 }

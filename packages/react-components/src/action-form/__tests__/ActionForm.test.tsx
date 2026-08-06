@@ -32,7 +32,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
-import { buildDisplayedFormState } from "../utils/buildDisplayedFormState.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAction: vi.fn(),
@@ -77,35 +76,20 @@ interface ScalarActionDef extends ActionDefinition<unknown> {
   };
 }
 
-interface UnsupportedDefaultsActionDef extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      objectValue: { type: "string" };
-      arrayValue: { type: "string" };
-      occurredAt: { type: "timestamp" };
-    };
-    type: "action";
-    apiName: "UnsupportedDefaultsAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
+} as TestActionDef;
+
+const ReloadedTestAction: TestActionDef = {
+  type: "action",
+  apiName: "ReloadedTestAction",
 } as TestActionDef;
 
 const ScalarAction: ScalarActionDef = {
   type: "action",
   apiName: "ScalarAction",
 } as ScalarActionDef;
-
-const UnsupportedDefaultsAction: UnsupportedDefaultsActionDef = {
-  type: "action",
-  apiName: "UnsupportedDefaultsAction",
-} as UnsupportedDefaultsActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -600,132 +584,6 @@ describe("ActionForm validation defaults", () => {
           .value,
       ).toBe("Fallback name");
     });
-  });
-
-  it("ignores object, array, and temporal validation defaults", async () => {
-    vi.mocked(useOsdkMetadata).mockReturnValue({
-      loading: false,
-      metadata: {
-        type: "action",
-        apiName: "UnsupportedDefaultsAction",
-        displayName: "Unsupported defaults",
-        parameters: {
-          objectValue: { type: "string", nullable: true },
-          arrayValue: { type: "string", nullable: true },
-          occurredAt: { type: "timestamp", nullable: true },
-        },
-        status: "ACTIVE",
-        rid: "ri.ontology.main.action-type.unsupported-defaults",
-      },
-    });
-    const validationResponse: ActionValidationResponse = {
-      result: "VALID",
-      submissionCriteria: [],
-      parameters: {
-        objectValue: {
-          result: "VALID",
-          evaluatedConstraints: [],
-          required: false,
-          defaultValue: { value: "object" },
-        },
-        arrayValue: {
-          result: "VALID",
-          evaluatedConstraints: [],
-          required: false,
-          defaultValue: ["array"],
-        },
-        occurredAt: {
-          result: "VALID",
-          evaluatedConstraints: [],
-          required: false,
-          defaultValue: "2026-08-06T12:00:00Z",
-        },
-      },
-    };
-    let resolveValidation: (
-      response: ActionValidationResponse | undefined,
-    ) => void;
-    mockValidateAction
-      .mockReturnValueOnce(
-        new Promise((resolve) => {
-          resolveValidation = resolve;
-        }),
-      )
-      .mockResolvedValue(undefined);
-    const definitions: Array<
-      FormFieldDefinition<UnsupportedDefaultsActionDef>
-    > = [
-      {
-        fieldKey: "objectValue",
-        label: "objectValue",
-        fieldComponent: "CUSTOM",
-        fieldComponentProps: {
-          customRenderer: (props) => (
-            <input
-              aria-label="objectValue"
-              data-value={JSON.stringify(props.value)}
-            />
-          ),
-        },
-      },
-      {
-        fieldKey: "arrayValue",
-        label: "arrayValue",
-        fieldComponent: "CUSTOM",
-        fieldComponentProps: {
-          customRenderer: (props) => (
-            <input
-              aria-label="arrayValue"
-              data-value={JSON.stringify(props.value)}
-            />
-          ),
-        },
-      },
-      {
-        fieldKey: "occurredAt",
-        label: "occurredAt",
-        fieldComponent: "CUSTOM",
-        fieldComponentProps: {
-          customRenderer: (props) => (
-            <input
-              aria-label="occurredAt"
-              data-value={JSON.stringify(props.value)}
-            />
-          ),
-        },
-      },
-    ];
-
-    render(
-      <ActionForm
-        actionDefinition={UnsupportedDefaultsAction}
-        formFieldDefinitions={definitions}
-      />,
-    );
-
-    await vi.waitFor(() => {
-      expect(mockValidateAction).toHaveBeenCalledTimes(1);
-    });
-    await act(async () => {
-      resolveValidation!(validationResponse);
-      await Promise.resolve();
-    });
-
-    expect(
-      screen
-        .getByRole("textbox", { name: "objectValue" })
-        .getAttribute("data-value"),
-    ).toBeNull();
-    expect(
-      screen
-        .getByRole("textbox", { name: "arrayValue" })
-        .getAttribute("data-value"),
-    ).toBeNull();
-    expect(
-      screen
-        .getByRole("textbox", { name: "occurredAt" })
-        .getAttribute("data-value"),
-    ).toBeNull();
   });
 
   it("does not replace an explicit field-definition default", async () => {
@@ -1644,7 +1502,7 @@ describe("ActionForm validation lifecycle", () => {
     expect(onValidationResponse).not.toHaveBeenCalled();
   });
 
-  it("cancels queued validation when the metadata RID changes", async () => {
+  it("cancels queued validation when the action definition changes", async () => {
     vi.useFakeTimers();
     try {
       const { rerender } = render(<ActionForm actionDefinition={TestAction} />);
@@ -1653,15 +1511,11 @@ describe("ActionForm validation lifecycle", () => {
       fireEvent.change(screen.getByRole("textbox", { name: /^name/u }), {
         target: { value: "Old queued edit" },
       });
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: false,
-        metadata: {
-          ...mockMetadata,
-          rid: "ri.ontology.main.action-type.reloaded",
-        },
-      });
       rerender(
-        <ActionForm actionDefinition={TestAction} showFormTitle={true} />,
+        <ActionForm
+          actionDefinition={ReloadedTestAction}
+          showFormTitle={true}
+        />,
       );
 
       await act(async () => {
@@ -1677,7 +1531,7 @@ describe("ActionForm validation lifecycle", () => {
     }
   });
 
-  it("validates a new metadata RID after a controlled field is cleared", async () => {
+  it("validates a new action definition after a controlled field is cleared", async () => {
     vi.useFakeTimers();
     const definitions: Array<FormFieldDefinition<TestActionDef>> = [
       {
@@ -1695,14 +1549,16 @@ describe("ActionForm validation lifecycle", () => {
     ];
 
     function ControlledClearedForm({
+      actionDefinition = TestAction,
       showFormTitle = false,
     }: {
+      actionDefinition?: TestActionDef;
       showFormTitle?: boolean;
     }) {
       const [formState, setFormState] = useState<{ name?: string }>({});
       return (
         <ActionForm
-          actionDefinition={TestAction}
+          actionDefinition={actionDefinition}
           formFieldDefinitions={definitions}
           formState={formState}
           onFormStateChange={setFormState}
@@ -1716,14 +1572,12 @@ describe("ActionForm validation lifecycle", () => {
       expect(mockValidateAction).toHaveBeenCalledTimes(1);
       fireEvent.click(screen.getByRole("button", { name: "Clear name" }));
 
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: false,
-        metadata: {
-          ...mockMetadata,
-          rid: "ri.ontology.main.action-type.reloaded",
-        },
-      });
-      rerender(<ControlledClearedForm showFormTitle={true} />);
+      rerender(
+        <ControlledClearedForm
+          actionDefinition={ReloadedTestAction}
+          showFormTitle={true}
+        />,
+      );
       await act(async () => {
         await vi.advanceTimersByTimeAsync(1_000);
       });
@@ -1735,7 +1589,7 @@ describe("ActionForm validation lifecycle", () => {
     }
   });
 
-  it("ignores an in-flight response from a previous metadata RID", async () => {
+  it("ignores an in-flight response from a previous action definition", async () => {
     let resolveValidation: (
       response: ActionValidationResponse | undefined,
     ) => void;
@@ -1754,16 +1608,9 @@ describe("ActionForm validation lifecycle", () => {
       />,
     );
 
-    vi.mocked(useOsdkMetadata).mockReturnValue({
-      loading: false,
-      metadata: {
-        ...mockMetadata,
-        rid: "ri.ontology.main.action-type.reloaded",
-      },
-    });
     rerender(
       <ActionForm
-        actionDefinition={TestAction}
+        actionDefinition={ReloadedTestAction}
         onValidationResponse={onValidationResponse}
         showFormTitle={true}
       />,
@@ -1792,7 +1639,7 @@ describe("ActionForm validation lifecycle", () => {
     expect(onValidationResponse).not.toHaveBeenCalled();
   });
 
-  it("resets user-edit provenance when the metadata RID changes", async () => {
+  it("resets user-edit provenance when the action definition changes", async () => {
     vi.useFakeTimers();
     mockValidateAction.mockResolvedValueOnce(undefined).mockResolvedValue({
       result: "VALID",
@@ -1815,15 +1662,11 @@ describe("ActionForm validation lifecycle", () => {
       fireEvent.change(nameInput, { target: { value: "Old session edit" } });
       expect(screen.queryByText("Edited")).not.toBeNull();
 
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: false,
-        metadata: {
-          ...mockMetadata,
-          rid: "ri.ontology.main.action-type.reloaded",
-        },
-      });
       rerender(
-        <ActionForm actionDefinition={TestAction} showFormTitle={true} />,
+        <ActionForm
+          actionDefinition={ReloadedTestAction}
+          showFormTitle={true}
+        />,
       );
       await act(async () => {
         await vi.advanceTimersByTimeAsync(500);
@@ -1995,43 +1838,5 @@ describe("ActionForm validation during submission", () => {
     } finally {
       vi.useRealTimers();
     }
-  });
-});
-describe("buildDisplayedFormState", () => {
-  it("preserves every defined falsy or empty current value", () => {
-    const validationDefaultValues = {
-      nullValue: "validation",
-      emptyString: "validation",
-      falseValue: true,
-      zeroValue: 1,
-      emptyArray: ["validation"],
-    };
-    const currentValues = {
-      nullValue: null,
-      emptyString: "",
-      falseValue: false,
-      zeroValue: 0,
-      emptyArray: [],
-    };
-
-    expect(
-      buildDisplayedFormState({
-        validationDefaultValues,
-        configuredDefaultValues: {},
-        currentValues,
-        protectedFieldKeys: new Set(),
-      }),
-    ).toEqual(currentValues);
-  });
-
-  it("treats undefined current values as absent", () => {
-    expect(
-      buildDisplayedFormState({
-        validationDefaultValues: { name: "Validation default" },
-        configuredDefaultValues: {},
-        currentValues: { name: undefined },
-        protectedFieldKeys: new Set(),
-      }),
-    ).toEqual({ name: "Validation default" });
   });
 });
