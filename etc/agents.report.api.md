@@ -4,10 +4,7 @@
 
 ```ts
 
-import type { ActionDefinition } from '@osdk/client';
-import type { InterfaceDefinition } from '@osdk/client';
-import type { ObjectTypeDefinition } from '@osdk/client';
-import type { QueryDefinition } from '@osdk/client';
+import type { Scope } from '@osdk/functions/experimental';
 
 // @public (undocumented)
 export interface AgentConfig {
@@ -15,9 +12,7 @@ export interface AgentConfig {
     apiName?: string;
     	// (undocumented)
     locator: string;
-    	// Warning: (ae-forgotten-export) The symbol "Scope" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     scope?: Scope;
     	// (undocumented)
     sources?: string[];

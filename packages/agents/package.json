@@ -18,6 +18,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./experimental": {
+      "browser": "./build/browser/public/experimental.js",
+      "import": {
+        "types": "./build/types/public/experimental.d.ts",
+        "default": "./build/esm/public/experimental.js"
+      },
+      "require": "./build/cjs/public/experimental.cjs",
+      "default": "./build/browser/public/experimental.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -42,11 +51,12 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/client": "workspace:^"
+    "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
+    "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4"

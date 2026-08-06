@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import type { Scope } from "@osdk/functions/experimental";
-
-export interface AgentConfig {
-  locator: string;
-  apiName?: string;
-  sources?: string[];
-  /**
-   * @experimental
-   */
-  scope?: Scope;
-}
+export * from "./build/cjs/public/experimental.cjs";
