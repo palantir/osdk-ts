@@ -155,13 +155,18 @@ commands:
     description: >
       Set $TURBO_FORCE for the rest of the job, so a run cannot silently rely on
       stale cached artifacts and mask a broken task dependency.
+
+      The list is deliberately shorter than the one in .github/workflows/ci.yml.
+      Everything dropped was measured to be redundant; see README "Why the infra
+      list is short". Forcing on a file turbo already tracks costs a full cold
+      build of the monorepo and buys nothing.
     steps:
       - run:
           name: Detect infra changes
           command: |
             force=""
             if files=$(.circleci/scripts/changed-files.sh); then
-              if printf '%s\n' "$files" | grep -qE '^(turbo\.json|package\.json|pnpm-workspace\.yaml|pnpm-lock\.yaml|config/tsconfig\.base\.json|babel\.config\.mjs|dprint\.json|\.circleci/config\.yml|\.github/workflows/(ci|release)\.yml)$'; then
+              if printf '%s\n' "$files" | grep -qE '^(pnpm-lock\.yaml|pnpm-workspace\.yaml)$'; then
                 echo "Infrastructure changed; forcing a clean build."
                 force="--force"
               fi
@@ -450,10 +455,15 @@ jobs:
       - prepare
       - restore-turbo-cache:
           scope: apps
-      - detect-infra-changes
+      # No detect-infra-changes here, unlike `build`. This job requires `build`
+      # and receives its freshly-built turbo cache through the workspace, so
+      # forcing would rebuild the ~684-task transpile graph that `build` just
+      # produced in this same pipeline, in a second container. "Do not trust an
+      # earlier pipeline's cache" is an argument about `build`, not about a job
+      # downstream of it.
       - run:
           name: Build apps and sites
-          command: pnpm exec turbo run build --filter='!@osdk/react-components-storybook' $TURBO_FORCE
+          command: pnpm exec turbo run build --filter='!@osdk/react-components-storybook'
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: apps

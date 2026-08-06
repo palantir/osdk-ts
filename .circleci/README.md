@@ -284,6 +284,39 @@ Blueprint pins exact patches (`cimg/node:24.14.1`). That is the more
 deterministic option and the alternative if a floating patch ever turns CI red
 on its own.
 
+### Why the infra list is short
+
+`detect-infra-changes` sets `--force` on a much shorter file list than the
+equivalent step in `.github/workflows/ci.yml`. This is the one place the mirror
+is deliberately thinner, because forcing costs a full cold build of the monorepo
+and most of that list buys nothing.
+
+Each entry was measured by taking a `turbo run transpileEsm --dry=json` hash,
+touching the file, and re-taking it:
+
+| File                                 | Verdict                                                                                                                                                                                                                                                    |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `turbo.json`                         | Dropped. In turbo's global hash: editing the `lint` task changed `transpileEsm`'s hash.                                                                                                                                                                    |
+| `package.json`                       | Dropped. In turbo's global hash.                                                                                                                                                                                                                           |
+| `babel.config.mjs`                   | Dropped. In turbo's global hash.                                                                                                                                                                                                                           |
+| `dprint.json`                        | Dropped. Already the declared `inputs` of the `//#dprint` pseudo-task, which `lint` depends on.                                                                                                                                                            |
+| `config/tsconfig.base.json`          | Dropped. **This path does not exist** and never has. The shared tsconfig is `packages/monorepo.tsconfig/`, reached through the `@osdk/monorepo.tsconfig#typecheck` dependency that the transpile tasks already declare. The same dead path is in `ci.yml`. |
+| `.circleci/config.yml`               | Dropped. CI plumbing cannot change build output. Keeping it meant every CI-config PR paid a full cold build, which is most of this branch's history.                                                                                                       |
+| `.github/workflows/{ci,release}.yml` | Dropped, same reason.                                                                                                                                                                                                                                      |
+| `pnpm-lock.yaml`                     | **Kept.** A dependency change is the case where a stale cache is genuinely dangerous.                                                                                                                                                                      |
+| `pnpm-workspace.yaml`                | **Kept.** Defines the package set and the catalog versions.                                                                                                                                                                                                |
+
+The two kept entries are the conservative choice rather than a measured one: a
+whitespace touch cannot prove anything about a file turbo parses semantically
+rather than hashing byte-wise, so the probe above is inconclusive for them.
+
+`build-apps` no longer calls `detect-infra-changes` at all. It requires `build`
+and gets that job's freshly-built turbo cache through the workspace, so forcing
+made it rebuild the ~684-task transpile graph `build` had just produced, in a
+second container. `turbo run build` schedules 797 tasks, of which only 27 are
+real build scripts; the rest are that transpile graph plus task nodes with no
+script behind them.
+
 ## Performance shape
 
 Resource classes are deliberate, not uniform:
