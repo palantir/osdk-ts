@@ -50,7 +50,6 @@ export interface FormFieldRendererProps {
   /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
   onFieldBlur?: () => void;
   isEdited: boolean;
-  isDisabled?: boolean;
   error: string | undefined;
   portalContainer?: PortalContainer;
 }
@@ -63,7 +62,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     onBlur,
     onFieldBlur,
     isEdited,
-    isDisabled,
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
@@ -88,7 +86,6 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           error,
           portalContainer,
           onFieldBlur,
-          isDisabled,
         )}
       </FormField>
     );
@@ -102,9 +99,8 @@ function renderFieldComponent(
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
   onFieldBlur: (() => void) | undefined,
-  isDisabled: boolean | undefined,
 ): React.ReactElement {
-  const disabled = isDisabled === true || fieldDefinition.disabled === true;
+  const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (

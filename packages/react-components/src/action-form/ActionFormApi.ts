@@ -203,7 +203,7 @@ interface BaseFormCommonProps {
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   /** Whether the submit button is disabled. Default `false`. */
   isSubmitDisabled?: boolean;
-  /** Whether a submission is in progress. Disables the fields and shows the submit button in a pending state. Default `false`. */
+  /** Whether a submission is in progress. Shows the submit button in a pending state. Default `false`. */
   isPending?: boolean;
   /** Whether the form is loading its fields. Shows a skeleton placeholder. Default `false`. */
   isLoading?: boolean;

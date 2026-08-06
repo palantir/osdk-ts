@@ -29,7 +29,6 @@ import { FormFieldRenderer } from "./FormFieldRenderer.js";
 export interface FieldBridgeProps {
   fieldDef: RendererFieldDefinition;
   control: Control<Record<string, unknown>>;
-  isDisabled?: boolean;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
   portalContainer?: PortalContainer;
 }
@@ -41,7 +40,6 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
   function FieldBridgeFn({
     fieldDef,
     control,
-    isDisabled,
     onExternalChange,
     portalContainer,
   }: FieldBridgeProps): React.ReactElement {
@@ -102,7 +100,6 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         onBlur={isDropdown ? undefined : handleBlur}
         onFieldBlur={isDropdown ? onBlur : undefined}
         isEdited={isEdited}
-        isDisabled={isDisabled}
         error={fieldError?.message}
         portalContainer={portalContainer}
       />

@@ -156,7 +156,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 key={item.definition.fieldKey}
                 fieldDef={item.definition}
                 control={control}
-                isDisabled={isFormPending}
                 onExternalChange={handleFieldChange}
                 portalContainer={portalContainerRef}
               />
@@ -177,7 +176,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   key={fieldDef.fieldKey}
                   fieldDef={fieldDef}
                   control={control}
-                  isDisabled={isFormPending}
                   onExternalChange={handleFieldChange}
                   portalContainer={portalContainerRef}
                 />
