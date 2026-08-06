@@ -46,7 +46,7 @@ executors:
         # so `24` is a 404 rather than a float to the newest 24.x — unlike
         # actions/setup-node, a docker tag is a literal, not a version range.
         # MAJOR.MINOR does float across patch releases.
-        description: cimg/node tag, MAJOR.MINOR or more specific.
+        description: cimg/node tag; MAJOR.MINOR, or a variant like 24.19-browsers.
         type: string
         default: "24.19"
       resource-class:
@@ -557,6 +557,11 @@ jobs:
   storybook-interaction-tests:
     executor:
       name: node
+      # The -browsers variant ships Chromium's system libraries, which is the
+      # half of `playwright install` that was an apt-get run. It does not ship
+      # Playwright's own pinned Chromium build, so the download is dealt with
+      # by the cache below. Both halves have to go or the step stays slow.
+      node-version: "24.19-browsers"
       resource-class: xlarge
     steps:
       - prepare
@@ -577,9 +582,25 @@ jobs:
           # The stories import the browser build of the packages they render.
           name: Transpile story dependencies
           command: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
+      # Keyed on the lockfile because that is what pins the playwright version,
+      # and playwright stores browsers per version. Restored after the halt
+      # guard above so a skipped run does not pay for it.
+      - restore_cache:
+          name: Restore the Playwright browser cache
+          keys:
+            - playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
       - run:
+          # No --with-deps: the -browsers image already has the system
+          # libraries, and that flag is an apt-get run. If a library ever turns
+          # out to be missing, playwright says so by name and the flag comes
+          # back. On a cache hit this step is a no-op that just verifies.
           name: Install Playwright Chromium
-          command: pnpm --filter @osdk/react-components-storybook exec playwright install --with-deps chromium
+          command: pnpm --filter @osdk/react-components-storybook exec playwright install chromium
+      - save_cache:
+          name: Save the Playwright browser cache
+          key: playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - /home/circleci/.cache/ms-playwright
       - run:
           # Vitest browser mode runs each story's play function in headless
           # Chromium. Note the arguments follow the script name directly: pnpm 10

@@ -295,7 +295,7 @@ Resource classes are deliberate, not uniform:
 | medium | `changesets`, `cspell`                                                                               | Short, mostly single-task.                                                                    |
 | small  | `chromatic`, `fork-guard`, `ci-all`                                                                  | An upload, a `git diff`, and an `echo`.                                                       |
 
-Three things keep the cost down:
+Four things keep the cost down:
 
 - **One install.** `install` is the only job that runs `pnpm install`; every
   other job attaches `node_modules` from the workspace. That trades a ~1.1 GB
@@ -308,6 +308,27 @@ Three things keep the cost down:
 - **The `bundle-size` base measurement is cached** on the base commit SHA. It is
   identical for every push to a PR, so only the first push pays for the base
   rebuild.
+- **`storybook-interaction-tests` pays for Chromium once.** Installing it was
+  one of the longest steps in the pipeline, and it is two costs, not one:
+  `--with-deps` runs `apt-get` for the system libraries, and `playwright install` downloads Playwright's own pinned Chromium build. Removing only one
+  of them leaves the step slow. The job runs on `cimg/node:24.19-browsers`,
+  whose system libraries let the `--with-deps` flag go, and caches
+  `~/.cache/ms-playwright` on the lockfile checksum, which is what pins the
+  playwright version. On a cache hit the install step just verifies and exits.
+
+  The tradeoff to watch: `-browsers` is a much larger image, so on a host that
+  has not cached it the pull can eat the saving. If the job's image-pull line
+  grows by more than the install step shrank, keep the cache and go back to the
+  plain image with `--with-deps`; the cache is the half that always pays.
+
+  This is also the answer to "should these long jobs use `parallelism`?". A job
+  costs `F + D/N`: fixed setup plus divisible work over N containers. Splitting
+  only pays when the divisible part dominates, and `parallelism` duplicates the
+  setup — including the ~1.1 GB workspace attach — on every container. For this
+  job the Chromium install was fixed cost, so removing it beats splitting it.
+  `e2e` is a worse candidate still: only `pnpm publish -r` is divisible, while
+  `changeset version` rewrites every manifest in one pass and would have to run
+  identically on each container.
 
 Against that, one deliberate cost increase: the `test` job runs
 `parallelism: 2`, so the matrix is 8 containers rather than 4. Container 1 runs
