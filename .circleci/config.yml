@@ -561,16 +561,24 @@ jobs:
   # ---------------------------------------------------------------------------
 
   # Build Storybook exactly once per pipeline; the result goes to the workspace
-  # for the chromatic job, and to artifacts so a build is downloadable even when
+  # for the chromatic job, and to artifacts so a build is browsable even when
   # Chromatic is unavailable (fork PRs get no project token).
   build-storybook:
     executor:
       name: node
       resource-class: large
     environment:
-      # Chromatic serves each build at its own domain root, so override the
-      # gh-pages-oriented default base path baked into .storybook/main.ts.
-      STORYBOOK_BASE_PATH: /
+      # Relative, so one build serves two mount points. This maps to vite's
+      # `base` in .storybook/main.ts, whose default is the gh-pages path
+      # `/osdk-ts/storybook/`.
+      #
+      # Chromatic serves at a domain root, but CircleCI serves artifacts under a
+      # long path prefix, so an absolute base (`/`, which is also vite's default
+      # and what Blueprint gets by not setting one) makes index.html request
+      # /assets/... from the artifact host root and 404. `./` resolves correctly
+      # in both places, which is what makes the artifact navigable rather than
+      # merely downloadable.
+      STORYBOOK_BASE_PATH: ./
     steps:
       - prepare
       - restore-turbo-cache:

@@ -27,10 +27,10 @@ stays declared — an unreferenced pipeline parameter is valid — so restoring 
 pure uncomment.
 
 `build-storybook` deliberately still runs. It is a real check on its own (`turbo run build` is what proves Storybook still compiles) and it has no dependency on
-Chromatic. Two knock-on effects while this is off, both harmless and both left
-alone to keep the restore small: it still persists `storybook-static` to the
-workspace with nothing left to consume it, and it still builds with
-`STORYBOOK_BASE_PATH=/`, so the stored artifact remains non-browsable in place.
+Chromatic. One knock-on effect while this is off, harmless and left alone to keep
+the restore small: it still persists `storybook-static` to the workspace with
+nothing left to consume it. The stored artifact is still browsable, because the
+base path is relative rather than Chromatic-specific.
 
 Everything under "Set up the Chromatic project" below is moot until this is put
 back.
@@ -158,10 +158,34 @@ than just relocating it.
 - `chromatic` is **not** in `ci-all`'s `requires`. A visual diff is a review
   signal, and a Chromatic outage should not be able to block a merge. Blueprint
   makes the same call.
-- The `storybook-static` artifact is stored for download, but you cannot browse
-  it in place — it is built with `STORYBOOK_BASE_PATH=/` for Chromatic, so its
-  asset URLs are absolute. The Actions gh-pages preview is unchanged and still
-  serves that need.
+
+### Browsable Storybook artifacts
+
+The `storybook-static` artifact is meant to be **navigable in place**, not just
+downloadable, which is what gives PRs a Storybook preview without Chromatic and
+without the gh-pages force-push.
+
+That hinges on one line: `STORYBOOK_BASE_PATH: ./` in `build-storybook`, which
+becomes vite's `base`. The default in `.storybook/main.ts` is the gh-pages path
+`/osdk-ts/storybook/`; an earlier version of this config used `/` for Chromatic.
+Both are absolute, and CircleCI serves artifacts under a long path prefix, so
+`index.html` would ask for `/assets/...` at the artifact host root and get a 404.
+A relative base resolves correctly at a domain root (Chromatic) _and_ under a
+prefix (artifacts), so one build serves both.
+
+Worth knowing, because it is a natural thing to copy: **Blueprint does not do
+this.** Its `.storybook/main.ts` sets no `base` at all, so it inherits vite's
+default of `/` and its own `storybook-static` artifact has the same absolute-URL
+problem. This is one of the few places to deliberately not follow it.
+
+**Unverified as of writing.** Storybook's manager and preview iframe both sit at
+the root of `storybook-static` and modern vite resolves relative chunks through
+`import.meta.url`, so this should hold — but it has not been confirmed against a
+real build. Check by opening `index.html` from the `storybook-static` artifact of
+a `build-storybook` run: if the page is blank and the network tab shows 404s on
+`assets/*`, revert to `STORYBOOK_BASE_PATH: /` and the artifact goes back to
+being download-only. Testing this while Chromatic is switched off is deliberate:
+nothing depends on the built output yet.
 
 ## Test results
 
