@@ -32,6 +32,11 @@ import type {
 /**
  * Props for the ActionForm component.
  *
+ * The form validates its displayed values when metadata loads and after value
+ * changes. Scalar defaults returned by validation populate fields until the
+ * user edits them, without replacing explicit field defaults or controlled
+ * values.
+ *
  * A discriminated union ensures that controlled mode (formState provided)
  * always requires onFormStateChange, and uncontrolled mode makes `onFormStateChange` optional
  */
@@ -95,7 +100,8 @@ interface ActionFormConfigProps<
   ) => Promise<unknown> | void;
 
   /**
-   * Called when the validation response is returned from a validateOnly submission
+   * Called for the latest accepted validation response after any derived
+   * defaults have been scheduled.
    *
    * @param results the validation response
    */
@@ -197,7 +203,7 @@ interface BaseFormCommonProps {
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   /** Whether the submit button is disabled. Default `false`. */
   isSubmitDisabled?: boolean;
-  /** Whether a submission is in progress. Shows the submit button in a pending state. Default `false`. */
+  /** Whether a submission is in progress. Disables the fields and shows the submit button in a pending state. Default `false`. */
   isPending?: boolean;
   /** Whether the form is loading its fields. Shows a skeleton placeholder. Default `false`. */
   isLoading?: boolean;

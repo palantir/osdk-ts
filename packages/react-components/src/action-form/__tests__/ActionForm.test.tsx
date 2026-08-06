@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionMetadata } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  ActionValidationResponse,
+} from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { useState } from "react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
+import { useCallback, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
+import { buildDisplayedFormState } from "../utils/buildDisplayedFormState.js";
 
 vi.mock("@osdk/react", () => ({
   useOsdkAction: vi.fn(),
@@ -51,14 +62,31 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
-interface BooleanActionDef extends ActionDefinition<unknown> {
+interface ScalarActionDef extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
     signatures: unknown;
     parameters: {
+      text: { type: "string" };
+      count: { type: "integer" };
       enabled: { type: "boolean" };
     };
     type: "action";
-    apiName: "BooleanAction";
+    apiName: "ScalarAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
+interface UnsupportedDefaultsActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      objectValue: { type: "string" };
+      arrayValue: { type: "string" };
+      occurredAt: { type: "timestamp" };
+    };
+    type: "action";
+    apiName: "UnsupportedDefaultsAction";
     status: "ACTIVE";
     rid: string;
   };
@@ -69,19 +97,25 @@ const TestAction: TestActionDef = {
   apiName: "TestAction",
 } as TestActionDef;
 
-const BooleanAction: BooleanActionDef = {
+const ScalarAction: ScalarActionDef = {
   type: "action",
-  apiName: "BooleanAction",
-} as BooleanActionDef;
+  apiName: "ScalarAction",
+} as ScalarActionDef;
+
+const UnsupportedDefaultsAction: UnsupportedDefaultsActionDef = {
+  type: "action",
+  apiName: "UnsupportedDefaultsAction",
+} as UnsupportedDefaultsActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
 });
+const mockValidateAction = vi.fn();
 
 function defaultMockActionResult() {
   return {
     applyAction: mockApplyAction,
-    validateAction: vi.fn(),
+    validateAction: mockValidateAction,
     error: undefined,
     data: undefined,
     isPending: false,
@@ -115,14 +149,17 @@ function defaultMockMetadataResult() {
   };
 }
 
+function resetActionFormMocks(): void {
+  vi.mocked(useOsdkAction).mockReturnValue(defaultMockActionResult());
+  vi.mocked(useOsdkMetadata).mockReturnValue(defaultMockMetadataResult());
+  mockApplyAction.mockReset().mockResolvedValue({ editedObjectTypes: [] });
+  mockValidateAction.mockReset().mockResolvedValue(undefined);
+}
+
 describe("ActionForm", () => {
   afterEach(cleanup);
 
-  beforeEach(() => {
-    vi.mocked(useOsdkAction).mockReturnValue(defaultMockActionResult());
-    vi.mocked(useOsdkMetadata).mockReturnValue(defaultMockMetadataResult());
-    mockApplyAction.mockReset().mockResolvedValue({ editedObjectTypes: [] });
-  });
+  beforeEach(resetActionFormMocks);
 
   describe("form title", () => {
     it("does not render a form title by default", () => {
@@ -414,5 +451,1413 @@ describe("ActionForm", () => {
         );
       });
     });
+  });
+});
+describe("ActionForm validation defaults", () => {
+  afterEach(cleanup);
+
+  beforeEach(resetActionFormMocks);
+
+  it("immediately validates the complete displayed form state", async () => {
+    const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        defaultValue: "Ada Lovelace",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+      {
+        fieldKey: "email",
+        label: "Email",
+        defaultValue: "ada@example.com",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formFieldDefinitions={customDefs}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(mockValidateAction).toHaveBeenCalledWith({
+        name: "Ada Lovelace",
+        email: "ada@example.com",
+      });
+    });
+  });
+
+  it("displays string, number, and boolean validation defaults", async () => {
+    vi.mocked(useOsdkMetadata).mockReturnValue({
+      loading: false,
+      metadata: {
+        type: "action",
+        apiName: "ScalarAction",
+        displayName: "Scalar Action",
+        parameters: {
+          text: { type: "string", nullable: true },
+          count: { type: "integer", nullable: true },
+          enabled: { type: "boolean", nullable: true },
+        },
+        status: "ACTIVE",
+        rid: "ri.ontology.main.action-type.scalars",
+      },
+    });
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        text: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Ada",
+        },
+        count: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: 42,
+        },
+        enabled: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: true,
+        },
+      },
+    };
+    mockValidateAction.mockResolvedValue(validationResponse);
+    const scalarDefinitions: Array<FormFieldDefinition<ScalarActionDef>> = [
+      {
+        fieldKey: "text",
+        label: "text",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+      {
+        fieldKey: "count",
+        label: "count",
+        fieldComponent: "NUMBER_INPUT",
+        fieldComponentProps: {},
+      },
+      {
+        fieldKey: "enabled",
+        label: "enabled",
+        fieldComponent: "SWITCH",
+        fieldComponentProps: {},
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={ScalarAction}
+        formFieldDefinitions={scalarDefinitions}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(
+        (screen.getByRole("textbox", { name: "text" }) as HTMLInputElement)
+          .value,
+      ).toBe("Ada");
+      expect(
+        (screen.getByRole("textbox", { name: "count" }) as HTMLInputElement)
+          .value,
+      ).toBe("42");
+      expect(
+        screen
+          .getByRole("switch", { name: "enabled" })
+          .getAttribute("aria-checked"),
+      ).toBe("true");
+    });
+  });
+
+  it("displays a validation default from an invalid response", async () => {
+    const validationResponse: ActionValidationResponse = {
+      result: "INVALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "INVALID",
+          evaluatedConstraints: [],
+          required: true,
+          defaultValue: "Fallback name",
+        },
+      },
+    };
+    mockValidateAction.mockResolvedValue(validationResponse);
+
+    render(<ActionForm actionDefinition={TestAction} />);
+
+    await vi.waitFor(() => {
+      expect(
+        (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+          .value,
+      ).toBe("Fallback name");
+    });
+  });
+
+  it("ignores object, array, and temporal validation defaults", async () => {
+    vi.mocked(useOsdkMetadata).mockReturnValue({
+      loading: false,
+      metadata: {
+        type: "action",
+        apiName: "UnsupportedDefaultsAction",
+        displayName: "Unsupported defaults",
+        parameters: {
+          objectValue: { type: "string", nullable: true },
+          arrayValue: { type: "string", nullable: true },
+          occurredAt: { type: "timestamp", nullable: true },
+        },
+        status: "ACTIVE",
+        rid: "ri.ontology.main.action-type.unsupported-defaults",
+      },
+    });
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        objectValue: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: { value: "object" },
+        },
+        arrayValue: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: ["array"],
+        },
+        occurredAt: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "2026-08-06T12:00:00Z",
+        },
+      },
+    };
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveValidation = resolve;
+        }),
+      )
+      .mockResolvedValue(undefined);
+    const definitions: Array<
+      FormFieldDefinition<UnsupportedDefaultsActionDef>
+    > = [
+      {
+        fieldKey: "objectValue",
+        label: "objectValue",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: (props) => (
+            <input
+              aria-label="objectValue"
+              data-value={JSON.stringify(props.value)}
+            />
+          ),
+        },
+      },
+      {
+        fieldKey: "arrayValue",
+        label: "arrayValue",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: (props) => (
+            <input
+              aria-label="arrayValue"
+              data-value={JSON.stringify(props.value)}
+            />
+          ),
+        },
+      },
+      {
+        fieldKey: "occurredAt",
+        label: "occurredAt",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: (props) => (
+            <input
+              aria-label="occurredAt"
+              data-value={JSON.stringify(props.value)}
+            />
+          ),
+        },
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={UnsupportedDefaultsAction}
+        formFieldDefinitions={definitions}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    });
+    await act(async () => {
+      resolveValidation!(validationResponse);
+      await Promise.resolve();
+    });
+
+    expect(
+      screen
+        .getByRole("textbox", { name: "objectValue" })
+        .getAttribute("data-value"),
+    ).toBeNull();
+    expect(
+      screen
+        .getByRole("textbox", { name: "arrayValue" })
+        .getAttribute("data-value"),
+    ).toBeNull();
+    expect(
+      screen
+        .getByRole("textbox", { name: "occurredAt" })
+        .getAttribute("data-value"),
+    ).toBeNull();
+  });
+
+  it("does not replace an explicit field-definition default", async () => {
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Validation default",
+        },
+      },
+    };
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction.mockReturnValue(
+      new Promise((resolve) => {
+        resolveValidation = resolve;
+      }),
+    );
+    const definitions: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        defaultValue: "Configured default",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formFieldDefinitions={definitions}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    });
+    await act(async () => {
+      resolveValidation!(validationResponse);
+      await Promise.resolve();
+    });
+
+    expect(
+      (screen.getByRole("textbox", { name: "Name" }) as HTMLInputElement).value,
+    ).toBe("Configured default");
+  });
+});
+describe("ActionForm validation provenance", () => {
+  afterEach(cleanup);
+
+  beforeEach(resetActionFormMocks);
+
+  it("applies a validation default after focus and blur without an edit", async () => {
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Validation default",
+        },
+      },
+    };
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction.mockReturnValue(
+      new Promise((resolve) => {
+        resolveValidation = resolve;
+      }),
+    );
+
+    render(<ActionForm actionDefinition={TestAction} />);
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /^name/u,
+    }) as HTMLInputElement;
+    fireEvent.focus(nameInput);
+    fireEvent.blur(nameInput);
+
+    await act(async () => {
+      resolveValidation!(validationResponse);
+      await Promise.resolve();
+    });
+
+    expect(nameInput.value).toBe("Validation default");
+    expect(screen.queryByText("Edited")).toBeNull();
+  });
+
+  it("does not apply a validation default after a user change event", async () => {
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Validation default",
+        },
+      },
+    };
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction.mockReturnValue(
+      new Promise((resolve) => {
+        resolveValidation = resolve;
+      }),
+    );
+    const onFormStateChange = vi.fn();
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formState={{}}
+        onFormStateChange={onFormStateChange}
+      />,
+    );
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /^name/u,
+    }) as HTMLInputElement;
+    fireEvent.change(nameInput, { target: { value: "User value" } });
+    expect(screen.queryByText("Edited")).not.toBeNull();
+
+    await act(async () => {
+      resolveValidation!(validationResponse);
+      await Promise.resolve();
+    });
+
+    expect(nameInput.value).toBe("User value");
+    expect(onFormStateChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("replaces a validation-owned default after a later response", async () => {
+    mockValidateAction
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "First default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Second default",
+          },
+        },
+      });
+    const onFormStateChange = vi.fn();
+    const { rerender } = render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formState={{}}
+        onFormStateChange={onFormStateChange}
+      />,
+    );
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /^name/u,
+    }) as HTMLInputElement;
+    await vi.waitFor(() => {
+      expect(nameInput.value).toBe("First default");
+    });
+
+    rerender(
+      <ActionForm
+        actionDefinition={TestAction}
+        formState={{ email: "trigger@example.com" }}
+        onFormStateChange={onFormStateChange}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(nameInput.value).toBe("Second default");
+    });
+  });
+
+  it("clears a validation-owned default when a later response omits it", async () => {
+    mockValidateAction
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Temporary default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+          },
+        },
+      });
+    const onFormStateChange = vi.fn();
+    const { rerender } = render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formState={{}}
+        onFormStateChange={onFormStateChange}
+      />,
+    );
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /^name/u,
+    }) as HTMLInputElement;
+    await vi.waitFor(() => {
+      expect(nameInput.value).toBe("Temporary default");
+    });
+
+    rerender(
+      <ActionForm
+        actionDefinition={TestAction}
+        formState={{ email: "trigger@example.com" }}
+        onFormStateChange={onFormStateChange}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(nameInput.value).toBe("");
+    });
+  });
+
+  it("revalidates an applied default and stops when the default is unchanged", async () => {
+    vi.useFakeTimers();
+    const validationResponse: ActionValidationResponse = {
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Stable default",
+        },
+      },
+    };
+    mockValidateAction.mockResolvedValue(validationResponse);
+
+    try {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({
+        name: "Stable default",
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+describe("ActionForm validation state", () => {
+  afterEach(cleanup);
+
+  beforeEach(resetActionFormMocks);
+
+  it("validates changes with a 500ms leading and trailing debounce", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+
+      const nameInput = screen.getByRole("textbox", {
+        name: /^name/u,
+      });
+      fireEvent.change(nameInput, { target: { value: "A" } });
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({ name: "A" });
+
+      fireEvent.change(nameInput, { target: { value: "Ada" } });
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(499);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(3);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({ name: "Ada" });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("coerces displayed values before backend validation", async () => {
+    vi.useFakeTimers();
+    vi.mocked(useOsdkMetadata).mockReturnValue({
+      loading: false,
+      metadata: {
+        type: "action",
+        apiName: "ScalarAction",
+        displayName: "Scalar Action",
+        parameters: {
+          text: { type: "string", nullable: true },
+          count: { type: "integer", nullable: true },
+          enabled: { type: "boolean", nullable: true },
+        },
+        status: "ACTIVE",
+        rid: "ri.ontology.main.action-type.scalars",
+      },
+    });
+    const definitions: Array<FormFieldDefinition<ScalarActionDef>> = [
+      {
+        fieldKey: "count",
+        label: "count",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: (props) => (
+            <button type="button" onClick={() => props.onChange?.("42.9")}>
+              Set numeric string
+            </button>
+          ),
+        },
+      },
+    ];
+
+    try {
+      render(
+        <ActionForm
+          actionDefinition={ScalarAction}
+          formFieldDefinitions={definitions}
+        />,
+      );
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Set numeric string" }),
+      );
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({ count: 42 });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("validates a programmatic controlled-state update", async () => {
+    vi.useFakeTimers();
+
+    function ControlledValidationForm() {
+      const [formState, setFormState] = useState({ name: "Initial" });
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => setFormState({ name: "Programmatic" })}
+          >
+            Update state
+          </button>
+          <ActionForm
+            actionDefinition={TestAction}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        </>
+      );
+    }
+
+    try {
+      render(<ControlledValidationForm />);
+      expect(mockValidateAction).toHaveBeenCalledWith({ name: "Initial" });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Update state" }));
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({
+        name: "Programmatic",
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("reports validation-default application, replacement, and clearing in uncontrolled mode", async () => {
+    vi.useFakeTimers();
+    mockValidateAction
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "First default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Second default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+          },
+        },
+      });
+    type TestFormState = { name?: string; email?: string };
+    let observedState: TestFormState = {};
+    const observedStates: TestFormState[] = [];
+    const onFormStateChange = vi.fn(
+      (updater: (previous: TestFormState) => TestFormState) => {
+        observedState = updater(observedState);
+        observedStates.push(observedState);
+      },
+    );
+
+    try {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(observedStates).toEqual([{ name: "First default" }]);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      expect(observedStates).toEqual([
+        { name: "First default" },
+        { name: "Second default" },
+        {},
+      ]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("replaces and clears validation defaults echoed by controlled state", async () => {
+    vi.useFakeTimers();
+    mockValidateAction
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "First default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Second default",
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+          },
+        },
+      });
+    type TestFormState = { name?: string; email?: string };
+    const controlledTransitions: TestFormState[] = [];
+
+    function ControlledDefaultsForm() {
+      const [formState, setFormState] = useState<TestFormState>({});
+      const handleFormStateChange = useCallback(
+        (updater: (previous: TestFormState) => TestFormState) => {
+          setFormState((previous) => {
+            const next = updater(previous);
+            controlledTransitions.push(next);
+            return next;
+          });
+        },
+        [],
+      );
+      return (
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={formState}
+          onFormStateChange={handleFormStateChange}
+        />
+      );
+    }
+
+    try {
+      render(<ControlledDefaultsForm />);
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(controlledTransitions).toEqual([{ name: "First default" }]);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      expect(controlledTransitions).toEqual([
+        { name: "First default" },
+        { name: "Second default" },
+        {},
+      ]);
+      expect(
+        (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+          .value,
+      ).toBe("");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("preserves a divergent programmatic parent value from later defaults", async () => {
+    vi.useFakeTimers();
+    mockValidateAction
+      .mockResolvedValueOnce({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Validation default",
+          },
+        },
+      })
+      .mockResolvedValue({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Later default",
+          },
+        },
+      });
+    type TestFormState = { name?: string; email?: string };
+
+    function ControlledParentForm() {
+      const [formState, setFormState] = useState<TestFormState>({});
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => setFormState({ name: "Parent value" })}
+          >
+            Set parent value
+          </button>
+          <ActionForm
+            actionDefinition={TestAction}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        </>
+      );
+    }
+
+    try {
+      render(<ControlledParentForm />);
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(
+        (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+          .value,
+      ).toBe("Validation default");
+
+      fireEvent.click(screen.getByRole("button", { name: "Set parent value" }));
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({
+        name: "Parent value",
+      });
+      expect(
+        (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+          .value,
+      ).toBe("Parent value");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+describe("ActionForm validation lifecycle", () => {
+  afterEach(cleanup);
+
+  beforeEach(resetActionFormMocks);
+
+  it("ignores a validation response made stale by a later form change", async () => {
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction.mockReturnValue(
+      new Promise((resolve) => {
+        resolveValidation = resolve;
+      }),
+    );
+    const onValidationResponse = vi.fn();
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        onValidationResponse={onValidationResponse}
+      />,
+    );
+    const nameInput = screen.getByRole("textbox", {
+      name: /^name/u,
+    }) as HTMLInputElement;
+    fireEvent.change(nameInput, { target: { value: "User value" } });
+
+    await act(async () => {
+      resolveValidation!({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Stale default",
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+
+    expect(nameInput.value).toBe("User value");
+    expect(onValidationResponse).not.toHaveBeenCalled();
+  });
+
+  it("calls onValidationResponse after scheduling derived form state", async () => {
+    mockValidateAction.mockResolvedValue({
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "Validation default",
+        },
+      },
+    });
+    const events: string[] = [];
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        onFormStateChange={() => {
+          events.push("form state");
+        }}
+        onValidationResponse={() => {
+          events.push("validation response");
+        }}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(events).toEqual(["form state", "validation response"]);
+    });
+  });
+
+  it("keeps the form unchanged and usable when validation rejects", async () => {
+    mockValidateAction.mockRejectedValue(new Error("Validation failed"));
+    const onError = vi.fn();
+    const definitions: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        defaultValue: "Visible value",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formFieldDefinitions={definitions}
+        onError={onError}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      (screen.getByRole("textbox", { name: "Name" }) as HTMLInputElement).value,
+    ).toBe("Visible value");
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(
+      (
+        screen.getByRole("button", {
+          name: /^submit$/iu,
+        }) as HTMLButtonElement
+      ).disabled,
+    ).toBe(false);
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("does not render errors or gate submit for an invalid response", async () => {
+    mockValidateAction.mockResolvedValue({
+      result: "INVALID",
+      submissionCriteria: [
+        {
+          result: "INVALID",
+          configuredFailureMessage: "Backend validation failed",
+        },
+      ],
+      parameters: {
+        name: {
+          result: "INVALID",
+          evaluatedConstraints: [],
+          required: false,
+        },
+      },
+    });
+    const onError = vi.fn();
+    const onValidationResponse = vi.fn();
+    const definitions: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+    ];
+
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formFieldDefinitions={definitions}
+        onError={onError}
+        onValidationResponse={onValidationResponse}
+      />,
+    );
+
+    await vi.waitFor(() => {
+      expect(onValidationResponse).toHaveBeenCalledTimes(1);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(
+      (
+        screen.getByRole("button", {
+          name: /^submit$/iu,
+        }) as HTMLButtonElement
+      ).disabled,
+    ).toBe(false);
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("ignores an in-flight response from a previous metadata RID", async () => {
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveValidation = resolve;
+        }),
+      )
+      .mockResolvedValue(undefined);
+    const onValidationResponse = vi.fn();
+    const { rerender } = render(
+      <ActionForm
+        actionDefinition={TestAction}
+        onValidationResponse={onValidationResponse}
+      />,
+    );
+
+    vi.mocked(useOsdkMetadata).mockReturnValue({
+      loading: false,
+      metadata: {
+        ...mockMetadata,
+        rid: "ri.ontology.main.action-type.reloaded",
+      },
+    });
+    rerender(
+      <ActionForm
+        actionDefinition={TestAction}
+        onValidationResponse={onValidationResponse}
+        showFormTitle={true}
+      />,
+    );
+
+    await act(async () => {
+      resolveValidation!({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Old session default",
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+
+    expect(
+      (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+        .value,
+    ).toBe("");
+    expect(onValidationResponse).not.toHaveBeenCalled();
+  });
+
+  it("resets user-edit provenance when the metadata RID changes", async () => {
+    vi.useFakeTimers();
+    mockValidateAction.mockResolvedValueOnce(undefined).mockResolvedValue({
+      result: "VALID",
+      submissionCriteria: [],
+      parameters: {
+        name: {
+          result: "VALID",
+          evaluatedConstraints: [],
+          required: false,
+          defaultValue: "New session default",
+        },
+      },
+    });
+
+    try {
+      const { rerender } = render(<ActionForm actionDefinition={TestAction} />);
+      const nameInput = screen.getByRole("textbox", {
+        name: /^name/u,
+      }) as HTMLInputElement;
+      fireEvent.change(nameInput, { target: { value: "Old session edit" } });
+      expect(screen.queryByText("Edited")).not.toBeNull();
+
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          rid: "ri.ontology.main.action-type.reloaded",
+        },
+      });
+      rerender(
+        <ActionForm actionDefinition={TestAction} showFormTitle={true} />,
+      );
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+
+      expect(
+        (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+          .value,
+      ).toBe("New session default");
+      expect(screen.queryByText("Edited")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+describe("ActionForm validation during submission", () => {
+  afterEach(cleanup);
+
+  beforeEach(resetActionFormMocks);
+
+  it("cancels queued validation without restarting it after submit", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<ActionForm actionDefinition={TestAction} />);
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      fireEvent.change(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Submitted value" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(mockApplyAction).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("submits the displayed value immediately while validation is queued", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<ActionForm actionDefinition={TestAction} />);
+      fireEvent.change(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Snapshot value" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockApplyAction).toHaveBeenCalledWith({
+        name: "Snapshot value",
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("ignores an in-flight validation response after submit", async () => {
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveValidation = resolve;
+      }),
+    );
+    const onValidationResponse = vi.fn();
+    const definitions: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        defaultValue: "Submitted value",
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      },
+    ];
+    render(
+      <ActionForm
+        actionDefinition={TestAction}
+        formFieldDefinitions={definitions}
+        onValidationResponse={onValidationResponse}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+    await vi.waitFor(() => {
+      expect(mockApplyAction).toHaveBeenCalledWith({
+        name: "Submitted value",
+      });
+    });
+    await act(async () => {
+      resolveValidation!({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Late default",
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+
+    expect(onValidationResponse).not.toHaveBeenCalled();
+    expect(
+      (screen.getByRole("textbox", { name: "Name" }) as HTMLInputElement).value,
+    ).toBe("Submitted value");
+  });
+
+  it("resumes validation only after the next form-state change", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<ActionForm actionDefinition={TestAction} />);
+      const nameInput = screen.getByRole("textbox", {
+        name: /^name/u,
+      });
+      fireEvent.change(nameInput, { target: { value: "Submitted value" } });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      fireEvent.change(nameInput, { target: { value: "Changed later" } });
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({
+        name: "Changed later",
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("uses the same validation snapshot boundary for custom onSubmit", async () => {
+    vi.useFakeTimers();
+    const onSubmit = vi.fn();
+    try {
+      render(<ActionForm actionDefinition={TestAction} onSubmit={onSubmit} />);
+      fireEvent.change(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Custom snapshot" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(onSubmit).toHaveBeenCalledWith(
+        { name: "Custom snapshot" },
+        mockApplyAction,
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+describe("buildDisplayedFormState", () => {
+  it("preserves every defined falsy or empty current value", () => {
+    const validationDefaultValues = {
+      nullValue: "validation",
+      emptyString: "validation",
+      falseValue: true,
+      zeroValue: 1,
+      emptyArray: ["validation"],
+    };
+    const currentValues = {
+      nullValue: null,
+      emptyString: "",
+      falseValue: false,
+      zeroValue: 0,
+      emptyArray: [],
+    };
+
+    expect(
+      buildDisplayedFormState({
+        validationDefaultValues,
+        configuredDefaultValues: {},
+        currentValues,
+        protectedFieldKeys: new Set(),
+      }),
+    ).toEqual(currentValues);
+  });
+
+  it("treats undefined current values as absent", () => {
+    expect(
+      buildDisplayedFormState({
+        validationDefaultValues: { name: "Validation default" },
+        configuredDefaultValues: {},
+        currentValues: { name: undefined },
+        protectedFieldKeys: new Set(),
+      }),
+    ).toEqual({ name: "Validation default" });
   });
 });

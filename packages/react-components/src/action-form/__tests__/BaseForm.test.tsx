@@ -718,6 +718,69 @@ describe("BaseForm", () => {
       });
     });
 
+    it("disables every field while async onSubmit is pending", async () => {
+      let resolveSubmit: () => void;
+      const onSubmit = vi.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSubmit = resolve;
+          }),
+      );
+      const customField: RendererFieldDefinition = {
+        fieldKey: "custom",
+        fieldComponent: "CUSTOM",
+        label: "custom",
+        fieldComponentProps: {
+          customRenderer: (props) => (
+            <input aria-label="custom" disabled={props.disabled} />
+          ),
+        },
+      };
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name")), field(customField)]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox", {
+        name: "name",
+      }) as HTMLInputElement;
+      const customInput = screen.getByRole("textbox", {
+        name: "custom",
+      }) as HTMLInputElement;
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(nameInput.disabled).toBe(true);
+        expect(customInput.disabled).toBe(true);
+      });
+
+      resolveSubmit!();
+
+      await waitFor(() => {
+        expect(nameInput.disabled).toBe(false);
+        expect(customInput.disabled).toBe(false);
+      });
+    });
+
+    it("disables fields when external submission is pending", () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          isPending={true}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox", {
+        name: "name",
+      }) as HTMLInputElement;
+      expect(nameInput.disabled).toBe(true);
+    });
+
     it("submits without errors when fields are not required", async () => {
       const onSubmit = vi.fn();
       render(
