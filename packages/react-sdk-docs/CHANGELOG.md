@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.15.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+
 ## 0.14.0
 
 ### Minor Changes

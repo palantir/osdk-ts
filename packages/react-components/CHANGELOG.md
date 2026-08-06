@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.47.0
+
+### Minor Changes
+
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
 ## 0.46.0
 
 ### Minor Changes
