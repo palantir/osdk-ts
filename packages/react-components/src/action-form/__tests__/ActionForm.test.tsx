@@ -1561,6 +1561,180 @@ describe("ActionForm validation lifecycle", () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
+  it("revalidates when parameters change without a metadata RID change", async () => {
+    vi.useFakeTimers();
+    try {
+      const { rerender } = render(<ActionForm actionDefinition={TestAction} />);
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { ...mockMetadata.parameters },
+        },
+      });
+      rerender(
+        <ActionForm actionDefinition={TestAction} showFormTitle={true} />,
+      );
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("ignores an in-flight response from a previous parameter context", async () => {
+    let resolveValidation: (
+      response: ActionValidationResponse | undefined,
+    ) => void;
+    mockValidateAction
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveValidation = resolve;
+        }),
+      )
+      .mockResolvedValue(undefined);
+    const onValidationResponse = vi.fn();
+    const { rerender } = render(
+      <ActionForm
+        actionDefinition={TestAction}
+        onValidationResponse={onValidationResponse}
+      />,
+    );
+
+    vi.mocked(useOsdkMetadata).mockReturnValue({
+      loading: false,
+      metadata: {
+        ...mockMetadata,
+        parameters: { ...mockMetadata.parameters },
+      },
+    });
+    rerender(
+      <ActionForm
+        actionDefinition={TestAction}
+        onValidationResponse={onValidationResponse}
+        showFormTitle={true}
+      />,
+    );
+
+    await act(async () => {
+      resolveValidation!({
+        result: "VALID",
+        submissionCriteria: [],
+        parameters: {
+          name: {
+            result: "VALID",
+            evaluatedConstraints: [],
+            required: false,
+            defaultValue: "Stale context default",
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+
+    expect(
+      (screen.getByRole("textbox", { name: /^name/u }) as HTMLInputElement)
+        .value,
+    ).toBe("");
+    expect(onValidationResponse).not.toHaveBeenCalled();
+  });
+
+  it("cancels queued validation when the metadata RID changes", async () => {
+    vi.useFakeTimers();
+    try {
+      const { rerender } = render(<ActionForm actionDefinition={TestAction} />);
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+
+      fireEvent.change(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Old queued edit" },
+      });
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          rid: "ri.ontology.main.action-type.reloaded",
+        },
+      });
+      rerender(
+        <ActionForm actionDefinition={TestAction} showFormTitle={true} />,
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).not.toHaveBeenCalledWith({
+        name: "Old queued edit",
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("validates a new metadata RID after a controlled field is cleared", async () => {
+    vi.useFakeTimers();
+    const definitions: Array<FormFieldDefinition<TestActionDef>> = [
+      {
+        fieldKey: "name",
+        label: "Name",
+        fieldComponent: "CUSTOM",
+        fieldComponentProps: {
+          customRenderer: ({ onChange }) => (
+            <button type="button" onClick={() => onChange?.(undefined)}>
+              Clear name
+            </button>
+          ),
+        },
+      },
+    ];
+
+    function ControlledClearedForm({
+      showFormTitle = false,
+    }: {
+      showFormTitle?: boolean;
+    }) {
+      const [formState, setFormState] = useState<{ name?: string }>({});
+      return (
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={definitions}
+          formState={formState}
+          onFormStateChange={setFormState}
+          showFormTitle={showFormTitle}
+        />
+      );
+    }
+
+    try {
+      const { rerender } = render(<ControlledClearedForm />);
+      expect(mockValidateAction).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole("button", { name: "Clear name" }));
+
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          rid: "ri.ontology.main.action-type.reloaded",
+        },
+      });
+      rerender(<ControlledClearedForm showFormTitle={true} />);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1_000);
+      });
+
+      expect(mockValidateAction).toHaveBeenCalledTimes(2);
+      expect(mockValidateAction).toHaveBeenLastCalledWith({});
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("ignores an in-flight response from a previous metadata RID", async () => {
     let resolveValidation: (
       response: ActionValidationResponse | undefined,

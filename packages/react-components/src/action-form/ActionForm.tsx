@@ -16,6 +16,7 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
+import { isEqual } from "lodash-es";
 import React, {
   useCallback,
   useEffect,
@@ -24,7 +25,6 @@ import React, {
   useState,
 } from "react";
 
-import { useDebouncedCallback } from "../shared/hooks/useDebouncedCallback.js";
 import { useDeepEqual } from "../shared/hooks/variables/useDeepEqual.js";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
@@ -33,7 +33,8 @@ import type {
   FormState,
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import type { FieldType, RendererFieldDefinition } from "./FormFieldApi.js";
+import { useActionFormValidation } from "./useActionFormValidation.js";
 import { buildDefaultValues } from "./utils/buildDefaultValues.js";
 import {
   buildDisplayedFormState,
@@ -44,6 +45,7 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
+const EMPTY_PROTECTED_FIELD_KEYS: ReadonlySet<string> = new Set();
 
 /**
  * Renders an action form whose displayed state combines caller values,
@@ -130,7 +132,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const coerceFormState = useCallback(
-    (rawState: Record<string, unknown>): Record<string, unknown> => {
+    (rawState: Readonly<Record<string, unknown>>): Record<string, unknown> => {
       const coerced: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(rawState)) {
         coerced[key] = coerceFieldValue(parameters?.[key]?.type, value);
@@ -150,14 +152,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const [uncontrolledValues, setUncontrolledValues] = useState<
     Record<string, unknown>
   >({});
-  // These refs track validation ownership and generations without adding render
-  // dependencies, so stale debounced responses cannot overwrite current state.
   const validationDefaultValuesRef = useRef(validationDefaultValues);
   const editedFieldKeysRef = useRef<Set<string>>(new Set());
-  const validationGenerationRef = useRef(0);
   const metadataRidRef = useRef<string>();
-  const validationParametersRef = useRef(parameters);
-  const lastScheduledFormStateRef = useRef<Record<string, unknown>>();
+  const processedValidationRequestIdRef = useRef<number>();
 
   const isControlled = controlledFormState != null;
   const unresolvedDisplayedFormState = useMemo(
@@ -176,138 +174,130 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     ],
   );
   const displayedFormState = useDeepEqual(unresolvedDisplayedFormState);
-
-  const debouncedValidate = useDebouncedCallback(
-    (rawFormState: Record<string, unknown>, generation: number) => {
-      void validateAction(coerceFormState(rawFormState)).then(
-        (response) => {
-          if (
-            response == null ||
-            generation !== validationGenerationRef.current
-          ) {
-            return;
-          }
-          const nextDefaults = extractScalarValidationDefaults(
-            response.parameters,
-            parameters,
-          );
-          const previousDefaults = validationDefaultValuesRef.current;
-          const nextDefaultsWithClears = retainClearedDefaultKeys(
-            previousDefaults,
-            nextDefaults,
-          );
-          if (!areRecordsEqual(previousDefaults, nextDefaultsWithClears)) {
-            validationDefaultValuesRef.current = nextDefaultsWithClears;
-            setValidationDefaultValues(nextDefaultsWithClears);
-            const currentValues = controlledFormState ?? uncontrolledValues;
-            const nextReportedState = updateFormStateFromValidation({
-              currentValues,
-              previousValidationDefaultValues: previousDefaults,
-              nextValidationDefaultValues: nextDefaults,
-              configuredDefaultValues,
-              protectedFieldKeys: editedFieldKeysRef.current,
-            });
-            const previousDisplayedState = buildDisplayedFormState({
-              validationDefaultValues: previousDefaults,
-              configuredDefaultValues,
-              currentValues,
-              protectedFieldKeys: editedFieldKeysRef.current,
-            });
-            const nextDisplayedState = buildDisplayedFormState({
-              validationDefaultValues: nextDefaultsWithClears,
-              configuredDefaultValues,
-              currentValues: nextReportedState,
-              protectedFieldKeys: editedFieldKeysRef.current,
-            });
-            if (!areRecordsEqual(previousDisplayedState, nextDisplayedState)) {
-              onFormStateChange?.(
-                // Validation only adds values returned for the action's parameter
-                // keys, so the record remains a valid FormState for this action.
-                (previousState) =>
-                  updateFormStateFromValidation({
-                    currentValues: previousState,
-                    previousValidationDefaultValues: previousDefaults,
-                    nextValidationDefaultValues: nextDefaults,
-                    configuredDefaultValues,
-                    protectedFieldKeys: editedFieldKeysRef.current,
-                  }) as FormState<Q>,
-              );
-            }
-          }
-          onValidationResponse?.(response);
-        },
-        () => {
-          // Validation is advisory. Submission errors continue to use onError.
-        },
-      );
-    },
-    500,
-    { leading: true, trailing: true },
+  const initialValidationFormState = useMemo(
+    () =>
+      buildDisplayedFormState({
+        validationDefaultValues: {},
+        configuredDefaultValues,
+        currentValues: controlledFormState ?? {},
+        protectedFieldKeys: EMPTY_PROTECTED_FIELD_KEYS,
+      }),
+    [configuredDefaultValues, controlledFormState],
   );
 
   useEffect(
-    function scheduleValidation() {
-      if (metadata == null) {
+    function resetValidationProvenance() {
+      if (metadata == null || metadataRidRef.current === metadata.rid) {
         return;
       }
-      const hasMetadataRidChanged = metadataRidRef.current !== metadata.rid;
-      const haveParametersChanged =
-        validationParametersRef.current !== parameters;
       metadataRidRef.current = metadata.rid;
-      validationParametersRef.current = parameters;
-
-      if (hasMetadataRidChanged) {
-        ++validationGenerationRef.current;
-        debouncedValidate.cancel();
-        editedFieldKeysRef.current = new Set();
-        validationDefaultValuesRef.current = {};
-        setValidationDefaultValues((previousDefaults) =>
-          Object.keys(previousDefaults).length === 0 ? previousDefaults : {},
+      editedFieldKeysRef.current = new Set();
+      validationDefaultValuesRef.current = {};
+      setValidationDefaultValues((previousDefaults) =>
+        Object.keys(previousDefaults).length === 0 ? previousDefaults : {},
+      );
+      if (!isControlled) {
+        setUncontrolledValues((previousValues) =>
+          Object.keys(previousValues).length === 0 ? previousValues : {},
         );
-        if (!isControlled) {
-          setUncontrolledValues((previousValues) =>
-            Object.keys(previousValues).length === 0 ? previousValues : {},
-          );
-        }
-
-        const resetFormState = buildDisplayedFormState({
-          validationDefaultValues: {},
-          configuredDefaultValues,
-          currentValues: controlledFormState ?? {},
-          protectedFieldKeys: new Set(),
-        });
-        lastScheduledFormStateRef.current = resetFormState;
-        const generation = ++validationGenerationRef.current;
-        debouncedValidate(resetFormState, generation);
-        return;
       }
+    },
+    [isControlled, metadata],
+  );
 
+  const validateFormState = useCallback(
+    (rawFormState: Readonly<Record<string, unknown>>) => {
+      return validateAction(coerceFormState(rawFormState));
+    },
+    [coerceFormState, validateAction],
+  );
+  const { cancelValidation, validationResult } = useActionFormValidation({
+    enabled: metadata != null,
+    formState: displayedFormState,
+    initialFormState: initialValidationFormState,
+    sessionKey: metadata?.rid,
+    validationContext: parameters,
+    validateFormState,
+  });
+
+  useEffect(
+    function applyValidationResult() {
       if (
-        !haveParametersChanged &&
-        lastScheduledFormStateRef.current != null &&
-        areRecordsEqual(lastScheduledFormStateRef.current, displayedFormState)
+        validationResult == null ||
+        validationResult.requestId ===
+          processedValidationRequestIdRef.current ||
+        validationResult.sessionKey !== metadata?.rid ||
+        validationResult.validationContext !== parameters
       ) {
         return;
       }
-      lastScheduledFormStateRef.current = displayedFormState;
-      const generation = ++validationGenerationRef.current;
-      debouncedValidate(displayedFormState, generation);
+      processedValidationRequestIdRef.current = validationResult.requestId;
+
+      const { response } = validationResult;
+      const nextDefaults = getValidationDefaultValues(
+        response.parameters,
+        parameters,
+      );
+      const previousDefaults = validationDefaultValuesRef.current;
+      const nextDefaultsWithClears = retainClearedDefaultKeys(
+        previousDefaults,
+        nextDefaults,
+      );
+      if (!isEqual(previousDefaults, nextDefaultsWithClears)) {
+        validationDefaultValuesRef.current = nextDefaultsWithClears;
+        setValidationDefaultValues(nextDefaultsWithClears);
+        const currentValues = controlledFormState ?? uncontrolledValues;
+        const nextReportedState = updateFormStateFromValidation({
+          currentValues,
+          previousValidationDefaultValues: previousDefaults,
+          nextValidationDefaultValues: nextDefaults,
+          configuredDefaultValues,
+          protectedFieldKeys: editedFieldKeysRef.current,
+        });
+        const previousDisplayedState = buildDisplayedFormState({
+          validationDefaultValues: previousDefaults,
+          configuredDefaultValues,
+          currentValues,
+          protectedFieldKeys: editedFieldKeysRef.current,
+        });
+        const nextDisplayedState = buildDisplayedFormState({
+          validationDefaultValues: nextDefaultsWithClears,
+          configuredDefaultValues,
+          currentValues: nextReportedState,
+          protectedFieldKeys: editedFieldKeysRef.current,
+        });
+        if (!isEqual(previousDisplayedState, nextDisplayedState)) {
+          onFormStateChange?.(
+            // Validation only adds values returned for the action's parameter
+            // keys, so the record remains a valid FormState for this action.
+            (previousState) =>
+              updateFormStateFromValidation({
+                currentValues: previousState,
+                previousValidationDefaultValues: previousDefaults,
+                nextValidationDefaultValues: nextDefaults,
+                configuredDefaultValues,
+                protectedFieldKeys: editedFieldKeysRef.current,
+              }) as FormState<Q>,
+          );
+        }
+      }
+      onValidationResponse?.(response);
     },
     [
       configuredDefaultValues,
       controlledFormState,
-      debouncedValidate,
-      displayedFormState,
-      isControlled,
-      metadata,
+      metadata?.rid,
+      onFormStateChange,
+      onValidationResponse,
       parameters,
+      uncontrolledValues,
+      validationResult,
     ],
   );
 
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
-      debouncedValidate.cancel();
-      ++validationGenerationRef.current;
+      cancelValidation();
       const formState = coerceFormState(rawFormState) as FormState<Q>;
       try {
         if (onSubmit != null) {
@@ -322,7 +312,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     },
     [
       coerceFormState,
-      debouncedValidate,
+      cancelValidation,
       onSubmit,
       osdkApplyAction,
       onSuccess,
@@ -365,48 +355,69 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   return <BaseForm key={metadata?.rid} {...commonProps} />;
 });
 
-function extractScalarValidationDefaults(
+function getValidationDefaultValues(
   parameters: Record<string, { defaultValue?: unknown }>,
-  parameterDefinitions: Record<string, { type: unknown }> | undefined,
+  parameterDefinitions: Record<string, { type: FieldType }> | undefined,
 ): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(parameters).flatMap(([fieldKey, parameter]) => {
-      const value = parameter.defaultValue;
-      const parameterType = parameterDefinitions?.[fieldKey]?.type;
-      return isSupportedScalarDefault(parameterType, value)
-        ? [[fieldKey, value]]
-        : [];
-    }),
+    Object.entries(parameters).flatMap(
+      ([fieldKey, parameter]): Array<[string, unknown]> => {
+        const parameterType = parameterDefinitions?.[fieldKey]?.type;
+        if (parameterType == null) {
+          return [];
+        }
+        const defaultValue = getValidationDefaultValue(
+          parameterType,
+          parameter.defaultValue,
+        );
+        return defaultValue === undefined ? [] : [[fieldKey, defaultValue]];
+      },
+    ),
   );
 }
 
-function isSupportedScalarDefault(
-  parameterType: unknown,
+function getValidationDefaultValue(
+  parameterType: FieldType,
   value: unknown,
-): value is string | number | boolean {
-  if (parameterType === "string") {
-    return typeof value === "string";
+): string | number | boolean | undefined {
+  if (typeof parameterType !== "string") {
+    switch (parameterType.type) {
+      // TODO: Support validation defaults for complex parameter types.
+      case "interface":
+      case "object":
+      case "objectSet":
+      case "struct":
+        return undefined;
+      default:
+        parameterType satisfies never;
+        return undefined;
+    }
   }
-  if (parameterType === "boolean") {
-    return typeof value === "boolean";
-  }
-  return (
-    (parameterType === "integer" ||
-      parameterType === "long" ||
-      parameterType === "double") &&
-    typeof value === "number"
-  );
-}
 
-function areRecordsEqual(
-  left: Readonly<Record<string, unknown>>,
-  right: Readonly<Record<string, unknown>>,
-): boolean {
-  const leftEntries = Object.entries(left);
-  return (
-    leftEntries.length === Object.keys(right).length &&
-    leftEntries.every(([key, value]) => Object.is(value, right[key]))
-  );
+  switch (parameterType) {
+    case "boolean":
+      return typeof value === "boolean" ? value : undefined;
+    case "double":
+    case "integer":
+    case "long":
+      return typeof value === "number" ? value : undefined;
+    case "string":
+      return typeof value === "string" ? value : undefined;
+    // TODO: Support validation defaults for non-scalar parameter types.
+    case "attachment":
+    case "datetime":
+    case "geohash":
+    case "geoshape":
+    case "marking":
+    case "mediaReference":
+    case "objectType":
+    case "scenarioReference":
+    case "timestamp":
+      return undefined;
+    default:
+      parameterType satisfies never;
+      return undefined;
+  }
 }
 
 function retainClearedDefaultKeys(
