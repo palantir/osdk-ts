@@ -88,7 +88,7 @@ async function parseResourcesJson(
     content = await readFile(resourcesJsonPath, "utf-8");
   } catch (err) {
     if ((err as { code?: string }).code === "ENOENT") {
-      // the file is not present in the repo; authorizations are optional.
+      // the file is not present in the repo
       return undefined;
     }
     throw err;
