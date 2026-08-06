@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { registerObjectTypeAlias } from "./ontology/objectTypeAliases.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
 
 /** @internal */
@@ -50,6 +51,11 @@ export const fetchMetadataInternal = async <
           : never
 > => {
   if (definition.type === "object") {
+    // The ontology provider translates metadata using the client's alias
+    // registry, which is populated as definitions enter the client. This is one
+    // of those entry points, and it can be the first, so register before
+    // resolving rather than reading a registry nothing has filled in yet.
+    registerObjectTypeAlias(client, definition);
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
       await client.ontologyProvider.getObjectDefinition(definition.apiName);
     // The provider rekeys `properties` (and friends) into the local vocabulary

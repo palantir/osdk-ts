@@ -138,6 +138,64 @@ describe("object type aliases", () => {
     });
   });
 
+  // Deliberately isolated: the alias registry is populated as definitions enter
+  // the client, so anything that reads it must also register. This block never
+  // calls `client(def)`, which would otherwise register the alias as a side
+  // effect and mask the problem.
+  describe("when fetchMetadata is the very first call", () => {
+    const FIRST_CALL_BOUND_API_NAME = "com.example.FirstCallEmployee";
+
+    const FirstCallEmployee = {
+      ...Employee,
+      apiName: FIRST_CALL_BOUND_API_NAME,
+      alias: {
+        localApiName: "Employee",
+        boundApiName: FIRST_CALL_BOUND_API_NAME,
+        properties: { fullName: "fc_fullName" },
+      },
+    } as typeof Employee;
+
+    let client: Client;
+
+    beforeAll(() => {
+      const testSetup = startNodeApiServer(
+        new LegacyFauxFoundry(),
+        createClient,
+      );
+      ({ client } = testSetup);
+
+      const source = stubData.employeeObjectWithLinkTypes;
+      testSetup.fauxFoundry.getDefaultOntology().registerObjectType({
+        ...source,
+        objectType: {
+          ...source.objectType,
+          apiName: FIRST_CALL_BOUND_API_NAME,
+          titleProperty: "fc_fullName",
+          properties: Object.fromEntries(
+            Object.entries(source.objectType.properties).map(([name, def]) => [
+              name === "fullName" ? "fc_fullName" : name,
+              def,
+            ]),
+          ),
+        },
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+      });
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    it("still reports code-facing names", async () => {
+      const metadata = await client.fetchMetadata(FirstCallEmployee);
+
+      expect(metadata.apiName).toBe("Employee");
+      expect(Object.keys(metadata.properties)).toContain("fullName");
+      expect(Object.keys(metadata.properties)).not.toContain("fc_fullName");
+    });
+  });
+
   describe("with property names remapped too", () => {
     const PROPERTY_BOUND_API_NAME = "com.example.RenamedPropsEmployee";
     // Renames the primary key as well, since `primaryKeyApiName` feeds
