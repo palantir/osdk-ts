@@ -299,16 +299,48 @@ Storybook invocation passes them directly after the script name.
 ## Prerelease tarballs
 
 **Trial.** The `pack` job runs `scripts/pack-packages.sh`, which packs all 47
-publishable packages into `.tgz` files and stores them as the `packages`
-artifact. A consumer can then smoketest an unreleased change without waiting for
-a release: download the tarball and point `pnpm.overrides` at it with the `file:`
-protocol.
+publishable packages into `.tgz` files plus a `manifest.json`, and stores them as
+the `packages` artifact. A consumer can then smoketest an unreleased change
+without waiting for a release: download the tarball and point `pnpm.overrides` at
+it with the `file:` protocol.
 
 This is the CI half of what `foundry/wizardry`'s `wizard-prerelease` CLI does for
 Blueprint, whose `store-packages` job is the same idea. The client half — query
 the CircleCI API for artifact URLs, rewrite `pnpm.overrides` — is deliberately
 **not** built yet. It is scriptable in the consuming repo, and it is worth
 learning from a few manual uses whether a CLI earns its maintenance.
+
+**It packs everything, on purpose.** Picking a subset is the client's job: it
+knows which dependencies it actually wants to override, and `manifest.json` plus
+CircleCI's per-file artifact API let it download only those. Scoping here — to
+changed packages, say — would be cheaper, but it risks the one tarball a consumer
+needs not existing, and a missing artifact is a much worse failure than a large
+one.
+
+`manifest.json` exists so the client never has to parse a filename:
+
+```json
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "…",
+    "branch": "…",
+    "sha": "…",
+    "buildNumber": "…"
+  },
+  "packages": [
+    { "name": "@osdk/client", "version": "…", "file": "osdk-client-….tgz" }
+  ]
+}
+```
+
+That matters more here than it would for Blueprint. `wizard-prerelease` recovers
+a package name with `basename(tgz).split("-")[1]`, which works only because no
+Blueprint package name contains a hyphen. Plenty of ours do —
+`@osdk/generator-converters`, `@osdk/vite-plugin-oac`, `@osdk/foundry-sdk-generator`
+— so `osdk-generator-converters-1.2.3.tgz` would resolve to `@osdk/generator`:
+the wrong package, silently, with no error. Any client for this must read the
+manifest rather than reimplement that split.
 
 Two things make this work, and the first is easy to get wrong:
 
