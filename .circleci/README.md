@@ -296,6 +296,48 @@ Unprefixed, CircleCI would merge unrelated tests and flaky detection would read
 Note pnpm 10 does **not** forward arguments after a `--` separator, so the
 Storybook invocation passes them directly after the script name.
 
+## Prerelease tarballs
+
+**Trial.** The `pack` job runs `scripts/pack-packages.sh`, which packs all 47
+publishable packages into `.tgz` files and stores them as the `packages`
+artifact. A consumer can then smoketest an unreleased change without waiting for
+a release: download the tarball and point `pnpm.overrides` at it with the `file:`
+protocol.
+
+This is the CI half of what `foundry/wizardry`'s `wizard-prerelease` CLI does for
+Blueprint, whose `store-packages` job is the same idea. The client half — query
+the CircleCI API for artifact URLs, rewrite `pnpm.overrides` — is deliberately
+**not** built yet. It is scriptable in the consuming repo, and it is worth
+learning from a few manual uses whether a CLI earns its maintenance.
+
+Two things make this work, and the first is easy to get wrong:
+
+- **It packs at the current versions.** Nothing runs `changeset version` first.
+  Each tarball's dependency ranges therefore still point at versions that exist
+  on npm, so a consumer overrides only the packages they actually changed —
+  usually one or two. Pack _after_ a version bump and every workspace dependency
+  points at an unpublished version, forcing an override for all 47. This is why
+  the step cannot live in `e2e`, which versions before it publishes.
+- **It runs `transpile transpileTypes` first**, as a cache hit off `build`. Every
+  publishable package's `files` field ships `build/{esm,cjs,browser,types}`, so
+  without that the tarballs would be empty shells. The script fails loudly on a
+  missing `build/` rather than producing publish-shaped garbage.
+
+`pack` is deliberately not in `ci-all`'s `requires`: it is a trial, and `e2e`
+already proves the packages are publishable.
+
+What to watch on the first runs: **total artifact size**, which the script
+prints. Forty-seven tarballs on every PR may not be worth keeping. If it is too
+much, the fix is scoping to changed packages via `scripts/is-affected.sh` —
+correct as well as cheaper, since an unchanged package's published version is
+identical to the packed one.
+
+The better answer, if it ever comes back, is the snapshot release in
+`.github/workflows/release.yml`: real versions on the registry resolve normally
+and need no overrides at all. Tarballs are the fallback for while that is off,
+and they have one advantage it can never have — they work for fork PRs, which
+cannot have publish credentials.
+
 ## Asking "did this change?"
 
 Two different questions, two different tools, and mixing them up causes real

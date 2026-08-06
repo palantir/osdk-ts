@@ -523,6 +523,34 @@ jobs:
       - save-turbo-cache:
           scope: apps
 
+  # Trial. Packs every publishable package into a downloadable .tgz so a
+  # consumer can smoketest an unreleased change without waiting for a release.
+  # See README "Prerelease tarballs" for what it is for and what to watch.
+  #
+  # Note there is no verify-working-tree-clean here: @osdk/react's `prepack`
+  # copies ../../docs/react into the package, which pnpm pack runs. That output
+  # is covered by packages/react/.gitignore, so it is expected, not a leak.
+  pack:
+    executor:
+      name: node
+      # tar and gzip over ~47 packages; not parallel work.
+      resource-class: medium
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          # The tarballs ship build/{esm,cjs,browser,types}, so those must exist
+          # before packing. A cache hit off the build job, not a rebuild.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Pack publishable packages
+          command: .circleci/scripts/pack-packages.sh /tmp/packages
+      - store_artifacts:
+          path: /tmp/packages
+          destination: packages
+
   e2e:
     executor: node-with-verdaccio
     steps:
@@ -838,6 +866,10 @@ workflows:
       - lint:
           requires: [build]
       - build-apps:
+          requires: [build]
+      # Deliberately absent from ci-all: a trial, and `e2e` already proves the
+      # packages are publishable.
+      - pack:
           requires: [build]
       - test:
           matrix:

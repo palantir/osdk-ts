@@ -36,8 +36,10 @@ pypi
 retryable
 revals
 rsort
+scriptable
 semver
 shellcheck
+smoketest
 streamutils
 struct
 structs
