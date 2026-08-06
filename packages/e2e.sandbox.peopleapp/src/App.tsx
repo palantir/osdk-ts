@@ -17,9 +17,11 @@ function PeopleApp() {
           ? "action-form-filter-list-repro"
           : path === "/form"
             ? "form"
-            : path === "/aip-agent-chat"
-              ? "aip-agent-chat"
-              : "offices";
+            : path === "/person"
+              ? "person"
+              : path === "/aip-agent-chat"
+                ? "aip-agent-chat"
+                : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -60,6 +62,13 @@ function PeopleApp() {
           onClick={() => navigate("/form")}
         >
           Form
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "person"}
+          onClick={() => navigate("/person")}
+        >
+          Person Interface Table
         </Button>
         <Button
           variant="tab"

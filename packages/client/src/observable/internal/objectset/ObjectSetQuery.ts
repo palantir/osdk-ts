@@ -60,6 +60,9 @@ export class ObjectSetQuery extends BaseListQuery<
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
+  // Set when the object set resolves to an interface, so rows can be projected
+  // to the interface view.
+  #interfaceApiName: string | undefined;
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Lazily populated on first fetch when `withProperties` is set.
@@ -106,6 +109,10 @@ export class ObjectSetQuery extends BaseListQuery<
 
     this.#resultTypeApiName =
       ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+
+    this.#interfaceApiName = ObjectSetQuery.#extractInterfaceApiName(
+      getWireObjectSet(this.#composedObjectSet),
+    );
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -199,6 +206,39 @@ export class ObjectSetQuery extends BaseListQuery<
       return wire.interfaceType;
     }
     return undefined;
+  }
+
+  /**
+   * The interface this object set returns rows of, if any.
+   *
+   * Only reads shapes it can decide from the wire alone, and declines for
+   * everything else — a link traversal's result is the link target rather than
+   * the source, and narrowing and union/intersect/subtract need the ontology to
+   * resolve. Declining just means rows stay as concrete objects, which is what
+   * they were before interface projection existed.
+   */
+  static #extractInterfaceApiName(wire: WireObjectSet): string | undefined {
+    switch (wire.type) {
+      case "interfaceBase":
+        return wire.interfaceType;
+      case "filter":
+      case "withProperties":
+      case "nearestNeighbors":
+        return ObjectSetQuery.#extractInterfaceApiName(wire.objectSet);
+      default:
+        return undefined;
+    }
+  }
+
+  /**
+   * Projects a row to the interface view only when this.#interfaceApiName is not null
+   * Otherwise, return object as-is
+   */
+  #wrapObject(object: ObjectHolder): ObjectHolder | InterfaceHolder {
+    if (this.#interfaceApiName == null) {
+      return object;
+    }
+    return object.$as(this.#interfaceApiName);
   }
 
   /**
@@ -520,7 +560,9 @@ export class ObjectSetQuery extends BaseListQuery<
     totalCount?: string;
   }): ObjectSetPayload {
     return {
-      resolvedList: params.resolvedData,
+      resolvedList: params.resolvedData?.map((obj: ObjectHolder) =>
+        this.#wrapObject(obj),
+      ),
       isOptimistic: params.isOptimistic,
       fetchMore: this.fetchMore,
       hasMore: this.nextPageToken != null,
