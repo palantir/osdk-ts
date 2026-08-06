@@ -168,8 +168,33 @@ than just relocating it.
 The `test` and `storybook-interaction-tests` jobs emit JUnit XML, which gives
 CircleCI a Tests tab with individual test names and durations, surfaces failures
 at the top of the job instead of buried in ~38 packages of console output, and
-enables flaky-test detection. Both upload with `when: always` — a failing run is
-exactly when the report is worth having.
+enables flaky-test detection. A failing run is exactly when the report is worth
+having, so both jobs are arranged to upload before anything fails the job.
+
+**That arrangement is not `when: always`, and it cannot be.** CircleCI's schema
+allows `when` on `run` and on `save_cache`, but `store_test_results` and
+`store_artifacts` declare `additionalProperties: false` and do not accept it.
+`circleci config validate` passes it through regardless, so the mistake is
+silent — the editor's YAML schema is the only thing that catches it. Instead the
+test step records its exit code, the upload steps run, and a final step re-raises
+it:
+
+```yaml
+- run:
+    name: Run …
+    command: |
+      set +e
+      <the test command>
+      status=$?
+      echo "$status" > /tmp/test-exit-code
+- run: { name: Collect JUnit reports, when: always, command: … }
+- store_test_results: { path: /tmp/test-results }
+- run:
+    name: Fail the job if the tests failed
+    command: exit "$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
+```
+
+The `when: always` on the collect step is legitimate — that one is a `run`.
 
 Four things make it work, and all four are load-bearing:
 

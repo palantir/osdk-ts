@@ -427,8 +427,15 @@ jobs:
           # its *global* hash: passing them made every task in this run a cache
           # miss, so the job rebuilt the whole graph instead of restoring the
           # build job's cache. See README "Test results".
+          # The exit code is recorded and re-raised in the last step of the job
+          # rather than failing here, so the upload steps below still run on a
+          # failing suite — which is exactly when the report is worth having.
+          # `when: always` cannot buy that: CircleCI's schema allows it on `run`
+          # and `save_cache`, but `store_test_results` and `store_artifacts`
+          # declare `additionalProperties: false`, so it is not valid there.
           name: Run this container's share of the tests
           command: |
+            set +e
             case "$CIRCLE_NODE_INDEX" in
               0)
                 pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
@@ -439,18 +446,24 @@ jobs:
               *)
                 # Fail loudly rather than silently running nothing, which is what
                 # Blueprint's config does today (parallelism 6, no branch for 3).
+                # This one is a config error, not a test failure, so it fails the
+                # step immediately instead of being deferred.
                 echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
                 echo "\`parallelism\` and this case statement have to agree." >&2
                 exit 1
                 ;;
             esac
+            status=$?
+            echo "$status" > /tmp/test-exit-code
+            if [ "$status" -ne 0 ]; then
+              echo "Tests exited $status. Reports upload first; the job fails at the end."
+            fi
       - run:
           name: Collect JUnit reports
           when: always
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
-          when: always
       - run:
           # Merged in-job because there is no separate coverage job, so each
           # container reports on the packages it actually ran: container 0 is
@@ -476,9 +489,14 @@ jobs:
       - store_artifacts:
           path: /tmp/coverage
           destination: coverage
-          when: always
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
+      - run:
+          # Last step, so everything above has uploaded first.
+          name: Fail the job if the tests failed
+          command: |
+            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
+            exit "$status"
 
   # Build the app/site packages that have no transpile/typecheck task; `turbo run
   # build` is what proves they still compile. Runs in parallel with the test
@@ -652,19 +670,34 @@ jobs:
           # Vitest browser mode runs each story's play function in headless
           # Chromium. Note the arguments follow the script name directly: pnpm 10
           # does not forward anything after a `--` separator.
+          #
+          # Exit code deferred to the last step for the same reason as the test
+          # matrix: `store_test_results` takes no `when`, so the upload has to
+          # happen before anything fails the job. This is the flakiest suite in
+          # the pipeline, so losing its report on a red run is the worst case.
           name: Run interaction tests
           command: |
+            set +e
             pnpm --filter @osdk/react-components-storybook run test-storybook \
               --reporter=default \
               --reporter=junit \
               --outputFile.junit=reports/junit.xml
+            status=$?
+            echo "$status" > /tmp/test-exit-code
+            if [ "$status" -ne 0 ]; then
+              echo "Interaction tests exited $status. Report uploads first; the job fails at the end."
+            fi
       - run:
           name: Collect JUnit reports
           when: always
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
-          when: always
+      - run:
+          name: Fail the job if the tests failed
+          command: |
+            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
+            exit "$status"
 
   # ---------------------------------------------------------------------------
   # PR-only reporting and guards
