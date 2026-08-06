@@ -46,6 +46,8 @@ export class OntologyServer extends FoundryCliService {
       "--skip-build",
       "--metadata",
       this.#metadataPath,
+      "--discovery-path",
+      this.getProjectPath(),
     ];
   }
 }

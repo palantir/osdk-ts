@@ -43,7 +43,13 @@ export class StatusServer extends FoundryCliService {
   }
 
   protected override getArgs(): readonly string[] {
-    return ["start", "status-server"];
+    // force project path to cwd
+    return [
+      "start",
+      "status-server",
+      "--discovery-path",
+      this.getProjectPath(),
+    ];
   }
 
   override async checkHealth(): Promise<ServiceHealth> {
