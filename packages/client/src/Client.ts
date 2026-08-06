@@ -116,8 +116,8 @@ export interface Client extends SharedClient, OldSharedClient {
    * @param experiment - The experiment marker that gates an unstable feature.
    * @example
    * ```ts
-   * const ref = await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
-   *   .createMediaReference({ data: blob, fileName: "media.mp4", objectType: Employee, propertyType: "photo" });
+   * const employee = await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid)
+   *   .fetchOneByRid(Employee, "ri.phonograph2-objects.main.object.1234");
    * ```
    * @returns the experiment-specific function surface.
    */

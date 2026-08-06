@@ -39,7 +39,6 @@ import type {
   TransformOptions,
 } from "@osdk/api/unstable";
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
@@ -243,34 +242,6 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               )) as Osdk<Q>;
             },
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
-          return {
-            createMediaReference: async <
-              Q extends ObjectTypeDefinition,
-              const L extends PropertyKeys.Filtered<Q, "mediaReference">,
-            >(args: {
-              data: Blob;
-              fileName: string;
-              objectType: Q;
-              propertyType: L;
-            }) => {
-              const { data, fileName, objectType, propertyType } = args;
-              const { upload } =
-                await import("@osdk/foundry.ontologies/MediaReferenceProperty");
-              return await upload(
-                clientCtx,
-                await clientCtx.ontologyRid,
-                objectType.apiName,
-                propertyType as string,
-                data,
-                {
-                  mediaItemPath: fileName,
-                  preview: true,
-                },
-              );
-            },
-          } as any;
-
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid.name:
           return {
             fetchPageByRid: async <
