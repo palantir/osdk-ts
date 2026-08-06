@@ -402,6 +402,17 @@ jobs:
                 echo "export TURBO_FILTERS=" >> "$BASH_ENV"
                 ;;
             esac
+
+            # Coverage rides on one leg only. It is the same tests either way,
+            # so running it four times would just pay the v8 overhead four
+            # times. The vitest configs read COVERAGE; turbo hashes it, so this
+            # leg's test tasks get their own cache namespace and the other legs
+            # are untouched.
+            case "<< parameters.node-version >>" in
+              24 | 24.*)
+                echo 'export COVERAGE=true' >> "$BASH_ENV"
+                ;;
+            esac
       - run:
           # `turbo run test` only depends on ^transpileEsm, but some suites also
           # consume their dependencies' other build outputs (verify-cjs/esm, the
@@ -439,6 +450,32 @@ jobs:
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
+          when: always
+      - run:
+          # Merged in-job because there is no separate coverage job, so each
+          # container reports on the packages it actually ran: container 0 is
+          # everything except @osdk/react-components, container 1 is only that.
+          # Two reports, not one. The destination carries the container index so
+          # the uploads cannot collide.
+          #
+          # Non-fatal on purpose: a merge problem should never be what turns a
+          # passing test run red.
+          name: Merge coverage
+          when: always
+          command: |
+            mkdir -p /tmp/coverage
+            if [ "${COVERAGE:-}" != "true" ]; then
+              echo "Not the coverage leg; nothing to merge."
+              exit 0
+            fi
+            if pnpm run coverage:merge; then
+              cp -R coverage "/tmp/coverage/container-$CIRCLE_NODE_INDEX"
+            else
+              echo "Coverage merge failed; leaving the artifact empty." >&2
+            fi
+      - store_artifacts:
+          path: /tmp/coverage
+          destination: coverage
           when: always
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>

@@ -205,6 +205,37 @@ or `node ./lib/test.js` rather than vitest. Nothing is lost there, and it is why
 the reporter cannot be a blanket command-line flag: webpack rejects
 `--reporter=junit` outright.
 
+### Coverage
+
+Coverage rides on the **Node 24 leg of the existing matrix**, rather than a
+separate job running the suite a second time. `scripts/coverage/collect.sh` (the
+local tool, from #3717) has to `turbo run test --force` because coverage output
+was not a declared turbo output, so a cache hit wrote no files. `turbo.json` now
+declares `coverage/**`, which removes that constraint here and would let
+`collect.sh` drop its `--force` too.
+
+It is switched on with `COVERAGE=true`, read by the vitest configs, for the same
+reason the JUnit reporter is: a `--` passthrough would put it in turbo's global
+hash. `COVERAGE` is in the `test` task's `env`, so the coverage leg gets its own
+cache namespace and a non-coverage cache entry can never be restored into it.
+Measured: `COVERAGE=true` changes 112 task hashes, all of them `test`.
+
+Only one leg runs it. The tests are identical on all four, so the other three
+would just pay the v8 overhead again for the same numbers.
+
+**There are two reports, not one.** With no separate merge job, each container
+merges what it ran: container 0 is everything except `@osdk/react-components`,
+container 1 is only that. They upload to `coverage/container-0` and
+`container-1`. Combining them into a single number needs the separate job that
+was deliberately skipped.
+
+Two caveats. `@osdk/example-generator` is kept in, unlike in `collect.sh`, which
+excludes it because its only test is a codegen-drift check that calls
+`process.exit` — that can stop v8 flushing its coverage file, so if that package
+is missing from the report, that is why. And **no thresholds are configured
+anywhere**, so this cannot fail a build; it is a downloadable report until
+someone sets them.
+
 `scripts/collect-test-results.sh` gathers the per-package reports into one
 directory, because `store_test_results` takes a path rather than a glob. On the
 way through it prefixes each `classname` with its package: vitest sets classname

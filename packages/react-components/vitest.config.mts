@@ -32,6 +32,15 @@ export default defineConfig({
     reporters: process.env.CI ? ["default", "junit"] : ["default"],
     outputFile: { junit: "reports/junit.xml" },
     coverage: {
+      // Switched on by env, not a turbo `--` arg, for the same reason
+      // as the reporter above. CI sets it on the Node 24 leg only;
+      // `pnpm run coverage` passes its own CLI flags, which win.
+      enabled: process.env.COVERAGE === "true",
+      provider: "v8",
+      // json only: coverage-final.json is what scripts/coverage
+      // merges. The default set adds text, which would print a table
+      // per package across ~80 packages of CI log.
+      reporter: ["json"],
       include: ["src/**"],
       // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [
