@@ -253,6 +253,19 @@ describe("object type aliases", () => {
       expect(metadata.titleProperty).toBe("fullName");
     });
 
+    it("fetches one by a remapped primary key", async () => {
+      // `fetchOne` writes its primary key filter straight into the wire object
+      // set instead of going through `where()`, so it needs its own translation.
+      // Without it the filter names the local primary key and the platform
+      // rejects the request with an unknown property.
+      const object = await client(RenamedPropsEmployee).fetchOne(
+        stubData.employee1.employeeId,
+      );
+
+      expect(object.$primaryKey).toBe(stubData.employee1.employeeId);
+      expect(object.fullName).toBe(stubData.employee1.fullName);
+    });
+
     it("orders by a remapped property", async () => {
       const { data } = await client(RenamedPropsEmployee).fetchPage({
         $orderBy: { fullName: "asc" },

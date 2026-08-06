@@ -107,6 +107,10 @@ describe("property aliases", () => {
       expectNoLocalPropertyNames(fetchFn);
     });
 
+    // NOTE: `fetchOne` is covered in objectTypeAliases.test.ts instead - it
+    // resolves the object definition to build its primary key filter, which the
+    // capture client cannot serve.
+
     it("via $orderBy", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchPage(client, FullyAliasedEmployee, {

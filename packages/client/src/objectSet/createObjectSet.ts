@@ -403,7 +403,10 @@ async function createWithPk(
     objectSet,
     where: {
       type: "eq",
-      field: objDef.primaryKeyApiName,
+      // Unlike `where()`, this writes the wire filter directly rather than going
+      // through `modernToLegacyWhereClause`, so the alias has to be applied here.
+      // `objDef` has already been translated, so `primaryKeyApiName` is local.
+      field: toBoundProperty(objDef, objDef.primaryKeyApiName as string),
       value: primaryKey,
     },
   };
