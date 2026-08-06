@@ -64,6 +64,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "maker-import": "packages/maker-import/oxlint.config.ts",
   "api": "packages/api/oxlint.config.ts",
   "functions": "packages/functions/oxlint.config.ts",
+  "agents": "packages/agents/oxlint.config.ts",
   "unit-testing": "packages/unit-testing/oxlint.config.ts",
   "aip-core": "packages/aip-core/oxlint.config.ts",
   "foundry-config-json": "packages/foundry-config-json/oxlint.config.ts",

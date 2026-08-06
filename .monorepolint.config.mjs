@@ -333,6 +333,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/agents",
       "@osdk/unit-testing",
     ],
     {
