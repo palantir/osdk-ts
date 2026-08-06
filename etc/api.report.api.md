@@ -1233,8 +1233,7 @@ export type MaybeScore<
 // @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
-    	// @beta
-    fetchFullMetadata?(): Promise<MediaFullMetadata>;
+    	fetchFullMetadata?(): Promise<MediaFullMetadata>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
     	// (undocumented)
