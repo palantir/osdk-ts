@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isAbsolute, resolve } from "node:path";
+import path, { isAbsolute, resolve } from "node:path";
 
 import {
   FoundryCliService,
@@ -47,7 +47,7 @@ export class OntologyServer extends FoundryCliService {
       "--metadata",
       this.#metadataPath,
       "--discovery-path",
-      this.getProjectPath(),
+      path.resolve(this.getProjectPath(), ".palantir"),
     ];
   }
 }

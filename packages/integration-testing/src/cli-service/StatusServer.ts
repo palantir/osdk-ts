@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import path from "node:path";
+
 import invariant from "tiny-invariant";
 
 import {
@@ -48,7 +50,7 @@ export class StatusServer extends FoundryCliService {
       "start",
       "status-server",
       "--discovery-path",
-      this.getProjectPath(),
+      path.resolve(this.getProjectPath(), ".palantir"),
     ];
   }
 
