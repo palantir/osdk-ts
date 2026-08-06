@@ -308,7 +308,6 @@ const archetypeRules = archetypes(standardPackageRules, {
       "@osdk/api",
       "@osdk/functions",
       "@osdk/agents",
-      "@osdk/integration-testing",
       "@osdk/unit-testing",
     ],
     {
