@@ -23,7 +23,7 @@ type DeclaredWidgetSetAuthorizations = Pick<
 
 interface ResourcesJsonV1 {
   authorizations: DeclaredWidgetSetAuthorizations;
-  version: number;
+  version: 1;
 }
 
 export type ResourcesJson = ResourcesJsonV1;
