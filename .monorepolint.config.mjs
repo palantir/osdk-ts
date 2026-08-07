@@ -232,6 +232,7 @@ const archetypeRules = archetypes(
       "@osdk/cli",
       "@osdk/create-app",
       "@osdk/create-widget",
+      "@osdk/platform-sdk-generator",
     ],
     {
       ...LIBRARY_RULES,
@@ -241,6 +242,18 @@ const archetypeRules = archetypes(
         esm: "bundle",
       },
       fixedDepsOnly: true,
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
+    },
+  )
+  .addArchetype(
+    "platform sdk generator core",
+    [
+      "@osdk/platform-sdk-generator-core",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_ESM_ONLY,
       oxc: true,
       oxcConfig: "./oxlint.config.ts",
     },
