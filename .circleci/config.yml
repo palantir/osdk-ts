@@ -1,0 +1,918 @@
+version: 2.1
+
+# ------------------------------------------------------------------------------
+# The pull-request half of .github/workflows/ci.yml, running alongside it.
+# Actions stays the source of truth for releases and for the required status
+# checks; nothing here publishes.
+#
+# Read .circleci/README.md first: it covers the Storybook divergence, the
+# resource-class choices, the Actions features with no CircleCI equivalent, and
+# how test reporting works. Comments here cover only what that file does not.
+# ------------------------------------------------------------------------------
+
+parameters:
+  run-chromatic:
+    description: >
+      Run only the Storybook build and Chromatic snapshot, skipping the rest of
+      CI. Refreshes a Chromatic baseline without paying for a full CI run.
+    type: boolean
+    default: false
+
+aliases:
+  - &ci-environment
+    DO_NOT_TRACK: "1"
+    TURBO_TELEMETRY_DISABLED: "1"
+    # Let corepack fetch the pinned pnpm without prompting for confirmation.
+    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+    PNPM_STORE_DIR: /home/circleci/.pnpm-store
+
+  # Packages that pull in Vite 7 or Storybook and therefore need Node 20+. They
+  # sit out the Node 18 leg of the test matrix.
+  - &node-18-excludes >-
+    --filter=!@osdk/create-app.template.*
+    --filter=!@osdk/create-widget.template.*
+    --filter=!@osdk/widget.vite-plugin
+    --filter=!@osdk/examples.*
+    --filter=!@psdk/examples.*
+    --filter=!@osdk/e2e.sandbox.todowidget
+    --filter=!@osdk/ontology-explorer-app
+    --filter=!@osdk/react-components-storybook
+
+executors:
+  node:
+    parameters:
+      node-version:
+        # Must be at least MAJOR.MINOR. cimg/node publishes no bare major tags,
+        # so `24` is a 404 rather than a float to the newest 24.x — unlike
+        # actions/setup-node, a docker tag is a literal, not a version range.
+        # MAJOR.MINOR does float across patch releases.
+        description: cimg/node tag; MAJOR.MINOR, or a variant like 24.19-browsers.
+        type: string
+        default: "24.19"
+      resource-class:
+        type: string
+        default: large
+    docker:
+      - image: cimg/node:<< parameters.node-version >>
+    resource_class: << parameters.resource-class >>
+    environment: *ci-environment
+
+  node-with-verdaccio:
+    docker:
+      - image: cimg/node:24.19
+      - image: verdaccio/verdaccio:6
+    resource_class: large
+    environment: *ci-environment
+
+commands:
+  activate-pnpm:
+    description: Make the repo's pinned pnpm available on PATH.
+    steps:
+      - run:
+          name: Activate pnpm
+          command: |
+            # The corepack bundled with cimg/node can be too old to verify the
+            # signatures of current pnpm releases, so refresh it before enabling.
+            sudo npm install --global --silent corepack@latest
+            sudo corepack enable
+            pnpm --version
+
+  install-deps:
+    description: Restore the pnpm store and install the workspace.
+    steps:
+      - restore_cache:
+          name: Restore pnpm store
+          keys:
+            - v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+            - v1-pnpm-store-{{ arch }}-
+      - run:
+          name: Install dependencies
+          command: pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+
+  attach-deps:
+    description: >
+      Take node_modules from the workspace instead of reinstalling. Jobs
+      downstream of `build` pick up its turbo cache this way too.
+    steps:
+      - attach_workspace:
+          at: .
+
+  prepare:
+    description: Check out, put pnpm on PATH, and attach the workspace.
+    steps:
+      - checkout
+      - activate-pnpm
+      - attach-deps
+
+  save-pnpm-store:
+    description: >
+      Persist the pnpm store. Only the install job does this: the key is content
+      addressed by the lockfile, so one writer per pipeline is enough.
+    steps:
+      - run:
+          name: Prune pnpm store
+          command: pnpm store prune --store-dir "$PNPM_STORE_DIR"
+      - save_cache:
+          name: Save pnpm store
+          key: v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - /home/circleci/.pnpm-store
+
+  restore-turbo-cache:
+    description: >
+      Restore a scoped turbo cache, falling back to this pipeline's build cache
+      and then to any earlier build cache.
+
+      Keys carry CIRCLE_NODE_INDEX because a save_cache against an existing key
+      is a silent no-op: sharing one key across a job's parallel containers would
+      mean only one container's results ever persist. Jobs without `parallelism`
+      always run at index 0.
+    parameters:
+      scope:
+        type: string
+    steps:
+      - restore_cache:
+          name: Restore turbo cache (<< parameters.scope >>)
+          keys:
+            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+            # `build` is never parallel, so its cache is always written at index 0.
+            - turbo-{{ arch }}-build-0-{{ .Revision }}
+            - turbo-{{ arch }}-build-0-
+
+  save-turbo-cache:
+    parameters:
+      scope:
+        type: string
+    steps:
+      - save_cache:
+          name: Save turbo cache (<< parameters.scope >>)
+          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+          paths:
+            - .turbo/cache
+
+  detect-infra-changes:
+    description: >
+      Set $TURBO_FORCE for the rest of the job, so a run cannot silently rely on
+      stale cached artifacts and mask a broken task dependency.
+
+      The list is deliberately shorter than the one in .github/workflows/ci.yml.
+      Everything dropped was measured to be redundant; see README "Why the infra
+      list is short". Forcing on a file turbo already tracks costs a full cold
+      build of the monorepo and buys nothing.
+    steps:
+      - run:
+          name: Detect infra changes
+          command: |
+            force=""
+            if files=$(.circleci/scripts/changed-files.sh); then
+              if printf '%s\n' "$files" | grep -qE '^(pnpm-lock\.yaml|pnpm-workspace\.yaml)$'; then
+                echo "Infrastructure changed; forcing a clean build."
+                force="--force"
+              fi
+            else
+              echo "Base commit unknown; forcing a clean build."
+              force="--force"
+            fi
+            echo "export TURBO_FORCE='$force'" >> "$BASH_ENV"
+
+  verify-working-tree-clean:
+    description: Fail if a build step modified or generated files.
+    steps:
+      - run:
+          name: Verify nothing changed
+          command: git diff --exit-code
+      - run:
+          name: Verify nothing added
+          command: |
+            untracked="$(git ls-files --others --exclude-standard)"
+            if [ -n "$untracked" ]; then
+              echo "Build produced unexpected untracked files:"
+              echo "$untracked"
+              exit 1
+            fi
+
+  halt-unless-pull-request:
+    description: End the job successfully when this is not a pull-request build.
+    steps:
+      - run:
+          name: Skip unless this is a pull request
+          command: |
+            case "${CIRCLE_BRANCH:-}" in
+              main | next | release/*)
+                echo "Branch '${CIRCLE_BRANCH}' is not a pull request; skipping."
+                circleci-agent step halt
+                # `halt` stops the job after this step, not this shell, so
+                # leave explicitly rather than falling through to the next line.
+                exit 0
+                ;;
+            esac
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Checks that gate a pull request
+  # ---------------------------------------------------------------------------
+
+  # The only job that installs; everything else attaches the result. One install
+  # serves all four Node legs of the test matrix — see README "Performance shape"
+  # for why that is safe, and what a native-module load failure would mean.
+  install:
+    executor:
+      name: node
+      resource-class: large
+    steps:
+      - checkout
+      - activate-pnpm
+      - install-deps
+      - save-pnpm-store
+      - persist_to_workspace:
+          root: .
+          paths:
+            # Every workspace package gets its own node_modules, because that is
+            # where pnpm puts the .bin symlinks for its direct dependencies. Miss
+            # one and its scripts fail with "command not found" in every
+            # downstream job — `examples-extra/docs_example` needs
+            # `osdk-unstable-typescript` from @osdk/cli.cmd.typescript this way.
+            #
+            # These globs must stay in sync with `packages:` in
+            # pnpm-workspace.yaml. The size cost is small: per-package
+            # node_modules are symlink farms pointing into the root .pnpm store,
+            # which `node_modules` below already carries.
+            #
+            # pnpm-workspace.yaml also lists `examples-extra/basic/*`, omitted
+            # here because that directory does not exist yet and a glob matching
+            # nothing fails the step. Add it back alongside the first package.
+            - node_modules
+            - packages/*/node_modules
+            - examples/*/node_modules
+            - examples-extra/*/node_modules
+            - tests/*/node_modules
+            - benchmarks/*/*/node_modules
+            - docs/node_modules
+
+  changesets:
+    executor:
+      name: node
+      resource-class: medium
+    steps:
+      - checkout
+      - halt-unless-pull-request
+      - run:
+          name: Skip release PRs
+          command: |
+            case "${CIRCLE_BRANCH:-}" in
+              changeset-release/*)
+                echo "Release PR; no changeset expected."
+                circleci-agent step halt
+                exit 0
+                ;;
+            esac
+      - activate-pnpm
+      - attach-deps
+      - run:
+          name: Check for changesets
+          command: |
+            # Explicit refspec so the remote-tracking ref exists regardless of
+            # how checkout configured the remote's default refspec.
+            git fetch origin "+refs/heads/main:refs/remotes/origin/main"
+            pnpm exec changeset status --since=origin/main
+
+  # Build all artifacts once on a single Node version. tsc/babel/esbuild emit
+  # identical output regardless of the host Node version (the build target comes
+  # from tsconfig/tsup, not the runtime), so a build matrix would produce the
+  # same bytes four times. Node 18 syntax compatibility is proven by the test
+  # matrix below.
+  build:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: build
+      - detect-infra-changes
+      - run:
+          name: Build all artifacts
+          command: pnpm exec turbo run transpile transpileTypes $TURBO_FORCE
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: build
+      # The turbo cache travels to downstream jobs rather than the raw build/
+      # directories: it is the compressed form of the same artifacts, and it
+      # keeps `turbo run` a cache hit in the consumers. That matters because
+      # `transpile` dependsOn `codegen`, whose generated sources turbo does not
+      # cache — dropping the turbo call downstream would leave those missing.
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .turbo/cache
+
+  # The Node-version-independent checks are split across three jobs rather than
+  # one, because on a single container typecheck, lint, cspell and the API checks
+  # contend for CPU and serialize.
+
+  typecheck:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: typecheck
+      - run:
+          # Materialize build/{esm,cjs,browser,types} before check-attw packs
+          # them, so it cannot race the tasks that produce them.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Typecheck and API checks
+          command: pnpm exec turbo run typecheck check-attw check-api check-bundle check-gen-props
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: typecheck
+
+  lint:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: lint
+      - run:
+          # lint dependsOn ^transpileTypes for type-aware rules, so the
+          # dependencies' .d.ts files have to exist first.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Lint and monorepolint
+          command: pnpm exec turbo run lint //#check-mrl
+          no_output_timeout: 20m
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: lint
+
+  cspell:
+    executor:
+      name: node
+      resource-class: medium
+    steps:
+      - prepare
+      - run:
+          # A whole-repo pass, which supersedes the per-package check-spelling
+          # task, so we do not run both.
+          name: Check spelling
+          command: pnpm exec turbo run ci:cspell
+
+  # The load-bearing matrix: run the suites against the artifacts the build job
+  # produced, under every supported Node version. This is what actually proves
+  # the published packages run on Node 18 and up.
+  test:
+    parameters:
+      node-version:
+        type: string
+    executor:
+      name: node
+      node-version: << parameters.node-version >>
+      resource-class: xlarge
+    # Container 1 runs @osdk/react-components alone; see README "Performance
+    # shape" for why, and for the lever if the extra containers cost too much.
+    parallelism: 2
+    environment:
+      NODE_18_EXCLUDES: *node-18-excludes
+    steps:
+      - prepare
+      # Keyed per Node version: turbo's hash does not encode the Node runtime,
+      # so a shared cache could restore another leg's result and defeat the
+      # whole point of the matrix.
+      - restore-turbo-cache:
+          scope: test-node<< parameters.node-version >>
+      - run:
+          name: Select package filters for this Node version
+          command: |
+            # Match the major only. The matrix pins MAJOR.MINOR, so an equality
+            # test against "18" would silently stop applying the excludes the
+            # moment the pinned minor moves, and the Node 18 leg would try to
+            # run the Vite 7 and Storybook packages that need Node 20+.
+            case "<< parameters.node-version >>" in
+              18 | 18.*)
+                echo "export TURBO_FILTERS=\"$NODE_18_EXCLUDES\"" >> "$BASH_ENV"
+                ;;
+              *)
+                echo "export TURBO_FILTERS=" >> "$BASH_ENV"
+                ;;
+            esac
+
+            # Coverage rides on one leg only. It is the same tests either way,
+            # so running it four times would just pay the v8 overhead four
+            # times. The vitest configs read COVERAGE; turbo hashes it, so this
+            # leg's test tasks get their own cache namespace and the other legs
+            # are untouched.
+            case "<< parameters.node-version >>" in
+              24 | 24.*)
+                echo 'export COVERAGE=true' >> "$BASH_ENV"
+                ;;
+            esac
+      - run:
+          # `turbo run test` only depends on ^transpileEsm, but some suites also
+          # consume their dependencies' other build outputs (verify-cjs/esm, the
+          # webpack bundling test). transpile + transpileTypes restores all of
+          # build/{esm,cjs,browser,types}, and because transpile dependsOn
+          # codegen it also regenerates the uncached generatedNoCheck/ sources.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes $TURBO_FILTERS
+      - run:
+          # No `--` passthrough here. Each package's vitest config adds the JUnit
+          # reporter when CI is set, because turbo folds passthrough args into
+          # its *global* hash: passing them made every task in this run a cache
+          # miss, so the job rebuilt the whole graph instead of restoring the
+          # build job's cache. See README "Test results".
+          # The exit code is recorded and re-raised in the last step of the job
+          # rather than failing here, so the upload steps below still run on a
+          # failing suite — which is exactly when the report is worth having.
+          # `when: always` cannot buy that: CircleCI's schema allows it on `run`
+          # and `save_cache`, but `store_test_results` and `store_artifacts`
+          # declare `additionalProperties: false`, so it is not valid there.
+          name: Run this container's share of the tests
+          command: |
+            set +e
+            case "$CIRCLE_NODE_INDEX" in
+              0)
+                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
+                ;;
+              1)
+                pnpm exec turbo run test --filter=@osdk/react-components
+                ;;
+              *)
+                # Fail loudly rather than silently running nothing, which is what
+                # Blueprint's config does today (parallelism 6, no branch for 3).
+                # This one is a config error, not a test failure, so it fails the
+                # step immediately instead of being deferred.
+                echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
+                echo "\`parallelism\` and this case statement have to agree." >&2
+                exit 1
+                ;;
+            esac
+            status=$?
+            echo "$status" > /tmp/test-exit-code
+            if [ "$status" -ne 0 ]; then
+              echo "Tests exited $status. Reports upload first; the job fails at the end."
+            fi
+      - run:
+          name: Collect JUnit reports
+          when: always
+          command: .circleci/scripts/collect-test-results.sh /tmp/test-results
+      - store_test_results:
+          path: /tmp/test-results
+      - run:
+          # Merged in-job because there is no separate coverage job, so each
+          # container reports on the packages it actually ran: container 0 is
+          # everything except @osdk/react-components, container 1 is only that.
+          # Two reports, not one. The destination carries the container index so
+          # the uploads cannot collide.
+          #
+          # Non-fatal on purpose: a merge problem should never be what turns a
+          # passing test run red.
+          name: Merge coverage
+          when: always
+          command: |
+            mkdir -p /tmp/coverage
+            if [ "${COVERAGE:-}" != "true" ]; then
+              echo "Not the coverage leg; nothing to merge."
+              exit 0
+            fi
+            if pnpm run coverage:merge; then
+              cp -R coverage "/tmp/coverage/container-$CIRCLE_NODE_INDEX"
+            else
+              echo "Coverage merge failed; leaving the artifact empty." >&2
+            fi
+      - store_artifacts:
+          path: /tmp/coverage
+          destination: coverage
+      - save-turbo-cache:
+          scope: test-node<< parameters.node-version >>
+      - run:
+          # Last step, so everything above has uploaded first.
+          name: Fail the job if the tests failed
+          command: |
+            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
+            exit "$status"
+
+  # Build the app/site packages that have no transpile/typecheck task; `turbo run
+  # build` is what proves they still compile. Runs in parallel with the test
+  # matrix so the slow app builds stay off the tests' critical path. Storybook is
+  # excluded because build-storybook builds it instead.
+  build-apps:
+    executor:
+      name: node
+      resource-class: xlarge
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: apps
+      # No detect-infra-changes here, unlike `build`. This job requires `build`
+      # and receives its freshly-built turbo cache through the workspace, so
+      # forcing would rebuild the ~684-task transpile graph that `build` just
+      # produced in this same pipeline, in a second container. "Do not trust an
+      # earlier pipeline's cache" is an argument about `build`, not about a job
+      # downstream of it.
+      - run:
+          name: Build apps and sites
+          command: pnpm exec turbo run build --filter='!@osdk/react-components-storybook'
+      - verify-working-tree-clean
+      - save-turbo-cache:
+          scope: apps
+
+  # Trial. Packs every publishable package into a downloadable .tgz so a
+  # consumer can smoketest an unreleased change without waiting for a release.
+  # See README "Prerelease tarballs" for what it is for and what to watch.
+  #
+  # Note there is no verify-working-tree-clean here: @osdk/react's `prepack`
+  # copies ../../docs/react into the package, which pnpm pack runs. That output
+  # is covered by packages/react/.gitignore, so it is expected, not a leak.
+  pack:
+    executor:
+      name: node
+      # tar and gzip over ~47 packages; not parallel work.
+      resource-class: medium
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          # The tarballs ship build/{esm,cjs,browser,types}, so those must exist
+          # before packing. A cache hit off the build job, not a rebuild.
+          name: Restore build artifacts from cache
+          command: pnpm exec turbo run transpile transpileTypes
+      - run:
+          name: Pack publishable packages
+          command: .circleci/scripts/pack-packages.sh /tmp/packages
+      - store_artifacts:
+          path: /tmp/packages
+          destination: packages
+
+  e2e:
+    executor: node-with-verdaccio
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          name: Transpile
+          command: pnpm exec turbo transpile
+      - run:
+          name: Wait for Verdaccio
+          command: |
+            for _ in $(seq 1 30); do
+              if curl --silent --fail http://localhost:4873/ >/dev/null; then
+                echo "Verdaccio is up."
+                exit 0
+              fi
+              sleep 2
+            done
+            echo "Verdaccio did not come up in time." >&2
+            exit 1
+      - run:
+          name: Setup Verdaccio
+          command: |
+            npx npm-auth-to-token -u verdaccio -p fake -e fake@palantir.com -r http://localhost:4873
+            npm config set registry http://localhost:4873
+      - run:
+          name: Faux release
+          command: pnpm exec changeset version
+      - run:
+          name: Faux publish
+          command: pnpm publish -r --no-git-checks
+
+  # ---------------------------------------------------------------------------
+  # Storybook
+  # ---------------------------------------------------------------------------
+
+  # Build Storybook exactly once per pipeline; the result goes to the workspace
+  # for the chromatic job, and to artifacts so a build is browsable even when
+  # Chromatic is unavailable (fork PRs get no project token).
+  build-storybook:
+    executor:
+      name: node
+      resource-class: large
+    environment:
+      # Relative, so one build serves two mount points. This maps to vite's
+      # `base` in .storybook/main.ts, whose default is the gh-pages path
+      # `/osdk-ts/storybook/`.
+      #
+      # Chromatic serves at a domain root, but CircleCI serves artifacts under a
+      # long path prefix, so an absolute base (`/`, which is also vite's default
+      # and what Blueprint gets by not setting one) makes index.html request
+      # /assets/... from the artifact host root and 404. `./` resolves correctly
+      # in both places, which is what makes the artifact navigable rather than
+      # merely downloadable.
+      STORYBOOK_BASE_PATH: ./
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: storybook
+      - run:
+          # The storybook package's turbo `build` only declares
+          # @osdk/react-components#transpileBrowser, and root `transpileBrowser`
+          # has no `^transpileBrowser`, so the graph does not cascade to the
+          # other workspace deps the stories import (@osdk/react, @osdk/client,
+          # @osdk/faux, …). Materialize them from the build job's cache first.
+          name: Restore story dependencies from cache
+          command: pnpm exec turbo run transpileBrowser --filter='@osdk/react-components-storybook^...'
+      - run:
+          # The package's `build` script passes --stats-json, which emits the
+          # preview-stats.json TurboSnap reads to work out which stories a
+          # commit can actually reach.
+          name: Build Storybook with TurboSnap stats
+          command: pnpm exec turbo run build --filter=@osdk/react-components-storybook
+      - persist_to_workspace:
+          root: .
+          paths:
+            - packages/react-components-storybook/storybook-static
+      - store_artifacts:
+          path: packages/react-components-storybook/storybook-static
+          destination: storybook-static
+      - save-turbo-cache:
+          scope: storybook
+
+  # TEMPORARILY DISABLED — see "Chromatic is switched off" in the README.
+  # Restore this job, its entry in the `ci` workflow, and the
+  # `chromatic-on-demand` workflow together; they are one change.
+  #
+  # chromatic:
+  #   executor:
+  #     name: node
+  #     resource-class: small
+  #   steps:
+  #     - checkout
+  #     # Attaching pulls node_modules and the turbo cache this job does not
+  #     # need; attach is all-or-nothing. See README "Performance shape".
+  #     - attach-deps
+  #     # Only pnpm itself is needed here, for `pnpm dlx`; the Storybook this
+  #     # publishes arrived prebuilt through the workspace.
+  #     - activate-pnpm
+  #     - run:
+  #         name: Publish to Chromatic
+  #         command: .circleci/scripts/chromatic.sh
+
+  storybook-interaction-tests:
+    executor:
+      name: node
+      # The -browsers variant ships Chromium's system libraries, which is the
+      # half of `playwright install` that was an apt-get run. It does not ship
+      # Playwright's own pinned Chromium build, so the download is dealt with
+      # by the cache below. Both halves have to go or the step stays slow.
+      node-version: "24.19-browsers"
+      resource-class: xlarge
+    steps:
+      - prepare
+      - run:
+          # Asks turbo's package graph rather than matching paths; see README
+          # "Asking did this change?". Needs node_modules to invoke turbo, so
+          # unlike the other guards it cannot run before the workspace attach.
+          name: Skip unless Storybook's dependency graph changed
+          command: |
+            if ! .circleci/scripts/is-affected.sh @osdk/react-components-storybook; then
+              echo "Skipping interaction tests."
+              circleci-agent step halt
+              exit 0
+            fi
+      - restore-turbo-cache:
+          scope: storybook
+      - run:
+          # The stories import the browser build of the packages they render.
+          name: Transpile story dependencies
+          command: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
+      # Keyed on the lockfile because that is what pins the playwright version,
+      # and playwright stores browsers per version. Restored after the halt
+      # guard above so a skipped run does not pay for it.
+      - restore_cache:
+          name: Restore the Playwright browser cache
+          keys:
+            - playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+      - run:
+          # No --with-deps: the -browsers image already has the system
+          # libraries, and that flag is an apt-get run. If a library ever turns
+          # out to be missing, playwright says so by name and the flag comes
+          # back. On a cache hit this step is a no-op that just verifies.
+          name: Install Playwright Chromium
+          command: pnpm --filter @osdk/react-components-storybook exec playwright install chromium
+      - save_cache:
+          name: Save the Playwright browser cache
+          key: playwright-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - /home/circleci/.cache/ms-playwright
+      - run:
+          # Vitest browser mode runs each story's play function in headless
+          # Chromium. Note the arguments follow the script name directly: pnpm 10
+          # does not forward anything after a `--` separator.
+          #
+          # Exit code deferred to the last step for the same reason as the test
+          # matrix: `store_test_results` takes no `when`, so the upload has to
+          # happen before anything fails the job. This is the flakiest suite in
+          # the pipeline, so losing its report on a red run is the worst case.
+          name: Run interaction tests
+          command: |
+            set +e
+            pnpm --filter @osdk/react-components-storybook run test-storybook \
+              --reporter=default \
+              --reporter=junit \
+              --outputFile.junit=reports/junit.xml
+            status=$?
+            echo "$status" > /tmp/test-exit-code
+            if [ "$status" -ne 0 ]; then
+              echo "Interaction tests exited $status. Report uploads first; the job fails at the end."
+            fi
+      - run:
+          name: Collect JUnit reports
+          when: always
+          command: .circleci/scripts/collect-test-results.sh /tmp/test-results
+      - store_test_results:
+          path: /tmp/test-results
+      - run:
+          name: Fail the job if the tests failed
+          command: |
+            status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
+            exit "$status"
+
+  # ---------------------------------------------------------------------------
+  # PR-only reporting and guards
+  # ---------------------------------------------------------------------------
+
+  bundle-size:
+    executor:
+      name: node
+      resource-class: large
+    steps:
+      - checkout
+      - halt-unless-pull-request
+      - activate-pnpm
+      - attach-deps
+      - restore-turbo-cache:
+          scope: build
+      - run:
+          name: Build and measure this PR
+          command: |
+            pnpm exec turbo transpile
+            npx size-limit --json > /tmp/current.json || true
+      - run:
+          # The base checkout below replaces the working tree with a commit that
+          # predates these scripts, so keep a copy outside it.
+          name: Stash the CI scripts
+          command: cp -R .circleci /tmp/ci
+      - run:
+          # Written to a file because CircleCI cache keys cannot interpolate a
+          # value computed at runtime, but they can checksum a file.
+          name: Resolve the base commit
+          command: |
+            .circleci/scripts/base-ref.sh > /tmp/base-sha
+            echo "Comparing against $(cat /tmp/base-sha)"
+      - restore_cache:
+          # Identical for every push to a PR, so only the first push pays for
+          # the base rebuild.
+          name: Restore the base-branch measurement
+          keys:
+            - size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+      - run:
+          name: Build and measure the base branch
+          command: |
+            if [ -s /tmp/base.json ]; then
+              echo "Base measurement restored from cache; skipping the base build."
+              exit 0
+            fi
+            git checkout --detach --force "$(cat /tmp/base-sha)"
+            pnpm exec turbo clean
+            pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+            pnpm exec turbo transpile
+            npx size-limit --json > /tmp/base.json || true
+      - save_cache:
+          # An empty file means the measurement failed; -s above rejects it on
+          # the next run, so a bad result cannot pin itself in place.
+          name: Save the base-branch measurement
+          key: size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          paths:
+            - /tmp/base.json
+      - run:
+          name: Comment with the comparison
+          command: |
+            node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
+            /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
+
+  # Fork PRs cannot be trusted to modify install-time or CI configuration,
+  # because either would execute attacker-controlled code with our credentials.
+  fork-guard:
+    executor:
+      name: node
+      resource-class: small
+    steps:
+      - checkout
+      # The guard gets a step to itself so `halt` can end the job before it.
+      # Folding these together would run the guard on in-repo PRs too, and fail
+      # any of them that legitimately touch CI config.
+      - run:
+          name: Skip unless this is a fork pull request
+          command: |
+            # CIRCLE_PR_REPONAME is only populated for pull requests opened from
+            # a fork; for in-repo PRs and pushes we trust the author.
+            if [ -z "${CIRCLE_PR_REPONAME:-}" ]; then
+              echo "Not a fork pull request; nothing to guard."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Guard install-time config from fork PRs
+          command: .circleci/scripts/fork-guard.sh
+
+  # Single fan-in check. CircleCI does not run a job whose upstream failed, so
+  # unlike the Actions equivalent this needs no per-job result inspection.
+  ci-all:
+    executor:
+      name: node
+      resource-class: small
+    steps:
+      - run:
+          name: All required jobs succeeded
+          command: echo "CircleCI PR pipeline is green."
+
+workflows:
+  ci:
+    # TEMPORARILY DISABLED with the chromatic job. Left off deliberately rather
+    # than kept: `chromatic-on-demand` is the only other workflow, so with it
+    # commented out a run-chromatic=true trigger would yield a pipeline with no
+    # workflows at all, which CircleCI rejects.
+    #
+    # unless: << pipeline.parameters.run-chromatic >>
+    jobs:
+      - install
+      # The only job that needs no node_modules, so it stays a true root and
+      # fails fast on an untrusted fork PR.
+      - fork-guard
+      - changesets:
+          requires: [install]
+      - cspell:
+          requires: [install]
+      - e2e:
+          requires: [install]
+      # Requires `build`, not `install`: it runs `turbo transpile` itself, so
+      # without the build job's turbo cache that is a cold rebuild of the whole
+      # repo on top of the cold base-branch build it already pays for.
+      - bundle-size:
+          requires: [build]
+      - storybook-interaction-tests:
+          requires: [install]
+      - build:
+          requires: [install]
+      - typecheck:
+          requires: [build]
+      - lint:
+          requires: [build]
+      - build-apps:
+          requires: [build]
+      # Deliberately absent from ci-all: a trial, and `e2e` already proves the
+      # packages are publishable.
+      - pack:
+          requires: [build]
+      - test:
+          matrix:
+            parameters:
+              # Every LTS since the 2.0 GA, which means 18.x and up. Pinned to
+              # MAJOR.MINOR because cimg/node has no bare major tags; each one
+              # still floats to the newest patch in its line.
+              node-version: ["18.20", "20.20", "22.23", "24.19"]
+          requires: [build]
+      - build-storybook:
+          requires: [build]
+      # TEMPORARILY DISABLED with the chromatic job.
+      # - chromatic:
+      #     requires: [build-storybook]
+      - ci-all:
+          # chromatic is deliberately absent: a visual diff is a review signal,
+          # and a Chromatic outage should not be able to block a merge.
+          requires:
+            - build
+            - build-apps
+            - build-storybook
+            - typecheck
+            - lint
+            - cspell
+            - test
+            - e2e
+            - fork-guard
+            - changesets
+            - storybook-interaction-tests
+
+  # TEMPORARILY DISABLED with the chromatic job. The `run-chromatic` pipeline
+  # parameter stays declared (an unreferenced parameter is valid) so restoring
+  # this is a pure uncomment.
+  #
+  # Refresh a Chromatic baseline without paying for the whole pipeline.
+  #
+  # chromatic-on-demand:
+  #   when: << pipeline.parameters.run-chromatic >>
+  #   jobs:
+  #     - install
+  #     - build:
+  #         requires: [install]
+  #     - build-storybook:
+  #         requires: [build]
+  #     - chromatic:
+  #         requires: [build-storybook]

@@ -25,7 +25,14 @@ export default defineConfig({
       },
     },
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    // Kept in sync by hand: this package is in monorepolint's excludePackages
+    // for vitest.config.mts, so the generator does not reach it.
+    reporters: process.env.CI ? ["default", "junit"] : ["default"],
+    outputFile: { junit: "reports/junit.xml" },
     coverage: {
+      enabled: process.env.COVERAGE === "true",
+      provider: "v8",
+      reporter: ["json"],
       include: ["src/**"],
       // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [

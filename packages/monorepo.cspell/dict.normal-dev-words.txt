@@ -6,8 +6,10 @@ BACKCOMPAT
 backlink
 blockquote
 blockquotes
+browsable
 Canonicalizer
 Canonicalizers
+cimg
 codegen
 commitish
 Cpath
@@ -34,13 +36,17 @@ pypi
 retryable
 revals
 rsort
+scriptable
 semver
+shellcheck
+smoketest
 streamutils
 struct
 structs
 subdependencies
 subdeps
 trackpad
+transpiles
 tsdoc
 typecheck
 typemapping
@@ -52,3 +58,4 @@ unioned
 unresolve
 Unsubscribable
 webapi
+xlarge
