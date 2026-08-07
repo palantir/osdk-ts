@@ -24,10 +24,7 @@ import type {
   FormContentItem,
   FormState,
 } from "./ActionFormApi.js";
-import {
-  ActionFormLabelsProvider,
-  useActionFormLabels,
-} from "./ActionFormLabels.js";
+import { LabelsProvider, useLabels } from "./ActionFormLabels.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
@@ -42,9 +39,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   Q extends ActionDefinition<unknown>,
 >(props: ActionFormProps<Q>): React.ReactElement {
   return (
-    <ActionFormLabelsProvider labels={props.labels}>
+    <LabelsProvider labels={props.labels}>
       <ActionFormInner {...props} />
-    </ActionFormLabelsProvider>
+    </LabelsProvider>
   );
 });
 
@@ -61,7 +58,7 @@ function ActionFormInner<Q extends ActionDefinition<unknown>>({
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const { applyAction: osdkApplyAction, isPending } =
     useOsdkAction(actionDefinition);
   const {

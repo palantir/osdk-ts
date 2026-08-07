@@ -21,7 +21,7 @@ import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
 import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -151,7 +151,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   modal = true,
   disabled,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const [open, setOpen] = useState(false);
   const isOpen = !disabled && open;
 
@@ -281,7 +281,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   modal = true,
   disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const [open, setOpen] = useState(false);
   const isOpen = !disabled && open;
 

@@ -181,13 +181,10 @@ export const DEFAULT_OBJECT_TABLE_LABELS: ObjectTableLabels = {
   selectRow: (rowNumber) => `Select row ${rowNumber}`,
 };
 
-const { LabelsProvider, useLabels, withLabels } = createLabelsContext(
+const labelsContext = createLabelsContext(
   DEFAULT_OBJECT_TABLE_LABELS,
   "ObjectTable",
 );
-
-export type ObjectTableLabelsProviderProps =
-  LabelsProviderProps<ObjectTableLabels>;
 
 /**
  * Supplies overridden {@link ObjectTableLabels} to descendant table
@@ -199,24 +196,25 @@ export type ObjectTableLabelsProviderProps =
  * merged labels are equal, so callers can pass an inline `labels` object
  * without re-rendering every label consumer.
  */
-export const ObjectTableLabelsProvider: React.FC<ObjectTableLabelsProviderProps> =
-  LabelsProvider;
+export const LabelsProvider: React.FC<LabelsProviderProps<ObjectTableLabels>> =
+  labelsContext.LabelsProvider;
 
 /**
  * Returns the fully-resolved {@link ObjectTableLabels} for the current subtree.
- * When no {@link ObjectTableLabelsProvider} is present, returns
+ * When no {@link LabelsProvider} is present, returns
  * {@link DEFAULT_OBJECT_TABLE_LABELS}.
  */
-export const useObjectTableLabels: () => ObjectTableLabels = useLabels;
+export const useLabels: () => ObjectTableLabels = labelsContext.useLabels;
 
 /**
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
  * {@link ObjectTableLabels} to its subtree.
  *
  * For generic components, e.g. `BaseTable` use
- * {@link ObjectTableLabelsProvider} directly to preserve its `TData`
+ * {@link LabelsProvider} directly to preserve its `TData`
  * type parameter.
  */
-export const withObjectTableLabels: <P extends object>(
+export const withLabels: <P extends object>(
   Inner: React.ComponentType<P>,
-) => React.FC<P & { labels?: Partial<ObjectTableLabels> }> = withLabels;
+) => React.FC<P & { labels?: Partial<ObjectTableLabels> }> =
+  labelsContext.withLabels;

@@ -258,13 +258,10 @@ export const DEFAULT_ACTION_FORM_LABELS: ActionFormLabels = {
     `File must be smaller than ${formatBytes(maxSizeBytes)}`,
 };
 
-const { LabelsProvider, useLabels, withLabels } = createLabelsContext(
+const labelsContext = createLabelsContext(
   DEFAULT_ACTION_FORM_LABELS,
   "ActionForm",
 );
-
-export type ActionFormLabelsProviderProps =
-  LabelsProviderProps<ActionFormLabels>;
 
 /**
  * Supplies overridden {@link ActionFormLabels} to descendant form and field
@@ -276,26 +273,27 @@ export type ActionFormLabelsProviderProps =
  * merged labels are equal, so callers can pass an inline `labels` object
  * without re-rendering every label consumer.
  */
-export const ActionFormLabelsProvider: React.FC<ActionFormLabelsProviderProps> =
-  LabelsProvider;
+export const LabelsProvider: React.FC<LabelsProviderProps<ActionFormLabels>> =
+  labelsContext.LabelsProvider;
 
 /**
  * Returns the fully-resolved {@link ActionFormLabels} for the current subtree.
- * When no {@link ActionFormLabelsProvider} is present, returns
+ * When no {@link LabelsProvider} is present, returns
  * {@link DEFAULT_ACTION_FORM_LABELS}.
  */
-export const useActionFormLabels: () => ActionFormLabels = useLabels;
+export const useLabels: () => ActionFormLabels = labelsContext.useLabels;
 
 /**
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
  * {@link ActionFormLabels} to its subtree.
  *
  * For generic components, e.g. `ActionForm` use
- * {@link ActionFormLabelsProvider} directly to preserve its type parameters.
+ * {@link LabelsProvider} directly to preserve its type parameters.
  */
-export const withActionFormLabels: <P extends object>(
+export const withLabels: <P extends object>(
   Inner: React.ComponentType<P>,
-) => React.FC<P & { labels?: Partial<ActionFormLabels> }> = withLabels;
+) => React.FC<P & { labels?: Partial<ActionFormLabels> }> =
+  labelsContext.withLabels;
 
 function formatConstraint(value: number | Date): string {
   if (value instanceof Date) {

@@ -19,7 +19,7 @@ import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
 
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
 
 import styles from "./NumberInputField.module.css";
@@ -52,7 +52,7 @@ export function NumberInputField({
   step,
   disabled,
 }: NumberInputFieldProps): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const [displayValue, setDisplayValue] = useState<string>(() =>
     formatNumberForDisplay(value),
   );

@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 import { DropdownField } from "./DropdownField.js";
 
@@ -63,7 +63,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   fetchError,
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const itemCount = dropdownProps.items.length;
   const popupStatus = useMemo(() => {
     if (fetchError != null) {

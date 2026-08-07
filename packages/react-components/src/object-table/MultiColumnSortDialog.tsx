@@ -25,10 +25,7 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
 import type { ObjectTableLabels } from "./ObjectTableLabels.js";
-import {
-  useObjectTableLabels,
-  withObjectTableLabels,
-} from "./ObjectTableLabels.js";
+import { useLabels, withLabels } from "./ObjectTableLabels.js";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -56,7 +53,7 @@ export interface MultiColumnSortDialogProps {
 }
 
 export const MultiColumnSortDialog: React.FC<MultiColumnSortDialogProps> =
-  withObjectTableLabels(MultiColumnSortDialogInner);
+  withLabels(MultiColumnSortDialogInner);
 
 function MultiColumnSortDialogInner({
   isOpen,
@@ -65,7 +62,7 @@ function MultiColumnSortDialogInner({
   currentSorting,
   columnOptions,
 }: Omit<MultiColumnSortDialogProps, "labels">): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);

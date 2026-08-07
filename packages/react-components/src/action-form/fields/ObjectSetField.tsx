@@ -26,7 +26,7 @@ import {
 } from "../../base-components/icon/BlueprintIcon.js";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
@@ -43,7 +43,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
   emptyMessage,
   disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   if (value == null) {
     return (
       <div
@@ -135,7 +135,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   isLoading: boolean;
   error: Error | undefined;
 }): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const hasData = totalCount != null;
   const objectTypeName =
     displayName ??

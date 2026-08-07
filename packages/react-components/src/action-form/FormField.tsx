@@ -18,7 +18,7 @@ import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 
-import { useActionFormLabels } from "./ActionFormLabels.js";
+import { useLabels } from "./ActionFormLabels.js";
 
 import styles from "./FormField.module.css";
 
@@ -45,7 +45,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   onBlur,
   children,
 }: FormFieldProps): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const hasHelperText = helperText != null && helperText !== "";
   const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
   const showBottomText = hasHelperText && helperTextPlacement === "bottom";
@@ -109,7 +109,7 @@ interface InfoTipProps {
 // content like links that need focus management and keyboard navigation.
 // See https://base-ui.com/react/components/tooltip#infotips
 function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   return (
     <Popover.Root>
       <Popover.Trigger

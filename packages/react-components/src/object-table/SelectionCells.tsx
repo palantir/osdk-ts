@@ -18,7 +18,7 @@ import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
 
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
+import { useLabels } from "./ObjectTableLabels.js";
 
 interface SelectionHeaderCellProps {
   isAllSelected: boolean;
@@ -31,7 +31,7 @@ export function SelectionHeaderCell({
   hasSelection,
   onToggleAll,
 }: SelectionHeaderCellProps): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const checkboxLabel = hasSelection
     ? labels.deselectAllRows
     : labels.selectAllRows;
@@ -55,7 +55,7 @@ export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       // TODO: Create ActionBoundary component

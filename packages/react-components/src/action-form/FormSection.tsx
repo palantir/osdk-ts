@@ -20,7 +20,7 @@ import classNames from "classnames";
 import React, { memo } from "react";
 
 import type { FormSectionDefinition } from "./ActionFormApi.js";
-import { useActionFormLabels } from "./ActionFormLabels.js";
+import { useLabels } from "./ActionFormLabels.js";
 
 import styles from "./FormSection.module.css";
 
@@ -36,7 +36,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
     errorCount,
     children,
   }: FormSectionProps): React.ReactElement {
-    const labels = useActionFormLabels();
+    const labels = useLabels();
     const {
       title,
       description,

@@ -19,7 +19,7 @@ import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
 
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
+import { useLabels } from "./ObjectTableLabels.js";
 import type { EditableConfig } from "./utils/types.js";
 
 import styles from "./TableEditContainer.module.css";
@@ -41,7 +41,7 @@ export function TableEditContainer<TData extends RowData>({
     validationErrors,
   } = editableConfig;
 
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
   const hasValidationError = (validationErrors?.size ?? 0) > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);

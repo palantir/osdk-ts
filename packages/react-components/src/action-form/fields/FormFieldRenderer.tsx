@@ -24,7 +24,7 @@ import {
   EMPTY_RANGE,
 } from "../../shared/calendar/index.js";
 import type { ActionFormLabels } from "../ActionFormLabels.js";
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import { FormField } from "../FormField.js";
 import {
   type PortalContainer,
@@ -64,7 +64,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
-    const labels = useActionFormLabels();
+    const labels = useLabels();
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
 

@@ -20,7 +20,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import { useActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { FilePickerProps } from "../FormFieldApi.js";
 
 import styles from "./FilePickerField.module.css";
@@ -41,7 +41,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     buttonText,
     disabled,
   }): React.ReactElement {
-    const labels = useActionFormLabels();
+    const labels = useLabels();
     const inputRef = useRef<HTMLInputElement>(null);
     const fileTriggerRef = useRef<HTMLButtonElement>(null);
 

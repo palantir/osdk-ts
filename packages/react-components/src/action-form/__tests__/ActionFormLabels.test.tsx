@@ -20,9 +20,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { ActionFormLabels } from "../ActionFormLabels.js";
 import {
-  ActionFormLabelsProvider,
+  LabelsProvider,
   DEFAULT_ACTION_FORM_LABELS,
-  useActionFormLabels,
+  useLabels,
 } from "../ActionFormLabels.js";
 
 type LabelKey = keyof ActionFormLabels;
@@ -30,26 +30,26 @@ type LabelKey = keyof ActionFormLabels;
 const ALL_KEYS = Object.keys(DEFAULT_ACTION_FORM_LABELS) as LabelKey[];
 
 /**
- * Renders the {@link useActionFormLabels} hook (optionally under a provider)
+ * Renders the {@link useLabels} hook (optionally under a provider)
  * and returns the fully-resolved labels object so every key can be asserted.
  */
 function resolveLabels(labels?: Partial<ActionFormLabels>): ActionFormLabels {
   let captured: ActionFormLabels | undefined;
   function Capture(): null {
-    captured = useActionFormLabels();
+    captured = useLabels();
     return null;
   }
   render(
     labels === undefined ? (
       <Capture />
     ) : (
-      <ActionFormLabelsProvider labels={labels}>
+      <LabelsProvider labels={labels}>
         <Capture />
-      </ActionFormLabelsProvider>
+      </LabelsProvider>
     ),
   );
   if (captured == null) {
-    throw new Error("useActionFormLabels did not resolve");
+    throw new Error("useLabels did not resolve");
   }
   return captured;
 }
@@ -144,17 +144,15 @@ describe("ActionFormLabels", () => {
   it("composes nested providers, inner overriding outer", () => {
     let captured: ActionFormLabels | undefined;
     function Capture(): null {
-      captured = useActionFormLabels();
+      captured = useLabels();
       return null;
     }
     render(
-      <ActionFormLabelsProvider
-        labels={{ submitButton: "Outer", editedTag: "Touched" }}
-      >
-        <ActionFormLabelsProvider labels={{ submitButton: "Inner" }}>
+      <LabelsProvider labels={{ submitButton: "Outer", editedTag: "Touched" }}>
+        <LabelsProvider labels={{ submitButton: "Inner" }}>
           <Capture />
-        </ActionFormLabelsProvider>
-      </ActionFormLabelsProvider>,
+        </LabelsProvider>
+      </LabelsProvider>,
     );
 
     // Inner override wins for the key it sets...
@@ -170,13 +168,13 @@ describe("ActionFormLabels", () => {
   it("returns the parent context unchanged when a provider is given no labels", () => {
     let captured: ActionFormLabels | undefined;
     function Capture(): null {
-      captured = useActionFormLabels();
+      captured = useLabels();
       return null;
     }
     render(
-      <ActionFormLabelsProvider>
+      <LabelsProvider>
         <Capture />
-      </ActionFormLabelsProvider>,
+      </LabelsProvider>,
     );
     // A provider with no labels does not allocate a new object.
     expect(captured).toBe(DEFAULT_ACTION_FORM_LABELS);
@@ -190,25 +188,25 @@ describe("ActionFormLabels", () => {
   it("keeps a stable value identity across renders with an equal inline labels object", () => {
     const seen: ActionFormLabels[] = [];
     function Capture(): null {
-      seen.push(useActionFormLabels());
+      seen.push(useLabels());
       return null;
     }
     const { rerender } = render(
-      <ActionFormLabelsProvider labels={{ submitButton: "Send" }}>
+      <LabelsProvider labels={{ submitButton: "Send" }}>
         <Capture />
-      </ActionFormLabelsProvider>,
+      </LabelsProvider>,
     );
     // Re-render with a brand-new inline object of identical content.
     rerender(
-      <ActionFormLabelsProvider labels={{ submitButton: "Send" }}>
+      <LabelsProvider labels={{ submitButton: "Send" }}>
         <Capture />
-      </ActionFormLabelsProvider>,
+      </LabelsProvider>,
     );
     // Content change gets a fresh identity.
     rerender(
-      <ActionFormLabelsProvider labels={{ submitButton: "Go" }}>
+      <LabelsProvider labels={{ submitButton: "Go" }}>
         <Capture />
-      </ActionFormLabelsProvider>,
+      </LabelsProvider>,
     );
 
     expect(seen[0]).toBe(seen[1]);

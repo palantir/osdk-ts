@@ -24,10 +24,7 @@ import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
-import {
-  useActionFormLabels,
-  withActionFormLabels,
-} from "./ActionFormLabels.js";
+import { useLabels, withLabels } from "./ActionFormLabels.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
@@ -48,7 +45,7 @@ const BaseFormInner = memo(function BaseFormFn({
   submitButtonText,
   submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
@@ -208,8 +205,7 @@ const BaseFormInner = memo(function BaseFormFn({
 // for React DevTools and for the label HOC's own displayName.
 BaseFormInner.displayName = "BaseForm";
 
-export const BaseForm: React.FC<BaseFormProps> =
-  withActionFormLabels(BaseFormInner);
+export const BaseForm: React.FC<BaseFormProps> = withLabels(BaseFormInner);
 
 /**
  * Extracts all RendererFieldDefinitions from formContent, flattening
@@ -278,7 +274,7 @@ const SubmitButton = memo(function SubmitButtonFn({
   buttonVariant,
   onClick,
 }: SubmitButtonProps): React.ReactElement {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   const buttonLabel = isPending ? labels.submitButtonPending : buttonText;
   const button = (
     <ActionButton
@@ -322,7 +318,7 @@ interface ErrorIndicatorProps {
 function ErrorIndicator({
   errorEntries,
 }: ErrorIndicatorProps): React.ReactElement | null {
-  const labels = useActionFormLabels();
+  const labels = useLabels();
   if (errorEntries.length === 0) {
     return null;
   }

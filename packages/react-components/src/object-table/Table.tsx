@@ -29,10 +29,7 @@ import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
 import type { ObjectTableLabels } from "./ObjectTableLabels.js";
-import {
-  ObjectTableLabelsProvider,
-  useObjectTableLabels,
-} from "./ObjectTableLabels.js";
+import { LabelsProvider, useLabels } from "./ObjectTableLabels.js";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
@@ -203,11 +200,11 @@ export function BaseTable<TData extends RowData>(
   props: BaseTableProps<TData>,
 ): ReactElement {
   return (
-    <ObjectTableLabelsProvider labels={props.labels}>
+    <LabelsProvider labels={props.labels}>
       <PortalTrackerProvider>
         <BaseTableInner {...props} />
       </PortalTrackerProvider>
-    </ObjectTableLabelsProvider>
+    </LabelsProvider>
   );
 }
 
@@ -232,7 +229,7 @@ function BaseTableInner<TData extends RowData>({
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const objectTablePortalRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
 
   const getRowById = useCallback(
     (id: string) => {

@@ -29,7 +29,7 @@ import classNames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { usePortalContainer } from "../shared/PortalContainerContext.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
+import { useLabels } from "./ObjectTableLabels.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import { getSortIcons } from "./utils/getSortIcons.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -113,7 +113,7 @@ export function TableHeaderWithPopover<TData extends RowData>({
   onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const portalContainer = usePortalContainer();
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const {
     showSortingItems = false,
     showPinningItems = false,

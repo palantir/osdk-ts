@@ -21,8 +21,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { ObjectTableLabels } from "../ObjectTableLabels.js";
 import {
   DEFAULT_OBJECT_TABLE_LABELS,
-  ObjectTableLabelsProvider,
-  useObjectTableLabels,
+  LabelsProvider,
+  useLabels,
 } from "../ObjectTableLabels.js";
 
 type LabelKey = keyof ObjectTableLabels;
@@ -30,26 +30,26 @@ type LabelKey = keyof ObjectTableLabels;
 const ALL_KEYS = Object.keys(DEFAULT_OBJECT_TABLE_LABELS) as LabelKey[];
 
 /**
- * Renders the {@link useObjectTableLabels} hook (optionally under a provider)
+ * Renders the {@link useLabels} hook (optionally under a provider)
  * and returns the fully-resolved labels object so every key can be asserted.
  */
 function resolveLabels(labels?: Partial<ObjectTableLabels>): ObjectTableLabels {
   let captured: ObjectTableLabels | undefined;
   function Capture(): null {
-    captured = useObjectTableLabels();
+    captured = useLabels();
     return null;
   }
   render(
     labels === undefined ? (
       <Capture />
     ) : (
-      <ObjectTableLabelsProvider labels={labels}>
+      <LabelsProvider labels={labels}>
         <Capture />
-      </ObjectTableLabelsProvider>
+      </LabelsProvider>
     ),
   );
   if (captured == null) {
-    throw new Error("useObjectTableLabels did not resolve");
+    throw new Error("useLabels did not resolve");
   }
   return captured;
 }
@@ -124,17 +124,17 @@ describe("ObjectTableLabels", () => {
   it("composes nested providers, inner overriding outer", () => {
     let captured: ObjectTableLabels | undefined;
     function Capture(): null {
-      captured = useObjectTableLabels();
+      captured = useLabels();
       return null;
     }
     render(
-      <ObjectTableLabelsProvider
+      <LabelsProvider
         labels={{ editFooterEditTable: "Outer", noData: "Empty here" }}
       >
-        <ObjectTableLabelsProvider labels={{ editFooterEditTable: "Inner" }}>
+        <LabelsProvider labels={{ editFooterEditTable: "Inner" }}>
           <Capture />
-        </ObjectTableLabelsProvider>
-      </ObjectTableLabelsProvider>,
+        </LabelsProvider>
+      </LabelsProvider>,
     );
 
     // Inner override wins for the key it sets...
@@ -150,13 +150,13 @@ describe("ObjectTableLabels", () => {
   it("returns the parent context unchanged when a provider is given no labels", () => {
     let captured: ObjectTableLabels | undefined;
     function Capture(): null {
-      captured = useObjectTableLabels();
+      captured = useLabels();
       return null;
     }
     render(
-      <ObjectTableLabelsProvider>
+      <LabelsProvider>
         <Capture />
-      </ObjectTableLabelsProvider>,
+      </LabelsProvider>,
     );
     // A provider with no labels does not allocate a new object.
     expect(captured).toBe(DEFAULT_OBJECT_TABLE_LABELS);
@@ -170,25 +170,25 @@ describe("ObjectTableLabels", () => {
   it("keeps a stable value identity across renders with an equal inline labels object", () => {
     const seen: ObjectTableLabels[] = [];
     function Capture(): null {
-      seen.push(useObjectTableLabels());
+      seen.push(useLabels());
       return null;
     }
     const { rerender } = render(
-      <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
+      <LabelsProvider labels={{ noData: "Nothing" }}>
         <Capture />
-      </ObjectTableLabelsProvider>,
+      </LabelsProvider>,
     );
     // Re-render with a brand-new inline object of identical content.
     rerender(
-      <ObjectTableLabelsProvider labels={{ noData: "Nothing" }}>
+      <LabelsProvider labels={{ noData: "Nothing" }}>
         <Capture />
-      </ObjectTableLabelsProvider>,
+      </LabelsProvider>,
     );
     // Content change gets a fresh identity.
     rerender(
-      <ObjectTableLabelsProvider labels={{ noData: "Other" }}>
+      <LabelsProvider labels={{ noData: "Other" }}>
         <Capture />
-      </ObjectTableLabelsProvider>,
+      </LabelsProvider>,
     );
 
     expect(seen[0]).toBe(seen[1]);
