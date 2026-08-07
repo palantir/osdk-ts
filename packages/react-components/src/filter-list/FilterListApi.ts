@@ -24,7 +24,7 @@ import type React from "react";
 import type { ReactNode } from "react";
 
 import type {
-  FilterState as FilterStateType,
+  FilterState,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
@@ -68,24 +68,6 @@ export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
   FilterDefinitionUnion<Q>
 >;
 
-/**
- * Extract the filter state from a filter definition union
- */
-type ExtractFilterState<D> = D extends { filterState: infer S } ? S : never;
-
-export type FilterState<Q extends ObjectTypeDefinition> = ExtractFilterState<
-  FilterDefinitionUnion<Q>
->;
-
-/**
- * Map from filter definition objects to their current state.
- * Uses object identity for keys, ensuring stable lookups across reorders.
- */
-export type FilterStatesMap<Q extends ObjectTypeDefinition> = Map<
-  FilterDefinitionUnion<Q>,
-  FilterStateType
->;
-
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * The object type definition for the objects being filtered.
@@ -100,15 +82,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet?: ObjectSet<Q>;
 
   /**
-   * The current where clause to filter the objectSet.
-   * If provided, the filter clause is controlled.
-   * LINKED_PROPERTY filters are not included; use `onEffectiveObjectSet`.
-   */
-  filterClause?: WhereClause<Q>;
-
-  /**
-   * Called when the filter clause changes.
-   * Required in controlled mode.
+   * Called whenever the filter clause changes. FilterList owns filter state;
+   * this is how you read it out, e.g. to feed an `ObjectTable`'s `filter`.
+   *
+   * `LINKED_PROPERTY` filters are not represented in the clause — use
+   * `onEffectiveObjectSet` for those.
    *
    * @param newClause The updated filter clause
    */
@@ -138,7 +116,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<Q>,
-    newState: FilterStateType,
+    newState: FilterState,
   ) => void;
 
   /**
@@ -233,7 +211,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * These states are merged over definition defaults on mount.
    * Use onFilterStateChanged to persist state changes externally.
    */
-  initialFilterStates?: Map<string, FilterStateType>;
+  initialFilterStates?: Map<string, FilterState>;
 
   /**
    * Show reset filters button in header
