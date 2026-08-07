@@ -21,6 +21,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  DEFAULT_STOP_GRACE_MS,
   FoundryCliService,
   type FoundryServiceConfig,
 } from "../cli-service/FoundryCliService.js";
@@ -133,7 +134,6 @@ describe("FoundryCliService", () => {
       `process.on("SIGINT", () => {});` +
         `process.stderr.write("handler-installed");` +
         `setInterval(() => {}, 1000)`,
-      { stopGraceMs: 250 },
     );
     await service.start();
     // `spawn` fires before node has evaluated -e, so signalling now would race
@@ -142,7 +142,14 @@ describe("FoundryCliService", () => {
       expect(service?.getCapturedStderr()).toContain("handler-installed"),
     );
 
-    await service.stop();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      const stopped = service.stop();
+      await vi.advanceTimersByTimeAsync(DEFAULT_STOP_GRACE_MS);
+      await stopped;
+    } finally {
+      vi.useRealTimers();
+    }
 
     expect(service.getExitInfo()).toBe("SIGKILL");
   });

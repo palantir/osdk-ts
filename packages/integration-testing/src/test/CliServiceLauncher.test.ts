@@ -18,12 +18,13 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CliServiceLauncher } from "../cli-service/CliServiceLauncher.js";
-import type {
-  FoundryCliService,
-  ServiceState,
+import {
+  DEFAULT_READY_TIMEOUT_MS,
+  type FoundryCliService,
+  type ServiceState,
 } from "../cli-service/FoundryCliService.js";
 import { OntologyServer } from "../cli-service/OntologyServer.js";
 import { StatusServer } from "../cli-service/StatusServer.js";
@@ -89,6 +90,17 @@ describe("CliServiceLauncher", () => {
         : {}),
       ...(options.message != null ? { message: options.message } : {}),
     });
+
+  const withFastClock = async <T>(work: () => Promise<T>): Promise<T> => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    const advancing = setInterval(() => vi.advanceTimersByTime(1_000), 1);
+    try {
+      return await work();
+    } finally {
+      clearInterval(advancing);
+      vi.useRealTimers();
+    }
+  };
 
   it("registers the status server, and dependencies transitively", () => {
     const statusServer = new NoSpawnStatusServer({ projectPath: projectDir });
@@ -182,7 +194,11 @@ describe("CliServiceLauncher", () => {
       }),
     );
 
-    await expect(launch.start()).rejects.toThrow("within 300ms");
+    await withFastClock(() =>
+      expect(launch.start()).rejects.toThrow(
+        `APP is not ready (PREPARING) within ${DEFAULT_READY_TIMEOUT_MS}ms`,
+      ),
+    );
   });
 
   it("says why a service failed, not just that it did", async () => {
@@ -202,21 +218,39 @@ describe("CliServiceLauncher", () => {
     );
   });
 
+  it("says why a service timed out, not just that it did", async () => {
+    const launch = await launcherWithStubStatusServer();
+
+    launch.register(
+      stubService("APP", {
+        stateWhenStarted: "PREPARING",
+        message: "still importing the ontology",
+      }),
+    );
+
+    await withFastClock(() =>
+      expect(launch.start()).rejects.toThrow(
+        `within ${DEFAULT_READY_TIMEOUT_MS}ms: still importing the ontology`,
+      ),
+    );
+  });
+
   it("waits for the status server before a service that never declared it", async () => {
     stub = await startStubStatusServer();
     stub.setHealthy(false);
     await writeDiscoveryFile(projectDir, "STATUS_SERVER", { url: stub.url });
-    launcher = new CliServiceLauncher({
+    const launch = new CliServiceLauncher({
       projectDir,
       statusServer: new NoSpawnStatusServer({
         projectPath: projectDir,
       }),
     });
+    launcher = launch;
     const ontology = stubService("ONTOLOGY");
-    launcher.register(ontology);
+    launch.register(ontology);
 
-    await expect(launcher.start()).rejects.toThrow(
-      "STATUS_SERVER is not ready",
+    await withFastClock(() =>
+      expect(launch.start()).rejects.toThrow("STATUS_SERVER is not ready"),
     );
 
     expect(ontology.isStarted()).toBe(false);
