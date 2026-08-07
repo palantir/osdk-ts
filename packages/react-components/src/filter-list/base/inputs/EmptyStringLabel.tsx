@@ -17,6 +17,8 @@
 import classnames from "classnames";
 import React, { memo } from "react";
 
+import { useFilterListLabels } from "../../FilterListLabels.js";
+
 // Shares the muted/italic styling used by NoValueLabel so the two special
 // option rows ("No value" and "(empty string)") read as visually consistent.
 import styles from "./NoValueLabel.module.css";
@@ -33,9 +35,10 @@ interface EmptyStringLabelProps {
 function EmptyStringLabelInner({
   className,
 }: EmptyStringLabelProps): React.ReactElement {
+  const labels = useFilterListLabels();
   return (
     <span className={classnames(styles.noValue, className)}>
-      (empty string)
+      {labels.emptyStringValue}
     </span>
   );
 }

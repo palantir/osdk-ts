@@ -24,6 +24,7 @@ import {
   formatDateForInput,
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 
 import styles from "./TimelineInput.module.css";
 
@@ -51,6 +52,7 @@ function TimelineInputInner({
   maxDate,
   formatDate,
 }: TimelineInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const renderDate = (date: Date | undefined, fallback: string): string =>
     date == null
       ? fallback
@@ -84,13 +86,13 @@ function TimelineInputInner({
     <div className={classnames(styles.timeline, className)}>
       <div className={styles.labels}>
         <span>{renderDate(startDate, "—")}</span>
-        <span>to</span>
+        <span>{labels.timelineRangeSeparator}</span>
         <span>{renderDate(endDate, "—")}</span>
         {(startDate || endDate) && (
           <Button
             type="button"
             onClick={handleClear}
-            aria-label="Clear range"
+            aria-label={labels.clearRange}
             className={styles.clearButton}
           >
             ×
@@ -106,7 +108,7 @@ function TimelineInputInner({
           onChange={handleStartChange}
           min={minDate ? formatDateForInput(minDate) : undefined}
           max={startInputMax ? formatDateForInput(startInputMax) : undefined}
-          aria-label="Start date"
+          aria-label={labels.timelineStartDate}
         />
         <span>—</span>
         <Input
@@ -116,7 +118,7 @@ function TimelineInputInner({
           onChange={handleEndChange}
           min={endInputMin ? formatDateForInput(endInputMin) : undefined}
           max={maxDate ? formatDateForInput(maxDate) : undefined}
-          aria-label="End date"
+          aria-label={labels.timelineEndDate}
         />
       </div>
     </div>

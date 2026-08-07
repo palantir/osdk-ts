@@ -28,6 +28,8 @@ import React, {
   useState,
 } from "react";
 
+import { useFilterListLabels } from "../../FilterListLabels.js";
+
 import styles from "./ContainsTextInput.module.css";
 
 interface ContainsTextInputProps {
@@ -44,13 +46,15 @@ interface ContainsTextInputProps {
 function ContainsTextInputInner({
   value,
   onChange,
-  placeholder = "Search...",
+  placeholder,
   debounceMs = 300,
   className,
   style,
   renderSearchIcon,
   renderClearIcon,
 }: ContainsTextInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
+  const effectivePlaceholder = placeholder ?? labels.textSearchPlaceholder;
   const [localValue, setLocalValue] = useState(value ?? "");
 
   const onChangeRef = useRef(onChange);
@@ -108,8 +112,8 @@ function ContainsTextInputInner({
           className={styles.input}
           value={localValue}
           onChange={handleInputChange}
-          placeholder={placeholder}
-          aria-label={placeholder}
+          placeholder={effectivePlaceholder}
+          aria-label={effectivePlaceholder}
         />
         <Button
           type="button"
@@ -117,7 +121,7 @@ function ContainsTextInputInner({
           data-active={!!localValue || undefined}
           onClick={handleClear}
           disabled={!localValue}
-          aria-label="Clear search"
+          aria-label={labels.clearSearch}
         >
           {renderClearIcon ? renderClearIcon() : <Cross />}
         </Button>

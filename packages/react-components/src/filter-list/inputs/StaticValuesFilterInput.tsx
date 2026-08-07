@@ -27,6 +27,7 @@ import {
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 import type { StaticValuesFilterDefinition } from "../types/StaticValuesTypes.js";
 import {
@@ -162,6 +163,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
   excludeRowOpen,
   layout,
 }: StaticValuesFilterInputProps<Q>): React.ReactElement {
+  const labels = useFilterListLabels();
   const aggregationValues: PropertyAggregationValue[] = useMemo(
     () => definition.values.map((value) => ({ value, count: 0 })),
     [definition.values],
@@ -221,7 +223,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             selectedValue={select.selectedValue}
             onChange={select.handleSingleChange}
             showCounts={definition.showCount}
-            ariaLabel={`Select ${definition.key}`}
+            ariaLabel={labels.selectPropertyAriaLabel(definition.key)}
             renderValue={definition.renderValue}
           />
         </FilterInputExcludeRow>
@@ -244,7 +246,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             onChange={select.handleMultiChange}
             showCounts={definition.showCount}
             showFilteredOutValues={SHOW_FILTERED_OUT_VALUES}
-            ariaLabel={`Search ${definition.key} values`}
+            ariaLabel={labels.searchPropertyValuesAriaLabel(definition.key)}
             renderValue={definition.renderValue}
             layout={layout}
           />

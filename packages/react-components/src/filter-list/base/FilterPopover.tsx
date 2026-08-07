@@ -18,6 +18,11 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { memo, useCallback, useState } from "react";
 
+import type { FilterListLabels } from "../FilterListLabels.js";
+import {
+  useFilterListLabels,
+  withFilterListLabels,
+} from "../FilterListLabels.js";
 import { RemoveIcon } from "./FilterIcons.js";
 
 import styles from "./FilterPopover.module.css";
@@ -38,6 +43,14 @@ export interface FilterPopoverProps {
    * - `"top"`: label stacks above the trigger.
    */
   labelPlacement?: "inline" | "top";
+  /**
+   * Overrides for this trigger's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. When this popover is
+   * rendered inside a `FilterList`/`BaseFilterList`, it inherits that list's
+   * `labels` and this prop is only needed to override further. See
+   * {@link FilterListLabels}.
+   */
+  labels?: Partial<FilterListLabels>;
 }
 
 /** Labeled, popover-backed filter trigger. Pair with `FilterInput` for the popup body. */
@@ -48,9 +61,10 @@ function FilterPopoverInner({
   onRemove,
   children,
   className,
-  placeholder = "Any",
+  placeholder,
   labelPlacement = "inline",
-}: FilterPopoverProps): React.ReactElement {
+}: Omit<FilterPopoverProps, "labels">): React.ReactElement {
+  const labels = useFilterListLabels();
   const [open, setOpen] = useState(false);
   const summaryHasValue = summary !== "";
   const handleRemoveClick = useCallback(
@@ -81,7 +95,9 @@ function FilterPopoverInner({
               !summaryHasValue && styles.placeholder,
             )}
           >
-            {summaryHasValue ? summary : placeholder}
+            {summaryHasValue
+              ? summary
+              : (placeholder ?? labels.popoverEmptySummary)}
           </span>
         </Popover.Trigger>
         {onRemove && (
@@ -89,7 +105,7 @@ function FilterPopoverInner({
             type="button"
             onClick={handleRemoveClick}
             className={styles.removeButton}
-            aria-label={`Remove ${label} filter`}
+            aria-label={labels.removeFilter(label)}
           >
             <RemoveIcon />
           </button>
@@ -104,5 +120,6 @@ function FilterPopoverInner({
   );
 }
 
-export const FilterPopover: React.NamedExoticComponent<FilterPopoverProps> =
-  memo(FilterPopoverInner);
+export const FilterPopover: React.FC<FilterPopoverProps> = withFilterListLabels(
+  memo(FilterPopoverInner),
+);

@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { getOptionLabelText, OptionLabel } from "./OptionLabel.js";
@@ -35,11 +36,12 @@ interface TagItemProps {
 }
 
 const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
+  const labels = useFilterListLabels();
   const handleRemove = useCallback(() => {
     onRemove(tag);
   }, [tag, onRemove]);
 
-  const displayLabel = getOptionLabelText(tag);
+  const displayLabel = getOptionLabelText(tag, labels);
 
   return (
     <span className={sharedStyles.tag}>
@@ -48,7 +50,7 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
         type="button"
         className={sharedStyles.tagRemove}
         onClick={handleRemove}
-        aria-label={`Remove ${displayLabel}`}
+        aria-label={labels.removeTag(displayLabel)}
       >
         ×
       </Button>
@@ -78,12 +80,13 @@ function TextTagsInputInner({
   onChange,
   className,
   style,
-  placeholder = "Add a tag...",
+  placeholder,
   allowCustomTags = true,
   suggestionLimit = 10,
-  ariaLabel = "Add tag",
+  ariaLabel,
 }: TextTagsInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
+  const labels = useFilterListLabels();
   const [inputValue, setInputValue] = useState("");
 
   const filteredSuggestions = useMemo(() => {
@@ -168,12 +171,12 @@ function TextTagsInputInner({
       data-loading={isLoading && suggestions.length > 0}
     >
       <span className={sharedStyles.srOnly} role="status">
-        {isLoading ? "Loading options" : ""}
+        {isLoading ? labels.loadingOptions : ""}
       </span>
 
       {error && (
         <div className={sharedStyles.errorMessage}>
-          Error loading suggestions: {error.message}
+          {labels.suggestionsLoadError(error.message)}
         </div>
       )}
 
@@ -194,10 +197,12 @@ function TextTagsInputInner({
 
         <Combobox.SearchInput
           className={styles.input}
-          placeholder={tags.length > 0 ? "" : placeholder}
+          placeholder={
+            tags.length > 0 ? "" : (placeholder ?? labels.addTagPlaceholder)
+          }
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          aria-label={ariaLabel}
+          aria-label={ariaLabel ?? labels.addTagAriaLabel}
         />
 
         <Combobox.Portal>
@@ -206,11 +211,13 @@ function TextTagsInputInner({
               {filteredSuggestions.length === 0 ? (
                 allowCustomTags && inputValue.trim() ? (
                   <Combobox.Empty>
-                    Press Enter to add "{inputValue}"
+                    {labels.pressEnterToAddTag(inputValue)}
                   </Combobox.Empty>
                 ) : (
                   <Combobox.Empty>
-                    {suggestionLimit ? "No suggestions" : "Type to add a tag"}
+                    {suggestionLimit
+                      ? labels.noSuggestions
+                      : labels.typeToAddTag}
                   </Combobox.Empty>
                 )
               ) : (

@@ -62,6 +62,25 @@ describe("FilterPopover", () => {
     expect(screen.getByText("Any")).toBeDefined();
   });
 
+  it("applies the labels prop and falls back to defaults for unset keys", () => {
+    render(
+      <FilterPopover
+        label="Sites"
+        summary=""
+        isActive={false}
+        onRemove={vi.fn()}
+        labels={{
+          popoverEmptySummary: "Anything",
+          removeFilter: (name) => `Drop ${name}`,
+        }}
+      >
+        <div>popup body</div>
+      </FilterPopover>,
+    );
+    expect(screen.getByText("Anything")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Drop Sites" })).toBeDefined();
+  });
+
   it("toggles data-active on the trigger based on isActive", () => {
     const { rerender } = render(
       <FilterPopover label="Sites" summary="" isActive={false}>

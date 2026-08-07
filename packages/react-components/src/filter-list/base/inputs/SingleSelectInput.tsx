@@ -18,6 +18,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
@@ -51,13 +52,14 @@ function SingleSelectInputInner({
   onChange,
   className,
   style,
-  placeholder = "Select a value...",
+  placeholder,
   showClearButton = true,
   showCounts = false,
-  ariaLabel = "Select value",
+  ariaLabel,
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
+  const labels = useFilterListLabels();
 
   const handleValueChange = useCallback(
     (value: string | null) => {
@@ -112,18 +114,20 @@ function SingleSelectInputInner({
       data-loading={isReloading}
     >
       <span className={sharedStyles.srOnly} role="status">
-        {isLoading ? "Loading options" : ""}
+        {isLoading ? labels.loadingOptions : ""}
       </span>
 
       {error && (
         <div className={sharedStyles.errorMessage}>
-          Error loading options: {error.message}
+          {labels.optionsLoadError(error.message)}
         </div>
       )}
 
       {isNoData && isLoading && <SelectInputSkeleton />}
       {isNoData && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>No options available</div>
+        <div className={sharedStyles.emptyMessage}>
+          {labels.noOptionsAvailable}
+        </div>
       )}
 
       {stableValues.length > 0 && (
@@ -135,8 +139,8 @@ function SingleSelectInputInner({
             filter={comboboxFilter}
           >
             <Combobox.SearchInput
-              placeholder={placeholder}
-              aria-label={ariaLabel}
+              placeholder={placeholder ?? labels.singleSelectPlaceholder}
+              aria-label={ariaLabel ?? labels.singleSelectAriaLabel}
             />
             {showClearButton && selectedValue !== undefined && (
               <Combobox.Clear className={styles.clearButton} />
@@ -144,7 +148,7 @@ function SingleSelectInputInner({
             <Combobox.Portal>
               <Combobox.Positioner collisionBoundary={collisionBoundary}>
                 <Combobox.Popup>
-                  <Combobox.Empty>No matching options</Combobox.Empty>
+                  <Combobox.Empty>{labels.noMatchingOptions}</Combobox.Empty>
                   <Combobox.List>{renderItem}</Combobox.List>
                 </Combobox.Popup>
               </Combobox.Positioner>

@@ -23,6 +23,7 @@ import {
   formatDateForDisplay,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -52,6 +53,7 @@ function MultiDateInputInner({
   showClearAll = true,
   formatDate,
 }: MultiDateInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const addDate = useCallback(
     (date: Date | null) => {
       if (date == null) return;
@@ -96,9 +98,9 @@ function MultiDateInputInner({
             <Button
               className={styles.clearAll}
               onClick={clearAll}
-              aria-label="Clear all dates"
+              aria-label={labels.clearAllDates}
             >
-              Clear all
+              {labels.clearAll}
             </Button>
           )}
         </div>
@@ -110,7 +112,7 @@ function MultiDateInputInner({
           onChange={addDate}
           min={minDate}
           max={maxDate}
-          ariaLabel="Add date"
+          ariaLabel={labels.addDate}
           modal={false}
           formatDate={formatDate}
         />
@@ -133,6 +135,7 @@ function DateTag({
   formatDate,
   onRemove,
 }: DateTagProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const handleRemove = useCallback(() => {
     onRemove(date);
   }, [onRemove, date]);
@@ -144,7 +147,7 @@ function DateTag({
       <Button
         className={sharedStyles.tagRemove}
         onClick={handleRemove}
-        aria-label={`Remove ${label}`}
+        aria-label={labels.removeDate(label)}
       >
         ×
       </Button>

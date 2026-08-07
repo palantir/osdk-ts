@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 
+import {
+  DEFAULT_FILTER_LIST_LABELS,
+  useFilterListLabels,
+} from "../../FilterListLabels.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 function formatNumber(value: number | undefined): string {
@@ -34,8 +38,8 @@ const numberConfig: RangeInputConfig<number> = {
   parseValue: parseNumber,
   toNumber: (v) => v,
   fromNumber: (v) => v,
-  minLabel: "Min",
-  maxLabel: "Max",
+  minLabel: DEFAULT_FILTER_LIST_LABELS.numberRangeMinLabel,
+  maxLabel: DEFAULT_FILTER_LIST_LABELS.numberRangeMaxLabel,
   formatTooltip: (min, max, count) =>
     `${min.toFixed(1)} - ${max.toFixed(1)}: ${count.toLocaleString()}`,
   formatPlaceholder: (value) => value.toFixed(0),
@@ -57,7 +61,16 @@ interface NumberRangeInputProps {
 function NumberRangeInputInner(
   props: NumberRangeInputProps,
 ): React.ReactElement {
-  return <RangeInput {...props} config={numberConfig} />;
+  const labels = useFilterListLabels();
+  const config = useMemo<RangeInputConfig<number>>(
+    () => ({
+      ...numberConfig,
+      minLabel: labels.numberRangeMinLabel,
+      maxLabel: labels.numberRangeMaxLabel,
+    }),
+    [labels],
+  );
+  return <RangeInput {...props} config={config} />;
 }
 
 export const NumberRangeInput = memo(

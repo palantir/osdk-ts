@@ -19,6 +19,10 @@ import classnames from "classnames";
 import React, { useCallback, useState } from "react";
 
 import type { FilterDefinitionControls } from "../FilterListItemApi.js";
+import {
+  FilterListLabelsProvider,
+  useFilterListLabels,
+} from "../FilterListLabels.js";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import { ExpandIcon } from "./FilterIcons.js";
 import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
@@ -30,6 +34,17 @@ import styles from "./FilterList.module.css";
 export function BaseFilterList<D extends FilterDefinitionControls>(
   props: BaseFilterListProps<D>,
 ): React.ReactElement {
+  return (
+    <FilterListLabelsProvider labels={props.labels}>
+      <BaseFilterListInner {...props} />
+    </FilterListLabelsProvider>
+  );
+}
+
+function BaseFilterListInner<D extends FilterDefinitionControls>(
+  props: BaseFilterListProps<D>,
+): React.ReactElement {
+  const labels = useFilterListLabels();
   const {
     title,
     titleIcon,
@@ -83,11 +98,13 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
           <Button
             className={styles.expandButton}
             onClick={handleExpand}
-            aria-label="Expand filters"
+            aria-label={labels.expandFilters}
           >
             <ExpandIcon />
           </Button>
-          <span className={styles.collapsedLabel}>{title ?? "Filters"}</span>
+          <span className={styles.collapsedLabel}>
+            {title ?? labels.collapsedTitle}
+          </span>
         </div>
       )}
       <div
@@ -139,7 +156,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
                   className={styles.addButton}
                   onClick={onFilterAdded}
                 >
-                  + Add filter
+                  {labels.addFilter}
                 </Button>
               )}
             </div>

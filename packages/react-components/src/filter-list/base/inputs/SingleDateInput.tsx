@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
 import { DatePicker } from "../../../shared/calendar/index.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 
 import styles from "./SingleDateInput.module.css";
 
@@ -46,6 +47,7 @@ function SingleDateInputInner({
   showClearButton = true,
   formatDate,
 }: SingleDateInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const handleClear = useCallback(() => {
     onChange(undefined);
   }, [onChange]);
@@ -66,7 +68,7 @@ function SingleDateInputInner({
           min={minDate}
           max={maxDate}
           placeholder={placeholder}
-          ariaLabel="Select date"
+          ariaLabel={labels.selectDate}
           modal={false}
           formatDate={formatDate}
         />
@@ -74,7 +76,7 @@ function SingleDateInputInner({
           <Button
             className={styles.clearButton}
             onClick={handleClear}
-            aria-label="Clear date"
+            aria-label={labels.clearDate}
           >
             ×
           </Button>

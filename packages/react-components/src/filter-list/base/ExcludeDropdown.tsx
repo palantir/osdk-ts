@@ -17,6 +17,7 @@
 import { Menu } from "@base-ui/react/menu";
 import React, { memo, useCallback } from "react";
 
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { CheckIcon, ChevronDownIcon, ExcludeIcon } from "./FilterIcons.js";
 import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
 
@@ -32,7 +33,8 @@ function ExcludeDropdownInner({
   onToggleExclude,
 }: ExcludeDropdownProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
-  const label = isExcluding ? "Excluding" : "Keeping";
+  const labels = useFilterListLabels();
+  const label = isExcluding ? labels.excluding : labels.keeping;
 
   const handleSelectKeeping = useCallback(() => {
     if (isExcluding) {
@@ -72,7 +74,7 @@ function ExcludeDropdownInner({
                 <span className={styles.menuItemCheck}>
                   {!isExcluding && <CheckIcon />}
                 </span>
-                Keeping
+                {labels.keeping}
               </Menu.Item>
               <Menu.Item
                 className={styles.menuItem}
@@ -81,7 +83,7 @@ function ExcludeDropdownInner({
                 <span className={styles.menuItemCheck}>
                   {isExcluding && <CheckIcon />}
                 </span>
-                Excluding
+                {labels.excluding}
               </Menu.Item>
             </Menu.Popup>
           </Menu.Positioner>

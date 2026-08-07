@@ -18,9 +18,16 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import type { FilterListLabels } from "../FilterListLabels.js";
+import { resolveLabel } from "../FilterListLabels.js";
 
+/**
+ * @param labels Optional label overrides, used for the `KEYWORD_SEARCH`
+ * fallback name. Unset keys fall back to the built-in English defaults.
+ */
 export function getFilterLabel<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
+  labels?: Partial<FilterListLabels>,
 ): string {
   if ("label" in definition && definition.label) {
     return definition.label;
@@ -33,7 +40,7 @@ export function getFilterLabel<Q extends ObjectTypeDefinition>(
     case "LINKED_PROPERTY":
       return definition.linkName;
     case "KEYWORD_SEARCH":
-      return "Search";
+      return resolveLabel(labels, "keywordSearchFilterLabel");
     case "CUSTOM":
       return definition.key;
     case "STATIC_VALUES":

@@ -17,6 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import React, { memo, type ReactNode, useCallback } from "react";
 
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { CollapseIcon, ResetIcon } from "./FilterIcons.js";
 
 import styles from "./FilterListHeader.module.css";
@@ -46,6 +47,7 @@ function FilterListHeaderInner({
   canReset,
   hasVisibilityChanges = false,
 }: FilterListHeaderProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const showCollapseButton = onCollapsedChange != null;
 
   const handleCollapseClick = useCallback(() => {
@@ -74,7 +76,7 @@ function FilterListHeaderInner({
             onClick={onReset}
             disabled={resetDisabled}
           >
-            <ResetIcon /> Reset filters
+            <ResetIcon /> {labels.resetFilters}
           </Button>
         )}
 
@@ -83,7 +85,9 @@ function FilterListHeaderInner({
             className={styles.collapseButton}
             onClick={handleCollapseClick}
             aria-expanded={!collapsed}
-            aria-label={collapsed ? "Expand filters" : "Collapse filters"}
+            aria-label={
+              collapsed ? labels.expandFilters : labels.collapseFilters
+            }
           >
             <CollapseIcon />
           </Button>

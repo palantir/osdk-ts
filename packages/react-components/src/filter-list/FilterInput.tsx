@@ -23,6 +23,11 @@ import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
 import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
+import type { FilterListLabels } from "./FilterListLabels.js";
+import {
+  FilterListLabelsProvider,
+  useFilterListLabels,
+} from "./FilterListLabels.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
@@ -49,6 +54,24 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
    * filter components.
    */
   layout?: MultiSelectInputLayout;
+  /**
+   * Overrides for this input's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. When this input is
+   * rendered inside a `FilterList`/`BaseFilterList`, it inherits that list's
+   * `labels` and this prop is only needed to override further. See
+   * {@link FilterListLabels}.
+   */
+  labels?: Partial<FilterListLabels>;
+}
+
+function FilterInputWithLabels<Q extends ObjectTypeDefinition>(
+  props: FilterInputProps<Q>,
+): React.ReactElement {
+  return (
+    <FilterListLabelsProvider labels={props.labels}>
+      <FilterInputInner {...props} />
+    </FilterListLabelsProvider>
+  );
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -63,7 +86,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   searchQuery,
   excludeRowOpen,
   layout,
-}: FilterInputProps<Q>): React.ReactElement {
+}: Omit<FilterInputProps<Q>, "labels">): React.ReactElement {
+  const labels = useFilterListLabels();
   switch (definition.type) {
     case "HAS_LINK":
       return (
@@ -99,14 +123,16 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         <KeywordSearchInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
-          placeholder={definition.label ?? "Search..."}
+          placeholder={definition.label ?? labels.textSearchPlaceholder}
         />
       );
 
     case "CUSTOM": {
       if (!definition.renderInput) {
         return (
-          <div data-unsupported="true">Custom filter missing renderInput</div>
+          <div data-unsupported="true">
+            {labels.customFilterMissingRenderInput}
+          </div>
         );
       }
       const customFilterState =
@@ -153,11 +179,13 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       );
 
     default:
-      return <div data-unsupported="true">Unsupported filter type</div>;
+      return <div data-unsupported="true">{labels.unsupportedFilterType}</div>;
   }
 }
 
-export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
+export const FilterInput = memo(
+  FilterInputWithLabels,
+) as typeof FilterInputWithLabels;
 
 interface HasLinkInputProps {
   filterState: FilterState | undefined;

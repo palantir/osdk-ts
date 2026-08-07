@@ -18,6 +18,7 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import { formatCompactCount } from "./formatCompactCount.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 
@@ -47,6 +48,7 @@ function NullValueWrapperInner({
   className,
   style,
 }: NullValueWrapperProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const handleToggle = useCallback(() => {
     onIncludeNullChange(!includeNull);
   }, [includeNull, onIncludeNullChange]);
@@ -72,7 +74,7 @@ function NullValueWrapperInner({
       </div>
       {error && (
         <div className={sharedStyles.errorMessage}>
-          Failed to load null count
+          {labels.nullCountLoadError}
         </div>
       )}
     </div>

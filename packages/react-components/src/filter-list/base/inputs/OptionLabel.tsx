@@ -16,17 +16,21 @@
 
 import React, { memo } from "react";
 
+import type { FilterListLabels } from "../../FilterListLabels.js";
 import { isNoValue } from "../../utils/filterValues.js";
 import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 
 /** Plain-text label for the screen-reader / aria-label equivalent of an option. */
-export function getOptionLabelText(value: string): string {
+export function getOptionLabelText(
+  value: string,
+  labels: FilterListLabels,
+): string {
   if (isNoValue(value)) {
-    return "No value";
+    return labels.noValue;
   }
   if (value === "") {
-    return "(empty string)";
+    return labels.emptyStringValue;
   }
   return value;
 }

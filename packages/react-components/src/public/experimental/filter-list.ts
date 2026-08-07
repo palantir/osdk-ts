@@ -30,6 +30,7 @@ export type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "../../filter-list/FilterListApi.js";
+export type { FilterListLabels } from "../../filter-list/FilterListLabels.js";
 export type {
   FilterComponentType,
   FilterDefinitionControls,

@@ -17,6 +17,7 @@
 import React, { memo } from "react";
 
 import { SearchableMenu } from "../../base-components/searchable-menu/SearchableMenu.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { useFilterListBoundary } from "./FilterListBoundaryContext.js";
 
 import styles from "./AddFilterPopover.module.css";
@@ -38,15 +39,16 @@ function AddFilterPopoverInner({
   renderTrigger,
 }: AddFilterPopoverProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
+  const labels = useFilterListLabels();
 
   return (
     <SearchableMenu
       items={hiddenDefinitions}
       onItemSelected={onShowFilter}
-      trigger={renderTrigger != null ? renderTrigger() : "+ Add filter"}
+      trigger={renderTrigger != null ? renderTrigger() : labels.addFilter}
       triggerClassName={renderTrigger == null ? styles.trigger : undefined}
-      searchPlaceholder="Search filters"
-      emptyMessage="No matching filters"
+      searchPlaceholder={labels.addFilterSearchPlaceholder}
+      emptyMessage={labels.addFilterNoMatches}
       collisionBoundary={collisionBoundary}
     />
   );

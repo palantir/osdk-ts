@@ -25,6 +25,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
 import {
   EMPTY_LINKED_FILTERS,
@@ -59,6 +60,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   renderValue,
   showCount,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
+  const labels = useFilterListLabels();
   const selectedValue = useMemo(
     () =>
       filterState?.type === "SELECT"
@@ -116,7 +118,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValue={selectedValue}
         onChange={handleChange}
         showCounts={showCount}
-        ariaLabel={`Select ${propertyKey}`}
+        ariaLabel={labels.selectPropertyAriaLabel(propertyKey)}
         renderValue={renderValue}
       />
     </FilterInputExcludeRow>

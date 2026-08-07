@@ -43,6 +43,7 @@ import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import { TimelineInput } from "../base/inputs/TimelineInput.js";
 import { ToggleInput } from "../base/inputs/ToggleInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import {
@@ -104,6 +105,7 @@ function LinkedPropertyInputInner<
   style,
   layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
+  const labels = useFilterListLabels();
   const scoped = useMemo(
     () => narrowObjectSet(objectSet, whereClause, linkedFilters),
     [objectSet, whereClause, linkedFilters],
@@ -323,7 +325,9 @@ function LinkedPropertyInputInner<
           <ContainsTextInput
             value={value}
             onChange={onContainsTextChange}
-            placeholder={`Search ${String(definition.linkedPropertyKey)}...`}
+            placeholder={labels.searchPropertyPlaceholder(
+              String(definition.linkedPropertyKey),
+            )}
           />
         );
       }
@@ -540,6 +544,7 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   showCount,
   renderValue,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
+  const labels = useFilterListLabels();
   const selectedValues = useMemo(
     () => (selectedValue != null ? [selectedValue] : []),
     [selectedValue],
@@ -561,7 +566,7 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
       onChange={onChange}
       showCounts={showCount}
       renderValue={renderValue}
-      ariaLabel={`Select ${propertyKey as string}`}
+      ariaLabel={labels.selectPropertyAriaLabel(propertyKey as string)}
     />
   );
 }
