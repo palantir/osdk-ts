@@ -37,7 +37,10 @@ import type {
  * always requires onFormStateChange, and uncontrolled mode makes `onFormStateChange` optional
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
-  | (ActionFormConfigProps<Q> & {
+  // The inline literals come first in each intersection so the generated props
+  // table lists formState/onFormStateChange before the shared config props;
+  // scripts/gen-props.mjs flattens intersections left-to-right.
+  | ({
       /**
        * The current form values.
        * If provided, the form state is controlled.
@@ -51,13 +54,13 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
       onFormStateChange: (
         updater: (prevState: FormState<Q>) => FormState<Q>,
       ) => void;
-    })
-  | (ActionFormConfigProps<Q> & {
+    } & ActionFormConfigProps<Q>)
+  | ({
       formState?: undefined;
       onFormStateChange?: (
         updater: (prevState: FormState<Q>) => FormState<Q>,
       ) => void;
-    });
+    } & ActionFormConfigProps<Q>);
 
 interface ActionFormConfigProps<
   Q extends ActionDefinition<unknown>,
