@@ -16,7 +16,6 @@
 
 import type {
   CompileTimeMetadata,
-  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WirePropertyTypes,
@@ -369,24 +368,3 @@ export type PropertyFilterDefinition<
     ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > = PropertyFilterDefinitionBase<Q, K, C> &
   PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
-
-/**
- * Props for a single filter list item component.
- * Extends PropertyFilterDefinition with runtime props for rendering.
- */
-export type FilterListItemProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
-    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> = PropertyFilterDefinition<Q, K, C> & {
-  objectSet: ObjectSet<Q>;
-
-  /**
-   * Called when the state of the filter changes.
-   * Required in controlled mode.
-   */
-  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
-
-  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-};

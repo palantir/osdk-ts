@@ -60,12 +60,6 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
    * filter and/or visibility state has diverged from its initial snapshot.
    */
   canReset?: boolean;
-  /**
-   * @deprecated Use {@link canReset} instead. When `canReset` is provided it
-   * takes precedence; `hasVisibilityChanges` is only consulted as a fallback
-   * for the reset button's enabled state.
-   */
-  hasVisibilityChanges?: boolean;
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
