@@ -122,7 +122,7 @@ const BaseFormInner = memo(function BaseFormFn({
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
     label: labelByFieldKey.get(key) ?? key,
-    message: entry?.message ?? labels.fieldErrorFallback,
+    message: entry?.message ?? labels.invalid,
   }));
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent

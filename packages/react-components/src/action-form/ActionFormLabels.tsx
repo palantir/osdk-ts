@@ -61,11 +61,11 @@ export interface ActionFormLabels {
    */
   issueCount: (count: number) => string;
   /**
-   * Fallback shown in the footer's error list for a field whose validation
-   * rule produced no message.
+   * Shown in the footer's error list for an invalid field whose validation
+   * rule produced no message of its own.
    * @default "Invalid"
    */
-  fieldErrorFallback: string;
+  invalid: string;
 
   /**
    * Badge on a collapsible section header counting the invalid fields inside.
@@ -215,7 +215,7 @@ export const DEFAULT_ACTION_FORM_LABELS: ActionFormLabels = {
   submissionFailed: "Submission failed",
   loadingFormFields: "Loading form fields",
   issueCount: (count) => (count === 1 ? "1 issue" : `${count} issues`),
-  fieldErrorFallback: "Invalid",
+  invalid: "Invalid",
 
   sectionErrorCount: (count) => (count === 1 ? "1 error" : `${count} errors`),
 
