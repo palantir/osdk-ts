@@ -22,6 +22,7 @@
  */
 
 export type {
+  SeedClient,
   IntegrationClient,
   IntegrationClientConfig,
   IntegrationServer,

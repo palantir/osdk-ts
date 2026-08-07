@@ -3,10 +3,10 @@ import type { Ontologies } from "@osdk/foundry";
 import {
   type IntegrationServer,
   type IntegrationClient,
+  type SeedClient,
   createIntegrationServer,
 } from "@osdk/integration-testing";
 import {
-  type SeedClient,
   type SeedOutput,
   type SeedFunction,
   createSeedWithMetadata,
