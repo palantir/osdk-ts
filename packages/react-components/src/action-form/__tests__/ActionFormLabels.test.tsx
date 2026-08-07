@@ -123,6 +123,24 @@ describe("ActionFormLabels", () => {
     }
   });
 
+  it("resolves infoTooltipAriaLabel for both the named and unnamed field cases", () => {
+    const resolved = resolveLabels();
+
+    expect(resolved.infoTooltipAriaLabel("Full name")).toBe(
+      "Info about Full name",
+    );
+    expect(resolved.infoTooltipAriaLabel(undefined)).toBe("More information");
+  });
+
+  it("lets an override of infoTooltipAriaLabel handle the unnamed field case", () => {
+    const resolved = resolveLabels({
+      infoTooltipAriaLabel: (fieldName) => fieldName ?? "Details",
+    });
+
+    expect(resolved.infoTooltipAriaLabel("Full name")).toBe("Full name");
+    expect(resolved.infoTooltipAriaLabel(undefined)).toBe("Details");
+  });
+
   it("composes nested providers, inner overriding outer", () => {
     let captured: ActionFormLabels | undefined;
     function Capture(): null {

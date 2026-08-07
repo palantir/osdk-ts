@@ -116,11 +116,7 @@ function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
         render={<span className={styles.osdkFormFieldInfoIcon} />}
         nativeButton={false}
         openOnHover={true}
-        aria-label={
-          label != null
-            ? labels.helperTextAriaLabel(label)
-            : labels.helperTextAriaLabelWithoutLabel
-        }
+        aria-label={labels.infoTooltipAriaLabel(label)}
       >
         <InfoSign size={12} />
       </Popover.Trigger>

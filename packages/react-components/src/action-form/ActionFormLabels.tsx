@@ -83,14 +83,12 @@ export interface ActionFormLabels {
    * @default "Edited"
    */
   editedTag: string;
-  /** @default (fieldName) => `Info about ${fieldName}` */
-  helperTextAriaLabel: (fieldName: string) => string;
   /**
-   * Used in place of {@link ActionFormLabels.helperTextAriaLabel} when the
-   * field has no label.
-   * @default "More information"
+   * Accessible name for the info tooltip trigger rendered next to a field's
+   * label. Receives the field's label, or `undefined` when the field has none.
+   * @default (fieldName) => fieldName != null ? `Info about ${fieldName}` : "More information"
    */
-  helperTextAriaLabelWithoutLabel: string;
+  infoTooltipAriaLabel: (fieldName: string | undefined) => string;
 
   /**
    * Rendered in place of an input for action parameter types the form cannot
@@ -223,8 +221,8 @@ export const DEFAULT_ACTION_FORM_LABELS: ActionFormLabels = {
 
   requiredIndicator: "required",
   editedTag: "Edited",
-  helperTextAriaLabel: (fieldName) => `Info about ${fieldName}`,
-  helperTextAriaLabelWithoutLabel: "More information",
+  infoTooltipAriaLabel: (fieldName) =>
+    fieldName != null ? `Info about ${fieldName}` : "More information",
 
   unsupportedField: "Unsupported field type. Use a CUSTOM field instead",
 
