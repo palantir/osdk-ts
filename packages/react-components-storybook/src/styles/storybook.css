@@ -67,6 +67,19 @@ body,
   width: 55%;
 }
 
+/* Center a docs Canvas preview (opt-in via ComponentDoc's `centerCanvas`).
+ * Storybook renders the story inside `.innerZoomElementWrapper > div`, which is
+ * block-level and left-aligns narrow, fixed-width demos; making that wrapper a
+ * centered flex row is the only hook available without patching the addon.
+ * `!important` is required because this file lives in `layer(storybook)` (see
+ * .storybook/styles.css) while Storybook's own emotion rule setting
+ * `display: block` here is unlayered — unlayered normal declarations beat
+ * layered ones no matter how specific. */
+.osdkDocCanvasCentered .docs-story .innerZoomElementWrapper > * {
+  display: flex !important;
+  justify-content: center;
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
