@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { getClient, getPlatformClient, withClients } from "../clients.js";
+export type { Clients } from "../clients.js";
 export {
   ScopeAuthorization,
   ScopeResources,
