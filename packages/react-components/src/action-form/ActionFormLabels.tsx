@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { isEqual } from "lodash-es";
-import React, {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  useContext,
-  useRef,
-} from "react";
+import type React from "react";
+
+import type { LabelsProviderProps } from "../shared/createLabelsContext.js";
+import { createLabelsContext } from "../shared/createLabelsContext.js";
 
 /**
  * All user-facing strings rendered by the action form and its field
@@ -262,14 +258,13 @@ export const DEFAULT_ACTION_FORM_LABELS: ActionFormLabels = {
     `File must be smaller than ${formatBytes(maxSizeBytes)}`,
 };
 
-const ActionFormLabelsContext = createContext<ActionFormLabels>(
+const { LabelsProvider, useLabels, withLabels } = createLabelsContext(
   DEFAULT_ACTION_FORM_LABELS,
+  "ActionForm",
 );
 
-export interface ActionFormLabelsProviderProps {
-  labels?: Partial<ActionFormLabels>;
-  children: ReactNode;
-}
+export type ActionFormLabelsProviderProps =
+  LabelsProviderProps<ActionFormLabels>;
 
 /**
  * Supplies overridden {@link ActionFormLabels} to descendant form and field
@@ -281,35 +276,15 @@ export interface ActionFormLabelsProviderProps {
  * merged labels are equal, so callers can pass an inline `labels` object
  * without re-rendering every label consumer.
  */
-export function ActionFormLabelsProvider({
-  labels,
-  children,
-}: ActionFormLabelsProviderProps): ReactElement {
-  const parent = useContext(ActionFormLabelsContext);
-  const merged = labels != null ? { ...parent, ...labels } : parent;
-
-  // Reuse the previous value when the merge is equal so an inline `labels`
-  // object (new identity each render) doesn't churn the context.
-  const stableRef = useRef(merged);
-  if (!isEqual(stableRef.current, merged)) {
-    stableRef.current = merged;
-  }
-
-  return (
-    <ActionFormLabelsContext.Provider value={stableRef.current}>
-      {children}
-    </ActionFormLabelsContext.Provider>
-  );
-}
+export const ActionFormLabelsProvider: React.FC<ActionFormLabelsProviderProps> =
+  LabelsProvider;
 
 /**
  * Returns the fully-resolved {@link ActionFormLabels} for the current subtree.
  * When no {@link ActionFormLabelsProvider} is present, returns
  * {@link DEFAULT_ACTION_FORM_LABELS}.
  */
-export function useActionFormLabels(): ActionFormLabels {
-  return useContext(ActionFormLabelsContext);
-}
+export const useActionFormLabels: () => ActionFormLabels = useLabels;
 
 /**
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
@@ -318,22 +293,9 @@ export function useActionFormLabels(): ActionFormLabels {
  * For generic components, e.g. `ActionForm` use
  * {@link ActionFormLabelsProvider} directly to preserve its type parameters.
  */
-export function withActionFormLabels<P extends object>(
+export const withActionFormLabels: <P extends object>(
   Inner: React.ComponentType<P>,
-): React.FC<P & { labels?: Partial<ActionFormLabels> }> {
-  function LabelledComponent(
-    props: P & { labels?: Partial<ActionFormLabels> },
-  ): ReactElement {
-    const { labels, ...rest } = props;
-    return (
-      <ActionFormLabelsProvider labels={labels}>
-        <Inner {...(rest as unknown as P)} />
-      </ActionFormLabelsProvider>
-    );
-  }
-  LabelledComponent.displayName = `withActionFormLabels(${Inner.displayName})`;
-  return LabelledComponent;
-}
+) => React.FC<P & { labels?: Partial<ActionFormLabels> }> = withLabels;
 
 function formatConstraint(value: number | Date): string {
   if (value instanceof Date) {
