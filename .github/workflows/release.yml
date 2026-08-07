@@ -9,6 +9,10 @@ on:
       - main
       - release/*
       - next
+      # Snapshot-only: the `release` job below is gated to main and release/*, so
+      # pushing this branch publishes a prerelease under the
+      # `next-<branch>` dist-tag without cutting real versions. Drop before merge.
+      - sj/object-type-alias-remapping
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -75,8 +79,12 @@ jobs:
       - name: Build code
         run: pnpm exec turbo run build
 
+      # `/` becomes `-`, not `__`: the snapshot tag ends up inside the package
+      # version, and semver prerelease identifiers allow only alphanumerics and
+      # hyphens. An underscore makes the version unparseable, which fails
+      # postVersioning on any branch whose name contains a slash.
       - name: Update versions for snapshots
-        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//-}
 
       - name: Make sure code is up to date
         run: pnpm exec turbo run postVersioning
@@ -85,4 +93,4 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Publish results
-        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//-}

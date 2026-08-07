@@ -29,10 +29,10 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 
-import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
 import { toIntervalQueryRule } from "./toIntervalQuery.js";
+import { toWirePropName } from "./toWirePropName.js";
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}`
   ? U
@@ -148,7 +148,7 @@ function resolvePropertyIdentifier(
     return {
       type: "structField",
       ...structFieldSelector,
-      propertyApiName: fullyQualifyPropName(
+      propertyApiName: toWirePropName(
         structFieldSelector.propertyApiName,
         objectOrInterface,
       ),
@@ -187,7 +187,7 @@ function handleWherePair(
 
   const field =
     !isRdp && !isSpecialProperty && structFieldSelector == null
-      ? fullyQualifyPropName(fieldName, objectOrInterface)
+      ? toWirePropName(fieldName, objectOrInterface)
       : undefined;
 
   invariant(

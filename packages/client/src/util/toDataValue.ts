@@ -30,6 +30,7 @@ import {
   isMediaUpload,
 } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { toBoundObjectType } from "../ontology/objectTypeAliases.js";
 import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
@@ -126,7 +127,8 @@ export async function toDataValue(
 
   if (isInterfaceActionParam(value)) {
     return {
-      objectTypeApiName: value.$objectType,
+      // `$objectType` is code-facing; the server needs the bound name.
+      objectTypeApiName: toBoundObjectType(client, value.$objectType),
       primaryKeyValue: value.$primaryKey,
     };
   }

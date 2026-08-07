@@ -16,6 +16,12 @@
 
 import * as fs from "fs";
 
+import {
+  Employee,
+  Office,
+  queryAcceptsObject,
+  returnsObject,
+} from "@osdk/client.test.ontology";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { custom } from "./custom.js";
@@ -28,6 +34,8 @@ import {
 import { resetPublishedCache } from "./loaders.js";
 import { mediaset } from "./mediaset.js";
 import { model } from "./model.js";
+import { objectType } from "./objectType.js";
+import { query } from "./query.js";
 import { source } from "./source.js";
 import { stream } from "./stream.js";
 import { AliasEnvironment } from "./types.js";
@@ -240,6 +248,129 @@ describe("published mode aliases", () => {
       );
       expect(result2.rid).toBe(
         "ri.foundry.main.dataset.44444444-4444-4444-4444-444444444444",
+      );
+    });
+  });
+
+  describe("objectType", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = objectType(Employee);
+      expect(result.apiName).toBe("com.example.PublishedEmployee");
+      expect(result.alias).toMatchObject({
+        localApiName: "Employee",
+        boundApiName: "com.example.PublishedEmployee",
+      });
+    });
+
+    it("carries the property remapping onto the alias", () => {
+      // In aliases.json each property is wrapped as `{ id: { apiName } }`, unlike
+      // resources.json where it maps straight to `{ apiName }`.
+      expect(objectType(Employee).alias?.properties).toEqual({
+        employeeId: "employeeId",
+        fullName: "full_name",
+      });
+    });
+
+    it("omits properties entirely when nothing is remapped", () => {
+      expect(objectType(Office).alias).not.toHaveProperty("properties");
+    });
+
+    it("throws when an entry's id carries no apiName", () => {
+      // Regression: aliases.json puts the bound name in `id.apiName`, not in a
+      // sibling `apiName`. Reading the wrong field produced `apiName: undefined`
+      // and a 400 from the platform rather than an error here.
+      resetPublishedCache();
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          defaults: {
+            custom: {},
+            models: {},
+            egressConnections: {},
+            datasets: {},
+            mediasets: {},
+            streams: {},
+            objects: { Employee: { id: {} } },
+          },
+          version: 1,
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' has no 'apiName'",
+      );
+    });
+
+    it("preserves the rest of the definition", () => {
+      const result = objectType(Employee);
+      expect(result.type).toBe("object");
+      expect(result.primaryKeyApiName).toBe(Employee.primaryKeyApiName);
+      expect(result.primaryKeyType).toBe(Employee.primaryKeyType);
+      expect(result.osdkMetadata).toBe(Employee.osdkMetadata);
+    });
+
+    it("does not mutate the definition it was given", () => {
+      objectType(Employee);
+      expect(Employee.apiName).toBe("Employee");
+      expect(Employee).not.toHaveProperty("alias");
+    });
+
+    it("drops the generated-stack object type rid", () => {
+      expect(Employee).toHaveProperty("internalDoNotUseMetadata");
+      expect(objectType(Employee)).not.toHaveProperty(
+        "internalDoNotUseMetadata",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(objectType(Employee).apiName).toBe(
+        "com.example.PublishedEmployee",
+      );
+      expect(objectType(Office).apiName).toBe("com.example.PublishedOffice");
+    });
+
+    it("throws on an object type with no alias", () => {
+      expect(() => objectType({ type: "object", apiName: "Unmapped" })).toThrow(
+        "Object type alias 'Unmapped' not found. Available aliases: [Employee, Office]",
+      );
+    });
+  });
+
+  describe("query", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = query(returnsObject);
+      expect(result.apiName).toBe("com.example.publishedReturnsObject");
+      expect(result.alias).toEqual({
+        localApiName: "returnsObject",
+        boundApiName: "com.example.publishedReturnsObject",
+      });
+    });
+
+    it("preserves version pinning and metadata", () => {
+      const result = query(returnsObject);
+      expect(result.version).toBe(returnsObject.version);
+      expect(result.isFixedVersion).toBe(returnsObject.isFixedVersion);
+      expect(result.osdkMetadata).toBe(returnsObject.osdkMetadata);
+    });
+
+    it("does not mutate the definition it was given", () => {
+      query(returnsObject);
+      expect(returnsObject.apiName).toBe("returnsObject");
+      expect(returnsObject).not.toHaveProperty("alias");
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(query(returnsObject).apiName).toBe(
+        "com.example.publishedReturnsObject",
+      );
+      expect(query(queryAcceptsObject).apiName).toBe(
+        "com.example.publishedQueryAcceptsObject",
+      );
+    });
+
+    it("throws on a query with no alias", () => {
+      expect(() => query({ type: "query", apiName: "unmapped" })).toThrow(
+        "Query alias 'unmapped' not found. Available aliases: " +
+          "[returnsObject, queryAcceptsObject]",
       );
     });
   });
@@ -464,6 +595,123 @@ describe("live preview mode aliases", () => {
     it("excludes streams with null or missing alias", () => {
       expect(() => stream("some-random-lookup")).toThrow(
         "Available aliases: [previewStreamAlias, anotherPreviewStream]",
+      );
+    });
+  });
+
+  describe("objectType", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = objectType(Employee);
+      expect(result.apiName).toBe("com.example.PreviewEmployee");
+      expect(result.alias).toMatchObject({
+        localApiName: "Employee",
+        boundApiName: "com.example.PreviewEmployee",
+      });
+    });
+
+    it("carries the property remapping onto the alias", () => {
+      // The platform writes an entry for every property, including ones whose
+      // name is unchanged, so identity mappings show up here too.
+      expect(objectType(Employee).alias?.properties).toEqual({
+        employeeId: "employeeId",
+        fullName: "full_name",
+        startDate: "start_date",
+      });
+    });
+
+    it("selects correct alias from multiple", () => {
+      expect(objectType(Employee).apiName).toBe("com.example.PreviewEmployee");
+      expect(objectType(Office).apiName).toBe("com.example.PreviewOffice");
+    });
+
+    it("throws when an entry has no apiName", () => {
+      // Regression: the bound api name is a sibling of `identifier`, not part of
+      // it. Reading the wrong field yielded `apiName: undefined`, which sailed
+      // through to the wire as a missing `objectType` and a 400 from the
+      // platform. It has to fail here instead.
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+            objects: [
+              {
+                identifier: { rid: "ri.ontology.main.object-type.x" },
+                verbs: [],
+                alias: "Employee",
+              },
+            ],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' has no 'apiName'",
+      );
+    });
+
+    it("excludes object types with null or missing alias", () => {
+      expect(() => objectType({ type: "object", apiName: "Unmapped" })).toThrow(
+        "Available aliases: [Employee, Office]",
+      );
+    });
+
+    it("throws when resources.json has no objects section", () => {
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => objectType(Employee)).toThrow(
+        "Object type alias 'Employee' not found. Available aliases: []",
+      );
+    });
+  });
+
+  describe("query", () => {
+    it("rebinds apiName and records both names on the alias", () => {
+      const result = query(returnsObject);
+      expect(result.apiName).toBe("com.example.previewReturnsObject");
+      expect(result.alias).toEqual({
+        localApiName: "returnsObject",
+        boundApiName: "com.example.previewReturnsObject",
+      });
+    });
+
+    it("excludes queries with null or missing alias", () => {
+      expect(() => query({ type: "query", apiName: "unmapped" })).toThrow(
+        "Available aliases: [returnsObject, queryAcceptsObject]",
+      );
+    });
+
+    it("throws when resources.json has no queries section", () => {
+      vi.mocked(fs.readFileSync).mockReturnValue(
+        JSON.stringify({
+          resources: {
+            custom: {},
+            models: [],
+            datasets: [],
+            mediasets: [],
+            streams: [],
+          },
+          egress: { connections: [] },
+        }),
+      );
+
+      expect(() => query(returnsObject)).toThrow(
+        "Query alias 'returnsObject' not found. Available aliases: []",
       );
     });
   });

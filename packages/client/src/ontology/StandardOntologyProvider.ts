@@ -28,11 +28,13 @@ import { loadActionMetadata } from "./loadActionMetadata.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceMetadata } from "./loadInterfaceMetadata.js";
 import { loadQueryMetadata } from "./loadQueryMetadata.js";
+import { getAliasByBound } from "./objectTypeAliases.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
   type OntologyProviderFactory,
 } from "./OntologyProvider.js";
+import { translateAliasedObjectMetadata } from "./translateAliasedObjectMetadata.js";
 
 export interface OntologyCachingOptions {}
 
@@ -118,8 +120,41 @@ export const createStandardOntologyProviderFactory: (
       };
     }
 
+    const getRawObjectDefinition = makeGetter(loadObject);
+
+    // Alias translation sits *above* the metadata cache rather than inside
+    // `loadObject`, because the cache is keyed by bound api name alone: a type
+    // fetched before its alias was registered (e.g. reached via `pivotTo`) would
+    // otherwise be cached untranslated forever. Translated results are memoized
+    // separately and dropped whenever a new alias is recorded.
+    const translated = new Map<string, FetchedObjectTypeDefinition>();
+    let translatedGeneration = -1;
+
+    async function getObjectDefinition(
+      apiName: string,
+    ): Promise<FetchedObjectTypeDefinition> {
+      const raw = await getRawObjectDefinition(apiName);
+      const alias = getAliasByBound(client, apiName);
+      if (alias == null) {
+        return raw;
+      }
+
+      const generation = client.objectTypeAliases.generation.value;
+      if (translatedGeneration !== generation) {
+        translated.clear();
+        translatedGeneration = generation;
+      }
+
+      let def = translated.get(apiName);
+      if (def == null) {
+        def = deepFreeze(translateAliasedObjectMetadata(raw, alias));
+        translated.set(apiName, def);
+      }
+      return def;
+    }
+
     const ret = {
-      getObjectDefinition: makeGetter(loadObject),
+      getObjectDefinition,
       getInterfaceDefinition: makeGetter(loadInterface),
       getActionDefinition: makeGetter(loadAction),
       getQueryDefinition: makeQueryGetter(client, loadQuery),

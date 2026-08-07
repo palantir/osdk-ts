@@ -35,6 +35,13 @@ import type {
   Model,
   ModelResource,
   ModelValue,
+  ObjectType,
+  ObjectTypeResource,
+  ObjectTypeValue,
+  PropertyIdentifier,
+  Query,
+  QueryResource,
+  QueryValue,
   ResolvedAliases,
   ResourcesFile,
   Source,
@@ -64,6 +71,8 @@ function loadPublishedAliases(): ResolvedAliases {
     datasets: loadPublishedDatasets(aliasesFile.defaults.datasets),
     mediasets: loadPublishedMediasets(aliasesFile.defaults.mediasets),
     streams: loadPublishedStreams(aliasesFile.defaults.streams),
+    objects: loadPublishedObjects(aliasesFile.defaults.objects),
+    queries: loadPublishedQueries(aliasesFile.defaults.queries),
   };
   return cachedPublishedAliases;
 }
@@ -84,6 +93,8 @@ function loadPreviewAliases(): ResolvedAliases {
     datasets: loadPreviewDatasets(resourcesFile.resources.datasets),
     mediasets: loadPreviewMediasets(resourcesFile.resources.mediasets),
     streams: loadPreviewStreams(resourcesFile.resources.streams),
+    objects: loadPreviewObjects(resourcesFile.resources.objects),
+    queries: loadPreviewQueries(resourcesFile.resources.queries),
   };
 }
 
@@ -193,6 +204,132 @@ function loadPreviewMediasets(
           mediaset.alias != null,
       )
       .map(({ alias, identifier }) => [alias, identifier]),
+  );
+}
+
+/**
+ * Reads the bound api name off an entry. It is a sibling of the entry's
+ * identifier rather than part of it, so a wrong assumption here would otherwise
+ * surface as an `undefined` object type in a request body and a confusing 400
+ * from the platform - hence failing loudly instead.
+ */
+function requireBoundApiName(
+  kind: string,
+  alias: string,
+  apiName: string | undefined,
+): string {
+  if (typeof apiName !== "string" || apiName === "") {
+    throw new Error(
+      `${kind} alias '${alias}' has no 'apiName'. Every aliased entry must` +
+        ` carry the api name it resolves to on this stack.`,
+    );
+  }
+  return apiName;
+}
+
+/**
+ * Flattens a property remapping into plain bound names. Returns undefined when
+ * there is nothing to remap, so the alias payload stays absent rather than
+ * carrying an empty record.
+ *
+ * `readApiName` differs per file: in `resources.json` a property maps straight to
+ * `{ apiName }`, while in `aliases.json` it is wrapped as `{ id: { apiName } }`.
+ */
+function loadObjectProperties<T>(
+  alias: string,
+  properties: Record<string, T> | undefined,
+  readApiName: (value: T) => string | undefined,
+): Record<string, string> | undefined {
+  if (properties == null) {
+    return undefined;
+  }
+  const entries = Object.entries(properties);
+  if (entries.length === 0) {
+    return undefined;
+  }
+  return Object.fromEntries(
+    entries.map(([local, value]) => [
+      local,
+      requireBoundApiName(
+        `Property '${local}' of object type`,
+        alias,
+        readApiName(value),
+      ),
+    ]),
+  );
+}
+
+function loadPublishedObjects(
+  objects: Record<string, ObjectTypeValue> | undefined,
+): Record<string, ObjectType> {
+  return Object.fromEntries<ObjectType>(
+    Object.entries(objects ?? {}).map(([alias, value]) => {
+      const loaded = loadObjectProperties(
+        alias,
+        value.properties,
+        (property) => property?.id?.apiName,
+      );
+      return [
+        alias,
+        {
+          apiName: requireBoundApiName("Object type", alias, value.id?.apiName),
+          ...(loaded != null && { properties: loaded }),
+        },
+      ];
+    }),
+  );
+}
+
+function loadPreviewObjects(
+  objects: ObjectTypeResource[] | undefined,
+): Record<string, ObjectType> {
+  return Object.fromEntries<ObjectType>(
+    (objects ?? [])
+      .filter(
+        (object): object is ObjectTypeResource & { alias: string } =>
+          object.alias != null,
+      )
+      .map(({ alias, apiName, properties }) => {
+        const loaded = loadObjectProperties(
+          alias,
+          properties,
+          (property) => property?.apiName,
+        );
+        return [
+          alias,
+          {
+            apiName: requireBoundApiName("Object type", alias, apiName),
+            ...(loaded != null && { properties: loaded }),
+          },
+        ];
+      }),
+  );
+}
+
+function loadPublishedQueries(
+  queries: Record<string, QueryValue> | undefined,
+): Record<string, Query> {
+  return Object.fromEntries<Query>(
+    Object.entries(queries ?? {}).map(([alias, value]) => [
+      alias,
+      { apiName: requireBoundApiName("Query", alias, value.id?.apiName) },
+    ]),
+  );
+}
+
+function loadPreviewQueries(
+  queries: QueryResource[] | undefined,
+): Record<string, Query> {
+  return Object.fromEntries<Query>(
+    (queries ?? [])
+      .filter(
+        (query): query is QueryResource & { alias: string } =>
+          query.alias != null,
+      )
+      .map(({ alias, apiName }) => [
+        alias,
+        { apiName: requireBoundApiName("Query", alias, apiName) },
+      ]),
   );
 }
 

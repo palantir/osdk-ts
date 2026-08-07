@@ -16,9 +16,21 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 
+import { toBoundProperty } from "../../ontology/objectTypeAliases.js";
 import { extractNamespace } from "./extractNamespace.js";
 
-export function fullyQualifyPropName(
+/**
+ * Converts a property name as written in user code into the name to put on the
+ * wire. Two transformations apply, each to one kind of type:
+ *
+ * - **interfaces** get their properties qualified with the interface's api
+ *   namespace when the property name does not carry one already.
+ * - **object types** that have been alias-remapped get their code-facing
+ *   property names replaced with the bound names used on this stack.
+ *
+ * Names that need neither are returned unchanged.
+ */
+export function toWirePropName(
   fieldName: string,
   objectOrInterface: ObjectOrInterfaceDefinition,
 ): string {
@@ -29,5 +41,5 @@ export function fullyQualifyPropName(
       ? `${objApiNamespace}.${fieldShortName}`
       : fieldName;
   }
-  return fieldName;
+  return toBoundProperty(objectOrInterface, fieldName);
 }

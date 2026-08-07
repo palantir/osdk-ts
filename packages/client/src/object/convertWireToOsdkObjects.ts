@@ -31,6 +31,11 @@ import invariant from "tiny-invariant";
 
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  describeObjectType,
+  toLocalObjectType,
+  toLocalPropertyLookup,
+} from "../ontology/objectTypeAliases.js";
 import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
@@ -154,14 +159,37 @@ export async function convertWireToOsdkObjects(
         ? objectDefsByApiName[rawObj.$apiName]
         : await client.ontologyProvider.getObjectDefinition(rawObj.$apiName)
     ) as FetchedObjectTypeDefinition;
-    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
+    invariant(
+      objectDef,
+      `Missing definition for ${describeObjectType(client, rawObj.$apiName)}`,
+    );
 
-    const interfaceToObjMapping =
+    // For an alias-remapped object type the wire speaks bound names while
+    // `objectDef` has already been translated to local ones. Bring the raw
+    // object (and the server-supplied interface mapping, whose values are object
+    // property names) into the local vocabulary before anything compares the two.
+    // Doing it here also covers `$apiName`/`$objectType`, which must stay bound
+    // for the definition lookup above.
+    const toLocalProperty = toLocalPropertyLookup(objectDef);
+    if (toLocalProperty != null) {
+      renamePropertiesInPlace(rawObj, toLocalProperty);
+    }
+    const localApiName = toLocalObjectType(client, rawObj.$apiName);
+
+    const boundInterfaceToObjMapping =
       interfaceApiName && isInterfaceScoped
         ? effectiveMappings[interfaceApiName as InterfaceTypeApiName][
             rawObj.$apiName
           ]
         : undefined;
+    const interfaceToObjMapping =
+      boundInterfaceToObjMapping != null && toLocalProperty != null
+        ? Object.fromEntries(
+            Object.entries(boundInterfaceToObjMapping).map(
+              ([ifaceProp, objProp]) => [ifaceProp, toLocalProperty(objProp)],
+            ),
+          )
+        : boundInterfaceToObjMapping;
 
     const ifaceSelected =
       interfaceApiName && interfaceToObjMapping
@@ -197,6 +225,14 @@ export async function convertWireToOsdkObjects(
       continue;
     }
 
+    // Done last so that everything above could still key off the bound name;
+    // `objectDef` keeps its bound `apiName` so follow-up requests (timeseries,
+    // media, cipherText, links) still address the real object type.
+    if (localApiName !== rawObj.$apiName) {
+      rawObj.$apiName = localApiName;
+      rawObj.$objectType = localApiName;
+    }
+
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
       client,
       objectDef,
@@ -211,6 +247,26 @@ export async function convertWireToOsdkObjects(
   }
 
   return ret;
+}
+
+/**
+ * Renames an object's property keys from bound to local, in place. `$` prefixed
+ * keys are platform-resolved pseudo-properties and are never remapped.
+ */
+function renamePropertiesInPlace(
+  rawObj: Record<string, any>,
+  toLocalProperty: (boundPropertyName: string) => string,
+): void {
+  for (const boundKey of Object.keys(rawObj)) {
+    if (boundKey.startsWith("$")) {
+      continue;
+    }
+    const localKey = toLocalProperty(boundKey);
+    if (localKey !== boundKey) {
+      rawObj[localKey] = rawObj[boundKey];
+      delete rawObj[boundKey];
+    }
+  }
 }
 
 function isConforming(

@@ -25,6 +25,7 @@ import type {
 import { convertWireToOsdkObjects } from "./object/convertWireToOsdkObjects.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { createObjectTypeAliases } from "./ontology/objectTypeAliases.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 import {
   createStandardOntologyProviderFactory,
@@ -88,6 +89,7 @@ export function createMinimalClient(
     requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
+    objectTypeAliases: createObjectTypeAliases(),
     createSubscriptionConnection: options.createSubscriptionConnection,
   } satisfies Omit<MinimalClient, "ontologyProvider"> as any;
 

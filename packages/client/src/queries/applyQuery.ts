@@ -35,6 +35,7 @@ import invariant from "tiny-invariant";
 import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
+import { toLocalObjectType } from "../ontology/objectTypeAliases.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -196,6 +197,7 @@ export async function remapQueryResponse<
       }
 
       return createQueryInterfaceResponse(
+        client,
         responseValue,
         def,
       ) as QueryReturnType<typeof responseDataType>;
@@ -425,6 +427,15 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
   }
 }
 
+/**
+ * The code-facing name of an object type whose definition may have been
+ * alias-remapped. Queries build object references by hand rather than going
+ * through `convertWireToOsdkObjects`, so they have to do this themselves.
+ */
+function localObjectTypeOf(objectDef: ObjectTypeDefinition): string {
+  return objectDef.alias?.localApiName ?? objectDef.apiName;
+}
+
 function getObjectSpecifier(
   primaryKey: any,
   objectTypeApiName: string,
@@ -434,40 +445,53 @@ function getObjectSpecifier(
   if (!def || def.type !== "object") {
     throw new Error(`Missing definition for ${objectTypeApiName}`);
   }
-  return createObjectSpecifierFromPrimaryKey(def, primaryKey);
+  return createObjectSpecifierFromPrimaryKey(
+    { type: "object", apiName: localObjectTypeOf(def) },
+    primaryKey,
+  );
 }
 
 export function createQueryObjectResponse<Q extends ObjectTypeDefinition>(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
 ): OsdkBase<Q> {
+  const apiName = localObjectTypeOf(objectDef);
   return {
-    $apiName: objectDef.apiName,
+    $apiName: apiName,
     $title: undefined,
-    $objectType: objectDef.apiName,
+    $objectType: apiName,
     $primaryKey: primaryKey,
     $objectSpecifier: createObjectSpecifierFromPrimaryKey(
-      objectDef,
+      // Same definition, named the way user code expects. Cast because `Q` is
+      // opaque here; only `apiName` is read.
+      { ...objectDef, apiName } as Q,
       primaryKey,
     ),
   };
 }
 
 export function createQueryInterfaceResponse<Q extends InterfaceDefinition>(
+  client: MinimalClient,
   interfaceSpecifier: {
     objectTypeApiName: string;
     primaryKeyValue: PrimaryKeyType<Q>;
   },
   interfaceDef: Q,
 ): OsdkBase<Q> {
+  // `objectTypeApiName` arrives straight off the wire, so it is a bound name.
+  // Interfaces themselves are not aliased, only the underlying object type.
+  const objectTypeApiName = toLocalObjectType(
+    client,
+    interfaceSpecifier.objectTypeApiName,
+  );
   return {
     $apiName: interfaceDef.apiName,
     $title: undefined,
-    $objectType: interfaceSpecifier.objectTypeApiName,
+    $objectType: objectTypeApiName,
     $primaryKey: interfaceSpecifier.primaryKeyValue,
     $objectSpecifier: createObjectSpecifierFromInterfaceSpecifier(
       interfaceDef,
-      interfaceSpecifier,
+      { ...interfaceSpecifier, objectTypeApiName },
     ),
   };
 }

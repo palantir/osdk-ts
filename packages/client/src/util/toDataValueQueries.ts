@@ -30,6 +30,7 @@ import {
   isMediaUpload,
 } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import { toBoundObjectType } from "../ontology/objectTypeAliases.js";
 import {
   isInterfaceQueryParam,
   isInterfaceSpecifier,
@@ -147,7 +148,8 @@ export async function toDataValueQueries(
     case "interface": {
       if (isInterfaceSpecifier(value) || isInterfaceQueryParam(value)) {
         return {
-          objectTypeApiName: value.$objectType,
+          // `$objectType` is code-facing; the server needs the bound name.
+          objectTypeApiName: toBoundObjectType(client, value.$objectType),
           primaryKeyValue: value.$primaryKey,
         };
       }

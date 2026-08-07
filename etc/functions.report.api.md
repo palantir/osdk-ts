@@ -42,6 +42,10 @@ declare namespace Aliases {
         Mediaset,
         model,
         Model,
+        objectType,
+        ObjectType,
+        query,
+        Query,
         source,
         Source,
         stream,
@@ -270,6 +274,16 @@ export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefi
     type: "object";
 }
 
+// @public
+interface ObjectType {
+    	// (undocumented)
+    apiName: string;
+    	properties?: Record<string, string>;
+}
+
+// @public
+function objectType<Q extends ObjectTypeDefinition>(definition: Q): Q;
+
 // @public (undocumented)
 export interface PlatformNotification {
     	// (undocumented)
@@ -292,6 +306,15 @@ export type Principal = {
     	type: "group"
     	id: string
 };
+
+// @public
+interface Query {
+    	// (undocumented)
+    apiName: string;
+}
+
+// @public
+function query<Q extends QueryDefinition<any>>(definition: Q): Q;
 
 export { Range_2 as Range }
 

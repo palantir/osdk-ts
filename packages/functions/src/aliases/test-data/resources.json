@@ -116,10 +116,83 @@
         "verbs": []
       }
     ],
+    "objects": [
+      {
+        "identifier": {
+          "rid": "ri.ontology.main.object-type.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": "Employee",
+        "apiName": "com.example.PreviewEmployee",
+        "properties": {
+          "employeeId": {
+            "apiName": "employeeId"
+          },
+          "fullName": {
+            "apiName": "full_name"
+          },
+          "startDate": {
+            "apiName": "start_date"
+          }
+        }
+      },
+      {
+        "identifier": {
+          "rid": "ri.ontology.main.object-type.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": "Office",
+        "apiName": "com.example.PreviewOffice"
+      },
+      {
+        "identifier": {
+          "rid": "ri.ontology.main.object-type.cccccccc-cccc-cccc-cccc-cccccccccccc"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": null,
+        "apiName": "com.example.PreviewUnaliasedType"
+      },
+      {
+        "identifier": {
+          "rid": "ri.ontology.main.object-type.dddddddd-dddd-dddd-dddd-dddddddddddd"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "apiName": "com.example.PreviewNoAliasField"
+      }
+    ],
     "custom": {
       "previewCustomAlias": "previewCustomValue",
       "anotherPreviewCustom": "anotherPreviewValue"
-    }
+    },
+    "queries": [
+      {
+        "identifier": {
+          "rid": "ri.function-registry.main.function.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "version": "1.1.0"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": "returnsObject",
+        "apiName": "com.example.previewReturnsObject"
+      },
+      {
+        "identifier": {
+          "rid": "ri.function-registry.main.function.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "version": "0.11.0"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": "queryAcceptsObject",
+        "apiName": "com.example.previewQueryAcceptsObject"
+      },
+      {
+        "identifier": {
+          "rid": "ri.function-registry.main.function.cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "version": "1.0.0"
+        },
+        "verbs": ["ONTOLOGIES_READ"],
+        "alias": null,
+        "apiName": "com.example.previewUnaliasedQuery"
+      }
+    ]
   },
   "egress": {
     "connections": [
