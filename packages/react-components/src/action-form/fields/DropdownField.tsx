@@ -21,6 +21,7 @@ import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
 import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -150,6 +151,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   modal = true,
   disabled,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
+  const labels = useLabels();
   const [open, setOpen] = useState(false);
   const isOpen = !disabled && open;
 
@@ -210,7 +212,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
           {hasValue && (
             <span
               role="button"
-              aria-label="Clear"
+              aria-label={labels.dropdownClear}
               className={selectStyles.osdkSelectClear}
               aria-disabled={disabled || undefined}
               onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -279,6 +281,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   modal = true,
   disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
+  const labels = useLabels();
   const [open, setOpen] = useState(false);
   const isOpen = !disabled && open;
 
@@ -399,7 +402,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                     {renderItemLabel(item)}
                     <span
                       role="button"
-                      aria-label={`Remove ${itemToStringLabel(item)}`}
+                      aria-label={labels.dropdownRemoveItem(
+                        itemToStringLabel(item),
+                      )}
                       className={comboboxStyles.osdkComboboxTriggerChipRemove}
                       aria-disabled={disabled || undefined}
                       onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -426,7 +431,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           {hasValue && (
             <span
               role="button"
-              aria-label="Clear"
+              aria-label={labels.dropdownClear}
               className={comboboxStyles.osdkComboboxClear}
               aria-disabled={disabled || undefined}
               onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -450,13 +455,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             <Combobox.Popup>
               {isSearchable && (
                 <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
-                  <Combobox.SearchInput placeholder="Search…" />
+                  <Combobox.SearchInput
+                    placeholder={labels.dropdownSearchPlaceholder}
+                  />
                 </div>
               )}
               {popupStatus}
-              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+              {/* Hide the empty message when popupStatus provides its own message (e.g. "Searching…") */}
               {popupStatus == null && (
-                <Combobox.Empty>No results</Combobox.Empty>
+                <Combobox.Empty>{labels.dropdownNoResults}</Combobox.Empty>
               )}
               <Combobox.List>
                 <Combobox.Collection>{renderItem}</Combobox.Collection>

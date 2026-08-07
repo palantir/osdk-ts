@@ -17,6 +17,8 @@
 import type { ActionMetadata } from "@osdk/api";
 
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type { ActionFormLabels } from "../ActionFormLabels.js";
+import { DEFAULT_ACTION_FORM_LABELS } from "../ActionFormLabels.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 /**
@@ -27,9 +29,10 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
  */
 export function getDefaultFieldDefinitions(
   metadata: ActionMetadata,
+  labels: ActionFormLabels = DEFAULT_ACTION_FORM_LABELS,
 ): ReadonlyArray<RendererFieldDefinition> {
   return Object.entries(metadata.parameters).map(([key, param]) =>
-    buildFieldDefinition(key, param),
+    buildFieldDefinition(key, param, labels),
   );
 }
 
@@ -42,6 +45,7 @@ export function getDefaultFieldDefinitions(
 function buildFieldDefinition(
   key: string,
   param: ActionMetadata.Parameter,
+  labels: ActionFormLabels,
 ): RendererFieldDefinition {
   const base = {
     fieldKey: key,
@@ -107,9 +111,9 @@ function buildFieldDefinition(
         fieldComponent: "RADIO_BUTTONS",
         fieldComponentProps: {
           options: [
-            { label: "True", value: true },
+            { label: labels.booleanTrue, value: true },
             {
-              label: "False",
+              label: labels.booleanFalse,
               value: false,
             },
           ],

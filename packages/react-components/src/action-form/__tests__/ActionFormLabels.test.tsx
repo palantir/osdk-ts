@@ -18,23 +18,23 @@ import { cleanup, render } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { ObjectTableLabels } from "../ObjectTableLabels.js";
+import type { ActionFormLabels } from "../ActionFormLabels.js";
 import {
-  DEFAULT_OBJECT_TABLE_LABELS,
   LabelsProvider,
+  DEFAULT_ACTION_FORM_LABELS,
   useLabels,
-} from "../ObjectTableLabels.js";
+} from "../ActionFormLabels.js";
 
-type LabelKey = keyof ObjectTableLabels;
+type LabelKey = keyof ActionFormLabels;
 
-const ALL_KEYS = Object.keys(DEFAULT_OBJECT_TABLE_LABELS) as LabelKey[];
+const ALL_KEYS = Object.keys(DEFAULT_ACTION_FORM_LABELS) as LabelKey[];
 
 /**
  * Renders the {@link useLabels} hook (optionally under a provider)
  * and returns the fully-resolved labels object so every key can be asserted.
  */
-function resolveLabels(labels?: Partial<ObjectTableLabels>): ObjectTableLabels {
-  let captured: ObjectTableLabels | undefined;
+function resolveLabels(labels?: Partial<ActionFormLabels>): ActionFormLabels {
+  let captured: ActionFormLabels | undefined;
   function Capture(): null {
     captured = useLabels();
     return null;
@@ -58,19 +58,19 @@ function resolveLabels(labels?: Partial<ObjectTableLabels>): ObjectTableLabels {
  * Builds a complete override object with a distinct sentinel value for every
  * label key — strings become `override:<key>`, functions echo their args.
  */
-function makeFullOverride(): ObjectTableLabels {
+function makeFullOverride(): ActionFormLabels {
   const overrides = {} as Record<string, unknown>;
   for (const key of ALL_KEYS) {
-    const defaultValue = DEFAULT_OBJECT_TABLE_LABELS[key];
+    const defaultValue = DEFAULT_ACTION_FORM_LABELS[key];
     overrides[key] =
       typeof defaultValue === "function"
         ? (...args: unknown[]) => `override:${key}(${args.join(",")})`
         : `override:${key}`;
   }
-  return overrides as unknown as ObjectTableLabels;
+  return overrides as unknown as ActionFormLabels;
 }
 
-describe("ObjectTableLabels", () => {
+describe("ActionFormLabels", () => {
   afterEach(() => {
     cleanup();
   });
@@ -81,20 +81,22 @@ describe("ObjectTableLabels", () => {
     // Sanity check that we are actually iterating a non-trivial key set.
     expect(ALL_KEYS.length).toBeGreaterThan(0);
     for (const key of ALL_KEYS) {
-      expect(resolved[key]).toBe(DEFAULT_OBJECT_TABLE_LABELS[key]);
+      expect(resolved[key]).toBe(DEFAULT_ACTION_FORM_LABELS[key]);
     }
   });
 
   it("overrides a subset and falls back to defaults for every other label", () => {
-    const overrides: Partial<ObjectTableLabels> = {
-      noData: "override:noData",
-      errorLoadingData: (message) => `override:errorLoadingData(${message})`,
-      editFooterCancel: "override:editFooterCancel",
-      editFooterModificationCount: (count) => `override:count(${count})`,
-      columnConfigApply: "override:columnConfigApply",
-      sortDialogToggleDirection: (name) => `override:toggle(${name})`,
-      headerMenuPinColumn: "override:headerMenuPinColumn",
-      selectRow: (row) => `override:selectRow(${row})`,
+    const overrides: Partial<ActionFormLabels> = {
+      submitButton: "override:submitButton",
+      issueCount: (count) => `override:issueCount(${count})`,
+      sectionErrorCount: (count) => `override:sectionErrorCount(${count})`,
+      editedTag: "override:editedTag",
+      dropdownNoResults: "override:dropdownNoResults",
+      objectSetLoadError: (message) =>
+        `override:objectSetLoadError(${message})`,
+      validationRequired: "override:validationRequired",
+      validationMinLength: (length) =>
+        `override:validationMinLength(${length})`,
     };
     const overriddenKeys = new Set(Object.keys(overrides) as LabelKey[]);
 
@@ -104,7 +106,7 @@ describe("ObjectTableLabels", () => {
       if (overriddenKeys.has(key)) {
         expect(resolved[key]).toBe(overrides[key]);
       } else {
-        expect(resolved[key]).toBe(DEFAULT_OBJECT_TABLE_LABELS[key]);
+        expect(resolved[key]).toBe(DEFAULT_ACTION_FORM_LABELS[key]);
       }
     }
   });
@@ -117,38 +119,54 @@ describe("ObjectTableLabels", () => {
     for (const key of ALL_KEYS) {
       expect(resolved[key]).toBe(overrides[key]);
       // No key is left pointing at the built-in default.
-      expect(resolved[key]).not.toBe(DEFAULT_OBJECT_TABLE_LABELS[key]);
+      expect(resolved[key]).not.toBe(DEFAULT_ACTION_FORM_LABELS[key]);
     }
   });
 
+  it("resolves infoTooltipAriaLabel for both the named and unnamed field cases", () => {
+    const resolved = resolveLabels();
+
+    expect(resolved.infoTooltipAriaLabel("Full name")).toBe(
+      "Info about Full name",
+    );
+    expect(resolved.infoTooltipAriaLabel(undefined)).toBe("More information");
+  });
+
+  it("lets an override of infoTooltipAriaLabel handle the unnamed field case", () => {
+    const resolved = resolveLabels({
+      infoTooltipAriaLabel: (fieldName) => fieldName ?? "Details",
+    });
+
+    expect(resolved.infoTooltipAriaLabel("Full name")).toBe("Full name");
+    expect(resolved.infoTooltipAriaLabel(undefined)).toBe("Details");
+  });
+
   it("composes nested providers, inner overriding outer", () => {
-    let captured: ObjectTableLabels | undefined;
+    let captured: ActionFormLabels | undefined;
     function Capture(): null {
       captured = useLabels();
       return null;
     }
     render(
-      <LabelsProvider
-        labels={{ editFooterEditTable: "Outer", noData: "Empty here" }}
-      >
-        <LabelsProvider labels={{ editFooterEditTable: "Inner" }}>
+      <LabelsProvider labels={{ submitButton: "Outer", editedTag: "Touched" }}>
+        <LabelsProvider labels={{ submitButton: "Inner" }}>
           <Capture />
         </LabelsProvider>
       </LabelsProvider>,
     );
 
     // Inner override wins for the key it sets...
-    expect(captured?.editFooterEditTable).toBe("Inner");
+    expect(captured?.submitButton).toBe("Inner");
     // ...the outer provider's other overrides still flow through...
-    expect(captured?.noData).toBe("Empty here");
+    expect(captured?.editedTag).toBe("Touched");
     // ...and untouched keys remain the defaults.
-    expect(captured?.editFooterCancel).toBe(
-      DEFAULT_OBJECT_TABLE_LABELS.editFooterCancel,
+    expect(captured?.validationRequired).toBe(
+      DEFAULT_ACTION_FORM_LABELS.validationRequired,
     );
   });
 
   it("returns the parent context unchanged when a provider is given no labels", () => {
-    let captured: ObjectTableLabels | undefined;
+    let captured: ActionFormLabels | undefined;
     function Capture(): null {
       captured = useLabels();
       return null;
@@ -159,40 +177,40 @@ describe("ObjectTableLabels", () => {
       </LabelsProvider>,
     );
     // A provider with no labels does not allocate a new object.
-    expect(captured).toBe(DEFAULT_OBJECT_TABLE_LABELS);
+    expect(captured).toBe(DEFAULT_ACTION_FORM_LABELS);
   });
 
   it("resolves to the defaults when no provider is present", () => {
     const resolved = resolveLabels();
-    expect(resolved).toBe(DEFAULT_OBJECT_TABLE_LABELS);
+    expect(resolved).toBe(DEFAULT_ACTION_FORM_LABELS);
   });
 
   it("keeps a stable value identity across renders with an equal inline labels object", () => {
-    const seen: ObjectTableLabels[] = [];
+    const seen: ActionFormLabels[] = [];
     function Capture(): null {
       seen.push(useLabels());
       return null;
     }
     const { rerender } = render(
-      <LabelsProvider labels={{ noData: "Nothing" }}>
+      <LabelsProvider labels={{ submitButton: "Send" }}>
         <Capture />
       </LabelsProvider>,
     );
     // Re-render with a brand-new inline object of identical content.
     rerender(
-      <LabelsProvider labels={{ noData: "Nothing" }}>
+      <LabelsProvider labels={{ submitButton: "Send" }}>
         <Capture />
       </LabelsProvider>,
     );
     // Content change gets a fresh identity.
     rerender(
-      <LabelsProvider labels={{ noData: "Other" }}>
+      <LabelsProvider labels={{ submitButton: "Go" }}>
         <Capture />
       </LabelsProvider>,
     );
 
     expect(seen[0]).toBe(seen[1]);
     expect(seen[2]).not.toBe(seen[1]);
-    expect(seen[2].noData).toBe("Other");
+    expect(seen[2].submitButton).toBe("Go");
   });
 });

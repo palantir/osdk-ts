@@ -23,6 +23,8 @@ import {
   DateRangePicker,
   EMPTY_RANGE,
 } from "../../shared/calendar/index.js";
+import type { ActionFormLabels } from "../ActionFormLabels.js";
+import { useLabels } from "../ActionFormLabels.js";
 import { FormField } from "../FormField.js";
 import {
   type PortalContainer,
@@ -38,9 +40,6 @@ import { RadioButtonsField } from "./RadioButtonsField.js";
 import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
-
-const UNSUPPORTED_FIELD_MESSAGE =
-  "Unsupported field type. Use a CUSTOM field instead";
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -65,6 +64,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
+    const labels = useLabels();
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
 
@@ -86,6 +86,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           error,
           portalContainer,
           onFieldBlur,
+          labels,
         )}
       </FormField>
     );
@@ -99,6 +100,7 @@ function renderFieldComponent(
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
   onFieldBlur: (() => void) | undefined,
+  labels: ActionFormLabels,
 ): React.ReactElement {
   const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
@@ -134,7 +136,7 @@ function renderFieldComponent(
         <TextInputField
           {...fieldDefinition.fieldComponentProps}
           id={fieldDefinition.fieldKey}
-          value={UNSUPPORTED_FIELD_MESSAGE}
+          value={labels.unsupportedField}
           error={error}
           disabled={true}
         />

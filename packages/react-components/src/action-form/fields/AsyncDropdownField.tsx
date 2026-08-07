@@ -19,6 +19,7 @@ import React, { useMemo } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 import { DropdownField } from "./DropdownField.js";
 
@@ -62,6 +63,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   fetchError,
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
+  const labels = useLabels();
   const itemCount = dropdownProps.items.length;
   const popupStatus = useMemo(() => {
     if (fetchError != null) {
@@ -72,16 +74,24 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       );
     }
     if (isSearching) {
-      return <div className={styles.osdkAsyncDropdownStatus}>Searching…</div>;
+      return (
+        <div className={styles.osdkAsyncDropdownStatus}>
+          {labels.dropdownSearching}
+        </div>
+      );
     }
-    // Show "Loading…" during the initial fetch before any data arrives,
-    // so the user doesn't see a misleading "No results" message.
+    // Show the loading status during the initial fetch before any data
+    // arrives, so the user doesn't see a misleading empty message.
     if (isLoading && itemCount === 0) {
-      return <div className={styles.osdkAsyncDropdownStatus}>Loading…</div>;
+      return (
+        <div className={styles.osdkAsyncDropdownStatus}>
+          {labels.dropdownLoading}
+        </div>
+      );
     }
-    // "No results" is handled by Combobox.Empty inside DropdownField
+    // The empty message is handled by Combobox.Empty inside DropdownField
     return null;
-  }, [fetchError, isSearching, isLoading, itemCount]);
+  }, [fetchError, isSearching, isLoading, itemCount, labels]);
 
   const infiniteScrollRef = useInfiniteScroll({
     callback: onFetchMore,

@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { isEqual } from "lodash-es";
-import React, {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  useContext,
-  useRef,
-} from "react";
+import type React from "react";
+
+import type { LabelsProviderProps } from "../shared/createLabelsContext.js";
+import { createLabelsContext } from "../shared/createLabelsContext.js";
 
 /**
  * All user-facing strings rendered by the object table and its
@@ -185,14 +181,10 @@ export const DEFAULT_OBJECT_TABLE_LABELS: ObjectTableLabels = {
   selectRow: (rowNumber) => `Select row ${rowNumber}`,
 };
 
-const ObjectTableLabelsContext = createContext<ObjectTableLabels>(
+const labelsContext = createLabelsContext(
   DEFAULT_OBJECT_TABLE_LABELS,
+  "ObjectTable",
 );
-
-export interface ObjectTableLabelsProviderProps {
-  labels?: Partial<ObjectTableLabels>;
-  children: ReactNode;
-}
 
 /**
  * Supplies overridden {@link ObjectTableLabels} to descendant table
@@ -204,57 +196,25 @@ export interface ObjectTableLabelsProviderProps {
  * merged labels are equal, so callers can pass an inline `labels` object
  * without re-rendering every label consumer.
  */
-export function ObjectTableLabelsProvider({
-  labels,
-  children,
-}: ObjectTableLabelsProviderProps): ReactElement {
-  const parent = useContext(ObjectTableLabelsContext);
-  const merged = labels != null ? { ...parent, ...labels } : parent;
-
-  // Reuse the previous value when the merge is equal so an inline `labels`
-  // object (new identity each render) doesn't churn the context.
-  const stableRef = useRef(merged);
-  if (!isEqual(stableRef.current, merged)) {
-    stableRef.current = merged;
-  }
-
-  return (
-    <ObjectTableLabelsContext.Provider value={stableRef.current}>
-      {children}
-    </ObjectTableLabelsContext.Provider>
-  );
-}
+export const LabelsProvider: React.FC<LabelsProviderProps<ObjectTableLabels>> =
+  labelsContext.LabelsProvider;
 
 /**
  * Returns the fully-resolved {@link ObjectTableLabels} for the current subtree.
- * When no {@link ObjectTableLabelsProvider} is present, returns
+ * When no {@link LabelsProvider} is present, returns
  * {@link DEFAULT_OBJECT_TABLE_LABELS}.
  */
-export function useObjectTableLabels(): ObjectTableLabels {
-  return useContext(ObjectTableLabelsContext);
-}
+export const useLabels: () => ObjectTableLabels = labelsContext.useLabels;
 
 /**
  * Wraps `Inner` so it accepts an optional `labels` prop and supplies the merged
  * {@link ObjectTableLabels} to its subtree.
  *
  * For generic components, e.g. `BaseTable` use
- * {@link ObjectTableLabelsProvider} directly to preserve its `TData`
+ * {@link LabelsProvider} directly to preserve its `TData`
  * type parameter.
  */
-export function withObjectTableLabels<P extends object>(
+export const withLabels: <P extends object>(
   Inner: React.ComponentType<P>,
-): React.FC<P & { labels?: Partial<ObjectTableLabels> }> {
-  function LabelledComponent(
-    props: P & { labels?: Partial<ObjectTableLabels> },
-  ): ReactElement {
-    const { labels, ...rest } = props;
-    return (
-      <ObjectTableLabelsProvider labels={labels}>
-        <Inner {...(rest as unknown as P)} />
-      </ObjectTableLabelsProvider>
-    );
-  }
-  LabelledComponent.displayName = `withObjectTableLabels(${Inner.displayName})`;
-  return LabelledComponent;
-}
+) => React.FC<P & { labels?: Partial<ObjectTableLabels> }> =
+  labelsContext.withLabels;

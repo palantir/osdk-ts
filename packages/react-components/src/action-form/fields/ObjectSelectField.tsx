@@ -24,6 +24,7 @@ import { useObjectSet, useOsdkObjects } from "@osdk/react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
+import { useLabels } from "../ActionFormLabels.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
 import { AsyncDropdownField } from "./AsyncDropdownField.js";
 
@@ -66,6 +67,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
   portalContainer,
   disabled,
 }): React.ReactElement {
+  const labels = useLabels();
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
   const [query, setQuery] = useState("");
@@ -128,7 +130,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       itemToStringLabel={itemToStringLabel}
       itemToKey={itemToKey}
       isItemEqual={isItemEqual}
-      placeholder={placeholder ?? "Search…"}
+      placeholder={placeholder ?? labels.objectSelectPlaceholder}
       isMultiple={isMultiple}
       portalRef={portalRef}
       portalContainer={portalContainer}

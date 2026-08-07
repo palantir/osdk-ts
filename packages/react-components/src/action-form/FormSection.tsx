@@ -20,6 +20,7 @@ import classNames from "classnames";
 import React, { memo } from "react";
 
 import type { FormSectionDefinition } from "./ActionFormApi.js";
+import { useLabels } from "./ActionFormLabels.js";
 
 import styles from "./FormSection.module.css";
 
@@ -35,6 +36,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
     errorCount,
     children,
   }: FormSectionProps): React.ReactElement {
+    const labels = useLabels();
     const {
       title,
       description,
@@ -90,7 +92,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
           >
             {errorCount > 0 && (
               <span className={styles.osdkFormSectionErrorBadge} role="status">
-                {errorCount === 1 ? "1 error" : `${errorCount} errors`}
+                {labels.sectionErrorCount(errorCount)}
               </span>
             )}
             <span className={styles.osdkFormSectionChevron}>

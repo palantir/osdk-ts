@@ -28,7 +28,7 @@ import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
-import { useObjectTableLabels } from "./ObjectTableLabels.js";
+import { useLabels } from "./ObjectTableLabels.js";
 import { cellValuesEqual } from "./utils/editableUtils.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
@@ -116,7 +116,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   rowCellEdits,
   isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );

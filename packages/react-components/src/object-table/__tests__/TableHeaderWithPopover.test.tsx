@@ -26,7 +26,7 @@ import React, { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PortalContainerProvider } from "../../shared/PortalContainerContext.js";
-import { ObjectTableLabelsProvider } from "../ObjectTableLabels.js";
+import { LabelsProvider } from "../ObjectTableLabels.js";
 import { TableHeaderWithPopover } from "../TableHeaderWithPopover.js";
 
 interface TestRow {
@@ -77,7 +77,7 @@ describe(TableHeaderWithPopover, () => {
     const portalContainerRef = createRef<HTMLDivElement>();
 
     render(
-      <ObjectTableLabelsProvider
+      <LabelsProvider
         labels={{
           headerMenuPinColumn: "Stick this column",
           headerMenuAriaLabel: (id) => `Menu for ${id}`,
@@ -94,7 +94,7 @@ describe(TableHeaderWithPopover, () => {
           />
           <div data-testid="header-menu-portal" ref={portalContainerRef} />
         </PortalContainerProvider>
-      </ObjectTableLabelsProvider>,
+      </LabelsProvider>,
     );
 
     fireEvent.click(

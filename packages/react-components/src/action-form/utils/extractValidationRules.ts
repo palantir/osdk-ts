@@ -16,6 +16,8 @@
 
 import type { RegisterOptions } from "react-hook-form";
 
+import type { ActionFormLabels } from "../ActionFormLabels.js";
+import { DEFAULT_ACTION_FORM_LABELS } from "../ActionFormLabels.js";
 import type {
   RendererFieldDefinition,
   ValidationError,
@@ -33,11 +35,12 @@ type RhfRules = RegisterOptions<Record<string, unknown>, string>;
  */
 export function extractValidationRules(
   fieldDef: RendererFieldDefinition,
+  labels: ActionFormLabels = DEFAULT_ACTION_FORM_LABELS,
 ): RhfRules {
   const rules: RhfRules = {};
 
   if (fieldDef.isRequired) {
-    rules.required = getMessage(fieldDef, { type: "required" });
+    rules.required = getMessage(fieldDef, { type: "required" }, labels);
   }
 
   const validateFns: Record<
@@ -49,12 +52,12 @@ export function extractValidationRules(
     case "NUMBER_INPUT": {
       const { min, max } = fieldDef.fieldComponentProps;
       if (min != null) {
-        const msg = getMessage(fieldDef, { type: "min", min });
+        const msg = getMessage(fieldDef, { type: "min", min }, labels);
         validateFns.min = (value) =>
           typeof value === "number" && value < min ? msg : true;
       }
       if (max != null) {
-        const msg = getMessage(fieldDef, { type: "max", max });
+        const msg = getMessage(fieldDef, { type: "max", max }, labels);
         validateFns.max = (value) =>
           typeof value === "number" && value > max ? msg : true;
       }
@@ -66,13 +69,21 @@ export function extractValidationRules(
       if (minLength != null) {
         rules.minLength = {
           value: minLength,
-          message: getMessage(fieldDef, { type: "minLength", minLength }),
+          message: getMessage(
+            fieldDef,
+            { type: "minLength", minLength },
+            labels,
+          ),
         };
       }
       if (maxLength != null) {
         rules.maxLength = {
           value: maxLength,
-          message: getMessage(fieldDef, { type: "maxLength", maxLength }),
+          message: getMessage(
+            fieldDef,
+            { type: "maxLength", maxLength },
+            labels,
+          ),
         };
       }
       break;
@@ -80,12 +91,12 @@ export function extractValidationRules(
     case "DATETIME_PICKER": {
       const { min, max } = fieldDef.fieldComponentProps;
       if (min != null) {
-        const msg = getMessage(fieldDef, { type: "min", min });
+        const msg = getMessage(fieldDef, { type: "min", min }, labels);
         validateFns.min = (value) =>
           value instanceof Date && value.getTime() < min.getTime() ? msg : true;
       }
       if (max != null) {
-        const msg = getMessage(fieldDef, { type: "max", max });
+        const msg = getMessage(fieldDef, { type: "max", max }, labels);
         validateFns.max = (value) =>
           value instanceof Date && value.getTime() > max.getTime() ? msg : true;
       }
@@ -94,7 +105,7 @@ export function extractValidationRules(
     case "FILE_PICKER": {
       const { maxSize } = fieldDef.fieldComponentProps;
       if (maxSize != null) {
-        const msg = getMessage(fieldDef, { type: "maxSize", maxSize });
+        const msg = getMessage(fieldDef, { type: "maxSize", maxSize }, labels);
         validateFns.maxSize = (value) => {
           if (value instanceof File) {
             return value.size > maxSize ? msg : true;
@@ -122,7 +133,11 @@ export function extractValidationRules(
       if (result == null) {
         return true;
       }
-      return getMessage(fieldDef, { type: "validate", message: result });
+      return getMessage(
+        fieldDef,
+        { type: "validate", message: result },
+        labels,
+      );
     };
   }
 
@@ -136,42 +151,31 @@ export function extractValidationRules(
 function getMessage(
   fieldDef: RendererFieldDefinition,
   error: ValidationError,
+  labels: ActionFormLabels,
 ): string {
-  return fieldDef.onValidationError?.(error) ?? getDefaultMessage(error);
+  return (
+    fieldDef.onValidationError?.(error) ?? getDefaultMessage(error, labels)
+  );
 }
 
-function getDefaultMessage(error: ValidationError): string {
+function getDefaultMessage(
+  error: ValidationError,
+  labels: ActionFormLabels,
+): string {
   switch (error.type) {
     case "required":
-      return "This field is required";
+      return labels.validationRequired;
     case "min":
-      return `Must be at least ${formatConstraint(error.min)}`;
+      return labels.validationMin(error.min);
     case "max":
-      return `Must be at most ${formatConstraint(error.max)}`;
+      return labels.validationMax(error.max);
     case "minLength":
-      return `Must be at least ${error.minLength} characters`;
+      return labels.validationMinLength(error.minLength);
     case "maxLength":
-      return `Must be at most ${error.maxLength} characters`;
+      return labels.validationMaxLength(error.maxLength);
     case "maxSize":
-      return `File must be smaller than ${formatBytes(error.maxSize)}`;
+      return labels.validationMaxFileSize(error.maxSize);
     case "validate":
       return error.message;
   }
-}
-
-function formatConstraint(value: number | Date): string {
-  if (value instanceof Date) {
-    return value.toLocaleDateString();
-  }
-  return String(value);
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

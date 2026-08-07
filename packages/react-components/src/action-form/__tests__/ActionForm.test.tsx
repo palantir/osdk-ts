@@ -108,6 +108,20 @@ const mockMetadata: ActionMetadata = {
   rid: "ri.ontology.main.action-type.test",
 };
 
+const booleanMetadata: ActionMetadata = {
+  type: "action",
+  apiName: "BooleanAction",
+  displayName: "Boolean Action",
+  parameters: {
+    enabled: {
+      type: "boolean",
+      nullable: true,
+    },
+  },
+  status: "ACTIVE",
+  rid: "ri.ontology.main.action-type.boolean",
+};
+
 function defaultMockMetadataResult() {
   return {
     loading: false,
@@ -411,6 +425,55 @@ describe("ActionForm", () => {
             name: "Updated",
             email: "initial@test.com",
           }),
+        );
+      });
+    });
+  });
+
+  describe("labels", () => {
+    it("overrides the submit button text and keeps defaults elsewhere", () => {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          labels={{ submitButton: "Send it" }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Send it" })).toBeDefined();
+      // The required marker still uses the built-in default.
+      expect(screen.getByLabelText("required")).toBeDefined();
+    });
+
+    it("overrides the boolean option labels of generated fields", () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: booleanMetadata,
+      });
+
+      render(
+        <ActionForm
+          actionDefinition={BooleanAction}
+          labels={{ booleanTrue: "Oui", booleanFalse: "Non" }}
+        />,
+      );
+
+      expect(screen.getByRole("radio", { name: "Oui" })).toBeDefined();
+      expect(screen.getByRole("radio", { name: "Non" })).toBeDefined();
+    });
+
+    it("overrides the required validation message of generated fields", async () => {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          labels={{ validationRequired: "This one is mandatory" }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This one is mandatory",
         );
       });
     });

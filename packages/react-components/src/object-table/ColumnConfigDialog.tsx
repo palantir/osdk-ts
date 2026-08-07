@@ -27,10 +27,7 @@ import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
 import { SearchBar } from "../base-components/search-bar/SearchBar.js";
 import type { ObjectTableLabels } from "./ObjectTableLabels.js";
-import {
-  useObjectTableLabels,
-  withObjectTableLabels,
-} from "./ObjectTableLabels.js";
+import { useLabels, withLabels } from "./ObjectTableLabels.js";
 import type { ColumnOption } from "./utils/types.js";
 
 import styles from "./ColumnConfigDialog.module.css";
@@ -66,8 +63,9 @@ interface ColumnItem {
   isVisible: boolean;
 }
 
-export const ColumnConfigDialog: React.FC<ColumnConfigDialogProps> =
-  withObjectTableLabels(ColumnConfigDialogInner);
+export const ColumnConfigDialog: React.FC<ColumnConfigDialogProps> = withLabels(
+  ColumnConfigDialogInner,
+);
 
 function ColumnConfigDialogInner({
   isOpen,
@@ -78,7 +76,7 @@ function ColumnConfigDialogInner({
   onApply,
   isValidConfig,
 }: Omit<ColumnConfigDialogProps, "labels">): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -267,7 +265,7 @@ function VisibleColumnsList({
   onReorder,
   onRemove,
 }: VisibleColumnsListProps): React.ReactElement {
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
   return (
     <div className={styles.visibleColumnsContainer}>
       <div className={styles.sectionHeader}>
@@ -317,7 +315,7 @@ function AvailableColumnsList({
     visibleColumns.some((v) => v.id === col.id),
   );
 
-  const labels = useObjectTableLabels();
+  const labels = useLabels();
 
   const handleSelectAllClick = useCallback(() => {
     onSelectAll(filteredColumns);
