@@ -31,6 +31,10 @@ import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import type { DocumentViewerProps } from "./DocumentViewerApi.js";
 import { ViewerType } from "./DocumentViewerApi.js";
+import {
+  useDocumentViewerLabels,
+  withDocumentViewerLabels,
+} from "./DocumentViewerLabels.js";
 import { TiffDocumentViewer } from "./TiffDocumentViewer.js";
 
 import styles from "./DocumentViewer.module.css";
@@ -92,7 +96,10 @@ function getViewerType(
   return ViewerType.Unsupported;
 }
 
-export function DocumentViewer({
+export const DocumentViewer: React.FC<DocumentViewerProps> =
+  withDocumentViewerLabels(DocumentViewerInner);
+
+function DocumentViewerInner({
   media,
   className,
   mimeTypeOverride,
@@ -106,7 +113,8 @@ export function DocumentViewer({
   xmlViewerProps,
   fileName,
   enableTiffToPdf = false,
-}: DocumentViewerProps): React.ReactElement {
+}: Omit<DocumentViewerProps, "labels">): React.ReactElement {
+  const labels = useDocumentViewerLabels();
   const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
   const viewerType = useMemo(
     () => getViewerType(mimeType, fileName),
@@ -195,7 +203,7 @@ export function DocumentViewer({
         <div className={rootClassName}>
           <div className={styles.unsupportedContainer}>
             <DocumentIcon className={styles.unsupportedIcon} />
-            Unsupported file type: {mimeType}
+            {labels.unsupportedFileType(mimeType)}
           </div>
         </div>
       );

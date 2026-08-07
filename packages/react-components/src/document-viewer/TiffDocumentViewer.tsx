@@ -23,6 +23,7 @@ import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 import { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 import type { PdfViewerProps } from "../pdf-viewer/types.js";
 import { ViewerType } from "./DocumentViewerApi.js";
+import { useDocumentViewerLabels } from "./DocumentViewerLabels.js";
 import { useTiffToPdf } from "./hooks/useTiffToPdf.js";
 
 import styles from "./DocumentViewer.module.css";
@@ -35,6 +36,8 @@ interface TiffDocumentViewerProps {
   pdfViewerProps?: Partial<Omit<PdfViewerProps, "src">>;
 }
 
+// Only reachable through `DocumentViewer`, so labels come from the provider it
+// already installs rather than from a `labels` prop of its own.
 export function TiffDocumentViewer({
   media,
   className,
@@ -42,6 +45,7 @@ export function TiffDocumentViewer({
   tiffRendererProps,
   pdfViewerProps,
 }: TiffDocumentViewerProps): React.ReactElement {
+  const labels = useDocumentViewerLabels();
   const { viewerType, pdfData, loading } = useTiffToPdf(media, enableTiffToPdf);
 
   if (loading) {
@@ -49,7 +53,7 @@ export function TiffDocumentViewer({
       <div className={className}>
         <div className={styles.loadingContainer}>
           <Spin className={styles.spinnerIcon} />
-          Converting document…
+          {labels.convertingDocument}
         </div>
       </div>
     );

@@ -373,6 +373,43 @@ export const WithMimeTypeOverride: Story = {
   },
 };
 
+export const LocalizedLabels: Story = {
+  args: {
+    media: mockUnsupportedMedia,
+    labels: {
+      unsupportedFileType: (mimeType: string) =>
+        `We can't preview ${mimeType} files yet`,
+      convertingDocument: "Getting your document ready…",
+    },
+  },
+  render: (args: DocumentViewerProps) => (
+    <div style={{ height: "200px", width: "400px" }}>
+      <DocumentViewer {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Every user-facing string the `DocumentViewer` itself renders " +
+          "can be overridden through the `labels` prop. Any key left unset " +
+          "falls back to the built-in English default. Strings rendered by " +
+          "the viewer it delegates to for a given MIME type are configured " +
+          "through that viewer's own props, e.g. `pdfViewerProps`.",
+      },
+      source: {
+        code: `<DocumentViewer
+  media={myMedia}
+  labels={{
+    unsupportedFileType: (mimeType) => \`We can't preview \${mimeType} files yet\`,
+    convertingDocument: "Getting your document ready…",
+  }}
+/>`,
+      },
+    },
+  },
+};
+
 export const WithPdfViewerProps: Story = {
   args: {
     media: mockPdfMedia,
