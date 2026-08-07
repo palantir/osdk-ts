@@ -28,6 +28,7 @@ export type {
   FormSectionDefinition,
   FormState,
 } from "../../action-form/ActionFormApi.js";
+export type { ActionFormLabels } from "../../action-form/ActionFormLabels.js";
 export { BaseForm } from "../../action-form/BaseForm.js";
 export type {
   ActionParameters,

@@ -24,6 +24,10 @@ import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
+import {
+  useActionFormLabels,
+  withActionFormLabels,
+} from "./ActionFormLabels.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
@@ -31,7 +35,7 @@ import { FormSection } from "./FormSection.js";
 
 import styles from "./BaseForm.module.css";
 
-export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
+const BaseFormInner = memo(function BaseFormFn({
   formTitle,
   formContent,
   formState: controlledFormState,
@@ -41,9 +45,10 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
-  submitButtonText = "Submit",
+  submitButtonText,
   submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
+  const labels = useActionFormLabels();
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
@@ -82,8 +87,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     submissionError != null
       ? submissionError instanceof Error
         ? submissionError.message
-        : // TODO: provide better error message
-          "Submission failed"
+        : labels.submissionFailed
       : undefined;
 
   const submitForm = useCallback(async () => {
@@ -118,11 +122,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
     label: labelByFieldKey.get(key) ?? key,
-    message: entry?.message ?? "Invalid",
+    message: entry?.message ?? labels.fieldErrorFallback,
   }));
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
-    ? "Some fields are invalid"
+    ? labels.submitBlockedByValidation
     : submissionErrorMessage;
   const isFormPending = isPending || isSubmitting;
   const isSubmitButtonDisabled =
@@ -141,7 +145,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       {isLoading && allFieldDefinitions.length === 0 && (
         <div
           role="status"
-          aria-label="Loading form fields"
+          aria-label={labels.loadingFormFields}
           className={styles.osdkFormFields}
         >
           {FORM_SKELETON}
@@ -190,7 +194,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
             isPending={isFormPending}
             isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
-            buttonText={submitButtonText}
+            buttonText={submitButtonText ?? labels.submitButton}
             buttonVariant={submitButtonVariant}
             onClick={submitForm}
           />
@@ -199,6 +203,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     </form>
   );
 });
+
+// The render fn is anonymous in the published build, so name the memo wrapper
+// for React DevTools and for the label HOC's own displayName.
+BaseFormInner.displayName = "BaseForm";
+
+export const BaseForm: React.FC<BaseFormProps> =
+  withActionFormLabels(BaseFormInner);
 
 /**
  * Extracts all RendererFieldDefinitions from formContent, flattening
@@ -267,7 +278,8 @@ const SubmitButton = memo(function SubmitButtonFn({
   buttonVariant,
   onClick,
 }: SubmitButtonProps): React.ReactElement {
-  const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
+  const labels = useActionFormLabels();
+  const buttonLabel = isPending ? labels.submitButtonPending : buttonText;
   const button = (
     <ActionButton
       type="button"
@@ -310,6 +322,7 @@ interface ErrorIndicatorProps {
 function ErrorIndicator({
   errorEntries,
 }: ErrorIndicatorProps): React.ReactElement | null {
+  const labels = useActionFormLabels();
   if (errorEntries.length === 0) {
     return null;
   }
@@ -321,7 +334,7 @@ function ErrorIndicator({
       <Tooltip.Trigger>
         <span className={styles.osdkFormErrorIndicator}>
           <ErrorIcon size={14} />
-          {count === 1 ? "1 issue" : `${count} issues`}
+          {labels.issueCount(count)}
         </span>
       </Tooltip.Trigger>
       <Tooltip.Portal>

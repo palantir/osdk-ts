@@ -24,6 +24,10 @@ import type {
   FormContentItem,
   FormState,
 } from "./ActionFormApi.js";
+import {
+  ActionFormLabelsProvider,
+  useActionFormLabels,
+} from "./ActionFormLabels.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
@@ -36,7 +40,15 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
   Q extends ActionDefinition<unknown>,
->({
+>(props: ActionFormProps<Q>): React.ReactElement {
+  return (
+    <ActionFormLabelsProvider labels={props.labels}>
+      <ActionFormInner {...props} />
+    </ActionFormLabelsProvider>
+  );
+});
+
+function ActionFormInner<Q extends ActionDefinition<unknown>>({
   actionDefinition,
   formTitle,
   showFormTitle = false,
@@ -49,6 +61,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
+  const labels = useActionFormLabels();
   const { applyAction: osdkApplyAction, isPending } =
     useOsdkAction(actionDefinition);
   const {
@@ -94,9 +107,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     () =>
       customFieldDefinitions ??
       (metadata != null
-        ? getDefaultFieldDefinitions(metadata)
+        ? getDefaultFieldDefinitions(metadata, labels)
         : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata],
+    [customFieldDefinitions, metadata, labels],
   );
 
   const formContent = useMemo(
@@ -171,7 +184,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   }
 
   return <BaseForm {...commonProps} formState={controlledFormState} />;
-});
+}
 
 // The inner render fn is anonymous in the published build, so set a displayName
 // on the memo wrapper for React DevTools and the OSDK devtools component tree.

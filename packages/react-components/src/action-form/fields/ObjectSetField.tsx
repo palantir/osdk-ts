@@ -26,13 +26,13 @@ import {
 } from "../../base-components/icon/BlueprintIcon.js";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
+import { useActionFormLabels } from "../ActionFormLabels.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
 
 const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
 const ICON_SIZE = IconSize.STANDARD;
-const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
   props: ObjectSetFieldProps<T>,
@@ -40,9 +40,10 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
   T extends ObjectTypeDefinition,
 >({
   value,
-  emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  emptyMessage,
   disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
+  const labels = useActionFormLabels();
   if (value == null) {
     return (
       <div
@@ -52,7 +53,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
         )}
         aria-disabled={disabled === true || undefined}
       >
-        {emptyMessage}
+        {emptyMessage ?? labels.objectSetEmpty}
       </div>
     );
   }
@@ -134,8 +135,13 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   isLoading: boolean;
   error: Error | undefined;
 }): React.ReactElement {
+  const labels = useActionFormLabels();
   const hasData = totalCount != null;
-  const label = displayName ?? (totalCount === "1" ? "object" : "objects");
+  const objectTypeName =
+    displayName ??
+    (totalCount === "1"
+      ? labels.objectSetObjectSingular
+      : labels.objectSetObjectPlural);
   const showSkeleton = isLoading && !hasData;
   const showError = error != null && !hasData && !isLoading;
 
@@ -144,11 +150,13 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
       {showSkeleton && OBJECT_SET_LABEL_SKELETON}
       {showError && (
         <span className={styles.osdkObjectSetFieldError} role="alert">
-          {`Failed to load: ${error.message}`}
+          {labels.objectSetLoadError(error.message)}
         </span>
       )}
       {!showSkeleton && !showError && (
-        <span>{`${formatCount(totalCount)} ${label}`}</span>
+        <span>
+          {labels.objectSetCount(formatCount(totalCount), objectTypeName)}
+        </span>
       )}
     </>
   );

@@ -48,6 +48,7 @@ interface UpdateEmployeeActionFormStoryProps {
   >;
   formTitle?: string;
   isSubmitDisabled?: boolean;
+  labels?: ActionFormProps<typeof actionDefinition>["labels"];
   onSubmit?: ActionFormProps<typeof actionDefinition>["onSubmit"];
   showFormTitle?: boolean;
 }
@@ -300,6 +301,7 @@ function UpdateEmployeeActionFormStory({
   formFieldDefinitions,
   formTitle,
   isSubmitDisabled,
+  labels,
   onSubmit,
   showFormTitle,
 }: UpdateEmployeeActionFormStoryProps): React.ReactElement {
@@ -323,6 +325,7 @@ function UpdateEmployeeActionFormStory({
         formFieldDefinitions={formFieldDefinitions}
         formTitle={formTitle}
         isSubmitDisabled={isSubmitDisabled}
+        labels={labels}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={showFormTitle}
@@ -401,6 +404,11 @@ const meta = {
     isSubmitDisabled: {
       control: "boolean",
       description: "Disables the submit button before validation runs.",
+    },
+    labels: {
+      control: false,
+      description:
+        "Overrides for the form's user-facing strings. Any key left unset falls back to the built-in English default.",
     },
     onSubmit: {
       control: false,
@@ -881,6 +889,53 @@ export const ControlledFormState: Story = {
   actionDefinition={updateEmployeeStoryAction}
   formState={formState}
   onFormStateChange={setFormState}
+/>`,
+      },
+    },
+  },
+};
+
+export const LocalizedLabels: Story = {
+  args: {
+    labels: {
+      submitButton: "Save changes",
+      submitButtonPending: "Saving…",
+      submitBlockedByValidation: "Fix the highlighted fields first",
+      requiredIndicator: "must be filled in",
+      editedTag: "Changed",
+      validationRequired: "Please fill this in",
+      validationMinLength: (minLength) =>
+        `Needs at least ${minLength} characters`,
+      issueCount: (count) =>
+        count === 1 ? "1 thing to fix" : `${count} things to fix`,
+      dropdownNoResults: "Nothing matches",
+      dropdownSearchPlaceholder: "Start typing…",
+      filePickerNoFileChosen: "Nothing attached yet",
+      filePickerBrowse: "Attach",
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Every user-facing string can be overridden through the `labels` " +
+          "prop. Any key left unset falls back to the built-in English " +
+          "default. Interpolated strings are functions, so the surrounding " +
+          "wording and argument order can change per locale. Pass the same " +
+          "object to `BaseForm` to localize a hand-authored form.",
+      },
+      source: {
+        code: `<ActionForm
+  actionDefinition={updateEmployeeStoryAction.actionDefinition}
+  labels={{
+    submitButton: "Save changes",
+    submitButtonPending: "Saving…",
+    requiredIndicator: "must be filled in",
+    editedTag: "Changed",
+    validationRequired: "Please fill this in",
+    validationMinLength: (minLength) =>
+      \`Needs at least \${minLength} characters\`,
+  }}
 />`,
       },
     },

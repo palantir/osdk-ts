@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import type { ActionValidationError } from "@osdk/client";
 
+import type { ActionFormLabels } from "./ActionFormLabels.js";
 import type {
   ActionParameters,
   FieldKey,
@@ -114,6 +115,15 @@ interface ActionFormConfigProps<
    * @param error the error that occurred
    */
   onError?: (error: FormError) => void;
+
+  /**
+   * Overrides for the form's user-facing strings. Provide any subset; unset keys
+   * fall back to the built-in English defaults. Use this to localize the form or
+   * adjust wording. See {@link ActionFormLabels}.
+   *
+   * @default undefined (built-in English strings)
+   */
+  labels?: Partial<ActionFormLabels>;
 }
 
 /**
@@ -207,4 +217,11 @@ interface BaseFormCommonProps {
   submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
   submitButtonVariant?: "primary" | "secondary";
+  /**
+   * Overrides for the form's user-facing strings. Provide any subset; unset
+   * keys fall back to the built-in English defaults. When this form is rendered
+   * inside an `ActionForm`, it inherits that form's `labels` and this prop is
+   * only needed to override further. See {@link ActionFormLabels}.
+   */
+  labels?: Partial<ActionFormLabels>;
 }

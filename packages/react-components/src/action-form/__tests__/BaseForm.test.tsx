@@ -931,4 +931,131 @@ describe("BaseForm", () => {
       });
     });
   });
+
+  describe("labels", () => {
+    it("overrides the submit button text", () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          labels={{ submitButton: "Send it" }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Send it" })).toBeDefined();
+    });
+
+    it("prefers submitButtonText over the submitButton label", () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          submitButtonText="Save"
+          labels={{ submitButton: "Send it" }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
+      expect(screen.queryByRole("button", { name: "Send it" })).toBeNull();
+    });
+
+    it("overrides the edited tag", async () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          labels={{ editedTag: "Touched" }}
+        />,
+      );
+
+      fireEvent.change(screen.getByRole("textbox", { name: "name" }), {
+        target: { value: "Alice" },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Touched")).toBeDefined();
+      });
+      expect(screen.queryByText("Edited")).toBeNull();
+    });
+
+    it("overrides the required validation message", async () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name", { isRequired: true }))]}
+          onSubmit={vi.fn()}
+          labels={{ validationRequired: "This one is mandatory" }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This one is mandatory",
+        );
+      });
+    });
+
+    it("overrides the issue and section error counts", async () => {
+      render(
+        <BaseForm
+          formContent={[
+            {
+              type: "section",
+              key: "s1",
+              definition: {
+                title: "Personal",
+                fields: [makeDef("name", { isRequired: true })],
+              },
+            },
+          ]}
+          onSubmit={vi.fn()}
+          labels={{
+            issueCount: (count) => `${count} things to fix`,
+            sectionErrorCount: (count) => `${count} bad fields`,
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await waitFor(() => {
+        expect(screen.getByText("1 things to fix")).toBeDefined();
+      });
+      expect(screen.getByText("1 bad fields")).toBeDefined();
+    });
+
+    it("overrides the unsupported field message", () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={vi.fn()}
+          labels={{ unsupportedField: "Cannot render this parameter" }}
+        />,
+      );
+
+      expect(
+        screen.getByRole("textbox", { name: "Unsupported" }),
+      ).toHaveProperty("value", "Cannot render this parameter");
+    });
+
+    it("falls back to defaults for labels that are not overridden", () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          labels={{ editedTag: "Touched" }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: /^submit$/iu })).toBeDefined();
+    });
+  });
 });

@@ -18,6 +18,7 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import type { Control } from "react-hook-form";
 import { useController } from "react-hook-form";
 
+import { useActionFormLabels } from "../ActionFormLabels.js";
 import type {
   FieldComponent,
   PortalContainer,
@@ -43,7 +44,11 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     onExternalChange,
     portalContainer,
   }: FieldBridgeProps): React.ReactElement {
-    const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
+    const labels = useActionFormLabels();
+    const rules = useMemo(
+      () => extractValidationRules(fieldDef, labels),
+      [fieldDef, labels],
+    );
 
     const {
       field: { onChange, onBlur, value },

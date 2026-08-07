@@ -20,6 +20,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
+import { useActionFormLabels } from "../ActionFormLabels.js";
 import type { FilePickerProps } from "../FormFieldApi.js";
 
 import styles from "./FilePickerField.module.css";
@@ -36,10 +37,11 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     // not here. Silently dropping oversized files would leave the user with
     // no indication of why their selection disappeared.
     maxSize: _maxSize,
-    text = "No file chosen",
-    buttonText = "Browse",
+    text,
+    buttonText,
     disabled,
   }): React.ReactElement {
+    const labels = useActionFormLabels();
     const inputRef = useRef<HTMLInputElement>(null);
     const fileTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -134,18 +136,18 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           )}
           onClick={openFileDialog}
           onKeyDown={handleKeyDown}
-          aria-label="Choose file"
+          aria-label={labels.filePickerChooseFile}
           aria-invalid={error != null || undefined}
           disabled={disabled}
         >
-          {displayText ?? text}
+          {displayText ?? text ?? labels.filePickerNoFileChosen}
         </Button>
         {hasValue && (
           <Button
             type="button"
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
-            aria-label="Clear selection"
+            aria-label={labels.filePickerClearSelection}
             disabled={disabled}
           >
             <Cross />
@@ -159,7 +161,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           onClick={handleBrowseClick}
           disabled={disabled}
         >
-          {buttonText}
+          {buttonText ?? labels.filePickerBrowse}
         </ActionButton>
       </div>
     );

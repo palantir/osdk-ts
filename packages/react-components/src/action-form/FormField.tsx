@@ -18,6 +18,8 @@ import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 
+import { useActionFormLabels } from "./ActionFormLabels.js";
+
 import styles from "./FormField.module.css";
 
 interface FormFieldProps {
@@ -43,6 +45,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   onBlur,
   children,
 }: FormFieldProps): React.ReactElement {
+  const labels = useActionFormLabels();
   const hasHelperText = helperText != null && helperText !== "";
   const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
   const showBottomText = hasHelperText && helperTextPlacement === "bottom";
@@ -53,7 +56,10 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
         {label}
         {isRequired === true && (
-          <span className={styles.osdkFormFieldRequired} aria-label="required">
+          <span
+            className={styles.osdkFormFieldRequired}
+            aria-label={labels.requiredIndicator}
+          >
             {" "}
             *
           </span>
@@ -66,7 +72,9 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
         {labelElement}
         {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
         {showEditedTag && (
-          <span className={styles.osdkFormFieldEditedTag}>Edited</span>
+          <span className={styles.osdkFormFieldEditedTag}>
+            {labels.editedTag}
+          </span>
         )}
       </div>
     ) : null;
@@ -101,13 +109,18 @@ interface InfoTipProps {
 // content like links that need focus management and keyboard navigation.
 // See https://base-ui.com/react/components/tooltip#infotips
 function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+  const labels = useActionFormLabels();
   return (
     <Popover.Root>
       <Popover.Trigger
         render={<span className={styles.osdkFormFieldInfoIcon} />}
         nativeButton={false}
         openOnHover={true}
-        aria-label={label != null ? `Info about ${label}` : "More information"}
+        aria-label={
+          label != null
+            ? labels.helperTextAriaLabel(label)
+            : labels.helperTextAriaLabelWithoutLabel
+        }
       >
         <InfoSign size={12} />
       </Popover.Trigger>
