@@ -91,7 +91,7 @@ The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM an
 
 `ObjectTable` is the OSDK-aware component most consumers should use. For cases where you need to bring your own data fetching or assemble the table from smaller pieces, the package also exports the OSDK-agnostic base component, the individual building blocks, and the headless hooks that back them. All are available from `@osdk/react-components/experimental/object-table`.
 
-### Base component
+### BaseTable
 
 `BaseTable` is the OSDK-agnostic table that renders rows, columns, selection, sorting, pinning, resizing, and inline editing from primitive props. It carries all of `ObjectTable`'s interactions and styling but does no data fetching — feed it primitive props from your own data source (or the hooks below).
 
