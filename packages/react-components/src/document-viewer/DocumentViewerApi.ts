@@ -24,6 +24,7 @@ import type { PdfViewerProps } from "../pdf-viewer/types.js";
 import type { BaseSpreadsheetViewerProps } from "../spreadsheet-viewer/SpreadsheetViewerApi.js";
 import type { BaseVideoViewerProps } from "../video-viewer/VideoViewerApi.js";
 import type { BaseXmlViewerProps } from "../xml-viewer/XmlViewerApi.js";
+import type { DocumentViewerLabels } from "./DocumentViewerLabels.js";
 
 export enum ViewerType {
   Pdf = "pdf",
@@ -81,4 +82,14 @@ export interface DocumentViewerProps {
   /** When true, multi-page TIFF files are converted to PDF via MIO transform API
    * @default false */
   enableTiffToPdf?: boolean;
+  /**
+   * Overrides for the document viewer's user-facing strings. Provide any subset;
+   * unset keys fall back to the built-in English defaults. Use this to localize
+   * the viewer or adjust wording. Strings owned by the delegated viewer for a
+   * given MIME type are configured through that viewer's own props. See
+   * {@link DocumentViewerLabels}.
+   *
+   * @default undefined (built-in English strings)
+   */
+  labels?: Partial<DocumentViewerLabels>;
 }
