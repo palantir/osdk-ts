@@ -24,18 +24,29 @@ interface ComponentDocProps {
   raw: string;
   /** Story reference to preview in a live `Canvas` above the Markdown body. */
   canvasOf?: React.ComponentProps<typeof Canvas>["of"];
+  /**
+   * Horizontally center the canvas preview. Useful for narrow, fixed-width
+   * demos (e.g. a sidebar) that otherwise sit against the left edge of the
+   * page. No-op for stories that already fill the width.
+   */
+  centerCanvas?: boolean;
 }
 
 export function ComponentDoc({
   raw,
   canvasOf,
+  centerCanvas = false,
 }: ComponentDocProps): React.ReactNode {
   const { title, description, body } = parseMarkdownDoc(raw);
   return (
     <>
       <h1>{title}</h1>
       <p>{description}</p>
-      {canvasOf != null && <Canvas of={canvasOf} />}
+      {canvasOf != null && (
+        <div className={centerCanvas ? "osdkDocCanvasCentered" : undefined}>
+          <Canvas of={canvasOf} />
+        </div>
+      )}
       <div className="osdkMarkdownDoc">
         <Markdown>{body}</Markdown>
       </div>
