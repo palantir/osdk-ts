@@ -20,7 +20,11 @@ import { setTimeout } from "node:timers/promises";
 import invariant from "tiny-invariant";
 
 import type { ServiceName } from "../generated/cli/index.js";
-import type { FoundryCliService, ServiceHealth } from "./FoundryCliService.js";
+import {
+  DEFAULT_READY_TIMEOUT_MS,
+  type FoundryCliService,
+  type ServiceHealth,
+} from "./FoundryCliService.js";
 import { ServiceDiscoverer } from "./ServiceDiscoverer.js";
 import { StatusServer } from "./StatusServer.js";
 
@@ -154,7 +158,7 @@ export class CliServiceLauncher {
    * exceeds its timeout.
    */
   async waitUntilReady(service: FoundryCliService): Promise<ServiceHealth> {
-    const deadline = Date.now() + service.getReadyTimeoutMs();
+    const deadline = Date.now() + DEFAULT_READY_TIMEOUT_MS;
     let health = await service.checkHealth();
     while (!health.ready) {
       const current = health;
@@ -166,7 +170,7 @@ export class CliServiceLauncher {
         Date.now() < deadline,
         () =>
           `${service.name} is not ready (${current.state}) within ` +
-          `${service.getReadyTimeoutMs()}ms${formatError(service, current)}`,
+          `${DEFAULT_READY_TIMEOUT_MS}ms${formatError(service, current)}`,
       );
       await setTimeout(HEALTH_POLL_INTERVAL_MS);
       await this.#discoverer.refresh();

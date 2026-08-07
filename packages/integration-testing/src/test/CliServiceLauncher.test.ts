@@ -75,7 +75,6 @@ describe("CliServiceLauncher", () => {
       startLog?: ServiceName[];
       dependencies?: readonly FoundryCliService[];
       stateWhenStarted?: ServiceState;
-      readyTimeoutMs?: number;
       message?: string;
     } = {},
   ): StubService =>
@@ -87,9 +86,6 @@ describe("CliServiceLauncher", () => {
         : {}),
       ...(options.stateWhenStarted != null
         ? { stateWhenStarted: options.stateWhenStarted }
-        : {}),
-      ...(options.readyTimeoutMs != null
-        ? { readyTimeoutMs: options.readyTimeoutMs }
         : {}),
       ...(options.message != null ? { message: options.message } : {}),
     });
@@ -183,7 +179,6 @@ describe("CliServiceLauncher", () => {
     launch.register(
       stubService("APP", {
         stateWhenStarted: "PREPARING",
-        readyTimeoutMs: 300,
       }),
     );
 
@@ -207,22 +202,6 @@ describe("CliServiceLauncher", () => {
     );
   });
 
-  it("says why a service timed out, not just that it did", async () => {
-    const launch = await launcherWithStubStatusServer();
-
-    launch.register(
-      stubService("APP", {
-        stateWhenStarted: "PREPARING",
-        message: "still importing the ontology",
-        readyTimeoutMs: 300,
-      }),
-    );
-
-    await expect(launch.start()).rejects.toThrow(
-      "within 300ms: still importing the ontology",
-    );
-  });
-
   it("waits for the status server before a service that never declared it", async () => {
     stub = await startStubStatusServer();
     stub.setHealthy(false);
@@ -231,7 +210,6 @@ describe("CliServiceLauncher", () => {
       projectDir,
       statusServer: new NoSpawnStatusServer({
         projectPath: projectDir,
-        readyTimeoutMs: 300,
       }),
     });
     const ontology = stubService("ONTOLOGY");

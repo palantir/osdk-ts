@@ -55,15 +55,8 @@ export interface FoundryServiceConfig {
   foundryCliPath?: string;
   /** Working directory the CLI runs in; the `.palantir/` dir hangs off it. */
   projectPath: string;
-  /** How long {@link FoundryCliService} may take to reach `READY`. */
-  readyTimeoutMs?: number;
   /** Services that must be ready before this one may be started. */
   dependencies?: readonly FoundryCliService[];
-  /**
-   * How long {@link FoundryCliService.stop} waits after `SIGINT` before
-   * escalating to `SIGKILL`.
-   */
-  stopGraceMs?: number;
 }
 
 const TERMINAL_STATES: ReadonlySet<ServiceState> = new Set<ServiceState>([
@@ -86,8 +79,6 @@ export abstract class FoundryCliService {
 
   #foundryCliPath: string;
   #projectPath: string;
-  #readyTimeoutMs: number;
-  #stopGraceMs: number;
   #child: ChildProcessWithoutNullStreams | undefined;
   #context: ServiceContext | undefined;
   #stderr: string[] = [];
@@ -98,15 +89,9 @@ export abstract class FoundryCliService {
     this.dependencies = config.dependencies ?? [];
     this.#foundryCliPath = config.foundryCliPath ?? "foundry";
     this.#projectPath = config.projectPath;
-    this.#readyTimeoutMs = config.readyTimeoutMs ?? DEFAULT_READY_TIMEOUT_MS;
-    this.#stopGraceMs = config.stopGraceMs ?? DEFAULT_STOP_GRACE_MS;
   }
 
   protected abstract getArgs(): readonly string[];
-
-  getReadyTimeoutMs(): number {
-    return this.#readyTimeoutMs;
-  }
 
   getProjectPath(): string {
     return this.#projectPath;
@@ -230,7 +215,7 @@ export abstract class FoundryCliService {
     child.kill("SIGINT");
     const escalation = setTimeout(() => {
       child.kill("SIGKILL");
-    }, this.#stopGraceMs);
+    }, DEFAULT_STOP_GRACE_MS);
     try {
       await exited;
     } finally {

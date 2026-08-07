@@ -60,12 +60,7 @@ const writeMetadata = async (args: {
 export async function createIntegrationServer(
   config: IntegrationServerConfig,
 ): Promise<IntegrationServer> {
-  const {
-    metadata,
-    projectPath = process.cwd(),
-    foundryCliPath,
-    readyTimeoutMs,
-  } = config;
+  const { metadata, projectPath = process.cwd(), foundryCliPath } = config;
 
   const testPath = await fs.mkdtemp(path.join(projectPath, ".test-run-"));
   const metadataPath = path.resolve(testPath, "ontology-metadata.json");
@@ -85,7 +80,6 @@ export async function createIntegrationServer(
     new OntologyServer({
       projectPath: testPath,
       metadataPath,
-      readyTimeoutMs,
       foundryCliPath,
     }),
   );

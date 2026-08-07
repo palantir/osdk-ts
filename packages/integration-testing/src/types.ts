@@ -43,8 +43,6 @@ export interface IntegrationServerConfig {
    * to the working directory.
    */
   projectPath?: string;
-  /** How long each service may take to become ready. Defaults to 30_000ms. */
-  readyTimeoutMs?: number;
 }
 
 export interface IntegrationServer {
