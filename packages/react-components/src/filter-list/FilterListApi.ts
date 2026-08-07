@@ -27,6 +27,7 @@ import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
+import type { FilterListLabels } from "./FilterListLabels.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
@@ -264,4 +265,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   The consumer is responsible for all add-filter behavior.
    */
   renderAddFilterButton?: () => React.ReactNode;
+
+  /**
+   * Overrides for the filter list's user-facing strings. Provide any subset;
+   * unset keys fall back to the built-in English defaults. Use this to localize
+   * the filter list or adjust wording. See {@link FilterListLabels}.
+   *
+   * @default undefined (built-in English strings)
+   */
+  labels?: Partial<FilterListLabels>;
 }

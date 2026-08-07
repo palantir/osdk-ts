@@ -160,4 +160,55 @@ describe("FilterList", () => {
       expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();
     });
   });
+
+  describe("labels", () => {
+    it("propagates the labels prop through the header and every nested input", () => {
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[def]}
+          showResetButton={true}
+          labels={{
+            resetFilters: "Start over",
+            removeFilter: (name) => `Discard ${name}`,
+            keeping: "Include",
+          }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Start over" })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Discard dept" }),
+      ).toBeDefined();
+
+      fireEvent.click(screen.getByRole("button", { name: /more actions/iu }));
+      expect(screen.getByRole("button", { name: "Include" })).toBeDefined();
+    });
+
+    it("keeps the built-in strings for keys that are not overridden", () => {
+      const def = createPropertyFilterDef("dept", "MULTI_SELECT", {
+        type: "SELECT",
+        selectedValues: [],
+      });
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[def]}
+          showResetButton={true}
+          labels={{ resetFilters: "Start over" }}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Start over" })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Remove dept filter" }),
+      ).toBeDefined();
+    });
+  });
 });

@@ -17,6 +17,7 @@
 import React from "react";
 
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 
 interface MultiSelectDropdownLayoutProps {
   renderChips: (selected: string[]) => React.ReactNode;
@@ -29,6 +30,7 @@ export function MultiSelectDropdownLayout({
   renderItem,
   collisionBoundary,
 }: MultiSelectDropdownLayoutProps): React.ReactElement {
+  const labels = useFilterListLabels();
   return (
     <>
       <Combobox.Chips>
@@ -37,7 +39,7 @@ export function MultiSelectDropdownLayout({
       <Combobox.Portal>
         <Combobox.Positioner collisionBoundary={collisionBoundary}>
           <Combobox.Popup>
-            <Combobox.Empty>No matching options</Combobox.Empty>
+            <Combobox.Empty>{labels.noMatchingOptions}</Combobox.Empty>
             <Combobox.List>{renderItem}</Combobox.List>
           </Combobox.Popup>
         </Combobox.Positioner>

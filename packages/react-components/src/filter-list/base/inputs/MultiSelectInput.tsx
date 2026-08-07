@@ -18,6 +18,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
@@ -64,14 +65,17 @@ function MultiSelectInputInner({
   onChange,
   className,
   style,
-  placeholder = "Select values...",
+  placeholder,
   showCounts = true,
   showFilteredOutValues = true,
-  ariaLabel = "Search values",
+  ariaLabel,
   renderValue,
   layout = "dropdown",
 }: MultiSelectInputProps): React.ReactElement {
   const collisionBoundary = useFilterListBoundary();
+  const labels = useFilterListLabels();
+  const effectivePlaceholder = placeholder ?? labels.multiSelectPlaceholder;
+  const effectiveAriaLabel = ariaLabel ?? labels.multiSelectAriaLabel;
 
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -128,19 +132,22 @@ function MultiSelectInputInner({
       <>
         {selectedItems.map((value) => {
           return (
-            <Combobox.Chip key={value} aria-label={getOptionLabelText(value)}>
+            <Combobox.Chip
+              key={value}
+              aria-label={getOptionLabelText(value, labels)}
+            >
               <OptionLabel value={value} renderValue={renderValue} />
               <Combobox.ChipRemove />
             </Combobox.Chip>
           );
         })}
         <Combobox.Input
-          placeholder={selectedItems.length > 0 ? "" : placeholder}
-          aria-label={ariaLabel}
+          placeholder={selectedItems.length > 0 ? "" : effectivePlaceholder}
+          aria-label={effectiveAriaLabel}
         />
       </>
     ),
-    [placeholder, ariaLabel, renderValue],
+    [effectivePlaceholder, effectiveAriaLabel, renderValue, labels],
   );
 
   const isNoData = !error && stableValues.length === 0;
@@ -153,18 +160,20 @@ function MultiSelectInputInner({
       data-loading={isReloading}
     >
       <span className={sharedStyles.srOnly} role="status">
-        {isLoading ? "Loading options" : ""}
+        {isLoading ? labels.loadingOptions : ""}
       </span>
 
       {error && (
         <div className={sharedStyles.errorMessage}>
-          Error loading options: {error.message}
+          {labels.optionsLoadError(error.message)}
         </div>
       )}
 
       {isNoData && isLoading && <SelectInputSkeleton />}
       {isNoData && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>No options available</div>
+        <div className={sharedStyles.emptyMessage}>
+          {labels.noOptionsAvailable}
+        </div>
       )}
 
       {stableValues.length > 0 && (
@@ -177,8 +186,8 @@ function MultiSelectInputInner({
         >
           {layout === "inline" ? (
             <MultiSelectInlineLayout
-              placeholder={placeholder}
-              ariaLabel={ariaLabel}
+              placeholder={effectivePlaceholder}
+              ariaLabel={effectiveAriaLabel}
               renderItem={renderItem}
             />
           ) : (

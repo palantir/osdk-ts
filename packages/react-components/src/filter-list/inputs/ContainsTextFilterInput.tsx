@@ -18,6 +18,7 @@ import React, { memo, useCallback, useMemo } from "react";
 
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 
 interface ContainsTextFilterInputProps {
   propertyKey: string;
@@ -30,6 +31,7 @@ function ContainsTextFilterInputInner({
   filterState,
   onFilterStateChanged,
 }: ContainsTextFilterInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const value = useMemo(
     () =>
       filterState?.type === "CONTAINS_TEXT" ? filterState.value : undefined,
@@ -47,7 +49,7 @@ function ContainsTextFilterInputInner({
     <ContainsTextInput
       value={value}
       onChange={handleChange}
-      placeholder="Search..."
+      placeholder={labels.textSearchPlaceholder}
     />
   );
 }

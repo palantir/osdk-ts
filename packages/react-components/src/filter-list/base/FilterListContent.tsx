@@ -44,6 +44,7 @@ import type {
   FilterDefinitionControls,
   FilterState,
 } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
 import { SortableFilterListItem } from "./SortableFilterListItem.js";
@@ -96,6 +97,7 @@ export function FilterListContent<D extends FilterDefinitionControls>({
   className,
   style,
 }: FilterListContentProps<D>): React.ReactElement {
+  const labels = useFilterListLabels();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   const sortableIds = useMemo(
@@ -172,32 +174,32 @@ export function FilterListContent<D extends FilterDefinitionControls>({
     const labelForId = (id: UniqueIdentifier) => {
       const idx = sortableIds.indexOf(String(id));
       const def = idx >= 0 ? filterDefinitions?.[idx] : undefined;
-      return def ? getFilterLabel(def) : "filter";
+      return def ? getFilterLabel(def) : labels.dragUnknownFilter;
     };
     return {
       onDragStart({ active }) {
-        return `Picked up ${labelForId(active.id)} filter`;
+        return labels.dragPickedUp(labelForId(active.id));
       },
       onDragOver({ over }) {
         if (!over) {
-          return "Not over a droppable area";
+          return labels.dragNotOverDroppable;
         }
         const overIdx = sortableIds.indexOf(String(over.id));
-        return `Moved to position ${overIdx + 1} of ${sortableIds.length}`;
+        return labels.dragMovedToPosition(overIdx + 1, sortableIds.length);
       },
       onDragEnd({ active, over }) {
         const label = labelForId(active.id);
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
-          return `Dropped ${label} filter at position ${overIdx + 1}`;
+          return labels.dragDroppedAtPosition(label, overIdx + 1);
         }
-        return `Dropped ${label} filter back in its original position`;
+        return labels.dragDroppedInOriginalPosition(label);
       },
       onDragCancel({ active }) {
-        return `Cancelled dragging ${labelForId(active.id)} filter`;
+        return labels.dragCancelled(labelForId(active.id));
       },
     };
-  }, [filterDefinitions, sortableIds, getFilterLabel]);
+  }, [filterDefinitions, sortableIds, getFilterLabel, labels]);
 
   const accessibility = useMemo(() => ({ announcements }), [announcements]);
 

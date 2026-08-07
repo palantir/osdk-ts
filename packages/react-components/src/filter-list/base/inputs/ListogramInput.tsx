@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { filterValuesBySearch, isNoValue } from "../../utils/filterValues.js";
 import { formatCompactCount } from "./formatCompactCount.js";
@@ -68,6 +69,7 @@ function ListogramInputInner({
   searchQuery,
   renderValue,
 }: ListogramInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = useCallback(() => setIsExpanded((v) => !v), []);
@@ -124,7 +126,7 @@ function ListogramInputInner({
     >
       {error && (
         <div className={sharedStyles.errorMessage}>
-          Error loading values: {error.message}
+          {labels.valuesLoadError(error.message)}
         </div>
       )}
 
@@ -132,7 +134,9 @@ function ListogramInputInner({
         <ListogramSkeleton />
       )}
       {!error && filteredValues.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>No values available</div>
+        <div className={sharedStyles.emptyMessage}>
+          {labels.noValuesAvailable}
+        </div>
       )}
 
       {filteredValues.length > 0 && (
@@ -212,7 +216,9 @@ function ListogramInputInner({
               aria-expanded={isExpanded}
               onClick={toggleExpanded}
             >
-              {isExpanded ? "View less" : `View all (${filteredValues.length})`}
+              {isExpanded
+                ? labels.viewLess
+                : labels.viewAll(filteredValues.length)}
             </Button>
           )}
         </div>

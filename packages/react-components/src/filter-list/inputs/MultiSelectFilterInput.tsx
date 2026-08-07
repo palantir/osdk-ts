@@ -28,6 +28,7 @@ import {
   type MultiSelectInputLayout,
 } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import { useFilterPropertyAggregation } from "../hooks/useFilterPropertyAggregation.js";
 import {
   EMPTY_LINKED_FILTERS,
@@ -64,6 +65,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   showCount,
   layout,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
+  const labels = useFilterListLabels();
   const selectedValues = useMemo(
     () =>
       filterState?.type === "SELECT"
@@ -116,7 +118,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValues={selectedValues}
         onChange={handleChange}
         showCounts={showCount}
-        ariaLabel={`Search ${propertyKey} values`}
+        ariaLabel={labels.searchPropertyValuesAriaLabel(propertyKey)}
         renderValue={renderValue}
         layout={layout}
       />

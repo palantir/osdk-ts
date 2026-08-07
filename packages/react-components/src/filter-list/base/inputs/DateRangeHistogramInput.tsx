@@ -17,6 +17,10 @@
 import React, { memo, useMemo } from "react";
 
 import { formatDateForInput } from "../../../shared/dateUtils.js";
+import {
+  DEFAULT_FILTER_LIST_LABELS,
+  useFilterListLabels,
+} from "../../FilterListLabels.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
@@ -26,8 +30,8 @@ const defaultDateConfig: RangeInputConfig<Date> = {
   parseValue: () => undefined,
   toNumber: (d) => d.getTime(),
   fromNumber: (t) => new Date(t),
-  minLabel: "From",
-  maxLabel: "To",
+  minLabel: DEFAULT_FILTER_LIST_LABELS.dateRangeMinLabel,
+  maxLabel: DEFAULT_FILTER_LIST_LABELS.dateRangeMaxLabel,
   formatTooltip: (min, max, count) =>
     `${formatDateForInput(min)} - ${formatDateForInput(
       max,
@@ -58,19 +62,23 @@ function DateRangeHistogramInputInner({
   valueCountPairs,
   ...rest
 }: DateRangeHistogramInputProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const config = useMemo<RangeInputConfig<Date>>(
-    () =>
-      formatDate != null
+    () => ({
+      ...defaultDateConfig,
+      minLabel: labels.dateRangeMinLabel,
+      maxLabel: labels.dateRangeMaxLabel,
+      ...(formatDate != null
         ? {
-            ...defaultDateConfig,
             formatDate,
-            formatTooltip: (min, max, count) =>
+            formatTooltip: (min: Date, max: Date, count: number) =>
               `${formatDate(min)} - ${formatDate(
                 max,
               )}: ${count.toLocaleString()}`,
           }
-        : defaultDateConfig,
-    [formatDate],
+        : undefined),
+    }),
+    [formatDate, labels],
   );
 
   const histogramData = useMemo(() => {

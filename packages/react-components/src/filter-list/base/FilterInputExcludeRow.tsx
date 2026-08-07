@@ -19,6 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import {
   filterHasActiveState,
   getEffectiveFilterState,
@@ -47,6 +48,7 @@ function FilterInputExcludeRowInner({
   onClearAll,
   children,
 }: FilterInputExcludeRowProps): React.ReactElement {
+  const labels = useFilterListLabels();
   const handleToggleExclude = useCallback(() => {
     if (filterState == null) {
       return;
@@ -82,16 +84,15 @@ function FilterInputExcludeRowInner({
           {totalValueCount != null && totalValueCount > 0 && (
             <span
               className={styles.excludeCountLabel}
-              title="Approximate count of unique values"
+              title={labels.uniqueValueCountTooltip}
             >
-              {selectedCount.toLocaleString()} of{" "}
-              {totalValueCount.toLocaleString()} values
+              {labels.selectedOfTotalValues(selectedCount, totalValueCount)}
             </span>
           )}
         </div>
         {onClearAll && filterHasActiveState(effectiveState) && (
           <Button className={styles.clearAllButton} onClick={onClearAll}>
-            Clear all
+            {labels.clearAll}
           </Button>
         )}
       </div>

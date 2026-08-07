@@ -26,6 +26,10 @@ import type {
   FilterKey,
   FilterListProps,
 } from "./FilterListApi.js";
+import {
+  FilterListLabelsProvider,
+  useFilterListLabels,
+} from "./FilterListLabels.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { EMPTY_LINKED_FILTERS } from "./types/LinkedFilterTypes.js";
@@ -38,6 +42,17 @@ const EMPTY_WHERE = {};
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): React.ReactElement {
+  return (
+    <FilterListLabelsProvider labels={props.labels}>
+      <FilterListInner {...props} />
+    </FilterListLabelsProvider>
+  );
+}
+
+function FilterListInner<Q extends ObjectTypeDefinition>(
+  props: FilterListProps<Q>,
+): React.ReactElement {
+  const labels = useFilterListLabels();
   const {
     objectType,
     objectSet,
@@ -152,13 +167,19 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     [reorderVisible],
   );
 
+  const filterLabelFor = useCallback(
+    (definition: FilterDefinitionUnion<Q>) =>
+      getFilterLabel(definition, labels),
+    [labels],
+  );
+
   const hiddenFilterItems = useMemo(
     () =>
       managedHiddenDefinitions.map((def) => ({
         key: getFilterKey(def),
-        label: getFilterLabel(def),
+        label: filterLabelFor(def),
       })),
-    [managedHiddenDefinitions],
+    [managedHiddenDefinitions, filterLabelFor],
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
@@ -231,7 +252,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onFilterStateChanged={setFilterState}
       renderInput={renderInput}
       getFilterKey={getFilterKey}
-      getFilterLabel={getFilterLabel}
+      getFilterLabel={filterLabelFor}
       getEmptyDisplayState={getEmptyDisplayState}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}

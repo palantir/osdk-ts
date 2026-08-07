@@ -2796,3 +2796,66 @@ export const WithResetButtonNonEmptyInitial: Story = {
   },
   render: (args) => <WithResetButtonNonEmptyInitialStory {...args} />,
 };
+
+export const LocalizedLabels: Story = {
+  args: {
+    showResetButton: true,
+    showActiveFilterCount: true,
+    labels: {
+      resetFilters: "Start over",
+      addFilter: "+ New filter",
+      addFilterSearchPlaceholder: "Type to filter…",
+      addFilterNoMatches: "Nothing matches",
+      removeFilter: (name) => `Discard the ${name} filter`,
+      toggleFilterSearch: "Find a value",
+      moreActions: "Options",
+      keeping: "Include",
+      excluding: "Omit",
+      clearAll: "Reset",
+      noValue: "Blank",
+      noValuesAvailable: "Nothing to pick from",
+      viewLess: "Show fewer",
+      viewAll: (count) => `Show all ${count}`,
+      dateRangeMinLabel: "Earliest",
+      dateRangeMaxLabel: "Latest",
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Every user-facing string can be overridden through the `labels` " +
+          "prop. Any key left unset falls back to the built-in English " +
+          "default. The same object flows through the header, each filter " +
+          "item, and every nested filter input, so one prop rewords or " +
+          "localizes the whole list.",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  showResetButton={true}
+  labels={{
+    resetFilters: "Start over",
+    addFilter: "+ New filter",
+    removeFilter: (name) => \`Discard the \${name} filter\`,
+    keeping: "Include",
+    excluding: "Omit",
+    viewAll: (count) => \`Show all \${count}\`,
+  }}
+/>`,
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={sharedFilterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};

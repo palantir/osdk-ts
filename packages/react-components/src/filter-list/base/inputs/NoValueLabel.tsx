@@ -17,6 +17,8 @@
 import classnames from "classnames";
 import React, { memo } from "react";
 
+import { useFilterListLabels } from "../../FilterListLabels.js";
+
 import styles from "./NoValueLabel.module.css";
 
 interface NoValueLabelProps {
@@ -35,8 +37,11 @@ interface NoValueLabelProps {
 function NoValueLabelInner({
   className,
 }: NoValueLabelProps): React.ReactElement {
+  const labels = useFilterListLabels();
   return (
-    <span className={classnames(styles.noValue, className)}>No value</span>
+    <span className={classnames(styles.noValue, className)}>
+      {labels.noValue}
+    </span>
   );
 }
 

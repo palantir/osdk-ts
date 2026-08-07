@@ -25,6 +25,7 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { useFilterListLabels } from "../FilterListLabels.js";
 import {
   filterHasActiveState,
   getEffectiveFilterState,
@@ -66,6 +67,7 @@ function FilterListItemInner<D>({
   className,
   style,
 }: FilterListItemProps<D>): React.ReactElement {
+  const labels = useFilterListLabels();
   const [searchState, setSearchState] = useState<
     { type: "closed" } | { type: "open"; query: string }
   >({ type: "closed" });
@@ -132,7 +134,7 @@ function FilterListItemInner<D>({
         {dragHandleAttributes && (
           <Button
             className={styles.dragHandle}
-            aria-label={`Reorder ${label}`}
+            aria-label={labels.reorderFilter(label)}
             {...dragHandleAttributes}
             {...dragHandleListeners}
           >
@@ -144,7 +146,7 @@ function FilterListItemInner<D>({
           <Button
             className={styles.headerActionButton}
             onClick={handleToggleSearch}
-            aria-label="Search values"
+            aria-label={labels.toggleFilterSearch}
             aria-pressed={searchOpen}
           >
             <SearchIcon />
@@ -154,7 +156,7 @@ function FilterListItemInner<D>({
           <Button
             className={styles.headerActionButton}
             onClick={handleRemove}
-            aria-label={`Remove ${label} filter`}
+            aria-label={labels.removeFilter(label)}
           >
             <RemoveIcon />
           </Button>
@@ -163,7 +165,7 @@ function FilterListItemInner<D>({
           <Button
             className={styles.headerActionButton}
             onClick={handleToggleExcludeRow}
-            aria-label="More actions"
+            aria-label={labels.moreActions}
             aria-pressed={excludeRowOpen}
           >
             <OverflowMenuIcon />
@@ -178,8 +180,8 @@ function FilterListItemInner<D>({
             className={styles.searchInput}
             value={searchQuery}
             onChange={handleSearchChange}
-            placeholder="Search property values..."
-            aria-label="Search property values"
+            placeholder={labels.filterSearchPlaceholder}
+            aria-label={labels.filterSearchAriaLabel}
             ref={searchInputRef}
           />
           {searchQuery && (
@@ -187,7 +189,7 @@ function FilterListItemInner<D>({
               type="button"
               className={styles.searchClearButton}
               onClick={handleSearchClear}
-              aria-label="Clear search"
+              aria-label={labels.clearSearch}
             >
               <RemoveIcon />
             </Button>
@@ -196,7 +198,7 @@ function FilterListItemInner<D>({
       )}
 
       <div className={styles.itemContent}>
-        <ErrorBoundary errorMessage="Error loading filter">
+        <ErrorBoundary errorMessage={labels.filterLoadError}>
           {renderInput({
             definition,
             filterKey,

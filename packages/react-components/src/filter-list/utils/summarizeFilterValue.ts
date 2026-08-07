@@ -20,36 +20,36 @@ import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import type { FilterListLabels } from "../FilterListLabels.js";
+import { resolveLabel } from "../FilterListLabels.js";
 import { NO_VALUE } from "./filterValues.js";
 
 // Em-dash reads naturally as an unbounded range half (e.g. "— – Jan 1").
 const NO_VALUE_PLACEHOLDER = "—";
 
-// Standalone SELECT triggers need the explicit phrase; a bare em-dash isn't discoverable.
-const SELECT_NO_VALUE_LABEL = "(No value)";
-
-// Literal empty string is a real, selectable value distinct from "No value".
-const SELECT_EMPTY_STRING_LABEL = "(empty string)";
-
 function summarizeSelectionValues(
   values: ReadonlyArray<string | number | boolean | Date | null | undefined>,
   formatDate: (d: Date) => string,
+  labels: Partial<FilterListLabels> | undefined,
 ): string {
   if (values.length === 0) {
     return "";
   }
   if (values.length > 1) {
-    return `${values.length} selected`;
+    return resolveLabel(labels, "summaryMultipleSelected")(values.length);
   }
   const v = values[0];
   if (v instanceof Date) {
     return formatDate(v);
   }
   if (v == null || v === NO_VALUE) {
-    return SELECT_NO_VALUE_LABEL;
+    // Standalone SELECT triggers need the explicit phrase; a bare em-dash
+    // isn't discoverable.
+    return resolveLabel(labels, "summaryNoValue");
   }
   if (v === "") {
-    return SELECT_EMPTY_STRING_LABEL;
+    // Literal empty string is a real, selectable value distinct from "No value".
+    return resolveLabel(labels, "emptyStringValue");
   }
   return String(v);
 }
@@ -66,10 +66,18 @@ function formatRange<T>(
   }`;
 }
 
-/** Short summary of a filter's current value for rendering inside a `FilterPopover` trigger. */
+/**
+ * Short summary of a filter's current value for rendering inside a
+ * `FilterPopover` trigger.
+ *
+ * @param labels Optional label overrides. Provide any subset; unset keys fall
+ * back to the built-in English defaults. Pass the same object given to
+ * `FilterList`/`FilterPopover` so the summary matches the rest of the UI.
+ */
 export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
   state: FilterState | undefined,
+  labels?: Partial<FilterListLabels>,
 ): string {
   if (state == null) {
     return "";
@@ -80,22 +88,22 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       : formatDateForInput;
   switch (state.type) {
     case "EXACT_MATCH":
-      return summarizeSelectionValues(state.values, formatDate);
+      return summarizeSelectionValues(state.values, formatDate, labels);
     case "SELECT":
-      return summarizeSelectionValues(state.selectedValues, formatDate);
+      return summarizeSelectionValues(state.selectedValues, formatDate, labels);
     case "CONTAINS_TEXT":
       return state.value ?? "";
     case "NUMBER_RANGE": {
       const { minValue, maxValue, includeNull } = state;
       if (minValue == null && maxValue == null) {
-        return includeNull ? "Includes empty" : "";
+        return includeNull ? resolveLabel(labels, "summaryIncludesEmpty") : "";
       }
       return formatRange(minValue, maxValue, String, "−∞", "∞");
     }
     case "DATE_RANGE": {
       const { minValue, maxValue, includeNull } = state;
       if (minValue == null && maxValue == null) {
-        return includeNull ? "Includes empty" : "";
+        return includeNull ? resolveLabel(labels, "summaryIncludesEmpty") : "";
       }
       return formatRange(
         minValue,
@@ -119,18 +127,18 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       );
     }
     case "TOGGLE":
-      return state.enabled ? "Enabled" : "";
+      return state.enabled ? resolveLabel(labels, "summaryEnabled") : "";
     case "hasLink":
-      return state.hasLink ? "Has link" : "";
+      return state.hasLink ? resolveLabel(labels, "summaryHasLink") : "";
     case "linkedProperty":
       // Forwards the outer definition so options like formatDate flow into the
       // linked summary; assumes the linked property shares the outer property's
       // type (true for current consumers).
-      return summarizeFilterValue(definition, state.linkedFilterState);
+      return summarizeFilterValue(definition, state.linkedFilterState, labels);
     case "keywordSearch":
       return state.searchTerm ?? "";
     case "custom":
-      return "Custom";
+      return resolveLabel(labels, "summaryCustom");
     default:
       return assertUnreachable(state);
   }

@@ -19,6 +19,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { FilterState } from "../../FilterListItemApi.js";
+import { FilterListLabelsProvider } from "../../FilterListLabels.js";
 import type { RenderFilterInput } from "../BaseFilterListApi.js";
 import { FilterListItem } from "../FilterListItem.js";
 
@@ -137,6 +138,57 @@ describe("FilterListItem", () => {
       expect(overflow.getAttribute("aria-pressed")).toBe("true");
       fireEvent.click(overflow);
       expect(overflow.getAttribute("aria-pressed")).toBe("false");
+    });
+  });
+
+  describe("labels", () => {
+    it("renders overridden strings supplied via the labels provider", () => {
+      render(
+        <FilterListLabelsProvider
+          labels={{
+            toggleFilterSearch: "Find values",
+            removeFilter: (name) => `Drop ${name}`,
+            moreActions: "Options",
+          }}
+        >
+          <FilterListItem
+            definition={{}}
+            filterKey="department"
+            label="Department"
+            filterState={{ type: "SELECT", selectedValues: ["a"] }}
+            onFilterStateChanged={vi.fn()}
+            onFilterRemoved={vi.fn()}
+            renderInput={renderInputStub}
+          />
+        </FilterListLabelsProvider>,
+      );
+
+      expect(screen.getByRole("button", { name: "Find values" })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Drop Department" }),
+      ).toBeDefined();
+      expect(screen.getByRole("button", { name: "Options" })).toBeDefined();
+    });
+
+    it("falls back to the default strings for keys that are not overridden", () => {
+      render(
+        <FilterListLabelsProvider labels={{ moreActions: "Options" }}>
+          <FilterListItem
+            definition={{}}
+            filterKey="department"
+            label="Department"
+            filterState={{ type: "SELECT", selectedValues: ["a"] }}
+            onFilterStateChanged={vi.fn()}
+            onFilterRemoved={vi.fn()}
+            renderInput={renderInputStub}
+          />
+        </FilterListLabelsProvider>,
+      );
+
+      expect(screen.getByRole("button", { name: "Options" })).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: /remove department filter/iu }),
+      ).toBeDefined();
     });
   });
 

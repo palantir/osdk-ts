@@ -29,6 +29,7 @@ import React, {
 } from "react";
 
 import { DatePicker } from "../../../shared/calendar/index.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -183,6 +184,7 @@ function RangeInputInner<T>({
   histogramData,
   clickToFilter = false,
 }: RangeInputProps<T>): React.ReactElement {
+  const labels = useFilterListLabels();
   const minInputId = useId();
   const maxInputId = useId();
 
@@ -632,7 +634,9 @@ function RangeInputInner<T>({
       data-loading={isLoading}
     >
       {showHistogram && buckets.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>No values available</div>
+        <div className={sharedStyles.emptyMessage}>
+          {labels.noValuesAvailable}
+        </div>
       )}
 
       <Button
@@ -641,7 +645,7 @@ function RangeInputInner<T>({
         onClick={handleClearFilter}
         disabled={!hasActiveFilter}
       >
-        Clear
+        {labels.clearRangeFilter}
       </Button>
 
       {showHistogram && buckets.length > 0 && barLayout != null && (
@@ -653,7 +657,7 @@ function RangeInputInner<T>({
             viewBox={`0 0 ${SVG_W} ${SVG_H}`}
             preserveAspectRatio="xMidYMid meet"
             role="img"
-            aria-label="Histogram of value counts"
+            aria-label={labels.histogramAriaLabel}
             onPointerDown={clickToFilter ? handlePlotPointerDown : undefined}
             onPointerUp={clickToFilter ? handlePlotPointerUp : undefined}
             onPointerCancel={

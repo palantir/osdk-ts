@@ -17,6 +17,7 @@
 import React from "react";
 
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
+import { useFilterListLabels } from "../../FilterListLabels.js";
 
 import styles from "./MultiSelectInput.module.css";
 
@@ -31,6 +32,7 @@ export function MultiSelectInlineLayout({
   ariaLabel,
   renderItem,
 }: MultiSelectInlineLayoutProps): React.ReactElement {
+  const labels = useFilterListLabels();
   return (
     <>
       <Combobox.Input
@@ -39,7 +41,7 @@ export function MultiSelectInlineLayout({
         aria-label={ariaLabel}
       />
       <Combobox.Empty className={styles.inlineEmpty}>
-        No matching options
+        {labels.noMatchingOptions}
       </Combobox.Empty>
       <Combobox.List className={styles.inlineList}>{renderItem}</Combobox.List>
     </>

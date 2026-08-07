@@ -20,6 +20,7 @@ import type {
   FilterDefinitionControls,
   FilterState,
 } from "../FilterListItemApi.js";
+import type { FilterListLabels } from "../FilterListLabels.js";
 
 export type RenderFilterInput<D> = (props: {
   definition: D;
@@ -69,4 +70,11 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
+  /**
+   * Overrides for the filter list's user-facing strings. Provide any subset;
+   * unset keys fall back to the built-in English defaults. When this list is
+   * rendered inside a `FilterList`, it inherits that list's `labels` and this
+   * prop is only needed to override further. See {@link FilterListLabels}.
+   */
+  labels?: Partial<FilterListLabels>;
 }
