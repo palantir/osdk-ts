@@ -40,11 +40,6 @@ const resolveFoundryToken = async (
   options: ResolveBearerTokenOptions = {},
 ): Promise<string | undefined> => {
   const env = options.env ?? process.env;
-  if (env.JEMMA) {
-    const jobToken = env.JOB_TOKEN;
-    invariant(jobToken, "JOB_TOKEN: unbound variable");
-    return jobToken;
-  }
   if (env.FOUNDRY_CONTAINER_RUNTIME_TYPE === "CODE_WORKSPACE") {
     const tokenPath = env.FOUNDRY_SCOPED_TOKEN;
     invariant(tokenPath, "FOUNDRY_SCOPED_TOKEN: unbound variable");
