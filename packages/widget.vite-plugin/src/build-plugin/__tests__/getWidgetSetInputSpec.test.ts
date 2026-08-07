@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
+import { readFile } from "fs/promises";
 import { resolve } from "path";
 
-import { expect, test, vi } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 
 import type { PackageJson } from "../../common/PackageJson.js";
 import { visitNpmPackages } from "../../common/visitNpmPackages.js";
 import { getWidgetSetInputSpec } from "../getWidgetSetInputSpec.js";
 
 vi.mock("../../common/visitNpmPackages.ts");
+vi.mock("fs/promises");
+
+const enoentError = Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+
+beforeEach(() => {
+  vi.mocked(readFile).mockReset();
+  vi.mocked(readFile).mockRejectedValue(enoentError);
+});
 
 test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
   const packageJson1: PackageJson = {
@@ -97,6 +106,7 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
   });
   const widgetSetInputSpec = await getWidgetSetInputSpec(
     "/path/to/package.json",
+    "/path/to/resources.json",
   );
 
   expect(widgetSetInputSpec).toEqual({
@@ -109,4 +119,99 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
       ],
     },
   });
+});
+
+function mockSingleRootPackage(): void {
+  const rootPackageJson: PackageJson = { name: "root", version: "0.1.0" };
+  vi.mocked(visitNpmPackages).mockImplementation((packageJsonPath, onVisit) => {
+    onVisit(packageJsonPath, rootPackageJson);
+    return Promise.resolve();
+  });
+}
+
+test("getWidgetSetInputSpec reads authorizations from resources.json", async () => {
+  mockSingleRootPackage();
+  vi.mocked(readFile).mockResolvedValue(
+    JSON.stringify({
+      authorizations: {
+        read: [["OrgA", "OrgB"], ["PII"]],
+        requiredRead: [["OrgA"]],
+      },
+      version: 1,
+    }),
+  );
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(readFile).toHaveBeenCalledWith("/path/to/resources.json", "utf-8");
+  expect(widgetSetInputSpec.discovered?.authorizations).toEqual({
+    read: [["OrgA", "OrgB"], ["PII"]],
+    requiredRead: [["OrgA"]],
+  });
+});
+
+test("getWidgetSetInputSpec ignores unknown properties in resources.json", async () => {
+  mockSingleRootPackage();
+  vi.mocked(readFile).mockResolvedValue(
+    JSON.stringify({
+      authorizations: {
+        read: [["OrgA"]],
+        // Not part of the declared schema and should be dropped.
+        write: [["PII"]],
+        unknownAuthorization: "ignored",
+      },
+      unknownTopLevel: 123,
+      _comment:
+        "EDITING THIS FILE MANUALLY MAY RESULT IN COMPILE ERRORS. DO NOT DELETE THIS FILE.",
+      version: 1,
+    }),
+  );
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(widgetSetInputSpec.discovered?.authorizations).toEqual({
+    read: [["OrgA"]],
+  });
+});
+
+test("getWidgetSetInputSpec omits authorizations when resources.json is missing", async () => {
+  mockSingleRootPackage();
+  vi.mocked(readFile).mockRejectedValue(enoentError);
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(widgetSetInputSpec.discovered?.authorizations).toBeUndefined();
+});
+
+test("getWidgetSetInputSpec rethrows non-ENOENT errors reading resources.json", async () => {
+  mockSingleRootPackage();
+  const permissionError = Object.assign(
+    new Error("EACCES: permission denied"),
+    {
+      code: "EACCES",
+    },
+  );
+  vi.mocked(readFile).mockRejectedValue(permissionError);
+
+  await expect(
+    getWidgetSetInputSpec("/path/to/package.json", "/path/to/resources.json"),
+  ).rejects.toThrow("EACCES");
+});
+
+test("getWidgetSetInputSpec throws when resources.json is invalid", async () => {
+  mockSingleRootPackage();
+  vi.mocked(readFile).mockResolvedValue("{ not valid json");
+
+  await expect(
+    getWidgetSetInputSpec("/path/to/package.json", "/path/to/resources.json"),
+  ).rejects.toThrow(/Failed to parse resources\.json/u);
 });

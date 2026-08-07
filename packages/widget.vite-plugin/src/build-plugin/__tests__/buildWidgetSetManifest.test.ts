@@ -182,6 +182,7 @@ describe("buildWidgetSetManifest", () => {
     const widgetSetInputSpec: WidgetSetInputSpec = {
       discovered: {
         sdks: [{ rid: "ri.foundry.main.sdk.test-sdk", version: "2.0.0" }],
+        authorizations: {},
       },
     };
 
