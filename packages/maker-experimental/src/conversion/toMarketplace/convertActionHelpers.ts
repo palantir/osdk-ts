@@ -186,6 +186,25 @@ export function convertAction(
     }
     return result;
   };
+  const convertStructFieldValues = <T>(
+    structFieldValues: Record<string, Record<string, T>>,
+  ): Record<string, Record<string, T>> =>
+    Object.fromEntries(
+      Object.entries(structFieldValues).map(
+        ([propertyApiName, fieldValues]) => [
+          propertyApiName,
+          Object.fromEntries(
+            Object.entries(fieldValues).map(([fieldApiName, value]) => [
+              ridGenerator.generateStructFieldRid(
+                propertyApiName,
+                fieldApiName,
+              ),
+              value,
+            ]),
+          ),
+        ],
+      ),
+    );
   return {
     actionType: {
       actionTypeLogic: {
@@ -248,8 +267,30 @@ export function convertAction(
                     rule.addObjectRule.objectTypeId,
                   ),
                   propertyValues: rule.addObjectRule.propertyValues,
-                  structFieldValues: rule.addObjectRule.structFieldValues,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addObjectRule.structFieldValues,
+                  ),
                   logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "addOrModifyObjectRuleV2") {
+              return {
+                type: "addOrModifyObjectRuleV2",
+                addOrModifyObjectRuleV2: {
+                  ...rule.addOrModifyObjectRuleV2,
+                  structFieldValues: convertStructFieldValues(
+                    rule.addOrModifyObjectRuleV2.structFieldValues,
+                  ),
+                },
+              };
+            } else if (rule.type === "modifyObjectRule") {
+              return {
+                type: "modifyObjectRule",
+                modifyObjectRule: {
+                  ...rule.modifyObjectRule,
+                  structFieldValues: convertStructFieldValues(
+                    rule.modifyObjectRule.structFieldValues,
+                  ),
                 },
               };
             } else if (rule.type === "addInterfaceLinkRuleV2") {

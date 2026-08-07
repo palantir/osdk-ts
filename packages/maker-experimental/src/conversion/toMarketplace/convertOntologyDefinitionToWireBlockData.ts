@@ -291,7 +291,10 @@ function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
-): KnownMarketplaceIdentifiers {
+): KnownMarketplaceIdentifiers & {
+  objectPropertyTypeIdsToRids: Record<string, Record<string, string>>;
+  structFieldRidsToApiNames: Record<string, Record<string, string>>;
+} {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
     Array.from(ridGenerator.getInterfaceRids().inverse().entries()).map(
@@ -383,22 +386,50 @@ function buildKnownIdentifiers(
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
   // Scan all ontologies so imported object properties are included.
   const propertyTypeIds: Record<string, Record<string, string>> = {};
+  const objectPropertyTypeIdsToRids: Record<
+    string,
+    Record<string, string>
+  > = {};
+  const structFieldRidsToApiNames: Record<string, Record<string, string>> = {};
   ontologiesToScan.forEach((ont) => {
     Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
       ([objectTypeApiName, objectType]) => {
         const propMap: Record<string, string> = {};
+        const propertyTypeIdsToRids: Record<string, string> = {};
         (objectType.properties ?? []).forEach((property) => {
+          const propertyTypeRid = ridGenerator.generatePropertyRid(
+            property.apiName,
+            objectTypeApiName,
+          );
           propMap[property.apiName] = ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForObjectProperty(
               objectTypeApiName,
               property.apiName,
             ),
           );
+          propertyTypeIdsToRids[property.apiName] = propertyTypeRid;
+          if (
+            typeof property.type === "object" &&
+            property.type.type === "struct"
+          ) {
+            structFieldRidsToApiNames[propertyTypeRid] = Object.fromEntries(
+              Object.keys(property.type.structDefinition).map(
+                (structFieldApiName) => [
+                  ridGenerator.generateStructFieldRid(
+                    property.apiName,
+                    structFieldApiName,
+                  ),
+                  structFieldApiName,
+                ],
+              ),
+            );
+          }
         });
         const objTypeId = ridGenerator
           .getObjectTypeIds()
           .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
         propertyTypeIds[objTypeId] = propMap;
+        objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
       },
     );
   });
@@ -596,6 +627,7 @@ function buildKnownIdentifiers(
     markings: markingsMappings,
     objectTypeIds,
     objectTypes: objectTypeRids,
+    objectPropertyTypeIdsToRids,
     propertyTypeIds,
     propertyTypes: propertyRids,
     sharedPropertyTypes: sharedPropertyMappings,
@@ -603,6 +635,7 @@ function buildKnownIdentifiers(
       MIGRATION_SHAPE_READABLE_ID,
     ),
     shapeIdForInstallPrefix: null,
+    structFieldRidsToApiNames,
     timeSeriesSyncs,
     valueTypes: valueTypeMappings,
     webhooks: {},

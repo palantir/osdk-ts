@@ -121,6 +121,13 @@ export function convertActionValidation(
     p.validation.conditionalOverrides?.forEach((override) => {
       registerGroupsFromCondition(override.condition, ridGenerator);
     });
+    Object.values(p.validation.structFieldValidations ?? {}).forEach(
+      (structFieldValidation) => {
+        structFieldValidation.conditionalOverrides?.forEach((override) => {
+          registerGroupsFromCondition(override.condition, ridGenerator);
+        });
+      },
+    );
   });
 
   // Register groups from section conditional overrides
