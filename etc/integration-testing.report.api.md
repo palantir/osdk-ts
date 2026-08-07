@@ -5,9 +5,16 @@
 ```ts
 
 import type { Client } from '@osdk/client';
+import type { LinkTargets } from '@osdk/seed-helpers';
+import type { LinkTypeApiNamesFor } from '@osdk/api';
 import type { MockClient } from '@osdk/unit-testing';
+import type { ObjectTypeDefinition } from '@osdk/client';
 import type { OntologyFullMetadata } from '@osdk/foundry.ontologies';
-import type { SeedClient } from '@osdk/seed-helpers';
+import type { PrimaryKeyType } from '@osdk/api';
+import type { SeedFunction } from '@osdk/seed-helpers';
+import type { SeedOutput } from '@osdk/seed-helpers';
+import type { SeedProps } from '@osdk/seed-helpers';
+import type { SeedRef } from '@osdk/seed-helpers';
 
 // Warning: (ae-forgotten-export) The symbol "FoundryProbeResult" needs to be exported by the entry point index.d.ts
 //
@@ -42,7 +49,9 @@ export interface IntegrationServer {
     getClient(): Promise<IntegrationClient>;
     	// (undocumented)
     getOntologyUrl(): string | undefined;
-    	// (undocumented)
+    	// Warning: (ae-forgotten-export) The symbol "SeedClient" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     getSeedClient(): Promise<SeedClient>;
     	// (undocumented)
     start(): Promise<void>;
@@ -55,7 +64,6 @@ export interface IntegrationServerConfig {
     	foundryCliPath?: string;
     	metadata: OntologyFullMetadata;
     	projectPath?: string;
-    	readyTimeoutMs?: number;
 }
 
 // (No @packageDocumentation comment for this package)

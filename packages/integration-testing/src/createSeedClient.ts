@@ -17,12 +17,12 @@
 import type * as Ontology from "@osdk/foundry.ontologies";
 import {
   SeedBuilder,
-  type SeedClient,
   type SeedFunction,
   type SeedOutput,
 } from "@osdk/seed-helpers";
 
 import { OntologySeedingService } from "./generated/cli/index.js";
+import type { SeedClient } from "./types.js";
 
 type SeedClientConfig = {
   baseUrl: string;

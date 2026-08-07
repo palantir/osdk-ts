@@ -20,7 +20,6 @@ import path from "node:path";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { PreviewOntologyFullMetadata } from "@osdk/generator-converters.preview";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import type { SeedClient } from "@osdk/seed-helpers";
 import invariant from "tiny-invariant";
 import { Agent, fetch as undiciFetch } from "undici";
 
@@ -32,6 +31,7 @@ import type {
   IntegrationClient,
   IntegrationServer,
   IntegrationServerConfig,
+  SeedClient,
 } from "./types.js";
 import { EMPTY_ONTOLOGY_BLOCK_DATA } from "./utils/empty-ontology-block.js";
 

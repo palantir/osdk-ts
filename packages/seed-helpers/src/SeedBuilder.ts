@@ -31,41 +31,6 @@ import { validateSeedObject } from "./validation.js";
 
 export type SeedFunction<T> = (seed: SeedBuilder) => T;
 
-export type SeedClient = {
-  /**
-   * Transactional interface to SeedBuilder
-   * Applies changes if function is provided, calls .addAll(seed) if SeedOutput is provided.
-   */
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>;
-  ref<Q extends ObjectTypeDefinition>(
-    o: Q,
-    primaryKey: PrimaryKeyType<Q>,
-  ): SeedRef<Q> | undefined;
-  set(seed?: SeedOutput): Promise<void>;
-  addAll(seed: SeedOutput): Promise<void>;
-  create<Q extends ObjectTypeDefinition>(
-    o: Q,
-    props: SeedProps<Q>,
-  ): Promise<SeedRef<Q>>;
-  update<Q extends ObjectTypeDefinition>(
-    ref: SeedRef<Q>,
-    props: Partial<
-      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-    >,
-  ): Promise<SeedRef<Q>>;
-  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
-  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>,
-  ): Promise<void>;
-  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>,
-  ): Promise<void>;
-};
-
 interface SeedLinkRecord {
   source: SeedRef<ObjectTypeDefinition>;
   apiName: string;
