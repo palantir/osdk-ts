@@ -31,36 +31,6 @@ import { validateSeedObject } from "./validation.js";
 
 export type SeedFunction<T> = (seed: SeedBuilder) => T;
 
-export type SeedClient = {
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'SeedBuilder.set'
-  ref<Q extends ObjectTypeDefinition>(
-    o: Q,
-    primaryKey: PrimaryKeyType<Q>,
-  ): SeedRef<Q> | undefined;
-  addAll(seed: SeedOutput): Promise<void>;
-  create<Q extends ObjectTypeDefinition>(
-    o: Q,
-    props: SeedProps<Q>,
-  ): Promise<SeedRef<Q>>;
-  update<Q extends ObjectTypeDefinition>(
-    ref: SeedRef<Q>,
-    props: Partial<
-      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-    >,
-  ): Promise<SeedRef<Q>>;
-  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
-  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>,
-  ): Promise<void>;
-  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
-    apiName: A,
-    target: LinkTargets<Q, A>,
-  ): Promise<void>;
-};
-
 interface SeedLinkRecord {
   source: SeedRef<ObjectTypeDefinition>;
   apiName: string;
@@ -414,8 +384,14 @@ export class SeedBuilder {
 export function createSeedWithMetadata<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
   fn: SeedFunction<T>,
-): [SeedOutput, T] {
+): {
+  output: SeedOutput;
+  context: T;
+} {
   const sb = new SeedBuilder(ontologyMetadata);
-  const result = fn(sb);
-  return [sb.build(), result];
+  const context = fn(sb);
+  return {
+    output: sb.build(),
+    context,
+  };
 }
