@@ -1093,6 +1093,81 @@ describe("Experimental Test Suite", () => {
         ),
       ).toEqual(apiNamePreset("importedInterface"));
     });
+
+    it("maps imported SPT-backed interface properties using the SPT API name", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const spt = importSharedPropertyType({
+          apiName: "sourceSystemMetadataList",
+          packageName: "com.palantir.core.ontology.types",
+          typeHint: "string",
+        });
+        const importedInterface: InterfaceType = {
+          apiName: "com.palantir.core.ontology.interfaces.sourceSystemMetadata",
+          displayMetadata: {
+            displayName: "Source System Metadata",
+          },
+          propertiesV2: {
+            [spt.apiName]: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          propertiesV3: {
+            sourceSystemMetadataList: {
+              sharedPropertyType: spt,
+              required: true,
+            },
+          },
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+
+        defineObject({
+          apiName: "country",
+          displayName: "Country",
+          pluralDisplayName: "Countries",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            sourceSystemMetadataList: { type: "string" },
+          },
+          implementsInterfaces: [
+            {
+              implements: importedInterface,
+              propertyMapping: [
+                {
+                  interfaceProperty: spt.apiName,
+                  mapsTo: "sourceSystemMetadataList",
+                },
+              ],
+            },
+          ],
+        });
+      });
+
+      const country = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      ).find(
+        (objectType) =>
+          objectType.objectType.apiName === "com.palantir.country",
+      );
+      const sptRid = Object.keys(
+        result.ontologyIr.importedOntology.sharedPropertyTypes,
+      )[0];
+      expect(
+        Object.keys(country!.objectType.implementsInterfaces2[0].propertiesV2),
+      ).toEqual([
+        sptRid.replace("shared-property-type", "interface-property-type"),
+      ]);
+      expect(country!.objectType.implementsInterfaces2[0].properties).toEqual(
+        {},
+      );
+    });
   });
 
   describe("Action Type Constraints", () => {
