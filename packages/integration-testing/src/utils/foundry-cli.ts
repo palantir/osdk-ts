@@ -19,7 +19,7 @@ import { promisify } from "node:util";
 
 import { gte, valid } from "semver";
 
-export const MIN_FOUNDRY_CLI_VERSION = "0.200.0";
+export const MIN_FOUNDRY_CLI_VERSION = "0.224.0";
 
 const FOUNDRY_VERSION_PATTERN =
   /cli (\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)/u;
