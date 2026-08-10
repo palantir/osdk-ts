@@ -2257,6 +2257,15 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
@@ -2264,7 +2273,7 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          onFilterClauseChanged={args.onFilterClauseChanged}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
