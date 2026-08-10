@@ -114,6 +114,6 @@ import { PdfViewer as _PdfViewer } from "../../pdf-viewer/PdfRenderer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const PdfViewer: typeof _PdfViewer = withOsdkMetrics(
   _PdfViewer,
-  "PdfViewer"
+  "PdfViewer",
 );
 export type { PdfViewerMediaProps } from "../../pdf-viewer/PdfRenderer.js";

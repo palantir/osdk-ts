@@ -31,12 +31,12 @@ export async function cancelRecall(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   blockSetId: _api_BlockSetId,
-  request: _api_CancelRecallRequest
+  request: _api_CancelRecallRequest,
 ): Promise<_api_CancelRecallResponse> {
   return conjureFetch(
     ctx,
     `/automation/product/${marketplaceRid}/${blockSetId}/release/clearRecall`,
     "POST",
-    request
+    request,
   );
 }

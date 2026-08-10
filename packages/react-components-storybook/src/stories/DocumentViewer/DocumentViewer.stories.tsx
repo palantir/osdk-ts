@@ -72,7 +72,7 @@ This is a **sample markdown** document rendered by the DocumentViewer.
 function createMockMedia(
   mimeType: string,
   fetchFn: () => Promise<Response>,
-  filename: string
+  filename: string,
 ): Media {
   return {
     fetchContents: fetchFn,
@@ -101,25 +101,25 @@ const imageBlob = createSampleImageBlob();
 const mockPdfMedia = createMockMedia(
   "application/pdf",
   () => fetch(SAMPLE_PDF_URL),
-  "document.pdf"
+  "document.pdf",
 );
 
 const mockImageMedia = createMockMedia(
   "image/png",
   () => Promise.resolve(new Response(imageBlob)),
-  "photo.png"
+  "photo.png",
 );
 
 const mockMarkdownMedia = createMockMedia(
   "text/markdown",
   () => Promise.resolve(new Response(SAMPLE_MARKDOWN)),
-  "readme.md"
+  "readme.md",
 );
 
 const mockVideoMedia = createMockMedia(
   "video/mp4",
   () => fetch(SAMPLE_VIDEO_URL),
-  "example.mp4"
+  "example.mp4",
 );
 
 const SAMPLE_EML = `From: Alice <alice@example.com>
@@ -134,7 +134,7 @@ Content-Type: text/html; charset=utf-8
 const mockEmailMedia = createMockMedia(
   "message/rfc822",
   () => Promise.resolve(new Response(SAMPLE_EML)),
-  "message.eml"
+  "message.eml",
 );
 
 const SAMPLE_XML = `<?xml version="1.0"?>
@@ -148,10 +148,10 @@ const SAMPLE_XML = `<?xml version="1.0"?>
 const mockXmlMedia = createMockMedia(
   "application/xml",
   () => Promise.resolve(new Response(SAMPLE_XML)),
-  "data.xml"
+  "data.xml",
 );
 
-function createMockExcelMedia(): Media {
+function createMockSpreadsheetMedia(): Media {
   const ws = utils.aoa_to_sheet([
     ["Name", "Department", "Salary"],
     ["Alice", "Engineering", "$145,000"],
@@ -163,22 +163,22 @@ function createMockExcelMedia(): Media {
   return createMockMedia(
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     () => Promise.resolve(new Response(buf)),
-    "report.xlsx"
+    "report.xlsx",
   );
 }
 
-const mockExcelMedia = createMockExcelMedia();
+const mockSpreadsheetMedia = createMockSpreadsheetMedia();
 
 const mockTiffMedia = createMockMedia(
   "image/tiff",
   () => fetch(SAMPLE_TIFF_URL),
-  "multi-page-tiff.tiff"
+  "multi-page-tiff.tiff",
 );
 
 const mockUnsupportedMedia = createMockMedia(
   "application/octet-stream",
   () => Promise.resolve(new Response("")),
-  "data.bin"
+  "data.bin",
 );
 
 const meta: Meta<DocumentViewerProps> = {
@@ -280,9 +280,9 @@ export const Email: Story = {
   },
 };
 
-export const Excel: Story = {
+export const Spreadsheet: Story = {
   args: {
-    media: mockExcelMedia,
+    media: mockSpreadsheetMedia,
   },
 };
 
@@ -336,7 +336,7 @@ export const TiffWithPdfConversion: Story = {
             return new HttpResponse(buffer, {
               headers: { "Content-Type": "application/pdf" },
             });
-          }
+          },
         ),
         // Mock MIO transform API: get status
         http.get("*/api/v2/mediasets/*/items/*/transformationJobs/*", () => {

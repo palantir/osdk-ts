@@ -31,12 +31,12 @@ import type {
  */
 export async function searchLinkTypes(
   ctx: ConjureContext,
-  request: _api_search_LinkTypeSearchRequest
+  request: _api_search_LinkTypeSearchRequest,
 ): Promise<_api_search_LinkTypeSearchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/search/v0/searchLinkTypes`,
     "POST",
-    request
+    request,
   );
 }

@@ -46,7 +46,7 @@ export function pageThroughResponseSearchParams<
     pageToken: PageToken | undefined;
   },
   includeCount?: TIncludeCount,
-  propertySecurities?: PropertySecurities[]
+  propertySecurities?: PropertySecurities[],
 ):
   | (TIncludeCount extends true
       ? PagedBodyResponseWithTotal<TData>

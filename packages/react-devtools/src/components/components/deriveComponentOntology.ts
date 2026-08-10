@@ -69,7 +69,7 @@ export interface ComponentInsight {
 
 /** Split an access `objectKey` ("Parcel:123" or nested "Parcel:123.owner"). */
 function parseObjectKey(
-  objectKey: string
+  objectKey: string,
 ): { objectType: string; primaryKey: string } | null {
   const colon = objectKey.indexOf(":");
   if (colon <= 0) {
@@ -91,7 +91,7 @@ export function deriveComponentOntology(
   bindings: ComponentHookBinding[],
   accesses: PropertyAccessEvent[],
   props: Record<string, string> | undefined,
-  insight: ComponentInsight
+  insight: ComponentInsight,
 ): ComponentOntology {
   const objectTypeNames = new Set<string>();
   const actionNames = new Set<string>();
@@ -150,7 +150,7 @@ export function deriveComponentOntology(
     .map((name) => ({
       name,
       instances: [...(instancesByType.get(name) ?? [])].sort((a, b) =>
-        a.localeCompare(b)
+        a.localeCompare(b),
       ),
     }));
 

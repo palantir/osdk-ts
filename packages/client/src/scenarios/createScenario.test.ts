@@ -40,7 +40,7 @@ describe("createScenario", () => {
       ontologyRid,
       () => "Token",
       undefined,
-      fetchFunction
+      fetchFunction,
     );
   });
 
@@ -56,7 +56,7 @@ describe("createScenario", () => {
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     const createUrl = new URL(
       fetchFunction.mock.calls[0][0] as string,
-      "https://mock.com"
+      "https://mock.com",
     );
     expect(createUrl.pathname).toMatch(/\/scenarios\/create$/u);
 
@@ -70,7 +70,7 @@ describe("createScenario", () => {
     await scenario(BarInterface).fetchPage();
     const url = new URL(
       fetchFunction.mock.calls[1][0] as string,
-      "https://mock.com"
+      "https://mock.com",
     );
     expect(url.searchParams.get("scenarioRid")).toBe(newScenarioRid);
   });
@@ -84,7 +84,7 @@ describe("createScenario", () => {
       ontologyRid,
       () => "Token",
       {},
-      fetchFunction
+      fetchFunction,
     );
     const newScenarioRid = "ri.actions..scenario.new";
     const createResponse: CreateOntologyScenarioResponse = {

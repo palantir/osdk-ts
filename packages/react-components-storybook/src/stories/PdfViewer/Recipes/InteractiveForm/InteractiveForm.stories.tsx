@@ -100,7 +100,7 @@ const FORM_RECIPES: FormRecipe[] = [
 
 function formatFieldValue(
   key: string,
-  value: PdfFormFieldValue | undefined
+  value: PdfFormFieldValue | undefined,
 ): string {
   if (value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -153,7 +153,7 @@ function RecipeCard({ recipe, onLoad }: RecipeCardProps): React.ReactElement {
 }
 
 async function downloadFilledPdf(
-  formValues: Record<string, PdfFormFieldValue>
+  formValues: Record<string, PdfFormFieldValue>,
 ): Promise<void> {
   const response = await fetch(PDF_SRC);
   const pdfBytes = await response.arrayBuffer();
@@ -302,7 +302,7 @@ function InteractiveFormWithSidebar(): React.ReactElement {
     (fieldName: string, value: PdfFormFieldValue) => {
       setFormValues((prev) => ({ ...prev, [fieldName]: value }));
     },
-    []
+    [],
   );
 
   const handleLoadRecipe = useCallback(
@@ -311,7 +311,7 @@ function InteractiveFormWithSidebar(): React.ReactElement {
       setFormValues(recipe);
       setRecipeLoadCount((c) => c + 1);
     },
-    []
+    [],
   );
 
   return (

@@ -41,7 +41,7 @@ function ReadonlyDisplayCellInner({
       <div
         className={classNames(
           styles.osdkEditableInput,
-          styles.readonlyDisplayCell
+          styles.readonlyDisplayCell,
         )}
       >
         {inputValue}

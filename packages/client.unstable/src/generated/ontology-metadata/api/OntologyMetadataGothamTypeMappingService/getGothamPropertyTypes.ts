@@ -33,11 +33,11 @@ import type { GetGothamPropertyTypesResponse as _api_typemapping_GetGothamProper
  */
 export async function getGothamPropertyTypes(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid
+  ontologyRid: _api_OntologyRid,
 ): Promise<_api_typemapping_GetGothamPropertyTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/getGothamPropertyTypes/${ontologyRid}`,
-    "GET"
+    "GET",
   );
 }

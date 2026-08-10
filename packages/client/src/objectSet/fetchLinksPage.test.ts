@@ -25,7 +25,7 @@ describe("remapObjectLocator", () => {
         __apiName: "Foo",
         __primaryKey: "bar",
         prop: "BAZ",
-      })
+      }),
     ).toEqual({ $apiName: "Foo", $primaryKey: "bar" });
   });
 });
@@ -59,7 +59,7 @@ describe("remapLinksPage", () => {
             ],
           },
         ],
-      })
+      }),
     ).toEqual({
       nextPageToken: "foo",
       data: [

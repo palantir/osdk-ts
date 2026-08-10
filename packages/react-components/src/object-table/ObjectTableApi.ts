@@ -90,7 +90,7 @@ interface SharedColumnDefinition<
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>
+    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
 
   /**
@@ -126,7 +126,7 @@ interface EditableColumnDefinition<
   editable:
     | true
     | ((
-        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       ) => boolean);
 
   /**
@@ -202,7 +202,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q, RDPs>
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[K]>;
 
   /**
@@ -211,7 +211,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The key to use for looking up this object's result in the FunctionsMap
    */
   getKey: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => string;
 
   /**
@@ -386,7 +386,7 @@ export interface ObjectTableProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       isVisible: boolean;
-    }>
+    }>,
   ) => void;
 
   /**
@@ -400,7 +400,7 @@ export interface ObjectTableProps<
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
       pinned: "left" | "right" | "none";
-    }>
+    }>,
   ) => void;
 
   /**
@@ -411,7 +411,7 @@ export interface ObjectTableProps<
    */
   onColumnResize?: (
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
-    newWidth: number | null
+    newWidth: number | null,
   ) => void;
 
   /**
@@ -424,7 +424,7 @@ export interface ObjectTableProps<
    * @param columnId The id of the clicked column
    */
   onColumnHeaderClick?: (
-    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
   ) => void;
 
   /**
@@ -464,7 +464,7 @@ export interface ObjectTableProps<
     newOrderBy: Array<{
       property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
-    }>
+    }>,
   ) => void;
 
   /**
@@ -518,7 +518,7 @@ export interface ObjectTableProps<
    * cleared
    */
   onFocusedRowChanged?: (
-    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs> | null
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs> | null,
   ) => void;
 
   /**
@@ -551,7 +551,7 @@ export interface ObjectTableProps<
     info: CellEditInfo<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       unknown
-    >
+    >,
   ) => void;
 
   /**
@@ -565,7 +565,7 @@ export interface ObjectTableProps<
     edits: CellEditInfo<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       unknown
-    >[]
+    >[],
   ) => Promise<boolean>;
 
   /**
@@ -574,7 +574,7 @@ export interface ObjectTableProps<
    * @param object The object representing the clicked row
    */
   onRowClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => void;
 
   /**
@@ -582,7 +582,7 @@ export interface ObjectTableProps<
    */
   renderCellContextMenu?: (
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    cellValue: unknown
+    cellValue: unknown,
   ) => React.ReactNode;
 
   /**
@@ -604,7 +604,7 @@ export interface ObjectTableProps<
    * row element. Use this to drive conditional row styling
    */
   getRowAttributes?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
   /**
@@ -639,7 +639,7 @@ export interface ObjectTableHandle<
    * Loads every row matching the object set and returns a format-agnostic
    * snapshot of the table's columns, row values, and total count. The caller
    * is responsible for turning the snapshot into a downloadable artifact
-   * (CSV, Excel, JSON, clipboard, …).
+   * (CSV, Spreadsheet, JSON, clipboard, …).
    *
    * Property, derived-property, and function-backed columns are included.
    * Function-backed cells are fetched per page during snapshot collection;
@@ -658,7 +658,7 @@ export interface ObjectTableHandle<
    * @param options See {@link ObjectTableSnapshotOptions}.
    */
   getSnapshot: (
-    options?: ObjectTableSnapshotOptions
+    options?: ObjectTableSnapshotOptions,
   ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
 }
 

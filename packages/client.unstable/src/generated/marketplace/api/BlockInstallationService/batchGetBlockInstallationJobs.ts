@@ -29,12 +29,12 @@ import type {
  */
 export async function batchGetBlockInstallationJobs(
   ctx: ConjureContext,
-  request: _api_BatchGetBlockInstallationJobsRequest
+  request: _api_BatchGetBlockInstallationJobsRequest,
 ): Promise<_api_BatchGetBlockInstallationJobsResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/jobs/batchGet`,
     "POST",
-    request
+    request,
   );
 }

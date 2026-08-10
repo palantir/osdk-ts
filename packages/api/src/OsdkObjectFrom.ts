@@ -323,7 +323,7 @@ export namespace Osdk {
               ? never
               : NEW_Q | string
             : NEW_Q | string
-          : NEW_Q | string
+          : NEW_Q | string,
       ) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>;
 
       readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(
@@ -331,7 +331,7 @@ export namespace Osdk {
           | Osdk.Instance<Q, any, NEW_PROPS>
           | {
               [K in NEW_PROPS]?: CompileTimeMetadata<Q>["props"][K];
-            }
+            },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
 
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition
@@ -347,7 +347,7 @@ export namespace Osdk {
         PropertyApiName extends PropertyKeys<Q>,
       >(
         propertyApiName: PropertyApiName,
-        options?: { locale?: string; timezoneId?: string }
+        options?: { locale?: string; timezoneId?: string },
       ) => string | undefined;
     } & (IsNever<OPTIONS> extends true
       ? {}

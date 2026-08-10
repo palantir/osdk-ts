@@ -62,13 +62,13 @@ describe("getDisplayLabel", () => {
 describe("getTooltipText", () => {
   it("explains why a disallowed marking is unavailable", () => {
     expect(getTooltipText("DISALLOWED")).toBe(
-      "This marking is not allowed with the current selection"
+      "This marking is not allowed with the current selection",
     );
   });
 
   it("distinguishes implied-but-disallowed markings", () => {
     expect(getTooltipText("IMPLIED_DISALLOWED")).toBe(
-      "This marking is implied but not allowed"
+      "This marking is implied but not allowed",
     );
   });
 

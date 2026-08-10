@@ -28,7 +28,7 @@ import type {
  */
 export async function getObjectsInitialScroll(
   ctx: ConjureContext,
-  request: _api_GetObjectsInitialScrollRequest
+  request: _api_GetObjectsInitialScrollRequest,
 ): Promise<_api_GetObjectsScrollResponse> {
   return conjureFetch(ctx, `/scroll/initial`, "POST", request);
 }

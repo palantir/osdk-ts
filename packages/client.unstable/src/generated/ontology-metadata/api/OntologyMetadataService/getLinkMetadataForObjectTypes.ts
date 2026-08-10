@@ -29,12 +29,12 @@ import type {
  */
 export async function getLinkMetadataForObjectTypes(
   ctx: ConjureContext,
-  request: _api_GetLinkMetadataForObjectTypesRequest
+  request: _api_GetLinkMetadataForObjectTypesRequest,
 ): Promise<_api_GetLinkMetadataForObjectTypesResponse> {
   return conjureFetch(
     ctx,
     `/ontology/getLinkMetadataForObjectTypes`,
     "POST",
-    request
+    request,
   );
 }

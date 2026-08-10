@@ -26,14 +26,14 @@ export type DefType = "object" | "interface";
 
 /** @internal */
 export function getDefType(
-  apiNameOrDef: string | ObjectOrInterfaceDefinition
+  apiNameOrDef: string | ObjectOrInterfaceDefinition,
 ): DefType {
   return typeof apiNameOrDef === "string" ? "object" : apiNameOrDef.type;
 }
 
 /** @internal */
 export function isInterfaceActionParam(
-  o: any
+  o: any,
 ): o is ActionParam.InterfaceType<any> {
   return (
     o != null &&
@@ -45,7 +45,7 @@ export function isInterfaceActionParam(
 
 /** @internal */
 export function isInterfaceQueryParam(
-  o: any
+  o: any,
 ): o is QueryParam.InterfaceType<any> {
   return (
     o != null &&

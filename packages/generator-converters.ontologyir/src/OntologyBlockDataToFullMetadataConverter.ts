@@ -189,6 +189,10 @@ export class OntologyBlockDataToFullMetadataConverter {
         status: this.convertObjectTypeStatusFromBlockData(object.status),
         properties,
         rid,
+        // TODO: aliases and datasources are not yet derived from the block
+        // data; to be implemented later.
+        aliases: [],
+        datasources: [],
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};

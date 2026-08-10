@@ -88,7 +88,7 @@ export function usePlatformQuery<T>({
         devToolsMetadata({
           hookType: "usePlatformQuery",
           objectType: queryName,
-        })
+        }),
       );
     }
 
@@ -105,7 +105,7 @@ export function usePlatformQuery<T>({
       devToolsMetadata({
         hookType: "usePlatformQuery",
         objectType: queryName,
-      })
+      }),
     );
   }, [enabled, queryName, handleQuery]);
 

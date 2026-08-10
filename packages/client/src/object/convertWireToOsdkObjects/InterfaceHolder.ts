@@ -35,7 +35,7 @@ export interface InterfaceHolder<
     PropertyApiName extends string,
   >(
     propertyApiName: PropertyApiName,
-    options?: FormatPropertyOptions
+    options?: FormatPropertyOptions,
   ) => string | undefined;
 }
 

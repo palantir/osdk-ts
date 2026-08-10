@@ -29,13 +29,13 @@ import type { GetEvaluationInformationResponse as _api_metrics_GetEvaluationInfo
 export async function getEvaluationInformation(
   ctx: ConjureContext,
   monitorRid: _api_MonitorRid,
-  branchRid: _api_BranchRid | null | undefined
+  branchRid: _api_BranchRid | null | undefined,
 ): Promise<_api_metrics_GetEvaluationInformationResponse> {
   return conjureFetch(
     ctx,
     `/monitorMetrics/evaluationInformation/${monitorRid}`,
     "GET",
     undefined,
-    { branchRid }
+    { branchRid },
   );
 }

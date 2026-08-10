@@ -27,7 +27,7 @@ export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
   interfaceApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     const convertedSpt = convertSpt(prop.sharedPropertyType, ridGenerator);
@@ -60,14 +60,14 @@ export function convertInterfaceProperty(
                   subtype: propertyTypeTypeToOntologyIrInterfaceType(
                     prop.type,
                     apiName,
-                    ridGenerator
+                    ridGenerator,
                   ),
                 },
               }
             : propertyTypeTypeToOntologyIrInterfaceType(
                 prop.type,
                 apiName,
-                ridGenerator
+                ridGenerator,
               ),
           constraints: {
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
@@ -81,13 +81,13 @@ export function convertInterfaceProperty(
             valueType: prop.valueType
               ? ridGenerator.generateRidForValueType(
                   prop.valueType.apiName,
-                  prop.valueType.version
+                  prop.valueType.version,
                 )
               : undefined,
           },
           rid: ridGenerator.generateInterfacePropertyTypeRid(
             apiName,
-            interfaceApiName
+            interfaceApiName,
           ),
         },
       },

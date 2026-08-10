@@ -27,7 +27,7 @@ import type { NotifySourceChangeRequest as _NotifySourceChangeRequest } from "..
  */
 export async function notifySourceChange(
   ctx: ConjureContext,
-  request: _NotifySourceChangeRequest
+  request: _NotifySourceChangeRequest,
 ): Promise<void> {
   return conjureFetch(ctx, `/deployed-apps/source-change`, "PUT", request);
 }

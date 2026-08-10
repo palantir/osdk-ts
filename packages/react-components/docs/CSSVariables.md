@@ -43,7 +43,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Tooltip](#tooltip)
   - [Document Viewer](#document-viewer)
   - [Email Viewer](#email-viewer)
-  - [Excel Viewer](#excel-viewer)
+  - [Spreadsheet Viewer](#spreadsheet-viewer)
   - [Image Viewer](#image-viewer)
   - [Video Viewer](#video-viewer)
   - [XML Viewer](#xml-viewer)
@@ -1486,40 +1486,40 @@ Styling for the email viewer.
 | `--osdk-email-viewer-header-bg`     | `var(--osdk-background-secondary)` | Header background |
 | `--osdk-email-viewer-header-border` | `var(--osdk-surface-border)`       | Header border     |
 
-### Excel Viewer
+### Spreadsheet Viewer
 
-Styling for the Excel viewer.
+Styling for the spreadsheet viewer.
 
 #### Container
 
-| Variable                     | Default Value                    | Description       |
-| ---------------------------- | -------------------------------- | ----------------- |
-| `--osdk-excel-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
-| `--osdk-excel-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+| Variable                           | Default Value                    | Description       |
+| ---------------------------------- | -------------------------------- | ----------------- |
+| `--osdk-spreadsheet-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-spreadsheet-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
 
 #### Table
 
-| Variable                               | Default Value                              | Description       |
-| -------------------------------------- | ------------------------------------------ | ----------------- |
-| `--osdk-excel-viewer-header-bg`        | `var(--osdk-background-secondary)`         | Header background |
-| `--osdk-excel-viewer-header-color`     | `var(--osdk-typography-color-muted)`       | Header text color |
-| `--osdk-excel-viewer-cell-border`      | `var(--osdk-surface-border-color-default)` | Cell border color |
-| `--osdk-excel-viewer-cell-padding`     | `2px 6px`                                  | Cell padding      |
-| `--osdk-excel-viewer-col-min-width`    | `80px`                                     | Minimum col width |
-| `--osdk-excel-viewer-row-header-width` | `40px`                                     | Row header width  |
+| Variable                                     | Default Value                              | Description       |
+| -------------------------------------------- | ------------------------------------------ | ----------------- |
+| `--osdk-spreadsheet-viewer-header-bg`        | `var(--osdk-background-secondary)`         | Header background |
+| `--osdk-spreadsheet-viewer-header-color`     | `var(--osdk-typography-color-muted)`       | Header text color |
+| `--osdk-spreadsheet-viewer-cell-border`      | `var(--osdk-surface-border-color-default)` | Cell border color |
+| `--osdk-spreadsheet-viewer-cell-padding`     | `2px 6px`                                  | Cell padding      |
+| `--osdk-spreadsheet-viewer-col-min-width`    | `80px`                                     | Minimum col width |
+| `--osdk-spreadsheet-viewer-row-header-width` | `40px`                                     | Row header width  |
 
 #### Sheet Tabs
 
-| Variable                                | Default Value                      | Description          |
-| --------------------------------------- | ---------------------------------- | -------------------- |
-| `--osdk-excel-viewer-tab-bg`            | `var(--osdk-background-secondary)` | Tab background       |
-| `--osdk-excel-viewer-tab-hover-bg`      | `var(--osdk-background-tertiary)`  | Tab hover background |
-| `--osdk-excel-viewer-tab-active-bg`     | `var(--osdk-background-primary)`   | Active tab bg        |
-| `--osdk-excel-viewer-tab-border`        | `var(--osdk-surface-border)`       | Tab border           |
-| `--osdk-excel-viewer-tab-border-radius` | `4px`                              | Tab border radius    |
-| `--osdk-excel-viewer-tab-padding`       | `4px 12px`                         | Tab padding          |
-| `--osdk-excel-viewer-tab-bar-padding`   | `4px`                              | Tab bar padding      |
-| `--osdk-excel-viewer-tab-gap`           | `2px`                              | Gap between tabs     |
+| Variable                                      | Default Value                      | Description          |
+| --------------------------------------------- | ---------------------------------- | -------------------- |
+| `--osdk-spreadsheet-viewer-tab-bg`            | `var(--osdk-background-secondary)` | Tab background       |
+| `--osdk-spreadsheet-viewer-tab-hover-bg`      | `var(--osdk-background-tertiary)`  | Tab hover background |
+| `--osdk-spreadsheet-viewer-tab-active-bg`     | `var(--osdk-background-primary)`   | Active tab bg        |
+| `--osdk-spreadsheet-viewer-tab-border`        | `var(--osdk-surface-border)`       | Tab border           |
+| `--osdk-spreadsheet-viewer-tab-border-radius` | `4px`                              | Tab border radius    |
+| `--osdk-spreadsheet-viewer-tab-padding`       | `4px 12px`                         | Tab padding          |
+| `--osdk-spreadsheet-viewer-tab-bar-padding`   | `4px`                              | Tab bar padding      |
+| `--osdk-spreadsheet-viewer-tab-gap`           | `2px`                              | Gap between tabs     |
 
 ### Image Viewer
 

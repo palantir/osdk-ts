@@ -23,7 +23,7 @@ import type { SupportedModuleType as _SupportedModuleType } from "../__component
  * supported to be launched and managed.
  */
 export async function getSupportedModuleTypes(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<Array<_SupportedModuleType>> {
   return conjureFetch(ctx, `/module-group/supported-module-types`, "GET");
 }

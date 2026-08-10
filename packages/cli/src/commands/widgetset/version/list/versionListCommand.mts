@@ -42,7 +42,7 @@ export default async function versionListCommand({
 
   const semver = await import("semver");
   const sortedVersions = semver.rsort(
-    response.data.map((v) => v.version).filter((v) => semver.valid(v))
+    response.data.map((v) => v.version).filter((v) => semver.valid(v)),
   );
   for (const version of sortedVersions) {
     consola.log(`    - ${version}`);

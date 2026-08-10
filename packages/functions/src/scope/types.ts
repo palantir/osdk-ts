@@ -53,7 +53,7 @@ export namespace ScopeResources {
    * Sentinel value: discovery populates scope from `defaultResources` declared in functions.json.
    */
   export const defaultResources: unique symbol = Symbol(
-    "ScopeResources.defaultResources"
+    "ScopeResources.defaultResources",
   );
 }
 
@@ -82,7 +82,7 @@ export namespace ScopeAuthorization {
    * Sentinel value: discovery uses `defaultAuthorization.read` declared in functions.json.
    */
   export const defaultRead: unique symbol = Symbol(
-    "ScopeAuthorization.defaultRead"
+    "ScopeAuthorization.defaultRead",
   );
 }
 

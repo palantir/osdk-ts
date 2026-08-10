@@ -222,7 +222,7 @@ interface FetchPageSignature<
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS
-    >
+    >,
   ): Promise<
     PageResult<
       MaybeScore<
@@ -263,7 +263,7 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
   readonly nearestNeighbors: (
     query: string | number[],
     numNeighbors: number,
-    property: PropertyKeys.Filtered<Q, "vector">
+    property: PropertyKeys.Filtered<Q, "vector">,
   ) => this;
 }
 
@@ -308,7 +308,7 @@ interface FetchPageWithErrorsSignature<
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS
-    >
+    >,
   ): Promise<
     Result<
       PageResult<
@@ -368,7 +368,7 @@ interface AsyncIterSignature<
    * @returns an async iterator to load all objects
    */
   <X extends ValidAsyncIterArgs<Q, RDPs> = never>(
-    args?: X
+    args?: X,
   ): AsyncIterableIterator<
     Osdk.Instance<
       Q,
@@ -409,7 +409,7 @@ interface AsyncIterSignature<
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS
-    >
+    >,
   ): AsyncIterableIterator<
     MaybeScore<
       Osdk.Instance<
@@ -504,7 +504,7 @@ interface Aggregate<Q extends ObjectOrInterfaceDefinition> {
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
   readonly aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 }
 
@@ -570,7 +570,7 @@ interface PivotTo<Q extends ObjectOrInterfaceDefinition> {
    * @returns an object set of the specified linked type
    */
   readonly pivotTo: <L extends LinkNames<Q>>(
-    type: L
+    type: L,
   ) => ObjectSet<LinkedType<Q, L>>;
 }
 
@@ -595,7 +595,7 @@ interface FetchOneSignature<
     PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
   ): Promise<
     Osdk.Instance<
       Q,
@@ -630,7 +630,7 @@ interface FetchOneWithErrorsSignature<
     PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
   ): Promise<
     Result<
       Osdk.Instance<
@@ -681,7 +681,7 @@ interface Subscribe<Q extends ObjectOrInterfaceDefinition> {
     const R extends boolean = false,
   >(
     listener: ObjectSetSubscription.Listener<Q, P, R>,
-    opts?: ObjectSetSubscription.Options<Q, P, R>
+    opts?: ObjectSetSubscription.Options<Q, P, R>,
   ) => { unsubscribe: () => void };
 }
 
@@ -701,7 +701,7 @@ interface NarrowToType<Q extends ObjectOrInterfaceDefinition> {
   readonly narrowToType: <
     CONVERT_TO extends RestrictToImplementingObjectTypes<Q>,
   >(
-    type: CONVERT_TO
+    type: CONVERT_TO,
   ) => ObjectSet<CONVERT_TO>;
 }
 
@@ -754,7 +754,7 @@ interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
   readonly experimental_asyncIterLinks: <
     LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
   >(
-    links: LINK_TYPE_API_NAME[]
+    links: LINK_TYPE_API_NAME[],
   ) => AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
   >;

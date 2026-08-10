@@ -58,7 +58,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     outlineIcons,
     className,
   },
-  ref
+  ref,
 ) {
   const viewer = usePdfViewerState({
     src,
@@ -85,7 +85,7 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
       scrollToPage: viewer.scrollToPage,
       deleteHighlight,
     }),
-    [viewer.scrollToPage, deleteHighlight]
+    [viewer.scrollToPage, deleteHighlight],
   );
 
   const { hasFormFields, submitFormData } = usePdfFormFields({

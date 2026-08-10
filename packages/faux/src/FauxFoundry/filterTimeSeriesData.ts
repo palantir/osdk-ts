@@ -35,7 +35,7 @@ const toDuration: Record<
 export function filterTimeSeriesData(
   data: OntologiesV2.TimeSeriesPoint[],
   { range }: OntologiesV2.StreamTimeSeriesPointsRequest,
-  now: Date = constructNow(Date.now())
+  now: Date = constructNow(Date.now()),
 ): OntologiesV2.TimeSeriesPoint[] {
   if (!range) {
     return data;
@@ -64,7 +64,7 @@ export function filterTimeSeriesData(
 function extractDate(
   range: OntologiesV2.TimeRange,
   key: "startTime" | "endTime",
-  now: number | Date | string
+  now: number | Date | string,
 ) {
   if (range.type === "absolute") {
     return range[key];

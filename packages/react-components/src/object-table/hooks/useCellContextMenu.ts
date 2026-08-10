@@ -57,7 +57,7 @@ export const useCellContextMenu = ({
         setIsContextMenuOpen(true);
       }
     },
-    [tdRef]
+    [tdRef],
   );
 
   const handleCloseContextMenu = useCallback(() => {

@@ -20,12 +20,18 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 const SAMPLE_COLUMNS: MultiColumnSortDialogProps["columnOptions"] = [
-  { id: "fullName", name: "Full Name", canSort: true },
-  { id: "email", name: "Email", canSort: true },
-  { id: "jobTitle", name: "Job Title", canSort: true },
-  { id: "department", name: "Department", canSort: true },
-  { id: "startDate", name: "Start Date", canSort: true },
-  { id: "location", name: "Location", canSort: false },
+  { id: "fullName", name: "Full Name", canSort: true, dataType: "string" },
+  { id: "email", name: "Email", canSort: true, dataType: "string" },
+  { id: "jobTitle", name: "Job Title", canSort: true, dataType: "string" },
+  { id: "department", name: "Department", canSort: true, dataType: "string" },
+  { id: "startDate", name: "Start Date", canSort: true, dataType: "timestamp" },
+  {
+    id: "yearsOfService",
+    name: "Years of Service",
+    canSort: true,
+    dataType: "integer",
+  },
+  { id: "location", name: "Location", canSort: false, dataType: "string" },
 ];
 
 const meta: Meta<MultiColumnSortDialogProps> = {
@@ -40,6 +46,8 @@ const meta: Meta<MultiColumnSortDialogProps> = {
     currentSorting: [
       { id: "fullName", desc: false },
       { id: "department", desc: true },
+      { id: "yearsOfService", desc: true },
+      { id: "startDate", desc: false },
     ],
   },
   argTypes: {
@@ -61,7 +69,6 @@ const meta: Meta<MultiColumnSortDialogProps> = {
     columnOptions: {
       description:
         "Available columns to sort by. Only columns with `canSort: true` appear in the add menu.",
-      control: false,
     },
     currentSorting: {
       description: "Current sorting state from TanStack Table",
@@ -93,13 +100,14 @@ const [isOpen, setIsOpen] = useState(false);
   isOpen={isOpen}
   onClose={() => setIsOpen(false)}
   columnOptions={[
-    { id: "fullName", name: "Full Name", canSort: true },
-    { id: "email", name: "Email", canSort: true },
-    { id: "department", name: "Department", canSort: true },
+    { id: "fullName", name: "Full Name", canSort: true, dataType: "string" },
+    { id: "email", name: "Email", canSort: true, dataType: "string" },
+    { id: "yearsOfService", name: "Years of Service", canSort: true, dataType: "integer" },
+    { id: "startDate", name: "Start Date", canSort: true, dataType: "timestamp" },
   ]}
   currentSorting={[
     { id: "fullName", desc: false },
-    { id: "department", desc: true },
+    { id: "yearsOfService", desc: true },
   ]}
   onApply={(sorting) => console.log("Applied:", sorting)}
 />`,

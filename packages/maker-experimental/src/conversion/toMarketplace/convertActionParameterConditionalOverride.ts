@@ -32,7 +32,7 @@ export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
   ridGenerator: OntologyRidGenerator,
-  actionParameters?: ActionParameter[]
+  actionParameters?: ActionParameter[],
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
   switch (override.type) {
@@ -116,7 +116,7 @@ export function convertActionParameterConditionalOverride(
         allowedValues: {
           allowedValues: extractAllowedValues(
             override.constraint,
-            ridGenerator
+            ridGenerator,
           ),
         },
       };

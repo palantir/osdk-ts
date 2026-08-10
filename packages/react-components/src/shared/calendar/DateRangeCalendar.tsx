@@ -39,12 +39,12 @@ const CLASS_NAMES: ClassNames = {
   ...BASE_CLASS_NAMES,
   day_range_start: classnames(
     styles.calendarRangeEndpoint,
-    styles.calendarRangeStart
+    styles.calendarRangeStart,
   ),
   day_range_middle: styles.calendarRangeMiddle,
   day_range_end: classnames(
     styles.calendarRangeEndpoint,
-    styles.calendarRangeEnd
+    styles.calendarRangeEnd,
   ),
 };
 

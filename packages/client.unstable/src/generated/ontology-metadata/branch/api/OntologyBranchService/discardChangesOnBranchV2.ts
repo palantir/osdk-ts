@@ -33,12 +33,12 @@ import type {
 export async function discardChangesOnBranchV2(
   ctx: ConjureContext,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_DiscardChangesRequest
+  request: _branch_api_DiscardChangesRequest,
 ): Promise<_branch_api_DiscardChangesResponseV2> {
   return conjureFetch(
     ctx,
     `/ontology/branch/${ontologyBranchRid}/discardChangesV2`,
     "POST",
-    request
+    request,
   );
 }

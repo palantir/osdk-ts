@@ -1,5 +1,33 @@
 # @osdk/create-app
 
+## 2.55.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- f6806ee: Add an opt-in `--unstableFeatures` flag. When enabled, apps generated from the 2.x/beta templates (React, Vue, Expo, and the to-do tutorials) are wired for Foundry branch support.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.53.0
+
+## 2.52.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.52.0
+
 ## 2.51.0
 
 ### Patch Changes

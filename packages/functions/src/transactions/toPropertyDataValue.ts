@@ -29,7 +29,7 @@ export function toPropertyDataValue(value: unknown): DataValue {
     const result: Record<string, DataValue> = {};
     for (const key in value) {
       result[key] = toPropertyDataValue(
-        (value as Record<string, unknown>)[key]
+        (value as Record<string, unknown>)[key],
       );
     }
     return result;

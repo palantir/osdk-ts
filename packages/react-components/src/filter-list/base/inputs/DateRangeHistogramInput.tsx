@@ -30,7 +30,7 @@ const defaultDateConfig: RangeInputConfig<Date> = {
   maxLabel: "To",
   formatTooltip: (min, max, count) =>
     `${formatDateForInput(min)} - ${formatDateForInput(
-      max
+      max,
     )}: ${count.toLocaleString()}`,
 };
 
@@ -66,11 +66,11 @@ function DateRangeHistogramInputInner({
             formatDate,
             formatTooltip: (min, max, count) =>
               `${formatDate(min)} - ${formatDate(
-                max
+                max,
               )}: ${count.toLocaleString()}`,
           }
         : defaultDateConfig,
-    [formatDate]
+    [formatDate],
   );
 
   const histogramData = useMemo(() => {
@@ -94,7 +94,7 @@ function DateRangeHistogramInputInner({
     const { buckets, subtitle } = createDateHistogramBuckets(
       valueCountPairs,
       { min: new Date(minMs), max: new Date(maxMs) },
-      formatDate
+      formatDate,
     );
     return { buckets, subtitle };
   }, [valueCountPairs, formatDate]);
@@ -110,5 +110,5 @@ function DateRangeHistogramInputInner({
 }
 
 export const DateRangeHistogramInput = memo(
-  DateRangeHistogramInputInner
+  DateRangeHistogramInputInner,
 ) as typeof DateRangeHistogramInputInner;

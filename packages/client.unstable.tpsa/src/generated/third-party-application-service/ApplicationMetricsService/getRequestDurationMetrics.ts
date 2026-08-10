@@ -31,12 +31,12 @@ import type { GetRequestDurationMetricsResponse } from "../GetRequestDurationMet
 export async function getRequestDurationMetrics(
   ctx: ConjureContext,
   applicationRid: ApplicationRid,
-  request: GetRequestDurationMetricsRequest
+  request: GetRequestDurationMetricsRequest,
 ): Promise<GetRequestDurationMetricsResponse> {
   return conjureFetch(
     ctx,
     `/application-metrics/${applicationRid}/requestDurationMetrics`,
     "PUT",
-    request
+    request,
   );
 }

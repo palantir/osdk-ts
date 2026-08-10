@@ -425,7 +425,7 @@ const headerMenuName = (columnId: string): string =>
 /** Resolve a column's `<th>` via its header-menu trigger button. */
 export async function getColumnHeader(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): Promise<HTMLElement> {
   const trigger = await root.findByRole("button", {
     name: headerMenuName(columnId),
@@ -439,10 +439,10 @@ export async function getColumnHeader(
 
 export async function openHeaderMenu(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): Promise<void> {
   await userEvent.click(
-    await root.findByRole("button", { name: headerMenuName(columnId) })
+    await root.findByRole("button", { name: headerMenuName(columnId) }),
   );
 }
 
@@ -450,11 +450,31 @@ export async function clickHeaderMenuItem(label: string): Promise<void> {
   await userEvent.click(await screen.findByRole("menuitem", { name: label }));
 }
 
+// The header picks its sort glyph from the column's property type:
+// alphabetical for text, numerical for numbers, and plain directional arrows
+// for dates plus any column whose type isn't known (derived properties, for
+// instance). Match every pair so this helper works for all column types.
+const ASCENDING_SORT_ICONS = [
+  "sort-alphabetical",
+  "sort-numerical",
+  "sort-asc",
+];
+const DESCENDING_SORT_ICONS = [
+  "sort-alphabetical-desc",
+  "sort-numerical-desc",
+  "sort-desc",
+];
+
+function hasSortIcon(th: HTMLElement, iconNames: readonly string[]): boolean {
+  const selector = iconNames.map((name) => `[data-icon="${name}"]`).join(", ");
+  return th.querySelector(selector) != null;
+}
+
 function getSortDirection(th: HTMLElement): "asc" | "desc" | "none" {
-  if (th.querySelector('[data-icon="sort-alphabetical-desc"]') != null) {
+  if (hasSortIcon(th, DESCENDING_SORT_ICONS)) {
     return "desc";
   }
-  if (th.querySelector('[data-icon="sort-alphabetical"]') != null) {
+  if (hasSortIcon(th, ASCENDING_SORT_ICONS)) {
     return "asc";
   }
   return "none";
@@ -462,7 +482,7 @@ function getSortDirection(th: HTMLElement): "asc" | "desc" | "none" {
 
 export function sortDirectionOf(
   root: Canvas,
-  columnId: string
+  columnId: string,
 ): "asc" | "desc" | "none" {
   const trigger = root.queryByRole("button", {
     name: headerMenuName(columnId),
@@ -488,7 +508,7 @@ export function getResizeHandle(th: HTMLElement): HTMLElement {
  */
 export async function dragResizeHandle(
   th: HTMLElement,
-  deltaX: number
+  deltaX: number,
 ): Promise<void> {
   const handle = getResizeHandle(th);
   const rect = handle.getBoundingClientRect();

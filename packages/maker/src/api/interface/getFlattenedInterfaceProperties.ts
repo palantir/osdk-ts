@@ -21,7 +21,7 @@ import {
 import type { InterfaceType } from "./InterfaceType.js";
 
 export function getFlattenedInterfaceProperties(
-  interfaceType: InterfaceType
+  interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
   let properties: Record<string, InterfacePropertyType> = Object.fromEntries(
     Object.entries(interfaceType.propertiesV3).map(([key, value]) => [
@@ -29,7 +29,7 @@ export function getFlattenedInterfaceProperties(
         ? value.sharedPropertyType.apiName
         : key,
       value,
-    ])
+    ]),
   );
   Object.entries(interfaceType.propertiesV2).forEach(([apiName, spt]) => {
     if (!(apiName in properties)) {

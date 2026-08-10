@@ -39,7 +39,7 @@ export function applyShapeTransformations<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
   shape: S,
-  rawObject: Osdk.Instance<ShapeBaseType<S>> | undefined
+  rawObject: Osdk.Instance<ShapeBaseType<S>> | undefined,
 ): ShapeTransformResult<S> {
   if (rawObject === undefined) {
     return {
@@ -126,7 +126,7 @@ export function applyShapeTransformations<
       ? rawObject.$clone(
           transformedProps as Partial<
             CompileTimeMetadata<ShapeBaseType<S>>["props"]
-          >
+          >,
         )
       : rawObject;
 
@@ -163,7 +163,7 @@ export function applyShapeTransformationsToArray<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
   shape: S,
-  rawObjects: Osdk.Instance<ShapeBaseType<S>>[]
+  rawObjects: Osdk.Instance<ShapeBaseType<S>>[],
 ): {
   data: ShapeInstance<S>[];
   droppedCount: number;

@@ -26,7 +26,7 @@ import {
 } from "./InternalSymbols.js";
 
 const nodejsUtilInspectCustom: unique symbol = Symbol.for(
-  "nodejs.util.inspect.custom"
+  "nodejs.util.inspect.custom",
 );
 
 export const OsdkCustomInspectPrototype: {
@@ -47,7 +47,7 @@ function customInspect(
   this: HolderBase<ObjectOrInterfaceDefinition> & Osdk<any>,
   _depth: number,
   options: InspectOptionsStylized,
-  localInspect: typeof inspect
+  localInspect: typeof inspect,
 ): string {
   const newOptions = {
     ...options,
@@ -56,7 +56,7 @@ function customInspect(
 
   let ret = `Osdk<${options.stylize(
     this[ObjectDefRef]?.apiName ?? this[InterfaceDefRef]?.apiName ?? "",
-    "special"
+    "special",
   )}> {\n`;
 
   for (const k of new Set([
@@ -69,7 +69,7 @@ function customInspect(
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
     ret += `  ${options.stylize(k.toString(), "undefined")}: ${localInspect(
       this[k as any],
-      newOptions
+      newOptions,
     )}\n`;
   }
 
@@ -77,7 +77,7 @@ function customInspect(
     ret += "\n";
     ret += `  ${options.stylize("$as", "special")}: ${localInspect(
       this[UnderlyingOsdkObject],
-      newOptions
+      newOptions,
     ).replace(/\n/gu, `\n  `)}`;
     ret += "\n";
   }

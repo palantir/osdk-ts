@@ -23,7 +23,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const numEmployee = await client(Employee)
-  .aggregate({
-    $select: { $count: "unordered" },
-  });
+const numEmployee = await client(Employee).aggregate({
+  $select: { $count: "unordered" },
+});

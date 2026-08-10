@@ -22,7 +22,7 @@ import { withOsdkMetrics } from "../util/withOsdkMetrics.js";
 
 export const CbacPicker: typeof _CbacPicker = withOsdkMetrics(
   _CbacPicker,
-  "CbacPicker"
+  "CbacPicker",
 );
 export { CbacPickerDialog } from "../cbac-picker/CbacPickerDialog.js";
 

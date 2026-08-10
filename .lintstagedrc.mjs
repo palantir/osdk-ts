@@ -41,6 +41,7 @@ const OXC_PACKAGES = [
   "create-app.template.vue.v2",
   "create-widget.template.minimal-react.v2",
   "create-widget.template.react.v2",
+  "typescript-sdk-docs-examples",
 ];
 const OXC_PACKAGE_GLOB = `packages/{${
   OXC_PACKAGES.join(",")
@@ -63,6 +64,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "maker-import": "packages/maker-import/oxlint.config.ts",
   "api": "packages/api/oxlint.config.ts",
   "functions": "packages/functions/oxlint.config.ts",
+  "agents": "packages/agents/oxlint.config.ts",
   "unit-testing": "packages/unit-testing/oxlint.config.ts",
   "aip-core": "packages/aip-core/oxlint.config.ts",
   "foundry-config-json": "packages/foundry-config-json/oxlint.config.ts",
@@ -89,6 +91,8 @@ const OXC_NESTED_CONFIG_PACKAGES = {
   "vite-plugin-superrepo": "packages/vite-plugin-superrepo/oxlint.config.ts",
   "vite-plugin-status-reporter":
     "packages/vite-plugin-status-reporter/oxlint.config.ts",
+  "vite-plugin-code-workspace-preview":
+    "packages/vite-plugin-code-workspace-preview/oxlint.config.ts",
   "widget.vite-plugin": "packages/widget.vite-plugin/oxlint.config.ts",
   "ontology-explorer-app": "packages/ontology-explorer-app/oxlint.config.ts",
   "ontology-explorer-server":

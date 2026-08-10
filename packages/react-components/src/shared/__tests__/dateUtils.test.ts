@@ -81,10 +81,10 @@ describe("formatTime", () => {
 describe("formatDatetimeForInput", () => {
   it("formats a date to YYYY-MM-DD HH:mm (space-separated)", () => {
     expect(formatDatetimeForInput(new Date(2024, 5, 15, 14, 30))).toBe(
-      "2024-06-15 14:30"
+      "2024-06-15 14:30",
     );
     expect(formatDatetimeForInput(new Date(2024, 0, 3, 9, 5))).toBe(
-      "2024-01-03 09:05"
+      "2024-01-03 09:05",
     );
   });
 
@@ -121,7 +121,7 @@ describe("parseDatetimeFromInput", () => {
 describe("isDateInRange", () => {
   it("returns true when no min/max constraints", () => {
     expect(isDateInRange(new Date(2024, 5, 15), undefined, undefined)).toBe(
-      true
+      true,
     );
   });
 

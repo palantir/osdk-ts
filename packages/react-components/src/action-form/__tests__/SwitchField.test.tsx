@@ -30,7 +30,7 @@ describe("SwitchField", () => {
         onChange={onChange}
         label="Enabled"
         disabled={true}
-      />
+      />,
     );
 
     const toggle = screen.getByRole("switch", { name: "Enabled" });

@@ -31,12 +31,12 @@ export async function mergeOntologyServiceBranch(
   ctx: ConjureContext,
   onBehalfOf: string,
   ontologyBranchRid: _api_OntologyBranchRid,
-  request: _branch_api_MergeOntologyServiceBranchRequest
+  request: _branch_api_MergeOntologyServiceBranchRequest,
 ): Promise<_branch_api_MergeOntologyServiceBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/service-branch/merge/${ontologyBranchRid}`,
     "PUT",
-    request
+    request,
   );
 }

@@ -41,14 +41,14 @@ describe("buildCopyPrompt", () => {
 
     expect(prompt).toContain("OSDK React Toolkit");
     expect(prompt).toContain(
-      "ISSUE: EmployeeCard fetches unused data (Bandwidth, severity: high)"
+      "ISSUE: EmployeeCard fetches unused data (Bandwidth, severity: high)",
     );
     expect(prompt).toContain(
-      "WHY IT MATTERS: This component fetches 12 properties but only uses 3"
+      "WHY IT MATTERS: This component fetches 12 properties but only uses 3",
     );
     expect(prompt).toContain("EXPECTED IMPACT: Save 4.2KB bandwidth per load");
     expect(prompt).toContain(
-      "SUGGESTED FIX:\nUse $select to only fetch used properties"
+      "SUGGESTED FIX:\nUse $select to only fetch used properties",
     );
     expect(prompt).toContain("OSDK GUIDANCE:");
     expect(prompt).toContain("TASK: Apply the suggested fix");
@@ -60,7 +60,7 @@ describe("buildCopyPrompt", () => {
     expect(prompt).not.toContain("LOCATION:");
     expect(prompt).not.toContain("the location above");
     expect(prompt).toContain(
-      "Use the issue above — it names the component, query, and object type involved"
+      "Use the issue above — it names the component, query, and object type involved",
     );
   });
 
@@ -82,10 +82,10 @@ describe("buildCopyPrompt", () => {
     expect(prompt).not.toContain("SUGGESTED FIX:");
     expect(prompt).not.toContain("OSDK GUIDANCE:");
     expect(prompt).toContain(
-      "ISSUE: Query waterfall on Employee (network, severity: high)"
+      "ISSUE: Query waterfall on Employee (network, severity: high)",
     );
     expect(prompt).toContain(
-      "WHY IT MATTERS: ParcelList reads Shipment after Parcel resolves"
+      "WHY IT MATTERS: ParcelList reads Shipment after Parcel resolves",
     );
   });
 
@@ -93,13 +93,13 @@ describe("buildCopyPrompt", () => {
     const prompt = buildCopyPrompt(makeRec({ filePath: "src/A.tsx" }));
 
     expect(prompt).toContain(
-      "TASK: Apply the suggested fix at the location above"
+      "TASK: Apply the suggested fix at the location above",
     );
   });
 
   it("renders LOCATION with line number when both filePath and lineNumber are present", () => {
     const prompt = buildCopyPrompt(
-      makeRec({ filePath: "src/A.tsx", lineNumber: 17 })
+      makeRec({ filePath: "src/A.tsx", lineNumber: 17 }),
     );
 
     expect(prompt).toContain("LOCATION: src/A.tsx:17");
@@ -114,7 +114,7 @@ describe("buildCopyPrompt", () => {
 
   it("includes lineNumber 0 in the LOCATION line", () => {
     const prompt = buildCopyPrompt(
-      makeRec({ filePath: "src/A.tsx", lineNumber: 0 })
+      makeRec({ filePath: "src/A.tsx", lineNumber: 0 }),
     );
 
     expect(prompt).toContain("LOCATION: src/A.tsx:0");
@@ -134,7 +134,7 @@ describe("buildCopyPrompt", () => {
     const prompt = buildCopyPrompt(makeRec());
 
     expect(prompt).toContain(
-      "SUGGESTED FIX:\nUse $select to only fetch used properties"
+      "SUGGESTED FIX:\nUse $select to only fetch used properties",
     );
     expect(prompt).not.toContain("```tsx");
   });
@@ -143,13 +143,13 @@ describe("buildCopyPrompt", () => {
     const prompt = buildCopyPrompt(makeRec({ code: "const y = 2;" }));
 
     expect(prompt).toContain(
-      "SUGGESTED FIX:\nUse $select to only fetch used properties\n```tsx\nconst y = 2;\n```"
+      "SUGGESTED FIX:\nUse $select to only fetch used properties\n```tsx\nconst y = 2;\n```",
     );
   });
 
   it("prefers the recommendation's own osdkGuidance when provided", () => {
     const prompt = buildCopyPrompt(
-      makeRec({ osdkGuidance: "Custom guidance for this rec." })
+      makeRec({ osdkGuidance: "Custom guidance for this rec." }),
     );
 
     expect(prompt).toContain("OSDK GUIDANCE:\nCustom guidance for this rec.");
@@ -159,7 +159,7 @@ describe("buildCopyPrompt", () => {
     const prompt = buildCopyPrompt(makeRec({ category: "Cache" }));
 
     expect(prompt).toContain(
-      `OSDK GUIDANCE:\n${OSDK_GUIDANCE_BY_CATEGORY.Cache}`
+      `OSDK GUIDANCE:\n${OSDK_GUIDANCE_BY_CATEGORY.Cache}`,
     );
   });
 });
@@ -169,7 +169,7 @@ describe("buildCopyAllPrompt", () => {
     const prompt = buildCopyAllPrompt([makeRec(), makeRec({ id: "rec-2" })]);
 
     expect(prompt).toContain(
-      "Here are 2 OSDK optimizations, ordered by priority:"
+      "Here are 2 OSDK optimizations, ordered by priority:",
     );
   });
 

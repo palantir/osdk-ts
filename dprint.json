@@ -47,6 +47,7 @@
     "packages/maker-import/",
     "packages/api/",
     "packages/functions/",
+    "packages/agents/",
     "packages/unit-testing/",
     "packages/aip-core/",
     "packages/foundry-config-json/",
@@ -80,6 +81,7 @@
     "packages/tool.release/",
     "packages/tool.generate-with-mock-ontology/",
     "packages/version-updater/",
+    "packages/vite-plugin-code-workspace-preview/",
     "packages/vite-plugin-oac/",
     "packages/vite-plugin-superrepo/",
     "packages/vite-plugin-status-reporter/",
@@ -97,7 +99,8 @@
     "packages/e2e.sandbox.officenetwork/",
     "packages/e2e.sandbox.peopleapp/",
     "packages/e2e.sandbox.todoapp/",
-    "packages/e2e.sandbox.todowidget/"
+    "packages/e2e.sandbox.todowidget/",
+    "packages/typescript-sdk-docs-examples/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

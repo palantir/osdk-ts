@@ -29,7 +29,7 @@ describe("basicAggregate", () => {
           .where({ employeeId: { $eq: 5 } })
           .aggregate({
             $select: { "employeeLocation:exactDistinct": "asc" },
-          })
+          }),
       )
       .thenReturnAggregation({ employeeLocation: { exactDistinct: 3 } });
 
@@ -43,7 +43,7 @@ describe("basicAggregate", () => {
               "fullName:approximateDistinct": "unordered",
             },
             $groupBy: { employeeId: "exact" },
-          })
+          }),
       )
       .thenReturnAggregation([
         {

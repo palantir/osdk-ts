@@ -46,7 +46,7 @@ export async function hydrateOsdkObject(
   client: Client,
   objects: OntologyObjectV2[],
   objectDefsByApiName?: Record<string, ObjectMetadata>,
-  propertySecurities?: PropertySecurities[]
+  propertySecurities?: PropertySecurities[],
 ): Promise<Array<Osdk.Instance<any>>> {
   return convertWireToOsdkObjects(
     client[additionalContext],
@@ -59,6 +59,6 @@ export async function hydrateOsdkObject(
     /* strictNonNull */ undefined,
     /* interfaceToObjectTypeMappings */ undefined,
     /* interfaceToObjectTypeMappingsV2 */ undefined,
-    objectDefsByApiName
+    objectDefsByApiName,
   ) as unknown as Promise<Array<Osdk.Instance<any>>>;
 }

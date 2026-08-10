@@ -57,7 +57,7 @@ describe("EditableCell", () => {
         onCellValidationError={onCellValidationError}
         clearCellValidationError={clearCellValidationError}
         validateEdit={validateEdit}
-      />
+      />,
     );
 
     const input = screen.getByRole("textbox");
@@ -68,7 +68,7 @@ describe("EditableCell", () => {
     await waitFor(() => {
       expect(onCellValidationError).toHaveBeenCalledWith(
         "row-1_col-1",
-        "Validation failed"
+        "Validation failed",
       );
     });
 
@@ -100,7 +100,7 @@ describe("EditableCell", () => {
         {...defaultProps}
         onCellValidationError={onCellValidationError}
         validateEdit={validateEdit}
-      />
+      />,
     );
 
     const input = screen.getByRole("textbox");
@@ -120,7 +120,7 @@ describe("EditableCell", () => {
     expect(onCellValidationError).toHaveBeenCalledTimes(1);
     expect(onCellValidationError).toHaveBeenCalledWith(
       "row-1_col-1",
-      "Validation error for value2"
+      "Validation error for value2",
     );
   });
 
@@ -139,7 +139,7 @@ describe("EditableCell", () => {
           initialValue={value}
           currentValue={value}
           onCellEdit={onCellEdit}
-        />
+        />,
       );
 
       const input = screen.getByRole("textbox");
@@ -147,7 +147,7 @@ describe("EditableCell", () => {
       fireEvent.blur(input);
 
       expect(onCellEdit).not.toHaveBeenCalled();
-    }
+    },
   );
 
   describe("DROPDOWN field with boolean values", () => {
@@ -168,7 +168,7 @@ describe("EditableCell", () => {
           isRowFocused={true}
           editFieldConfig={booleanDropdownConfig}
           onCellEdit={onCellEdit}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -184,7 +184,7 @@ describe("EditableCell", () => {
       await waitFor(() => {
         expect(onCellEdit).toHaveBeenCalledWith(
           "row-1_col-1",
-          expect.objectContaining({ newValue: true })
+          expect.objectContaining({ newValue: true }),
         );
       });
     });
@@ -197,7 +197,7 @@ describe("EditableCell", () => {
           currentValue={true}
           isRowFocused={true}
           editFieldConfig={booleanDropdownConfig}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -211,12 +211,12 @@ describe("EditableCell", () => {
       expect(
         screen
           .getByRole("option", { name: "true" })
-          .getAttribute("aria-selected")
+          .getAttribute("aria-selected"),
       ).toBe("true");
       expect(
         screen
           .getByRole("option", { name: "false" })
-          .getAttribute("aria-selected")
+          .getAttribute("aria-selected"),
       ).toBe("false");
     });
 
@@ -239,7 +239,7 @@ describe("EditableCell", () => {
           initialValue={true}
           currentValue={true}
           editFieldConfig={config}
-        />
+        />,
       );
 
       expect(itemToStringLabel).toHaveBeenCalledWith(true);
@@ -265,7 +265,7 @@ describe("EditableCell", () => {
           initialValue={null}
           currentValue={null}
           editFieldConfig={config}
-        />
+        />,
       );
 
       expect(itemToStringLabel).toHaveBeenCalled();
@@ -282,7 +282,7 @@ describe("EditableCell", () => {
           isRowFocused={true}
           editFieldConfig={booleanDropdownConfig}
           onCellEdit={onCellEdit}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByRole("combobox"));
@@ -301,7 +301,7 @@ describe("EditableCell", () => {
       await waitFor(() => {
         expect(onCellEdit).toHaveBeenCalledWith(
           "row-1_col-1",
-          expect.objectContaining({ newValue: false })
+          expect.objectContaining({ newValue: false }),
         );
       });
     });
@@ -322,7 +322,7 @@ describe("EditableCell", () => {
         {...defaultProps}
         onCellValidationError={onCellValidationError}
         validateEdit={validateEdit}
-      />
+      />,
     );
 
     const input = screen.getByRole("textbox");

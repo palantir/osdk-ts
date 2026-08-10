@@ -31,7 +31,7 @@ import type {
  */
 export async function getResolvedJobDraft(
   ctx: ConjureContext,
-  jobRid: _api_BlockSetInstallationJobRid
+  jobRid: _api_BlockSetInstallationJobRid,
 ): Promise<_api_GetResolvedJobDraftResponse> {
   return conjureFetch(ctx, `/installation-job-draft/${jobRid}/resolved`, "GET");
 }

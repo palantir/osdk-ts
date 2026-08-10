@@ -35,29 +35,29 @@ export type SeedClient = {
   <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>; // equivalent to 'SeedBuilder.set'
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
-    primaryKey: PrimaryKeyType<Q>
+    primaryKey: PrimaryKeyType<Q>,
   ): SeedRef<Q> | undefined;
   addAll(seed: SeedOutput): Promise<void>;
   create<Q extends ObjectTypeDefinition>(
     o: Q,
-    props: SeedProps<Q>
+    props: SeedProps<Q>,
   ): Promise<SeedRef<Q>>;
   update<Q extends ObjectTypeDefinition>(
     ref: SeedRef<Q>,
     props: Partial<
       Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-    >
+    >,
   ): Promise<SeedRef<Q>>;
   delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
   link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
-    target: LinkTargets<Q, A>
+    target: LinkTargets<Q, A>,
   ): Promise<void>;
   unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
-    target: LinkTargets<Q, A>
+    target: LinkTargets<Q, A>,
   ): Promise<void>;
 };
 
@@ -70,7 +70,7 @@ interface SeedLinkRecord {
 function linkIdentity(
   source: SeedRef<ObjectTypeDefinition>,
   apiName: string,
-  target: SeedRef<ObjectTypeDefinition>
+  target: SeedRef<ObjectTypeDefinition>,
 ): string {
   return [
     source.$apiName,
@@ -97,7 +97,7 @@ export class SeedBuilder {
     for (const { objectType } of Object.values(metadata.objectTypes)) {
       invariant(
         Object.hasOwn(objectType.properties, objectType.primaryKey),
-        `[${objectType.apiName}] Primary key '${objectType.primaryKey}' is not among the object's properties`
+        `[${objectType.apiName}] Primary key '${objectType.primaryKey}' is not among the object's properties`,
       );
     }
   }
@@ -123,7 +123,7 @@ export class SeedBuilder {
    */
   addAll(seed: SeedOutput): void {
     const objectEntries = Object.entries(seed.objects).flatMap(
-      ([apiName, objects]) => objects.map((o) => [apiName, o] as const)
+      ([apiName, objects]) => objects.map((o) => [apiName, o] as const),
     );
     for (const [apiName, object] of objectEntries) {
       this.create(
@@ -131,7 +131,7 @@ export class SeedBuilder {
           type: "object",
           apiName,
         },
-        object
+        object,
       );
     }
     const linkEntries = seed.links;
@@ -141,14 +141,14 @@ export class SeedBuilder {
           type: "object",
           apiName: link.sourceObjectType,
         },
-        link.sourceKey
+        link.sourceKey,
       );
       const targetRef = this.#ref(
         {
           type: "object",
           apiName: link.targetObjectType,
         },
-        link.targetKey
+        link.targetKey,
       );
       this.#recordLink(sourceRef, link.linkType, targetRef);
     }
@@ -173,7 +173,7 @@ export class SeedBuilder {
    */
   #ref<Q extends ObjectTypeDefinition>(
     o: Q,
-    primaryKey: PrimaryKeyType<Q>
+    primaryKey: PrimaryKeyType<Q>,
   ): SeedRef<Q> {
     const objectType = this.#objectType(o.apiName);
     const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
@@ -200,7 +200,7 @@ export class SeedBuilder {
    */
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
-    primaryKey: PrimaryKeyType<Q>
+    primaryKey: PrimaryKeyType<Q>,
   ): SeedRef<Q> | undefined {
     if (!this.#getObjectTypeMap(o.apiName).has(String(primaryKey))) {
       return;
@@ -216,7 +216,7 @@ export class SeedBuilder {
    */
   create<Q extends ObjectTypeDefinition>(
     o: Q,
-    props: SeedProps<Q>
+    props: SeedProps<Q>,
   ): SeedRef<Q> {
     const objectType = this.#objectType(o.apiName);
     const primaryKeyValue = props[
@@ -225,7 +225,7 @@ export class SeedBuilder {
     const stringPrimaryKeyValue = String(primaryKeyValue);
     invariant(
       !this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue),
-      `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`
+      `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`,
     );
     validateSeedObject(props as Record<string, unknown>, objectType);
     this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
@@ -254,22 +254,22 @@ export class SeedBuilder {
     ref: SeedRef<Q>,
     props: Partial<
       Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
-    >
+    >,
   ): SeedRef<Q> {
     const { $apiName, $primaryKey } = ref;
     const objectType = this.#objectType($apiName);
     const stringPrimaryKeyValue = String($primaryKey);
     const currentValue = this.#getObjectTypeMap($apiName).get(
-      stringPrimaryKeyValue
+      stringPrimaryKeyValue,
     );
     if (!currentValue) {
       consola.warn(
-        `Updating ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`
+        `Updating ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`,
       );
     }
     invariant(
       typeof props[objectType.primaryKey as keyof typeof props] === "undefined",
-      `Cannot modify primary key ${objectType.primaryKey}`
+      `Cannot modify primary key ${objectType.primaryKey}`,
     );
     const merged = {
       ...currentValue,
@@ -291,7 +291,7 @@ export class SeedBuilder {
     const stringPrimaryKeyValue = String($primaryKey);
     if (!this.#getObjectTypeMap($apiName).delete(stringPrimaryKeyValue)) {
       consola.warn(
-        `Deleting ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`
+        `Deleting ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`,
       );
       return;
     }
@@ -306,7 +306,7 @@ export class SeedBuilder {
   link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
-    target: LinkTargets<Q, A>
+    target: LinkTargets<Q, A>,
   ): void {
     const targets = (Array.isArray(target) ? target : [target]) as Array<
       SeedRef<ObjectTypeDefinition>
@@ -319,7 +319,7 @@ export class SeedBuilder {
   #recordLink(
     source: SeedRef<ObjectTypeDefinition>,
     apiName: string,
-    target: SeedRef<ObjectTypeDefinition>
+    target: SeedRef<ObjectTypeDefinition>,
   ): void {
     this.#links.set(linkIdentity(source, apiName, target), {
       source,
@@ -337,7 +337,7 @@ export class SeedBuilder {
   unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
     source: SeedRef<Q>,
     apiName: A,
-    target: LinkTargets<Q, A>
+    target: LinkTargets<Q, A>,
   ): void {
     const targets = (Array.isArray(target) ? target : [target]) as Array<
       SeedRef<ObjectTypeDefinition>
@@ -351,8 +351,8 @@ export class SeedBuilder {
     if (removed === 0) {
       consola.warn(
         `Unlinking ${source.$apiName} with primary key ${String(
-          source.$primaryKey
-        )} via '${apiName}' which matches no existing links. This will be a no-op.`
+          source.$primaryKey,
+        )} via '${apiName}' which matches no existing links. This will be a no-op.`,
       );
     }
   }
@@ -396,7 +396,7 @@ export class SeedBuilder {
   }
 
   #getObjectTypeMap(
-    objectTypeApiName: string
+    objectTypeApiName: string,
   ): Map<string, SeedProps<ObjectTypeDefinition>> {
     if (!this.#objectMap.has(objectTypeApiName)) {
       this.#objectMap.set(objectTypeApiName, new Map());
@@ -413,7 +413,7 @@ export class SeedBuilder {
  */
 export function createSeedWithMetadata<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
-  fn: SeedFunction<T>
+  fn: SeedFunction<T>,
 ): [SeedOutput, T] {
   const sb = new SeedBuilder(ontologyMetadata);
   const result = fn(sb);

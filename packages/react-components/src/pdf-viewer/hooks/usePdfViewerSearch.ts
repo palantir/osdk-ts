@@ -44,7 +44,7 @@ export interface UsePdfViewerSearchResult {
 export function usePdfViewerSearch(
   eventBusRef: RefObject<EventBus | null>,
   findControllerRef: RefObject<PDFFindController | null>,
-  document: PDFDocumentProxy | undefined
+  document: PDFDocumentProxy | undefined,
 ): UsePdfViewerSearchResult {
   const [query, setQueryState] = useState(EMPTY_STRING);
   const [totalMatches, setTotalMatches] = useState(0);
@@ -63,7 +63,7 @@ export function usePdfViewerSearch(
         findPrevious,
       });
     },
-    [eventBusRef]
+    [eventBusRef],
   );
 
   const dispatchFindAgain = useCallback(
@@ -78,7 +78,7 @@ export function usePdfViewerSearch(
         findPrevious,
       });
     },
-    [eventBusRef, query]
+    [eventBusRef, query],
   );
 
   const setQuery = useCallback(
@@ -95,7 +95,7 @@ export function usePdfViewerSearch(
 
       dispatchFind(input, false);
     },
-    [dispatchFind]
+    [dispatchFind],
   );
 
   const nextMatch = useCallback(() => {
@@ -131,7 +131,7 @@ export function usePdfViewerSearch(
       }) => {
         setTotalMatches(evt.matchesCount.total);
         setCurrentMatchIndex(
-          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0
+          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
         );
       };
 
@@ -141,7 +141,7 @@ export function usePdfViewerSearch(
       }) => {
         setTotalMatches(evt.matchesCount.total);
         setCurrentMatchIndex(
-          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0
+          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
         );
       };
 
@@ -153,7 +153,7 @@ export function usePdfViewerSearch(
         eventBus.off(UPDATE_FIND_CONTROL_STATE_EVENT, handleControlState);
       };
     },
-    [eventBusRef, findControllerRef, document]
+    [eventBusRef, findControllerRef, document],
   );
 
   return useMemo(
@@ -178,6 +178,6 @@ export function usePdfViewerSearch(
       prevMatch,
       openSearch,
       closeSearch,
-    ]
+    ],
   );
 }

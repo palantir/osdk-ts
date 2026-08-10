@@ -19,14 +19,14 @@
 
 // Example: applyAction (Variation: #hasMediaParameter)
 
-// Edit this import if your client location differs
-import type { AttachmentUpload, MediaReference } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import type { AttachmentUpload, MediaReference, MediaUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
+
 import {
   documentEquipment,
   Equipment,
 } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callAction() {
@@ -39,24 +39,21 @@ async function callAction() {
   );
   // alternatively, you can get the Rid from the attachment property on the object type you are modifying
   // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
-  // Create media reference
+  // You can upload media data via your Action
   const mediaFile = await fetch("media.mp4");
   const mediaBlob = await mediaFile.blob();
-  const mediaReference: MediaReference = await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  ).createMediaReference({
-    data: mediaBlob,
-    fileName: "myMedia",
-    objectType: Equipment,
-    propertyType: "trainingMaterial",
-  });
-  // alternatively, you can get the Rid from the media property on the object type you are modifying
-  // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
+  const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+  // You can also pass an existing media reference into your Action
+  const objectPage = await client(Equipment).fetchPage();
+  const mediaReference: MediaReference =
+    objectPage.data[0].trainingMaterial!.getMediaReference();
+
   const result = await client(documentEquipment).applyAction(
     {
-      "equipmentId": "mac-1234",
-      "documentFile": attachment,
-      "instructionalVideo": mediaReference,
+      equipmentId: "mac-1234",
+      documentFile: attachment,
+      instructionalVideo: mediaReference,
     },
     {
       $returnEdits: true,

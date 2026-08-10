@@ -24,7 +24,7 @@ import type { SchemaMap } from "./schema.js";
 
 const makeOutput = (
   objects: SeedOutput["objects"],
-  links: SeedOutput["links"] = []
+  links: SeedOutput["links"] = [],
 ): SeedOutput => ({ objects, links });
 
 /** Builds a minimal SchemaMap fixture with Employee and Department. */
@@ -96,7 +96,7 @@ describe("mergeSeedOutputs", () => {
       Employee: [{ employeeId: "emp-001", firstName: "Alice" }],
     });
     expect(() => mergeSeedOutputs([output1, output2], schema)).toThrow(
-      /Duplicate primary key 'emp-001' for 'Employee'/u
+      /Duplicate primary key 'emp-001' for 'Employee'/u,
     );
   });
 
@@ -160,7 +160,7 @@ describe("validateSeedOutput", () => {
   it("should throw on unknown object types", () => {
     const output = makeOutput({ Ghost: [{ id: "1" }] });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Object type 'Ghost' in seed data is not defined in the ontology/u
+      /Object type 'Ghost' in seed data is not defined in the ontology/u,
     );
   });
 
@@ -169,7 +169,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", badProp: "x" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/u
+      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/u,
     );
   });
 
@@ -178,7 +178,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", firstName: null }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/u
+      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/u,
     );
   });
 
@@ -198,7 +198,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", createdAt: 12345 }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/u
+      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/u,
     );
   });
 
@@ -208,7 +208,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", age: "30" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/u
+      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/u,
     );
   });
 
@@ -217,7 +217,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", createdAt: "qdeqd" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /property 'createdAt' has invalid timestamp format: 'qdeqd'/u
+      /property 'createdAt' has invalid timestamp format: 'qdeqd'/u,
     );
   });
 
@@ -233,7 +233,7 @@ describe("validateSeedOutput", () => {
       Employee: [{ employeeId: "emp-001", score: "not-a-number" }],
     });
     expect(() => validateSeedOutput(output, schema)).toThrow(
-      /property 'score' has invalid long format/u
+      /property 'score' has invalid long format/u,
     );
   });
 

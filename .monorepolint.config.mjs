@@ -37,7 +37,7 @@ import * as semver from "semver";
 const rootPackageJson = JSON.parse(
   await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
-    "utf8",
+    "utf-8",
   ),
 );
 
@@ -214,6 +214,7 @@ const archetypeRules = archetypes(
       // These are the create-app / create-widget template *packages* (their own
       // 1-file src). The shipped scaffolding under each package's templates/ dir is
       // ignored by oxlint + oxfmt and migrates separately.
+      "@osdk/create-app.react.beta.common",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
     ],
@@ -311,6 +312,7 @@ const archetypeRules = archetypes(
       "@osdk/vite-plugin-oac",
       "@osdk/vite-plugin-superrepo",
       "@osdk/vite-plugin-status-reporter",
+      "@osdk/vite-plugin-code-workspace-preview",
     ],
     {
       ...LIBRARY_RULES,
@@ -331,6 +333,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/agents",
       "@osdk/unit-testing",
     ],
     {
@@ -462,15 +465,15 @@ const archetypeRules = archetypes(
       extraTsConfigCompilerOptions: {
         "lib": ["ES2023", "DOM", "ESNEXT.Array"],
       },
-      // NOT migrated to the oxc toolchain in this increment. Its `codegen` step
-      // reformats freshly-generated documentation examples via `pnpm run format`,
-      // and that step runs on every CI test-matrix leg (Node 18-24) because a
-      // generator package, @osdk/osdk-docs-context-generator, depends on this
-      // package's codegen output. oxfmt cannot load the repo's TypeScript
-      // oxfmt.config.ts on Node < 22.18, so the format step must stay on dprint
-      // (which is Node-version-independent). Migrate this package once codegen is
-      // restored from the Node-24 build cache on the matrix (see #3031 follow-up)
-      // rather than re-executed per leg.
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Its `codegen` step
+      // reformats freshly-generated documentation examples via `pnpm run format`
+      // (now oxfmt), and oxfmt can't run on Node < 20.19/22.18. This is safe on
+      // CI: the test-matrix leg is the only step that runs on the older Node
+      // versions (every other job runs on Node 24), and on those legs codegen is
+      // restored from the Node-24 build cache rather than re-executed (see #3783),
+      // so its oxfmt format step never runs there.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
   .addArchetype("publishedSandboxes", [
@@ -489,6 +492,22 @@ const archetypeRules = archetypes(
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    extraExports: {
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        import: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+        require: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+      },
+    },
     // Migrated to the oxc toolchain; carries a nested oxlint config (its
     // src/index.ts barrel re-exports the generated ontology, tripping
     // oxc/no-barrel-file once the module graph is resolvable).
@@ -627,12 +646,12 @@ const archetypeRules = archetypes(
         "./experimental/cbac-picker",
         "./experimental/document-viewer",
         "./experimental/email-viewer",
-        "./experimental/excel-viewer",
         "./experimental/filter-list",
         "./experimental/image-viewer",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/spreadsheet-viewer",
         "./experimental/theme",
         "./experimental/tiff-renderer",
         "./experimental/video-viewer",
@@ -702,7 +721,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               file: context.getPackageJsonPath(),
               fixer: () => {
                 // always refetch in fixer since another fixer may have already changed the file
-                let packageJson = context.getPackageJson();
+                const packageJson = context.getPackageJson();
                 if (packageJson[d]) {
                   packageJson[d] = {
                     ...packageJson[d],
@@ -726,7 +745,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
             file: context.getPackageJsonPath(),
             fixer: () => {
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:~") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -754,7 +773,7 @@ const disallowWorkspaceCaret = createRuleFactory({
             file: context.getPackageJsonPath(),
             fixer: () => {
               // always refetch in fixer since another fixer may have already changed the file
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -836,7 +855,7 @@ async function dirExists(dirPath) {
   try {
     const stat = await fs.stat(dirPath);
     return stat.isDirectory();
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -845,7 +864,8 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExports?: string[]
+ *   cssExports?: string[],
+ *   extraExports?: Record<string, unknown>
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -905,7 +925,7 @@ const ourExportsConvention = createRuleFactory({
       for (
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
-          encoding: "utf8",
+          encoding: "utf-8",
           recursive: true,
         })
       ) {
@@ -915,7 +935,7 @@ const ourExportsConvention = createRuleFactory({
         const fullPath = path.join(q.parentPath, q.name);
         const rel = path.relative(publicPath, fullPath);
         const b = rel.replace(/\.ts$/, "");
-        expectedExports.exports["./" + b] = makeExport(b);
+        expectedExports.exports[`./${b}`] = makeExport(b);
       }
     }
 
@@ -923,6 +943,14 @@ const ourExportsConvention = createRuleFactory({
     const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
       expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
+    }
+
+    // escape hatch for subpaths this convention can't derive from src/public,
+    // e.g. generated data assets. also must come before the wildcard.
+    for (
+      const [subpath, target] of Object.entries(options.extraExports ?? {})
+    ) {
+      expectedExports.exports[subpath] = target;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -1005,7 +1033,7 @@ const setWorkspaceDepRangeForPrereleases = createRuleFactory({
             `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
           file: packageJsonPath,
           fixer: () => {
-            let updated = context.getPackageJson();
+            const updated = context.getPackageJson();
             if (updated[depField]?.[depName] === current) {
               updated[depField][depName] = expected;
               context.host.writeJson(packageJsonPath, updated);
@@ -1031,7 +1059,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
     `pnpm exec dprint fmt --stdin foo.${ext}`,
     {
       input: contents,
-      encoding: "utf8",
+      encoding: "utf-8",
       shell: true,
     },
   );
@@ -1081,7 +1109,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
             }
             : {}
         ),
-        ...(opts.extraTsConfigCompilerOptions ?? {}),
+        ...opts.extraTsConfigCompilerOptions,
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -1168,6 +1196,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
+ * @property { Record<string, unknown> } [extraExports]
  * @property { string[] } [attwExcludeEntrypoints]
  * @property { string } [typecheckProject]
  */
@@ -1208,8 +1237,7 @@ function standardPackageRules(shared, options) {
     if (!options.output.browser) {
       return DELETE_SCRIPT_ENTRY;
     }
-    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
-      + buildCssSuffix;
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${buildCssSuffix}`;
   };
 
   if (options.minimalChangesOnly) {
@@ -1333,6 +1361,7 @@ function standardPackageRules(shared, options) {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
         cssExports,
+        extraExports: options.extraExports,
       },
     }),
     packageEntry({
@@ -1522,6 +1551,11 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
         "@osdk/create-app.template.*",
         "@osdk/create-widget.template.*",
       ],
+      // Templates that use a `--shared` package are handled by the rule below.
+      excludePackages: [
+        "@osdk/create-app.template.react.beta",
+        "@osdk/create-app.template.react-public.beta",
+      ],
       options: {
         file: "turbo.json",
         template: `{
@@ -1532,6 +1566,32 @@ NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
       "inputs": ["templates/**/*"],
       "outputs": ["src/generatedNoCheck/**/*"],
       "dependsOn": ["@osdk/create-app.template-packager#transpileEsm"]
+    }
+  }
+}
+`,
+      },
+    }),
+    // Templates using a `--shared` package: add each here so codegen depends on the
+    // shared package's transpileEsm (tracks its templates/ in turbo's cache).
+    fileContents({
+      includePackages: [
+        "@osdk/create-app.template.react.beta",
+        "@osdk/create-app.template.react-public.beta",
+      ],
+      options: {
+        file: "turbo.json",
+        template: `{
+  // WARNING: GENERATED FILE. DO NOT EDIT DIRECTLY. See .monorepolint.config.mjs
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["templates/**/*"],
+      "outputs": ["src/generatedNoCheck/**/*"],
+      "dependsOn": [
+        "@osdk/create-app.template-packager#transpileEsm",
+        "@osdk/create-app.react.beta.common#transpileEsm"
+      ]
     }
   }
 }

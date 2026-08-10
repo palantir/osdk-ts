@@ -38,18 +38,18 @@ type QueryParamsFromDef<Q extends QueryDefinition> =
 export type StubPatternCallback<T> = (client: StubClient) => T;
 
 export type ObjectSetStubCallback<Q extends ObjectOrInterfaceDefinition, T> = (
-  os: ObjectSet<Q>
+  os: ObjectSet<Q>,
 ) => T;
 
 export interface MockClient extends Client {
   when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
   whenObjectSet<Q extends ObjectOrInterfaceDefinition, T>(
     objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>
+    callback: ObjectSetStubCallback<Q, T>,
   ): StubBuilderFor<T>;
   whenQuery<Q extends QueryDefinition>(
     query: Q,
-    params?: QueryParamsFromDef<Q>
+    params?: QueryParamsFromDef<Q>,
   ): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
   clearStubs(): void;
 }

@@ -27,7 +27,7 @@ import type { InterfaceActionTypeConstraintDefinition } from "./InterfaceActionT
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
 export function defineInterfaceActionTypeConstraint(
-  input: InterfaceActionTypeConstraintDefinition
+  input: InterfaceActionTypeConstraintDefinition,
 ): void {
   const def = cloneDefinition(input);
 
@@ -35,19 +35,19 @@ export function defineInterfaceActionTypeConstraint(
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       def.interfaceType.apiName
     ] == null,
-    `Cannot define an action type constraint on imported interface ${def.interfaceType.apiName}. The interface must be locally defined.`
+    `Cannot define an action type constraint on imported interface ${def.interfaceType.apiName}. The interface must be locally defined.`,
   );
 
   const apiNameWithNamespace = combineApiNamespaceIfMissing(
     namespace,
-    def.apiName
+    def.apiName,
   );
 
   invariant(
     def.interfaceType.actionTypeConstraints.find(
-      (a) => a.metadata.apiName === apiNameWithNamespace
+      (a) => a.metadata.apiName === apiNameWithNamespace,
     ) == null,
-    `Action type constraint with apiName ${apiNameWithNamespace} already exists on interface ${def.interfaceType.apiName}`
+    `Action type constraint with apiName ${apiNameWithNamespace} already exists on interface ${def.interfaceType.apiName}`,
   );
 
   const parameters: Record<
@@ -58,7 +58,7 @@ export function defineInterfaceActionTypeConstraint(
   for (const param of def.parameters) {
     invariant(
       !seenParamApiNames.has(param.apiName),
-      `Duplicate parameter constraint apiName "${param.apiName}" in action type constraint ${apiNameWithNamespace}`
+      `Duplicate parameter constraint apiName "${param.apiName}" in action type constraint ${apiNameWithNamespace}`,
     );
     seenParamApiNames.add(param.apiName);
     parameters[param.apiName] = {

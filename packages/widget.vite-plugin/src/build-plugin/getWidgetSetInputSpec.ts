@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
+import { readFile } from "fs/promises";
+
 import type {
   OntologySdkInputSpec,
+  WidgetSetAuthorizationsInputSpec,
   WidgetSetInputSpec,
 } from "@osdk/widget.api";
 
 import type { PackageJson } from "../common/PackageJson.js";
+import type { ResourcesJson } from "../common/ResourcesJson.js";
 import { visitNpmPackages } from "../common/visitNpmPackages.js";
 
 export async function getWidgetSetInputSpec(
-  packageJsonPath: string
+  packageJsonPath: string,
+  resourcesJsonPath: string,
 ): Promise<WidgetSetInputSpec> {
-  const sdks = await discoverOntologySdkInputSpecs(packageJsonPath);
+  const [sdks, authorizations] = await Promise.all([
+    discoverOntologySdkInputSpecs(packageJsonPath),
+    getAuthorizations(resourcesJsonPath),
+  ]);
   return {
     discovered: {
       sdks,
+      authorizations,
     },
   };
 }
 
 async function discoverOntologySdkInputSpecs(
-  packageJsonPath: string
+  packageJsonPath: string,
 ): Promise<Array<OntologySdkInputSpec>> {
   const sdks = new Set<string>();
   const onVisit = (_packageJsonPath: string, packageJson: PackageJson) => {
@@ -55,3 +64,42 @@ const fromKey = (key: string): OntologySdkInputSpec => {
     version,
   };
 };
+
+async function getAuthorizations(
+  resourcesJsonPath: string,
+): Promise<WidgetSetAuthorizationsInputSpec | undefined> {
+  const parsedResourcesJson: ResourcesJson | undefined =
+    await parseResourcesJson(resourcesJsonPath);
+  if (parsedResourcesJson == null) {
+    return undefined;
+  }
+  const { read, requiredRead } = parsedResourcesJson.authorizations ?? {};
+  return {
+    read,
+    requiredRead,
+  };
+}
+
+async function parseResourcesJson(
+  resourcesJsonPath: string,
+): Promise<ResourcesJson | undefined> {
+  let content: string;
+  try {
+    content = await readFile(resourcesJsonPath, "utf-8");
+  } catch (err) {
+    if ((err as { code?: string }).code === "ENOENT") {
+      // the file is not present in the repo
+      return undefined;
+    }
+    throw err;
+  }
+
+  try {
+    return JSON.parse(content) as ResourcesJson;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse resources.json content from file "${resourcesJsonPath}"`,
+      { cause: err },
+    );
+  }
+}

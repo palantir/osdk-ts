@@ -53,7 +53,7 @@ describe(FauxAdmin, () => {
       fauxAdmin.registerUser(user);
 
       expect(() => fauxAdmin.registerUser(user)).toThrow(
-        `Failed to register new user. A user with ID ${user.id} already exists.`
+        `Failed to register new user. A user with ID ${user.id} already exists.`,
       );
     });
 
@@ -81,7 +81,7 @@ describe(FauxAdmin, () => {
 
     it("should throw when setting current user to non-existent user", () => {
       expect(() => fauxAdmin.setCurrentUser("non-existent")).toThrow(
-        OpenApiCallError
+        OpenApiCallError,
       );
     });
 

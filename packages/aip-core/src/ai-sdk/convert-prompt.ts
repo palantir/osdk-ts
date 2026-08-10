@@ -36,7 +36,7 @@ export interface OpenAiAssistantToolCall {
 
 export function convertPrompt(
   prompt: LanguageModelV3Prompt,
-  warnings: Array<SharedV3Warning>
+  warnings: Array<SharedV3Warning>,
 ): Array<OpenAiMessage> {
   const messages: Array<OpenAiMessage> = [];
 
@@ -49,7 +49,7 @@ export function convertPrompt(
 
 function convertMessage(
   message: LanguageModelV3Message,
-  warnings: Array<SharedV3Warning>
+  warnings: Array<SharedV3Warning>,
 ): Array<OpenAiMessage> {
   switch (message.role) {
     case "system":
@@ -130,7 +130,7 @@ function convertMessage(
               details: `"${part.type}" parts in tool messages are not supported in v0 — ignored`,
             });
             return false;
-          }
+          },
         )
         .map((part) => ({
           role: "tool" as const,
@@ -142,7 +142,7 @@ function convertMessage(
 
 function stringifyToolResult(
   output: LanguageModelV3ToolResultOutput,
-  warnings: Array<SharedV3Warning>
+  warnings: Array<SharedV3Warning>,
 ): string {
   switch (output.type) {
     case "text":

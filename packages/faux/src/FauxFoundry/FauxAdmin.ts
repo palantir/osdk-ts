@@ -42,7 +42,7 @@ interface BannerConfig {
 type BannerResolver = (
   markingIds: string[],
   markings: Marking[],
-  categories: MarkingCategory[]
+  categories: MarkingCategory[],
 ) => BannerConfig;
 
 export class FauxAdmin {
@@ -55,7 +55,7 @@ export class FauxAdmin {
   registerUser(user: User): void {
     if (this.#users.some(({ id }) => id === user.id)) {
       throw new Error(
-        `Failed to register new user. A user with ID ${user.id} already exists.`
+        `Failed to register new user. A user with ID ${user.id} already exists.`,
       );
     }
 
@@ -94,7 +94,7 @@ export class FauxAdmin {
         400,
         status === "DELETED"
           ? GetUserActiveStatusError(userId)
-          : GetUserDeletedStatusError(userId)
+          : GetUserDeletedStatusError(userId),
       );
     }
 
@@ -108,7 +108,7 @@ export class FauxAdmin {
     // oxlint-disable-next-line default-param-last
     pageSize: number | undefined = this.#users.length,
     pageToken: string | undefined,
-    status: UserStatus | undefined
+    status: UserStatus | undefined,
   ): { users: User[]; nextPageToken: string } {
     const filteredUsers =
       status != null
@@ -155,7 +155,7 @@ export class FauxAdmin {
       const config = this.#bannerResolver(
         markingIds,
         this.#markings,
-        this.#markingCategories
+        this.#markingCategories,
       );
       return {
         classificationString: config.classificationString,

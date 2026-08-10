@@ -26,12 +26,12 @@ import type {
  */
 export async function getBulkLatestVersion(
   ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest
+  request: _api_GetBulkLatestVersionRequest,
 ): Promise<_api_GetBulkLatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/latestVersion`,
     "PUT",
-    request
+    request,
   );
 }

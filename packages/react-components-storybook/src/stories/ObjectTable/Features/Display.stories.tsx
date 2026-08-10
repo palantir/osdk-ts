@@ -87,11 +87,11 @@ export const CustomColumnWidths: Story = {
     // Drag the resize handle to widen the column.
     await dragResizeHandle(fullNameHeader, 120);
     await waitFor(() =>
-      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250)
+      expect(getHeaderWidth(fullNameHeader)).toBeGreaterThan(250),
     );
     await expect(args.onColumnResize).toHaveBeenCalledWith(
       "fullName",
-      expect.any(Number)
+      expect.any(Number),
     );
 
     // Double-clicking the handle resets the column to its configured width.
@@ -187,7 +187,7 @@ return (
     const canvas = within(canvasElement);
 
     await expect(
-      await canvas.findByText("No saved views found.")
+      await canvas.findByText("No saved views found."),
     ).toBeInTheDocument();
     await expect(canvas.queryByText(TARGET_DATA)).not.toBeInTheDocument();
   },
@@ -242,7 +242,7 @@ return (
         "data-highlight-row":
           rowData.locationCity === "New York" ? "true" : undefined,
       }),
-      []
+      [],
     );
 
     return (
@@ -277,12 +277,12 @@ return (
     // New York employees carry the highlight attribute...
     await expect(rowContaining(canvas.getByText(TARGET_DATA))).toHaveAttribute(
       "data-highlight-row",
-      "true"
+      "true",
     );
 
     // ...while non–New York employees do not.
     await expect(
-      rowContaining(canvas.getByText("Charlotte Weber"))
+      rowContaining(canvas.getByText("Charlotte Weber")),
     ).not.toHaveAttribute("data-highlight-row");
   },
 };
@@ -322,7 +322,7 @@ export const DisableAllHeaderMenuFeatures: Story = {
     await canvas.findByText(TARGET_DATA);
 
     await expect(
-      canvas.queryByRole("button", { name: /Open header menu/iu })
+      canvas.queryByRole("button", { name: /Open header menu/iu }),
     ).not.toBeInTheDocument();
   },
 };

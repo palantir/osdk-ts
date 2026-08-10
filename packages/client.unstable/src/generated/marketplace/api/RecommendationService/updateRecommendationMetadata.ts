@@ -39,12 +39,12 @@ import type {
  */
 export async function updateRecommendationMetadata(
   ctx: ConjureContext,
-  request: _api_UpdateRecommendationMetadataRequest
+  request: _api_UpdateRecommendationMetadataRequest,
 ): Promise<_api_UpdateRecommendationMetadataResponse> {
   return conjureFetch(
     ctx,
     `/recommendations-v2/update-metadata`,
     "POST",
-    request
+    request,
   );
 }

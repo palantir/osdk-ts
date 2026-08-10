@@ -22,7 +22,7 @@ import { useAsyncAction } from "../useAsyncAction.js";
 describe("useAsyncAction", () => {
   it("starts with isPending false and no error", () => {
     const { result } = renderHook(() =>
-      useAsyncAction(vi.fn().mockResolvedValue(undefined))
+      useAsyncAction(vi.fn().mockResolvedValue(undefined)),
     );
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeUndefined();
@@ -34,7 +34,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((r) => {
           resolve = r;
-        })
+        }),
     );
 
     const { result } = renderHook(() => useAsyncAction(action));
@@ -56,7 +56,7 @@ describe("useAsyncAction", () => {
 
   it("forwards arguments to the action", async () => {
     const action = vi.fn(
-      (_a: string, _b: number): Promise<void> => Promise.resolve()
+      (_a: string, _b: number): Promise<void> => Promise.resolve(),
     );
 
     const { result } = renderHook(() => useAsyncAction(action));
@@ -123,7 +123,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((r) => {
           resolve = r;
-        })
+        }),
     );
 
     const { result, unmount } = renderHook(() => useAsyncAction(action));
@@ -153,7 +153,7 @@ describe("useAsyncAction", () => {
       () =>
         new Promise<void>((_resolve, rej) => {
           reject = rej;
-        })
+        }),
     );
 
     const { result, unmount } = renderHook(() => useAsyncAction(action));

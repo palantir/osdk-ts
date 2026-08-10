@@ -37,7 +37,7 @@ describe("narrowObjectSet", () => {
   it("returns the base unchanged for an empty where clause and no linked filters", () => {
     const base = createMockSet();
     expect(
-      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, [])
+      narrowObjectSet(base, {} as WhereClause<ObjectTypeDefinition>, []),
     ).toBe(base);
     expect(base.where).not.toHaveBeenCalled();
     expect(base.pivotTo).not.toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe("narrowObjectSet", () => {
     narrowObjectSet(
       base,
       { active: true } as unknown as WhereClause<ObjectTypeDefinition>,
-      [linked1, linked2]
+      [linked1, linked2],
     );
 
     // First step applies the property where. The first linked filter

@@ -234,7 +234,7 @@ describe("ObservableClientMonitor", () => {
       expect.objectContaining({
         hookType: "useOsdkObject",
         querySignature: "object:Employee:pk-1",
-      })
+      }),
     );
   });
 
@@ -263,7 +263,7 @@ describe("ObservableClientMonitor", () => {
     passedObserver.next({ status: "loaded", object: { id: "pk-1" } });
 
     expect(timeline.record).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "EMISSION" })
+      expect.objectContaining({ type: "EMISSION" }),
     );
   });
 
@@ -274,12 +274,12 @@ describe("ObservableClientMonitor", () => {
     const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
     wrapped.observeList(
       { type: "Employee", where: {} } as never,
-      observer as never
+      observer as never,
     );
 
     expect(client.observeList).toHaveBeenCalled();
     expect(registry.registerBinding).toHaveBeenCalledWith(
-      expect.objectContaining({ hookType: "useOsdkObjects" })
+      expect.objectContaining({ hookType: "useOsdkObjects" }),
     );
   });
 
@@ -290,7 +290,7 @@ describe("ObservableClientMonitor", () => {
     const observer = { next: vi.fn(), error: vi.fn(), complete: vi.fn() };
     wrapped.observeList(
       { type: "Employee", where: {} } as never,
-      observer as never
+      observer as never,
     );
 
     const passedObserver = client.observeList.mock.calls[0][1];
@@ -355,20 +355,20 @@ describe("ObservableClientMonitor", () => {
     const wrapped = monitor.wrapClient(client as unknown as ObservableClient);
 
     await expect(
-      wrapped.applyAction("createEmployee" as never, {})
+      wrapped.applyAction("createEmployee" as never, {}),
     ).rejects.toThrow("Action failed");
 
     expect(metricsStore.recordActionError).toHaveBeenCalledWith(
       expect.objectContaining({
         actionType: "createEmployee",
         message: "Action failed",
-      })
+      }),
     );
   });
 
   it("getCacheSnapshot rejects when no client is wrapped", async () => {
     await expect(monitor.getCacheSnapshot()).rejects.toThrow(
-      "No wrapped client available"
+      "No wrapped client available",
     );
   });
 

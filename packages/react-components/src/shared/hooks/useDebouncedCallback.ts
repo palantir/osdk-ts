@@ -55,13 +55,13 @@ export type DebounceOptions = {
 export function useDebouncedCallback<T extends (...args: any[]) => unknown>(
   callback: HasExplicitParams<T>,
   wait: number,
-  options?: DebounceOptions
+  options?: DebounceOptions,
 ): DebouncedFunc<T> {
   const f = useEventCallback(callback as T);
   const deepOptions = useDeepEqual(options);
   const debouncedCallback: DebouncedFunc<T> = React.useMemo(
     () => debounce(f, wait, deepOptions),
-    [f, wait, deepOptions]
+    [f, wait, deepOptions],
   );
   useOnUnmount(() => debouncedCallback.cancel());
   return debouncedCallback;

@@ -42,7 +42,7 @@ interface CompoundFilter {
 }
 
 function isCompoundFilter(
-  f: PropertyFilter | CompoundFilter
+  f: PropertyFilter | CompoundFilter,
 ): f is CompoundFilter {
   return typeof f === "object" && f != null && "__compound" in f;
 }
@@ -56,7 +56,7 @@ const NUMERIC_BOUNDS: Record<string, { min: number; max: number }> = {
 
 function clampToPropertyBounds(
   value: number,
-  propertyType: string | undefined
+  propertyType: string | undefined,
 ): number {
   if (propertyType === undefined) {
     return value;
@@ -77,7 +77,7 @@ function formatDateValue(date: Date, propertyType: string | undefined): string {
 
 function filterStateToPropertyFilter(
   state: FilterState,
-  propertyType?: string
+  propertyType?: string,
 ): PropertyFilter | CompoundFilter | undefined {
   switch (state.type) {
     case "CONTAINS_TEXT": {
@@ -169,7 +169,7 @@ function filterStateToPropertyFilter(
         (v) =>
           v instanceof Date
             ? formatDateValue(v, propertyType)
-            : (v as string | number | boolean)
+            : (v as string | number | boolean),
       );
       return buildValueOrNullFilter(values);
     }
@@ -218,7 +218,7 @@ function filterStateToPropertyFilter(
 export function buildPropertyKeyClause(
   key: string | number | symbol,
   state: FilterState,
-  propertyType?: string
+  propertyType?: string,
 ): Record<string, unknown> | undefined {
   const filter = filterStateToPropertyFilter(state, propertyType);
   if (filter === undefined) {
@@ -257,7 +257,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   propertyTypes?: Map<string, PropertyTypeInfo>,
-  excludeFilterKey?: string
+  excludeFilterKey?: string,
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
     return {} as WhereClause<Q>;
@@ -282,7 +282,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         const clause = buildPropertyKeyClause(
           definition.key,
           state,
-          propertyType
+          propertyType,
         );
         if (clause !== undefined) {
           clauses.push(clause);
@@ -295,7 +295,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
           }
           break;
@@ -306,7 +306,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         const hasLinkClause = { [definition.linkName]: { $isNotNull: true } };
         // "Excluding" keeps objects that do NOT have the link.
         clauses.push(
-          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause
+          state.isExcluding ? { $not: hasLinkClause } : hasLinkClause,
         );
         break;
       }
@@ -321,7 +321,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`
+              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
           }
           break;
@@ -350,7 +350,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             if (process.env.NODE_ENV !== "production") {
               // eslint-disable-next-line no-console
               console.warn(
-                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped."
+                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped.",
               );
             }
             break;
@@ -385,7 +385,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );
           }
           break;
@@ -439,11 +439,11 @@ export function buildLinkedInnerWhere<
   L extends LinkNames<Q>,
 >(
   definition: LinkedPropertyFilterDefinition<Q, L>,
-  state: LinkedPropertyFilterState
+  state: LinkedPropertyFilterState,
 ): WhereClause<LinkedType<Q, L>> | undefined {
   const record = buildPropertyKeyClause(
     definition.linkedPropertyKey,
-    state.linkedFilterState
+    state.linkedFilterState,
   );
   if (record === undefined) {
     return undefined;
@@ -457,7 +457,7 @@ export function buildLinkedInnerWhere<
 export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
-  excludeFilterKey?: string
+  excludeFilterKey?: string,
 ): Array<LinkedFilter<Q>> {
   if (!definitions || definitions.length === 0) {
     return [];
@@ -497,7 +497,7 @@ export function getActiveLinkedFilters<Q extends ObjectTypeDefinition>(
  * via equality (`{ key: "" }`), not `$isNull`.
  */
 function buildValueOrNullFilter(
-  values: (string | number | boolean)[]
+  values: (string | number | boolean)[],
 ): PropertyFilter | CompoundFilter | undefined {
   if (values.length === 0) {
     return undefined;

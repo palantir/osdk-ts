@@ -24,7 +24,7 @@ import type { SubmitJobToDeployedAppRequest as _SubmitJobToDeployedAppRequest } 
  */
 export async function executeOnComputeModule(
   ctx: ConjureContext,
-  request: _SubmitJobToDeployedAppRequest
+  request: _SubmitJobToDeployedAppRequest,
 ): Promise<string> {
   return conjureFetch(
     ctx,
@@ -33,6 +33,6 @@ export async function executeOnComputeModule(
     request,
     undefined,
     undefined,
-    "application/octet-stream"
+    "application/octet-stream",
   );
 }

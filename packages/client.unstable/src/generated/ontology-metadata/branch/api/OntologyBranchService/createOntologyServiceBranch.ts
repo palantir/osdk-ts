@@ -32,12 +32,12 @@ export async function createOntologyServiceBranch(
   ctx: ConjureContext,
   onBehalfOf: string,
   ontologyRid: _api_OntologyRid,
-  request: _branch_api_CreateOntologyServiceBranchRequest
+  request: _branch_api_CreateOntologyServiceBranchRequest,
 ): Promise<_branch_api_CreateOntologyServiceBranchResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/service-branch/create/${ontologyRid}`,
     "PUT",
-    request
+    request,
   );
 }

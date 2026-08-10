@@ -28,12 +28,12 @@ import type {
 export async function deleteAssociations(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_association_metadata_DeleteAssociationsRequest
+  request: _api_association_metadata_DeleteAssociationsRequest,
 ): Promise<_api_association_metadata_DeleteAssociationsResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/deleteOntologyEntityAssociations`,
     "PUT",
-    request
+    request,
   );
 }

@@ -27,12 +27,12 @@ import type {
  */
 export async function checkTranslationEligibility(
   ctx: ConjureContext,
-  request: _api_typemapping_CheckTranslationEligibilityRequest
+  request: _api_typemapping_CheckTranslationEligibilityRequest,
 ): Promise<_api_typemapping_CheckTranslationEligibilityResponse> {
   return conjureFetch(
     ctx,
     `/ontology/typemapping/checkTranslationEligibility`,
     "PUT",
-    request
+    request,
   );
 }

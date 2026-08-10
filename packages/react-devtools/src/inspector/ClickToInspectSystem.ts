@@ -118,7 +118,7 @@ export class ClickToInspectSystem {
       this.stateUnsubscribe = this.inspectorController.subscribe(
         (controllerState) => {
           this.renderOverlay(controllerState);
-        }
+        },
       );
 
       this.renderOverlay(this.inspectorController.getState());
@@ -133,7 +133,7 @@ export class ClickToInspectSystem {
     this.overlayRoot.render(
       React.createElement(InspectorOverlay, {
         state: controllerState,
-      })
+      }),
     );
   }
 
@@ -159,7 +159,7 @@ export class ClickToInspectSystem {
             labelStatus: "idle",
             viewportVersion: 0,
           },
-        })
+        }),
       );
     }
   }
@@ -175,14 +175,14 @@ export class ClickToInspectSystem {
     }
 
     this.bannerRoot?.render(
-      React.createElement(InspectorBanner, { visible: true })
+      React.createElement(InspectorBanner, { visible: true }),
     );
   }
 
   private hideBanner(): void {
     if (this.bannerRoot) {
       this.bannerRoot.render(
-        React.createElement(InspectorBanner, { visible: false })
+        React.createElement(InspectorBanner, { visible: false }),
       );
     }
   }

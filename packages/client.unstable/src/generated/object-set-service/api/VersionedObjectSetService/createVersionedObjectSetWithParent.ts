@@ -26,7 +26,7 @@ import type {
  */
 export async function createVersionedObjectSetWithParent(
   ctx: ConjureContext,
-  request: _api_CreateVersionedObjectSetWithParentRequest
+  request: _api_CreateVersionedObjectSetWithParentRequest,
 ): Promise<_api_CreateVersionedObjectSetResponse> {
   return conjureFetch(ctx, `/versionedObjectSetsWithParent`, "POST", request);
 }

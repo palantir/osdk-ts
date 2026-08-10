@@ -74,8 +74,8 @@ export function createDateHistogramBuckets(
   formatDate?: (date: Date) => string,
   formatTickLabel?: (
     date: Date,
-    granularity: DateHistogramGranularity
-  ) => string
+    granularity: DateHistogramGranularity,
+  ) => string,
 ): DateHistogramData {
   if (pairs.length === 0) {
     return { buckets: [], subtitle: "", granularity: "day" };
@@ -175,7 +175,7 @@ export function createDateHistogramBuckets(
     range.min,
     range.max,
     granularity,
-    formatDate
+    formatDate,
   );
   return { buckets, subtitle, granularity };
 }
@@ -184,7 +184,7 @@ function computeSubtitle(
   rangeMin: Date,
   rangeMax: Date,
   granularity: DateHistogramGranularity,
-  formatDate?: (date: Date) => string
+  formatDate?: (date: Date) => string,
 ): string {
   if (granularity === "day") {
     // Daily within one month: "2020-05". Across months: the year(s) when

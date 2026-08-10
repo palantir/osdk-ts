@@ -19,10 +19,11 @@
 
 // Example: batchApplyAction (Variation: #hasAttachmentProperty)
 
-// Edit this import if your client location differs
 import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
+
 import { documentEquipment } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 async function callBatchAction() {
@@ -34,20 +35,23 @@ async function callBatchAction() {
     "myFile",
   );
 
-  const result = await client(documentEquipment).batchApplyAction([
+  const result = await client(documentEquipment).batchApplyAction(
+    [
+      {
+        equipmentId: "mac-1234",
+        documentType: "invoice",
+        documentFile: attachment,
+      },
+      {
+        equipmentId: "mac-1234",
+        documentType: "invoice",
+        documentFile: attachment,
+      },
+    ],
     {
-      "equipmentId": "mac-1234",
-      "documentType": "invoice",
-      "documentFile": attachment,
+      $returnEdits: true,
     },
-    {
-      "equipmentId": "mac-1234",
-      "documentType": "invoice",
-      "documentFile": attachment,
-    },
-  ], {
-    $returnEdits: true,
-  });
+  );
   if (result.type === "edits") {
     // use the result object to report back on action results
     const updatedObject = result.editedObjectTypes[0];

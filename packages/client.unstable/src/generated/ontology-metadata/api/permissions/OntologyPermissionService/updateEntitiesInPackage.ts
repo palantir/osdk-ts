@@ -37,12 +37,12 @@ import type {
 export async function updateEntitiesInPackage(
   ctx: ConjureContext,
   packageRid: _api_OntologyPackageRid,
-  request: _api_permissions_UpdateEntitiesInPackageRequest
+  request: _api_permissions_UpdateEntitiesInPackageRequest,
 ): Promise<_api_permissions_UpdateEntitiesInPackageResponse> {
   return conjureFetch(
     ctx,
     `/permissions/packages/${packageRid}`,
     "PUT",
-    request
+    request,
   );
 }

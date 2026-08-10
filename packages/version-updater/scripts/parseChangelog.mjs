@@ -47,7 +47,7 @@ export function parseChangelog(content, peerPackageNames) {
         const escaped = peerName.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
         const match = block.match(
           // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
-          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`)
+          new RegExp(`${escaped}@(\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?)`),
         );
         if (match) {
           peerVersions[peerName] = match[1];
@@ -65,6 +65,6 @@ export function parseChangelog(content, peerPackageNames) {
     })
     .filter(
       /** @returns {m is VersionMapping} */
-      (m) => m != null
+      (m) => m != null,
     );
 }

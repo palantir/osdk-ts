@@ -61,7 +61,7 @@ function useStableArray(arr: string[]): string[] {
 }
 
 export function useCbacPickerState(
-  selectedIds: string[]
+  selectedIds: string[],
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
   const {
@@ -117,7 +117,7 @@ export function useCbacPickerState(
     if (errors.length > 1) {
       return new AggregateError(
         errors,
-        errors.map((e) => e.message).join("; ")
+        errors.map((e) => e.message).join("; "),
       );
     }
     return errors[0];
@@ -142,14 +142,14 @@ export function useCbacPickerState(
       computeMarkingStates(
         stableSelectedIds,
         impliedMarkingIds,
-        disallowedMarkingIds
+        disallowedMarkingIds,
       ),
-    [stableSelectedIds, impliedMarkingIds, disallowedMarkingIds]
+    [stableSelectedIds, impliedMarkingIds, disallowedMarkingIds],
   );
 
   const resolvedRequiredGroups = React.useMemo(
     () => resolveRequiredGroups(categoryGroups, requiredMarkingGroups),
-    [categoryGroups, requiredMarkingGroups]
+    [categoryGroups, requiredMarkingGroups],
   );
 
   return React.useMemo(
@@ -176,6 +176,6 @@ export function useCbacPickerState(
       isLoading,
       error,
       retry,
-    ]
+    ],
   );
 }

@@ -54,7 +54,7 @@ import type {
 import type { Transformation } from "@osdk/foundry.mediasets";
 
 export function makeMediaTransformation(
-  transformation: MediaTransformation
+  transformation: MediaTransformation,
 ): Transformation {
   if ("$image" in transformation && transformation.$image != null) {
     const t = transformation.$image;
@@ -82,7 +82,7 @@ export function makeMediaTransformation(
     return {
       type: "emailToText" as const,
       operation: convertEmailToTextOperation(
-        transformation.$emailToText.$operation
+        transformation.$emailToText.$operation,
       ),
     };
   } else if (
@@ -92,7 +92,7 @@ export function makeMediaTransformation(
     return {
       type: "spreadsheetToText" as const,
       operation: convertSpreadsheetToTextOperation(
-        transformation.$spreadsheetToText.$operation
+        transformation.$spreadsheetToText.$operation,
       ),
     };
   } else if (
@@ -112,7 +112,7 @@ export function makeMediaTransformation(
     return {
       type: "audioToText" as const,
       operation: convertAudioToTextOperation(
-        transformation.$audioToText.$operation
+        transformation.$audioToText.$operation,
       ),
     } as Transformation;
   } else if (
@@ -122,7 +122,7 @@ export function makeMediaTransformation(
     return {
       type: "emailToAttachment" as const,
       operation: convertEmailToAttachmentOperation(
-        transformation.$emailToAttachment.$operation
+        transformation.$emailToAttachment.$operation,
       ),
     };
   } else if (
@@ -142,7 +142,7 @@ export function makeMediaTransformation(
     return {
       type: "videoToText" as const,
       operation: convertVideoToTextOperation(
-        transformation.$videoToText.$operation
+        transformation.$videoToText.$operation,
       ),
     };
   } else if (
@@ -152,7 +152,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToText" as const,
       operation: convertImageToTextOperation(
-        transformation.$imageToText.$operation
+        transformation.$imageToText.$operation,
       ),
     } as Transformation;
   } else if (
@@ -172,7 +172,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToDocument" as const,
       operation: convertImageToDocumentOperation(
-        transformation.$imageToDocument.$operation
+        transformation.$imageToDocument.$operation,
       ),
     };
   } else if (
@@ -212,7 +212,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToEmbedding" as const,
       operation: convertImageToEmbeddingOperation(
-        transformation.$imageToEmbedding.$operation
+        transformation.$imageToEmbedding.$operation,
       ),
     } as Transformation;
   } else {
@@ -220,7 +220,7 @@ export function makeMediaTransformation(
       type: "documentToText" as const,
       operation: convertDocumentToTextOperation(
         (transformation as MediaTransformation & { $documentToText: {} })
-          .$documentToText.$operation
+          .$documentToText.$operation,
       ),
     } as Transformation;
   }
@@ -282,7 +282,7 @@ function convertOcrParameters(params: OcrParameters) {
 }
 
 function convertLayoutAwareExtractionParameters(
-  params: LayoutAwareExtractionParameters
+  params: LayoutAwareExtractionParameters,
 ) {
   return {
     languages: params.$languages,
@@ -290,7 +290,7 @@ function convertLayoutAwareExtractionParameters(
 }
 
 function convertDocumentTextExtractionConfig(
-  config: DocumentTextExtractionConfig
+  config: DocumentTextExtractionConfig,
 ) {
   return {
     format: config.$format,
@@ -333,7 +333,7 @@ function convertVlmPreprocessingConfig(config: VlmPreprocessingConfig) {
       type: "layoutAware" as const,
       layoutAware: {
         transformationConfig: convertDocumentTextExtractionConfig(
-          config.$layoutAware.$transformationConfig
+          config.$layoutAware.$transformationConfig,
         ),
         cropConfig:
           config.$layoutAware.$cropConfig != null
@@ -585,7 +585,7 @@ function convertImageToTextOperation(op: ImageToTextOperation) {
     return {
       type: "extractLayoutAwareContent" as const,
       parameters: convertLayoutAwareExtractionParameters(
-        op.$extractLayoutAwareContent.$parameters
+        op.$extractLayoutAwareContent.$parameters,
       ),
     };
   } else {
@@ -716,7 +716,7 @@ function convertDocumentToTextOperation(op: DocumentToTextOperation) {
     return {
       type: "extractLayoutAwareContent" as const,
       parameters: convertLayoutAwareExtractionParameters(
-        op.$extractLayoutAwareContent.$parameters
+        op.$extractLayoutAwareContent.$parameters,
       ),
     };
   } else if (
@@ -730,7 +730,7 @@ function convertDocumentToTextOperation(op: DocumentToTextOperation) {
           ? convertPageRange(op.$extractLayoutAwareTextV2.$pageRange)
           : undefined,
       config: convertDocumentTextExtractionConfig(
-        op.$extractLayoutAwareTextV2.$config
+        op.$extractLayoutAwareTextV2.$config,
       ),
     };
   } else if ("$extractTextV2" in op && op.$extractTextV2 != null) {

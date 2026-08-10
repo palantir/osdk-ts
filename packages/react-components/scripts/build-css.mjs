@@ -42,7 +42,7 @@ async function findCssModules(dir) {
         return fullPath;
       }
       return null;
-    })
+    }),
   );
   return files.flat().filter(Boolean);
 }
@@ -64,7 +64,7 @@ async function findJsFiles(dir) {
         return fullPath;
       }
       return null;
-    })
+    }),
   );
   return files.flat().filter(Boolean);
 }
@@ -78,7 +78,7 @@ async function rewriteCssImports() {
     // Replace CSS module imports to point to .js files
     const updatedContent = content.replaceAll(
       /from\s+["']([^"']+\.module\.css)["']/gu,
-      'from "$1.js"'
+      'from "$1.js"',
     );
 
     if (content !== updatedContent) {

@@ -23,7 +23,7 @@ import type {
 import type { ActionType } from "../../api/action/ActionType.js";
 
 export function convertActionParameters(
-  action: ActionType
+  action: ActionType,
 ): Record<ParameterId, OntologyIrParameter> {
   return Object.fromEntries(
     (action.parameters ?? []).map((p) => [
@@ -39,6 +39,6 @@ export function convertActionParameters(
           typeClasses: p.typeClasses ?? [],
         },
       },
-    ])
+    ]),
   );
 }

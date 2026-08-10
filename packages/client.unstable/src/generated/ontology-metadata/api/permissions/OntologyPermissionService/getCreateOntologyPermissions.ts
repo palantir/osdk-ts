@@ -22,7 +22,7 @@ import type { GetCreateOntologyPermissionsResponse as _api_permissions_GetCreate
  * Returns whether the user has permissions to create a new Ontology.
  */
 export async function getCreateOntologyPermissions(
-  ctx: ConjureContext
+  ctx: ConjureContext,
 ): Promise<_api_permissions_GetCreateOntologyPermissionsResponse> {
   return conjureFetch(ctx, `/permissions/ontologyCreate`, "GET");
 }

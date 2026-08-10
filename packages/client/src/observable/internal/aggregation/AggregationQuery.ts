@@ -102,7 +102,7 @@ export abstract class AggregationQuery extends Query<
     store: Store,
     subject: Subject<SubjectPayload<AggregationCacheKey>>,
     cacheKey: AggregationCacheKey,
-    opts: CommonObserveOptions
+    opts: CommonObserveOptions,
   ) {
     super(
       store,
@@ -116,9 +116,9 @@ export abstract class AggregationQuery extends Query<
               msgPrefix: `AggregationQuery<${cacheKey.otherKeys
                 .map((x) => JSON.stringify(x))
                 .join(", ")}>`,
-            }
+            },
           )
-        : undefined
+        : undefined,
     );
     this.apiName = cacheKey.otherKeys[API_NAME_IDX];
     this.canonicalWhere = cacheKey.otherKeys[WHERE_IDX];
@@ -129,27 +129,27 @@ export abstract class AggregationQuery extends Query<
     this.#invalidationTypes = new Set([this.apiName]);
     if (serializedObjectSet) {
       this.parsedWireObjectSet = JSON.parse(
-        serializedObjectSet
+        serializedObjectSet,
       ) as WireObjectSet;
       this.#invalidationTypesPromise = this.#computeInvalidationTypes(
-        this.parsedWireObjectSet
+        this.parsedWireObjectSet,
       );
     }
   }
 
   async #computeInvalidationTypes(
-    wireObjectSet: WireObjectSet
+    wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
       const { invalidationSet } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
-        wireObjectSet
+        wireObjectSet,
       );
       return new Set([this.apiName, ...invalidationSet]);
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for aggregation, falling back to base type only",
-        error
+        error,
       );
       return new Set([this.apiName]);
     }
@@ -163,7 +163,7 @@ export abstract class AggregationQuery extends Query<
   }
 
   protected _createConnectable(
-    subject: Observable<SubjectPayload<AggregationCacheKey>>
+    subject: Observable<SubjectPayload<AggregationCacheKey>>,
   ): Connectable<AggregationPayloadBase> {
     return connectable<AggregationPayloadBase>(
       subject.pipe(
@@ -177,7 +177,7 @@ export abstract class AggregationQuery extends Query<
                 ? new Error("Aggregation failed")
                 : undefined,
           };
-        })
+        }),
       ),
       {
         connector: () =>
@@ -186,7 +186,7 @@ export abstract class AggregationQuery extends Query<
             result: undefined,
             lastUpdated: 0,
           }),
-      }
+      },
     );
   }
 
@@ -217,7 +217,7 @@ export abstract class AggregationQuery extends Query<
   writeToStore(
     data: AggregationCacheKey["__cacheKey"]["value"],
     status: Status,
-    batch: BatchContext
+    batch: BatchContext,
   ): Entry<AggregationCacheKey> {
     batch.write(this.cacheKey, data, status);
     batch.changes.modified.add(this.cacheKey);
@@ -226,7 +226,7 @@ export abstract class AggregationQuery extends Query<
 
   invalidateObjectType = (
     objectType: string,
-    changes: Changes | undefined
+    changes: Changes | undefined,
   ): Promise<void> => {
     if (this.#invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);

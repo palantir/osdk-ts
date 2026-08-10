@@ -79,7 +79,7 @@ type NewValueTypeDefinition =
   NewValueTypeDefinitionBacking[keyof NewValueTypeDefinitionBacking];
 
 function convertValueTypeTypeToBaseType(
-  valueType: ValueTypeType["value"]
+  valueType: ValueTypeType["value"],
 ): BaseType {
   if (typeof valueType === "string") {
   }
@@ -143,7 +143,7 @@ export type UserValueTypeStatus =
     };
 
 export function defineValueType(
-  valueTypeDefInput: ValueTypeDefinition
+  valueTypeDefInput: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
   const valueTypeDef = cloneDefinition(valueTypeDefInput);
   const {
@@ -162,11 +162,11 @@ export function defineValueType(
   const existingVersions =
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][apiName] ?? [];
   const duplicateVersion = existingVersions.find(
-    (vt) => vt.version === version
+    (vt) => vt.version === version,
   );
   invariant(
     duplicateVersion === undefined,
-    `Value type with apiName ${apiName} and version ${version} is already defined`
+    `Value type with apiName ${apiName} and version ${version} is already defined`,
   );
 
   const typeName: TypeNames =
@@ -207,7 +207,7 @@ export function defineValueType(
 }
 
 export function convertUserValueTypeStatusToValueTypeStatus(
-  status: UserValueTypeStatus | undefined
+  status: UserValueTypeStatus | undefined,
 ): ValueTypeStatus {
   if (typeof status === "object" && status.type === "deprecated") {
     return {

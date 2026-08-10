@@ -50,7 +50,7 @@ export async function run({
 }: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
-    `Creating project ${green(project)} using template ${green(template.id)}`
+    `Creating project ${green(project)} using template ${green(template.id)}`,
   );
 
   const cwd = process.cwd();
@@ -73,7 +73,7 @@ export async function run({
 
   if (template.files[sdkVersion] == null) {
     throw new Error(
-      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`
+      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`,
     );
   }
 
@@ -88,7 +88,7 @@ export async function run({
     await fs.promises.mkdir(dirPath, { recursive: true });
     await fs.promises.writeFile(
       finalPath,
-      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64")
+      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64"),
     );
   }
 
@@ -114,7 +114,7 @@ export async function run({
         return;
       }
       const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
-        templateContext
+        templateContext,
       );
       fs.writeFileSync(file.replace(/.hbs$/u, ""), templated);
       fs.rmSync(file);
@@ -125,7 +125,7 @@ export async function run({
   if (template.requiresOsdk) {
     if (osdkPackage == null || osdkRegistryUrl == null) {
       throw new Error(
-        `Template ${template.id} requires OSDK package and registry URL`
+        `Template ${template.id} requires OSDK package and registry URL`,
       );
     }
     const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });

@@ -37,12 +37,12 @@ export async function createSdk(
   repositoryRid: ArtifactsRepositoryRid,
   packageName: PackageName,
   sdkVersion: SdkVersion,
-  request: CreateSdkRequest
+  request: CreateSdkRequest,
 ): Promise<Sdk> {
   return conjureFetch(
     ctx,
     `/sdks/${repositoryRid}/${packageName}/${sdkVersion}`,
     "POST",
-    request
+    request,
   );
 }

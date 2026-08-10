@@ -64,7 +64,7 @@ describe("MonitorStore", () => {
               didTimeout: false,
               timeRemaining: () => 50,
             }),
-          0
+          0,
         ) as unknown as number;
       }) as typeof globalThis.requestIdleCallback;
       globalThis.cancelIdleCallback = ((id: number) => {
@@ -158,7 +158,7 @@ describe("MonitorStore", () => {
         type: "object",
         objectType: "Employee",
         data: { pk: "123" },
-      })
+      }),
     ).resolves.toBeUndefined();
   });
 

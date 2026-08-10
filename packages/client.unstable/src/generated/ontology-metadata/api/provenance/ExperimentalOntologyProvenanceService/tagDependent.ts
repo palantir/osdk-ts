@@ -28,7 +28,7 @@ import type {
  */
 export async function tagDependent(
   ctx: ConjureContext,
-  request: _api_provenance_TagDependentRequest
+  request: _api_provenance_TagDependentRequest,
 ): Promise<_api_provenance_TagDependentResponse> {
   return conjureFetch(ctx, `/provenance/tagDependent`, "PUT", request);
 }

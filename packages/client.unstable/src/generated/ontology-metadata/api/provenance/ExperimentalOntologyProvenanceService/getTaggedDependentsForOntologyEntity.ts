@@ -27,12 +27,12 @@ import type {
  */
 export async function getTaggedDependentsForOntologyEntity(
   ctx: ConjureContext,
-  request: _api_provenance_GetTaggedDependentsForOntologyEntityRequest
+  request: _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
 ): Promise<_api_provenance_GetTaggedDependentsForOntologyEntityResponse> {
   return conjureFetch(
     ctx,
     `/provenance/getTaggedDependentsForOntologyEntity`,
     "PUT",
-    request
+    request,
   );
 }

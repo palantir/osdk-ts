@@ -55,7 +55,7 @@ export class ComputeStore extends SubscribableStore {
   }
 
   createPendingRequest(
-    request: Omit<PendingComputeRequest, "type" | "id">
+    request: Omit<PendingComputeRequest, "type" | "id">,
   ): string {
     const id = crypto.randomUUID();
     const pendingRequest: PendingComputeRequest = {
@@ -77,7 +77,7 @@ export class ComputeStore extends SubscribableStore {
       responsePayloadBytes: number;
       responsePayloadHash: number;
       responsePayload: string;
-    }
+    },
   ): void {
     const pending = this.requestMap.get(requestId);
 
@@ -110,7 +110,7 @@ export class ComputeStore extends SubscribableStore {
       responsePayloadBytes: number;
       responsePayloadHash: number;
       responsePayload: string;
-    }
+    },
   ): void {
     const pending = this.requestMap.get(requestId);
 
@@ -227,7 +227,7 @@ export class ComputeStore extends SubscribableStore {
 
     const requestsFromBuffer = this.requests.toArray();
     const newRequests = requestsFromBuffer.map(
-      (req) => this.requestMap.get(req.id) ?? req
+      (req) => this.requestMap.get(req.id) ?? req,
     );
 
     if (this.arraysReferentiallyEqual(this.cachedRequests, newRequests)) {
@@ -343,7 +343,7 @@ export class ComputeStore extends SubscribableStore {
 
   private arraysReferentiallyEqual(
     a: ReadonlyArray<ComputeRequest>,
-    b: ReadonlyArray<ComputeRequest>
+    b: ReadonlyArray<ComputeRequest>,
   ): boolean {
     if (a.length !== b.length) {
       return false;

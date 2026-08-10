@@ -46,7 +46,7 @@ interface TableHeaderProps<TData extends RowData> {
 
 const getHeaderName = <TData,>(
   column: Column<TData, unknown>,
-  allHeaders: Header<TData, unknown>[]
+  allHeaders: Header<TData, unknown>[],
 ) => {
   const { id, columnDef } = column;
   const header = allHeaders.find((header) => header.id === id);
@@ -106,7 +106,7 @@ export function TableHeader<TData extends RowData>({
       setMultiSortDialogOpen(false);
       setSorting?.(sortColumns);
     },
-    [setSorting]
+    [setSorting],
   );
 
   const handleApplyColumnConfig = useCallback(
@@ -119,7 +119,7 @@ export function TableHeader<TData extends RowData>({
       setColumnOrder(updates.map((col) => col.columnId));
       setColumnVisibility(newVisibilityState);
     },
-    [setColumnOrder, setColumnVisibility]
+    [setColumnOrder, setColumnVisibility],
   );
 
   const columnOptions: ColumnOption[] = useMemo(() => {
@@ -135,6 +135,7 @@ export function TableHeader<TData extends RowData>({
           id: column.id,
           name: getHeaderName(column, allHeaders),
           canSort: column.getCanSort(),
+          dataType: column.columnDef.meta?.dataType,
         };
       });
   }, [table]);

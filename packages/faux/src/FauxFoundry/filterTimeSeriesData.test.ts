@@ -71,8 +71,8 @@ describe(filterTimeSeriesData, () => {
               unit: "DAYS",
             },
           },
-        }
-      )
+        },
+      ),
     ).toEqual([
       { time: "2021-12-26T00:00:00Z", value: 2 },
       { time: "2021-12-27T00:00:00Z", value: 3 },
@@ -97,8 +97,8 @@ describe(filterTimeSeriesData, () => {
               unit: "DAYS",
             },
           },
-        }
-      )
+        },
+      ),
     ).toEqual([
       { time: "2022-01-01T00:00:00Z", value: 1 },
       { time: "2022-01-02T00:00:00Z", value: 2 },

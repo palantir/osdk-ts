@@ -21,13 +21,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadActionMetadata(
   client: MinimalClient,
-  actionType: string
+  actionType: string,
 ): Promise<ActionMetadata> {
   const r = await ActionTypesV2.get(
     client,
     await client.ontologyRid,
     actionType,
-    { branch: client.branch }
+    { branch: client.branch },
   );
 
   const { wireActionTypeV2ToSdkActionMetadata } =

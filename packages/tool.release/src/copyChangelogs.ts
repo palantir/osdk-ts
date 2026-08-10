@@ -44,12 +44,12 @@ async function getPackageInfo(): Promise<PackageInfo[]> {
 
 async function getChangelogContent(
   packageName: string,
-  branch: string
+  branch: string,
 ): Promise<string | null> {
   const changelogPath = join(
     "packages",
     packageName.split("/")[1],
-    "CHANGELOG.md"
+    "CHANGELOG.md",
   );
   let content: Result<{}> = {} as Result<{}>;
   try {
@@ -57,7 +57,7 @@ async function getChangelogContent(
     return content.stdout;
   } catch (error) {
     consola.warn(
-      `Failed to update changelog for ${packageName}, likely does not exist on release branch`
+      `Failed to update changelog for ${packageName}, likely does not exist on release branch`,
     );
     return null;
   }
@@ -65,7 +65,7 @@ async function getChangelogContent(
 
 function doesVersionExistInChangelog(
   changelogContent: string,
-  version: string
+  version: string,
 ): boolean {
   const changelogEntry = getChangelogEntry(changelogContent, version);
 
@@ -77,17 +77,17 @@ function doesVersionExistInChangelog(
 async function updateChangelog(
   packageName: string,
   targetVersion: string,
-  fullTargetBranchChangelogContent: string
+  fullTargetBranchChangelogContent: string,
 ): Promise<void> {
   const changelogPath = join(
     "packages",
     packageName.split("/")[1],
-    "CHANGELOG.md"
+    "CHANGELOG.md",
   );
 
   if (!existsSync(changelogPath)) {
     consola.warn(
-      `Changelog file does not exist for ${packageName}, skipping update`
+      `Changelog file does not exist for ${packageName}, skipping update`,
     );
     return;
   }
@@ -96,7 +96,7 @@ async function updateChangelog(
 
   if (doesVersionExistInChangelog(currentContent, targetVersion)) {
     consola.warn(
-      `Changelog entry for ${targetVersion} already exists on current branch, skipping`
+      `Changelog entry for ${targetVersion} already exists on current branch, skipping`,
     );
     return;
   }
@@ -104,18 +104,18 @@ async function updateChangelog(
   if (
     !doesVersionExistInChangelog(
       fullTargetBranchChangelogContent,
-      targetVersion
+      targetVersion,
     )
   ) {
     consola.warn(
-      `Changelog entry for ${targetVersion} does not exist on release branch, skipping`
+      `Changelog entry for ${targetVersion} does not exist on release branch, skipping`,
     );
     return;
   }
 
   const entry = getChangelogEntry(
     fullTargetBranchChangelogContent,
-    targetVersion
+    targetVersion,
   );
 
   if (!entry) {
@@ -146,12 +146,12 @@ async function updateChangelog(
 
   await writeFile(changelogPath, updatedContent);
   consola.success(
-    `Updated ${changelogPath} with changelog for ${targetVersion}`
+    `Updated ${changelogPath} with changelog for ${targetVersion}`,
   );
 }
 
 export async function copyChangelogs(
-  options: CopyChangelogOptions
+  options: CopyChangelogOptions,
 ): Promise<void> {
   const { releaseBranch } = options;
 

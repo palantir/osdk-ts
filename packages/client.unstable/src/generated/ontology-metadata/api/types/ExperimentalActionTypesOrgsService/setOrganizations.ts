@@ -27,7 +27,7 @@ import type { ActionTypeSetOrganizationsRequest as _api_ActionTypeSetOrganizatio
  */
 export async function setOrganizations(
   ctx: ConjureContext,
-  request: _api_ActionTypeSetOrganizationsRequest
+  request: _api_ActionTypeSetOrganizationsRequest,
 ): Promise<void> {
   return conjureFetch(ctx, `/actions/orgs/v2`, "PUT", request);
 }

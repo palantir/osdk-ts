@@ -27,7 +27,7 @@ import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
   return async function fetchOrThrow(
     url: RequestInfo | URL,
-    requestInit?: RequestInit
+    requestInit?: RequestInit,
   ): Promise<Response> {
     let response;
 
@@ -48,7 +48,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         throw unknownError(
           fallbackMessage,
           response.status,
-          new Error(`Received HTML error page: ${await response.text()}`)
+          new Error(`Received HTML error page: ${await response.text()}`),
         );
       }
 
@@ -59,7 +59,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         throw unknownError(
           fallbackMessage,
           response.status,
-          error instanceof Error ? error : undefined
+          error instanceof Error ? error : undefined,
         );
       }
 
@@ -70,7 +70,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         body?.errorDescription,
         response.status,
         body?.errorInstanceId,
-        body?.parameters
+        body?.parameters,
       );
     }
     return response;
@@ -87,7 +87,7 @@ function convertError(e: any, msgIfNotError = "An unknown error occurred") {
 function unknownError(
   message: string,
   statusCode?: number,
-  originalError?: Error
+  originalError?: Error,
 ) {
   return new UnknownError(message, undefined, originalError, statusCode);
 }

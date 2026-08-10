@@ -56,7 +56,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
             value: "no",
           },
         ],
-      }
+      },
     )) as "yes" | "no";
 
     if (skip === "no") {
@@ -73,9 +73,9 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
     }
     ontology = await consola.prompt(
       `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${italic(
-        "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)"
+        "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
 
@@ -85,28 +85,28 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
     }
     osdkPackage = await consola.prompt(
       `Enter the OSDK package name for your application from Developer Console:\n${italic(
-        "(Example: @my-app/sdk)"
+        "(Example: @my-app/sdk)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
 
   while (
     osdkRegistryUrl == null ||
     !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/u.test(
-      osdkRegistryUrl
+      osdkRegistryUrl,
     )
   ) {
     if (osdkRegistryUrl != null) {
       consola.fail(
-        "Please enter a valid NPM registry URL to install your OSDK package"
+        "Please enter a valid NPM registry URL to install your OSDK package",
       );
     }
     osdkRegistryUrl = await consola.prompt(
       `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${italic(
-        "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)"
+        "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
       )}`,
-      { type: "text" }
+      { type: "text" },
     );
   }
 

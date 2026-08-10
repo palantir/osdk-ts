@@ -42,7 +42,7 @@ import type {
  */
 export async function createRelease(
   ctx: ConjureContext,
-  request: _release_api_CreateReleaseRequest
+  request: _release_api_CreateReleaseRequest,
 ): Promise<_release_api_CreateReleaseResponse> {
   return conjureFetch(ctx, `/releases/create`, "POST", request);
 }

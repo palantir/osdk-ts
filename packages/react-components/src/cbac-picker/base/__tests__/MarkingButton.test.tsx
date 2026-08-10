@@ -26,7 +26,7 @@ function renderButton(
     description: string;
     disabled: boolean;
     onToggle: (id: string) => void;
-  }> = {}
+  }> = {},
 ): (id: string) => void {
   const onToggle = overrides.onToggle ?? vi.fn();
   render(
@@ -37,7 +37,7 @@ function renderButton(
       description={overrides.description}
       disabled={overrides.disabled}
       onToggle={onToggle}
-    />
+    />,
   );
   return onToggle;
 }
@@ -54,14 +54,14 @@ describe("MarkingButton", () => {
   it("marks a selected marking as pressed", () => {
     renderButton({ selectionState: "SELECTED" });
     expect(screen.getByRole("button").getAttribute("aria-pressed")).toBe(
-      "true"
+      "true",
     );
   });
 
   it("marks an implied marking as pressed", () => {
     renderButton({ selectionState: "IMPLIED" });
     expect(screen.getByRole("button").getAttribute("aria-pressed")).toBe(
-      "true"
+      "true",
     );
   });
 

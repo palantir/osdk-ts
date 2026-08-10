@@ -41,12 +41,12 @@ import type {
 export async function updateAccessRequest(
   ctx: ConjureContext,
   accessRequestRid: _api_AccessRequestRid,
-  updateAccessRequest: _api_accessrequest_UpdateAccessRequestRequest
+  updateAccessRequest: _api_accessrequest_UpdateAccessRequestRequest,
 ): Promise<_api_accessrequest_UpdateAccessRequestResponse> {
   return conjureFetch(
     ctx,
     `/ontology/access-request/${accessRequestRid}`,
     "PUT",
-    updateAccessRequest
+    updateAccessRequest,
   );
 }

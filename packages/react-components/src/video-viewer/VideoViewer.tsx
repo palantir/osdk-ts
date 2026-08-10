@@ -46,7 +46,7 @@ export function VideoViewer({
 
   const mimeType = useMemo(
     () => videoViewerProps.mimeType ?? media.getMediaReference().mimeType,
-    [videoViewerProps.mimeType, media]
+    [videoViewerProps.mimeType, media],
   );
 
   const rootClassName = classnames(styles.container, className);

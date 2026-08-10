@@ -84,12 +84,12 @@ export function CbacPicker({
       const newSelection = toggleMarking(
         markingId,
         selectedIdsRef.current,
-        categoryGroups
+        categoryGroups,
       );
       setSelectedIds(newSelection);
       onChange(newSelection);
     },
-    [readOnly, categoryGroups, onChange]
+    [readOnly, categoryGroups, onChange],
   );
 
   const handleDismiss = React.useCallback(() => {
@@ -102,7 +102,7 @@ export function CbacPicker({
       maxClassificationConstraint != null ? (
         <ConstraintCallout constraint={maxClassificationConstraint} />
       ) : undefined,
-    [maxClassificationConstraint]
+    [maxClassificationConstraint],
   );
 
   return (

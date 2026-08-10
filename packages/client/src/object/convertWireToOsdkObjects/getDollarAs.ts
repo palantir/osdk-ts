@@ -32,13 +32,13 @@ export type DollarAsFn = <
   NEW_Q extends ObjectOrInterfaceDefinition,
 >(
   this: InterfaceHolder | ObjectHolder,
-  newDef: string | NEW_Q
+  newDef: string | NEW_Q,
 ) => OsdkBase<any>;
 
 export const get$as: (key: FetchedObjectTypeDefinition) => DollarAsFn =
   createSimpleCache<FetchedObjectTypeDefinition, DollarAsFn>(
     new WeakMap(),
-    $asFactory
+    $asFactory,
   ).get;
 
 const osdkObjectToInterfaceView = createSimpleCache(
@@ -47,12 +47,12 @@ const osdkObjectToInterfaceView = createSimpleCache(
     new Map<
       /* interface api name */ string,
       /* $as'd object */ WeakRef<OsdkBase<any>>
-    >()
+    >(),
 );
 
 function assertInterfaceToOtCastIsPermitted(
   holder: { [InterfaceDefRef]?: unknown },
-  objDef: FetchedObjectTypeDefinition
+  objDef: FetchedObjectTypeDefinition,
 ): void {
   const interfaceDef = holder[InterfaceDefRef] as
     | { apiName: string }
@@ -68,7 +68,7 @@ function assertInterfaceToOtCastIsPermitted(
       `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
         `'${objDef.apiName}': property '${iptApiName}' has a non-local ` +
         `implementation (${impl.type}), so the underlying object type cannot ` +
-        `be faithfully represented. Load the object type directly.`
+        `be faithfully represented. Load the object type directly.`,
     );
   }
 }
@@ -81,7 +81,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
       [UnderlyingOsdkObject]: any;
       [InterfaceDefRef]?: unknown;
     },
-    targetMinDef: NEW_Q | string
+    targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
@@ -94,7 +94,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
       // this is sufficient to determine if we implement the interface
       if (objDef.interfaceMap?.[targetMinDef] == null) {
         throw new Error(
-          `Object does not implement interface '${targetMinDef}'.`
+          `Object does not implement interface '${targetMinDef}'.`,
         );
       }
 
@@ -105,7 +105,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
     } else {
       if (targetMinDef.type === "object") {
         throw new Error(
-          `'${targetMinDef.apiName}' is not an interface nor is it '${objDef.apiName}', which is the object type.`
+          `'${targetMinDef.apiName}' is not an interface nor is it '${objDef.apiName}', which is the object type.`,
         );
       }
       targetInterfaceApiName = targetMinDef.apiName;
@@ -114,7 +114,7 @@ function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
     const def = objDef[InterfaceDefinitions][targetInterfaceApiName];
     if (!def) {
       throw new Error(
-        `Object does not implement interface '${targetInterfaceApiName}'.`
+        `Object does not implement interface '${targetInterfaceApiName}'.`,
       );
     }
 

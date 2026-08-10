@@ -128,7 +128,7 @@ export function useObjectTableData<
         acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
         return acc;
       },
-      {}
+      {},
     );
   }, [sorting]);
 
@@ -155,7 +155,7 @@ export function useObjectTableData<
           [cur.id]: cur.creator,
         };
       },
-      {} as WithProperties<Q, RDPs>
+      {} as WithProperties<Q, RDPs>,
     );
   }, [columnDefinitions]);
 
@@ -175,7 +175,7 @@ export function useObjectTableData<
       enabled: shouldUseObjectSet,
       dedupeIntervalMs,
       streamUpdates,
-    }
+    },
   );
 
   const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {

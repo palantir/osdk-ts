@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 
 export function createGroupByAggregateOptions<Q extends ObjectTypeDefinition>(
-  propertyKey: string
+  propertyKey: string,
 ): AggregateOpts<Q> {
   return {
     $select: { $count: "unordered" as const },
@@ -44,7 +44,7 @@ export type AggregationGroupResult = Iterable<{
 }>;
 
 export function createNullWhereClause<Q extends ObjectTypeDefinition>(
-  propertyKey: string
+  propertyKey: string,
 ): WhereClause<Q> {
   return { [propertyKey]: { $isNull: true } } as WhereClause<Q>;
 }
@@ -59,7 +59,7 @@ export function createNullWhereClause<Q extends ObjectTypeDefinition>(
  */
 export function createNullCountWhereClause<Q extends ObjectTypeDefinition>(
   propertyKey: string,
-  crossFilterWhereClause: WhereClause<Q>
+  crossFilterWhereClause: WhereClause<Q>,
 ): WhereClause<Q> {
   const nullClause = createNullWhereClause<Q>(propertyKey);
   if (Object.keys(crossFilterWhereClause).length === 0) {

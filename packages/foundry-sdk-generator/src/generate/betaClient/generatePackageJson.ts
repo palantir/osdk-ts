@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { writeFile } from "fs/promises";
-import { join } from "path";
 import {
-  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
   ONTOLOGY_METADATA_JSON_PATH,
-} from "./generateOntologyMetadata.js";
+} from "@osdk/generator";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export async function generatePackageJson(options: {
   packageName: string;
@@ -32,6 +33,7 @@ export async function generatePackageJson(options: {
   beta: boolean;
   packageRid?: string;
   branch?: string;
+  exportOntologyMetadata: boolean;
 }): Promise<
   {
     name: string;
@@ -68,10 +70,20 @@ export async function generatePackageJson(options: {
         types: "./cjs/index.d.ts",
         default: "./cjs/index.js",
       },
-      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
-        types: `./${ONTOLOGY_METADATA_DTS_PATH}`,
-        default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
-      },
+      ...(options.exportOntologyMetadata
+        ? {
+          "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+            require: {
+              types: `./${ONTOLOGY_METADATA_DCTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+            import: {
+              types: `./${ONTOLOGY_METADATA_DMTS_PATH}`,
+              default: `./${ONTOLOGY_METADATA_JSON_PATH}`,
+            },
+          },
+        }
+        : {}),
     },
     dependencies: packageDeps,
     peerDependencies: packagePeerDeps,

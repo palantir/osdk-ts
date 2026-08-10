@@ -62,7 +62,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   constructor(
     query: ListQueryViewTarget<PAYLOAD>,
     pageSize: number,
-    autoFetchMore?: boolean | number
+    autoFetchMore?: boolean | number,
   ) {
     this.#query = query;
     this.#pageSize = pageSize;

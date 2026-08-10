@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 
 export function convertConditionDefinition(
   condition: ConditionDefinition,
-  actionParameters?: ActionParameter[]
+  actionParameters?: ActionParameter[],
 ): OntologyIrCondition {
   switch (condition.type) {
     case "and":
@@ -29,7 +29,7 @@ export function convertConditionDefinition(
           type: "and",
           and: {
             conditions: condition.conditions.map((c) =>
-              convertConditionDefinition(c, actionParameters)
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -42,7 +42,7 @@ export function convertConditionDefinition(
           type: "or",
           or: {
             conditions: condition.conditions.map((c) =>
-              convertConditionDefinition(c, actionParameters)
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -81,7 +81,7 @@ export function convertConditionDefinition(
     case "parameter":
       invariant(
         actionParameters?.some((param) => param.id === condition.parameterId),
-        `Action parameter condition references unknown parameter ${condition.parameterId}`
+        `Action parameter condition references unknown parameter ${condition.parameterId}`,
       );
       return {
         type: "comparison",

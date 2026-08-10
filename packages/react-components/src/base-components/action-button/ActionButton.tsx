@@ -32,7 +32,7 @@ export const ActionButton: React.MemoExoticComponent<
 > = React.memo(
   React.forwardRef<HTMLButtonElement, ButtonProps>(function ActionButton(
     { variant = "secondary", appearance = "default", className, ...rest },
-    ref
+    ref,
   ) {
     return (
       <Button
@@ -41,10 +41,10 @@ export const ActionButton: React.MemoExoticComponent<
           styles.button,
           variant === "primary" ? styles.primaryButton : styles.secondaryButton,
           appearance === "minimal" && styles.minimalButton,
-          className
+          className,
         )}
         {...rest}
       />
     );
-  })
+  }),
 );

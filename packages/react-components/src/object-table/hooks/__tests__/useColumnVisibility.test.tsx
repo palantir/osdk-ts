@@ -44,7 +44,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnVisibility).toEqual({});
@@ -59,7 +59,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnVisibility).toEqual({
@@ -79,7 +79,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnVisibility).toEqual({
@@ -102,7 +102,7 @@ describe(useColumnVisibility, () => {
           }),
         {
           initialProps: { allColumns: initialColumns },
-        }
+        },
       );
 
       expect(result.current.columnVisibility).toEqual({
@@ -135,7 +135,7 @@ describe(useColumnVisibility, () => {
         useColumnVisibility<TestObject>({
           allColumns,
           onColumnVisibilityChanged,
-        })
+        }),
       );
 
       act(() => {
@@ -162,7 +162,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       // Should not throw
@@ -189,7 +189,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnOrder).toEqual(["name", "email", "age"]);
@@ -205,7 +205,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnOrder).toEqual([
@@ -225,7 +225,7 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-        })
+        }),
       );
 
       expect(result.current.columnOrder).toEqual(["name", "email", "age"]);
@@ -250,7 +250,7 @@ describe(useColumnVisibility, () => {
           }),
         {
           initialProps: { allColumns: initialColumns },
-        }
+        },
       );
 
       expect(result.current.columnOrder).toEqual(["name", "email"]);

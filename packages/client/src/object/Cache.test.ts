@@ -40,7 +40,7 @@ describe("AsyncCache", () => {
 
   it("keeps clients separate", async () => {
     const cache = createAsyncClientCache((client: MinimalClient, key: string) =>
-      Promise.resolve(key)
+      Promise.resolve(key),
     );
     await cache.set(fauxClient, "k", "v");
     expect(await cache.get(fauxClient2, "k")).toEqual("k");
@@ -48,7 +48,7 @@ describe("AsyncCache", () => {
 
   it("has a client and its copy access the same cache", async () => {
     const cache = createAsyncClientCache((client: MinimalClient, key: string) =>
-      Promise.resolve(key)
+      Promise.resolve(key),
     );
     await cache.set(fauxClient, "k", "v");
     expect(await cache.get({ ...fauxClient }, "k")).toEqual("v");
@@ -122,7 +122,7 @@ describe("AsyncCache", () => {
 
       asyncCache = createAsyncClientCache<string, string>(
         factoryFn,
-        createSyncCacheMock as any
+        createSyncCacheMock as any,
       );
 
       asyncSetSpy = vi.spyOn(asyncCache, "set");
@@ -162,7 +162,7 @@ describe("AsyncCache", () => {
     function resolveFactoryCall(
       num: number,
       key: string,
-      value = `${key}Result`
+      value = `${key}Result`,
     ) {
       return async () => {
         // <preconditions>
@@ -191,7 +191,7 @@ describe("AsyncCache", () => {
     function rejectFactoryCall(
       num: number,
       key: string,
-      error = `${key}Error`
+      error = `${key}Error`,
     ) {
       return async () => {
         expect(factoryFn.mock.calls[num][1]).toBe(key);
@@ -236,7 +236,7 @@ describe("AsyncCache", () => {
 
       // inProgress should be removed after a success or failure
       expect(inProgress.remove).toHaveBeenCalledTimes(
-        stats.fulfilledFactoryCalls + stats.rejectedFactoryCalls
+        stats.fulfilledFactoryCalls + stats.rejectedFactoryCalls,
       );
 
       // the inner cache gets checked once per async get
@@ -251,10 +251,10 @@ describe("AsyncCache", () => {
         for (let i = 0; i < asyncCacheSpies.get.mock.calls.length; i++) {
           if (asyncCacheSpies.get.mock.calls[i][1] === key) {
             expect(asyncCacheSpies.get.mock.settledResults[i].type).toBe(
-              "rejected"
+              "rejected",
             );
             expect(
-              asyncCacheSpies.get.mock.settledResults[i].value
+              asyncCacheSpies.get.mock.settledResults[i].value,
             ).toMatchObject(new Error("aError"));
           }
         }
@@ -270,7 +270,7 @@ describe("AsyncCache", () => {
     function describeRejectsFactoryCall(
       num: number,
       key: string,
-      fn: () => void
+      fn: () => void,
     ) {
       return describe(`rejects factory request ${num} for ${key}`, () => {
         beforeEach(rejectFactoryCall(num, key));
@@ -283,7 +283,7 @@ describe("AsyncCache", () => {
     function describeResolvesFactoryCall(
       num: number,
       key: string,
-      fn: () => void
+      fn: () => void,
     ) {
       return describe(`resolves factory request ${num} for ${key}`, () => {
         beforeEach(resolveFactoryCall(num, key));
@@ -312,7 +312,7 @@ describe("AsyncCache", () => {
     function itLeavesAsyncGetPromisesInStates(states: PromiseState[]) {
       it(`leaves the AsyncCache.get()'s in states [${states.join(", ")}]`, async () => {
         expect(
-          await Promise.all(getPromises.map((p) => pStateAsync(p)))
+          await Promise.all(getPromises.map((p) => pStateAsync(p))),
         ).toStrictEqual(states);
         for (let i = 0; i < states.length; i++) {
           expect(await pStateAsync(getPromises[i])).toBe(states[i]);
@@ -329,7 +329,7 @@ describe("AsyncCache", () => {
     function itReturnsForAsyncGet(results: any[]) {
       it("returns for async get", () => {
         expect(
-          asyncCacheSpies.get.mock.settledResults.map((a) => a.value)
+          asyncCacheSpies.get.mock.settledResults.map((a) => a.value),
         ).toEqual(results);
       });
     }

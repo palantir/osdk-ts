@@ -35,12 +35,12 @@ import type {
 export async function previewDiscovery(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
-  request: _api_PreviewDiscoveryRequest
+  request: _api_PreviewDiscoveryRequest,
 ): Promise<_api_PreviewDiscoveryResponse> {
   return conjureFetch(
     ctx,
     `/block-sets/version/${blockSetVersionId}/preview-discovery`,
     "POST",
-    request
+    request,
   );
 }

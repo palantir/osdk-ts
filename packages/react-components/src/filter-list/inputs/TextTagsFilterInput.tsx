@@ -52,7 +52,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState?.type === "EXACT_MATCH"
         ? coerceToStringArray(filterState.values)
         : [],
-    [filterState]
+    [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -72,19 +72,19 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding,
       });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const aggregationOptions = useMemo(
     () => ({ where: whereClause }),
-    [whereClause]
+    [whereClause],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
-    aggregationOptions
+    aggregationOptions,
   );
 
   return (
@@ -107,5 +107,5 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
 }
 
 export const TextTagsFilterInput: typeof TextTagsFilterInputInner = memo(
-  TextTagsFilterInputInner
+  TextTagsFilterInputInner,
 ) as typeof TextTagsFilterInputInner;

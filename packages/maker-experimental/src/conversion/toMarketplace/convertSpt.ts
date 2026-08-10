@@ -39,7 +39,7 @@ export function convertSpt(
     nullability,
     baseFormatter,
   }: SharedPropertyType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): SharedPropertyTypeWire {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
@@ -61,7 +61,7 @@ export function convertSpt(
               type,
               ridGenerator,
               apiName,
-              true
+              true,
             ),
             reducers: [],
           },
@@ -78,7 +78,7 @@ export function convertSpt(
         ? undefined
         : ridGenerator.generateRidForValueType(
             valueType.apiName,
-            valueType.version
+            valueType.version,
           ),
   };
 }
