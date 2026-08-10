@@ -7398,13 +7398,13 @@ export const WithCustomRenderers: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  519 | }
-  520 |
-&gt; 521 | const meta: Meta = {
+  518 | }
+  519 |
+&gt; 520 | const meta: Meta = {
       | ^
-  522 |   title: &quot;Components/Overview&quot;,
-  523 |   component: ComponentOverview,
-  524 |   tags: [&quot;beta&quot;],
+  521 |   title: &quot;Components/Overview&quot;,
+  522 |   component: ComponentOverview,
+  523 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -7725,7 +7725,6 @@ function DataTab(): React.ReactElement {
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={FILTER_DEFINITIONS}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           title=&quot;Employee Filters&quot;
           collapsed={collapsed}
@@ -10675,14 +10674,9 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       description: &quot;Icon displayed next to the title&quot;,
       control: false,
     },
-    filterClause: {
-      description:
-        &quot;The current where clause. If provided, the filter clause is controlled.&quot;,
-      control: false,
-    },
     onFilterClauseChanged: {
       description:
-        &quot;Called when the filter clause changes. Required in controlled mode.&quot;,
+        &quot;Called whenever the filter clause changes. FilterList owns filter state; this is how you read it out.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -10989,7 +10983,6 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -11010,14 +11003,13 @@ export const WithAllFilterTypes: Story = {
     docs: {
       description: {
         story:
-          &quot;All filter component types with a controlled where clause. &quot; +
+          &quot;All filter component types, with the emitted where clause shown as JSON. &quot; +
           &quot;Hover filter items to reveal search and exclude actions.&quot;,
       },
       source: {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -12148,7 +12140,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -12221,7 +12212,6 @@ export const WithStaticValues: Story = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -12283,7 +12273,6 @@ function FullFeaturedStory(
           {...args}
           onReset={handleReset}
           onFilterRemoved={handleFilterRemoved}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -12307,7 +12296,7 @@ export const FullFeatured: Story = {
       description: {
         story:
           &quot;Demonstrates all filter list features together: collapse, reset, active count, sorting, &quot; +
-          &quot;removable filters, per-filter search, exclude toggle, and controlled where clause &quot; +
+          &quot;removable filters, per-filter search, exclude toggle, and the emitted where clause &quot; +
           &quot;driving an ObjectTable.&quot;,
       },
       source: {
@@ -12325,7 +12314,6 @@ export const FullFeatured: Story = {
   onReset={handleReset}
   onFilterRemoved={handleFilterRemoved}
   enableSorting={true}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -12398,7 +12386,6 @@ function WithLinkedPropertyFiltersStory(
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -12454,7 +12441,6 @@ const filterDefinitions = [
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -12538,20 +12524,8 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
   const client = useOsdkClient();
   const baseObjectSet = useMemo(() =&gt; client(Employee), [client]);
 
-  const [filterClause, setFilterClause] = useState&lt;
-    WhereClause&lt;Employee&gt; | undefined
-  &gt;(undefined);
   const [effectiveObjectSet, setEffectiveObjectSet] =
     useState&lt;ObjectSet&lt;Employee&gt;&gt;(baseObjectSet);
-
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause&lt;Employee&gt;) =&gt; {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -12561,8 +12535,7 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
           objectType={Employee}
           objectSet={baseObjectSet}
           filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
-          filterClause={filterClause}
-          onFilterClauseChanged={handleFilterClauseChanged}
+          onFilterClauseChanged={args.onFilterClauseChanged}
           onEffectiveObjectSet={setEffectiveObjectSet}
           showFilteredOutValues={true}
         /&gt;
@@ -12655,8 +12628,6 @@ const columnDefinitions: ColumnDefinition&lt;Employee, RDPs&gt;[] = [
   objectType={Employee}
   objectSet={baseObjectSet}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
   onEffectiveObjectSet={setEffectiveObjectSet}
   showFilteredOutValues
 /&gt;
@@ -12785,7 +12756,6 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -12841,7 +12811,6 @@ const nameContainsFilter = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={[nameContainsFilter]}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -27686,13 +27655,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  519 | }
-  520 |
-&gt; 521 | const meta: Meta = {
+  518 | }
+  519 |
+&gt; 520 | const meta: Meta = {
       | ^
-  522 |   title: &quot;Components/Overview&quot;,
-  523 |   component: ComponentOverview,
-  524 |   tags: [&quot;beta&quot;],
+  521 |   title: &quot;Components/Overview&quot;,
+  522 |   component: ComponentOverview,
+  523 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -28013,7 +27982,6 @@ function DataTab(): React.ReactElement {
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={FILTER_DEFINITIONS}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           title=&quot;Employee Filters&quot;
           collapsed={collapsed}
@@ -29122,14 +29090,9 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       description: &quot;Icon displayed next to the title&quot;,
       control: false,
     },
-    filterClause: {
-      description:
-        &quot;The current where clause. If provided, the filter clause is controlled.&quot;,
-      control: false,
-    },
     onFilterClauseChanged: {
       description:
-        &quot;Called when the filter clause changes. Required in controlled mode.&quot;,
+        &quot;Called whenever the filter clause changes. FilterList owns filter state; this is how you read it out.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -29436,7 +29399,6 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -29457,14 +29419,13 @@ export const WithAllFilterTypes: Story = {
     docs: {
       description: {
         story:
-          &quot;All filter component types with a controlled where clause. &quot; +
+          &quot;All filter component types, with the emitted where clause shown as JSON. &quot; +
           &quot;Hover filter items to reveal search and exclude actions.&quot;,
       },
       source: {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -30595,7 +30556,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -30668,7 +30628,6 @@ export const WithStaticValues: Story = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -30730,7 +30689,6 @@ function FullFeaturedStory(
           {...args}
           onReset={handleReset}
           onFilterRemoved={handleFilterRemoved}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -30754,7 +30712,7 @@ export const FullFeatured: Story = {
       description: {
         story:
           &quot;Demonstrates all filter list features together: collapse, reset, active count, sorting, &quot; +
-          &quot;removable filters, per-filter search, exclude toggle, and controlled where clause &quot; +
+          &quot;removable filters, per-filter search, exclude toggle, and the emitted where clause &quot; +
           &quot;driving an ObjectTable.&quot;,
       },
       source: {
@@ -30772,7 +30730,6 @@ export const FullFeatured: Story = {
   onReset={handleReset}
   onFilterRemoved={handleFilterRemoved}
   enableSorting={true}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -30845,7 +30802,6 @@ function WithLinkedPropertyFiltersStory(
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -30901,7 +30857,6 @@ const filterDefinitions = [
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
@@ -30985,20 +30940,8 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
   const client = useOsdkClient();
   const baseObjectSet = useMemo(() =&gt; client(Employee), [client]);
 
-  const [filterClause, setFilterClause] = useState&lt;
-    WhereClause&lt;Employee&gt; | undefined
-  &gt;(undefined);
   const [effectiveObjectSet, setEffectiveObjectSet] =
     useState&lt;ObjectSet&lt;Employee&gt;&gt;(baseObjectSet);
-
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause&lt;Employee&gt;) =&gt; {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -31008,8 +30951,7 @@ function CombinedWithObjectTableStory(args: Partial&lt;EmployeeFilterListProps&g
           objectType={Employee}
           objectSet={baseObjectSet}
           filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
-          filterClause={filterClause}
-          onFilterClauseChanged={handleFilterClauseChanged}
+          onFilterClauseChanged={args.onFilterClauseChanged}
           onEffectiveObjectSet={setEffectiveObjectSet}
           showFilteredOutValues={true}
         /&gt;
@@ -31102,8 +31044,6 @@ const columnDefinitions: ColumnDefinition&lt;Employee, RDPs&gt;[] = [
   objectType={Employee}
   objectSet={baseObjectSet}
   filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
   onEffectiveObjectSet={setEffectiveObjectSet}
   showFilteredOutValues
 /&gt;
@@ -31232,7 +31172,6 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          filterClause={filterClause}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -31288,7 +31227,6 @@ const nameContainsFilter = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={[nameContainsFilter]}
-  filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 /&gt;`,
       },
