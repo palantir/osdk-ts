@@ -22,7 +22,6 @@ import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
-import { isCellEditable } from "./utils/editableUtils.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
@@ -63,7 +62,8 @@ export function TableCell<TData extends RowData>({
   const tableMeta = cell.getContext().table.options.meta;
   const columnMeta = cell.column.columnDef.meta;
   const isEditable = shouldShowEditableCell(
-    isCellEditable(columnMeta?.editable, cell.row.original),
+    columnMeta?.editable,
+    cell.row.original,
     tableMeta?.onCellEdit,
     tableMeta?.isInEditMode,
   );

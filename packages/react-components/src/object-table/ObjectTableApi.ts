@@ -87,6 +87,10 @@ interface SharedColumnDefinition<
    *   column into a permanently-editable surface, leaving no read-only
    *   state for `renderCell` to render. Use `editMode: "manual"` if you
    *   need a custom display alongside editing.
+   *
+   * The editor only takes over on cells that are actually editable. When
+   * `editable` is a predicate, rows it rejects stay read-only and keep
+   * rendering `renderCell` even in edit mode.
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,

@@ -153,9 +153,12 @@ function getColumnsFromColumnDefinitions<
         > = cellContext.row.original;
 
         const meta = cellContext.table.options.meta;
-        const isEditable = shouldShowEditableCell<
-          Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-        >(editable, meta?.onCellEdit, meta?.isInEditMode);
+        const isEditable = shouldShowEditableCell(
+          editable,
+          object,
+          meta?.onCellEdit,
+          meta?.isInEditMode,
+        );
 
         if (renderCell && !isEditable) {
           return renderCell(object, locator);
