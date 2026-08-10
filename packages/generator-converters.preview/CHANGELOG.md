@@ -1,5 +1,17 @@
 # @osdk/generator-converters.preview
 
+## 0.34.0
+
+### Minor Changes
+
+- 7b85fa7: Include ontology metadata in generator converter preview
+
+### Patch Changes
+
+- @osdk/client.unstable@2.56.0
+- @osdk/generator-converters.ontologyir@2.56.0
+- @osdk/generator@2.56.0
+
 ## 0.33.0
 
 ### Patch Changes

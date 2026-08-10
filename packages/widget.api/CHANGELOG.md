@@ -1,5 +1,16 @@
 # @osdk/widget.api
 
+## 3.54.0
+
+### Minor Changes
+
+- 47c66c3: Generate widget set manifest authorizations defined in a resources.json file
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+
 ## 3.53.0
 
 ### Patch Changes
