@@ -20,4 +20,5 @@ import type { CommonWidgetSetArgs } from "../CommonWidgetSetArgs.js";
 export interface WidgetSetDeployArgs extends CommonWidgetSetArgs {
   directory: string;
   repository?: StemmaRepositoryRid;
+  saveTokenScope: boolean;
 }

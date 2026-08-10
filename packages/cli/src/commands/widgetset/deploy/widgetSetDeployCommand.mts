@@ -37,6 +37,7 @@ export default async function widgetSetDeployCommand({
   foundryUrl,
   directory,
   repository,
+  saveTokenScope,
   token,
   tokenFile,
 }: WidgetSetDeployArgs): Promise<void> {
@@ -74,6 +75,7 @@ export default async function widgetSetDeployCommand({
       clientCtx,
       deployRid,
       widgetSetVersion,
+      saveTokenScope,
       Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),

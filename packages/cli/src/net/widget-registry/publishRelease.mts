@@ -23,6 +23,7 @@ export async function publishRelease(
   ctx: InternalClientContext,
   repositoryRid: WidgetSetRid | StemmaRepositoryRid,
   repositoryVersion: string,
+  saveTokenScope: boolean,
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
@@ -32,6 +33,9 @@ export async function publishRelease(
   );
   urlObj.searchParams.set("preview", "true");
   urlObj.searchParams.set("repositoryVersion", repositoryVersion);
+  if (saveTokenScope) {
+    urlObj.searchParams.set("saveTokenScope", "true");
+  }
   const url = urlObj.toString();
 
   await fetch(url, {

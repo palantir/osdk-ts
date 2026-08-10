@@ -53,8 +53,14 @@ const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
           description:
             "Code repository resource identifier (rid) publishing the widget set",
         },
+        saveTokenScope: {
+          type: "boolean",
+          description:
+            "Save the widget set token scope after publishing the release",
+          default: false,
+        },
       })
-      .group(["directory", "repository"], "Deploy Options")
+      .group(["directory", "repository", "saveTokenScope"], "Deploy Options")
       .middleware((args) =>
         logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig),
       );
