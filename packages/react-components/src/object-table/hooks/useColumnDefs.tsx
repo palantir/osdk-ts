@@ -24,8 +24,9 @@ import type {
 } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
+import { NonEditableCellInEditMode } from "../components/NonEditableCellInEditMode.js";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
@@ -161,7 +162,15 @@ function getColumnsFromColumnDefinitions<
         );
 
         if (renderCell && !isEditable) {
-          return renderCell(object, locator);
+          const cell = renderCell(object, locator);
+          // A predicate column mixes editor cells and `renderCell` cells in
+          // the same column, so the read-only ones need the editor's
+          // horizontal padding or they stagger against their neighbors.
+          return meta?.isInEditMode && typeof editable === "function" ? (
+            <NonEditableCellInEditMode>{cell}</NonEditableCellInEditMode>
+          ) : (
+            cell
+          );
         }
 
         return renderDefaultCell(cellContext);

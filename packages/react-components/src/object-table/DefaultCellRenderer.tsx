@@ -20,13 +20,12 @@ import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { CbacMarkingCell } from "./components/CbacMarkingCell.js";
 import { MandatoryMarkingCell } from "./components/MandatoryMarkingCell.js";
+import { NonEditableCellInEditMode } from "./components/NonEditableCellInEditMode.js";
 import { EditableCell } from "./EditableCell.js";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 import type { CellEditInfo } from "./utils/types.js";
-
-import styles from "./EditableCell.module.css";
 
 function toDisplayValue(value: unknown): React.ReactNode {
   if (typeof value === "boolean") {
@@ -92,9 +91,9 @@ export function renderDefaultCell<TData extends RowData>(
     // Align non editable cells with the editable cells
     if (meta?.isInEditMode) {
       return (
-        <span className={styles.nonEditableCellInEditMode}>
+        <NonEditableCellInEditMode>
           {toDisplayValue(cellValue)}
-        </span>
+        </NonEditableCellInEditMode>
       );
     }
 
