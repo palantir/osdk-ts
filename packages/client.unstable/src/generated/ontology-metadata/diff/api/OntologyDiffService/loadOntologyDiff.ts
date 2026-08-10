@@ -29,12 +29,12 @@ import type {
 export async function loadOntologyDiff(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _diff_api_LoadOntologyDiffRequest
+  request: _diff_api_LoadOntologyDiffRequest,
 ): Promise<_diff_api_LoadOntologyDiffResponse> {
   return conjureFetch(
     ctx,
     `/ontology/diff/load/ontologyDiff/${ontologyRid}`,
     "POST",
-    request
+    request,
   );
 }

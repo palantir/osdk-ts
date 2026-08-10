@@ -66,7 +66,7 @@ export function modernToLegacyWhereClause<
 >(
   whereClause: WhereClause<T, RDPs>,
   objectOrInterface: T,
-  rdpNames?: Set<string>
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   const parts = Object.entries(whereClause).map(([key, value]) => ({
     [key]: value,
@@ -75,13 +75,13 @@ export function modernToLegacyWhereClause<
     return modernToLegacyWhereClauseInner(
       whereClause,
       objectOrInterface,
-      rdpNames
+      rdpNames,
     );
   }
   return {
     type: "and",
     value: parts.map<SearchJsonQueryV2>((v) =>
-      modernToLegacyWhereClauseInner(v, objectOrInterface, rdpNames)
+      modernToLegacyWhereClauseInner(v, objectOrInterface, rdpNames),
     ),
   };
 }
@@ -93,7 +93,7 @@ export function modernToLegacyWhereClauseInner<
 >(
   whereClause: WhereClause<T, RDPs>,
   objectOrInterface: T,
-  rdpNames?: Set<string>
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   const parts = Object.entries(whereClause);
 
@@ -103,14 +103,14 @@ export function modernToLegacyWhereClauseInner<
     return {
       type: "and",
       value: (whereClause.$and as WhereClause<T, RDPs>[]).map((clause) =>
-        modernToLegacyWhereClause(clause, objectOrInterface, rdpNames)
+        modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
   } else if (isOrClause(whereClause)) {
     return {
       type: "or",
       value: (whereClause.$or as WhereClause<T, RDPs>[]).map((clause) =>
-        modernToLegacyWhereClause(clause, objectOrInterface, rdpNames)
+        modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
   } else if (isNotClause(whereClause)) {
@@ -119,7 +119,7 @@ export function modernToLegacyWhereClauseInner<
       value: modernToLegacyWhereClause(
         whereClause.$not as WhereClause<T, RDPs>,
         objectOrInterface,
-        rdpNames
+        rdpNames,
       ),
     };
   }
@@ -133,7 +133,7 @@ function resolvePropertyIdentifier(
   isTitleProperty: boolean,
   isPrimaryKeyProperty: boolean,
   isRdp: boolean | undefined,
-  structFieldSelector?: { propertyApiName: string; structFieldApiName: string }
+  structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
 ): PropertyIdentifier | undefined {
   if (isTitleProperty) {
     return { type: "titleProperty" } as PropertyIdentifier;
@@ -150,7 +150,7 @@ function resolvePropertyIdentifier(
       ...structFieldSelector,
       propertyApiName: fullyQualifyPropName(
         structFieldSelector.propertyApiName,
-        objectOrInterface
+        objectOrInterface,
       ),
     };
   }
@@ -161,12 +161,12 @@ function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
   structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
-  rdpNames?: Set<string>
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
     `Cannot filter on property "${fieldName}" with an undefined or null value. ` +
-      `If the value might be undefined, check it before adding to the where clause.`
+      `If the value might be undefined, check it before adding to the where clause.`,
   );
 
   const isTitleProperty = fieldName === "$title";
@@ -182,7 +182,7 @@ function handleWherePair(
     isTitleProperty,
     isPrimaryKeyProperty,
     isRdp,
-    structFieldSelector
+    structFieldSelector,
   );
 
   const field =
@@ -193,7 +193,7 @@ function handleWherePair(
   invariant(
     field == null ||
       (propertyIdentifier == null && (field != null || isRdp != null)),
-    "Encountered error constructing where clause: field and propertyIdentifier cannot both be defined"
+    "Encountered error constructing where clause: field and propertyIdentifier cannot both be defined",
   );
 
   if (
@@ -216,7 +216,7 @@ function handleWherePair(
   const hasDollarSign = keysOfFilter.some((key) => key.startsWith("$"));
   invariant(
     !hasDollarSign || keysOfFilter.length === 1,
-    "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters."
+    "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
   // Struct
@@ -224,7 +224,7 @@ function handleWherePair(
     const structFilter = Object.entries(filter);
     invariant(
       structFilter.length === 1,
-      "Cannot filter on more than one struct field in the same clause, need to use an and clause"
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
     );
     const structFieldApiName = keysOfFilter[0];
     return handleWherePair(
@@ -234,7 +234,7 @@ function handleWherePair(
         propertyApiName: fieldName,
         structFieldApiName,
       },
-      rdpNames
+      rdpNames,
     );
   }
 
@@ -252,13 +252,13 @@ function handleWherePair(
         [fieldName, containsValue],
         objectOrInterface,
         structFieldSelector,
-        rdpNames
+        rdpNames,
       );
     } else {
       const structFilter: [string, any][] = Object.entries(containsValue);
       invariant(
         structFilter.length === 1,
-        "Cannot filter on more than one struct field in the same clause, need to use an and clause"
+        "Cannot filter on more than one struct field in the same clause, need to use an and clause",
       );
       const structFieldApiName = structFilter[0][0];
 

@@ -60,7 +60,7 @@ describe.each([
   beforeAll(() => {
     ({ client, apiServer } = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
-      createClient
+      createClient,
     ));
 
     return () => {
@@ -183,7 +183,7 @@ describe.each([
         stubData.employee1.employeeId,
         {
           $select: ["employeeId"],
-        }
+        },
       );
       expect(peep).toBeDefined();
 
@@ -202,7 +202,7 @@ describe.each([
       const leadRid = result.data[0].$rid;
       expect(leadRid).toBeDefined();
       expect(leadRid).toBe(
-        "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61"
+        "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
       );
     });
     it("objects are enumerable in an sdk", () => {
@@ -219,7 +219,7 @@ describe.each([
           "Todo",
           "equipment",
           "objectTypeWithAllPropertyTypes",
-        ].sort()
+        ].sort(),
       );
     });
   });
@@ -274,7 +274,7 @@ describe.each([
           employeeId: 50031,
           fullName: "Jane Doe",
           office: "NYC",
-        }
+        },
       ) as unknown as Osdk.Instance<
         Employee,
         never,
@@ -322,7 +322,7 @@ describe.each([
         "class"
       >;
       expectTypeOf(
-        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">)
+        firstEmployee.$clone({} as Osdk.Instance<Employee, never, "office">),
       ).toMatchTypeOf<Osdk.Instance<Employee, never, "class" | "office">>();
     });
 
@@ -367,7 +367,7 @@ describe.each([
           fullName: "John Doe",
           office: "SEA",
           startDate: "2019-01-01",
-        })
+        }),
       ).toMatchTypeOf<
         Osdk.Instance<
           Employee,
@@ -420,7 +420,7 @@ describe.each([
         employee.$clone({
           class: "Green",
           employeeId: 50035,
-        })
+        }),
       ).toThrow();
     });
     describe("interface", () => {
@@ -492,7 +492,7 @@ describe.each([
             $title: "Jane Doe",
             employeeId: 50031,
             fullName: "Jane Doe",
-          }
+          },
         ) as unknown as Osdk.Instance<
           Employee,
           never,
@@ -536,7 +536,7 @@ describe.each([
             $title: "Jane Doe",
             employeeId: 50031,
             fullName: "Jane Doe",
-          }
+          },
         ) as unknown as Osdk.Instance<
           Employee,
           never,
@@ -547,9 +547,9 @@ describe.each([
         expect(() =>
           loadedInterfaceObject.$clone({
             notImplementedFooSpt: "John Adams",
-          })
+          }),
         ).toThrowError(
-          `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`
+          `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
     });
@@ -599,7 +599,7 @@ describe.each([
       >();
 
       expectTypeOf(
-        object.$propertySecurities.favoriteRestaurants
+        object.$propertySecurities.favoriteRestaurants,
       ).toMatchTypeOf<PropertySecurity[][]>();
 
       expect(object).toMatchInlineSnapshot(`
@@ -783,8 +783,8 @@ describe.each([
                 totalCount: "UNKNOWN",
                 propertySecurities: [],
               };
-            }
-          )
+            },
+          ),
         );
 
         const result = await client(Employee).fetchPage({
@@ -813,7 +813,7 @@ describe.each([
           ]),
         });
         expect(result.data[0].employeeProfile).toBe(
-          "Senior engineer with expertise in distributed systems"
+          "Senior engineer with expertise in distributed systems",
         );
 
         type ResultEmployeeProfile = (typeof result.data)[0]["employeeProfile"];
@@ -848,8 +848,8 @@ describe.each([
                 totalCount: "UNKNOWN",
                 propertySecurities: [],
               };
-            }
-          )
+            },
+          ),
         );
 
         const result = await client(Employee).fetchPage({
@@ -901,7 +901,7 @@ export function shouldError2(client: Client): Promise<Employee.OsdkObject> {
 }
 
 export function shouldCompile_client_fetchOne_old_select(
-  client: Client
+  client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -909,7 +909,7 @@ export function shouldCompile_client_fetchOne_old_select(
 }
 
 export function shouldCompile_unstableClient_fetchOne_old_select(
-  client: Client
+  client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -917,7 +917,7 @@ export function shouldCompile_unstableClient_fetchOne_old_select(
 }
 
 export function shouldCompile_client_fetchOne_new_select(
-  client: Client
+  client: Client,
 ): Promise<Employee.OsdkObject<never, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -925,7 +925,7 @@ export function shouldCompile_client_fetchOne_new_select(
 }
 
 export function shouldCompile_unstableClient_fetchOne_new_select(
-  client: Client
+  client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
@@ -933,13 +933,13 @@ export function shouldCompile_unstableClient_fetchOne_new_select(
 }
 
 export function shouldCompile_client_fetchOne_old_noArgs(
-  client: Client
+  client: Client,
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }
 
 export function shouldCompile_unstableClient_fetchOne_noArgs(
-  client: Client
+  client: Client,
 ): Promise<Osdk<Employee>> {
   return client(Employee).fetchOne(1);
 }

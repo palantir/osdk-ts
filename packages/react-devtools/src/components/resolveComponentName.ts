@@ -17,7 +17,7 @@
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
 
 export function deriveComponentName(
-  bindings: ComponentHookBinding[]
+  bindings: ComponentHookBinding[],
 ): string | null {
   const objectTypes = new Set<string>();
   const actionNames = new Set<string>();

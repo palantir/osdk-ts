@@ -23,11 +23,11 @@ import type { ValueTypeRid } from "../ValueTypeRid.js";
  */
 export async function deleteValueType(
   ctx: ConjureContext,
-  valueTypeRid: ValueTypeRid
+  valueTypeRid: ValueTypeRid,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/${valueTypeRid}`,
-    "DELETE"
+    "DELETE",
   );
 }

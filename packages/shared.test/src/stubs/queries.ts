@@ -544,13 +544,13 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
       queryRequestHandlers[queryType.apiName][queryType.version];
     if (!lazyHandlerMap) {
       throw new Error(
-        `Query type ${queryType.apiName} is not registered in queryRequestHandlers`
+        `Query type ${queryType.apiName} is not registered in queryRequestHandlers`,
       );
     }
 
     fauxOntology.registerQueryType(
       queryType,
-      createLazyQueryImpl(lazyHandlerMap)
+      createLazyQueryImpl(lazyHandlerMap),
     );
   }
 }

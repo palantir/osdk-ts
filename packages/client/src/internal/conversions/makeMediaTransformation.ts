@@ -15,9 +15,13 @@
  */
 
 import type {
+  AnnotateGeometry,
+  Annotation,
   AudioEncoding,
   AudioOperation,
   AudioToTextOperation,
+  Color,
+  ContrastType,
   DicomToImageOperation,
   DocumentTextExtractionConfig,
   DocumentToDocumentOperation,
@@ -26,6 +30,7 @@ import type {
   EmailToAttachmentOperation,
   EmailToTextOperation,
   ImageOperation,
+  ImageRegionPolygon,
   ImageSpec,
   ImageToDocumentOperation,
   ImageToEmbeddingOperation,
@@ -49,7 +54,7 @@ import type {
 import type { Transformation } from "@osdk/foundry.mediasets";
 
 export function makeMediaTransformation(
-  transformation: MediaTransformation
+  transformation: MediaTransformation,
 ): Transformation {
   if ("$image" in transformation && transformation.$image != null) {
     const t = transformation.$image;
@@ -77,7 +82,7 @@ export function makeMediaTransformation(
     return {
       type: "emailToText" as const,
       operation: convertEmailToTextOperation(
-        transformation.$emailToText.$operation
+        transformation.$emailToText.$operation,
       ),
     };
   } else if (
@@ -87,7 +92,7 @@ export function makeMediaTransformation(
     return {
       type: "spreadsheetToText" as const,
       operation: convertSpreadsheetToTextOperation(
-        transformation.$spreadsheetToText.$operation
+        transformation.$spreadsheetToText.$operation,
       ),
     };
   } else if (
@@ -107,7 +112,7 @@ export function makeMediaTransformation(
     return {
       type: "audioToText" as const,
       operation: convertAudioToTextOperation(
-        transformation.$audioToText.$operation
+        transformation.$audioToText.$operation,
       ),
     } as Transformation;
   } else if (
@@ -117,7 +122,7 @@ export function makeMediaTransformation(
     return {
       type: "emailToAttachment" as const,
       operation: convertEmailToAttachmentOperation(
-        transformation.$emailToAttachment.$operation
+        transformation.$emailToAttachment.$operation,
       ),
     };
   } else if (
@@ -137,7 +142,7 @@ export function makeMediaTransformation(
     return {
       type: "videoToText" as const,
       operation: convertVideoToTextOperation(
-        transformation.$videoToText.$operation
+        transformation.$videoToText.$operation,
       ),
     };
   } else if (
@@ -147,7 +152,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToText" as const,
       operation: convertImageToTextOperation(
-        transformation.$imageToText.$operation
+        transformation.$imageToText.$operation,
       ),
     } as Transformation;
   } else if (
@@ -167,7 +172,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToDocument" as const,
       operation: convertImageToDocumentOperation(
-        transformation.$imageToDocument.$operation
+        transformation.$imageToDocument.$operation,
       ),
     };
   } else if (
@@ -207,7 +212,7 @@ export function makeMediaTransformation(
     return {
       type: "imageToEmbedding" as const,
       operation: convertImageToEmbeddingOperation(
-        transformation.$imageToEmbedding.$operation
+        transformation.$imageToEmbedding.$operation,
       ),
     } as Transformation;
   } else {
@@ -215,7 +220,7 @@ export function makeMediaTransformation(
       type: "documentToText" as const,
       operation: convertDocumentToTextOperation(
         (transformation as MediaTransformation & { $documentToText: {} })
-          .$documentToText.$operation
+          .$documentToText.$operation,
       ),
     } as Transformation;
   }
@@ -277,7 +282,7 @@ function convertOcrParameters(params: OcrParameters) {
 }
 
 function convertLayoutAwareExtractionParameters(
-  params: LayoutAwareExtractionParameters
+  params: LayoutAwareExtractionParameters,
 ) {
   return {
     languages: params.$languages,
@@ -285,7 +290,7 @@ function convertLayoutAwareExtractionParameters(
 }
 
 function convertDocumentTextExtractionConfig(
-  config: DocumentTextExtractionConfig
+  config: DocumentTextExtractionConfig,
 ) {
   return {
     format: config.$format,
@@ -328,7 +333,7 @@ function convertVlmPreprocessingConfig(config: VlmPreprocessingConfig) {
       type: "layoutAware" as const,
       layoutAware: {
         transformationConfig: convertDocumentTextExtractionConfig(
-          config.$layoutAware.$transformationConfig
+          config.$layoutAware.$transformationConfig,
         ),
         cropConfig:
           config.$layoutAware.$cropConfig != null
@@ -392,15 +397,86 @@ function convertImageOperation(op: ImageOperation) {
     };
   } else if ("$grayscale" in op) {
     return { type: "grayscale" as const };
-  } else {
-    const tile = (op as ImageOperation & { $tile: {} }).$tile;
+  } else if ("$tile" in op && op.$tile != null) {
     return {
       type: "tile" as const,
-      zoom: tile.$zoom,
-      x: tile.$x,
-      y: tile.$y,
+      zoom: op.$tile.$zoom,
+      x: op.$tile.$x,
+      y: op.$tile.$y,
+    };
+  } else if ("$annotate" in op && op.$annotate != null) {
+    return {
+      type: "annotate" as const,
+      annotations: op.$annotate.$annotations.map(convertAnnotation),
+    };
+  } else if ("$contrast" in op && op.$contrast != null) {
+    return {
+      type: "contrast" as const,
+      contrastType: convertContrastType(op.$contrast.$contrastType),
+    };
+  } else if ("$encrypt" in op && op.$encrypt != null) {
+    return {
+      type: "encrypt" as const,
+      polygons: op.$encrypt.$polygons.map(convertImageRegionPolygon),
+      cipherLicenseRid: op.$encrypt.$cipherLicenseRid,
+    };
+  } else {
+    const decrypt = (op as ImageOperation & { $decrypt: {} }).$decrypt;
+    return {
+      type: "decrypt" as const,
+      polygons: decrypt.$polygons.map(convertImageRegionPolygon),
+      cipherLicenseRid: decrypt.$cipherLicenseRid,
     };
   }
+}
+
+function convertAnnotation(annotation: Annotation) {
+  return {
+    geometry: convertAnnotateGeometry(annotation.$geometry),
+    label: annotation.$label,
+    color:
+      annotation.$color != null ? convertColor(annotation.$color) : undefined,
+    thickness: annotation.$thickness,
+    fontSize: annotation.$fontSize,
+  };
+}
+
+function convertAnnotateGeometry(geometry: AnnotateGeometry) {
+  return {
+    type: "boundingBox" as const,
+    boundingBox: {
+      left: geometry.$boundingBox.$left,
+      top: geometry.$boundingBox.$top,
+      width: geometry.$boundingBox.$width,
+      height: geometry.$boundingBox.$height,
+    },
+  };
+}
+
+function convertColor(color: Color) {
+  return { r: color.$r, g: color.$g, b: color.$b, a: color.$a };
+}
+
+function convertContrastType(contrastType: ContrastType) {
+  if ("$equalize" in contrastType) {
+    return { type: "equalize" as const };
+  } else if ("$rayleigh" in contrastType && contrastType.$rayleigh != null) {
+    return {
+      type: "rayleigh" as const,
+      sigma: contrastType.$rayleigh.$sigma,
+    };
+  } else {
+    const binarize = (contrastType as ContrastType & { $binarize: {} })
+      .$binarize;
+    return { type: "binarize" as const, threshold: binarize.$threshold };
+  }
+}
+
+function convertImageRegionPolygon(polygon: ImageRegionPolygon) {
+  return polygon.map((coordinate) => ({
+    x: coordinate.$x,
+    y: coordinate.$y,
+  }));
 }
 
 function convertVideoOperation(op: VideoOperation) {
@@ -509,7 +585,7 @@ function convertImageToTextOperation(op: ImageToTextOperation) {
     return {
       type: "extractLayoutAwareContent" as const,
       parameters: convertLayoutAwareExtractionParameters(
-        op.$extractLayoutAwareContent.$parameters
+        op.$extractLayoutAwareContent.$parameters,
       ),
     };
   } else {
@@ -640,7 +716,7 @@ function convertDocumentToTextOperation(op: DocumentToTextOperation) {
     return {
       type: "extractLayoutAwareContent" as const,
       parameters: convertLayoutAwareExtractionParameters(
-        op.$extractLayoutAwareContent.$parameters
+        op.$extractLayoutAwareContent.$parameters,
       ),
     };
   } else if (
@@ -654,7 +730,7 @@ function convertDocumentToTextOperation(op: DocumentToTextOperation) {
           ? convertPageRange(op.$extractLayoutAwareTextV2.$pageRange)
           : undefined,
       config: convertDocumentTextExtractionConfig(
-        op.$extractLayoutAwareTextV2.$config
+        op.$extractLayoutAwareTextV2.$config,
       ),
     };
   } else if ("$extractTextV2" in op && op.$extractTextV2 != null) {

@@ -35,12 +35,12 @@ import type {
  */
 export async function setProjectImmutability(
   ctx: ConjureContext,
-  request: _api_SetProjectImmutabilityRequest
+  request: _api_SetProjectImmutabilityRequest,
 ): Promise<_api_SetProjectImmutabilityResponse> {
   return conjureFetch(
     ctx,
     `/block-installation/v2/project-immutability`,
     "POST",
-    request
+    request,
   );
 }

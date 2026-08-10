@@ -28,12 +28,12 @@ import type { BulkGetApplicationsForClientsResponse } from "../BulkGetApplicatio
  */
 export async function bulkGetApplicationsForClients(
   ctx: ConjureContext,
-  request: BulkGetApplicationsForClientsRequest
+  request: BulkGetApplicationsForClientsRequest,
 ): Promise<BulkGetApplicationsForClientsResponse> {
   return conjureFetch(
     ctx,
     `/application-clients/for-client/bulk`,
     "PUT",
-    request
+    request,
   );
 }

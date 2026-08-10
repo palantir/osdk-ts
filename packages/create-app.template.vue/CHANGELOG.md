@@ -1,5 +1,25 @@
 # @osdk/create-app.template.vue
 
+## 2.56.0
+
+## 2.55.0
+
+## 2.54.0
+
+## 2.53.0
+
+## 2.52.0
+
+## 2.51.0
+
+## 2.50.0
+
+### Minor Changes
+
+- a754871: Reverting "Lowercase generated package.json name fields" (#3681) due to unintended side effects.
+
+## 2.49.0
+
 ## 2.48.0
 
 ### Minor Changes

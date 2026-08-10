@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { customNormalize } from "../generatePackage.js";
+import { customNormalize } from "../customNormalize.js";
 
 describe("test path normalization", () => {
   it("works for mac", () => {

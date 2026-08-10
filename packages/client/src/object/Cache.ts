@@ -60,10 +60,10 @@ export function createClientCache<K, V extends {}>(): ClientCache<
  * @param fn A factory function that will be used to create the value if it does not exist in the cache.
  */
 export function createClientCache<K, V extends {}>(
-  fn: Factory<K, V>
+  fn: Factory<K, V>,
 ): ClientCache<K, V>;
 export function createClientCache<K, V extends {}>(
-  fn?: Factory<K, V>
+  fn?: Factory<K, V>,
 ): typeof fn extends undefined
   ? ClientCache<K, V | undefined>
   : ClientCache<K, V> {
@@ -104,7 +104,7 @@ export function createClientCache<K, V extends {}>(
 /** @internal */
 export type AsyncFactory<K, V extends {}> = (
   client: MinimalClient,
-  key: K
+  key: K,
 ) => Promise<V>;
 
 /**
@@ -115,7 +115,7 @@ export type AsyncFactory<K, V extends {}> = (
  */
 export function createAsyncClientCache<K, V extends {}>(
   fn: AsyncFactory<K, V>,
-  createCacheLocal: typeof createClientCache = createClientCache
+  createCacheLocal: typeof createClientCache = createClientCache,
 ): AsyncClientCache<K, V> {
   const cache = createCacheLocal<K, V>();
   const inProgress = createCacheLocal<K, Promise<V> | V>();

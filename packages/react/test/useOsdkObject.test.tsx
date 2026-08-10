@@ -68,12 +68,12 @@ describe("useOsdkObject", () => {
         (_typeOrName, _pk, _opts, observer) => {
           capturedObserver = observer;
           return { unsubscribe: vitest.fn() };
-        }
+        },
       );
 
       const { result } = renderHook(
         () => useOsdkObject(MockObjectType, "non-existent-pk"),
-        { wrapper }
+        { wrapper },
       );
 
       // Initial state: loading.
@@ -112,12 +112,12 @@ describe("useOsdkObject", () => {
         (_typeOrName, _pk, _opts, observer) => {
           capturedObserver = observer;
           return { unsubscribe: vitest.fn() };
-        }
+        },
       );
 
       const { result } = renderHook(
         () => useOsdkObject(MockObjectType, "non-existent-pk"),
-        { wrapper }
+        { wrapper },
       );
 
       expect(result.current.isLoading).toBe(true);

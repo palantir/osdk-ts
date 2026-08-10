@@ -25,5 +25,5 @@ interface FormHeaderProps {
 export const FormHeader: React.FC<FormHeaderProps> = memo(
   function FormHeaderFn({ title }: FormHeaderProps): React.ReactElement {
     return <h2 className={styles.osdkFormHeader}>{title}</h2>;
-  }
+  },
 );

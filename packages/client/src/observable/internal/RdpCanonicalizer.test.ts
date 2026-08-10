@@ -98,7 +98,7 @@ describe("RdpCanonicalizer", () => {
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
     const objectSetCanonical = sharedCanonicalizer.canonicalize(
-      objectSetWithProperties
+      objectSetWithProperties,
     );
 
     expect(listCanonical).toBe(objectSetCanonical);

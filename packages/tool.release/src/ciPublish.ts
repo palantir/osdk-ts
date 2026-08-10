@@ -61,7 +61,7 @@ async function ciPublish(): Promise<void> {
       {
         stdio: "inherit",
         cwd: repoRoot,
-      }
+      },
     );
   } catch (error) {
     consola.error(`Error during publish: ${error}`);
@@ -74,7 +74,7 @@ async function getRemoteBranches(): Promise<string[]> {
   const { stdout } = await execa(
     "git",
     ["ls-remote", "--heads", "origin", "refs/heads/release/*"],
-    { cwd: repoRoot }
+    { cwd: repoRoot },
   );
   return stdout
     .split("\n")
@@ -116,7 +116,7 @@ export function findGreatestVersion(releaseBranches: string[]): string | null {
 export function determineTag(
   currentBranch: string,
   greatestVersion: string | null,
-  defaultTag: string
+  defaultTag: string,
 ): string {
   if (currentBranch === "main") {
     return "latest";

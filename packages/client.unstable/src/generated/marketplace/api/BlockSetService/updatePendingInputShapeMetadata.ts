@@ -34,12 +34,12 @@ export async function updatePendingInputShapeMetadata(
   ctx: ConjureContext,
   blockSetVersionId: _api_BlockSetVersionId,
   inputBlockSetShapeId: _api_InputBlockSetShapeId,
-  request: _api_UpdatePendingInputShapeMetadataRequest
+  request: _api_UpdatePendingInputShapeMetadataRequest,
 ): Promise<void> {
   return conjureFetch(
     ctx,
     `/block-sets/pending/version/${blockSetVersionId}/input/${inputBlockSetShapeId}/metadata`,
     "PUT",
-    request
+    request,
   );
 }

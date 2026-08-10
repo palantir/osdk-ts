@@ -23,11 +23,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
-  .where({
-    contactInfo: {
-      entrance: {
-        $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128] },
-      },
-    },
-  });
+const EmployeeObjectSet = client(Employee).where({
+  contactInfo: {
+    entrance: { $intersects: { $bbox: [-74.006, 25.123, 80.4231, 40.7128] } },
+  },
+});

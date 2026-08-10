@@ -25,7 +25,7 @@ import type { ApplicationRid } from "../ApplicationRid.js";
  */
 export async function deleteApplication(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<void> {
   return conjureFetch(ctx, `/applications/${applicationRid}`, "DELETE");
 }

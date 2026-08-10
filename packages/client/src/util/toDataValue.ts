@@ -46,7 +46,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata
+  actionMetadata: ActionMetadata,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -60,7 +60,7 @@ export async function toDataValue(
     if (
       values.some(
         (dataValue) =>
-          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue),
       )
     ) {
       const converted = [];
@@ -72,7 +72,7 @@ export async function toDataValue(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata)
+        await toDataValue(innerValue, client, actionMetadata),
     );
     return Promise.all(promiseArray);
   }
@@ -148,7 +148,7 @@ export async function toDataValue(
         acc[key] = await toDataValue(structValue, client, actionMetadata);
         return acc;
       },
-      Promise.resolve({} as { [key: string]: DataValue })
+      Promise.resolve({} as { [key: string]: DataValue }),
     );
   }
 

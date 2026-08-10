@@ -59,7 +59,7 @@ describe(fetchPage, () => {
         return fetchPage<T, L & PropertyKeys<T>, R, "drop", false>(
           {} as any,
           {} as any,
-          {} as any
+          {} as any,
         );
       }
     }
@@ -109,8 +109,8 @@ describe(fetchPage, () => {
           },
         },
         "Todo",
-        undefined
-      )
+        undefined,
+      ),
     ).toEqual({
       type: "and",
       value: [
@@ -168,7 +168,7 @@ describe(fetchPage, () => {
     expect(
       resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: true,
-      })
+      }),
     ).toEqual({
       type: "intersect",
       objectSets: [
@@ -190,7 +190,7 @@ describe(fetchPage, () => {
     });
 
     expect(
-      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {})
+      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {}),
     ).toEqual({
       type: "filter",
       where: {
@@ -203,7 +203,7 @@ describe(fetchPage, () => {
     expect(
       resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: false,
-      })
+      }),
     ).toEqual({
       type: "filter",
       where: {
@@ -482,7 +482,7 @@ describe(fetchPage, () => {
       const result = buildSelectV2(
         ["firstName", "lastName"],
         undefined,
-        undefined
+        undefined,
       );
       expect(result).toEqual([
         { type: "property", apiName: "firstName" },
@@ -496,7 +496,7 @@ describe(fetchPage, () => {
         {
           myStruct: "applyMainValue",
         },
-        undefined
+        undefined,
       );
 
       expect(result).toEqual([
@@ -514,7 +514,7 @@ describe(fetchPage, () => {
         {
           scores: "applyReducers",
         },
-        undefined
+        undefined,
       );
 
       expect(result).toEqual([
@@ -532,7 +532,7 @@ describe(fetchPage, () => {
         {
           items: "applyReducersAndExtractMainValue",
         },
-        undefined
+        undefined,
       );
 
       expect(result).toEqual([
@@ -551,7 +551,7 @@ describe(fetchPage, () => {
           myStruct: "applyMainValue",
           scores: "applyReducers",
         },
-        undefined
+        undefined,
       );
 
       expect(result).toHaveLength(3);
@@ -574,7 +574,7 @@ describe(fetchPage, () => {
         {
           myStruct: "applyMainValue",
         },
-        ["id", "firstName", "lastName", "myStruct"]
+        ["id", "firstName", "lastName", "myStruct"],
       );
 
       expect(result).toHaveLength(4);

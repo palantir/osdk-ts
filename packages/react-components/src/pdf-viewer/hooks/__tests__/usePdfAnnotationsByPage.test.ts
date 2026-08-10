@@ -21,7 +21,7 @@ import type { PdfAnnotation } from "../../types.js";
 import { usePdfAnnotationsByPage } from "../usePdfAnnotationsByPage.js";
 
 function createAnnotation(
-  overrides: Record<string, unknown> = {}
+  overrides: Record<string, unknown> = {},
 ): PdfAnnotation {
   return {
     id: "ann-1",
@@ -74,7 +74,7 @@ describe("usePdfAnnotationsByPage", () => {
     const annotations = [createAnnotation({ id: "a1", page: 1 })];
 
     const { result, rerender } = renderHook(() =>
-      usePdfAnnotationsByPage(annotations)
+      usePdfAnnotationsByPage(annotations),
     );
 
     const firstResult = result.current;

@@ -46,7 +46,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
     <span
       className={classNames(
         styles.healthBadge,
-        ontology.healthy ? styles.healthy : styles.unhealthy
+        ontology.healthy ? styles.healthy : styles.unhealthy,
       )}
     >
       {ontology.healthy ? "Healthy" : ontology.warning}

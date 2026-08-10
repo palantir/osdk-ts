@@ -18,7 +18,7 @@ import type { CliCommonArgs } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 
 import type { BranchCommonArgs } from "./BranchCommonArgs.js";
-import install from "./install/index.js";
+import sync from "./sync/index.js";
 
 const command: CommandModule<CliCommonArgs, BranchCommonArgs> = {
   command: "branch",
@@ -32,7 +32,7 @@ const command: CommandModule<CliCommonArgs, BranchCommonArgs> = {
             "Git branch name used to select the branched SDKs (defaults to the current git branch).",
         },
       })
-      .command(install)
+      .command(sync)
       .demandCommand();
   },
   handler: async () => {},

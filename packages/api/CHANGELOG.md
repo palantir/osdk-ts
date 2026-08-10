@@ -1,5 +1,40 @@
 # @osdk/api
 
+## 2.56.0
+
+### Minor Changes
+
+- 342c492: Graduate `Media.fetchFullMetadata` out of beta. It stays optional so existing external implementations of `Media` keep compiling.
+
+## 2.55.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+## 2.54.0
+
+## 2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 5d92381: Reject unknown top-level keys in `aggregate()` options (e.g. a misspelled group-by key or a non-existent `$orderBy`). These were previously accepted by the type checker and silently ignored at runtime.
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
+## 2.51.0
+
+### Minor Changes
+
+- b99b0bb: Fix type for casting interfaces to objects using generic types.
+
+## 2.50.0
+
+## 2.49.0
+
 ## 2.48.0
 
 ## 2.47.0

@@ -56,7 +56,7 @@ export function AipAgentChat({
       controlledModel ??
       defaultModel ??
       availableModels?.[0] ??
-      FALLBACK_MODEL_API_NAME
+      FALLBACK_MODEL_API_NAME,
   );
 
   const isControlled = controlledModel != null;
@@ -69,12 +69,12 @@ export function AipAgentChat({
       }
       onModelChange?.(next);
     },
-    [isControlled, onModelChange]
+    [isControlled, onModelChange],
   );
 
   const model = React.useMemo(
     () => foundryModel({ client, model: activeModel }),
-    [client, activeModel]
+    [client, activeModel],
   );
 
   const { messages, status, error, sendMessage, stop, clearError } = useChat({
@@ -104,7 +104,7 @@ export function AipAgentChat({
     (text: string) => {
       return sendMessage({ text });
     },
-    [sendMessage]
+    [sendMessage],
   );
 
   const isInFlight = status === "submitted" || status === "streaming";

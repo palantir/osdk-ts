@@ -26,7 +26,7 @@ import type { ClientState } from "../ClientState.js";
  */
 export async function getClientState(
   ctx: ConjureContext,
-  applicationRid: ApplicationRid
+  applicationRid: ApplicationRid,
 ): Promise<ClientState> {
   return conjureFetch(ctx, `/application-clients/${applicationRid}`, "GET");
 }

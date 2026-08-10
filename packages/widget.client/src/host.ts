@@ -17,7 +17,7 @@
 import type { HostMessage, WidgetConfig } from "@osdk/widget.api";
 
 export type HostMessageEventListener<P extends HostMessage.Payload> = (
-  event: CustomEvent<P>
+  event: CustomEvent<P>,
 ) => void;
 
 export interface HostMessageEventListenerObject<P extends HostMessage.Payload> {
@@ -35,7 +35,7 @@ export class FoundryHostEventTarget<
           (HostMessage<C> & { type: T })["payload"]
         >
       | null,
-    options?: AddEventListenerOptions | boolean
+    options?: AddEventListenerOptions | boolean,
   ): void {
     super.addEventListener(type, callback as EventListener, options);
   }
@@ -48,19 +48,19 @@ export class FoundryHostEventTarget<
           (HostMessage<C> & { type: T })["payload"]
         >
       | null,
-    options?: EventListenerOptions | boolean
+    options?: EventListenerOptions | boolean,
   ): void {
     super.removeEventListener(type, callback as EventListener, options);
   }
 
   public dispatchEventMessage<T extends HostMessage<C>["type"]>(
     type: T,
-    payload: (HostMessage<C> & { type: T })["payload"]
+    payload: (HostMessage<C> & { type: T })["payload"],
   ): void {
     this.dispatchEvent(
       new CustomEvent<HostMessage.Payload>(type, {
         detail: payload,
-      })
+      }),
     );
   }
 }

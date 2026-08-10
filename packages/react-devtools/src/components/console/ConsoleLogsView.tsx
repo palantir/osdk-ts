@@ -61,7 +61,7 @@ export const ConsoleLogsView: React.FC<ConsoleLogsViewProps> = ({
       (entry) =>
         (level === "all" || entry.level === level) &&
         (query.length === 0 ||
-          entry.args.some((arg) => arg.toLowerCase().includes(query)))
+          entry.args.some((arg) => arg.toLowerCase().includes(query))),
     );
   }, [entries, level, search]);
 

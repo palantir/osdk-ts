@@ -21,7 +21,7 @@ export function OfficeSelector({
 }: OfficeSelectorProps) {
   const [showSelector, setShowSelector] = useState(false);
   const [selectedOfficeId, setSelectedOfficeId] = useState<string | null>(
-    currentOfficeId || null
+    currentOfficeId || null,
   );
   const [isAssigning, setIsAssigning] = useState(false);
   const [assignError, setAssignError] = useState<Error | null>(null);
@@ -47,6 +47,7 @@ export function OfficeSelector({
       await $(modifyEmployee).applyAction({
         employee,
         primary_office_id,
+        emailPrimaryWork: employee.emailPrimaryWork ?? "",
       });
 
       setAssignSuccess(true);
@@ -65,7 +66,7 @@ export function OfficeSelector({
     } catch (error) {
       console.error("Failed to assign office:", error);
       setAssignError(
-        error instanceof Error ? error : new Error("Failed to assign office")
+        error instanceof Error ? error : new Error("Failed to assign office"),
       );
       setIsAssigning(false);
       return false;

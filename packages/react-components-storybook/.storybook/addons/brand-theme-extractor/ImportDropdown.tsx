@@ -141,7 +141,7 @@ const ChooseButton = styled.button<{ disabled?: boolean }>(
           background: theme.background.hoverable,
           borderColor: theme.color.medium,
         },
-  })
+  }),
 );
 
 const Hint = styled.div(({ theme }) => ({
@@ -176,7 +176,7 @@ const Chip = styled.div<{ color: string }>(({ color, theme }) => ({
 
 function roleValue(
   assignments: TokenAssignment[],
-  role: string
+  role: string,
 ): string | undefined {
   return assignments.find((a) => a.role === role)?.customValue;
 }
@@ -186,7 +186,7 @@ function isDesignMarkdown(fileName: string, text: string): boolean {
   if (/\.(md|markdown)$/iu.test(fileName)) return true;
   if (/\.css$/iu.test(fileName)) return false;
   return /^﻿?---\s*\n[\s\S]*\n(colors|typography|rounded|spacing)\s*:/mu.test(
-    text
+    text,
   );
 }
 
@@ -243,7 +243,7 @@ export function ImportDropdown({
       const width = Math.min(288, window.innerWidth - 16);
       const left = Math.max(
         8,
-        Math.min(rect.right - width, window.innerWidth - width - 8)
+        Math.min(rect.right - width, window.innerWidth - width - 8),
       );
       setMenuPos({ top: rect.bottom + 6, left, width });
     }
@@ -280,14 +280,14 @@ export function ImportDropdown({
           : `${
               missing.length === 1 ? "Font" : "Fonts"
             } not installed on this machine: ${missing.join(
-              ", "
+              ", ",
             )}. Falling back to an available font — the theme still records ${
               missing.length === 1 ? "it" : "them"
-            } for machines that have ${missing.length === 1 ? "it" : "them"}.`
+            } for machines that have ${missing.length === 1 ? "it" : "them"}.`,
       );
       onApply(result.assignments, result.colorMode);
     },
-    [onApply]
+    [onApply],
   );
 
   const handleFile = useCallback(
@@ -309,7 +309,7 @@ export function ImportDropdown({
             setError(
               isMarkdown
                 ? "No usable tokens found in that DESIGN.md file."
-                : "No usable design tokens found in that CSS file."
+                : "No usable design tokens found in that CSS file.",
             );
             return;
           }
@@ -317,7 +317,7 @@ export function ImportDropdown({
             result,
             `Mapped ${result.directMappedCount} tokens from ${
               isMarkdown ? "DESIGN.md" : "the uploaded CSS"
-            }.`
+            }.`,
           );
         } catch {
           setError("Couldn't read that file.");
@@ -326,7 +326,7 @@ export function ImportDropdown({
         }
       })();
     },
-    [finish]
+    [finish],
   );
 
   return (
@@ -397,7 +397,7 @@ export function ImportDropdown({
               )}
             </Body>
           </Menu>,
-          document.body
+          document.body,
         )}
     </Wrapper>
   );

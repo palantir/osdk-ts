@@ -17,6 +17,7 @@
 import * as fs from "fs";
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
@@ -24,18 +25,23 @@ import {
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
 
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
-import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import {
+  getImportedShapes,
+  type LinkTypeIdsByApiName,
+} from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
-import type { BlockShapes } from "../util/generateRid.js";
+import type { BlockShapes, ReadableId } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
+  importedInputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
 }
@@ -48,8 +54,10 @@ export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
   outputDir?: string,
+  dependencyFile?: string,
   functionsIrFile?: string,
-  randomnessKey?: string
+  randomnessKey?: string,
+  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -59,7 +67,7 @@ export async function defineOntologyV2(
     // eslint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
-      e
+      e,
     );
     throw e;
   }
@@ -73,26 +81,27 @@ export async function defineOntologyV2(
 
   const ridGenerator = new OntologyRidGeneratorImpl(
     getImportedTypes(),
-    randomnessKey
+    randomnessKey,
   );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
-    randomnessKey
+    randomnessKey,
   );
 
   const shapes = await getShapes(
     ontDef.ontology,
     ridGenerator,
     functionsIr,
-    randomnessKey
+    randomnessKey,
   );
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
     ontDef.importedOntology,
-    ridGenerator
+    ridGenerator,
+    importedLinkTypeIdsByApiName,
   );
   for (const [key, value] of importedShapes.inputShapes) {
     shapes.inputShapes.set(key, value);
@@ -102,15 +111,15 @@ export async function defineOntologyV2(
   }
 
   const backingDatasourceApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE]
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
   )
     .filter(
-      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true
+      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true,
     )
     .map(([apiName]) => apiName);
 
   const backingDatasourceLinkApiNames = Object.entries(
-    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE]
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
   )
     .filter(([_, link]) => {
       const lt = link as LinkType;
@@ -126,10 +135,14 @@ export async function defineOntologyV2(
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
+  }
 
   return {
     ontologyIr: ontDef,
     shapes,
+    importedInputPresets: importedShapes.inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
   };

@@ -181,7 +181,7 @@ describe("MockManager", () => {
     manager.registerMock(
       createObjectMock({
         matcher: { objectType: "Employee", primaryKey: /^pk-\d+$/u },
-      })
+      }),
     );
 
     const result = manager.findMock({
@@ -230,7 +230,7 @@ describe("MockManager", () => {
     manager.registerMock(createObjectMock({ id: "m-1" }));
     manager.registerMock(createObjectMock({ id: "m-2", enabled: false }));
     manager.registerMock(
-      createObjectMock({ id: "m-3", maxUses: 1, usedCount: 1 })
+      createObjectMock({ id: "m-3", maxUses: 1, usedCount: 1 }),
     );
 
     manager.findMock({

@@ -1197,17 +1197,14 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaReference, MediaUpload } from "@osdk/api";
             {{/hasMediaParameter}}{{/hasAttachmentProperty}}
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            {{#hasMediaParameter}}
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            {{/hasMediaParameter}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
             async function callAction() {
@@ -1220,19 +1217,15 @@ versions:
                 // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Create media reference
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
-                const mediaReference: MediaReference = await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data: mediaBlob,
-                    fileName: "myMedia",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
-                // alternatively, you can get the Rid from the media property on the object type you are modifying
-                // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
                     {
@@ -1261,17 +1254,14 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaReference, MediaUpload } from "@osdk/api";
             {{/hasMediaParameter}}{{/hasAttachmentProperty}}
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            {{#hasMediaParameter}}
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            {{/hasMediaParameter}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
             async function callBatchAction() {
@@ -1282,17 +1272,15 @@ versions:
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Create media reference
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
-                const mediaReference: MediaReference = await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data: mediaBlob,
-                    fileName: "myMedia",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).batchApplyAction([
                         {
@@ -2287,30 +2275,19 @@ versions:
             export default createObject;
       uploadMedia:
         - template: |-
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import { {{objectType}}, {{actionApiName}} } from "{{{packageName}}}"
+            import { {{actionApiName}} } from "{{{packageName}}}"
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { MediaReference } from "@osdk/api";
+            import type { MediaUpload } from "@osdk/api";
             // To upload media with 2.x, it has to be linked to an Action call
-            async function createMediaReference() {
-                const file = await fetch("file.json");
-                const data = await file.blob();
-                // Upload media to an object type with a media property. This returns a media reference that can passed to
-                // a media parameter in an Action.
-                return await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data,
-                    fileName: "myFile",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
-            }
-            const mediaReference: MediaReference = await createMediaReference();
+            const file = await fetch("file.json");
+            const data = await file.blob();
+            // Pass the media data straight to a media parameter on the Action. The client uploads it
+            // and links the resulting media item to the object.
+            const mediaUpload: MediaUpload = { data, fileName: "myFile" };
             const actionResult = client({{actionApiName}}).applyAction({
                 {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
-                {{mediaParameter}}: mediaReference
+                {{mediaParameter}}: mediaUpload
             });
           computedVariables:
             - propertyValueV2

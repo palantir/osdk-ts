@@ -228,7 +228,7 @@ const CSS_SPACING_ALIASES = ["spacing", "space", "spacing-unit", "spacing-md"];
  */
 export function parseCssTokens(
   cssTexts: string[],
-  _brandHint?: string | null
+  _brandHint?: string | null,
 ): CssTokenMap {
   const css = cssTexts.map((c) => c.slice(0, MAX_CSS_CHARS)).join("\n");
   const vars = resolveVars(collectCustomProps(css));
@@ -321,7 +321,7 @@ function resolveVars(vars: Record<string, string>): Record<string, string> {
         const target = vars[ref];
         if (target != null) return target;
         return fallback != null ? fallback.trim() : "";
-      }
+      },
     );
   }
   return resolved;
@@ -340,13 +340,13 @@ export function extractTokensFromCssText(cssText: string): CssExtractionResult {
  */
 export function buildCssExtractionResult(
   map: CssTokenMap,
-  fetchSource: FetchSource
+  fetchSource: FetchSource,
 ): CssExtractionResult {
   const mappedRoles = (Object.keys(map) as TokenRole[]).filter(
-    (r) => map[r] != null
+    (r) => map[r] != null,
   );
   const colorRolesFound = mappedRoles.filter((r) =>
-    (COLOR_ROLES as string[]).includes(r)
+    (COLOR_ROLES as string[]).includes(r),
   );
   // Require at least one real color before trusting the CSS result; a font-only
   // hit isn't enough to reconstruct a palette, so report zero and let the
@@ -377,7 +377,7 @@ export function buildCssExtractionResult(
     if (surfaceRadius != null) {
       byRole.set(
         "button-border-radius",
-        valueAssignment("button-border-radius", surfaceRadius)
+        valueAssignment("button-border-radius", surfaceRadius),
       );
     }
   }
@@ -391,8 +391,8 @@ export function buildCssExtractionResult(
       "primary-foreground",
       valueAssignment(
         "primary-foreground",
-        primaryForeground(map["primary-foreground"], finalPrimary)
-      )
+        primaryForeground(map["primary-foreground"], finalPrimary),
+      ),
     );
   }
 
@@ -445,7 +445,7 @@ function deriveScale(map: CssTokenMap): Record<string, string> {
   if (medium != null && !Number.isNaN(medium)) {
     if (map["font-size-small"] == null) {
       derived["font-size-small"] = String(
-        Math.max(10, Math.round(medium * 0.86))
+        Math.max(10, Math.round(medium * 0.86)),
       );
     }
     if (map["font-size-large"] == null) {
@@ -453,7 +453,7 @@ function deriveScale(map: CssTokenMap): Record<string, string> {
     }
     if (map["font-size-xsmall"] == null) {
       derived["font-size-xsmall"] = String(
-        Math.max(9, Math.round(medium * 0.79))
+        Math.max(9, Math.round(medium * 0.79)),
       );
     }
   }

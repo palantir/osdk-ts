@@ -28,7 +28,7 @@ import { FilterListHeader } from "./FilterListHeader.js";
 import styles from "./FilterList.module.css";
 
 export function BaseFilterList<D extends FilterDefinitionControls>(
-  props: BaseFilterListProps<D>
+  props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
@@ -50,15 +50,13 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     showResetButton = false,
     showActiveFilterCount = false,
     canReset,
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- consumed as a backwards-compatible fallback when canReset is not provided
-    hasVisibilityChanges,
     enableSorting,
     className,
     renderAddFilterButton,
   } = props;
 
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
 
   const showHeader =
@@ -94,7 +92,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
         ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
-          isCollapsed && styles.hiddenContent
+          isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
       >
@@ -110,7 +108,6 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
               showActiveFilterCount={showActiveFilterCount}
               activeFilterCount={activeFilterCount}
               canReset={canReset}
-              hasVisibilityChanges={hasVisibilityChanges}
             />
           )}
 

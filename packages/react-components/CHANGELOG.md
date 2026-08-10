@@ -1,5 +1,61 @@
 # @osdk/react-components
 
+## 0.48.0
+
+### Minor Changes
+
+- 2d4eb3f: Drop internal element tags from the ActionForm Style API table and rename the "Base component" doc sections to "BaseForm" and "BaseTable"
+- 768ab2f: Remove dead and deprecated props from the experimental FilterList API. Breaking: filterClause prop is removed, this has no behavioral changes as the prop is unused.
+
+  `FilterListProps.filterClause` was never read — FilterList has always owned its own filter state, so passing it did nothing; read state out with `onFilterClauseChanged` instead. `FilterListItemProps` was exported but described props no component accepts.
+
+  `BaseFilterListProps.hasVisibilityChanges` (deprecated in 0.24.0 in favor of `canReset`) is gone, along with its fallback in the reset button's enabled state. `FilterList` is unaffected — it already folds visibility changes into the `canReset` it passes down. Consumers using `BaseFilterList` directly who still pass only `hasVisibilityChanges` will see the reset button stay disabled when no filters are active; pass `canReset` instead.
+
+## 0.47.0
+
+### Minor Changes
+
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+## 0.46.0
+
+### Minor Changes
+
+- c64be50: Rename `ExcelViewer` to `SpreadsheetViewer`. Breaking: the `experimental/excel-viewer` subpath is now `experimental/spreadsheet-viewer`, `ExcelViewer`/`BaseExcelViewer` and their prop types are renamed, `DocumentViewer`'s `excelViewerProps` is now `spreadsheetViewerProps`, `ViewerType.Excel` is now `ViewerType.Spreadsheet` and its value changed from `"excel"` to `"spreadsheet"`, and the `--osdk-excel-viewer-*` CSS tokens are now `--osdk-spreadsheet-viewer-*`. No deprecated aliases are kept.
+
+## 0.45.0
+
+### Minor Changes
+
+- 5d63ff0: Add an `ActionFormOverview.md` one-pager (usage, an `ActionFormProps` props reference, a `Style API` token summary, and an Advanced section covering `BaseForm`) rendered by the Storybook ActionForm Docs page.
+
+## 0.44.0
+
+### Minor Changes
+
+- 55e201f: Replace the ObjectTable docs "Base component" export list with a generated `BaseTableProps` reference table, and document the previously undocumented `BaseTableProps` members
+- 2cff51b: Add internal useDebouncedCallback, useGatedValue, useDeepEqual, and useOnUnmount hooks
+- ac64665: Show type-aware sort icons in the ObjectTable multi-column sort dialog
+- 0fcdfd2: Add an `ObjectTableOverview.md` one-pager (usage, a direct `ObjectTableProps` props reference, and the styling/`Style API` token table) rendered by the Storybook ObjectTable Docs page, and reorder `ObjectTableProps` so the props reference reads `objectType`, `objectSet`, `columnDefinitions` first and then groups the remaining props by feature (data source, filtering, columns, sorting, selection, focus, editing, interactions, display).
+- 85de734: Make the `ObjectTable` column-header sort icon reflect the column's property type: A→Z for text, 1→9 for numbers, and a plain ascending/descending arrow for dates and other types, instead of always showing the alphabetical icon
+- 716b42b: Remove the deprecated `@osdk/react-components-styles` package, whose tokens have been merged into `@osdk/react-components`.
+- d400416: Make the ListogramInput "View all (N)" button a two-way toggle so it collapses back to "View less"
+- 42a094b: Document in `table.css` why `--osdk-table-cell-bg` must stay undeclared (declaring `inherit` at `:root` turns sticky pinned cells transparent) and sanction the nested-primitive token-scoping pattern in the styling guidelines
+- 9d0b21e: Surface action parameter displayName in metadata and use it for ActionForm field labels
+
+## 0.43.0
+
+### Minor Changes
+
+- c2df0ff: Refactor the CBAC picker's max-classification callout from a hook that returned JSX (`useConstraintCallout`) into a `ConstraintCallout` component. Internal cleanup with no change to the public API or behavior.
+- 5e9775e: Stop listogram filter rows reordering when a checkbox is toggled; render values in natural count/value order and append below-fold selections at the tail in the collapsed view.
+
+## 0.42.0
+
+### Minor Changes
+
+- 12e6a69: Add an `isLoading` prop to `CbacBanner`/`BaseCbacBanner` that renders an animated skeleton placeholder matching the banner's width and height. On the OSDK `CbacBanner`, it is OR'd with the banner query's own loading state so the skeleton also shows automatically while marking data is being fetched.
+
 ## 0.41.0
 
 ### Minor Changes

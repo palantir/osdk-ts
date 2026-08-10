@@ -32,7 +32,7 @@ export const DEFAULT_TO_YEAR: number = new Date().getFullYear() + 10;
  */
 export function buildDisabledMatchers(
   min: Date | undefined,
-  max: Date | undefined
+  max: Date | undefined,
 ): Matcher[] {
   const matchers: Matcher[] = [];
   if (min != null) {

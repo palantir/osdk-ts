@@ -55,7 +55,7 @@ export function useColumnDefs<
   >,
 >(
   objectType: Q,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
@@ -67,7 +67,7 @@ export function useColumnDefs<
     if (columnDefinitions) {
       return getColumnsFromColumnDefinitions<Q, RDPs, FunctionColumns>(
         columnDefinitions,
-        objectProperties
+        objectProperties,
       );
     }
 
@@ -87,7 +87,7 @@ function getColumnsFromColumnDefinitions<
   >,
 >(
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  objectProperties?: Record<any, ObjectMetadata.Property>
+  objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -115,10 +115,7 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const dataType =
-      propertyMetadata?.type && typeof propertyMetadata.type === "string"
-        ? propertyMetadata.type
-        : undefined;
+    const dataType = getDataType(propertyMetadata);
 
     const markingType =
       propertyMetadata?.typeMetadata?.type === "marking"
@@ -176,7 +173,7 @@ function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  objectProperties?: Record<any, ObjectMetadata.Property>
+  objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
   AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -190,7 +187,26 @@ function getDefaultColumns<
     > = {
       accessorKey: key,
       header: property.displayName ?? key,
+      meta: {
+        dataType: getDataType(property),
+      },
     };
     return colDef;
   });
+}
+
+/**
+ * The property's `WirePropertyTypes` value, used for type-aware rendering such
+ * as the header's and multi-sort dialog's sort icons.
+ *
+ * Structured types (arrays, structs) carry an object rather than a wire type
+ * string, and a column may have no metadata at all (e.g. function-backed
+ * columns), so both yield `undefined`.
+ */
+function getDataType(
+  property: ObjectMetadata.Property | undefined,
+): string | undefined {
+  return typeof property?.type === "string" && property.type.length > 0
+    ? property.type
+    : undefined;
 }

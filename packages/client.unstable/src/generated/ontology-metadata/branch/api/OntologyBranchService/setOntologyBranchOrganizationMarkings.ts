@@ -27,12 +27,12 @@ import type {
  */
 export async function setOntologyBranchOrganizationMarkings(
   ctx: ConjureContext,
-  request: _branch_api_SetOntologyBranchOrganizationMarkingsRequest
+  request: _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
 ): Promise<_branch_api_SetOntologyBranchOrganizationMarkingsResponse> {
   return conjureFetch(
     ctx,
     `/ontology/branch/setBranchOrganizationMarkings`,
     "PUT",
-    request
+    request,
   );
 }

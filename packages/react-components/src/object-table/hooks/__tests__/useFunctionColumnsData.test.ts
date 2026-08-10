@@ -53,7 +53,7 @@ vi.mock("../../utils/addFilterClauseToObjectSet.js", () => ({
       __filteredObjectSet: true,
       objectSet,
       whereClause,
-    })
+    }),
   ),
 }));
 
@@ -167,7 +167,7 @@ describe("useFunctionColumnsData", () => {
       useFunctionColumnsData({
         objectOrInterfaceType: TestObjectType,
         objects: [],
-      })
+      }),
     );
 
     expect(result.current).toEqual({});
@@ -203,7 +203,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestInterfaceType,
         objects: mockInterfaceObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current).toEqual({});
@@ -236,7 +236,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     // Initially shows isLoading state
@@ -306,7 +306,7 @@ describe("useFunctionColumnsData", () => {
         ],
         enabled: true,
         maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
-      })
+      }),
     );
   });
 
@@ -357,7 +357,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockOneObject,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current).toEqual({
@@ -449,7 +449,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current).toEqual({
@@ -500,7 +500,7 @@ describe("useFunctionColumnsData", () => {
         ],
         enabled: true,
         maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
-      })
+      }),
     );
   });
 
@@ -539,7 +539,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current).toEqual({
@@ -576,7 +576,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
@@ -629,7 +629,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     expect(result.current).toEqual({
@@ -667,7 +667,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions: nonFunctionColumns,
-      })
+      }),
     );
 
     expect(useOsdkFunctions).toHaveBeenCalledWith({
@@ -701,7 +701,7 @@ describe("useFunctionColumnsData", () => {
           error: undefined,
           isLoading: false,
           lastUpdated: Date.now(),
-        })) as unknown as UseOsdkFunctionsResult
+        })) as unknown as UseOsdkFunctionsResult,
       );
 
       renderHook(() =>
@@ -710,7 +710,7 @@ describe("useFunctionColumnsData", () => {
           objects,
           columnDefinitions,
           pageSize,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -740,7 +740,7 @@ describe("useFunctionColumnsData", () => {
           whereClause: {
             $primaryKey: { $in: ["obj0", "obj1"] },
           },
-        })
+        }),
       );
 
       // Page 1: obj2, obj3
@@ -751,7 +751,7 @@ describe("useFunctionColumnsData", () => {
           whereClause: {
             $primaryKey: { $in: ["obj2", "obj3"] },
           },
-        })
+        }),
       );
 
       // Page 2: obj4
@@ -762,7 +762,7 @@ describe("useFunctionColumnsData", () => {
           whereClause: {
             $primaryKey: { $in: ["obj4"] },
           },
-        })
+        }),
       );
     });
 
@@ -775,7 +775,7 @@ describe("useFunctionColumnsData", () => {
           error: undefined,
           isLoading: false,
           lastUpdated: Date.now(),
-        })) as unknown as UseOsdkFunctionsResult
+        })) as unknown as UseOsdkFunctionsResult,
       );
 
       renderHook(() =>
@@ -783,7 +783,7 @@ describe("useFunctionColumnsData", () => {
           objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -836,7 +836,7 @@ describe("useFunctionColumnsData", () => {
           error: undefined,
           isLoading: false,
           lastUpdated: Date.now(),
-        })) as unknown as UseOsdkFunctionsResult
+        })) as unknown as UseOsdkFunctionsResult,
       );
 
       renderHook(() =>
@@ -845,7 +845,7 @@ describe("useFunctionColumnsData", () => {
           objects,
           columnDefinitions: multiColumnDefs,
           pageSize,
-        })
+        }),
       );
 
       const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
@@ -867,7 +867,7 @@ describe("useFunctionColumnsData", () => {
           whereClause: {
             $primaryKey: { $in: ["obj0", "obj1"] },
           },
-        })
+        }),
       );
 
       // Page 1 queries should filter to obj2
@@ -880,7 +880,7 @@ describe("useFunctionColumnsData", () => {
           whereClause: {
             $primaryKey: { $in: ["obj2"] },
           },
-        })
+        }),
       );
     });
 
@@ -916,7 +916,7 @@ describe("useFunctionColumnsData", () => {
           objects,
           columnDefinitions,
           pageSize,
-        })
+        }),
       );
 
       expect(result.current).toEqual({
@@ -960,7 +960,7 @@ describe("useFunctionColumnsData", () => {
         objectOrInterfaceType: TestObjectType,
         objects: mockObjects,
         columnDefinitions,
-      })
+      }),
     );
 
     // Check initial loading state

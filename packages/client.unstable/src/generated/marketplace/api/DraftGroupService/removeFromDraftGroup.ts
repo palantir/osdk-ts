@@ -32,12 +32,12 @@ import type {
 export async function removeFromDraftGroup(
   ctx: ConjureContext,
   draftGroupRid: _api_DraftGroupRid,
-  request: _api_RemoveFromDraftGroupRequest
+  request: _api_RemoveFromDraftGroupRequest,
 ): Promise<_api_DraftGroup> {
   return conjureFetch(
     ctx,
     `/draft-groups/${draftGroupRid}/remove-versions`,
     "POST",
-    request
+    request,
   );
 }

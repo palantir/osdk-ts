@@ -22,7 +22,7 @@ import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertActionSections(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): Record<SectionId, Section> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
@@ -49,6 +49,6 @@ export function convertActionSections(
           }),
         },
       },
-    ])
+    ]),
   );
 }

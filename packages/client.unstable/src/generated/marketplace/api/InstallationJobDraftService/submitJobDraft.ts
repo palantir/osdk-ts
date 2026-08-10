@@ -35,12 +35,12 @@ import type {
 export async function submitJobDraft(
   ctx: ConjureContext,
   jobRid: _api_BlockSetInstallationJobRid,
-  request: _api_SubmitJobDraftRequest
+  request: _api_SubmitJobDraftRequest,
 ): Promise<_api_SubmitJobDraftResponse> {
   return conjureFetch(
     ctx,
     `/installation-job-draft/${jobRid}/submit`,
     "POST",
-    request
+    request,
   );
 }

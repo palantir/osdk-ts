@@ -55,7 +55,7 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
  * Converts a PropertyModifierValue to the corresponding wire format loadLevel type.
  */
 function modifierToLoadLevelType(
-  modifier: PropertyModifierValue
+  modifier: PropertyModifierValue,
 ): LoadLevelType {
   switch (modifier) {
     case "applyMainValue":
@@ -92,7 +92,7 @@ type SelectV2Entry = SelectV2SimpleProperty | SelectV2PropertyWithLoadLevel;
 export function buildSelectV2(
   select: readonly string[] | undefined,
   modifiers: Record<string, PropertyModifierValue> | undefined,
-  allProperties: readonly string[] | undefined
+  allProperties: readonly string[] | undefined,
 ): SelectV2Entry[] {
   const modifiersMap = modifiers ?? {};
   const modifierProps = new Set(Object.keys(modifiersMap));
@@ -104,7 +104,7 @@ export function buildSelectV2(
     for (const [prop, _] of Object.entries(modifiersMap)) {
       invariant(
         select.includes(prop),
-        "Modified properties must be included in $select when manually specifying properties"
+        "Modified properties must be included in $select when manually specifying properties",
       );
     }
     for (const prop of select) {
@@ -146,12 +146,12 @@ export function augment<
 export function objectSetToSearchJsonV2(
   objectSet: ObjectSet,
   expectedApiName: string,
-  existingWhere: SearchJsonQueryV2 | undefined = undefined
+  existingWhere: SearchJsonQueryV2 | undefined = undefined,
 ): SearchJsonQueryV2 | undefined {
   if (objectSet.type === "base" || objectSet.type === "interfaceBase") {
     if (objectSet.type === "base" && objectSet.objectType !== expectedApiName) {
       throw new Error(
-        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`
+        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`,
       );
     }
     if (
@@ -159,7 +159,7 @@ export function objectSetToSearchJsonV2(
       objectSet.interfaceType !== expectedApiName
     ) {
       throw new Error(
-        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.interfaceType}`
+        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.interfaceType}`,
       );
     }
 
@@ -175,7 +175,7 @@ export function objectSetToSearchJsonV2(
         : {
             type: "and",
             value: [existingWhere, objectSet.where],
-          }
+          },
     );
   }
 
@@ -186,7 +186,7 @@ export function objectSetToSearchJsonV2(
 export function resolveInterfaceObjectSet(
   objectSet: ObjectSet,
   interfaceTypeApiName: string,
-  args: FetchPageArgs<any, any, any, any, any, any>
+  args: FetchPageArgs<any, any, any, any, any, any>,
 ): ObjectSet {
   return args?.$includeAllBaseObjectProperties
     ? {
@@ -222,7 +222,7 @@ export async function fetchStaticRidPage<
     never,
     {},
     PROPERTY_SECURITIES
-  >
+  >,
 ): Promise<
   FetchPageResult<
     ObjectOrInterfaceDefinition,
@@ -249,7 +249,7 @@ export async function fetchStaticRidPage<
       loadPropertySecurities: shouldLoadPropertySecurities,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
-    { type: "object", apiName: "" }
+    { type: "object", apiName: "" },
   );
 
   if (client.flushEdits != null) {
@@ -264,7 +264,7 @@ export async function fetchStaticRidPage<
       preview: true,
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
-    }
+    },
   );
 
   return Promise.resolve({
@@ -278,7 +278,7 @@ export async function fetchStaticRidPage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
-      result.interfaceToObjectTypeMappingsV2
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -305,7 +305,7 @@ async function fetchInterfacePage<
   client: MinimalClient,
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet
+  objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   const extractedInterfaceTypeApiName =
     (await extractObjectOrInterfaceType(client, objectSet))?.apiName ??
@@ -313,7 +313,7 @@ async function fetchInterfacePage<
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
     extractedInterfaceTypeApiName,
-    args
+    args,
   );
   const shouldLoadPropertySecurities =
     args.$loadPropertySecurityMetadata ?? false;
@@ -327,7 +327,7 @@ async function fetchInterfacePage<
   let allProperties: string[] | undefined;
   if (!hasSelect && hasModifiers) {
     const ifaceDef = await client.ontologyProvider.getInterfaceDefinition(
-      interfaceType.apiName
+      interfaceType.apiName,
     );
     allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
   }
@@ -335,7 +335,7 @@ async function fetchInterfacePage<
   const selectV2 = buildSelectV2(
     args?.$select ? [...args.$select] : undefined,
     modifiers,
-    allProperties
+    allProperties,
   );
 
   const requestBody = await buildAndRemapRequestBody(
@@ -349,7 +349,7 @@ async function fetchInterfacePage<
       snapshot: args.$snapshot ?? false,
     },
     client,
-    interfaceType
+    interfaceType,
   );
 
   if (client.flushEdits != null) {
@@ -365,7 +365,7 @@ async function fetchInterfacePage<
       branch: client.branch,
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
-    }
+    },
   );
 
   return Promise.resolve({
@@ -379,7 +379,7 @@ async function fetchInterfacePage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
-      result.interfaceToObjectTypeMappingsV2
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -410,7 +410,7 @@ export async function fetchPageInternal<
     never,
     ORDER_BY_OPTIONS,
     PROPERTY_SECURITIES
-  > = {}
+  > = {},
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
@@ -428,7 +428,7 @@ export async function fetchPageInternal<
         never,
         ORDER_BY_OPTIONS
       >,
-      objectSet
+      objectSet,
     )) as any; // fixme
   } else {
     return (await fetchObjectPage(
@@ -444,7 +444,7 @@ export async function fetchPageInternal<
         never,
         ORDER_BY_OPTIONS
       >,
-      objectSet
+      objectSet,
     )) as any; // fixme
   }
 }
@@ -461,7 +461,7 @@ export async function fetchPageWithErrorsInternal<
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {}
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
@@ -495,7 +495,7 @@ export async function fetchPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType)
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
@@ -513,7 +513,7 @@ export async function fetchPageWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType)
+  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
@@ -538,7 +538,7 @@ async function buildAndRemapRequestBody<
   args: FetchPageArgs<Q, L, R, A, S, T>,
   baseBody: RequestBody,
   client: MinimalClient,
-  objectType: Q
+  objectType: Q,
 ): Promise<RequestBody> {
   const withArgs = await applyFetchArgs(args, baseBody, client, objectType);
 
@@ -562,7 +562,7 @@ async function buildAndRemapRequestBody<
 
 function remapSelectV2(
   objectOrInterface: ObjectOrInterfaceDefinition | undefined,
-  selectV2: SelectV2Entry[]
+  selectV2: SelectV2Entry[],
 ): SelectV2Entry[] {
   if (objectOrInterface == null) {
     return selectV2;
@@ -580,7 +580,7 @@ function remapSelectV2(
   return selectV2.map((entry): SelectV2Entry => {
     if (entry.type === "property") {
       const [fieldApiNamespace, fieldShortName] = extractNamespace(
-        entry.apiName
+        entry.apiName,
       );
       if (fieldApiNamespace == null) {
         return {
@@ -591,7 +591,7 @@ function remapSelectV2(
       return entry;
     } else {
       const [fieldApiNamespace, fieldShortName] = extractNamespace(
-        entry.propertyIdentifier.apiName
+        entry.propertyIdentifier.apiName,
       );
       if (fieldApiNamespace == null) {
         return {
@@ -610,7 +610,7 @@ function remapSelectV2(
 /** @internal */
 export function remapPropertyNames(
   objectOrInterface: ObjectOrInterfaceDefinition | undefined,
-  propertyNames: readonly string[]
+  propertyNames: readonly string[],
 ): readonly string[] {
   if (objectOrInterface == null) {
     return propertyNames;
@@ -657,7 +657,7 @@ async function applyFetchArgs<
   >,
   body: X,
   _client: MinimalClient,
-  objectType: Q
+  objectType: Q,
 ): Promise<X> {
   if (args?.$nextPageToken) {
     body.pageToken = args.$nextPageToken;
@@ -704,7 +704,7 @@ export async function fetchObjectPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S, T, never, ORDER_BY_OPTIONS>,
-  objectSet: ObjectSet
+  objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
@@ -718,7 +718,7 @@ export async function fetchObjectPage<
   let allProperties: string[] | undefined;
   if (!hasSelect && hasModifiers) {
     const objDef = await client.ontologyProvider.getObjectDefinition(
-      objectType.apiName
+      objectType.apiName,
     );
     allProperties = objDef ? Object.keys(objDef.properties) : undefined;
   } else {
@@ -735,7 +735,7 @@ export async function fetchObjectPage<
   const selectV2 = buildSelectV2(
     args?.$select ? [...args.$select] : undefined,
     modifiers,
-    allProperties
+    allProperties,
   );
 
   const requestBody = await buildAndRemapRequestBody(
@@ -749,7 +749,7 @@ export async function fetchObjectPage<
       snapshot: args.$snapshot ?? false,
     },
     client,
-    objectType
+    objectType,
   );
 
   if (client.flushEdits != null) {
@@ -764,7 +764,7 @@ export async function fetchObjectPage<
       branch: client.branch,
       transactionId: client.transactionId,
       scenarioRid: client.scenarioRid,
-    }
+    },
   );
 
   return Promise.resolve({
@@ -776,7 +776,7 @@ export async function fetchObjectPage<
       shouldLoadPropertySecurities ? r.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
-      false
+      false,
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,

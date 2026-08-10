@@ -50,7 +50,7 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
 export async function* asyncIterPointsHelper<
   T extends number | string | GeoJSON.Point,
 >(
-  iterator: Response
+  iterator: Response,
 ): AsyncGenerator<
   {
     time: any;
@@ -61,7 +61,7 @@ export async function* asyncIterPointsHelper<
 > {
   const reader = iterator.body?.getReader()!;
   for await (const point of parseStreamedResponse(
-    iterateReadableStream(reader)
+    iterateReadableStream(reader),
   )) {
     yield {
       time: point.time,

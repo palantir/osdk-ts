@@ -23,7 +23,7 @@ import { FilterList as _FilterList } from "../../filter-list/FilterList.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const FilterList: typeof _FilterList = withOsdkMetrics(
   _FilterList,
-  "FilterList"
+  "FilterList",
 );
 
 export type {
@@ -33,7 +33,6 @@ export type {
 export type {
   FilterComponentType,
   FilterDefinitionControls,
-  FilterListItemProps,
   FilterState,
   PropertyFilterDefinition,
 } from "../../filter-list/FilterListItemApi.js";

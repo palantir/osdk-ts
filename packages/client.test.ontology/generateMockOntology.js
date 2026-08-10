@@ -59,7 +59,7 @@ const fullOntology = fauxFoundry
         fauxFoundry
           .getDefaultOntology()
           .getAllQueryTypes()
-          .map((x) => x.apiName)
+          .map((x) => x.apiName),
       ),
     ],
   });
@@ -94,5 +94,5 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   undefined,
   true,
-  ["addOne"]
+  ["addOne"],
 );

@@ -38,12 +38,13 @@ export async function createAndFetchTempObjectSetRid<
   client: Client,
   objectSet: unknown extends CompileTimeMetadata<Q>["objectSet"]
     ? ObjectSet<Q>
-    : CompileTimeMetadata<Q>["objectSet"]
+    : CompileTimeMetadata<Q>["objectSet"],
 ): Promise<string> {
   const response = await OntologyObjectSets.createTemporary(
     client,
     await client[additionalContext].ontologyRid,
     {
+<<<<<<< HEAD
       // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
       // `interfaceLinkSearchAround` for a chain that has already landed on an
       // object type, which the gateway rejects.
@@ -52,6 +53,10 @@ export async function createAndFetchTempObjectSetRid<
         getWireObjectSet(objectSet)
       ),
     }
+=======
+      objectSet: getWireObjectSet(objectSet),
+    },
+>>>>>>> main
   );
   return response.objectSetRid;
 }

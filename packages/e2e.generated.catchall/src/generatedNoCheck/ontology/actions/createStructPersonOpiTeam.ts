@@ -13,6 +13,7 @@ export namespace createStructPersonOpiTeam {
   export type ParamsDefinition = {
     address: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: true;
       type: ActionMetadata.DataType.Struct<{
@@ -23,12 +24,14 @@ export namespace createStructPersonOpiTeam {
     };
     age: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     id: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

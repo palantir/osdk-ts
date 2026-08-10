@@ -49,7 +49,7 @@ describe("Timeseries", () => {
         "Employee",
         "50030",
         "employeeStatus",
-        statusTimeseriesData
+        statusTimeseriesData,
       );
 
     testSetup.fauxFoundry
@@ -58,7 +58,7 @@ describe("Timeseries", () => {
         "Employee",
         "50030",
         "employeeSensor",
-        sensorTimeseriesData
+        sensorTimeseriesData,
       );
 
     return () => {

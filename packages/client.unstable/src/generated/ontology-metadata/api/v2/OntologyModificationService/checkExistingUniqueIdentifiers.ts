@@ -31,12 +31,12 @@ import type {
 export async function checkExistingUniqueIdentifiers(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_modification_CheckExistingUniqueIdentifiersRequest
+  request: _api_modification_CheckExistingUniqueIdentifiersRequest,
 ): Promise<_api_modification_CheckExistingUniqueIdentifiersResponse> {
   return conjureFetch(
     ctx,
     `/ontology/v2/${ontologyRid}/modification/check-uniqueness`,
     "POST",
-    request
+    request,
   );
 }

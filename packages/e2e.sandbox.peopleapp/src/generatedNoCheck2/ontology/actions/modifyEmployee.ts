@@ -12,32 +12,293 @@ import type { Employee } from '../objects/Employee.js';
 export namespace modifyEmployee {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
+    adUsername: {
+      description: undefined;
+      displayName: 'Ad Username';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    businessArea: {
+      description: undefined;
+      displayName: 'Business Area';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    businessTitle: {
+      description: undefined;
+      displayName: 'Business Title';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    department: {
+      description: undefined;
+      displayName: 'Department';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    emailPrimaryWork: {
+      description: undefined;
+      displayName: 'Email';
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
     employee: {
       description: undefined;
+      displayName: 'Employee';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
+    employeeDocuments: {
+      description: undefined;
+      displayName: 'employeeDocuments';
+      multiplicity: false;
+      nullable: true;
+      type: 'mediaReference';
+    };
+    employeeFile: {
+      description: undefined;
+      displayName: 'Employee File';
+      multiplicity: false;
+      nullable: true;
+      type: 'attachment';
+    };
+    employeeMedia: {
+      description: undefined;
+      displayName: 'Media';
+      multiplicity: false;
+      nullable: true;
+      type: 'mediaReference';
+    };
+    favoritePlaceArea: {
+      description: undefined;
+      displayName: 'Favorite Place Area';
+      multiplicity: false;
+      nullable: true;
+      type: 'geoshape';
+    };
+    favPlace: {
+      description: undefined;
+      displayName: 'Favorite Place';
+      multiplicity: false;
+      nullable: true;
+      type: 'geohash';
+    };
+    firstFullTimeStartDate: {
+      description: undefined;
+      displayName: 'First Full Time Start Date';
+      multiplicity: false;
+      nullable: true;
+      type: 'datetime';
+    };
+    firstInternStartDate: {
+      description: undefined;
+      displayName: 'First Intern Start Date';
+      multiplicity: false;
+      nullable: true;
+      type: 'datetime';
+    };
+    fullName: {
+      description: undefined;
+      displayName: 'Name';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    jobProfile: {
+      description: undefined;
+      displayName: 'Job Profile';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    jobTitle: {
+      description: undefined;
+      displayName: 'Job Title';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    latestVenture: {
+      description: undefined;
+      displayName: 'Latest Venture ';
+      multiplicity: false;
+      nullable: true;
+      type: ActionMetadata.DataType.Struct<{
+        days: { type: 'integer'; nullable: false };
+        venture: { type: 'string'; nullable: false };
+      }>;
+    };
+    leadEmployeeNumber: {
+      description: undefined;
+      displayName: 'Lead Employee Number';
+      multiplicity: false;
+      nullable: true;
+      type: 'integer';
+    };
+    locationCity: {
+      description: undefined;
+      displayName: 'Location City';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    locationCountry: {
+      description: undefined;
+      displayName: 'Location Country';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    locationName: {
+      description: undefined;
+      displayName: 'Location Name';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    locationRegion: {
+      description: undefined;
+      displayName: 'Location Region';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    locationType: {
+      description: undefined;
+      displayName: 'Location Type';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    mentorEmployeeNumber: {
+      description: undefined;
+      displayName: 'Mentor Employee Number';
+      multiplicity: false;
+      nullable: true;
+      type: 'integer';
+    };
+    newProperty1: {
+      description: undefined;
+      displayName: 'New property 1';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    preferredNameFirst: {
+      description: undefined;
+      displayName: 'Preferred Name First';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    preferredNameLast: {
+      description: undefined;
+      displayName: 'Preferred Name Last';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
     primary_office_id: {
       description: undefined;
+      displayName: 'Primary Office ID';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     stockOptions: {
       description: undefined;
+      displayName: 'Stock Options';
       multiplicity: false;
       nullable: true;
       type: 'long';
     };
+    team: {
+      description: undefined;
+      displayName: 'Team';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    workerType: {
+      description: undefined;
+      displayName: 'Worker Type';
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
   };
 
   export interface Params {
+    readonly adUsername?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly businessArea?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly businessTitle?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly department?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly emailPrimaryWork: ActionParam.PrimitiveType<'string'>;
+
     readonly employee: ActionParam.ObjectType<Employee>;
+
+    readonly employeeDocuments?: ActionParam.PrimitiveType<'mediaReference'> | null;
+
+    readonly employeeFile?: ActionParam.PrimitiveType<'attachment'> | null;
+
+    readonly employeeMedia?: ActionParam.PrimitiveType<'mediaReference'> | null;
+
+    readonly favoritePlaceArea?: ActionParam.PrimitiveType<'geoshape'> | null;
+
+    readonly favPlace?: ActionParam.PrimitiveType<'geohash'> | null;
+
+    readonly firstFullTimeStartDate?: ActionParam.PrimitiveType<'datetime'> | null;
+
+    readonly firstInternStartDate?: ActionParam.PrimitiveType<'datetime'> | null;
+
+    readonly fullName?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly jobProfile?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly jobTitle?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly latestVenture?: ActionParam.StructType<{
+      days: { type: 'integer'; nullable: false };
+      venture: { type: 'string'; nullable: false };
+    }> | null;
+
+    readonly leadEmployeeNumber?: ActionParam.PrimitiveType<'integer'> | null;
+
+    readonly locationCity?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly locationCountry?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly locationName?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly locationRegion?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly locationType?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly mentorEmployeeNumber?: ActionParam.PrimitiveType<'integer'> | null;
+
+    readonly newProperty1?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly preferredNameFirst?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly preferredNameLast?: ActionParam.PrimitiveType<'string'> | null;
 
     readonly primary_office_id?: ActionParam.PrimitiveType<'string'> | null;
 
     readonly stockOptions?: ActionParam.PrimitiveType<'long'> | null;
+
+    readonly team?: ActionParam.PrimitiveType<'string'> | null;
+
+    readonly workerType?: ActionParam.PrimitiveType<'string'> | null;
   }
 
   // Represents a fqn of the action
@@ -55,9 +316,37 @@ export namespace modifyEmployee {
 }
 
 /**
+ * @param {ActionParam.PrimitiveType<"string">} [adUsername]
+ * @param {ActionParam.PrimitiveType<"string">} [businessArea]
+ * @param {ActionParam.PrimitiveType<"string">} [businessTitle]
+ * @param {ActionParam.PrimitiveType<"string">} [department]
+ * @param {ActionParam.PrimitiveType<"string">} emailPrimaryWork
  * @param {ActionParam.ObjectType<Employee>} employee
+ * @param {ActionParam.PrimitiveType<"mediaReference">} [employeeDocuments]
+ * @param {ActionParam.PrimitiveType<"attachment">} [employeeFile]
+ * @param {ActionParam.PrimitiveType<"mediaReference">} [employeeMedia]
+ * @param {ActionParam.PrimitiveType<"geoshape">} [favoritePlaceArea]
+ * @param {ActionParam.PrimitiveType<"geohash">} [favPlace]
+ * @param {ActionParam.PrimitiveType<"datetime">} [firstFullTimeStartDate]
+ * @param {ActionParam.PrimitiveType<"datetime">} [firstInternStartDate]
+ * @param {ActionParam.PrimitiveType<"string">} [fullName]
+ * @param {ActionParam.PrimitiveType<"string">} [jobProfile]
+ * @param {ActionParam.PrimitiveType<"string">} [jobTitle]
+ * @param {ActionParam.StructType<{"days":{"type":"integer","nullable":false},"venture":{"type":"string","nullable":false}}>} [latestVenture]
+ * @param {ActionParam.PrimitiveType<"integer">} [leadEmployeeNumber]
+ * @param {ActionParam.PrimitiveType<"string">} [locationCity]
+ * @param {ActionParam.PrimitiveType<"string">} [locationCountry]
+ * @param {ActionParam.PrimitiveType<"string">} [locationName]
+ * @param {ActionParam.PrimitiveType<"string">} [locationRegion]
+ * @param {ActionParam.PrimitiveType<"string">} [locationType]
+ * @param {ActionParam.PrimitiveType<"integer">} [mentorEmployeeNumber]
+ * @param {ActionParam.PrimitiveType<"string">} [newProperty1]
+ * @param {ActionParam.PrimitiveType<"string">} [preferredNameFirst]
+ * @param {ActionParam.PrimitiveType<"string">} [preferredNameLast]
  * @param {ActionParam.PrimitiveType<"string">} [primary_office_id]
  * @param {ActionParam.PrimitiveType<"long">} [stockOptions]
+ * @param {ActionParam.PrimitiveType<"string">} [team]
+ * @param {ActionParam.PrimitiveType<"string">} [workerType]
  */
 export interface modifyEmployee extends ActionDefinition<modifyEmployee.Signatures> {
   __DefinitionMetadata?: {

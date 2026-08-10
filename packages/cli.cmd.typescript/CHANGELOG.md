@@ -1,5 +1,71 @@
 # @osdk/cli.cmd.typescript
 
+## 0.81.0
+
+### Patch Changes
+
+- @osdk/generator@2.56.0
+- @osdk/cli.common@0.81.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/generator@2.55.0
+- @osdk/cli.common@0.80.0
+
+## 0.79.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/generator@2.54.0
+- @osdk/cli.common@0.79.0
+
+## 0.78.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator@2.53.0
+  - @osdk/cli.common@0.78.0
+
+## 0.77.0
+
+### Patch Changes
+
+- @osdk/generator@2.52.0
+- @osdk/cli.common@0.77.0
+
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/generator@2.51.0
+- @osdk/cli.common@0.76.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/generator@2.50.0
+- @osdk/cli.common@0.75.0
+
+## 0.74.0
+
+### Patch Changes
+
+- @osdk/generator@2.49.0
+- @osdk/cli.common@0.74.0
+
 ## 0.73.0
 
 ### Patch Changes

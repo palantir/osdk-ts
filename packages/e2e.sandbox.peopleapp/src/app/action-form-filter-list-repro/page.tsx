@@ -38,12 +38,12 @@ interface ModifyEmployeeDepartmentParams {
 interface ModifyEmployeeDepartmentSignatures {
   applyAction<OP extends ApplyActionOptions>(
     args: ModifyEmployeeDepartmentParams,
-    options?: OP
+    options?: OP,
   ): Promise<ActionReturnTypeForOptions<OP>>;
 
   batchApplyAction<OP extends ApplyBatchActionOptions>(
     args: ReadonlyArray<ModifyEmployeeDepartmentParams>,
-    options?: OP
+    options?: OP,
   ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
@@ -188,7 +188,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
     }, []);
 
     const handleActionError = useCallback(function handleActionError(
-      error: FormError
+      error: FormError,
     ) {
       setStatusMessage({
         kind: "error",
@@ -229,7 +229,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            filterClause={filterClause}
             onFilterClauseChanged={setFilterClause}
             title="Employee filters"
             showActiveFilterCount={true}
@@ -277,7 +276,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
         )}
       </div>
     );
-  }
+  },
 );
 
 function formatFormError(error: FormError): string {

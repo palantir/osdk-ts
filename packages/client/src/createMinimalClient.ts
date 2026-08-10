@@ -49,14 +49,14 @@ export function createMinimalClient(
   } = {},
   fetchFn: (
     input: Request | URL | string,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
   createOntologyProviderFactory: (
-    a: OntologyCachingOptions & { logger?: Logger }
+    a: OntologyCachingOptions & { logger?: Logger },
   ) => (
-    minimalClient: MinimalClient
-  ) => OntologyProvider = createStandardOntologyProviderFactory
+    minimalClient: MinimalClient,
+  ) => OntologyProvider = createStandardOntologyProviderFactory,
 ) {
   if (process.env.NODE_ENV !== "production") {
     try {
@@ -75,7 +75,7 @@ export function createMinimalClient(
       tokenProvider,
       USER_AGENT,
       fetchFn,
-      options.headers
+      options.headers,
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
@@ -94,6 +94,6 @@ export function createMinimalClient(
   return Object.freeze(
     Object.assign(minimalClient, {
       ontologyProvider: createOntologyProviderFactory(options)(minimalClient),
-    })
+    }),
   );
 }

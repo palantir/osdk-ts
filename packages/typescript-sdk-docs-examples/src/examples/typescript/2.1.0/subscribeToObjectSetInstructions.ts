@@ -31,7 +31,7 @@ const subscription = client(Employee).subscribe(
         // Get the object using the $primaryKey from your cache
         // const currentObject = objects[update.object.$primaryKey];
         // use the update.object["<propertyName>"] to update your cache
-        // currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
+        //currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
       } else if (update.state === "REMOVED") {
         // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria
         // Remove the object from your cache using the $primaryKey

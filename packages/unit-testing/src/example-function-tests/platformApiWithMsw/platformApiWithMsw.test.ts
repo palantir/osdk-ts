@@ -42,8 +42,8 @@ describe("platformApiWithMsw", () => {
           realm: "default",
           status: "ACTIVE",
           attributes: {},
-        } satisfies User)
-      )
+        } satisfies User),
+      ),
     );
 
     const mockClient = createMockClient();
@@ -63,14 +63,14 @@ describe("platformApiWithMsw", () => {
           realm: "default",
           status: "ACTIVE",
           attributes: {},
-        } satisfies User)
-      )
+        } satisfies User),
+      ),
     );
 
     const mockClient = createMockClient();
 
     await expect(requireAdminUser(mockClient)).rejects.toThrow(
-      "User bob@example.com is not an admin"
+      "User bob@example.com is not an admin",
     );
   });
 });

@@ -29,6 +29,93 @@
         "verbs": []
       }
     ],
+    "datasets": [
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "verbs": [],
+        "alias": "previewDatasetAlias"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        },
+        "verbs": [],
+        "alias": "anotherPreviewDataset"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.cccccccc-cccc-cccc-cccc-cccccccccccc"
+        },
+        "verbs": [],
+        "alias": null
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.dddddddd-dddd-dddd-dddd-dddddddddddd"
+        },
+        "verbs": []
+      }
+    ],
+    "mediasets": [
+      {
+        "identifier": {
+          "rid": "ri.mio.main.media-set.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "verbs": [],
+        "alias": "previewMediasetAlias"
+      },
+      {
+        "identifier": {
+          "rid": "ri.mio.main.media-set.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        },
+        "verbs": [],
+        "alias": "anotherPreviewMediaset"
+      },
+      {
+        "identifier": {
+          "rid": "ri.mio.main.media-set.cccccccc-cccc-cccc-cccc-cccccccccccc"
+        },
+        "verbs": [],
+        "alias": null
+      },
+      {
+        "identifier": {
+          "rid": "ri.mio.main.media-set.dddddddd-dddd-dddd-dddd-dddddddddddd"
+        },
+        "verbs": []
+      }
+    ],
+    "streams": [
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+        },
+        "verbs": [],
+        "alias": "previewStreamAlias"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.ffffffff-ffff-ffff-ffff-ffffffffffff"
+        },
+        "verbs": [],
+        "alias": "anotherPreviewStream"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.99999999-9999-9999-9999-999999999999"
+        },
+        "verbs": [],
+        "alias": null
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry.main.dataset.88888888-8888-8888-8888-888888888888"
+        },
+        "verbs": []
+      }
+    ],
     "custom": {
       "previewCustomAlias": "previewCustomValue",
       "anotherPreviewCustom": "anotherPreviewValue"

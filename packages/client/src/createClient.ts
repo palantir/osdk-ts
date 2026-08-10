@@ -19,7 +19,7 @@ import type {
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
-  MediaReference,
+  Media,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -39,13 +39,12 @@ import type {
   TransformOptions,
 } from "@osdk/api/unstable";
 import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
@@ -119,7 +118,7 @@ export function createClientInternal(
         headers?: Record<string, string>;
       }
     | undefined = undefined,
-  fetchFn: typeof globalThis.fetch = fetch
+  fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
     if (!ontologyRid.startsWith("ri.")) {
@@ -149,7 +148,7 @@ export function createClientInternal(
       createSubscriptionConnection: subscribeConnectionFn,
     },
     fetchFn,
-    objectSetFactory
+    objectSetFactory,
   );
 
   return createClientFromContext(clientCtx);
@@ -169,7 +168,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | Experiment<"2.8.0">
       | Experiment<"2.19.0">,
   >(
-    o: T
+    o: T,
   ): T extends ObjectTypeDefinition
     ? ObjectSet<T>
     : T extends InterfaceDefinition
@@ -202,7 +201,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           return {
             async *executeStreamingFunction(
               query: QueryDefinition<any>,
-              params?: Record<string, any>
+              params?: Record<string, any>,
             ) {
               const { applyStreamingQuery } =
                 await import("./queries/applyStreamingQuery.js");
@@ -213,13 +212,13 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           return {
             async *getBulkLinks(
               objs: Array<OsdkBase<any>>,
-              linkTypes: string[]
+              linkTypes: string[],
             ) {
               const { createBulkLinksAsyncIterFactory } =
                 await import("./__unstable/createBulkLinksAsyncIterFactory.js");
               yield* createBulkLinksAsyncIterFactory(clientCtx)(
                 objs,
-                linkTypes
+                linkTypes,
               );
             },
           } as any;
@@ -233,44 +232,16 @@ export function createClientFromContext(clientCtx: MinimalClient) {
             >(
               objectType: Q,
               rid: string,
-              options: SelectArg<Q, L, R, S>
+              options: SelectArg<Q, L, R, S>,
             ) => {
               return (await fetchSingle(
                 clientCtx,
                 objectType,
                 options,
-                createWithRid([rid])
+                createWithRid([rid]),
               )) as Osdk<Q>;
             },
           } as any;
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
-          return {
-            createMediaReference: async <
-              Q extends ObjectTypeDefinition,
-              const L extends PropertyKeys.Filtered<Q, "mediaReference">,
-            >(args: {
-              data: Blob;
-              fileName: string;
-              objectType: Q;
-              propertyType: L;
-            }) => {
-              const { data, fileName, objectType, propertyType } = args;
-              const { upload } =
-                await import("@osdk/foundry.ontologies/MediaReferenceProperty");
-              return await upload(
-                clientCtx,
-                await clientCtx.ontologyRid,
-                objectType.apiName,
-                propertyType as string,
-                data,
-                {
-                  mediaItemPath: fileName,
-                  preview: true,
-                }
-              );
-            },
-          } as any;
-
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid.name:
           return {
             fetchPageByRid: async <
@@ -293,13 +264,13 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 never,
                 {},
                 PROPERTY_SECURITIES
-              > = {}
+              > = {},
             ) => {
               return await fetchPage(
                 clientCtx,
                 objectOrInterfaceType,
                 options,
-                createWithRid(rids)
+                createWithRid(rids),
               );
             },
             fetchPageByRidNoType: async <
@@ -319,7 +290,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 never,
                 {},
                 PROPERTY_SECURITIES
-              >
+              >,
             ) => {
               return await fetchStaticRidPage(clientCtx, rids, options ?? {});
             },
@@ -334,40 +305,40 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 never,
                 R
               >,
-              opts?: { includeRid?: R }
+              opts?: { includeRid?: R },
             ) => {
               const unsubscribe = ObjectSetListenerWebsocket.getInstance(
-                clientCtx
+                clientCtx,
               ).subscribeWithoutType(
                 { type: "reference", reference: rid },
                 listener as ObjectSetSubscription.Listener<
                   ObjectOrInterfaceDefinition,
                   never
                 >,
-                opts?.includeRid ?? false
+                opts?.includeRid ?? false,
               );
               return { unsubscribe };
             },
           } as any;
 
-        case __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait.name:
+        case transformAndWait.name:
           return {
             transformAndWait: async (args: {
-              mediaReference: MediaReference;
+              media: Media;
               transformation: MediaTransformation;
               options?: TransformOptions;
             }) => {
               const { transformAndWaitInternal } =
                 await import("./util/transformAndWaitInternal.js");
               const { mediaSetRid, mediaItemRid, token } =
-                args.mediaReference.reference.mediaSetViewItem;
+                args.media.getMediaReference().reference.mediaSetViewItem;
               return transformAndWaitInternal(
                 clientCtx,
                 mediaSetRid,
                 mediaItemRid,
                 makeMediaTransformation(args.transformation),
                 token,
-                args.options
+                args.options,
               );
             },
           } as any;
@@ -447,14 +418,14 @@ export const createClient: (
         headers?: Record<string, string>;
       }
     | undefined,
-  fetchFn?: typeof fetch | undefined
+  fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
   undefined,
   undefined,
   undefined,
-  undefined
+  undefined,
 );
 
 export const createClientWithTransaction: (
@@ -468,7 +439,7 @@ export const createClientWithTransaction: (
     flushEdits,
     undefined,
     undefined,
-    ...args
+    ...args,
   ) as Client;
 
 /**
@@ -493,7 +464,7 @@ export const createClientWithSubscriptionConnection: (
     undefined,
     undefined,
     createSubscriptionConnection,
-    ...args
+    ...args,
   ) as Client;
 
 /** @internal */
@@ -507,7 +478,7 @@ export const createClientWithScenario: (
     undefined,
     scenarioRid,
     undefined,
-    ...args
+    ...args,
   ) as Client;
 
 function createWithRid(rids: string[]) {

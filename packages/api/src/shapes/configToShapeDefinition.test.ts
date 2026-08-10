@@ -69,7 +69,7 @@ describe("configToShapeDefinition", () => {
       configToShapeDefinition(MockEmployee, {
         require: ["name"] as any,
         select: ["name"] as any,
-      })
+      }),
     ).toThrow('Property "name" appears in multiple config arrays');
   });
 
@@ -77,7 +77,7 @@ describe("configToShapeDefinition", () => {
     expect(() =>
       configToShapeDefinition(MockEmployee, {
         transforms: { name: "not a function" } as any,
-      })
+      }),
     ).toThrow('transforms["name"] must be a function');
   });
 

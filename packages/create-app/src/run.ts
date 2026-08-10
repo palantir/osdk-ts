@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { changeVersionPrefix, lowercase } from "@osdk/generator-utils";
+import { changeVersionPrefix } from "@osdk/generator-utils";
 import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 
@@ -31,10 +31,6 @@ import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 import type { SdkVersion, Template, TemplateContext } from "./templates.js";
-
-// Register the shared `lowercase` helper so template `package.json` name
-// fields can enforce npm-safe (lowercase) package names.
-Handlebars.registerHelper("lowercase", lowercase);
 
 interface RunArgs {
   project: string;
@@ -50,6 +46,8 @@ interface RunArgs {
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  /** Opt-in gate for unstable/experimental features; defaults to `false`. */
+  unstableFeatures?: boolean;
 }
 
 export async function run({
@@ -66,10 +64,11 @@ export async function run({
   osdkRegistryUrl,
   corsProxy,
   scopes,
+  unstableFeatures = false,
 }: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
-    `Creating project ${green(project)} using template ${green(template.id)}`
+    `Creating project ${green(project)} using template ${green(template.id)}`,
   );
 
   const cwd = process.cwd();
@@ -92,7 +91,7 @@ export async function run({
 
   if (template.files[sdkVersion] == null) {
     throw new Error(
-      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`
+      `The ${template.label} template does not support a "${sdkVersion}" SDK version.`,
     );
   }
 
@@ -107,7 +106,7 @@ export async function run({
     await fs.promises.mkdir(dirPath, { recursive: true });
     await fs.promises.writeFile(
       finalPath,
-      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64")
+      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64"),
     );
   }
 
@@ -135,9 +134,10 @@ export async function run({
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    unstableFeatures,
   };
   const processFiles = function (dir: string) {
-    fs.readdirSync(dir).forEach(function (file) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -148,7 +148,7 @@ export async function run({
       if (fullPath.endsWith("/_gitignore")) {
         fs.renameSync(
           fullPath,
-          fullPath.replace(/\/_gitignore$/u, "/.gitignore")
+          fullPath.replace(/\/_gitignore$/u, "/.gitignore"),
         );
         return;
       }
@@ -177,13 +177,27 @@ export async function run({
         return;
       }
       const templated = Handlebars.compile(fs.readFileSync(fullPath, "utf-8"))(
-        templateContext
+        templateContext,
       );
       fs.writeFileSync(fullPath.replace(/.hbs$/u, ""), templated);
       fs.rmSync(fullPath);
     });
   };
   processFiles(root);
+
+  if (unstableFeatures && osdkPackage != null) {
+    const packageJsonPath = path.join(root, "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+    packageJson.scripts = {
+      ...packageJson.scripts,
+      postinstall: "./node_modules/.bin/osdk unstable branch sync",
+    };
+    packageJson.devDependencies = {
+      "@osdk/cli": "latest",
+      ...packageJson.devDependencies,
+    };
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  }
 
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);

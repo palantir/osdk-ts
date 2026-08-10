@@ -26,7 +26,7 @@ export interface ComponentInsights {
 }
 
 export function useComponentInsights(
-  monitorStore: MonitorStore
+  monitorStore: MonitorStore,
 ): ComponentInsights {
   const tick = useSharedTick();
   return useMemo(() => {

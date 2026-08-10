@@ -46,12 +46,12 @@ describe("useDualScopeAggregation", () => {
     });
 
     const { result } = renderHook(() =>
-      useDualScopeAggregation(MockObjectType, "name", scopedSet, undefined)
+      useDualScopeAggregation(MockObjectType, "name", scopedSet, undefined),
     );
 
     expect(result.current.data.map((d) => d.value)).toEqual(["Engineering"]);
     expect(
-      result.current.data.find((d) => d.value === "Engineering")?.count
+      result.current.data.find((d) => d.value === "Engineering")?.count,
     ).toBe(3);
   });
 
@@ -65,14 +65,19 @@ describe("useDualScopeAggregation", () => {
     });
 
     const { result } = renderHook(() =>
-      useDualScopeAggregation(MockObjectType, "name", scopedSet, emptySourceSet)
+      useDualScopeAggregation(
+        MockObjectType,
+        "name",
+        scopedSet,
+        emptySourceSet,
+      ),
     );
 
     const values = result.current.data.map((d) => d.value);
     expect(values).toContain("Engineering");
     expect(values).toContain("Marketing");
     expect(
-      result.current.data.find((d) => d.value === "Marketing")?.count
+      result.current.data.find((d) => d.value === "Marketing")?.count,
     ).toBe(0);
   });
 
@@ -97,7 +102,12 @@ describe("useDualScopeAggregation", () => {
     });
 
     const { result } = renderHook(() =>
-      useDualScopeAggregation(MockObjectType, "name", scopedSet, emptySourceSet)
+      useDualScopeAggregation(
+        MockObjectType,
+        "name",
+        scopedSet,
+        emptySourceSet,
+      ),
     );
 
     expect(result.current.data.map((d) => d.value)).toEqual(["Engineering"]);
@@ -111,14 +121,14 @@ describe("useDualScopeAggregation", () => {
     const { result } = renderHook(() =>
       useDualScopeAggregation(MockObjectType, "name", scopedSet, undefined, {
         selectedValues: ["Marketing"],
-      })
+      }),
     );
 
     const values = result.current.data.map((d) => d.value);
     expect(values).toContain("Engineering");
     expect(values).toContain("Marketing");
     expect(
-      result.current.data.find((d) => d.value === "Marketing")?.count
+      result.current.data.find((d) => d.value === "Marketing")?.count,
     ).toBe(0);
   });
 });

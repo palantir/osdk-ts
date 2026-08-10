@@ -57,7 +57,7 @@ type HostMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
       payload: infer P;
     }
       ? P
-      : never
+      : never,
   ) => void;
 } & {
   _unknown: (type: string) => void;
@@ -68,7 +68,7 @@ type HostMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
  */
 export function visitHostMessage<C extends WidgetConfig<C["parameters"]>>(
   message: HostMessage<C>,
-  visitor: HostMessageVisitor<C>
+  visitor: HostMessageVisitor<C>,
 ): void {
   const { type, payload } = message;
   const handler = visitor[type];

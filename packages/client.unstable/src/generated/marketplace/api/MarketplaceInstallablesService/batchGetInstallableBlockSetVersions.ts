@@ -34,13 +34,13 @@ export async function batchGetInstallableBlockSetVersions(
   ctx: ConjureContext,
   marketplaceRid: _api_MarketplaceRid,
   onlyLoadMetadata: boolean | null | undefined,
-  request: _api_BatchGetInstallableBlockSetVersionsRequest
+  request: _api_BatchGetInstallableBlockSetVersionsRequest,
 ): Promise<_api_BatchGetInstallableBlockSetVersionsResponse> {
   return conjureFetch(
     ctx,
     `/installation-app-service/installable/${marketplaceRid}/blockSet/version/batchGet`,
     "POST",
     request,
-    { onlyLoadMetadata }
+    { onlyLoadMetadata },
   );
 }

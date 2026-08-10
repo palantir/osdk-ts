@@ -45,18 +45,18 @@ const levelStyles = {
 export class BrowserLogger extends BaseLogger implements Logger {
   constructor(
     bindings: Record<string, any> = {},
-    options: { level?: string; msgPrefix?: string } = {}
+    options: { level?: string; msgPrefix?: string } = {},
   ) {
     super(
       bindings,
       { ...options, level: options.level ?? "error" },
-      BrowserLogger
+      BrowserLogger,
     );
   }
 
   protected createLogMethod(
     name: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
-    bindings: Record<string, any>
+    bindings: Record<string, any>,
   ): Logger.LogFn {
     const msgs: string[] = [`%c${name}%c`];
     const styles: string[] = [levelStyles[name], ""];
@@ -76,7 +76,7 @@ export class BrowserLogger extends BaseLogger implements Logger {
       console[name === "fatal" ? "error" : name](
         msgs.join(" "),
         ...styles,
-        ...args
+        ...args,
       );
     };
   }

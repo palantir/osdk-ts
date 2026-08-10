@@ -48,7 +48,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValueQueries(
   value: unknown,
   client: MinimalClient,
-  desiredType: QueryDataTypeDefinition
+  desiredType: QueryDataTypeDefinition,
 ): Promise<DataValue> {
   if (value == null) {
     return value;
@@ -59,7 +59,7 @@ export async function toDataValueQueries(
     if (
       values.some(
         (dataValue) =>
-          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue),
       )
     ) {
       const converted = [];
@@ -71,7 +71,7 @@ export async function toDataValueQueries(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValueQueries(innerValue, client, desiredType.array)
+        await toDataValueQueries(innerValue, client, desiredType.array),
     );
     return Promise.all(promiseArray);
   }
@@ -124,7 +124,7 @@ export async function toDataValueQueries(
       }
 
       throw new Error(
-        "Expected media reference type but got value that is not a MediaReference or MediaUpload"
+        "Expected media reference type but got value that is not a MediaReference or MediaUpload",
       );
     }
 
@@ -133,7 +133,7 @@ export async function toDataValueQueries(
         const promiseArray = Array.from(
           value,
           async (innerValue) =>
-            await toDataValueQueries(innerValue, client, desiredType.set)
+            await toDataValueQueries(innerValue, client, desiredType.set),
         );
         return Promise.all(promiseArray);
       }
@@ -180,7 +180,7 @@ export async function toDataValueQueries(
             value: await toDataValueQueries(
               mapValue,
               client,
-              desiredType.valueType
+              desiredType.valueType,
             ),
           });
         }
@@ -196,7 +196,7 @@ export async function toDataValueQueries(
           structMap[key] = await toDataValueQueries(
             structValue,
             client,
-            desiredType.struct[key]
+            desiredType.struct[key],
           );
         }
         return structMap;

@@ -52,7 +52,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
         objectTypeHolder,
         { type: "methodInput" },
         definitionMap,
-        /* fromBaseObjectSet */ true
+        /* fromBaseObjectSet */ true,
       );
 
       const result = rdpFunction(builder);

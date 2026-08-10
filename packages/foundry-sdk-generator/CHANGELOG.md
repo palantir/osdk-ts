@@ -1,5 +1,117 @@
 # @osdk/foundry-sdk-generator
 
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters@2.56.0
+  - @osdk/generator-utils@2.56.0
+  - @osdk/generator@2.56.0
+
+## 2.55.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/client@2.55.0
+  - @osdk/generator@2.55.0
+  - @osdk/generator-converters@2.55.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-utils@2.55.0
+
+## 2.54.0
+
+### Minor Changes
+
+- 8bd0053: Gate ontology metadata generation behind the additive, opt-in `--experimentalOntologyMetadata` flag, replacing the unreleased negative `--disableOntologyMetadataExport`
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/client@2.54.0
+- @osdk/generator-converters@2.54.0
+- @osdk/generator-utils@2.54.0
+- @osdk/generator@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- 5bd3024: Type the ontology metadata json subpath per resolution mode instead of per generated package type, and honor --generateOntologyMetadata when generating sources in place (without --asPackage)
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator@2.53.0
+  - @osdk/client@2.53.0
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/generator-utils@2.53.0
+
+## 2.52.0
+
+### Minor Changes
+
+- 913563f: Generated SDKs now ship the full ontology metadata as a typed `./UNSTABLE_DO_NOT_USE/ontology-metadata` subpath export.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/generator@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-utils@2.52.0
+
+## 2.51.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+- Updated dependencies [d96b5de]
+  - @osdk/api@2.51.0
+  - @osdk/client@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+  - @osdk/generator-utils@2.51.0
+  - @osdk/generator@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- Updated dependencies [a754871]
+  - @osdk/generator-utils@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+  - @osdk/client@2.50.0
+  - @osdk/generator-converters@2.50.0
+  - @osdk/generator@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/client@2.49.0
+- @osdk/generator-converters@2.49.0
+- @osdk/generator-utils@2.49.0
+- @osdk/generator@2.49.0
+
 ## 2.48.0
 
 ### Patch Changes

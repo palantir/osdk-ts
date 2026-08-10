@@ -57,7 +57,7 @@ export interface UseOsdkObjectOptions<Q extends ObjectOrInterfaceDefinition> {
  */
 export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   obj: Osdk.Instance<Q>,
-  enabled?: boolean
+  enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
  * Loads an object or interface instance by type and primary key.
@@ -69,7 +69,7 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
 export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  enabled?: boolean
+  enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
  * Loads an object or interface instance by type and primary key with options.
@@ -82,7 +82,7 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
 export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  options?: UseOsdkObjectOptions<Q>
+  options?: UseOsdkObjectOptions<Q>,
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
@@ -142,7 +142,7 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
 
   const stableSelect = React.useMemo(
     () => selectArg,
-    [JSON.stringify(selectArg)]
+    [JSON.stringify(selectArg)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(() => {
@@ -153,7 +153,7 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
           hookType: "useOsdkObject",
           objectType: apiNameString,
           primaryKey: String(primaryKey),
-        })
+        }),
       );
     }
     return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
@@ -171,13 +171,13 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
                 }
               : {}),
           },
-          observer
+          observer,
         ),
       devToolsMetadata({
         hookType: "useOsdkObject",
         objectType: apiNameString,
         primaryKey: String(primaryKey),
-      })
+      }),
     );
   }, [
     enabled,

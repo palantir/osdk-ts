@@ -32,7 +32,7 @@ export type MockObjectSetBranded<Q extends ObjectOrInterfaceDefinition> =
   };
 
 export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
-  objectType: Q
+  objectType: Q,
 ): ObjectSet<Q> {
   const stubs: Stub[] = [];
 
@@ -40,12 +40,12 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
     resolveStub(
       stubs,
       calls,
-      `No stub registered on standalone MockObjectSet\n`
+      `No stub registered on standalone MockObjectSet\n`,
     );
 
   const objectSet = createMockObjectSetWithResolver(
     objectType,
-    resolve
+    resolve,
   ) as MockObjectSetBranded<Q>;
 
   objectSet[MOCK_OBJECT_SET_BRAND] = true;
@@ -58,7 +58,7 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
 /** @internal */
 export function isMockObjectSet(
-  value: unknown
+  value: unknown,
 ): value is MockObjectSetBranded<ObjectOrInterfaceDefinition> {
   return (
     value != null && typeof value === "object" && MOCK_OBJECT_SET_BRAND in value

@@ -37,7 +37,7 @@ export const fetchMetadataInternal = async <
     | QueryDefinition<any>,
 >(
   client: MinimalClient,
-  definition: Q
+  definition: Q,
 ): Promise<
   Q extends ObjectTypeDefinition
     ? ObjectMetadata
@@ -55,16 +55,16 @@ export const fetchMetadataInternal = async <
     return objectTypeDef as any;
   } else if (definition.type === "interface") {
     return client.ontologyProvider.getInterfaceDefinition(
-      definition.apiName
+      definition.apiName,
     ) as any;
   } else if (definition.type === "action") {
     return client.ontologyProvider.getActionDefinition(
-      definition.unsanitizedApiName ?? definition.apiName
+      definition.unsanitizedApiName ?? definition.apiName,
     ) as any;
   } else if (definition.type === "query") {
     return client.ontologyProvider.getQueryDefinition(
       definition.apiName,
-      definition.isFixedVersion ? definition.version : undefined
+      definition.isFixedVersion ? definition.version : undefined,
     ) as any;
   } else {
     throw new Error("Not implemented for given definition");

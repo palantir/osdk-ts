@@ -48,7 +48,7 @@ export class FauxDataStoreBatch {
 
   getObject = (
     objectType: string,
-    primaryKey: string | number | boolean
+    primaryKey: string | number | boolean,
   ): BaseServerObject => {
     return this.#fauxDataStore.getObjectOrThrow(objectType, primaryKey);
   };
@@ -60,21 +60,21 @@ export class FauxDataStoreBatch {
   public addObject<T extends ObjectTypeDefinition>(
     objectType: T["apiName"],
     primaryKey: PrimaryKeyType<T>,
-    update: Omit<JustProps<T>, CompileTimeMetadata<T>["primaryKeyApiName"]>
+    update: Omit<JustProps<T>, CompileTimeMetadata<T>["primaryKeyApiName"]>,
   ): void;
   public addObject(
     objectType: string,
     primaryKey: string | number | boolean,
-    object: BaseServerObject
+    object: BaseServerObject,
   ): void;
   public addObject(
     objectType: string,
     primaryKey: string | number | boolean,
-    object: BaseServerObject
+    object: BaseServerObject,
   ): void {
     const existingObject = this.#fauxDataStore.getObject(
       objectType,
-      primaryKey
+      primaryKey,
     );
     if (existingObject) {
       throw new OpenApiCallError(500, {
@@ -110,21 +110,21 @@ export class FauxDataStoreBatch {
   public modifyObject<T extends ObjectTypeDefinition>(
     objectType: T["apiName"],
     primaryKey: PrimaryKeyType<T>,
-    update: Partial<JustProps<T>>
+    update: Partial<JustProps<T>>,
   ): void;
   public modifyObject(
     objectType: string,
     primaryKey: string | number | boolean,
-    update: Partial<BaseServerObject>
+    update: Partial<BaseServerObject>,
   ): void;
   public modifyObject(
     objectType: string,
     primaryKey: string | number | boolean,
-    update: Partial<BaseServerObject>
+    update: Partial<BaseServerObject>,
   ): void {
     const origObj = this.#fauxDataStore.getObjectOrThrow(
       objectType,
-      primaryKey
+      primaryKey,
     );
     const newObj = {
       ...origObj,
@@ -144,7 +144,7 @@ export class FauxDataStoreBatch {
 
   deleteObject = (
     objectType: string,
-    primaryKey: string | number | boolean
+    primaryKey: string | number | boolean,
   ): void => {
     this.#fauxDataStore.unregisterObjectOrThrow(objectType, primaryKey);
     this.objectEdits.edits.push({
@@ -159,20 +159,20 @@ export class FauxDataStoreBatch {
     leftPrimaryKey: string | number | boolean,
     leftLinkName: string,
     rightObjectType: string,
-    rightPrimaryKey: string | number | boolean
+    rightPrimaryKey: string | number | boolean,
   ): void => {
     const [leftTypeSideV2, rightTypeSideV2] =
       this.#fauxDataStore.ontology.getBothLinkTypeSides(
         leftObjectType,
         leftLinkName,
-        rightObjectType
+        rightObjectType,
       );
 
     this.#fauxDataStore.registerLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
-      rightTypeSideV2.apiName
+      rightTypeSideV2.apiName,
     );
 
     this.objectEdits.edits.push({
@@ -197,20 +197,20 @@ export class FauxDataStoreBatch {
     leftPrimaryKey: string | number | boolean,
     leftLinkName: string,
     rightObjectType: string,
-    rightPrimaryKey: string | number | boolean
+    rightPrimaryKey: string | number | boolean,
   ): void => {
     const [leftTypeSideV2, rightTypeSideV2] =
       this.#fauxDataStore.ontology.getBothLinkTypeSides(
         leftObjectType,
         leftLinkName,
-        rightObjectType
+        rightObjectType,
       );
 
     this.#fauxDataStore.unregisterLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
-      rightTypeSideV2.apiName
+      rightTypeSideV2.apiName,
     );
   };
 }

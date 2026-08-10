@@ -21,4 +21,10 @@ export {
 } from "./generateClientSdkPackage.js";
 export type { MinimalFs } from "./MinimalFs.js";
 export { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
+export {
+  ONTOLOGY_METADATA_DCTS_PATH,
+  ONTOLOGY_METADATA_DMTS_PATH,
+  ONTOLOGY_METADATA_DTS_PATH,
+  ONTOLOGY_METADATA_JSON_PATH,
+} from "./v2.0/generateMetadata.js";
 export type { WireOntologyDefinition } from "./WireOntologyDefinition.js";

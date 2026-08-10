@@ -24,12 +24,12 @@ import type { InstallRequest as _api_experimental_InstallRequest } from "../__co
  */
 export async function debugInstall(
   ctx: ConjureContext,
-  request: _api_experimental_InstallRequest
+  request: _api_experimental_InstallRequest,
 ): Promise<_api_InstallBlockSetsRequest> {
   return conjureFetch(
     ctx,
     `/experimental/installations/debug`,
     "POST",
-    request
+    request,
   );
 }

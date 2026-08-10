@@ -34,7 +34,7 @@ export default async function versionGetCommand({
 
   const website = await thirdPartyApplications.getWebsite(
     clientCtx,
-    application
+    application,
   );
   const deployedVersion = website?.deployedVersion;
 

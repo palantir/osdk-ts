@@ -31,12 +31,12 @@ export async function pageLoadAllActionTypesFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllActionTypesPageRequest
+  request: _api_LoadAllActionTypesPageRequest,
 ): Promise<_api_LoadAllActionTypesPageResponse> {
   return conjureFetch(
     ctx,
     `/actions/types/load/all/${ontologyRid}/${ontologyVersion}`,
     "POST",
-    request
+    request,
   );
 }

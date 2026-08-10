@@ -35,7 +35,7 @@ export interface TiffViewerMediaProps extends Omit<
 }
 
 const transformToUint8Array = async (
-  response: Response
+  response: Response,
 ): Promise<Uint8Array> => {
   const buffer = await response.arrayBuffer();
   return new Uint8Array(buffer);

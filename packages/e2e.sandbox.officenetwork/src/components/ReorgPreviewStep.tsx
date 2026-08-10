@@ -39,7 +39,7 @@ export function ReorgPreviewStep({
       const generatedChanges = generateChanges(
         selectedEmployees,
         offices,
-        config
+        config,
       );
       onSetAllChanges(generatedChanges);
     }

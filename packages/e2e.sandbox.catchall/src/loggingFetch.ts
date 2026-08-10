@@ -20,14 +20,14 @@ import { logger } from "./logger.js";
 
 export async function loggingFetch(
   input: RequestInfo | URL,
-  init?: RequestInit | undefined
+  init?: RequestInit | undefined,
 ): Promise<Response> {
   const url = new URL(
     typeof input === "string"
       ? input
       : input instanceof URL
         ? input.toString()
-        : input.url
+        : input.url,
   );
 
   const cleaned = url.pathname.replace(/ri.ontology..*?\//u, "{rid}/");

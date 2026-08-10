@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,275 +14,384 @@
  * limitations under the License.
  */
 
-import type { LinkedType, LinkNames, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  OsdkBase,
+  PrimaryKeyType,
+  LinkTypeApiNamesFor,
+} from "@osdk/api";
+import { createObjectSpecifierFromPrimaryKey } from "@osdk/client";
+import type * as Ontology from "@osdk/foundry.ontologies";
+import { consola } from "consola";
+import invariant from "tiny-invariant";
 
-import type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";
+import type { LinkTargets } from "./linkTypes.js";
+import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
+import { validateSeedObject } from "./validation.js";
 
-/** Internal representation of a resolved link before validation. */
-interface ResolvedLink {
-  sourceObjectType: string;
-  sourceKey: string;
-  linkType: string;
-  targetObjectType: string;
-  targetKey: string;
+export type SeedFunction<T> = (seed: SeedBuilder) => T;
+
+interface SeedLinkRecord {
+  source: SeedRef<ObjectTypeDefinition>;
+  apiName: string;
+  target: SeedRef<ObjectTypeDefinition>;
 }
 
-/** Checks whether a value is a {@link SeedRef} returned by `SeedBuilder.add()`. */
-function isSeedRef(value: unknown): value is SeedRef {
-  return (
-    typeof value === "object" &&
-    value != null &&
-    "__objectTypeApiName" in value &&
-    "__primaryKey" in value
-  );
+function linkIdentity(
+  source: SeedRef<ObjectTypeDefinition>,
+  apiName: string,
+  target: SeedRef<ObjectTypeDefinition>,
+): string {
+  return [
+    source.$apiName,
+    String(source.$primaryKey),
+    apiName,
+    target.$apiName,
+    String(target.$primaryKey),
+  ].join(":");
 }
 
-/**
- * Resolves a link from two {@link SeedRef} instances.
- * Extracts the object type and primary key from each ref.
- */
-function resolveFromRefs(
-  src: SeedRef,
-  srcLinkName: string,
-  dst: SeedRef
-): ResolvedLink {
-  return {
-    sourceObjectType: src.__objectTypeApiName,
-    sourceKey: String(src.__primaryKey),
-    linkType: srcLinkName,
-    targetObjectType: dst.__objectTypeApiName,
-    targetKey: String(dst.__primaryKey),
-  };
-}
-
-/**
- * Resolves a link from two {@link ObjectTypeDefinition} instances and explicit primary keys.
- * Reads the `apiName` from each type definition.
- */
-function resolveFromTypes(
-  srcType: ObjectTypeDefinition,
-  srcPk: string | number,
-  srcLinkName: string,
-  dstType: ObjectTypeDefinition,
-  dstPk: string | number
-): ResolvedLink {
-  return {
-    sourceObjectType: srcType.apiName,
-    sourceKey: String(srcPk),
-    linkType: srcLinkName,
-    targetObjectType: dstType.apiName,
-    targetKey: String(dstPk),
-  };
-}
-
-/**
- * A lightweight, type-safe builder for constructing seed data.
- *
- * TypeScript catches everything expressible at the call site: property
- * names and value types, required primary keys, link names valid on the
- * source type, and link target types matching what the link points to.
- */
 export class SeedBuilder {
-  readonly #objects = new Map<string, Map<string, Record<string, unknown>>>();
-  readonly #refs = new Set<string>();
-  readonly #links: SeedLinkEntry[] = [];
+  #metadata: Ontology.OntologyFullMetadata;
+  #objectMap: Map<string, Map<string, SeedProps<ObjectTypeDefinition>>>;
+  #links: Map<string, SeedLinkRecord>;
 
   /**
-   * Register a seed object and return a typed reference for use in {@link link}.
-   *
-   * Property names and value types are validated at compile time against the
-   * generated SDK type. Non-nullable properties (including the primary key)
-   * are required.
-   *
-   * @param type  - The generated SDK object type definition (e.g., `Product`).
-   * @param props - Property values for the object. Must match the SDK type's property schema.
-   * @returns A frozen {@link SeedRef} carrying the object type and primary key.
-   * @throws if the primary key is null, undefined, or already registered for this type.
-   * @throws if the object type definition is missing `apiName` or `primaryKeyApiName`.
+   * Creates a seed builder backed by the given ontology metadata.
+   * @param metadata Ontology full metadata describing the object types
    */
-  add<Q extends ObjectTypeDefinition>(
-    type: Q,
-    props: SeedProps<Q>
-  ): SeedRef<Q> {
-    // Runtime guards for callers who bypass the type system with `as any`.
-    // Properly-typed ObjectTypeDefinition values can't reach these.
-    const apiName = type.apiName;
-    const pkApiName = type.primaryKeyApiName;
-
-    if (!apiName) {
-      throw new Error("Object type is missing apiName");
-    }
-    if (!pkApiName) {
-      throw new Error(`[${apiName}] Object type is missing primaryKeyApiName`);
-    }
-
-    const record = props as Record<string, unknown>;
-    const pkValue = record[pkApiName];
-
-    if (pkValue == null) {
-      throw new Error(
-        `[${apiName}] Primary key '${pkApiName}' is null or undefined`
+  constructor(metadata: Ontology.OntologyFullMetadata) {
+    this.#metadata = metadata;
+    this.#objectMap = new Map();
+    this.#links = new Map();
+    for (const { objectType } of Object.values(metadata.objectTypes)) {
+      invariant(
+        Object.hasOwn(objectType.properties, objectType.primaryKey),
+        `[${objectType.apiName}] Primary key '${objectType.primaryKey}' is not among the object's properties`,
       );
     }
+  }
 
-    const pk = String(pkValue);
+  #reset() {
+    this.#objectMap = new Map();
+    this.#links = new Map();
+  }
 
-    let typeMap = this.#objects.get(apiName);
-    if (!typeMap) {
-      typeMap = new Map();
-      this.#objects.set(apiName, typeMap);
+  /**
+   * Resolves the object type metadata for `apiName`.
+   * @throws if the object type is not present in the metadata
+   */
+  #objectType(apiName: string): Ontology.ObjectTypeV2 {
+    const full = this.#metadata.objectTypes[apiName];
+    invariant(full, "Object not found in metadata");
+    return full.objectType;
+  }
+
+  /**
+   * Merges an existing seed output. Must match the metadata supplied at construction.
+   * @param seed Seed output to derive from
+   */
+  addAll(seed: SeedOutput): void {
+    const objectEntries = Object.entries(seed.objects).flatMap(
+      ([apiName, objects]) => objects.map((o) => [apiName, o] as const),
+    );
+    for (const [apiName, object] of objectEntries) {
+      this.create(
+        {
+          type: "object",
+          apiName,
+        },
+        object,
+      );
     }
-
-    if (typeMap.has(pk)) {
-      throw new Error(`[${apiName}] Duplicate primary key '${pk}'`);
+    const linkEntries = seed.links;
+    for (const link of linkEntries) {
+      const sourceRef = this.#ref(
+        {
+          type: "object",
+          apiName: link.sourceObjectType,
+        },
+        link.sourceKey,
+      );
+      const targetRef = this.#ref(
+        {
+          type: "object",
+          apiName: link.targetObjectType,
+        },
+        link.targetKey,
+      );
+      this.#recordLink(sourceRef, link.linkType, targetRef);
     }
+  }
 
-    typeMap.set(pk, { ...record });
-    this.#refs.add(`${apiName}:${pk}`);
+  /**
+   * Set the current state to the provided seed.
+   * @param seed Seed output to reset to. Resets the seed builder if undefined.
+   */
+  set(seed?: SeedOutput): void {
+    this.#reset();
+    if (typeof seed !== "undefined") {
+      this.addAll(seed);
+    }
+  }
 
+  /**
+   * Returns a SeedRef<Q> regardless of the existence of the object.
+   * @param o Object Type
+   * @param primaryKey
+   * @returns SeedRef<Q>
+   */
+  #ref<Q extends ObjectTypeDefinition>(
+    o: Q,
+    primaryKey: PrimaryKeyType<Q>,
+  ): SeedRef<Q> {
+    const objectType = this.#objectType(o.apiName);
+    const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
+      | SeedProps<Q>
+      | undefined;
+    const base: OsdkBase<Q> = {
+      $apiName: o.apiName,
+      $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKey),
+      $objectType: o.apiName,
+      $primaryKey: primaryKey,
+      $title: props?.[objectType.titleProperty as keyof typeof props],
+    };
     return Object.freeze({
-      __objectTypeApiName: apiName,
-      __primaryKey: pkValue as string | number,
+      ...base,
+      ...props,
     }) as SeedRef<Q>;
   }
 
   /**
-   * Register a link between two seed objects.
-   *
-   * Supports two calling conventions that produce identical output:
-   * by-reference (passing `SeedRef`s returned from {@link add}) or by-type
-   * and primary-key. See the `@osdk/seed-compiler` README for usage examples.
-   *
-   * @param name - A descriptive label for this link (included in seed output and error messages).
-   * @throws if either source or target object was not registered via {@link add}.
+   * Returns a reference to a previously created object, or `undefined` if none exists.
+   * @param o Object type definition
+   * @param primaryKey Primary key value of the object
+   * @returns Reference to the object, or `undefined` if not found
    */
-  link<
-    S extends ObjectTypeDefinition,
-    SL extends LinkNames<S>,
-    D extends LinkedType<S, SL>,
-    DL extends LinkNames<D>,
-  >(
-    name: string,
-    src: SeedRef<S>,
-    srcLinkName: SL,
-    dst: SeedRef<D>,
-    dstLinkName: DL
-  ): void;
-  link<
-    S extends ObjectTypeDefinition,
-    SL extends LinkNames<S>,
-    D extends LinkedType<S, SL>,
-    DL extends LinkNames<D>,
-  >(
-    name: string,
-    srcType: S,
-    srcPk: string | number,
-    srcLinkName: SL,
-    dstType: D,
-    dstPk: string | number,
-    dstLinkName: DL
-  ): void;
-  link(
-    name: string,
-    srcOrType: SeedRef | ObjectTypeDefinition,
-    linkNameOrPk: string | number,
-    dstOrLinkName: SeedRef | ObjectTypeDefinition | string,
-    typeOrLinkName?: ObjectTypeDefinition | string,
-    dstPk?: string | number,
-    _dstLinkName?: string
-  ): void {
-    const resolved = isSeedRef(srcOrType)
-      ? resolveFromRefs(
-          srcOrType,
-          linkNameOrPk as string,
-          dstOrLinkName as SeedRef
-        )
-      : resolveFromTypes(
-          srcOrType,
-          linkNameOrPk,
-          dstOrLinkName as string,
-          typeOrLinkName as ObjectTypeDefinition,
-          dstPk!
-        );
-
-    this.#assertRegistered(
-      resolved.sourceObjectType,
-      resolved.sourceKey,
-      "Source",
-      name
-    );
-    this.#assertRegistered(
-      resolved.targetObjectType,
-      resolved.targetKey,
-      "Target",
-      name
-    );
-
-    this.#links.push({ name, ...resolved });
+  ref<Q extends ObjectTypeDefinition>(
+    o: Q,
+    primaryKey: PrimaryKeyType<Q>,
+  ): SeedRef<Q> | undefined {
+    if (!this.#getObjectTypeMap(o.apiName).has(String(primaryKey))) {
+      return;
+    }
+    return this.#ref(o, primaryKey);
   }
 
   /**
-   * Asserts that an object with the given type and key was registered via {@link add}.
-   * @throws with a descriptive message including the link name for context.
+   * Creates an object of the given type, returning a reference to it.
+   * @param o Object type definition
+   * @param props Object properties, including its primary key
+   * @returns Reference to the created object
    */
-  #assertRegistered(
-    objectType: string,
-    key: string,
-    role: "Source" | "Target",
-    linkName: string
-  ): void {
-    const ref = `${objectType}:${key}`;
-    if (!this.#refs.has(ref)) {
-      throw new Error(`${role} '${ref}' not registered (link '${linkName}')`);
+  create<Q extends ObjectTypeDefinition>(
+    o: Q,
+    props: SeedProps<Q>,
+  ): SeedRef<Q> {
+    const objectType = this.#objectType(o.apiName);
+    const primaryKeyValue = props[
+      objectType.primaryKey as keyof typeof props
+    ] as PrimaryKeyType<Q>;
+    const stringPrimaryKeyValue = String(primaryKeyValue);
+    invariant(
+      !this.#getObjectTypeMap(o.apiName).has(stringPrimaryKeyValue),
+      `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`,
+    );
+    validateSeedObject(props as Record<string, unknown>, objectType);
+    this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
+    const base: OsdkBase<Q> = {
+      $apiName: o.apiName,
+      $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKeyValue),
+      $objectType: o.apiName,
+      $primaryKey: primaryKeyValue,
+      $title: props[objectType.titleProperty as keyof typeof props],
+    };
+    return Object.freeze({
+      ...base,
+      ...props,
+    }) as SeedRef<Q>;
+  }
+
+  /**
+   * Merges the given props into the referenced object, keeping its primary key.
+   * Properties not included in `props` are left unchanged; if the object does
+   * not yet exist it is created from `props`.
+   * @param ref Reference to the object to update
+   * @param props Partial object properties to merge in, excluding the primary key
+   * @returns The same reference passed in
+   */
+  update<Q extends ObjectTypeDefinition>(
+    ref: SeedRef<Q>,
+    props: Partial<
+      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+    >,
+  ): SeedRef<Q> {
+    const { $apiName, $primaryKey } = ref;
+    const objectType = this.#objectType($apiName);
+    const stringPrimaryKeyValue = String($primaryKey);
+    const currentValue = this.#getObjectTypeMap($apiName).get(
+      stringPrimaryKeyValue,
+    );
+    if (!currentValue) {
+      consola.warn(
+        `Updating ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will create the object regardless.`,
+      );
+    }
+    invariant(
+      typeof props[objectType.primaryKey as keyof typeof props] === "undefined",
+      `Cannot modify primary key ${objectType.primaryKey}`,
+    );
+    const merged = {
+      ...currentValue,
+      ...props,
+      [objectType.primaryKey]: $primaryKey,
+    };
+    validateSeedObject(merged as Record<string, unknown>, objectType);
+    this.#getObjectTypeMap($apiName).set(stringPrimaryKeyValue, merged);
+    return ref;
+  }
+
+  /**
+   * Removes the referenced object from the seed.
+   * @param ref Reference to the object to delete
+   */
+  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
+    const { $apiName, $primaryKey } = ref;
+    this.#objectType($apiName);
+    const stringPrimaryKeyValue = String($primaryKey);
+    if (!this.#getObjectTypeMap($apiName).delete(stringPrimaryKeyValue)) {
+      consola.warn(
+        `Deleting ${$apiName} with primary key ${stringPrimaryKeyValue} which does not exist. This will be a no-op.`,
+      );
+      return;
     }
   }
 
   /**
-   * Build the final {@link SeedOutput} from all registered objects and links.
-   *
-   * The returned arrays are fresh copies, so a subsequent `add()` or `link()`
-   * call does not retroactively grow or shrink an array that was already
-   * returned. The property records inside the arrays, however, are shared
-   * references with the builder's internal storage — mutating
-   * `output.objects.Employee[0].name = "x"` *will* propagate into the
-   * builder and into anything else holding a previous output. Treat the
-   * output as read-only, or deep-clone it before mutating.
-   *
-   * Inputs to {@link add} are still safe to mutate after calling: `add` stores
-   * a shallow copy of the props record on registration.
+   * Links the source object to one or more targets via the given link type.
+   * @param source Reference to the source object
+   * @param apiName Link type API name
+   * @param target Reference (or references) to the target object(s)
+   */
+  link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>,
+  ): void {
+    const targets = (Array.isArray(target) ? target : [target]) as Array<
+      SeedRef<ObjectTypeDefinition>
+    >;
+    for (const t of targets) {
+      this.#recordLink(source, apiName, t);
+    }
+  }
+
+  #recordLink(
+    source: SeedRef<ObjectTypeDefinition>,
+    apiName: string,
+    target: SeedRef<ObjectTypeDefinition>,
+  ): void {
+    this.#links.set(linkIdentity(source, apiName, target), {
+      source,
+      apiName,
+      target,
+    });
+  }
+
+  /**
+   * Removes links from the source object to the given targets via the link type.
+   * @param source Reference to the source object
+   * @param apiName Link type API name
+   * @param target Reference (or references) to the target object(s)
+   */
+  unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
+    source: SeedRef<Q>,
+    apiName: A,
+    target: LinkTargets<Q, A>,
+  ): void {
+    const targets = (Array.isArray(target) ? target : [target]) as Array<
+      SeedRef<ObjectTypeDefinition>
+    >;
+    let removed = 0;
+    for (const t of targets) {
+      if (this.#links.delete(linkIdentity(source, apiName, t))) {
+        removed++;
+      }
+    }
+    if (removed === 0) {
+      consola.warn(
+        `Unlinking ${source.$apiName} with primary key ${String(
+          source.$primaryKey,
+        )} via '${apiName}' which matches no existing links. This will be a no-op.`,
+      );
+    }
+  }
+
+  /**
+   * Validates the accumulated objects and links and returns the seed output.
+   * @returns The built seed output
    */
   build(): SeedOutput {
-    const objects: Record<string, Array<Record<string, unknown>>> = {};
-    for (const [apiName, typeMap] of this.#objects) {
-      objects[apiName] = [...typeMap.values()];
+    const objects: SeedOutput["objects"] = {};
+    const entries = this.#objectMap.entries();
+    let nextEntry = entries.next();
+    while (!nextEntry.done) {
+      const objectTypeApiName = nextEntry.value[0];
+      objects[objectTypeApiName] = [];
+      const objectMap = nextEntry.value[1];
+      const objectEntries = objectMap.entries();
+      let nextObjectEntry = objectEntries.next();
+      while (!nextObjectEntry.done) {
+        objects[objectTypeApiName].push(nextObjectEntry.value[1]);
+        nextObjectEntry = objectEntries.next();
+      }
+      nextEntry = entries.next();
     }
-    return { objects, links: [...this.#links] };
+    const links: SeedOutput["links"] = [];
+    const linkEntries = this.#links.entries();
+    let nextLink = linkEntries.next();
+    while (!nextLink.done) {
+      const [key, value] = nextLink.value;
+      links.push({
+        name: key,
+        sourceObjectType: value.source.$apiName,
+        sourceKey: String(value.source.$primaryKey),
+        linkType: value.apiName,
+        targetObjectType: value.target.$apiName,
+        targetKey: String(value.target.$primaryKey),
+      });
+      nextLink = linkEntries.next();
+    }
+    return { objects, links } as SeedOutput;
+  }
+
+  #getObjectTypeMap(
+    objectTypeApiName: string,
+  ): Map<string, SeedProps<ObjectTypeDefinition>> {
+    if (!this.#objectMap.has(objectTypeApiName)) {
+      this.#objectMap.set(objectTypeApiName, new Map());
+    }
+    return this.#objectMap.get(objectTypeApiName)!;
   }
 }
 
 /**
- * Create seed data using a builder function.
- *
- * The builder is created, passed to `fn`, and the resulting {@link SeedOutput}
- * is returned as the module's default export for consumption by the seed compiler.
- *
- * @param fn - A function that registers objects and links on the provided {@link SeedBuilder}.
- * @returns The built {@link SeedOutput} containing all registered objects and links.
- *
- * @example
- * ```ts
- * import { Product, Seller } from "@ontology/sdk";
- * import { createSeed } from "@osdk/seed-helpers";
- *
- * export default createSeed((seed) => {
- *   const prod = seed.add(Product, { pk: "prod-001", title: "Widget", price: 100 });
- *   const alice = seed.add(Seller, { pk: "seller-001", name: "Alice" });
- *   seed.link("widget-seller", prod, "sellers", alice, "products");
- * });
- * ```
+ * Utility handle for building seeds from a metadata
+ * @param ontologyMetadata Ontology metadata to instantiate seed builder from
+ * @param fn handle to create seeds, may return an arbitrary value
+ * @returns Tuple of [SeedOutput, T]: Seed output and arbitrary value returned from fn
  */
-export function createSeed(fn: (seed: SeedBuilder) => void): SeedOutput {
-  const builder = new SeedBuilder();
-  fn(builder);
-  return builder.build();
+export function createSeedWithMetadata<T>(
+  ontologyMetadata: Ontology.OntologyFullMetadata,
+  fn: SeedFunction<T>,
+): {
+  output: SeedOutput;
+  context: T;
+} {
+  const sb = new SeedBuilder(ontologyMetadata);
+  const context = fn(sb);
+  return {
+    output: sb.build(),
+    context,
+  };
 }

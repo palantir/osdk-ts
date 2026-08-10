@@ -27,12 +27,12 @@ import type {
  */
 export async function loadAllObjectTypesFromOntologyPage(
   ctx: ConjureContext,
-  request: _api_LoadAllObjectTypesFromOntologyPageRequest
+  request: _api_LoadAllObjectTypesFromOntologyPageRequest,
 ): Promise<_api_LoadAllObjectTypesFromOntologyPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/loadAllObjectTypes`,
     "POST",
-    request
+    request,
   );
 }

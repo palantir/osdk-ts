@@ -28,12 +28,12 @@ import type {
 export async function updateAssociation(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
-  request: _api_association_metadata_UpdateAssociationRequest
+  request: _api_association_metadata_UpdateAssociationRequest,
 ): Promise<_api_association_metadata_UpdateAssociationResponse> {
   return conjureFetch(
     ctx,
     `/association/ontology/${ontologyRid}/updateOntologyEntityAssociation`,
     "PUT",
-    request
+    request,
   );
 }

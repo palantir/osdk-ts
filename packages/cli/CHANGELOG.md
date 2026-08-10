@@ -1,5 +1,58 @@
 # @osdk/cli
 
+## 0.81.0
+
+### Patch Changes
+
+- Updated dependencies [47c66c3]
+  - @osdk/widget.api@3.54.0
+
+## 0.80.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.53.0
+
+## 0.79.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.52.0
+
+## 0.78.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.51.0
+
+## 0.77.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.50.0
+
+## 0.76.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.49.0
+
+## 0.75.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.48.0
+
+## 0.74.0
+
+### Minor Changes
+
+- a7ff4d3: Improve branch command OSDK discovery and global branch<->main dependency syncing.
+
+### Patch Changes
+
+- @osdk/widget.api@3.47.0
+
 ## 0.73.0
 
 ### Patch Changes

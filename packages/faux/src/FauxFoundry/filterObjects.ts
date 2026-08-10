@@ -23,7 +23,7 @@ import type { BaseServerObject } from "./BaseServerObject.js";
 
 export function filterObjects(
   objects: BaseServerObject[],
-  where: OntologiesV2.SearchJsonQueryV2
+  where: OntologiesV2.SearchJsonQueryV2,
 ): BaseServerObject[] {
   switch (where.type) {
     case "eq": {
@@ -238,7 +238,7 @@ export function filterObjects(
           for (let i = 0; i < searchTerms.length - 1; i++) {
             const index = lowerFieldValue.indexOf(
               searchTerms[i],
-              lastIndex + 1
+              lastIndex + 1,
             );
             if (index <= lastIndex) return false;
             lastIndex = index;
@@ -285,14 +285,14 @@ export function filterObjects(
     case "withinDistanceOf":
     case "geoShapeV2":
       throw new Error(
-        `Unhandled where type: ${where.type} in ${JSON.stringify(where)}`
+        `Unhandled where type: ${where.type} in ${JSON.stringify(where)}`,
       );
     default:
       where satisfies never;
   }
   console.error(
     "-=-=-=-=-=-= Unhandled where type: \n" +
-      `Unhandled where type: ${JSON.stringify(where)}`
+      `Unhandled where type: ${JSON.stringify(where)}`,
   );
   throw new Error(`Unhandled where type: ${JSON.stringify(where)}`);
 }

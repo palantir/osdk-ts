@@ -52,13 +52,13 @@ export interface ComponentOntologyResult {
  * from those same entries so header counts, filters, and cards cannot diverge.
  */
 export function useComponentOntology(
-  monitorStore: MonitorStore
+  monitorStore: MonitorStore,
 ): ComponentOntologyResult {
   const registry = monitorStore.getComponentRegistry();
   const tracker = monitorStore.getPropertyAccessTracker();
   const subscribe = useCallback(
     (cb: () => void) => registry.subscribe(cb),
-    [registry]
+    [registry],
   );
   const getVersion = useCallback(() => registry.getVersion(), [registry]);
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
@@ -74,7 +74,7 @@ export function useComponentOntology(
           {
             wasted: insights.wastedByComponent.get(componentId),
             unused: insights.unusedByComponent.get(componentId),
-          }
+          },
         );
         const name = resolveComponentName(bindings);
         const haystack = [
@@ -87,7 +87,7 @@ export function useComponentOntology(
           .join(" ")
           .toLowerCase();
         return { componentId, name, ontology, haystack };
-      }
+      },
     );
     // version + insights drive the recompute as the registry and tracker change.
   }, [registry, tracker, version, insights]);

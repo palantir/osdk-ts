@@ -46,31 +46,18 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
-import {
-  LegacyFauxFoundry,
-  msw,
-  type SetupServer,
-  startNodeApiServer,
-} from "@osdk/shared.test";
-import {
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("queries", () => {
   let client: Client;
-  let apiServer: SetupServer;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client, apiServer } = testSetup);
+    ({ client } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -154,7 +141,7 @@ describe("queries", () => {
     });
     it("Works when passing in interfaces", async () => {
       const clientBoundQueryFunction = client(
-        queryAcceptsInterface
+        queryAcceptsInterface,
       ).executeFunction;
       type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
@@ -185,7 +172,7 @@ describe("queries", () => {
     it("Works when passing in interface object sets", async () => {
       const os = client(FooInterface);
       const result = await client(
-        queryAcceptsInterfaceObjectSet
+        queryAcceptsInterfaceObjectSet,
       ).executeFunction({
         interfaceObjectSet: os,
       });
@@ -207,7 +194,7 @@ describe("queries", () => {
     const result = await client(queryTypeReturnsArrayOfObjects).executeFunction(
       {
         people: ["Brad", "George", "Ryan"],
-      }
+      },
     );
 
     expect(result).toEqual([
@@ -272,7 +259,7 @@ describe("queries", () => {
 
   it("two dimensional aggregation response works", async () => {
     const result = await client(
-      twoDimensionalAggregationFunction
+      twoDimensionalAggregationFunction,
     ).executeFunction();
     expectTypeOf<typeof result>().toEqualTypeOf<
       { key: string; value: number }[]
@@ -288,7 +275,7 @@ describe("queries", () => {
 
   it("two dimensional aggregation request/response works", async () => {
     const clientBoundQueryFunction = client(
-      acceptsTwoDimensionalAggregationFunction
+      acceptsTwoDimensionalAggregationFunction,
     ).executeFunction;
     type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
@@ -297,7 +284,7 @@ describe("queries", () => {
     }>().toMatchTypeOf<InferredParamType>();
 
     const result = await client(
-      acceptsTwoDimensionalAggregationFunction
+      acceptsTwoDimensionalAggregationFunction,
     ).executeFunction({
       aggFunction: [
         {
@@ -325,7 +312,7 @@ describe("queries", () => {
 
   it("three dimensional aggregation response works", async () => {
     const result = await client(
-      threeDimensionalAggregationFunction
+      threeDimensionalAggregationFunction,
     ).executeFunction();
 
     expectTypeOf<typeof result>().toEqualTypeOf<
@@ -360,14 +347,14 @@ describe("queries", () => {
       expect.fail("Should not reach here");
     } catch (e) {
       expect((e as Error).message).toMatch(
-        `Got null response when nullable was not allowed`
+        `Got null response when nullable was not allowed`,
       );
     }
   });
 
   it("three dimensional aggregation request/response works", async () => {
     const clientBoundQueryFunction = client(
-      acceptsThreeDimensionalAggregationFunction
+      acceptsThreeDimensionalAggregationFunction,
     ).executeFunction;
     type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
@@ -382,7 +369,7 @@ describe("queries", () => {
     }>().toMatchTypeOf<InferredParamType>();
 
     const result = await client(
-      acceptsThreeDimensionalAggregationFunction
+      acceptsThreeDimensionalAggregationFunction,
     ).executeFunction({
       aggFunction: [
         {
@@ -493,7 +480,7 @@ describe("queries", () => {
 
   it("queries work with arrays", async () => {
     const result = await client($Queries.queryTypeReturnsArray).executeFunction(
-      { people: ["Brad", "George", "Ryan"] }
+      { people: ["Brad", "George", "Ryan"] },
     );
     expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
   });
@@ -540,7 +527,7 @@ describe("queries", () => {
       expect(mediaRef.mimeType).toBe("image/png");
       expect(mediaRef.reference.type).toBe("mediaSetViewItem");
       expect(mediaRef.reference.mediaSetViewItem.mediaItemRid).toBe(
-        "ri.mio.main.media-item.test-item-rid"
+        "ri.mio.main.media-item.test-item-rid",
       );
     });
 
@@ -600,7 +587,7 @@ describe("queries", () => {
 
     it("query parameter type accepts Media, MediaReference, or MediaUpload", () => {
       const clientBoundQueryFunction = client(
-        queryAcceptsMediaReference
+        queryAcceptsMediaReference,
       ).executeFunction;
       type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
 
@@ -615,130 +602,25 @@ describe("queries", () => {
   });
 
   describe("executeStreamingFunction", () => {
-    const STREAMING_URL_BASE =
-      "https://stack.palantir.com/api/v2/functions/queries";
-
-    function ndjsonResponse(lines: unknown[]): Response {
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          for (const line of lines) {
-            controller.enqueue(encoder.encode(JSON.stringify(line) + "\n"));
-          }
-          controller.close();
-        },
-      });
-      return new Response(stream, {
-        headers: { "Content-Type": "application/x-ndjson" },
-      });
-    }
-
-    afterEach(() => {
-      apiServer.resetHandlers();
-    });
-
-    it("yields the value of a single-line non-streaming response", async () => {
-      apiServer.use(
-        msw.http.post(
-          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
-          () => ndjsonResponse([{ type: "data", value: 3 }])
-        )
-      );
-
-      const items: number[] = [];
-      for await (const item of client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
-      ).executeStreamingFunction(addOne, { n: 2 })) {
-        items.push(item);
-      }
-      expect(items).toEqual([3]);
-    });
-
-    it("flattens batched array results across multiple lines", async () => {
-      apiServer.use(
-        msw.http.post(
-          `${STREAMING_URL_BASE}/${queryTypeReturnsArrayOfObjects.apiName}/streamingExecute`,
-          () =>
-            ndjsonResponse([
-              { type: "data", value: [50030, 50031] },
-              { type: "data", value: [50032] },
-            ])
-        )
-      );
-
-      const items: Array<OsdkBase<Employee>> = [];
-      for await (const item of client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
-      ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
-        people: ["Brad", "George", "Ryan"],
-      })) {
-        items.push(item);
-      }
-      expect(items).toEqual([
-        {
-          $apiName: "Employee",
-          $objectType: "Employee",
-          $primaryKey: 50030,
-          $objectSpecifier: "Employee:50030",
-          $title: undefined,
-        },
-        {
-          $apiName: "Employee",
-          $objectType: "Employee",
-          $primaryKey: 50031,
-          $objectSpecifier: "Employee:50031",
-          $title: undefined,
-        },
-        {
-          $apiName: "Employee",
-          $objectType: "Employee",
-          $primaryKey: 50032,
-          $objectSpecifier: "Employee:50032",
-          $title: undefined,
-        },
-      ]);
-    });
-
-    it("throws on error lines, attaching error fields", async () => {
-      apiServer.use(
-        msw.http.post(
-          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
-          () =>
-            ndjsonResponse([
-              {
-                type: "error",
-                errorCode: "INVALID_ARGUMENT",
-                errorName: "QueryRuntimeError",
-                errorInstanceId: "abc-123",
-                errorDescription: "Division by zero",
-                parameters: {},
-              },
-            ])
-        )
-      );
-
-      let caught: any;
+    it("throws because streaming execution is not currently supported", async () => {
+      let caught: unknown;
       try {
         for await (const _ of client(
-          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
         ).executeStreamingFunction(addOne, { n: 2 })) {
           // unreachable
         }
-        expect.fail("expected stream to throw");
+        expect.fail("expected streaming execution to throw");
       } catch (e) {
         caught = e;
       }
       expect(caught).toBeInstanceOf(Error);
-      expect((caught as Error).message).toContain("QueryRuntimeError");
-      expect((caught as Error).message).toContain("INVALID_ARGUMENT");
-      expect((caught as Error).message).toContain("abc-123");
-      expect(caught.errorCode).toBe("INVALID_ARGUMENT");
-      expect(caught.errorInstanceId).toBe("abc-123");
+      expect((caught as Error).message).toContain("not currently supported");
     });
 
     it("yields elements of an array-returning query as the element type", () => {
       const stream = client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
       ).executeStreamingFunction(queryTypeReturnsArrayOfObjects, {
         people: [],
       });
@@ -749,7 +631,7 @@ describe("queries", () => {
 
     it("yields the scalar value for a non-array query", () => {
       const stream = client(
-        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
       ).executeStreamingFunction(addOne, { n: 1 });
       expectTypeOf<typeof stream>().toMatchTypeOf<AsyncIterable<number>>();
     });

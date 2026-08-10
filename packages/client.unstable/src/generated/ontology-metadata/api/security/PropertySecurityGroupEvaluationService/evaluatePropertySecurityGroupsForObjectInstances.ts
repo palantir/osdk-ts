@@ -30,7 +30,7 @@ import type {
  */
 export async function evaluatePropertySecurityGroupsForObjectInstances(
   ctx: ConjureContext,
-  request: _api_security_EvaluatePsgForObjectInstancesRequest
+  request: _api_security_EvaluatePsgForObjectInstancesRequest,
 ): Promise<_api_security_EvaluatePsgForObjectInstancesResponse> {
   return conjureFetch(ctx, `/psg-evaluation/eval`, "POST", request);
 }

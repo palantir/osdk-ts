@@ -17,6 +17,18 @@
 export interface MinimalFs {
   mkdir: (path: string, options?: { recursive: boolean }) => Promise<void>;
   writeFile: WriteFileFn;
+
+  /**
+   * Writes a non-TypeScript asset, such as a JSON file or a hand written
+   * `.d.ts` shim.
+   *
+   * Hosts that route {@link writeFile} through a compiler must implement this
+   * separately, since assets have no compiler output and would otherwise be
+   * silently dropped. Hosts that write directly to disk can leave it undefined,
+   * in which case {@link writeFile} is used.
+   */
+  writeAsset?: WriteFileFn;
+
   readdir: ReaddirFn;
 }
 

@@ -60,12 +60,12 @@ describe("FiberCapabilitiesManager", () => {
       manager.recordError(feature, new Error("err1"));
       manager.recordError(feature, new Error("err2"));
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        false
+        false,
       );
 
       manager.recordError(feature, new Error("err3"));
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
     });
 
@@ -75,10 +75,10 @@ describe("FiberCapabilitiesManager", () => {
       manager.recordError("component-inspection", new Error("err1"));
 
       expect(
-        manager.getCapabilities().disabledFeatures.has("hook-discovery")
+        manager.getCapabilities().disabledFeatures.has("hook-discovery"),
       ).toBe(false);
       expect(
-        manager.getCapabilities().disabledFeatures.has("component-inspection")
+        manager.getCapabilities().disabledFeatures.has("component-inspection"),
       ).toBe(false);
       expect(manager.getCapabilities().errorCount).toBe(3);
     });
@@ -91,12 +91,12 @@ describe("FiberCapabilitiesManager", () => {
       manager.recordError(feature, new Error("err2"));
       manager.recordError(feature, new Error("err3"));
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
 
       manager.clearErrors(feature);
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        false
+        false,
       );
     });
 
@@ -111,10 +111,10 @@ describe("FiberCapabilitiesManager", () => {
 
       manager.clearErrors("hook-discovery");
       expect(
-        manager.getCapabilities().disabledFeatures.has("hook-discovery")
+        manager.getCapabilities().disabledFeatures.has("hook-discovery"),
       ).toBe(false);
       expect(
-        manager.getCapabilities().disabledFeatures.has("component-inspection")
+        manager.getCapabilities().disabledFeatures.has("component-inspection"),
       ).toBe(true);
     });
   });
@@ -126,13 +126,13 @@ describe("FiberCapabilitiesManager", () => {
       manager.recordError(feature, new Error("err2"));
       manager.recordError(feature, new Error("err3"));
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
 
       vi.advanceTimersByTime(30000);
 
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        false
+        false,
       );
     });
 
@@ -144,7 +144,7 @@ describe("FiberCapabilitiesManager", () => {
 
       vi.advanceTimersByTime(15000);
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
     });
   });
@@ -201,14 +201,14 @@ describe("FiberCapabilitiesManager", () => {
       manager.recordError(feature, new Error("e2"));
       manager.recordError(feature, new Error("e3"));
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
 
       manager.dispose();
       vi.advanceTimersByTime(60000);
 
       expect(manager.getCapabilities().disabledFeatures.has(feature)).toBe(
-        true
+        true,
       );
     });
   });

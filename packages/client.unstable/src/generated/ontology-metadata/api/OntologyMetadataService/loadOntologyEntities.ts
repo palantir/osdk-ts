@@ -30,7 +30,7 @@ import type {
  */
 export async function loadOntologyEntities(
   ctx: ConjureContext,
-  request: _api_OntologyLoadEntitiesRequest
+  request: _api_OntologyLoadEntitiesRequest,
 ): Promise<_api_OntologyLoadEntitiesResponse> {
   return conjureFetch(ctx, `/ontology/ontology/loadEntities`, "POST", request);
 }

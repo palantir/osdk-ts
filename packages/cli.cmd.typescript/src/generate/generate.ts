@@ -129,38 +129,46 @@ export const generateCommand: CommandModule<{}, TypescriptGenerateArgs> = {
           description: "Skip updating package.json with OSDK dependencies",
           default: false,
         },
+        experimentalOntologyMetadata: {
+          type: "boolean",
+          description:
+            "EXPERIMENTAL: emit the raw ontology metadata as a " +
+            "./UNSTABLE_DO_NOT_USE/ontology-metadata subpath export. " +
+            "May change or be removed at any time.",
+          default: false,
+        },
       } as const)
       .group(
         ["ontologyPath", "outDir", "version"],
-        "Generate from a local file"
+        "Generate from a local file",
       )
       .group(
         ["foundryUrl", "clientId", "outDir", "ontologyWritePath", "version"],
-        "OR Generate from Foundry"
+        "OR Generate from Foundry",
       )
       .group(["packageName", "as"], "Package generation options")
       .check((args) => {
         if (!args.ontologyPath && !args.foundryUrl) {
           throw new YargsCheckError(
-            "Must specify either ontologyPath or foundryUrl and clientId"
+            "Must specify either ontologyPath or foundryUrl and clientId",
           );
         }
 
         if (args.version !== "dev" && !isValidSemver(args.version)) {
           throw new YargsCheckError(
-            "Version must be 'dev' or a valid semver version"
+            "Version must be 'dev' or a valid semver version",
           );
         }
 
         if (args.asPackage && !args.packageName) {
           throw new YargsCheckError(
-            "Must specify packageName when generating as a package"
+            "Must specify packageName when generating as a package",
           );
         }
 
         if (args.asPackage && !args.version) {
           throw new YargsCheckError(
-            "Must specify version when generating as a package"
+            "Must specify version when generating as a package",
           );
         }
 

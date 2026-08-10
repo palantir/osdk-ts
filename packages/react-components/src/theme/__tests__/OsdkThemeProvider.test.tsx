@@ -116,7 +116,7 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider>
         <ThemeProbe />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(screen.getByTestId("theme").textContent).toBe("system");
@@ -130,12 +130,12 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider defaultTheme="light">
         <ThemeProbe />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
   });
 
@@ -144,11 +144,11 @@ describe("OsdkThemeProvider", () => {
     render(
       <OsdkThemeProvider>
         <ThemeProbe />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
 
     act(() => {
@@ -165,7 +165,7 @@ describe("OsdkThemeProvider", () => {
       <OsdkThemeProvider>
         <ThemeProbe />
         <ThemeToggle />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("dark");
@@ -178,7 +178,7 @@ describe("OsdkThemeProvider", () => {
     expect(screen.getByTestId("theme").textContent).toBe("light");
     expect(screen.getByTestId("resolved").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
   });
 
@@ -188,7 +188,7 @@ describe("OsdkThemeProvider", () => {
       <OsdkThemeProvider theme="light" onThemeChanged={onThemeChanged}>
         <ThemeProbe />
         <ThemeToggle />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(screen.getByTestId("resolved").textContent).toBe("light");
@@ -202,7 +202,7 @@ describe("OsdkThemeProvider", () => {
     // controlled mode: still light because parent didn't re-render
     expect(screen.getByTestId("theme").textContent).toBe("light");
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
   });
 
@@ -219,7 +219,7 @@ describe("OsdkThemeProvider", () => {
     render(<Harness />);
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
 
     act(() => {
@@ -236,7 +236,7 @@ describe("OsdkThemeProvider", () => {
     const { unmount } = render(
       <OsdkThemeProvider defaultTheme="dark">
         <ThemeProbe />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
@@ -244,7 +244,7 @@ describe("OsdkThemeProvider", () => {
     unmount();
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe(
-      "light"
+      "light",
     );
   });
 
@@ -253,7 +253,7 @@ describe("OsdkThemeProvider", () => {
     const { unmount } = render(
       <OsdkThemeProvider defaultTheme="dark">
         <ThemeProbe />
-      </OsdkThemeProvider>
+      </OsdkThemeProvider>,
     );
 
     expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBe("dark");
@@ -270,7 +270,7 @@ describe("OsdkThemeProvider", () => {
       render(
         <OsdkThemeProvider defaultTheme="dark" target={custom}>
           <ThemeProbe />
-        </OsdkThemeProvider>
+        </OsdkThemeProvider>,
       );
 
       expect(custom.getAttribute(DATA_THEME_ATTR)).toBe("dark");

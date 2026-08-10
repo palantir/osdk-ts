@@ -22,7 +22,7 @@ import type { FormSectionDefinition } from "../ActionFormApi.js";
 import { FormSection } from "../FormSection.js";
 
 function makeDefinition(
-  overrides?: Partial<FormSectionDefinition>
+  overrides?: Partial<FormSectionDefinition>,
 ): FormSectionDefinition {
   return {
     title: "Test Section",
@@ -42,7 +42,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Personal Info")).toBeDefined();
@@ -53,7 +53,7 @@ describe("FormSection", () => {
       render(
         <FormSection definition={makeDefinition()} errorCount={0}>
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       // Content is visible initially
@@ -65,7 +65,7 @@ describe("FormSection", () => {
 
       // Content should be hidden (panel closed)
       expect(
-        screen.getByTestId("child-field").closest("[hidden]")
+        screen.getByTestId("child-field").closest("[hidden]"),
       ).not.toBeNull();
     });
 
@@ -76,12 +76,12 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       // Content should be hidden initially
       expect(
-        screen.getByTestId("child-field").closest("[hidden]")
+        screen.getByTestId("child-field").closest("[hidden]"),
       ).not.toBeNull();
     });
 
@@ -92,12 +92,12 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       // Initially collapsed
       expect(
-        screen.getByTestId("child-field").closest("[hidden]")
+        screen.getByTestId("child-field").closest("[hidden]"),
       ).not.toBeNull();
 
       // Click to expand
@@ -115,7 +115,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div>content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Fill in your details")).toBeDefined();
@@ -128,7 +128,7 @@ describe("FormSection", () => {
           errorCount={2}
         >
           <div>content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("2 errors")).toBeDefined();
@@ -138,7 +138,7 @@ describe("FormSection", () => {
       render(
         <FormSection definition={makeDefinition()} errorCount={1}>
           <div>content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("1 error")).toBeDefined();
@@ -148,7 +148,7 @@ describe("FormSection", () => {
       render(
         <FormSection definition={makeDefinition()} errorCount={0}>
           <div>content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.queryByText(/error/u)).toBeNull();
@@ -161,7 +161,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       // No trigger button, no title text
@@ -180,7 +180,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div data-testid="child-field">Field content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Details")).toBeDefined();
@@ -199,7 +199,7 @@ describe("FormSection", () => {
           errorCount={0}
         >
           <div>content</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByText("Some info")).toBeDefined();
@@ -216,7 +216,7 @@ describe("FormSection", () => {
           <div data-testid="field-1">Field 1</div>
           <div data-testid="field-2">Field 2</div>
           <div data-testid="field-3">Field 3</div>
-        </FormSection>
+        </FormSection>,
       );
 
       expect(screen.getByTestId("field-1")).toBeDefined();

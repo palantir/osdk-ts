@@ -61,7 +61,7 @@ export function AssignmentsTab(): React.JSX.Element {
 
   const closeDrawer = React.useCallback(
     () => setSelectedAssignmentId(undefined),
-    []
+    [],
   );
 
   return (
@@ -72,7 +72,6 @@ export function AssignmentsTab(): React.JSX.Element {
           key={resetKey}
           objectSet={narrowedObjectSet}
           filterDefinitions={orderedFilterDefs}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           onFilterStateChanged={handleFilterStateChanged}
           onFilterVisibilityChange={handleFilterVisibilityChange}

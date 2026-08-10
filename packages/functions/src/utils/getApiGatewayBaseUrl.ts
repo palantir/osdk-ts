@@ -67,7 +67,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (!filePath) {
     throw new Error(
-      `${FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR} environment variable is not set`
+      `${FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR} environment variable is not set`,
     );
   }
 
@@ -77,7 +77,7 @@ export function getApiGatewayBaseUrl(): string {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to read service discovery file at ${filePath}: ${errorMessage}`
+      `Failed to read service discovery file at ${filePath}: ${errorMessage}`,
     );
   }
 
@@ -87,7 +87,7 @@ export function getApiGatewayBaseUrl(): string {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to parse service discovery YAML file at ${filePath}: ${errorMessage}`
+      `Failed to parse service discovery YAML file at ${filePath}: ${errorMessage}`,
     );
   }
 
@@ -95,7 +95,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (!apiGatewayConfig) {
     throw new Error(
-      `${API_GATEWAY_SERVICE} service not found in service discovery file`
+      `${API_GATEWAY_SERVICE} service not found in service discovery file`,
     );
   }
 
@@ -103,7 +103,7 @@ export function getApiGatewayBaseUrl(): string {
 
   if (uris.length === 0) {
     throw new Error(
-      `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`
+      `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`,
     );
   }
 

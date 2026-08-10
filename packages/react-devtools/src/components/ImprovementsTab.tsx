@@ -110,7 +110,7 @@ export const ImprovementsTab: React.FC<ImprovementsTabProps> = ({
                   <span
                     className={classNames(
                       styles.improvementLevel,
-                      styles[`level-${rec.level}`]
+                      styles[`level-${rec.level}`],
                     )}
                   >
                     {rec.level.toUpperCase()}

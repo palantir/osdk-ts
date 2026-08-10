@@ -35,7 +35,7 @@ const checkDCE = (fn: unknown): void => {
           "React is running in production mode, but dead code " +
             "elimination has not been applied. Read how to correctly " +
             "configure React for production: " +
-            "https://reactjs.org/link/perf-use-production-build"
+            "https://reactjs.org/link/perf-use-production-build",
         );
       });
     }
@@ -61,7 +61,7 @@ function isClientEnvironment(): boolean {
 function hasDevToolsHook(): boolean {
   return Object.prototype.hasOwnProperty.call(
     globalThis,
-    "__REACT_DEVTOOLS_GLOBAL_HOOK__"
+    "__REACT_DEVTOOLS_GLOBAL_HOOK__",
   );
 }
 
@@ -244,7 +244,7 @@ export function safelyInstallDevToolsHook(): void {
 export function isReactDetected(): boolean {
   const hook = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
   return Boolean(
-    hook && (hook.renderers.size > 0 || hook._instrumentationIsActive)
+    hook && (hook.renderers.size > 0 || hook._instrumentationIsActive),
   );
 }
 
@@ -275,8 +275,8 @@ export function onCommitFiberRoot(
   handler: (
     rendererID: number,
     root: FiberRoot,
-    priority: number | undefined
-  ) => void
+    priority: number | undefined,
+  ) => void,
 ): () => void {
   const hook = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (!hook) {

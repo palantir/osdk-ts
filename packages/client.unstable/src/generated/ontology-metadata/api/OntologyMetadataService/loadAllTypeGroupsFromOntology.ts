@@ -31,12 +31,12 @@ export async function loadAllTypeGroupsFromOntology(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyVersion: _api_OntologyVersion,
-  request: _api_LoadAllTypeGroupsPageRequest
+  request: _api_LoadAllTypeGroupsPageRequest,
 ): Promise<_api_LoadAllTypeGroupsPageResponse> {
   return conjureFetch(
     ctx,
     `/ontology/ontology/load/${ontologyRid}/${ontologyVersion}/loadAllTypeGroups`,
     "PUT",
-    request
+    request,
   );
 }

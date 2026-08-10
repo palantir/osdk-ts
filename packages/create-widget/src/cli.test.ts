@@ -30,8 +30,8 @@ beforeAll(() => {
   createWidgetVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8"
-    )
+      "utf-8",
+    ),
   ).version;
 });
 
@@ -58,26 +58,6 @@ for (const template of TEMPLATES) {
     });
   });
 }
-
-test(`CLI lowercases the package.json name field`, async () => {
-  // Project names may contain uppercase characters, but npm rejects package
-  // names that aren't all lowercase. The `name` field is rendered via the
-  // `lowercase` Handlebars helper, so an uppercase project must produce a
-  // lowercase package name.
-  const template = TEMPLATES[0];
-  const project = "My-Uppercase-Widget";
-  await runTest({
-    project,
-    template,
-    sdkVersion: "2.x",
-    requiresOsdk: template.requiresOsdk,
-  });
-
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
-  );
-  expect(packageJson.name).toBe(project.toLowerCase());
-});
 
 async function runTest({
   project,
@@ -117,17 +97,17 @@ async function runTest({
   await cli(options);
 
   expect(
-    fs.readdirSync(path.join(process.cwd(), project)).length
+    fs.readdirSync(path.join(process.cwd(), project)).length,
   ).toBeGreaterThan(0);
   expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
-    true
+    true,
   );
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
-    true
+    true,
   );
   const packageJsonContents = fs.readFileSync(
     path.join(process.cwd(), project, "package.json"),
-    "utf-8"
+    "utf-8",
   );
   expect(() => JSON.parse(packageJsonContents)).not.toThrow();
 }

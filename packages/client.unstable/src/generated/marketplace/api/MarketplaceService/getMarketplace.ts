@@ -29,7 +29,7 @@ import type {
  */
 export async function getMarketplace(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid
+  marketplaceRid: _api_MarketplaceRid,
 ): Promise<_api_Marketplace> {
   return conjureFetch(ctx, `/marketplaces/${marketplaceRid}`, "GET");
 }

@@ -1,5 +1,37 @@
 # @osdk/functions
 
+## 1.20.0
+
+### Minor Changes
+
+- feaf298: Add `Aliases.dataset`, `Aliases.mediaset`, and `Aliases.stream` APIs for resolving dataset, media set, and stream aliases
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 21f7434: Fix EditBatch/WriteableClient `update` rejecting interface (and object) edits whose types have array-valued properties.
+
+### Patch Changes
+
+- Updated dependencies [bf4580a]
+  - @osdk/client@2.52.0
+
+## 1.18.0
+
+### Minor Changes
+
+- d3d5895: Add new Annotated type to @osdk/functions
+
+### Patch Changes
+
+- @osdk/client@2.50.0
+
 ## 1.17.0
 
 ### Minor Changes

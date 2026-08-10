@@ -53,7 +53,7 @@ export class OptimisticJob {
                     apiName: obj.value.$objectType,
                     pk: obj.value.$primaryKey,
                   },
-                  undefined
+                  undefined,
                 )
                 .writeToStore(obj.value, "loading", batch);
             } else {
@@ -69,7 +69,7 @@ export class OptimisticJob {
                   apiName: obj.$objectType,
                   pk: obj.$primaryKey,
                 },
-                undefined
+                undefined,
               )
               .writeToStore(obj, "loading", batch);
           }
@@ -81,7 +81,7 @@ export class OptimisticJob {
                   apiName: obj.$objectType,
                   pk: obj.$primaryKey,
                 },
-                undefined
+                undefined,
               )
               .deleteFromStore("loading", batch);
           }
@@ -110,7 +110,7 @@ export class OptimisticJob {
             ],
             undefined,
             {},
-            undefined
+            undefined,
           )
           .then((objs) => {
             return objs[0];
@@ -129,7 +129,7 @@ export class OptimisticJob {
 
 export function runOptimisticJob(
   store: Store,
-  optimisticUpdate: undefined | ((ctx: OptimisticBuilder) => void)
+  optimisticUpdate: undefined | ((ctx: OptimisticBuilder) => void),
 ): () => Promise<void> {
   if (!optimisticUpdate) {
     return () => Promise.resolve();
@@ -144,7 +144,7 @@ export function runOptimisticJob(
     return optimisticApplicationDone
       .then(
         // we don't want to leak the result
-        () => undefined
+        () => undefined,
       )
       .finally(() => {
         store.layers.remove(optimisticId);

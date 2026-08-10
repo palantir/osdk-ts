@@ -1,5 +1,106 @@
 # @osdk/maker-experimental
 
+## 0.46.0
+
+### Minor Changes
+
+- 849f34e: Port over knownIdentifier logic for imported interface props from java
+- e8584ec: Fix value type shapes
+
+### Patch Changes
+
+- Updated dependencies [7b85fa7]
+- Updated dependencies [342c492]
+  - @osdk/generator-converters.preview@0.34.0
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
+## 0.45.0
+
+### Minor Changes
+
+- e786c2a: Write direct oac imports to metadata file
+- b336b1d: generate external recs for interface props
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/maker@0.54.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+  - @osdk/generator-converters.preview@0.33.0
+
+## 0.44.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [5bd3024]
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters.preview@0.32.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/maker@0.53.0
+
+## 0.43.0
+
+### Minor Changes
+
+- 7ae7004: Revert re-enabling the `unicorn/no-useless-switch-case` oxlint rule; the rule is disabled again and the explicit `case` labels are restored. Behavior-preserving with no runtime or API changes.
+- d349c0b: Support presets for imports
+- e0cbc70: Add propertiesV2 to imported interface shapes
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/client.unstable@2.52.0
+  - @osdk/generator-converters.preview@0.31.0
+
+## 0.42.0
+
+### Minor Changes
+
+- bce917e: Write dependency file for maker-experimental
+
+### Patch Changes
+
+- Updated dependencies [bce917e]
+- Updated dependencies [9d75f4e]
+  - @osdk/maker@0.51.0
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+
+## 0.41.0
+
+### Minor Changes
+
+- f4f70fb: Make codegen and build dir different arguments
+- ecfcf3d: Fix transitive interface link imports
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+  - @osdk/maker@0.50.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
 ## 0.40.0
 
 ### Minor Changes

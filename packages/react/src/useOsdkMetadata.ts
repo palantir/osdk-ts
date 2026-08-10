@@ -47,11 +47,11 @@ export interface UseOsdkMetadataResult<T extends MetadataFetchableDefinition> {
 }
 
 export function useOsdkMetadata<T extends MetadataFetchableDefinition>(
-  type: T
+  type: T,
 ): UseOsdkMetadataResult<T> {
   const client = useOsdkClient();
   const [metadata, setMetadata] = React.useState<MetadataFor<T> | undefined>(
-    undefined
+    undefined,
   );
   const [error, setError] = React.useState<UseOsdkMetadataResult<T>["error"]>();
 

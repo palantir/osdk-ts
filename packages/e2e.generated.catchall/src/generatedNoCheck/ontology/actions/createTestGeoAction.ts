@@ -13,18 +13,21 @@ export namespace createTestGeoAction {
   export type ParamsDefinition = {
     geo_title: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     geohash_prop: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'geohash';
     };
     geoshape_prop: {
       description: undefined;
+      displayName: undefined;
       multiplicity: false;
       nullable: false;
       type: 'geoshape';

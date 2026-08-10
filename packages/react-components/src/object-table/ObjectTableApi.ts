@@ -90,7 +90,7 @@ interface SharedColumnDefinition<
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>
+    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
 
   /**
@@ -126,7 +126,7 @@ interface EditableColumnDefinition<
   editable:
     | true
     | ((
-        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       ) => boolean);
 
   /**
@@ -202,7 +202,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q, RDPs>
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[K]>;
 
   /**
@@ -211,7 +211,7 @@ interface FunctionColumnLocatorForKey<
    * @returns - The key to use for looking up this object's result in the FunctionsMap
    */
   getKey: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => string;
 
   /**
@@ -309,6 +309,13 @@ export interface ObjectTableProps<
    */
   objectSet?: ObjectSet<Q>;
 
+  /**
+   * Ordered list of column definitions to show in the table
+   *
+   * If not provided, all of the properties of the object type will be shown in default order.
+   */
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+
   objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
@@ -342,24 +349,17 @@ export interface ObjectTableProps<
   pageSize?: number;
 
   /**
-   * Ordered list of column definitions to show in the table
-   *
-   * If not provided, all of the properties of the object type will be shown in default order.
-   */
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
-
-  /**
    * The current where clause to filter the objects in the table.
    * If provided, the filter is controlled.
    */
   filter?: WhereClause<Q, RDPs>;
 
   /**
-   * Whether the table is sortable by the user.
+   * Whether the column configuration dialog for column visibility and ordering is available to the user.
    *
    * @default true
    */
-  enableOrdering?: boolean;
+  enableColumnConfig?: boolean;
 
   /**
    * Whether columns can be pinned by the user.
@@ -376,31 +376,63 @@ export interface ObjectTableProps<
   enableColumnResizing?: boolean;
 
   /**
-   * Whether the column configuration dialog for column visibility and ordering is available to the user.
+   * Called when the column visibility or ordering changed.
+   *
+   * If provided, the table will allow the user to show/hide columns.
+   *
+   * @param newStates The columns sorted in their display order in the table and their visibility state.
+   */
+  onColumnVisibilityChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      isVisible: boolean;
+    }>,
+  ) => void;
+
+  /**
+   * Called when the pinned columns change.
+   *
+   * If provided, the table will allow the user to pin/unpin columns.
+   *
+   * @param newStates The new list of column pin states
+   */
+  onColumnsPinnedChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      pinned: "left" | "right" | "none";
+    }>,
+  ) => void;
+
+  /**
+   * Called when a column is resized.
+   *
+   * @param columnId The ID of the resized column
+   * @param newWidth The new width of the column. When newWidth = null, the column size is reset.
+   */
+  onColumnResize?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
+    newWidth: number | null,
+  ) => void;
+
+  /**
+   * Called when a column header is clicked.
+   *
+   * The columnId matches the `locator.id` configured on the column definition.
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
+  onColumnHeaderClick?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
+  ) => void;
+
+  /**
+   * Whether the table is sortable by the user.
    *
    * @default true
    */
-  enableColumnConfig?: boolean;
-
-  /**
-   * Controls the edit mode behavior of the table.
-   * - "always": Editable cells are immediately in edit mode on row clicked.
-   * - "manual": User can toggle edit mode on/off via the Edit Table button.
-   *
-   * @default "manual"
-   */
-  editMode?: "always" | "manual";
-
-  /**
-   * Whether to render the bottom edit footer that hosts the
-   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
-   * indicators (modification count, validation errors).
-   *
-   * @default true whenever the table has at least one column declared
-   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
-   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
-   */
-  showEditFooter?: boolean;
+  enableOrdering?: boolean;
 
   /**
    * The default order by clause to sort the objects in the table.
@@ -432,119 +464,7 @@ export interface ObjectTableProps<
     newOrderBy: Array<{
       property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
-    }>
-  ) => void;
-
-  /**
-   * Called after the value of a cell is edited and committed by the user.
-   *
-   * @param info An object containing details about the cell that was edited,
-   * including the rowId, columnId, new and old values, and the row data before the edit
-   */
-  onCellValueChanged?: (
-    info: CellEditInfo<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >
-  ) => void;
-
-  /**
-   * If provided, the "Submit Edits" button will be shown in the edit footer.
-   *
-   * @param edits an array of edit info containing details about the edited cells
-   * including the rowId, columnId, new and old values, and the row data before the edit
-   * @return a promise that resolves to true if the edits were successfully submitted
-   */
-  onSubmitEdits?: (
-    edits: CellEditInfo<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >[]
-  ) => Promise<boolean>;
-
-  /**
-   * Called when the column visibility or ordering changed.
-   *
-   * If provided, the table will allow the user to show/hide columns.
-   *
-   * @param newStates The columns sorted in their display order in the table and their visibility state.
-   */
-  onColumnVisibilityChanged?: (
-    newStates: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      isVisible: boolean;
-    }>
-  ) => void;
-
-  /**
-   * Called when the pinned columns change.
-   *
-   * If provided, the table will allow the user to pin/unpin columns.
-   *
-   * @param newStates The new list of column pin states
-   */
-  onColumnsPinnedChanged?: (
-    newStates: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      pinned: "left" | "right" | "none";
-    }>
-  ) => void;
-
-  /**
-   * Called when a column is resized.
-   *
-   * @param columnId The ID of the resized column
-   * @param newWidth The new width of the column. When newWidth = null, the column size is reset.
-   */
-  onColumnResize?: (
-    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
-    newWidth: number | null
-  ) => void;
-
-  /**
-   * Called when a row is clicked.
-   *
-   * @param object The object representing the clicked row
-   */
-  onRowClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-  ) => void;
-
-  /**
-   * The primary key of the row to render as visually focused (the
-   * "last interacted" row). When provided, focus state is controlled by
-   * the caller.
-   *
-   * Stored as a primary key rather than a full object so the focus does
-   * not go stale when the underlying row data changes.
-   *
-   * Pass `null` to render no row as focused.
-   */
-  focusedRow?: PrimaryKeyType<Q> | null;
-
-  /**
-   * Called when the focused row changes — fires in both controlled and
-   * uncontrolled modes so callers can observe focus without taking it
-   * over.
-   *
-   * @param row The newly-focused row object, or `null` if focus was
-   * cleared
-   */
-  onFocusedRowChanged?: (
-    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs> | null
-  ) => void;
-
-  /**
-   * Called when a column header is clicked.
-   *
-   * The columnId matches the `locator.id` configured on the column definition.
-   * The dropdown menu trigger is excluded — clicking the chevron opens the
-   * header menu instead of firing this callback.
-   *
-   * @param columnId The id of the clicked column
-   */
-  onColumnHeaderClick?: (
-    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns
+    }>,
   ) => void;
 
   /**
@@ -576,20 +496,94 @@ export interface ObjectTableProps<
    * @param change The new selection state. See {@link RowSelectionChange}.
    */
   onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
+
+  /**
+   * The primary key of the row to render as visually focused (the
+   * "last interacted" row). When provided, focus state is controlled by
+   * the caller.
+   *
+   * Stored as a primary key rather than a full object so the focus does
+   * not go stale when the underlying row data changes.
+   *
+   * Pass `null` to render no row as focused.
+   */
+  focusedRow?: PrimaryKeyType<Q> | null;
+
+  /**
+   * Called when the focused row changes — fires in both controlled and
+   * uncontrolled modes so callers can observe focus without taking it
+   * over.
+   *
+   * @param row The newly-focused row object, or `null` if focus was
+   * cleared
+   */
+  onFocusedRowChanged?: (
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs> | null,
+  ) => void;
+
+  /**
+   * Controls the edit mode behavior of the table.
+   * - "always": Editable cells are immediately in edit mode on row clicked.
+   * - "manual": User can toggle edit mode on/off via the Edit Table button.
+   *
+   * @default "manual"
+   */
+  editMode?: "always" | "manual";
+
+  /**
+   * Whether to render the bottom edit footer that hosts the
+   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
+   * indicators (modification count, validation errors).
+   *
+   * @default true whenever the table has at least one column declared
+   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
+   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
+   */
+  showEditFooter?: boolean;
+
+  /**
+   * Called after the value of a cell is edited and committed by the user.
+   *
+   * @param info An object containing details about the cell that was edited,
+   * including the rowId, columnId, new and old values, and the row data before the edit
+   */
+  onCellValueChanged?: (
+    info: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >,
+  ) => void;
+
+  /**
+   * If provided, the "Submit Edits" button will be shown in the edit footer.
+   *
+   * @param edits an array of edit info containing details about the edited cells
+   * including the rowId, columnId, new and old values, and the row data before the edit
+   * @return a promise that resolves to true if the edits were successfully submitted
+   */
+  onSubmitEdits?: (
+    edits: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >[],
+  ) => Promise<boolean>;
+
+  /**
+   * Called when a row is clicked.
+   *
+   * @param object The object representing the clicked row
+   */
+  onRowClick?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => void;
+
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    cellValue: unknown
+    cellValue: unknown,
   ) => React.ReactNode;
-
-  /**
-   * Render override for the empty state. Called when the table has no
-   * rows and no error. When omitted, a default "No Data" indicator is
-   * rendered.
-   */
-  renderEmptyState?: () => React.ReactNode;
 
   /**
    * The height of each row in pixels.
@@ -599,11 +593,18 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
+
+  /**
    * Returns extra HTML attributes (typically `data-*`) to apply to each
    * row element. Use this to drive conditional row styling
    */
   getRowAttributes?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   ) => Record<string, string | undefined>;
 
   /**
@@ -638,7 +639,7 @@ export interface ObjectTableHandle<
    * Loads every row matching the object set and returns a format-agnostic
    * snapshot of the table's columns, row values, and total count. The caller
    * is responsible for turning the snapshot into a downloadable artifact
-   * (CSV, Excel, JSON, clipboard, …).
+   * (CSV, Spreadsheet, JSON, clipboard, …).
    *
    * Property, derived-property, and function-backed columns are included.
    * Function-backed cells are fetched per page during snapshot collection;
@@ -657,7 +658,7 @@ export interface ObjectTableHandle<
    * @param options See {@link ObjectTableSnapshotOptions}.
    */
   getSnapshot: (
-    options?: ObjectTableSnapshotOptions
+    options?: ObjectTableSnapshotOptions,
   ) => Promise<ObjectTableSnapshot<Q, RDPs>>;
 }
 

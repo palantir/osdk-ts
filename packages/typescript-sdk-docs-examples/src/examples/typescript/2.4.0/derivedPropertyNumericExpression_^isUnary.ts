@@ -25,9 +25,10 @@ import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
   .withProperties({
-    "newPropertyName": (baseObjectSet) =>
-      baseObjectSet.pivotTo("assignedEquipment")
-        .aggregate("purchasePrice:avg").divide(
-          baseObjectSet.pivotTo("assignedEquipment").aggregate("$count"),
-        ),
-  }).fetchPage();
+    newPropertyName: (baseObjectSet) =>
+      baseObjectSet
+        .pivotTo("assignedEquipment")
+        .aggregate("purchasePrice:avg")
+        .divide(baseObjectSet.pivotTo("assignedEquipment").aggregate("$count")),
+  })
+  .fetchPage();

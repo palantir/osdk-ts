@@ -20,7 +20,7 @@ import { extractNamespace } from "./extractNamespace.js";
 
 export function fullyQualifyPropName(
   fieldName: string,
-  objectOrInterface: ObjectOrInterfaceDefinition
+  objectOrInterface: ObjectOrInterfaceDefinition,
 ): string {
   if (objectOrInterface.type === "interface") {
     const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);

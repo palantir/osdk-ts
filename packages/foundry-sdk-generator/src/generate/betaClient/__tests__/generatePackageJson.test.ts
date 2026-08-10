@@ -1,0 +1,120 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { generatePackageJson } from "../generatePackageJson.js";
+
+describe("generatePackageJson", () => {
+  let packagePath: string;
+
+  beforeEach(async () => {
+    packagePath = await mkdtemp(join(tmpdir(), "generate-package-json-test-"));
+  });
+
+  afterEach(async () => {
+    await rm(packagePath, { recursive: true, force: true });
+  });
+
+  it("emits the ontology metadata subpath export when enabled", async () => {
+    await generatePackageJson({
+      packageName: "@my/generated-sdk",
+      packageVersion: "1.2.3",
+      packagePath,
+      dependencies: [],
+      peerDependencies: [{
+        dependencyName: "@osdk/client",
+        dependencyVersion: "^2.0.0",
+      }],
+      beta: true,
+      packageRid: "ri.foundry.main.package.dead-beef",
+      branch: "master",
+      exportOntologyMetadata: true,
+    });
+
+    expect(await readFile(join(packagePath, "package.json"), "utf-8"))
+      .toMatchInlineSnapshot(`
+        "{
+            "name": "@my/generated-sdk",
+            "version": "1.2.3",
+            "main": "./cjs/index.js",
+            "types": "./cjs/index.d.ts",
+            "osdk": {
+                "packageRid": "ri.foundry.main.package.dead-beef",
+                "branch": "master"
+            },
+            "exports": {
+                ".": {
+                    "script": {
+                        "types": "./dist/bundle/index.d.mts",
+                        "default": "./dist/bundle/index.mjs"
+                    },
+                    "require": {
+                        "types": "./cjs/index.d.ts",
+                        "default": "./cjs/index.js"
+                    },
+                    "import": {
+                        "types": "./esm/index.d.ts",
+                        "default": "./esm/index.js"
+                    },
+                    "types": "./cjs/index.d.ts",
+                    "default": "./cjs/index.js"
+                },
+                "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+                    "require": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    },
+                    "import": {
+                        "types": "./UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+                        "default": "./UNSTABLE_DO_NOT_USE/ontology-metadata.json"
+                    }
+                }
+            },
+            "dependencies": {},
+            "peerDependencies": {
+                "@osdk/client": "^2.0.0"
+            },
+            "type": "commonjs"
+        }"
+      `);
+  });
+
+  it("omits the ontology metadata subpath export when disabled", async () => {
+    await generatePackageJson({
+      packageName: "@my/generated-sdk",
+      packageVersion: "1.2.3",
+      packagePath,
+      dependencies: [],
+      peerDependencies: [{
+        dependencyName: "@osdk/client",
+        dependencyVersion: "^2.0.0",
+      }],
+      beta: true,
+      packageRid: "ri.foundry.main.package.dead-beef",
+      branch: "master",
+      exportOntologyMetadata: false,
+    });
+
+    // The shims and json are only written when the flag is on, so advertising
+    // the subpath here would point at files that don't exist.
+    const written = await readFile(join(packagePath, "package.json"), "utf-8");
+    expect(Object.keys(JSON.parse(written).exports)).toEqual(["."]);
+    expect(written).not.toContain("UNSTABLE_DO_NOT_USE/ontology-metadata");
+  });
+});

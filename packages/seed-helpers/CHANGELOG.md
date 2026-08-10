@@ -1,5 +1,52 @@
 # @osdk/seed-helpers
 
+## 0.26.0
+
+### Minor Changes
+
+- cec01e5: Introduce the `@osdk/integration-testing` package for Ontology SDK integration-testing helpers, and add `SeedClient.set` for replacing the seeded state rather than adding to it.
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client@2.56.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/client@2.55.0
+
+## 0.24.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/client@2.53.0
+  - @osdk/api@2.53.0
+
+## 0.23.0
+
+### Minor Changes
+
+- fc3e4b9: Implement new seed builder with built-in validation
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/client@2.52.0
+
 ## 0.22.0
 
 ### Patch Changes

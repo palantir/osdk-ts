@@ -69,7 +69,7 @@ interface Signatures<X extends Record<any, ActionMetadata.Parameter<any>>> {
     OP extends ApplyBatchActionOptions,
   >(
     args: A,
-    options?: OP
+    options?: OP,
   ) => Promise<ActionReturnTypeForOptions<OP>>;
 }
 type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
@@ -87,7 +87,7 @@ type ActionSignature<X extends Record<any, ActionMetadata.Parameter<any>>> = <
   OP extends ApplyActionOptions,
 >(
   args: A,
-  options?: OP
+  options?: OP,
 ) => Promise<ActionReturnTypeForOptions<OP>>;
 type ActionParametersDefinition = Record<any, ActionMetadata.Parameter<any>>;
 type OsdkActionParameters<X extends ActionParametersDefinition> = PartialBy<

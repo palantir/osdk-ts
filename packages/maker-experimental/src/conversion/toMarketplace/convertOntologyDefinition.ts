@@ -27,7 +27,7 @@ export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGeneratorImpl,
   functionsIr?: FunctionsIr,
-  randomnessKey?: string
+  randomnessKey?: string,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
   const allOntologies = [ontology, importedTypes];
@@ -35,21 +35,21 @@ export function convertOntologyDefinition(
     ontology,
     ridGenerator,
     allOntologies,
-    functionsIr
+    functionsIr,
   );
 
   const importedOntology = convertOntologyDefinitionToWireBlockData(
     importedTypes,
-    ridGenerator
+    ridGenerator,
   );
 
   const importedInterfaceApiNames = new Set(
-    Object.keys(importedTypes.INTERFACE_TYPE)
+    Object.keys(importedTypes.INTERFACE_TYPE),
   );
 
   const relatedInterfaces = (iface: InterfaceType): InterfaceType[] =>
     [...(iface.linkedInterfaces ?? []), ...iface.extendsInterfaces].filter(
-      (related): related is InterfaceType => typeof related !== "string"
+      (related): related is InterfaceType => typeof related !== "string",
     );
 
   const fullImportedInterfaces = new Map<string, InterfaceType>();
@@ -86,11 +86,11 @@ export function convertOntologyDefinition(
 
   const throwawayRidGenerator = new OntologyRidGeneratorImpl(
     getImportedTypes(),
-    randomnessKey
+    randomnessKey,
   );
   const transitiveImportedOntology = convertOntologyDefinitionToWireBlockData(
     transitiveOntology,
-    throwawayRidGenerator
+    throwawayRidGenerator,
   );
 
   return {

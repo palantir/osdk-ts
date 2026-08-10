@@ -14,9 +14,11 @@
  * limitations under the License.
  */}
 
-import { Meta, Markdown } from "@storybook/addon-docs/blocks";
-import actionFormDocs from "@docs/ActionForm.md?raw";
+import { Meta } from "@storybook/addon-docs/blocks";
+import actionFormDocs from "@docs/ActionFormOverview.md?raw";
+import { ComponentDoc } from "../../util/ComponentDoc.js";
+import * as ActionFormStories from "./ActionForm.stories";
 
-<Meta title="Components/ActionForm/Docs" tags={["beta"]}/>
+<Meta title="Components/ActionForm/Docs" tags={["beta"]} />
 
-<Markdown>{actionFormDocs}</Markdown>
+<ComponentDoc raw={actionFormDocs} canvasOf={ActionFormStories.Default} />

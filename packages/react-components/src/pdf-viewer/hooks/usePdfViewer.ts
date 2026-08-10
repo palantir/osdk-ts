@@ -38,7 +38,7 @@ export function usePdfViewer(
   viewerRef: RefObject<HTMLDivElement | null>,
   document: PDFDocumentProxy | undefined,
   initialScale?: number,
-  initialPage?: number
+  initialPage?: number,
 ): UsePdfViewerResult {
   const pdfViewerRef = useRef<PDFViewer | null>(null);
   const eventBusRef = useRef<EventBus | null>(null);
@@ -102,7 +102,7 @@ export function usePdfViewer(
         pdfViewer.cleanup();
       };
     },
-    [containerRef, viewerRef, document]
+    [containerRef, viewerRef, document],
   );
 
   return { pdfViewerRef, eventBusRef, findControllerRef };

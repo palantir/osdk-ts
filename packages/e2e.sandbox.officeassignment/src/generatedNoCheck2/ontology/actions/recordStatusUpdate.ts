@@ -14,60 +14,70 @@ export namespace recordStatusUpdate {
   export type ParamsDefinition = {
     assignment: {
       description: 'The assignment this status update belongs to.';
+      displayName: 'Assignment';
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Assignment>;
     };
     comment: {
       description: 'Optional free-text note.';
+      displayName: 'Comment';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     isExcluded: {
       description: 'Whether the row is excluded by the metrics layer. Defaults to false.';
+      displayName: 'Is Excluded';
       multiplicity: false;
       nullable: true;
       type: 'boolean';
     };
     recordedBy: {
       description: 'User who recorded the status.';
+      displayName: 'Recorded By';
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     statusUpdateId: {
       description: 'Primary key for the new status update row.';
+      displayName: 'Status Update ID';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     timestamp: {
       description: 'When the status was recorded (display).';
+      displayName: 'Timestamp';
       multiplicity: false;
       nullable: false;
       type: 'timestamp';
     };
     timestampEpochMs: {
       description: 'Millisecond epoch matching the timestamp. Must equal the timestamp in epoch ms.';
+      displayName: 'Timestamp Epoch Ms';
       multiplicity: false;
       nullable: false;
       type: 'long';
     };
     type: {
       description: 'Status category.';
+      displayName: 'Type';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     typeValue: {
       description: "Combined '{type} - {value}' string (space-hyphen-space separator).";
+      displayName: 'Type Value';
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     value: {
       description: 'Status value within the type (e.g. Remote, Yes, Elevated).';
+      displayName: 'Value';
       multiplicity: false;
       nullable: false;
       type: 'string';

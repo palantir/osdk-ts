@@ -32,11 +32,11 @@ interface FilterVisibilityResult<D> {
 
 export function useFilterVisibility<Q extends ObjectTypeDefinition>(
   filterDefinitions: Array<FilterDefinitionUnion<Q>> | undefined,
-  onVisibilityChange?: (visibleKeys: string[], hiddenKeys: string[]) => void
+  onVisibilityChange?: (visibleKeys: string[], hiddenKeys: string[]) => void,
 ): FilterVisibilityResult<FilterDefinitionUnion<Q>> {
   const allKeys = useMemo(
     () => filterDefinitions?.map(getFilterKey) ?? [],
-    [filterDefinitions]
+    [filterDefinitions],
   );
 
   const defaultVisibleKeyOrder = useMemo(
@@ -44,11 +44,11 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
       filterDefinitions
         ?.filter((def) => def.isVisible !== false)
         .map(getFilterKey) ?? [],
-    [filterDefinitions]
+    [filterDefinitions],
   );
 
   const [visibleKeyOrder, setVisibleKeyOrder] = useState<string[]>(
-    () => defaultVisibleKeyOrder
+    () => defaultVisibleKeyOrder,
   );
 
   // Sync state when filterDefinitions changes
@@ -67,7 +67,7 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
       const hiddenKeys = allKeys.filter((k) => !visibleSet.has(k));
       onVisibilityChangeRef.current(nextVisibleKeyOrder, hiddenKeys);
     },
-    [allKeys]
+    [allKeys],
   );
 
   const defByKey = useMemo(() => {
@@ -122,7 +122,7 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
         return next;
       });
     },
-    [fireVisibilityChange]
+    [fireVisibilityChange],
   );
 
   const hideFilter = useCallback(
@@ -133,7 +133,7 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
         return next;
       });
     },
-    [fireVisibilityChange]
+    [fireVisibilityChange],
   );
 
   const reorderVisible = useCallback(
@@ -149,7 +149,7 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
         return keys;
       });
     },
-    [fireVisibilityChange]
+    [fireVisibilityChange],
   );
 
   const resetVisibility = useCallback(() => {
@@ -170,7 +170,7 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
       return true;
     }
     return !visibleKeyOrder.every(
-      (key, i) => key === defaultVisibleKeyOrder[i]
+      (key, i) => key === defaultVisibleKeyOrder[i],
     );
   }, [visibleKeyOrder, defaultVisibleKeyOrder]);
 

@@ -29,13 +29,13 @@ export async function getStagedActions(
   ctx: ConjureContext,
   getStagedActionsRequest: _api_registry_GetStagedActionsRequest,
   pageToken: _api_registry_PageToken | null | undefined,
-  pageSize: number | null | undefined
+  pageSize: number | null | undefined,
 ): Promise<_api_registry_GetStagedActionsResponse> {
   return conjureFetch(
     ctx,
     `/staged-actions/v0/staged-actions`,
     "PUT",
     getStagedActionsRequest,
-    { pageToken, pageSize }
+    { pageToken, pageSize },
   );
 }

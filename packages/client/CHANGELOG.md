@@ -1,5 +1,97 @@
 # @osdk/client
 
+## 2.56.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters@2.56.0
+
+## 2.55.0
+
+### Minor Changes
+
+- c40b6e5: Remove the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference` export. To upload media, pass `{ data, fileName }` directly to an Action's media parameter; the client uploads it via `uploadMedia` and links the resulting media item.
+- f27a119: Rename the experimental `__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait` export to `transformAndWait`, and change its argument from `mediaReference: MediaReference` to `media: Media`. It is still only exported from `@osdk/api/unstable`. Callers holding a media property can now pass it straight through instead of unwrapping it with `getMediaReference()` first.
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/generator-converters@2.55.0
+  - @osdk/shared.test@2.37.0
+  - @osdk/client.unstable@2.55.0
+
+## 2.54.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/generator-converters@2.54.0
+
+## 2.53.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/generator-converters@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/shared.test@2.36.0
+
+## 2.52.0
+
+### Minor Changes
+
+- bf4580a: Add annotate, contrast, encrypt, and decrypt image operations to the experimental media transformation surface, closing parity with the platform image-operation set.
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [bf4580a]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/generator-converters@2.52.0
+  - @osdk/shared.test@2.35.0
+  - @osdk/client.unstable@2.52.0
+
+## 2.51.0
+
+### Minor Changes
+
+- d96b5de: Export scenario helpers from experimental
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters@2.51.0
+
+## 2.50.0
+
+### Patch Changes
+
+- @osdk/api@2.50.0
+- @osdk/client.unstable@2.50.0
+- @osdk/generator-converters@2.50.0
+
+## 2.49.0
+
+### Patch Changes
+
+- @osdk/api@2.49.0
+- @osdk/client.unstable@2.49.0
+- @osdk/generator-converters@2.49.0
+
 ## 2.48.0
 
 ### Minor Changes

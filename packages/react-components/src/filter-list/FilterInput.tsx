@@ -180,7 +180,7 @@ const HasLinkInput = memo(function HasLinkInput({
     (hasLink: boolean) => {
       onFilterStateChanged({ type: "hasLink", hasLink, isExcluding });
     },
-    [onFilterStateChanged, isExcluding]
+    [onFilterStateChanged, isExcluding],
   );
 
   const handleClearAll = useCallback(() => {
@@ -223,7 +223,7 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
         operator,
       });
     },
-    [onFilterStateChanged, operator]
+    [onFilterStateChanged, operator],
   );
 
   return (

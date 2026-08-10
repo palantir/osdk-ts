@@ -26,7 +26,7 @@ import type {
  */
 export async function createObjectSet(
   ctx: ConjureContext,
-  request: _api_CreateObjectSetRequest
+  request: _api_CreateObjectSetRequest,
 ): Promise<_api_CreateObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets`, "POST", request);
 }

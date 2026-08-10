@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import type { ActionType, InterfaceType } from "@osdk/maker";
 import {
+  addDependency,
   defineCreateObjectAction,
   defineInterface,
   defineInterfaceActionTypeConstraint,
@@ -30,12 +36,62 @@ import {
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 import { defineImportObject } from "./importObjectType.js";
+
+function apiNamePreset(apiName: string) {
+  return {
+    value: {
+      type: "fromSource",
+      fromSource: {
+        resolver: {
+          type: "apiNameResolver",
+          apiNameResolver: { apiName },
+        },
+      },
+    },
+    exportCompatibility: "COMPATIBLE",
+    enforcement: "SUGGESTED",
+    isDefault: false,
+  };
+}
 
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
+  });
+
+  describe("Dependencies", () => {
+    it("writes dependencies to the configured file", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "maker-experimental-dependencies-"),
+      );
+      const dependencyFile = path.join(outputDir, "dependencies.json");
+
+      try {
+        await defineOntologyV2(
+          "com.palantir.",
+          () => {
+            addDependency("com.palantir", fileURLToPath(import.meta.url));
+          },
+          undefined,
+          dependencyFile,
+        );
+
+        const packageJson = JSON.parse(
+          fs.readFileSync(
+            new URL("../../package.json", import.meta.url),
+            "utf8",
+          ),
+        );
+        expect(JSON.parse(fs.readFileSync(dependencyFile, "utf8"))).toEqual({
+          "com.palantir": packageJson.version,
+        });
+      } finally {
+        fs.rmSync(outputDir, { recursive: true, force: true });
+      }
+    });
   });
 
   describe("Imports", () => {
@@ -721,7 +777,7 @@ describe("Experimental Test Suite", () => {
           },
           "sharedPropertyTypes": {},
         }
-      `
+      `,
       );
     });
   });
@@ -750,7 +806,7 @@ describe("Experimental Test Suite", () => {
 
       // Imported object should have an input shape
       const objectInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectInputShapes).toHaveLength(1);
       expect(objectInputShapes[0][1]).toMatchObject({
@@ -764,16 +820,23 @@ describe("Experimental Test Suite", () => {
 
       // Imported object properties should have input shapes
       const propertyInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(
         ([key, shape]) =>
-          shape.type === "property" && key.includes("importedFoo")
+          shape.type === "property" && key.includes("importedFoo"),
       );
       expect(propertyInputShapes).toHaveLength(2);
+      expect(result.importedInputPresets).toEqual(
+        new Map([
+          ["object-type-importedFoo", apiNamePreset("importedFoo")],
+          ["importedFoo-property-type-id", apiNamePreset("id")],
+          ["importedFoo-property-type-name", apiNamePreset("name")],
+        ]),
+      );
 
       // Local object should have an output shape, not input
       const objectOutputShapes = Array.from(
-        result.shapes.outputShapes.entries()
+        result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
     });
@@ -820,13 +883,13 @@ describe("Experimental Test Suite", () => {
 
       // The link should have an output shape
       const linkOutputShapes = Array.from(
-        result.shapes.outputShapes.entries()
+        result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "linkType");
       expect(linkOutputShapes).toHaveLength(1);
 
       // The imported object should have an input shape
       const objectInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectInputShapes).toHaveLength(1);
       expect(objectInputShapes[0][1]).toMatchObject({
@@ -875,13 +938,13 @@ describe("Experimental Test Suite", () => {
       // object type in objectTypeIds
       const knownIds = result.ontologyIr.ontology.knownIdentifiers;
       const importedObjId = Object.keys(knownIds.objectTypeIds ?? {}).find(
-        (id) => id === "imported"
+        (id) => id === "imported",
       );
       expect(importedObjId).toBeDefined();
 
       // The action output shape should exist
       const actionShapes = Array.from(
-        result.shapes.outputShapes.entries()
+        result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "action");
       expect(actionShapes).toHaveLength(1);
     });
@@ -907,7 +970,7 @@ describe("Experimental Test Suite", () => {
 
       // The imported SPT should have an input shape
       const sptInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "sharedPropertyType");
       expect(sptInputShapes).toHaveLength(1);
       expect(sptInputShapes[0][1]).toMatchObject({
@@ -916,6 +979,9 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "com.external.pkg.externalId" },
         },
       });
+      expect(result.importedInputPresets.get(sptInputShapes[0][0])).toEqual(
+        apiNamePreset("com.external.pkg.externalId"),
+      );
     });
 
     it("generates input shapes for imported action types", async () => {
@@ -943,7 +1009,7 @@ describe("Experimental Test Suite", () => {
 
       // The imported action should have an input shape
       const actionInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "action");
       expect(actionInputShapes).toHaveLength(1);
       expect(actionInputShapes[0][1]).toMatchObject({
@@ -952,10 +1018,15 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "Imported Action" },
         },
       });
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForActionType("importedAction"),
+        ),
+      ).toEqual(apiNamePreset("importedAction"));
 
       // No parameters on this action, so no parameter input shapes
       const paramInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "actionParameter");
       expect(paramInputShapes).toHaveLength(0);
     });
@@ -1007,7 +1078,7 @@ describe("Experimental Test Suite", () => {
 
       // The imported interface should have an input shape
       const interfaceInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceType");
       expect(interfaceInputShapes).toHaveLength(1);
       expect(interfaceInputShapes[0][1]).toMatchObject({
@@ -1016,6 +1087,11 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "Imported Interface" },
         },
       });
+      expect(
+        result.importedInputPresets.get(
+          ReadableIdGenerator.getForInterface("importedInterface"),
+        ),
+      ).toEqual(apiNamePreset("importedInterface"));
     });
   });
 
@@ -1042,7 +1118,7 @@ describe("Experimental Test Suite", () => {
       });
 
       const constraintOutputShapes = Array.from(
-        result.shapes.outputShapes.entries()
+        result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
       expect(constraintOutputShapes).toHaveLength(1);
       expect(constraintOutputShapes[0][1]).toMatchObject({
@@ -1054,7 +1130,7 @@ describe("Experimental Test Suite", () => {
       });
 
       const paramOutputShapes = Array.from(
-        result.shapes.outputShapes.entries()
+        result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
       expect(paramOutputShapes).toHaveLength(1);
       expect(paramOutputShapes[0][1]).toMatchObject({
@@ -1116,7 +1192,7 @@ describe("Experimental Test Suite", () => {
       });
 
       const constraintInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceActionTypeConstraint");
       expect(constraintInputShapes).toHaveLength(1);
       expect(constraintInputShapes[0][1]).toMatchObject({
@@ -1128,7 +1204,7 @@ describe("Experimental Test Suite", () => {
       });
 
       const paramInputShapes = Array.from(
-        result.shapes.inputShapes.entries()
+        result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
       expect(paramInputShapes).toHaveLength(1);
       expect(paramInputShapes[0][1]).toMatchObject({
@@ -1198,9 +1274,9 @@ describe("Experimental Test Suite", () => {
             },
           },
         });
-      })
+      }),
     ).rejects.toThrow(
-      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u
+      /Property 'ghostProperty' used in derived datasource .* is not (defined|a property)/u,
     );
   });
 });

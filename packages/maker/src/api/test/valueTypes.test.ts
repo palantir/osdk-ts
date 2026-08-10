@@ -39,9 +39,9 @@ describe("Value Types", () => {
           constraints: [{ constraint: { allowedValues: ["TRUE_VALUE"] } }],
         },
         version: "not a version",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Version is not a valid semver]"
+      "[Error: Invariant failed: Version is not a valid semver]",
     );
   });
 
@@ -102,7 +102,7 @@ describe("Value Types", () => {
 
     expect(objectPropertyType.dataConstraints).toBeDefined();
     expect(
-      objectPropertyType.dataConstraints?.propertyTypeConstraints
+      objectPropertyType.dataConstraints?.propertyTypeConstraints,
     ).toHaveLength(1);
 
     const constraintWrapper =
@@ -114,7 +114,7 @@ describe("Value Types", () => {
           type: "string";
           string: { length: { minSize: number; maxSize: number } };
         }
-      ).string.length.minSize
+      ).string.length.minSize,
     ).toBe(5);
     expect(
       (
@@ -122,10 +122,10 @@ describe("Value Types", () => {
           type: "string";
           string: { length: { minSize: number; maxSize: number } };
         }
-      ).string.length.maxSize
+      ).string.length.maxSize,
     ).toBe(20);
     expect(constraintWrapper?.failureMessage?.message).toBe(
-      "String must be between 5 and 20 characters"
+      "String must be between 5 and 20 characters",
     );
   });
 
@@ -312,9 +312,9 @@ describe("Value Types", () => {
           type: "boolean",
         },
         version: "1.0.0",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]"
+      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
     );
   });
 

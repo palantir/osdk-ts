@@ -27,7 +27,7 @@ import type {
  */
 export async function getLatestMarketplaceMetadata(
   ctx: ConjureContext,
-  marketplaceRid: _api_MarketplaceRid
+  marketplaceRid: _api_MarketplaceRid,
 ): Promise<_api_VersionedMarketplaceMetadata> {
   return conjureFetch(ctx, `/marketplaces/${marketplaceRid}/metadata`, "GET");
 }

@@ -835,10 +835,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["person-to-friend"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_to");
     });
 
@@ -885,10 +887,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_from");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("id_to");
     });
 
@@ -935,10 +939,12 @@ describe("Link Types", () => {
       const linkDatasource =
         metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
       expect(
-        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
       ).toBe("fooId");
       expect(
-        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0].column
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
       ).toBe("barId");
     });
 
@@ -987,7 +993,7 @@ describe("Link Types", () => {
       expect(
         "many" in link &&
           !("intermediaryObjectType" in link) &&
-          link.includeEmptyBackingDatasource
+          link.includeEmptyBackingDatasource,
       ).toBe(true);
     });
 
@@ -2310,7 +2316,7 @@ describe("Link Types", () => {
           ontologyPackageRid: null,
         });
       },
-      "/tmp/"
+      "/tmp/",
     );
   });
 

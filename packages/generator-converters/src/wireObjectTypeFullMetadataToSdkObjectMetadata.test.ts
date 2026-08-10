@@ -34,6 +34,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -109,6 +111,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: {
           type: "INVALID_NOT_IN_API",
           name: "blueprint",
@@ -160,6 +164,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -219,6 +225,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -252,6 +260,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
@@ -331,6 +341,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         description: "description",
         displayName: "displayName",
         pluralDisplayName: "displayNames",
+        aliases: [],
+        datasources: [],
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {

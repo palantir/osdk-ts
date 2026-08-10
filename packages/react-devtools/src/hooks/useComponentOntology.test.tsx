@@ -112,14 +112,14 @@ describe("useComponentOntology", () => {
     ]);
 
     const { result } = renderHook(() =>
-      useComponentOntology(makeStore(active))
+      useComponentOntology(makeStore(active)),
     );
 
     const expectedObjectTypes = [
       ...new Set(
         result.current.entries.flatMap((e) =>
-          e.ontology.objectTypes.map((t) => t.name)
-        )
+          e.ontology.objectTypes.map((t) => t.name),
+        ),
       ),
     ].sort((a, b) => a.localeCompare(b));
     const expectedActions = [
@@ -158,7 +158,7 @@ describe("useComponentOntology", () => {
     ]);
 
     const { result } = renderHook(() =>
-      useComponentOntology(makeStore(active))
+      useComponentOntology(makeStore(active)),
     );
 
     expect(result.current.facets.objectTypes).toEqual(["Workspace"]);
@@ -178,7 +178,7 @@ describe("useComponentOntology", () => {
     ]);
 
     const { result } = renderHook(() =>
-      useComponentOntology(makeStore(active))
+      useComponentOntology(makeStore(active)),
     );
 
     expect(result.current.facets.actions).toEqual([
@@ -193,7 +193,7 @@ describe("useComponentOntology", () => {
 
   it("yields no entries and empty facets when nothing is mounted", () => {
     const { result } = renderHook(() =>
-      useComponentOntology(makeStore(new Map()))
+      useComponentOntology(makeStore(new Map())),
     );
 
     expect(result.current.entries).toEqual([]);
@@ -219,8 +219,8 @@ describe("useComponentOntology", () => {
     expect(result.current.facets.objectTypes).toContain("Invoice");
     expect(
       result.current.entries.flatMap((e) =>
-        e.ontology.objectTypes.map((t) => t.name)
-      )
+        e.ontology.objectTypes.map((t) => t.name),
+      ),
     ).toContain("Invoice");
   });
 });

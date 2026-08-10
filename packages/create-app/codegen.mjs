@@ -104,7 +104,7 @@ fs.writeFileSync(
           },`;
   }).join("\n")}
   ];
-  `
+  `,
 );
 
 /**

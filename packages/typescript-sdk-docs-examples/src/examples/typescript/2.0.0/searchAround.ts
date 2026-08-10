@@ -24,8 +24,9 @@ import { Equipment } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 // Object set containing objects a, b and c
-const objects = client(Equipment)
-  .where({ equipmentId: { $in: ["a", "b", "c"] } });
+const objects = client(Equipment).where({
+  equipmentId: { $in: ["a", "b", "c"] },
+});
 
 // Traverse the selected link type to find all objects of type
 // Find Employee objects linked to the filtered Equipment objects

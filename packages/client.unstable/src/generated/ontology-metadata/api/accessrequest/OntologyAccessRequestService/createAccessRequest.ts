@@ -37,7 +37,7 @@ import type {
  */
 export async function createAccessRequest(
   ctx: ConjureContext,
-  request: _api_accessrequest_CreateAccessRequestRequest
+  request: _api_accessrequest_CreateAccessRequestRequest,
 ): Promise<_api_accessrequest_CreateAccessRequestResponse> {
   return conjureFetch(ctx, `/ontology/access-request/request`, "POST", request);
 }

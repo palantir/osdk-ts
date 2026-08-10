@@ -1,5 +1,104 @@
 # @osdk/vite-plugin-oac
 
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/cli@0.81.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
+## 0.54.0
+
+### Patch Changes
+
+- Updated dependencies [c40b6e5]
+- Updated dependencies [f27a119]
+  - @osdk/api@2.55.0
+  - @osdk/faux@0.41.0
+  - @osdk/maker@0.54.0
+  - @osdk/cli@0.80.0
+  - @osdk/client.unstable@2.55.0
+  - @osdk/generator-converters.ontologyir@2.55.0
+
+## 0.53.0
+
+### Patch Changes
+
+- @osdk/api@2.54.0
+- @osdk/client.unstable@2.54.0
+- @osdk/generator-converters.ontologyir@2.54.0
+- @osdk/cli@0.79.0
+
+## 0.52.0
+
+### Minor Changes
+
+- c14abb8: Streaming query execution is not currently supported in the TypeScript OSDK, so the experimental `executeStreamingFunction` helper now throws. Bump the `@osdk/foundry.*` and `@osdk/internal.foundry.*` catalog entries to `2.70.0`. The ontology-as-code full-metadata converters now populate the object type `aliases` and `datasources` fields.
+
+### Patch Changes
+
+- Updated dependencies [c14abb8]
+  - @osdk/faux@0.40.0
+  - @osdk/generator-converters.ontologyir@2.53.0
+  - @osdk/api@2.53.0
+  - @osdk/client.unstable@2.53.0
+  - @osdk/cli@0.78.0
+  - @osdk/maker@0.53.0
+
+## 0.51.0
+
+### Patch Changes
+
+- Updated dependencies [5d92381]
+- Updated dependencies [7ae7004]
+- Updated dependencies [eab0750]
+- Updated dependencies [bf4580a]
+- Updated dependencies [7667b67]
+- Updated dependencies [9d0b21e]
+  - @osdk/api@2.52.0
+  - @osdk/maker@0.52.0
+  - @osdk/generator-converters.ontologyir@2.52.0
+  - @osdk/faux@0.39.0
+  - @osdk/cli@0.77.0
+  - @osdk/client.unstable@2.52.0
+
+## 0.50.0
+
+### Patch Changes
+
+- Updated dependencies [b99b0bb]
+  - @osdk/api@2.51.0
+  - @osdk/cli@0.76.0
+  - @osdk/client.unstable@2.51.0
+  - @osdk/generator-converters.ontologyir@2.51.0
+
+## 0.49.0
+
+### Patch Changes
+
+- Updated dependencies [bce917e]
+- Updated dependencies [9d75f4e]
+  - @osdk/maker@0.51.0
+  - @osdk/generator-converters.ontologyir@2.50.0
+  - @osdk/api@2.50.0
+  - @osdk/client.unstable@2.50.0
+  - @osdk/cli@0.75.0
+
+## 0.48.0
+
+### Patch Changes
+
+- Updated dependencies [3a1c5a2]
+- Updated dependencies [a7ff4d3]
+  - @osdk/maker@0.50.0
+  - @osdk/cli@0.74.0
+  - @osdk/api@2.49.0
+  - @osdk/client.unstable@2.49.0
+  - @osdk/generator-converters.ontologyir@2.49.0
+
 ## 0.47.0
 
 ### Patch Changes

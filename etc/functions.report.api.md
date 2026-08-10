@@ -36,12 +36,24 @@ declare namespace Aliases {
     export {
         custom,
         Custom,
+        dataset,
+        Dataset,
+        mediaset,
+        Mediaset,
         model,
         Model,
         source,
-        Source
+        Source,
+        stream,
+        Stream
     }
 }
+
+// @public (undocumented)
+export type Annotated<
+	T,
+	A extends Record<string, string>
+> = T;
 
 export { Attachment }
 
@@ -67,6 +79,15 @@ type Custom = string & {
 
 // @public (undocumented)
 function custom(alias: string): Custom;
+
+// @public (undocumented)
+interface Dataset {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function dataset(alias: string): Dataset;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -195,6 +216,15 @@ export type MandatoryMarking<T extends string = string> = T & {
 
 export { MediaReference }
 
+// @public (undocumented)
+interface Mediaset {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function mediaset(alias: string): Mediaset;
+
 export { MediaUpload }
 
 // @public (undocumented)
@@ -286,6 +316,15 @@ interface Source {
 
 // @public (undocumented)
 function source(alias: string): Source;
+
+// @public (undocumented)
+interface Stream {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function stream(alias: string): Stream;
 
 export { ThreeDimensionalAggregation }
 

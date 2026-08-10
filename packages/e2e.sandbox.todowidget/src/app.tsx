@@ -32,9 +32,9 @@ export const App: React.FC = () => {
       createClient(
         window.location.origin,
         "ri.ontology.main.ontology.0000-0000-0000-0000",
-        () => Promise.resolve("dummy-auth")
+        () => Promise.resolve("dummy-auth"),
       ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNewTodoItem(event.target.value);
     },
-    []
+    [],
   );
 
   return (

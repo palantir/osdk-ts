@@ -18,8 +18,6 @@ import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { lowercase } from "@osdk/generator-utils";
-import Handlebars from "handlebars";
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -32,8 +30,8 @@ beforeAll(() => {
   createAppVersion = JSON.parse(
     fs.readFileSync(
       path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8"
-    )
+      "utf-8",
+    ),
   ).version;
 });
 
@@ -93,7 +91,7 @@ describe.each(TEMPLATES.filter((template) => !template.hidden))(
         skipOsdk: true,
       });
     });
-  }
+  },
 );
 
 const VISIBLE_TEMPLATE = TEMPLATES.filter((template) => !template.hidden)[0];
@@ -106,53 +104,8 @@ test(`CLI rejects no OSDK with 1.x`, async () => {
       corsProxy: false,
       sdkVersion: "1.x",
       skipOsdk: true,
-    })
+    }),
   ).rejects.toThrowError();
-});
-
-test(`CLI lowercases the package.json name field`, async () => {
-  // Project names may contain uppercase characters, but npm rejects package
-  // names that aren't all lowercase. The `name` field is rendered via the
-  // `lowercase` Handlebars helper, so an uppercase project must produce a
-  // lowercase package name.
-  const project = "My-Uppercase-App";
-  await runTest({
-    project,
-    template: VISIBLE_TEMPLATE,
-    corsProxy: false,
-    sdkVersion: "2.x",
-    skipOsdk: false,
-    ontology: "ri.ontology.main.ontology.fake",
-    osdkPackage: "@fake/sdk",
-    osdkRegistryUrl:
-      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-  });
-
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
-  );
-  expect(packageJson.name).toBe(project.toLowerCase());
-});
-
-describe("lowercase Handlebars helper", () => {
-  // Mirrors how run.ts wires the shared helper into the template engine.
-  const handlebars = Handlebars.create();
-  handlebars.registerHelper("lowercase", lowercase);
-
-  test(`renders a package.json name field lowercased`, () => {
-    const rendered = handlebars.compile(`{ "name": "{{lowercase project}}" }`)({
-      project: "@Foundry/My-Uppercase-App",
-    });
-    expect(JSON.parse(rendered).name).toBe("@foundry/my-uppercase-app");
-  });
-
-  test(`throws when its argument cannot be resolved`, () => {
-    // A missing/misspelled token resolves to undefined, so rendering must fail
-    // rather than silently produce an invalid "undefined" package name.
-    expect(() =>
-      handlebars.compile(`{{lowercase typoToken}}`)({ project: "my-app" })
-    ).toThrowError(/requires a string argument/u);
-  });
 });
 
 async function runTest({
@@ -217,17 +170,17 @@ async function runTest({
   await cli(args);
 
   expect(
-    fs.readdirSync(path.join(process.cwd(), project)).length
+    fs.readdirSync(path.join(process.cwd(), project)).length,
   ).toBeGreaterThan(0);
   expect(fs.existsSync(path.join(process.cwd(), project, "package.json"))).toBe(
-    true
+    true,
   );
   expect(fs.existsSync(path.join(process.cwd(), project, "README.md"))).toBe(
-    true
+    true,
   );
 
   const packageJson = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8")
+    fs.readFileSync(path.join(process.cwd(), project, "package.json"), "utf-8"),
   );
 
   // The TypeScript library template is a hidden, non-OSDK scaffold: it ships no
@@ -243,7 +196,7 @@ async function runTest({
     // it should be, so that if the create-app code were to change to different behavior
     // it would be caught.
     expect(packageJson.dependencies["@osdk/client"]).toBe(
-      `^${createAppVersion}`
+      `^${createAppVersion}`,
     );
 
     // The React template pins @osdk/react to the same clientVersion as
@@ -252,10 +205,75 @@ async function runTest({
     // independently, so this assertion is scoped to template-react.
     if (template.id === "template-react") {
       expect(packageJson.dependencies["@osdk/react"]).toBe(
-        `^${createAppVersion}`
+        `^${createAppVersion}`,
       );
     }
   } else {
     expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
   }
 }
+
+describe("--unstableFeatures flag", () => {
+  const argsFor = (project: string, extra: string[]): string[] => [
+    "npx",
+    "@osdk/create-app",
+    project,
+    "--overwrite",
+    "--template",
+    "template-react",
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--applicationUrl",
+    "https://app.example.palantirfoundry.com",
+    "--application",
+    "ri.third-party-applications.main.application.fake",
+    "--clientId",
+    "123",
+    "--corsProxy",
+    "false",
+    "--sdkVersion",
+    "2.x",
+    "--scopes",
+    "api:read-data",
+    "--ontology",
+    "ri.ontology.main.ontology.fake",
+    "--osdkPackage",
+    "@fake/sdk",
+    "--osdkRegistryUrl",
+    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    ...extra,
+  ];
+
+  const readProject = (project: string) => {
+    const root = path.join(process.cwd(), project);
+    const pkgPath = path.join(root, "package.json");
+    const clientPath = path.join(root, "src", "client.ts");
+    return {
+      packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
+      clientTs: fs.readFileSync(clientPath, "utf-8"),
+    };
+  };
+
+  test("wires Foundry branch support when enabled", async () => {
+    const project = "expected-unstable-on";
+    await cli(argsFor(project, ["--unstableFeatures", "true"]));
+    const { packageJson, clientTs } = readProject(project);
+
+    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    expect(packageJson.scripts.postinstall).toBe(postinstall);
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
+    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+  });
+
+  test("omits Foundry branch support by default", async () => {
+    const project = "expected-unstable-off";
+    await cli(argsFor(project, []));
+    const { packageJson, clientTs } = readProject(project);
+
+    expect(packageJson.scripts.postinstall).toBeUndefined();
+    expect(packageJson.devDependencies?.["@osdk/cli"]).toBeUndefined();
+    expect(clientTs).not.toContain("UNSTABLE_DO_NOT_USE_BRANCH");
+    expect(clientTs).not.toContain("$branch");
+  });
+});

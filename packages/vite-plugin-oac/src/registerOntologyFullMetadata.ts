@@ -32,7 +32,7 @@ inspect.defaultOptions = {
 
 export function registerOntologyFullMetadata(
   ontology: ReturnType<FauxFoundry["getOntology"]>,
-  ontologyFullMetadata: Ontologies.OntologyFullMetadata
+  ontologyFullMetadata: Ontologies.OntologyFullMetadata,
 ): void {
   // Register object types
   Object.values(ontologyFullMetadata.objectTypes).forEach((objectType) => {
@@ -42,7 +42,7 @@ export function registerOntologyFullMetadata(
   Object.values(ontologyFullMetadata.actionTypes).forEach((actionType) => {
     const implementation = createActionImplementation(
       actionType,
-      ontologyFullMetadata
+      ontologyFullMetadata,
     );
     const actionTypeWithCamelCaseApiName = {
       ...actionType,
@@ -53,7 +53,7 @@ export function registerOntologyFullMetadata(
   Object.values(ontologyFullMetadata.sharedPropertyTypes).forEach(
     (actionType) => {
       ontology.registerSharedPropertyType(actionType);
-    }
+    },
   );
   Object.values(ontologyFullMetadata.queryTypes).forEach((query) => {
     ontology.registerQueryType(query);
@@ -70,14 +70,14 @@ export function registerOntologyFullMetadata(
  */
 function createActionImplementation(
   actionType: Ontologies.ActionTypeV2,
-  fullMetadata: Ontologies.OntologyFullMetadata
+  fullMetadata: Ontologies.OntologyFullMetadata,
 ): FauxActionImpl {
   return (
     batch,
     payload: {
       parameters: Record<string, any>;
     },
-    _ctx: unknown
+    _ctx: unknown,
   ) => {
     // Extract parameters from payload
     const params = payload.parameters;
@@ -98,7 +98,7 @@ function createActionImplementation(
           batch.addObject(
             objectType.objectType.apiName,
             primaryKey,
-            objectData
+            objectData,
           );
 
           // TODO: this shouldn't send params but the actual object!
@@ -107,7 +107,7 @@ function createActionImplementation(
             fullMetadata,
             objectType.objectType.apiName,
             primaryKey,
-            params
+            params,
           );
           break;
         }
@@ -116,25 +116,25 @@ function createActionImplementation(
           // Handle modify object operation
           const { objectType } = getObjectTypeForOperation(
             operation,
-            fullMetadata
+            fullMetadata,
           );
 
           const primaryKey = extractAndDelete(
             params,
-            "objectToModifyParameter"
+            "objectToModifyParameter",
           );
 
           const targetObject = batch.getObject(objectType.apiName, primaryKey);
           invariant(
             targetObject,
-            `Could not find object ${objectType.apiName} with PK ${primaryKey}`
+            `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
           );
 
           if (objectType.primaryKey in params) {
             // TODO Is this true? Or are you allowed to change the PK value?
             invariant(
               params[objectType.primaryKey] === primaryKey,
-              `If the primary key is provided, it must match the 'objectToModifyParameter'`
+              `If the primary key is provided, it must match the 'objectToModifyParameter'`,
             );
             // delete the key since we don't store it directly on the object
             delete params[objectType.primaryKey];
@@ -149,7 +149,7 @@ function createActionImplementation(
             fullMetadata,
             objectType.apiName,
             primaryKey,
-            params
+            params,
           );
 
           break;
@@ -158,11 +158,11 @@ function createActionImplementation(
         case "deleteObject": {
           const { objectType } = getObjectTypeForOperation(
             operation,
-            fullMetadata
+            fullMetadata,
           );
           const primaryKey = extractAndDelete(
             params,
-            "objectToDeleteParameter"
+            "objectToDeleteParameter",
           );
 
           // Handle delete object operation
@@ -188,7 +188,7 @@ function createActionImplementation(
               aSidePrimaryKey,
               linkTypeApiNameAtoB,
               bSideObjectTypeApiName,
-              bSidePrimaryKey
+              bSidePrimaryKey,
             );
           }
           break;
@@ -212,7 +212,7 @@ function createActionImplementation(
               aSidePrimaryKey,
               linkTypeApiNameAtoB,
               bSideObjectTypeApiName,
-              bSidePrimaryKey
+              bSidePrimaryKey,
             );
           }
           break;
@@ -224,7 +224,7 @@ function createActionImplementation(
         case "deleteInterfaceObject":
           // These operations are not implemented for now
           throw new Error(
-            `Operation type ${operation.type} not implemented yet`
+            `Operation type ${operation.type} not implemented yet`,
           );
           break;
         default:
@@ -236,7 +236,7 @@ function createActionImplementation(
 
 function extractAndDelete<K extends string, O extends Record<K, any>>(
   obj: O,
-  key: K
+  key: K,
 ) {
   const value = obj[key];
   delete obj[key];
@@ -248,7 +248,7 @@ function getObjectTypeForOperation(
     | Ontologies.CreateObjectRule
     | Ontologies.ModifyObjectRule
     | Ontologies.DeleteObjectRule,
-  fullMetadata: Ontologies.OntologyFullMetadata
+  fullMetadata: Ontologies.OntologyFullMetadata,
 ) {
   const objectTypeApiName = operation.objectTypeApiName;
   const objectType = fullMetadata.objectTypes[objectTypeApiName];
@@ -258,7 +258,7 @@ function getObjectTypeForOperation(
 
 function paramsToDataValues(
   params: Record<string, any>,
-  actionType: Ontologies.ActionTypeV2
+  actionType: Ontologies.ActionTypeV2,
 ) {
   const objectData: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(params)) {
@@ -311,7 +311,7 @@ function handleObjectLinks(
   fullMetadata: Ontologies.OntologyFullMetadata,
   objectTypeApiName: string,
   primaryKey: string | number | boolean,
-  params: Record<string, unknown>
+  params: Record<string, unknown>,
 ): void {
   // HACK HACK HACK
   fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach((link) => {
@@ -326,7 +326,7 @@ function handleObjectLinks(
             primaryKey,
             link.apiName,
             link.objectTypeApiName,
-            foreignObject.__primaryKey
+            foreignObject.__primaryKey,
           );
         }
       }
@@ -339,7 +339,7 @@ function handleObjectLinks(
             primaryKey,
             link.apiName,
             link.objectTypeApiName,
-            foreignObject.__primaryKey
+            foreignObject.__primaryKey,
           );
         }
       }
@@ -349,7 +349,7 @@ function handleObjectLinks(
 
 function anyValueMatches(
   obj: BaseServerObject | Record<string, unknown>,
-  primaryKey: string | number | boolean
+  primaryKey: string | number | boolean,
 ) {
   return Object.values(obj).some((val) => val === primaryKey);
 }

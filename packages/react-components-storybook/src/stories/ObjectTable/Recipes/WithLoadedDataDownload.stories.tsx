@@ -59,7 +59,7 @@ const employeeColumns: Array<ColumnDefinition<Employee>> = [
 ];
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Components/ObjectTable/Recipes",
+  title: "Components/ObjectTable/Features/Advanced",
   component: ObjectTable,
   tags: ["beta"],
   parameters: {
@@ -124,7 +124,7 @@ function LoadedDataDownloadExample(): React.ReactElement {
 
       await downloadCsv(
         toCsv(snapshot.columns, snapshot.rows),
-        "employees.csv"
+        "employees.csv",
       );
     } finally {
       setIsDownloading(false);
@@ -165,9 +165,9 @@ function toCsv(columns: ObjectTableDataColumn[], rows: EmployeeRow[]): string {
     ...rows.map((row) =>
       columns
         .map((column) =>
-          escapeCsvCell(formatCellValue(row.getValue(column.id)))
+          escapeCsvCell(formatCellValue(row.getValue(column.id))),
         )
-        .join(",")
+        .join(","),
     ),
   ].join("\n");
 }

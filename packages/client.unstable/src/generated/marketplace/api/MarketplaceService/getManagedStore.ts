@@ -29,11 +29,11 @@ import type {
  */
 export async function getManagedStore(
   ctx: ConjureContext,
-  managedMarketplaceId: _api_ManagedMarketplaceId
+  managedMarketplaceId: _api_ManagedMarketplaceId,
 ): Promise<_api_ManagedStoreResponseEntry> {
   return conjureFetch(
     ctx,
     `/marketplaces/managedStores/${managedMarketplaceId}`,
-    "GET"
+    "GET",
   );
 }

@@ -35,12 +35,12 @@ import type {
  */
 export async function getInstallationProvenanceForResource(
   ctx: ConjureContext,
-  installationOutputKey: _api_InstallationOutputKey
+  installationOutputKey: _api_InstallationOutputKey,
 ): Promise<_api_ResourceInstallationProvenanceResponse | null | undefined> {
   return conjureFetch(
     ctx,
     `/block-set-installation/get-installation-provenance`,
     "POST",
-    installationOutputKey
+    installationOutputKey,
   );
 }

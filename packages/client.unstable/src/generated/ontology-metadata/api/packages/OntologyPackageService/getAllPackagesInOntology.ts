@@ -28,7 +28,7 @@ import type { OntologyPackageMetadata as _api_packages_OntologyPackageMetadata }
  */
 export async function getAllPackagesInOntology(
   ctx: ConjureContext,
-  ontologyRid: _api_OntologyRid
+  ontologyRid: _api_OntologyRid,
 ): Promise<
   Record<_api_OntologyPackageRid, _api_packages_OntologyPackageMetadata>
 > {

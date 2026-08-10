@@ -62,7 +62,7 @@ function InteractivePicker({
   initialSelection?: string[];
 }) {
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    initialSelection ?? EMPTY_SELECTED
+    initialSelection ?? EMPTY_SELECTED,
   );
 
   return (
@@ -126,7 +126,7 @@ function WithImpliedAndDisallowedPicker() {
 
   const markingStates = useMemo(
     () => computeMarkingStates(selectedIds, impliedIds, disallowedIds),
-    [selectedIds, impliedIds, disallowedIds]
+    [selectedIds, impliedIds, disallowedIds],
   );
 
   const noop = useCallback(() => {}, []);

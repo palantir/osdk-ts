@@ -48,7 +48,7 @@ export interface RenderQuickInfoProbesOptions {
  * user-facing situation it captures; a missing JSDoc throws.
  */
 export function renderQuickInfoProbes(
-  opts: RenderQuickInfoProbesOptions
+  opts: RenderQuickInfoProbesOptions,
 ): Record<string, string> {
   const { probesPaths, tsconfigPath } = opts;
   const program = buildProgram(probesPaths, tsconfigPath);
@@ -57,7 +57,7 @@ export function renderQuickInfoProbes(
   for (const probesPath of probesPaths) {
     out[probesPath] = formatSnapshot(
       extractProbes(program, checker, probesPath),
-      path.basename(probesPath)
+      path.basename(probesPath),
     );
   }
   return out;
@@ -73,7 +73,7 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
   if (configText == null) throw new Error(`cannot read ${tsconfigPath}`);
   const { config, error } = ts.parseConfigFileTextToJson(
     tsconfigPath,
-    configText
+    configText,
   );
   if (error) {
     throw new Error(ts.flattenDiagnosticMessageText(error.messageText, "\n"));
@@ -81,7 +81,7 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
   const parsed = ts.parseJsonConfigFileContent(
     config,
     ts.sys,
-    path.dirname(tsconfigPath)
+    path.dirname(tsconfigPath),
   );
   return ts.createProgram({
     rootNames: probesPaths,
@@ -97,7 +97,7 @@ function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
 function extractProbes(
   program: ts.Program,
   checker: ts.TypeChecker,
-  probesPath: string
+  probesPath: string,
 ): Record<string, ProbeEntry> {
   const sourceFile = program.getSourceFile(probesPath);
   if (sourceFile == null) {
@@ -131,7 +131,7 @@ function extractProbes(
 // falling back to an empty description.
 function probeDescription(
   stmt: ts.VariableStatement,
-  decl: ts.VariableDeclaration
+  decl: ts.VariableDeclaration,
 ): string {
   const jsdoc = ts.getJSDocCommentsAndTags(stmt).find(ts.isJSDoc);
   const raw = jsdoc?.comment;
@@ -140,7 +140,7 @@ function probeDescription(
   if (text.trim().length === 0) {
     const name = ts.isIdentifier(decl.name) ? decl.name.text : "<unnamed>";
     throw new Error(
-      `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration`
+      `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration`,
     );
   }
   return text.replace(/\s+/gu, " ").trim();
@@ -156,7 +156,7 @@ function scrub(s: string): string {
 // dprint.
 function formatSnapshot(
   probes: Record<string, ProbeEntry>,
-  probesFileName: string
+  probesFileName: string,
 ): string {
   const names = Object.keys(probes).sort();
   if (names.length === 0) return "";
@@ -181,7 +181,7 @@ function formatSnapshot(
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(
-      `dprint exited with status ${result.status}: ${result.stderr}`
+      `dprint exited with status ${result.status}: ${result.stderr}`,
     );
   }
   return result.stdout;

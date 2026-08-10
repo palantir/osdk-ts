@@ -85,7 +85,7 @@ export function updateOntology<T extends OntologyEntityType>(entity: T): void {
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
   }
   ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName].push(
-    entity
+    entity,
   );
 }
 
@@ -97,7 +97,7 @@ export async function defineOntology(
   codeSnippetFiles?: boolean,
   snippetPackageName?: string,
   snippetFileOutputDir?: string,
-  randomnessKey?: string
+  randomnessKey?: string,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -123,7 +123,7 @@ export async function defineOntology(
     // eslint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
-      e
+      e,
     );
     throw e;
   }
@@ -137,7 +137,7 @@ export async function defineOntology(
     createCodeSnippets(
       ontologyDefinition,
       snippetPackageName,
-      snippetFileOutputDir
+      snippetFileOutputDir,
     );
   }
 
@@ -190,10 +190,10 @@ export function writeStaticObjects(outputDir: string): void {
           const entityJSON = JSON.stringify(
             sanitizeTypes(entity),
             null,
-            2
+            2,
           ).replace(
             /("__type"\s*:\s*)"([^"]*)"/gu,
-            (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`
+            (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
           );
           const content = `
 import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
@@ -210,15 +210,15 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
         `;
           fs.writeFileSync(filePath, content, { flag: "w" });
           entityModuleNames.push(entityFileNameBase);
-        }
+        },
       );
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
         );
       }
-    }
+    },
   );
 
   if (topLevelExportStatements.length > 0) {
@@ -233,7 +233,7 @@ export function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
-  mandatoryMarkingGroupName?: string
+  mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -275,7 +275,7 @@ export function sanitizeTypes(entity: OntologyEntityType): OntologyEntityType {
               ? ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
                   interfaceTypeOrApiName
                 ]
-              : interfaceTypeOrApiName
+              : interfaceTypeOrApiName,
         ),
       });
     case OntologyEntityTypeEnum.OBJECT_TYPE:
@@ -284,7 +284,7 @@ export function sanitizeTypes(entity: OntologyEntityType): OntologyEntityType {
         : {
             ...entity,
             implementsInterfaces: sanitizeImplements(
-              entity.implementsInterfaces
+              entity.implementsInterfaces,
             ),
           };
     case OntologyEntityTypeEnum.LINK_TYPE:
@@ -295,7 +295,7 @@ export function sanitizeTypes(entity: OntologyEntityType): OntologyEntityType {
 }
 
 function sanitizeImplements(
-  implementsInterfaces: Array<InterfaceImplementation>
+  implementsInterfaces: Array<InterfaceImplementation>,
 ): Array<InterfaceImplementation> {
   return implementsInterfaces.map((impl) => ({
     ...impl,
@@ -304,7 +304,7 @@ function sanitizeImplements(
 }
 
 function sanitizeImplementer(
-  object: ObjectTypeDefinition | ObjectType
+  object: ObjectTypeDefinition | ObjectType,
 ): ObjectTypeDefinition | ObjectType {
   return object.implementsInterfaces === undefined
     ? object
@@ -315,7 +315,7 @@ function sanitizeImplementer(
 }
 
 function sanitizeLinkSideObject(
-  object: ObjectTypeDefinition | ObjectType | string
+  object: ObjectTypeDefinition | ObjectType | string,
 ): ObjectTypeDefinition | ObjectType | string {
   return typeof object === "string" ? object : sanitizeImplementer(object);
 }
@@ -350,7 +350,7 @@ function sanitizeLinkInterfaces(link: LinkType): LinkType {
 }
 
 function sanitizeIntermediarySide(
-  side: IntermediaryObjectLinkReference
+  side: IntermediaryObjectLinkReference,
 ): IntermediaryObjectLinkReference {
   return {
     ...side,
@@ -362,12 +362,12 @@ function sanitizeIntermediarySide(
 function filterCyclicReferences(
   iface: InterfaceType,
   ancestors = new Set<string>(),
-  expanded = new Set<string>()
+  expanded = new Set<string>(),
 ): InterfaceType {
   ancestors.add(iface.apiName);
 
   const processLinked = (
-    linked: InterfaceType | string
+    linked: InterfaceType | string,
   ): InterfaceType | string => {
     if (typeof linked === "string") return linked;
     if (ancestors.has(linked.apiName)) return linked.apiName;
@@ -387,7 +387,7 @@ function filterCyclicReferences(
     ...iface,
     linkedInterfaces: (iface.linkedInterfaces ?? []).map(processLinked),
     extendsInterfaces: iface.extendsInterfaces.map(
-      (parent) => processLinked(parent) as InterfaceType
+      (parent) => processLinked(parent) as InterfaceType,
     ),
   };
 }
@@ -405,7 +405,7 @@ export function cleanAndValidateLinkTypeId(apiName: string): string {
   const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/u;
   if (!VALIDATION_PATTERN.test(linkTypeId)) {
     throw new Error(
-      `LinkType id '${linkTypeId}' must be lower case with dashes.`
+      `LinkType id '${linkTypeId}' must be lower case with dashes.`,
     );
   }
   return linkTypeId;
@@ -463,7 +463,7 @@ export function convertObjectStatus(status: any): any {
 }
 
 export function convertAction(
-  action: ActionType
+  action: ActionType,
 ): OntologyIrActionTypeBlockDataV2 {
   const actionValidation = convertActionValidation(action);
   const actionParameters: Record<ParameterId, OntologyIrParameter> =
@@ -539,7 +539,7 @@ export function convertAction(
 }
 
 export function extractAllowedValues(
-  allowedValues: ActionParameterAllowedValues
+  allowedValues: ActionParameterAllowedValues,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
     case "oneOf":
@@ -674,7 +674,7 @@ export function extractAllowedValues(
 
 export function renderHintFromBaseType(
   parameter: ActionParameter,
-  validation?: ActionParameterValidation
+  validation?: ActionParameterValidation,
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
   const type =
@@ -722,7 +722,7 @@ export function renderHintFromBaseType(
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`
+          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
         );
       }
     case "timeSeriesReference":
@@ -779,7 +779,7 @@ function getEntityTypeName(type: string): string {
   }[type]!;
 }
 
-function writeDependencyFile(dependencyFile: string): void {
+export function writeDependencyFile(dependencyFile: string): void {
   fs.writeFileSync(dependencyFile, JSON.stringify(dependencies, null, 2));
 }
 
