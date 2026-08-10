@@ -35,6 +35,7 @@ import {
   isInterfaceSpecifier,
 } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
+import { normalizeInterfaceLinkSearchArounds } from "./normalizeInterfaceLinkSearchArounds.js";
 import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -156,10 +157,13 @@ export async function toDataValueQueries(
     case "interfaceObjectSet": {
       // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
       if (isWireObjectSet(value)) {
-        return value;
+        return normalizeInterfaceLinkSearchArounds(client, value);
       }
       if (isObjectSet(value)) {
-        return getWireObjectSet(value);
+        return normalizeInterfaceLinkSearchArounds(
+          client,
+          getWireObjectSet(value)
+        );
       }
       break;
     }

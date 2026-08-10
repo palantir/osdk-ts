@@ -35,6 +35,7 @@ import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLeg
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /** @internal */
@@ -62,11 +63,19 @@ export async function aggregate<
     await clientCtx.flushEdits();
   }
 
+  // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
+  // `interfaceLinkSearchAround` for a chain that has already landed on an object
+  // type, which the gateway rejects.
+  const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
+    clientCtx,
+    objectSet
+  );
+
   const result = await OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
-      objectSet,
+      objectSet: normalizedObjectSet,
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },

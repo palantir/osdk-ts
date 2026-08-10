@@ -48,6 +48,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /**
@@ -525,6 +526,7 @@ async function buildAndRemapRequestBody<
   S extends NullabilityAdherence,
   T extends boolean,
   RequestBody extends {
+    objectSet: ObjectSet;
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
@@ -538,7 +540,17 @@ async function buildAndRemapRequestBody<
   client: MinimalClient,
   objectType: Q
 ): Promise<RequestBody> {
-  const requestBody = await applyFetchArgs(args, baseBody, client, objectType);
+  const withArgs = await applyFetchArgs(args, baseBody, client, objectType);
+
+  // `pivotTo` cannot resolve link targets synchronously, so an interface-rooted
+  // chain emits `interfaceLinkSearchAround` even after it lands on an object
+  // type. Rewrite those before they reach the wire.
+  const objectSet = await normalizeInterfaceLinkSearchArounds(
+    client,
+    withArgs.objectSet
+  );
+  const requestBody =
+    objectSet === withArgs.objectSet ? withArgs : { ...withArgs, objectSet };
 
   if (requestBody.selectV2 != null && requestBody.selectV2.length > 0) {
     const remapped = remapSelectV2(objectType, requestBody.selectV2);

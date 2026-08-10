@@ -28,6 +28,7 @@ import type {
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 
 /** @internal */
 export const fetchLinksPage = async <
@@ -48,11 +49,19 @@ export const fetchLinksPage = async <
     .getObjectDefinition(objectType.apiName)
     .catch(() => {});
 
+  // See normalizeInterfaceLinkSearchArounds: `pivotTo` can emit
+  // `interfaceLinkSearchAround` for a chain that has already landed on an object
+  // type, which the gateway rejects.
+  const normalizedObjectSet = await normalizeInterfaceLinkSearchArounds(
+    client,
+    objectSet
+  );
+
   const result = await OntologyObjectSets.loadLinks(
     client,
     await client.ontologyRid,
     {
-      objectSet,
+      objectSet: normalizedObjectSet,
       links,
       pageToken,
     },
