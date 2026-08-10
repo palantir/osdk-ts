@@ -1,5 +1,21 @@
 # @osdk/maker-experimental
 
+## 0.46.0
+
+### Minor Changes
+
+- 849f34e: Port over knownIdentifier logic for imported interface props from java
+- e8584ec: Fix value type shapes
+
+### Patch Changes
+
+- Updated dependencies [7b85fa7]
+- Updated dependencies [342c492]
+  - @osdk/generator-converters.preview@0.34.0
+  - @osdk/api@2.56.0
+  - @osdk/client.unstable@2.56.0
+  - @osdk/generator-converters.ontologyir@2.56.0
+
 ## 0.45.0
 
 ### Minor Changes
