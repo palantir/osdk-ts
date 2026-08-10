@@ -854,6 +854,8 @@ export interface FetchPageArgs<
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	// Warning: (ae-forgotten-export) The symbol "PropertyModifierValue" needs to be exported by the entry point index.d.ts
+    $defaultLoadLevel?: PropertyModifierValue;
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
