@@ -173,33 +173,37 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   addFilterMode?: "controlled" | "uncontrolled";
 
   /**
-   * Called when a filter is added (shown).
+   * Called after a filter is shown from the built-in "Add filter" popover.
    *
-   * In uncontrolled mode, this fires when a user selects a hidden filter
-   * from the "Add filter" popover.
+   * Uncontrolled mode only — controlled mode renders no built-in popover, so
+   * nothing fires this. For the resulting visibility and order, use
+   * `onFilterVisibilityChange`, which fires in both modes.
    *
    * @param filterKey The key of the added filter
-   * @param newDefinitions The current filter definitions array
    */
-  onFilterAdded?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
+  onFilterAdded?: (filterKey: FilterKey<Q>) => void;
 
   /**
-   * Called when a filter is removed (hidden).
+   * Called after a filter's remove button is clicked.
    *
-   * In uncontrolled mode, this fires as a notification after the filter
-   * is hidden internally.
+   * In uncontrolled mode this is a notification — the filter is already
+   * hidden and its state cleared. In controlled mode nothing is hidden for
+   * you; set `isVisible: false` in `filterDefinitions` to act on it.
    *
    * @param filterKey The key of the removed filter
    */
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
-   * Called when filter visibility or ordering changes, i.e. when filters
-   * are reordered, or (in uncontrolled mode) added or
-   * removed via the built-in show/remove controls.
+   * Called when filter visibility or ordering changes: on drag-reorder in
+   * either mode, and on add/remove via the built-in controls in uncontrolled
+   * mode.
+   *
+   * Visible filters come first, in display order, followed by the hidden ones.
+   * Persist this array and feed it back as the order and `isVisible` of
+   * `filterDefinitions` to make reordering survive a remount — in controlled
+   * mode that is the only way a drag sticks, since order is read from
+   * `filterDefinitions` on every render.
    *
    * @param newStates The filters in current display order with their visibility state
    */
@@ -211,10 +215,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Enable drag-and-drop reordering of filters.
-   * When true, drag handles are rendered and filters can be reordered.
-   * Reorder state is managed internally; consumers who need to track order
-   * should use controlled filterDefinitions.
+   * Enable drag-and-drop reordering of filters. When `true`, drag handles are
+   * rendered and filters can be reordered.
+   *
+   * In uncontrolled mode the new order is held internally. In controlled mode
+   * `filterDefinitions` is the source of truth, so a drag reverts unless you
+   * persist `onFilterVisibilityChange` and pass the new order back.
+   *
+   * @default undefined (no drag handles)
    */
   enableSorting?: boolean;
 

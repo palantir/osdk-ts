@@ -160,4 +160,155 @@ describe("FilterList", () => {
       expect(screen.getByRole("button", { name: "Keeping" })).toBeDefined();
     });
   });
+  describe("visibility and ordering callbacks", () => {
+    const ROW_HEIGHT = 50;
+    const originalGetBoundingClientRect =
+      Element.prototype.getBoundingClientRect;
+
+    // dnd-kit resolves drops from measured rects, and jsdom reports every
+    // element as 0x0. Stack the rects so a pointer drag finds a neighbor.
+    function stubRowLayout(): void {
+      Element.prototype.getBoundingClientRect = function (this: Element) {
+        const parent = this.parentElement;
+        const index = parent ? Array.from(parent.children).indexOf(this) : 0;
+        const top = index * ROW_HEIGHT;
+        return {
+          x: 0,
+          y: top,
+          top,
+          left: 0,
+          right: 200,
+          bottom: top + ROW_HEIGHT,
+          width: 200,
+          height: ROW_HEIGHT,
+          toJSON: () => ({}),
+        } as DOMRect;
+      };
+    }
+
+    function dragFirstFilterDown(): void {
+      const handle = screen.getAllByLabelText(/reorder/iu)[0];
+      fireEvent.pointerDown(handle, {
+        clientX: 10,
+        clientY: 10,
+        isPrimary: true,
+        button: 0,
+        pointerId: 1,
+      });
+      fireEvent.pointerMove(handle, { clientX: 10, clientY: 40, pointerId: 1 });
+      fireEvent.pointerMove(handle, { clientX: 10, clientY: 80, pointerId: 1 });
+      fireEvent.pointerUp(handle, { clientX: 10, clientY: 80, pointerId: 1 });
+    }
+
+    function twoSortableDefs() {
+      return [
+        createPropertyFilterDef("name", "LISTOGRAM", {
+          type: "EXACT_MATCH",
+          values: [],
+        }),
+        createPropertyFilterDef("age", "NUMBER_RANGE", {
+          type: "NUMBER_RANGE",
+          minValue: undefined,
+          maxValue: undefined,
+        }),
+      ];
+    }
+
+    function hiddenDeptDef() {
+      return {
+        ...createPropertyFilterDef("dept", "MULTI_SELECT", {
+          type: "SELECT",
+          selectedValues: [],
+        }),
+        isVisible: false,
+      };
+    }
+
+    afterEach(() => {
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+    });
+
+    it("passes only the filter key to onFilterAdded", () => {
+      const onFilterAdded = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[hiddenDeptDef()]}
+          onFilterAdded={onFilterAdded}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
+
+      expect(onFilterAdded).toHaveBeenCalledWith("dept");
+      expect(onFilterAdded.mock.calls[0]).toHaveLength(1);
+    });
+
+    it("reports the shown filter as visible after an add", () => {
+      const onFilterVisibilityChange = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[hiddenDeptDef()]}
+          onFilterVisibilityChange={onFilterVisibilityChange}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
+
+      expect(onFilterVisibilityChange).toHaveBeenCalledWith([
+        { filterKey: "dept", isVisible: true },
+      ]);
+    });
+
+    // The drag cases come last on purpose: synthetic pointer events leave
+    // base-ui interaction state behind that stops a later click from opening
+    // the add-filter popover.
+    it("reports a reorder in controlled mode", () => {
+      stubRowLayout();
+      const onFilterVisibilityChange = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={twoSortableDefs()}
+          addFilterMode="controlled"
+          enableSorting
+          onFilterVisibilityChange={onFilterVisibilityChange}
+        />,
+      );
+
+      dragFirstFilterDown();
+
+      expect(onFilterVisibilityChange).toHaveBeenCalledWith([
+        { filterKey: "age", isVisible: true },
+        { filterKey: "name", isVisible: true },
+      ]);
+    });
+
+    it("reports a reorder in uncontrolled mode", () => {
+      stubRowLayout();
+      const onFilterVisibilityChange = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={twoSortableDefs()}
+          enableSorting
+          onFilterVisibilityChange={onFilterVisibilityChange}
+        />,
+      );
+
+      dragFirstFilterDown();
+
+      expect(onFilterVisibilityChange).toHaveBeenCalledWith([
+        { filterKey: "age", isVisible: true },
+        { filterKey: "name", isVisible: true },
+      ]);
+    });
+  });
 });

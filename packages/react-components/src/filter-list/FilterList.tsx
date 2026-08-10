@@ -100,10 +100,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
-  } = useFilterVisibility(
-    filterDefinitions,
-    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
-  );
+  } = useFilterVisibility(filterDefinitions, handleVisibilityChange);
 
   const canReset = hasChangesFromInitial || hasVisibilityChanges;
 
@@ -140,9 +137,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      onFilterAdded?.(filterKey, filterDefinitions ?? []);
+      onFilterAdded?.(filterKey);
     },
-    [showFilter, onFilterAdded, filterDefinitions],
+    [showFilter, onFilterAdded],
   );
 
   const handleOrderChange = useCallback(
