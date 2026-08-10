@@ -1,6 +1,11 @@
+<!-- cspell:words zpoh officenetwork peopleapp OOTB autodocs -->
+
 # GA Readiness Audit — DocumentViewer
 
 Read-only audit against `packages/react-components/CONTRIBUTING.md` and `CLAUDE.md`.
+Re-audited 2026-08-10 against `zpoh/ga` @ `ee3b3ed8ee`.
+
+> **What changed:** `docs/DocumentViewer.md` now generates its Props table from source (#3463 AUTOGEN), closing the `fileName` and `enableTiffToPdf` gaps. Separately, the Excel viewer was renamed to SpreadsheetViewer (#3799) — `excelViewerProps` is now `spreadsheetViewerProps`. **Categories A, B and C are entirely unchanged.** Blocking set: **7** (was 9 counted per-bullet; see the verdict note).
 
 ---
 
@@ -17,14 +22,14 @@ DocumentViewer is a **format-detecting dispatcher**: it takes an OSDK `Media` ob
   - image (png/jpeg/gif/svg+xml/webp/bmp) → `ImageViewer`
   - `video/*` → `VideoViewer`
   - markdown (text/markdown, text/x-markdown) → `MarkdownViewerMedia`
-  - Excel (xlsx) → `ExcelViewer`
+  - spreadsheet (xlsx) → `SpreadsheetViewer` (renamed from `ExcelViewer` in #3799)
   - email (message/rfc822) → `EmailViewer`
   - XML (application/xml, text/xml) → `XmlViewer`
   - Unsupported → fallback message.
 - **MIME override** — `mimeTypeOverride?: string` bypasses auto-detection.
 - **Filename hint** — `fileName?: string` disambiguates TIFF (`.tif`/`.tiff`) when MIME is ambiguous (`application/octet-stream`).
 - **Multi-page TIFF → PDF** — `enableTiffToPdf?: boolean` (default `false`): fetches TIFF bytes, counts pages via `utif`, and for multi-page converts to PDF via the experimental MIO `transformAndWait` API, falling back to the TIFF renderer on failure (`hooks/useTiffToPdf.ts`).
-- **Per-viewer prop pass-through** — 8 optional prop bags (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffRendererProps`, `markdownRendererProps`, `excelViewerProps`, `emailViewerProps`, `xmlViewerProps`) forwarded to the matching viewer.
+- **Per-viewer prop pass-through** — 8 optional prop bags (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffRendererProps`, `markdownRendererProps`, `spreadsheetViewerProps`, `emailViewerProps`, `xmlViewerProps`) forwarded to the matching viewer.
 - **Styling hook** — `className?: string` merged onto the root container.
 - **Loading state** — "Converting document…" spinner while TIFF→PDF conversion runs.
 
@@ -46,7 +51,7 @@ _✅ No forbidden exports — `src/public/experimental/document-viewer.ts` expor
 ### B. API
 
 **[REQUIRED]**
-- [ ] **Not exercised in any sandbox app.** `DocumentViewer` (and every sibling viewer) has zero usages in `packages/e2e.sandbox.peopleapp` or `e2e.sandbox.officenetwork` (grep across both `src/` trees returns nothing). CONTRIBUTING step 11 makes a live peopleapp example part of the MVP definition of done. Because it is never mounted against real Foundry `Media`, the "types resolve without casts in a consumer" guarantee is **unverified end-to-end** — add a real example wiring `media` from an ontology object and confirm no `as`/`any` is needed for `media` or the 9 pass-through prop bags.
+- [ ] **Not exercised in any sandbox app.** Unchanged as of 2026-08-10: `DocumentViewer` (and every sibling viewer) still has zero usages in `packages/e2e.sandbox.peopleapp` or `e2e.sandbox.officenetwork` (grep across both `src/` trees returns nothing). CONTRIBUTING step 11 makes a live peopleapp example part of the MVP definition of done. Because it is never mounted against real Foundry `Media`, the "types resolve without casts in a consumer" guarantee is **unverified end-to-end** — add a real example wiring `media` from an ontology object and confirm no `as`/`any` is needed for `media` or the 9 pass-through prop bags.
 
 _✅ No `@deprecated` props. ✅ No dead API — every public prop is live: all 8 `*ViewerProps` are spread into their viewer, `mimeTypeOverride`/`fileName` feed `getViewerType`, `enableTiffToPdf` drives `TiffDocumentViewer`, `className` merges onto root. No declared-but-never-invoked callbacks (component exposes no callbacks)._
 
@@ -55,7 +60,7 @@ _✅ No `@deprecated` props. ✅ No dead API — every public prop is live: all 
 
 ### C. Features
 
-**[REQUIRED]**
+**[REQUIRED] — both unchanged as of 2026-08-10**
 - [ ] **Hardcoded "Unsupported file type:" message with no override prop** (`DocumentViewer.tsx:198`). Add an override (e.g. `renderUnsupported` slot or `unsupportedMessage` prop). A hardcoded default is fine, but there must be an override path.
 - [ ] **Hardcoded "Converting document…" loading message with no override prop** (`TiffDocumentViewer.tsx:52`). Add an override path.
 
@@ -78,13 +83,13 @@ _✅ Dark mode — no hardcoded hex/rgb/rgba anywhere in `src/document-viewer/` 
 ### E. Documentation
 
 **[REQUIRED]**
-- [ ] **`fileName` prop undocumented** — missing from the Props table in `docs/DocumentViewer.md` (table `:48-60` stops at `xmlViewerProps`). Prop exists at `DocumentViewerApi.ts:80`.
-- [ ] **`enableTiffToPdf` prop undocumented** — missing from the same Props table. Prop exists at `DocumentViewerApi.ts:83`.
-- [ ] **`ViewerType` enum undocumented** — it is a public export (`document-viewer.ts:25`) but appears nowhere in `docs/DocumentViewer.md`.
-- [ ] **Stale coverage in docs prose** — intro (`DocumentViewer.md:5`) claims support for only "PDF, TIFF, common image formats, video, and markdown", omitting Excel, Email, and XML (all supported and in the MIME table). Reconcile.
-- [ ] **Storybook code panel missing on most stories** — only `Pdf`, `TiffWithPdfConversion`, `WithMimeTypeOverride`, `WithPdfViewerProps` set `docs.source.code`. `Image`, `Markdown`, `Video`, `Email`, `Excel`, `Xml`, `Tiff` have no explicit snippet (rely on auto-source). Add a Code-panel snippet per the GA story requirement.
+- [ ] **`ViewerType` enum undocumented** — unchanged. It is a public export (`src/public/experimental/document-viewer.ts:25`) but still appears nowhere in `docs/DocumentViewer.md` (grep: zero hits). The AUTOGEN block only covers `DocumentViewerProps`, so regenerating won't add it.
+- [ ] **Stale coverage in docs prose** — unchanged, and now doubly stale. The intro (`DocumentViewer.md:5`) still claims support for only "PDF, TIFF, common image formats, video, and markdown", omitting spreadsheet, email, and XML (all supported and in the MIME table) — and the rename in #3799 means any reference to "Excel" in the surrounding prose needs a pass too.
+- [ ] **Storybook code panel missing on most stories** — unchanged. Only `Pdf` (`:224`), `TiffWithPdfConversion` (`:348`), `WithMimeTypeOverride` (`:366`), and `WithPdfViewerProps` (`:386`) set `docs.source.code`. `Image`, `Markdown`, `Video`, `UnsupportedType`, `Email`, `Spreadsheet`, `Xml`, `Tiff` have no explicit snippet (rely on auto-source). Add a Code-panel snippet per the GA story requirement.
 
-_✅ Storybook Overview page exists (`DocumentViewer.mdx` embeds `docs/DocumentViewer.md`). ✅ Default story (`Pdf`, minimal props) present. ✅ One story per supported document type (Pdf, Image, Markdown, Video, Email, Excel, Xml, Tiff, + TiffWithPdfConversion) — every format in the inventory has a story. ✅ Both CSS tokens documented in the Theming section. ✅ No data-attributes to document (none emitted). Base-component story N/A (no base layer — see A)._
+- ✅ **`fileName` and `enableTiffToPdf` now documented** (#3463). `docs/DocumentViewer.md:46-64` is an AUTOGEN block generated from `DocumentViewerApi.ts`; both props appear with their JSDoc and defaults, alongside all 8 pass-through bags (now including the renamed `spreadsheetViewerProps`).
+
+_✅ Storybook Overview page exists (`DocumentViewer.mdx` embeds `docs/DocumentViewer.md`). ✅ Default story (`Pdf`, minimal props) present. ✅ One story per supported document type (Pdf, Image, Markdown, Video, Email, Spreadsheet, Xml, Tiff, + TiffWithPdfConversion and UnsupportedType) — every format in the inventory has a story. ✅ Both CSS tokens documented in the Theming section. ✅ No data-attributes to document (none emitted). Base-component story N/A (no base layer — see A)._
 
 **Nice-to-have / conflict notes (non-blocking)**
 - [ ] **Conflict with CONTRIBUTING Storybook rules.** `DocumentViewer.stories.tsx:185` uses `title: "Components/DocumentViewer"` and manually sets `tags: ["beta"]` (`:187`). CONTRIBUTING/CLAUDE require `title: "Beta/<Name>"` and say the `beta` tag is injected automatically — "do **not** add `tags: ["beta"]` manually". The mdx (`title: "Components/DocumentViewer/Docs"`) has the same deviation. Not a GA criterion E blocker, flagged as a docs-convention conflict.
@@ -93,8 +98,12 @@ _✅ Storybook Overview page exists (`DocumentViewer.mdx` embeds `docs/DocumentV
 
 ## Summary verdict
 
-**Not ready (7 blocking items).**
+**Not ready (7 blocking items).** Down from 9.
 
-Blocking [REQUIRED] count by category: A=1, B=1, C=2, E=3.
+Blocking [REQUIRED] count by bullet: A=1, B=1, C=2, E=3 (E was 5). Concretely: no base dispatcher (A), no sandbox integration (B), two non-overridable strings (C), and `ViewerType` undocumented + stale format prose + missing Code panels (E).
 
-**Single biggest blocker:** DocumentViewer is **not integrated into any sandbox app** (B) — CONTRIBUTING makes a live peopleapp example part of the MVP definition of done, and without it the core GA guarantee (types resolve in a real consumer without casts) is unverified. Close behind: the two hardcoded user-facing strings with no override path (C), and the undocumented public props/enum (E), all of which are small, well-scoped fixes.
+> The headline went 7 → 7 only because the first audit's "7" collapsed its five E bullets into three. Counted per-bullet the original set was 9; two E items have since closed, leaving 7.
+
+Resolved since the first audit: `fileName` and `enableTiffToPdf` are now documented via the AUTOGEN props table (#3463).
+
+**Single biggest blocker (unchanged):** DocumentViewer is **not integrated into any sandbox app** (B) — CONTRIBUTING makes a live peopleapp example part of the MVP definition of done, and without it the core GA guarantee (types resolve in a real consumer without casts) is unverified. Close behind: the two hardcoded user-facing strings with no override path (C), and the remaining docs items (E), all of which are small, well-scoped fixes.

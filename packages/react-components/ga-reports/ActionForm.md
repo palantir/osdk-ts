@@ -1,7 +1,12 @@
+<!-- cspell:words zpoh officenetwork peopleapp OOTB autodocs -->
+
 # GA-Readiness Audit — ActionForm
 
 Read-only audit. Source of truth: `packages/react-components/CONTRIBUTING.md`, `packages/react-components/CLAUDE.md`.
-Component: `src/action-form/` · Export: `src/public/experimental/action-form.ts` · Docs: `docs/ActionForm.md` · Storybook: `../react-components-storybook/src/stories/ActionForm/`
+Component: `src/action-form/` · Export: `src/public/experimental/action-form.ts` · Docs: `docs/ActionForm.md`, `docs/ActionFormOverview.md` · Storybook: `../react-components-storybook/src/stories/ActionForm/`
+Re-audited 2026-08-10 against `zpoh/ga` @ `ee3b3ed8ee`.
+
+> **What changed since the first audit:** documentation moved substantially. `docs/ActionFormOverview.md` (#3761) adds AUTOGEN props tables for both `ActionFormProps` and `BaseFormProps` plus a Style API table, and `docs/ActionForm.md` gained an AUTOGEN `ActionFormProps` table (#3463). That closes the BaseForm-props gap, the `isSubmitDisabled` gap, and all but the `--osdk-form-section-*` group of the CSS-token gap. The sections/`columnCount` Storybook gap is also closed. **Categories B and C are entirely unchanged** — every API and string-override blocker is still open.
 
 ---
 
@@ -43,11 +48,11 @@ Derived from `ActionFormApi.ts` + `FormFieldApi.ts`.
 
 ### B. API
 
-**[REQUIRED]**
-- **`onSubmit`'s `applyAction` is typed with the wrong shape, forcing casts.** `ActionFormApi.ts:79-82` types the injected callback as `applyAction: (args: ActionParameters<Q>) => …` (metadata-descriptor shape), but the value the consumer holds is `FormState<Q>` (value shape). Every consumer of the custom-submit path must cast. Confirmed in the storybook consumer: `ActionForm.stories.tsx:199-201, 210-212, 221-223` all use `formState as unknown as Parameters<…>[0]` with a comment noting "the callback type currently exposes metadata-shaped ActionParameters". This is the "types must resolve in a consumer without casts" blocker. Fix: type `applyAction` to accept `FormState<Q>` (or coerced params) so `applyAction(formState)` type-checks.
-- **Dead prop: `onValidationResponse`.** Declared `ActionFormApi.ts:89`, destructured as `_onValidationResponse` (`ActionForm.tsx:48`), never invoked. No `validateOnly` path exists anywhere in `src/action-form/` (grep: zero `validateOnly` refs). Strip the prop, the `ActionValidationResponse` import (`ActionFormApi.ts:20`), and its JSDoc.
-- **Dead type variant: `FormError` `"validation"`.** `ActionFormApi.ts:117` `{ type: "validation"; error: ActionValidationError }` is never emitted — `ActionForm.tsx` only produces `"unknown"` (`:63`) and `"submission"` (`:134`). Remove the variant (and the `ActionValidationError` import if it becomes unused) or wire up the validation path that produces it.
-- **Sandbox coverage incomplete.** Only the repro page (`e2e.sandbox.peopleapp/src/app/action-form-filter-list-repro/page.tsx:269`) exercises `ActionForm`, and only `actionDefinition`, `formFieldDefinitions`, `onSuccess`, `onError`. Not exercised by any ActionForm instance in the sandbox: `formState`/`onFormStateChange` (controlled), `onSubmit`, `showFormTitle`, `formTitle`, `isSubmitDisabled`. (The `/form` page uses `BaseForm`, not `ActionForm`.) CONTRIBUTING treats the peopleapp example as MVP DoD. These props are covered in Storybook but should be exercised in-sandbox before GA.
+**[REQUIRED] — all four unchanged as of 2026-08-10**
+- [ ] **`onSubmit`'s `applyAction` is typed with the wrong shape, forcing casts.** `ActionFormApi.ts:90-95` still types the injected callback as `applyAction: (args: ActionParameters<Q>) => …` (metadata-descriptor shape), but the value the consumer holds is `FormState<Q>` (value shape). Every consumer of the custom-submit path must cast. Still confirmed in the storybook consumer: `ActionForm.stories.tsx:200, 211, 222` all use `formState as unknown as Parameters<…>[0]`. This is the "types must resolve in a consumer without casts" blocker. Fix: type `applyAction` to accept `FormState<Q>` (or coerced params) so `applyAction(formState)` type-checks.
+- [ ] **Dead prop: `onValidationResponse`.** Still declared `ActionFormApi.ts:102`, still destructured as `_onValidationResponse` (`ActionForm.tsx:48`), never invoked. No `validateOnly` path exists anywhere in `src/action-form/`. Strip the prop, the `ActionValidationResponse` import (`ActionFormApi.ts:20`), and its JSDoc. **Now also leaking into docs** — the AUTOGEN table publishes it at `docs/ActionForm.md:58`, so a dead prop is being actively advertised.
+- [ ] **Dead type variant: `FormError` `"validation"`.** Still at `ActionFormApi.ts:130`; `ActionForm.tsx` only produces `"unknown"` and `"submission"`. Remove the variant (and the `ActionValidationError` import if it becomes unused) or wire up the validation path that produces it.
+- [ ] **Sandbox coverage incomplete.** Unchanged: the repro page (`e2e.sandbox.peopleapp/src/app/action-form-filter-list-repro/page.tsx:269`) is still the only `ActionForm` mount in either sandbox, and still passes only `actionDefinition`, `formFieldDefinitions`, `onSuccess`, `onError`. Not exercised: `formState`/`onFormStateChange` (controlled), `onSubmit`, `showFormTitle`, `formTitle`, `isSubmitDisabled`. (The `/form` page uses `BaseForm`, not `ActionForm`.) CONTRIBUTING treats the peopleapp example as MVP DoD.
 
 **Nice-to-have (non-blocking)**
 - [OPTIONAL] No `@deprecated` props found — clean.
@@ -56,8 +61,8 @@ Derived from `ActionFormApi.ts` + `FormFieldApi.ts`.
 
 ### C. Features
 
-**[REQUIRED] — user-facing strings with NO override path**
-Many literals in Base/sub-components/fields have no override prop. (Hardcoded *defaults* are fine — these have no prop at all.)
+**[REQUIRED] — user-facing strings with NO override path** (unchanged; no `labels`/`strings` bag exists on `ActionFormProps` or `BaseFormProps`)
+Many literals in Base/sub-components/fields have no override prop. (Hardcoded *defaults* are fine — these have no prop at all.) `ObjectTable` solved the equivalent problem in #3697 with a context-backed `labels?: Partial<ObjectTableLabels>` bag — see `src/object-table/ObjectTableLabels.tsx` for the pattern to copy.
 - `BaseForm.tsx:125` `"Some fields are invalid"` and `:324` `"1 issue"` / `"{n} issues"` (error indicator).
 - `BaseForm.tsx:270` `"Submitting…"` (pending button — `submitButtonText` covers idle only).
 - `BaseForm.tsx:86` `"Submission failed"` (also flagged `TODO`), `:122` `"Invalid"` (validation fallback).
@@ -72,7 +77,7 @@ Many literals in Base/sub-components/fields have no override prop. (Hardcoded *d
 Add override props (or a strings/labels bag) for these before GA.
 
 **[REQUIRED] — dark mode**
-- **Hardcoded hex color.** `ObjectSetField.tsx:33` `DEFAULT_OBJECT_ICON = { name: "cube", color: "#4C90F0" }`. This is the fallback icon tint when metadata carries no icon; a literal blue will not adapt to theme. Route through an `--osdk`/`--bp` token. (All `*.module.css` are clean — grep for hex/rgb in module CSS returned nothing.)
+- [ ] **Hardcoded hex color.** Unchanged: `ObjectSetField.tsx:33` `DEFAULT_OBJECT_ICON = { name: "cube", color: "#4C90F0" }`. This is the fallback icon tint when metadata carries no icon; a literal blue will not adapt to theme. Route through an `--osdk`/`--bp` token. (All `*.module.css` are clean — grep for hex/rgb in module CSS returned nothing.)
 
 **Nice-to-have (non-blocking)**
 - [OPTIONAL] Open `TODO`s: `BaseForm.tsx:85` (better submission error message), `FormFieldRenderer.tsx:177,224` (use `coerceFieldValue` for datetime/number), `:295` (share file coercion), `DropdownField.tsx:121` (`trailingItem` unsupported in Select path), `coerceFieldValue.ts:39` (complex object types). No `FIXME`/`HACK`.
@@ -91,17 +96,18 @@ Add override props (or a strings/labels bag) for these before GA.
 ### E. Documentation — ALL [REQUIRED]
 
 **[REQUIRED]**
-- **Undocumented CSS tokens.** ~40 declared tokens are absent from `docs/CSSVariables.md`, including the entire `--osdk-form-section-*` group and the `--osdk-form-edited-tag-*`, `--osdk-form-info-popup-*`, `--osdk-form-info-icon-color`, `--osdk-form-label-row-*`, `--osdk-form-error-line-height`, `--osdk-form-error-reserved-block-size` tokens. `docs/ActionForm.md` delegates styling to `CSSVariables.md`, which only covers ~18 of the form tokens.
-- **Undocumented `ActionForm` props.** `isSubmitDisabled` is not documented in `docs/ActionForm.md` (only in Storybook argTypes). `onValidationResponse` is undocumented (and dead — see B).
-- **`BaseForm` props not documented.** `docs/ActionForm.md` mentions `BaseForm` only in the "Choosing" and "Styling" sections; it documents none of its props. Missing: `formContent`, `onFieldValueChange`, `isPending`, `isLoading`, `className`, `submitButtonText`, `submitButtonVariant`, `formTitle`, `isSubmitDisabled`. Criterion requires all base-component props documented.
-- **Undocumented data attribute.** `data-osdk-form-field-error-slot` (`FormField.tsx:83`) is a public DOM hook and is not documented.
-- **Field-definition props partially documented.** `helperTextPlacement`, `onValidationError`, field-level `validate`, and `disabled` on `FormFieldDefinition` are not covered in `docs/ActionForm.md`.
+- [ ] **Undocumented CSS tokens — narrowed to the `--osdk-form-section-*` group.** The Style API table in `docs/ActionFormOverview.md:47-65` (#3761, trimmed by #3817) now covers `--osdk-form-edited-tag-*`, `--osdk-form-info-popup-*`, `--osdk-form-info-icon-color`, `--osdk-form-label-row-*`, `--osdk-form-error-line-height`, and `--osdk-form-error-reserved-block-size`, and the `--osdk-object-set-*` group is covered too. **Still undocumented: all 23 tokens declared in `src/tokens/component-tokens/form-section.css`** — `--osdk-form-section-{background,border-color,border-radius,border-width,content-padding-block,content-padding-inline,description-color,description-font-size,error-color,error-font-size,field-gap,grid-column-gap,header-gap,header-padding-block,header-padding-inline,minimal-title-font-size,title-color,title-font-size,title-font-weight,title-gap,transition-duration,trigger-color,trigger-gap}`. Sections are a major inventory feature; add a Sections row-group to the Style API table.
+- [ ] **Undocumented data attribute.** Unchanged: `data-osdk-form-field-error-slot` (`FormField.tsx:83`) is a public DOM hook and appears nowhere in `docs/`.
+- [ ] **Field-definition props still undocumented.** Unchanged: `helperTextPlacement`, `onValidationError`, field-level `validate`, and `disabled` on `FormFieldDefinition` are absent from `docs/ActionForm.md` and `docs/ActionFormOverview.md`. Note the AUTOGEN tables only cover `ActionFormProps`/`BaseFormProps` — the field-definition types have no AUTOGEN block, so regenerating won't fix this. Consider adding `AUTOGEN:props` blocks for `FormFieldDefinition`/`FormFieldPropsByType` the way `FilterList.md` does for its definition types.
 
-**Storybook — [REQUIRED] gaps**
+- ✅ **`BaseForm` props now documented** (#3761) — `docs/ActionFormOverview.md:80-96` carries an AUTOGEN `BaseFormProps` table.
+- ✅ **`isSubmitDisabled` now documented** — `docs/ActionForm.md:53` and `docs/ActionFormOverview.md`, via the AUTOGEN `ActionFormProps` tables. (`onValidationResponse` is also now published at `docs/ActionForm.md:58` — but it is dead API, so this makes the B blocker worse, not better.)
+
+**Storybook — ✅ no blocking gaps**
 - ✅ Overview page embedding docs mdx exists (`ActionForm.mdx` → `<Markdown>{actionFormDocs}</Markdown>`).
 - ✅ OSDK `Default` (minimal props) story exists; feature stories cover submit/validation/disabled/pending/custom-submit/title/default-values/overrides/unsupported/controlled.
-- ✅ Base component story exists (`BaseForm.stories.tsx`, `title: "Components/ActionForm/BaseForm"`, 29 stories with `source` Code panels).
-- [REQUIRED] No dedicated OSDK story for **sections** or **`columnCount`/`style` (box vs minimal)** layout — `FormSectionDefinition` is a major inventory feature. Cross-check: confirm a section story exists in the Base story set (sections are Base-driven); if absent, add one.
+- ✅ Base component story exists (`BaseForm.stories.tsx`, `title: "Components/ActionForm/BaseForm"`, with `source` Code panels).
+- ✅ **Sections / `columnCount` / `style` now covered** — the cross-check resolves in the Base story set as anticipated: `BaseForm.stories.tsx:2205` `WithSections`, `:2260` `WithMinimalSections` (box vs minimal `style`), `:2307` `WithGridSection` (`columnCount: 2`, `:2273`). Sections are Base-driven, so this satisfies the criterion.
 
 **Nice-to-have (non-blocking)**
 - [OPTIONAL] Tier inconsistency: stories use `title: "Components/ActionForm/*"` + manual `tags: ["beta"]`, but CONTRIBUTING says Beta components use a `Beta/` title prefix (badge auto-injected, no manual tag). Reconcile once the GA/Beta tier decision is final.
@@ -110,8 +116,14 @@ Add override props (or a strings/labels bag) for these before GA.
 
 ## Summary Verdict
 
-**Not ready (8 blocking items).**
+**Not ready (9 blocking items).**
 
-Blocking count (REQUIRED only): B ×4 (`applyAction` mis-typing forcing casts; dead `onValidationResponse`; dead `FormError."validation"`; incomplete sandbox coverage), C ×2 (non-overridable user-facing strings; hardcoded `#4C90F0`), E ×2+ (undocumented CSS tokens; undocumented `BaseForm`/`ActionForm` props + data attribute). Exports (A) and token-mapping location (D) are clean.
+Blocking count (REQUIRED only, counted per bullet): B ×4 (`applyAction` mis-typing forcing casts; dead `onValidationResponse`; dead `FormError."validation"`; incomplete sandbox coverage), C ×2 (non-overridable user-facing strings; hardcoded `#4C90F0`), E ×3 (`--osdk-form-section-*` tokens undocumented; `data-osdk-form-field-error-slot` undocumented; field-definition props undocumented). Exports (A) and token-mapping location (D) remain clean.
 
-**Single biggest blocker:** `onSubmit`'s injected `applyAction` is typed with `ActionParameters<Q>` (metadata shape) instead of the `FormState<Q>` value the consumer actually holds — every custom-submit consumer must write `formState as unknown as …`, which the package's own Storybook demonstrates. This defeats the "types resolve without casts" GA bar and is the most user-visible API defect.
+> The count went 8 → 9 without anything regressing: the first audit collapsed its five E bullets into "E ×2+". Counting per-bullet, the original set was 11; three E items have since been closed, leaving 9.
+
+Resolved since the first audit: `BaseForm` props documented (#3761), `isSubmitDisabled` documented (#3463 AUTOGEN), most of the CSS-token gap documented (#3761/#3817), and the sections/`columnCount`/`style` Storybook gap (`BaseForm.stories.tsx` `WithSections`/`WithMinimalSections`/`WithGridSection`).
+
+**Single biggest blocker (unchanged):** `onSubmit`'s injected `applyAction` is typed with `ActionParameters<Q>` (metadata shape) instead of the `FormState<Q>` value the consumer actually holds — every custom-submit consumer must write `formState as unknown as …`, which the package's own Storybook still demonstrates at `ActionForm.stories.tsx:200,211,222`. This defeats the "types resolve without casts" GA bar and is the most user-visible API defect.
+
+**Second-largest, and the one with the most work in it:** the string-override bag (C). `ObjectTable` has since shipped the exact mechanism to copy (#3697, `src/object-table/ObjectTableLabels.tsx`), so this is now a port rather than a design problem.
