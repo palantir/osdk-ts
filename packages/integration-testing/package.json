@@ -55,9 +55,9 @@
     "undici": "^6.28.0"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/seed-helpers": "workspace:*"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/seed-helpers": ">=0.25.0 <1.0.0"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
@@ -66,6 +66,7 @@
     "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/seed-helpers": "workspace:~",
     "@types/node": "^26.1.1",
     "@types/semver": "^7.7.1",
     "typescript": "~5.5.4",
