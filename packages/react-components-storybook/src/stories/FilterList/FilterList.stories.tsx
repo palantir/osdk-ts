@@ -2041,20 +2041,8 @@ function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
   const client = useOsdkClient();
   const baseObjectSet = useMemo(() => client(Employee), [client]);
 
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
   const [effectiveObjectSet, setEffectiveObjectSet] =
     useState<ObjectSet<Employee>>(baseObjectSet);
-
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause<Employee>) => {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
 
   return (
     <div style={COMBINED_LAYOUT_STYLE}>
@@ -2064,7 +2052,7 @@ function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
           objectType={Employee}
           objectSet={baseObjectSet}
           filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
-          onFilterClauseChanged={handleFilterClauseChanged}
+          onFilterClauseChanged={args.onFilterClauseChanged}
           onEffectiveObjectSet={setEffectiveObjectSet}
           showFilteredOutValues={true}
         />
@@ -2157,7 +2145,6 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
   objectType={Employee}
   objectSet={baseObjectSet}
   filterDefinitions={filterDefinitions}
-  onFilterClauseChanged={setFilterClause}
   onEffectiveObjectSet={setEffectiveObjectSet}
   showFilteredOutValues
 />
@@ -2270,15 +2257,6 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
     [],
   );
 
-  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
-  const handleFilterClauseChanged = useCallback(
-    (clause: WhereClause<Employee>) => {
-      setFilterClause(clause);
-      argsOnFilterClauseChanged?.(clause);
-    },
-    [argsOnFilterClauseChanged],
-  );
-
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
@@ -2286,7 +2264,7 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
           objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
-          onFilterClauseChanged={handleFilterClauseChanged}
+          onFilterClauseChanged={args.onFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
