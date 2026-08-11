@@ -1196,7 +1196,7 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: sptApiName },
           interfaceType: expect.any(String),
           sharedPropertyType: expect.any(String),
-          requireImplementation: false,
+          requireImplementation: true,
         },
       });
       expect(

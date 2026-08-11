@@ -495,7 +495,8 @@ function extractImportedInterfaceTypes(
             objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type),
           },
           interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
-          requireImplementation: false,
+          requireImplementation:
+            property.sharedPropertyBasedPropertyType.requireImplementation,
           sharedPropertyType: ridGenerator.toBlockInternalId(
             ReadableIdGenerator.getForSpt(spt.apiName),
           ),
