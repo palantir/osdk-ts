@@ -1,11 +1,9 @@
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
-
-import css from "./CreateTaskDialog.module.css";
 
 interface CreateTaskDialogProps {
   project: MockProject;

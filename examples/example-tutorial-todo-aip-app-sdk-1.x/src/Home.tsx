@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-
 import CreateProjectButton from "./CreateProjectButton";
 import DeleteProjectButton from "./DeleteProjectButton";
+import css from "./Home.module.css";
 import Layout from "./Layout";
 import type { MockProject } from "./mocks";
 import { ProjectDetails } from "./ProjectDetails";
 import ProjectSelect from "./ProjectSelect";
 import useProjects from "./useProjects";
-
-import css from "./Home.module.css";
 
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>();

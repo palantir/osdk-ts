@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
-import type { ITask } from "./useProjectTasks";
-
 import css from "./TaskListItem.module.css";
+import type { ITask } from "./useProjectTasks";
 
 interface TaskListItemProps {
   task: ITask;

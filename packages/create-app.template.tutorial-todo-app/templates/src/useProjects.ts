@@ -33,12 +33,12 @@ function useProjects() {
   );
 
   return {
-    createProject,
-    deleteProject,
-    isError: error,
+    projects: data,
     isLoading,
     isValidating,
-    projects: data,
+    isError: error,
+    createProject,
+    deleteProject,
   };
 }
 
