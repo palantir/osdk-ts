@@ -137,6 +137,15 @@ const fields = [
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
 
+### Common field-definition options
+
+| Option                | Type                                              | Behavior                                                                                                                                                                       |
+| --------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `helperTextPlacement` | `"tooltip" \| "bottom"`                           | Controls where `helperText` appears: a tooltip icon beside the label (default) or text below the label.                                                                        |
+| `onValidationError`   | `(error: ValidationError) => string \| undefined` | Customizes a built-in validation message. Return a string to replace the default, or `undefined` to preserve it. The error identifies the failed rule and its constraint data. |
+| `validate`            | `(value) => Promise<string \| undefined>`         | Runs additional asynchronous validation. Resolve to `undefined` when valid, or an error-message string when invalid.                                                           |
+| `disabled`            | `boolean`                                         | Disables the rendered control while preserving its current form value.                                                                                                         |
+
 ### Rich dropdown labels
 
 Use `itemToStringLabel` for the dropdown's text behavior: search matching, accessibility labels, fallback item keys, and default visual text. Add `renderItemLabel` when the visible label needs richer React content while preserving the same string behavior.
