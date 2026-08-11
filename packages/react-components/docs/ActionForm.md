@@ -57,7 +57,7 @@ Type parameters: `Q extends ActionDefinition<unknown>`
 | `onSubmit`             | `(formState: FormState<Q>, applyAction: (formState: FormState<Q>) => Promise<ActionEditResponse \| undefined>) => Promise<unknown> \| void` | If supplied, this will override the default submit action. By default, the action's applyAction will be called.                                                      |
 | `onValidationResponse` | `(results: ActionValidationResponse) => void`                                                                                               | Called when the validation response is returned from a validateOnly submission                                                                                       |
 | `onSuccess`            | `(results: ActionEditResponse \| undefined) => void`                                                                                        | Called when the action is successfully executed from a non-validateOnly submission                                                                                   |
-| `onError`              | `(error: FormError) => void`                                                                                                                | Called when action metadata fails to load or form submission fails.                                                                                                  |
+| `onError`              | `(error: FormError) => void`                                                                                                                | Called when there is an error rendering the form or during submission.                                                                                               |
 | `formState`            | `FormState<Q>`                                                                                                                              | The current form values. If provided, the form state is controlled.                                                                                                  |
 | `onFormStateChange`    | `(updater: (prevState: FormState<Q>) => FormState<Q>) => void`                                                                              | Called when a field value changes, with a state updater. Required when the form state is controlled; also fires in uncontrolled mode so callers can observe changes. |
 
@@ -136,15 +136,6 @@ const fields = [
 
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
-
-### Common field-definition options
-
-| Option                | Type                                              | Behavior                                                                                                                                                                       |
-| --------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `helperTextPlacement` | `"tooltip" \| "bottom"`                           | Controls where `helperText` appears: a tooltip icon beside the label (default) or text below the label.                                                                        |
-| `onValidationError`   | `(error: ValidationError) => string \| undefined` | Customizes a built-in validation message. Return a string to replace the default, or `undefined` to preserve it. The error identifies the failed rule and its constraint data. |
-| `validate`            | `(value) => Promise<string \| undefined>`         | Runs additional asynchronous validation. Resolve to `undefined` when valid, or an error-message string when invalid.                                                           |
-| `disabled`            | `boolean`                                         | Disables the rendered control while preserving its current form value.                                                                                                         |
 
 ### Rich dropdown labels
 
