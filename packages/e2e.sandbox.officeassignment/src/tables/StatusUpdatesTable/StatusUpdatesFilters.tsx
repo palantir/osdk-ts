@@ -28,7 +28,6 @@ import type { IdentifiedFilterDef } from "../../types/filters.js";
 interface StatusUpdatesFiltersProps {
   objectSet: ObjectSet<StatusUpdate>;
   filterDefinitions: Array<IdentifiedFilterDef<StatusUpdate>>;
-  filterClause: WhereClause<StatusUpdate> | undefined;
   onFilterClauseChanged: (clause: WhereClause<StatusUpdate>) => void;
   onFilterStateChanged?: (
     definition: FilterDefinitionUnion<StatusUpdate>,
@@ -49,7 +48,6 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
   function StatusUpdatesFiltersFn({
     objectSet,
     filterDefinitions,
-    filterClause,
     onFilterClauseChanged,
     onFilterStateChanged,
     onFilterVisibilityChange,
@@ -65,7 +63,6 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
         objectType={StatusUpdate}
         objectSet={objectSet}
         filterDefinitions={filterDefinitions}
-        filterClause={filterClause}
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterStateChanged={onFilterStateChanged}
         onFilterVisibilityChange={onFilterVisibilityChange}

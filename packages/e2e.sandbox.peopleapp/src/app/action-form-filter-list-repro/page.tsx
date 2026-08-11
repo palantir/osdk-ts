@@ -229,7 +229,6 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
             objectType={Employee}
             objectSet={employeeObjectSet}
             filterDefinitions={EMPLOYEE_FILTERS}
-            filterClause={filterClause}
             onFilterClauseChanged={setFilterClause}
             title="Employee filters"
             showActiveFilterCount={true}

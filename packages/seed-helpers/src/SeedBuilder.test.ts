@@ -426,7 +426,7 @@ describe("createSeed", () => {
   });
 
   it("runs the callback, returns the built output, and derives primary keys from metadata", () => {
-    const [out] = createSeedWithMetadata(metadata, (sb) => {
+    const { output: out } = createSeedWithMetadata(metadata, (sb) => {
       const office = sb.create(Office, { officeId: "NYC" });
       const emp = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.link(emp, "officeLink", office);

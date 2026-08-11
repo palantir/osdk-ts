@@ -316,7 +316,6 @@ function DataTab(): React.ReactElement {
         <FilterList
           objectType={Employee}
           filterDefinitions={FILTER_DEFINITIONS}
-          filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
           title="Employee Filters"
           collapsed={collapsed}

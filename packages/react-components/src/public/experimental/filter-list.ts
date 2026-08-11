@@ -33,7 +33,6 @@ export type {
 export type {
   FilterComponentType,
   FilterDefinitionControls,
-  FilterListItemProps,
   FilterState,
   PropertyFilterDefinition,
 } from "../../filter-list/FilterListItemApi.js";
