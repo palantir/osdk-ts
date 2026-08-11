@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -254,6 +255,44 @@ describe("--unstableFeatures flag", () => {
     };
   };
 
+  /**
+   * Runs the oxc toolchain the scaffold itself ships over a generated project's
+   * src, using this repo's binaries and the template's configs (the scaffold has
+   * no node_modules of its own, so its copies of those configs cannot resolve
+   * `ultracite`). The template configs are copied verbatim into the scaffold, so
+   * this checks the same rules a user would get from `npm run lint`.
+   */
+  function expectScaffoldPassesOwnLint(projectRoot: string): void {
+    const repoRoot = path.join(
+      dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "..",
+      "..",
+    );
+    const templates = path.join(
+      repoRoot,
+      "packages",
+      "create-app.react.beta.common",
+      "templates",
+    );
+    const src = path.join(projectRoot, "src");
+
+    for (const [bin, config, extra] of [
+      ["oxlint", "oxlint.config.ts", []],
+      ["oxfmt", "oxfmt.config.ts", ["--check"]],
+    ] as const) {
+      const result = spawnSync(
+        path.join(repoRoot, "node_modules", ".bin", bin),
+        ["-c", path.join(templates, config), ...extra, src],
+        { encoding: "utf-8" },
+      );
+      expect(
+        result.status,
+        `${bin} rejected the generated scaffold:\n${result.stdout}\n${result.stderr}`,
+      ).toBe(0);
+    }
+  }
+
   test("wires Foundry branch support when enabled", async () => {
     const project = "expected-unstable-on";
     await cli(argsFor(project, ["--unstableFeatures", "true"]));
@@ -264,6 +303,14 @@ describe("--unstableFeatures flag", () => {
     expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
     expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
     expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+
+    // The generated example apps never exercise --unstableFeatures, so this is
+    // the only place the `$branch` import gets rendered. Assert the scaffold
+    // passes its own `npm run lint` (oxlint + oxfmt --check via ultracite):
+    // the import sits inside a handlebars conditional at a fixed position while
+    // its specifier depends on the user's OSDK package name, which import
+    // sorting would reject.
+    expectScaffoldPassesOwnLint(path.join(process.cwd(), project));
   });
 
   test("omits Foundry branch support by default", async () => {
