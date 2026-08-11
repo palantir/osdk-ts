@@ -22,7 +22,6 @@ import type {
 import type { ActionValidationError } from "@osdk/client";
 
 import type {
-  ActionParameters,
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
@@ -75,7 +74,7 @@ interface ActionFormConfigProps<
   showFormTitle?: boolean;
 
   /**
-   * If not supplied, field definitions are constructed from `ActionParameters`.
+   * If not supplied, field definitions are constructed from action metadata.
    */
   formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
@@ -90,7 +89,7 @@ interface ActionFormConfigProps<
   onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
-      args: ActionParameters<Q>,
+      formState: FormState<Q>,
     ) => Promise<ActionEditResponse | undefined>,
   ) => Promise<unknown> | void;
 
