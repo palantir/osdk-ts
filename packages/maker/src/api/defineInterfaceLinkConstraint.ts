@@ -55,8 +55,10 @@ type One = {
   required?: boolean;
 };
 
+export type InterfaceLinkConstraintDefinition = Many | One;
+
 export function defineInterfaceLinkConstraint(
-  linkDefInput: One | Many,
+  linkDefInput: InterfaceLinkConstraintDefinition,
 ): InterfaceLinkConstraint {
   const linkDef = cloneDefinition(linkDefInput);
 
