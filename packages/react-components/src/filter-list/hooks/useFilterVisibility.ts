@@ -51,15 +51,8 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
     () => defaultVisibleKeyOrder,
   );
 
-  // Mirrors visibleKeyOrder so mutators can read the latest value without
-  // running their side effect inside a setState updater — updaters must be
-  // pure, and StrictMode double-invokes them. Writing it eagerly in each
-  // mutator also keeps several changes in one tick consistent.
-  const visibleKeyOrderRef = useRef(visibleKeyOrder);
-
   // Sync state when filterDefinitions changes
   useEffect(() => {
-    visibleKeyOrderRef.current = defaultVisibleKeyOrder;
     setVisibleKeyOrder(defaultVisibleKeyOrder);
   }, [defaultVisibleKeyOrder]);
 
@@ -67,10 +60,8 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
   const onVisibilityChangeRef = useRef(onVisibilityChange);
   onVisibilityChangeRef.current = onVisibilityChange;
 
-  const commitVisibleKeyOrder = useCallback(
+  const fireVisibilityChange = useCallback(
     (nextVisibleKeyOrder: string[]) => {
-      visibleKeyOrderRef.current = nextVisibleKeyOrder;
-      setVisibleKeyOrder(nextVisibleKeyOrder);
       if (!onVisibilityChangeRef.current) return;
       const visibleSet = new Set(nextVisibleKeyOrder);
       const hiddenKeys = allKeys.filter((k) => !visibleSet.has(k));
@@ -124,43 +115,55 @@ export function useFilterVisibility<Q extends ObjectTypeDefinition>(
 
   const showFilter = useCallback(
     (key: string) => {
-      const prev = visibleKeyOrderRef.current;
-      if (prev.includes(key)) return;
-      commitVisibleKeyOrder([...prev, key]);
+      setVisibleKeyOrder((prev) => {
+        if (prev.includes(key)) return prev;
+        const next = [...prev, key];
+        fireVisibilityChange(next);
+        return next;
+      });
     },
-    [commitVisibleKeyOrder],
+    [fireVisibilityChange],
   );
 
   const hideFilter = useCallback(
     (key: string) => {
-      const prev = visibleKeyOrderRef.current;
-      if (!prev.includes(key)) return;
-      commitVisibleKeyOrder(prev.filter((k) => k !== key));
+      setVisibleKeyOrder((prev) => {
+        const next = prev.filter((k) => k !== key);
+        fireVisibilityChange(next);
+        return next;
+      });
     },
-    [commitVisibleKeyOrder],
+    [fireVisibilityChange],
   );
 
   const reorderVisible = useCallback(
     (keys: string[]) => {
-      const prev = visibleKeyOrderRef.current;
-      if (keys.length === prev.length && keys.every((k, i) => k === prev[i])) {
-        return;
-      }
-      commitVisibleKeyOrder(keys);
+      setVisibleKeyOrder((prev) => {
+        if (
+          keys.length === prev.length &&
+          keys.every((k, i) => k === prev[i])
+        ) {
+          return prev;
+        }
+        fireVisibilityChange(keys);
+        return keys;
+      });
     },
-    [commitVisibleKeyOrder],
+    [fireVisibilityChange],
   );
 
   const resetVisibility = useCallback(() => {
-    const prev = visibleKeyOrderRef.current;
-    if (
-      defaultVisibleKeyOrder.length === prev.length &&
-      defaultVisibleKeyOrder.every((k, i) => k === prev[i])
-    ) {
-      return;
-    }
-    commitVisibleKeyOrder(defaultVisibleKeyOrder);
-  }, [defaultVisibleKeyOrder, commitVisibleKeyOrder]);
+    setVisibleKeyOrder((prev) => {
+      if (
+        defaultVisibleKeyOrder.length === prev.length &&
+        defaultVisibleKeyOrder.every((k, i) => k === prev[i])
+      ) {
+        return prev;
+      }
+      fireVisibilityChange(defaultVisibleKeyOrder);
+      return defaultVisibleKeyOrder;
+    });
+  }, [defaultVisibleKeyOrder, fireVisibilityChange]);
 
   const hasVisibilityChanges = useMemo(() => {
     if (visibleKeyOrder.length !== defaultVisibleKeyOrder.length) {
