@@ -20,7 +20,7 @@ import {
   Office,
   queryTypeReturnsArray,
 } from "@osdk/client.test.ontology";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { createMockClient } from "../createMockClient.js";
 import { createMockObjectSet } from "../createMockObjectSet.js";
@@ -533,6 +533,138 @@ describe("createMockClient", () => {
       await expect(
         mockClient(addOne).executeFunction({ n: 5 }),
       ).rejects.toThrow("No stub for query 'addOne'");
+    });
+
+    it("computes the result from params with a dynamic implementation", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, (args) => args.n + 1);
+
+      expect(await mockClient(addOne).executeFunction({ n: 5 })).toBe(6);
+      expect(await mockClient(addOne).executeFunction({ n: 41 })).toBe(42);
+    });
+
+    it("passes the caller's params to the implementation", async () => {
+      const mockClient = createMockClient();
+      const impl = vi.fn((args: { people: readonly string[] }) => [
+        ...args.people,
+      ]);
+
+      mockClient.whenQuery(queryTypeReturnsArray, impl);
+
+      await mockClient(queryTypeReturnsArray).executeFunction({
+        people: ["Alice"],
+      });
+
+      expect(impl).toHaveBeenCalledTimes(1);
+      expect(impl).toHaveBeenCalledWith({ people: ["Alice"] });
+    });
+
+    it("rejects when the implementation throws", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, () => {
+        throw new Error("boom");
+      });
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toThrow("boom");
+    });
+
+    it("clears dynamic implementations with clearStubs", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, (args) => args.n + 1);
+      mockClient.clearStubs();
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toThrow("No stub for query 'addOne'");
+    });
+
+    it("uses the last registered stub, mixing params and implementations", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(999);
+      mockClient.whenQuery(addOne, (args) => args.n + 1);
+
+      // The impl was registered last, so it wins even for the stubbed params.
+      expect(await mockClient(addOne).executeFunction({ n: 5 })).toBe(6);
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(999);
+
+      expect(await mockClient(addOne).executeFunction({ n: 5 })).toBe(999);
+      // Params the later stub doesn't match still fall through to the impl.
+      expect(await mockClient(addOne).executeFunction({ n: 7 })).toBe(8);
+    });
+
+    it("keeps implementations scoped to their own query", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, (args) => args.n + 1);
+
+      await expect(
+        mockClient(queryTypeReturnsArray).executeFunction({ people: [] }),
+      ).rejects.toThrow("No stub for query 'queryTypeReturnsArray'");
+    });
+
+    it("types the implementation's params from the query definition", () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, (args) => {
+        expectTypeOf(args).toEqualTypeOf<addOne.Parameters>();
+        return args.n + 1;
+      });
+
+      mockClient.whenQuery(queryTypeReturnsArray, (args) => {
+        expectTypeOf(args).toEqualTypeOf<queryTypeReturnsArray.Parameters>();
+        return [...args.people];
+      });
+    });
+
+    it("awaits an async implementation", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, async (args) => {
+        await Promise.resolve();
+        return args.n + 1;
+      });
+
+      expect(await mockClient(addOne).executeFunction({ n: 5 })).toBe(6);
+    });
+
+    it("rejects when an async implementation rejects", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, async () => {
+        await Promise.resolve();
+        throw new Error("async boom");
+      });
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toThrow("async boom");
+    });
+
+    it("matches any params with an asymmetric matcher", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, expect.anything()).thenReturn(6);
+
+      expect(await mockClient(addOne).executeFunction({ n: 5 })).toBe(6);
+      expect(await mockClient(addOne).executeFunction({ n: 41 })).toBe(6);
+    });
+
+    it("throws for any params with an asymmetric matcher", async () => {
+      const mockClient = createMockClient();
+      const err = new Error("nope");
+
+      mockClient.whenQuery(addOne, expect.anything()).thenThrow(err);
+
+      await expect(mockClient(addOne).executeFunction({ n: 5 })).rejects.toBe(
+        err,
+      );
     });
 
     it("thenThrow: executeFunction rejects with the configured error", async () => {
