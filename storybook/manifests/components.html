@@ -10716,25 +10716,25 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     },
     onFilterAdded: {
       description:
-        &quot;Called when a filter is added. If provided, users can add filters.&quot;,
+        &quot;Fires after a filter is shown from the built-in Add filter popover.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     onFilterRemoved: {
       description:
-        &quot;Called when a filter is removed. If provided, users can remove filters.&quot;,
+        &quot;Fires after a filter&#39;s remove button is clicked, once the filter is hidden and its state cleared.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     onFilterVisibilityChange: {
       description:
-        &quot;Called when filter visibility or ordering changes (reorder, add, remove).&quot;,
+        &quot;Fires when filters are reordered, added or removed via the built-in controls, or reset. Visible filters first in display order, then hidden.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     addFilterMode: {
       description:
-        &#39;Controls how filter add/remove is managed. &quot;uncontrolled&quot; manages visibility internally; &quot;controlled&quot; leaves it to the consumer.&#39;,
+        &quot;Deprecated — going away; visibility will always be managed internally. Seed it with isVisible on each definition and observe changes with onFilterVisibilityChange.&quot;,
       control: &quot;select&quot;,
       options: [&quot;controlled&quot;, &quot;uncontrolled&quot;],
       table: {
@@ -29132,25 +29132,25 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     },
     onFilterAdded: {
       description:
-        &quot;Called when a filter is added. If provided, users can add filters.&quot;,
+        &quot;Fires after a filter is shown from the built-in Add filter popover.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     onFilterRemoved: {
       description:
-        &quot;Called when a filter is removed. If provided, users can remove filters.&quot;,
+        &quot;Fires after a filter&#39;s remove button is clicked, once the filter is hidden and its state cleared.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     onFilterVisibilityChange: {
       description:
-        &quot;Called when filter visibility or ordering changes (reorder, add, remove).&quot;,
+        &quot;Fires when filters are reordered, added or removed via the built-in controls, or reset. Visible filters first in display order, then hidden.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
     addFilterMode: {
       description:
-        &#39;Controls how filter add/remove is managed. &quot;uncontrolled&quot; manages visibility internally; &quot;controlled&quot; leaves it to the consumer.&#39;,
+        &quot;Deprecated — going away; visibility will always be managed internally. Seed it with isVisible on each definition and observe changes with onFilterVisibilityChange.&quot;,
       control: &quot;select&quot;,
       options: [&quot;controlled&quot;, &quot;uncontrolled&quot;],
       table: {
