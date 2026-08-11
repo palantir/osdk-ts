@@ -1138,56 +1138,56 @@ content, and minimal variant.
 
 #### Container
 
-| Variable                                | Default Value                                               | Description                         |
-| --------------------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| `--osdk-form-section-border-color`      | `var(--osdk-surface-border-color-default)`                  | Container border color              |
-| `--osdk-form-section-border-width`      | `var(--osdk-surface-border-width)`                          | Container border width              |
-| `--osdk-form-section-border-radius`     | `var(--osdk-surface-border-radius)`                         | Container corner radius             |
-| `--osdk-form-section-background`        | `var(--osdk-surface-background-color-default-rest)`         | Container background color          |
+| Variable                            | Default Value                                       | Description                |
+| ----------------------------------- | --------------------------------------------------- | -------------------------- |
+| `--osdk-form-section-border-color`  | `var(--osdk-surface-border-color-default)`          | Container border color     |
+| `--osdk-form-section-border-width`  | `var(--osdk-surface-border-width)`                  | Container border width     |
+| `--osdk-form-section-border-radius` | `var(--osdk-surface-border-radius)`                 | Container corner radius    |
+| `--osdk-form-section-background`    | `var(--osdk-surface-background-color-default-rest)` | Container background color |
 
 #### Header
 
-| Variable                                          | Default Value                                         | Description                              |
-| ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| `--osdk-form-section-header-padding-block`        | `calc(var(--osdk-surface-spacing) * 2.5)`             | Header block padding                     |
-| `--osdk-form-section-header-padding-inline`       | `calc(var(--osdk-surface-spacing) * 2.5)`             | Header inline padding                    |
-| `--osdk-form-section-header-gap`                  | `calc(var(--osdk-surface-spacing) * 2)`               | Gap between header items                 |
-| `--osdk-form-section-title-gap`                   | `calc(var(--osdk-surface-spacing) * 1)`               | Gap between the title and description    |
-| `--osdk-form-section-title-font-size`             | `var(--osdk-typography-size-body-medium)`             | Title font size                          |
-| `--osdk-form-section-title-font-weight`           | `var(--osdk-typography-weight-bold)`                  | Title font weight                        |
-| `--osdk-form-section-title-color`                 | `var(--osdk-typography-color-default-rest)`           | Title color                              |
-| `--osdk-form-section-description-font-size`       | `var(--osdk-typography-size-body-small)`              | Description font size                    |
-| `--osdk-form-section-description-color`           | `var(--osdk-typography-color-muted)`                  | Description color                        |
+| Variable                                    | Default Value                               | Description                           |
+| ------------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| `--osdk-form-section-header-padding-block`  | `calc(var(--osdk-surface-spacing) * 2.5)`   | Header block padding                  |
+| `--osdk-form-section-header-padding-inline` | `calc(var(--osdk-surface-spacing) * 2.5)`   | Header inline padding                 |
+| `--osdk-form-section-header-gap`            | `calc(var(--osdk-surface-spacing) * 2)`     | Gap between header items              |
+| `--osdk-form-section-title-gap`             | `calc(var(--osdk-surface-spacing) * 1)`     | Gap between the title and description |
+| `--osdk-form-section-title-font-size`       | `var(--osdk-typography-size-body-medium)`   | Title font size                       |
+| `--osdk-form-section-title-font-weight`     | `var(--osdk-typography-weight-bold)`        | Title font weight                     |
+| `--osdk-form-section-title-color`           | `var(--osdk-typography-color-default-rest)` | Title color                           |
+| `--osdk-form-section-description-font-size` | `var(--osdk-typography-size-body-small)`    | Description font size                 |
+| `--osdk-form-section-description-color`     | `var(--osdk-typography-color-muted)`        | Description color                     |
 
 #### Collapse Trigger
 
-| Variable                                          | Default Value                                         | Description                              |
-| ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| `--osdk-form-section-trigger-color`               | `var(--osdk-typography-color-muted)`                  | Collapse trigger icon color              |
-| `--osdk-form-section-trigger-gap`                 | `calc(var(--osdk-surface-spacing) * 2)`               | Gap between the header text and trigger  |
-| `--osdk-form-section-transition-duration`         | `var(--osdk-emphasis-transition-duration)`            | Collapse-chevron transition duration     |
+| Variable                                  | Default Value                              | Description                             |
+| ----------------------------------------- | ------------------------------------------ | --------------------------------------- |
+| `--osdk-form-section-trigger-color`       | `var(--osdk-typography-color-muted)`       | Collapse trigger icon color             |
+| `--osdk-form-section-trigger-gap`         | `calc(var(--osdk-surface-spacing) * 2)`    | Gap between the header text and trigger |
+| `--osdk-form-section-transition-duration` | `var(--osdk-emphasis-transition-duration)` | Collapse-chevron transition duration    |
 
 #### Content
 
-| Variable                                          | Default Value                                         | Description                              |
-| ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| `--osdk-form-section-content-padding-block`       | `calc(var(--osdk-surface-spacing) * 2.5)`             | Content block padding                    |
-| `--osdk-form-section-content-padding-inline`      | `calc(var(--osdk-surface-spacing) * 2.5)`             | Content inline padding                   |
-| `--osdk-form-section-field-gap`                   | `var(--osdk-form-fields-gap)`                         | Gap between stacked fields               |
-| `--osdk-form-section-grid-column-gap`             | `calc(var(--osdk-surface-spacing) * 4)`               | Gap between fields in a grid             |
+| Variable                                     | Default Value                             | Description                  |
+| -------------------------------------------- | ----------------------------------------- | ---------------------------- |
+| `--osdk-form-section-content-padding-block`  | `calc(var(--osdk-surface-spacing) * 2.5)` | Content block padding        |
+| `--osdk-form-section-content-padding-inline` | `calc(var(--osdk-surface-spacing) * 2.5)` | Content inline padding       |
+| `--osdk-form-section-field-gap`              | `var(--osdk-form-fields-gap)`             | Gap between stacked fields   |
+| `--osdk-form-section-grid-column-gap`        | `calc(var(--osdk-surface-spacing) * 4)`   | Gap between fields in a grid |
 
 #### Validation
 
-| Variable                                          | Default Value                                         | Description                              |
-| ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| `--osdk-form-section-error-color`                 | `var(--osdk-form-error-color)`                        | Section error indicator color             |
-| `--osdk-form-section-error-font-size`             | `var(--osdk-typography-size-body-small)`              | Section error indicator font size         |
+| Variable                              | Default Value                            | Description                       |
+| ------------------------------------- | ---------------------------------------- | --------------------------------- |
+| `--osdk-form-section-error-color`     | `var(--osdk-form-error-color)`           | Section error indicator color     |
+| `--osdk-form-section-error-font-size` | `var(--osdk-typography-size-body-small)` | Section error indicator font size |
 
 #### Minimal Variant
 
-| Variable                                          | Default Value                                         | Description                              |
-| ------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| `--osdk-form-section-minimal-title-font-size`     | `var(--osdk-typography-size-body-large)`              | Title font size in the minimal variant    |
+| Variable                                      | Default Value                            | Description                            |
+| --------------------------------------------- | ---------------------------------------- | -------------------------------------- |
+| `--osdk-form-section-minimal-title-font-size` | `var(--osdk-typography-size-body-large)` | Title font size in the minimal variant |
 
 ### Input
 
