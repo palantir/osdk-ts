@@ -137,9 +137,6 @@ export interface FetchPageArgs<
    * reducers and struct main values where defined, other properties unchanged.
    * A per-property `$applyModifiers` entry wins.
    *
-   * Only reflected in the result type where the signature threads the
-   * `DEFAULT_LOAD_LEVEL` parameter through (currently `fetchPageByRid`).
-   *
    * @experimental
    */
   $defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
