@@ -250,13 +250,13 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
     onFilterVisibilityChange: {
       description:
-        "Fires on drag-reorder in either mode, and on add/remove in uncontrolled mode. Visible filters first in display order, then hidden.",
+        "Fires on drag-reorder in either mode, on add/remove in uncontrolled mode, and on reset once the order has drifted. Visible filters first in display order, then hidden.",
       control: false,
       table: { category: "Events" },
     },
     addFilterMode: {
       description:
-        'Controls how filter add/remove is managed. "uncontrolled" manages visibility internally; "controlled" leaves it to the consumer.',
+        'Deprecated — going away, with visibility always managed internally ("uncontrolled"). Migrate off "controlled": seed visibility with isVisible on each definition and persist onFilterVisibilityChange.',
       control: "select",
       options: ["controlled", "uncontrolled"],
       table: {

@@ -34,6 +34,7 @@ import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
 const EMPTY_WHERE = {};
+const EMPTY_DEFINITIONS: Array<never> = [];
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -137,9 +138,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      onFilterAdded?.(filterKey);
+      onFilterAdded?.(filterKey, filterDefinitions ?? EMPTY_DEFINITIONS);
     },
-    [showFilter, onFilterAdded],
+    [showFilter, onFilterAdded, filterDefinitions],
   );
 
   const handleOrderChange = useCallback(

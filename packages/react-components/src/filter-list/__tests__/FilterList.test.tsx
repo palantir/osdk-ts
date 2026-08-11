@@ -186,7 +186,13 @@ describe("FilterList", () => {
       };
     }
 
-    function dragFirstFilterDown(): void {
+    // dnd-kit swallows the click that follows a drag with a capture-phase
+    // `click` listener on the document, torn down on a 50ms timer in
+    // PointerSensor.detach(). Outrun it, or every later click in the file gets
+    // stopPropagation'd.
+    const DND_KIT_CLICK_SUPPRESSION_MS = 50;
+
+    async function dragFirstFilterDown(): Promise<void> {
       const handle = screen.getAllByLabelText(/reorder/iu)[0];
       fireEvent.pointerDown(handle, {
         clientX: 10,
@@ -198,6 +204,9 @@ describe("FilterList", () => {
       fireEvent.pointerMove(handle, { clientX: 10, clientY: 40, pointerId: 1 });
       fireEvent.pointerMove(handle, { clientX: 10, clientY: 80, pointerId: 1 });
       fireEvent.pointerUp(handle, { clientX: 10, clientY: 80, pointerId: 1 });
+      await new Promise((resolve) => {
+        setTimeout(resolve, DND_KIT_CLICK_SUPPRESSION_MS * 2);
+      });
     }
 
     function twoSortableDefs() {
@@ -228,13 +237,14 @@ describe("FilterList", () => {
       Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
     });
 
-    it("passes only the filter key to onFilterAdded", () => {
+    it("passes the filter key and the unchanged definitions to onFilterAdded", () => {
       const onFilterAdded = vi.fn();
+      const definitions = [hiddenDeptDef()];
 
       render(
         <FilterList
           objectType={MockObjectType}
-          filterDefinitions={[hiddenDeptDef()]}
+          filterDefinitions={definitions}
           onFilterAdded={onFilterAdded}
         />,
       );
@@ -242,8 +252,7 @@ describe("FilterList", () => {
       fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
 
-      expect(onFilterAdded).toHaveBeenCalledWith("dept");
-      expect(onFilterAdded.mock.calls[0]).toHaveLength(1);
+      expect(onFilterAdded).toHaveBeenCalledWith("dept", definitions);
     });
 
     it("reports the shown filter as visible after an add", () => {
@@ -265,10 +274,66 @@ describe("FilterList", () => {
       ]);
     });
 
-    // The drag cases come last on purpose: synthetic pointer events leave
-    // base-ui interaction state behind that stops a later click from opening
-    // the add-filter popover.
-    it("reports a reorder in controlled mode", () => {
+    it("renders no add-filter popover in controlled mode, so onFilterAdded never fires", () => {
+      const onFilterAdded = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={[hiddenDeptDef(), ...twoSortableDefs()]}
+          addFilterMode="controlled"
+          onFilterAdded={onFilterAdded}
+        />,
+      );
+
+      expect(screen.queryByRole("button", { name: /add filter/iu })).toBeNull();
+      expect(onFilterAdded).not.toHaveBeenCalled();
+    });
+
+    it("reports the removed filter as hidden in uncontrolled mode", () => {
+      const onFilterVisibilityChange = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={twoSortableDefs()}
+          onFilterVisibilityChange={onFilterVisibilityChange}
+        />,
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove name filter" }),
+      );
+
+      expect(onFilterVisibilityChange).toHaveBeenCalledWith([
+        { filterKey: "age", isVisible: true },
+        { filterKey: "name", isVisible: false },
+      ]);
+    });
+
+    it("does not report a removal in controlled mode, where nothing is hidden", () => {
+      const onFilterRemoved = vi.fn();
+      const onFilterVisibilityChange = vi.fn();
+
+      render(
+        <FilterList
+          objectType={MockObjectType}
+          filterDefinitions={twoSortableDefs()}
+          addFilterMode="controlled"
+          onFilterRemoved={onFilterRemoved}
+          onFilterVisibilityChange={onFilterVisibilityChange}
+        />,
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Remove name filter" }),
+      );
+
+      expect(onFilterRemoved).toHaveBeenCalledWith("name");
+      expect(onFilterVisibilityChange).not.toHaveBeenCalled();
+    });
+
+    it("reports a reorder in controlled mode", async () => {
       stubRowLayout();
       const onFilterVisibilityChange = vi.fn();
 
@@ -282,7 +347,7 @@ describe("FilterList", () => {
         />,
       );
 
-      dragFirstFilterDown();
+      await dragFirstFilterDown();
 
       expect(onFilterVisibilityChange).toHaveBeenCalledWith([
         { filterKey: "age", isVisible: true },
@@ -290,7 +355,7 @@ describe("FilterList", () => {
       ]);
     });
 
-    it("reports a reorder in uncontrolled mode", () => {
+    it("reports a reorder in uncontrolled mode", async () => {
       stubRowLayout();
       const onFilterVisibilityChange = vi.fn();
 
@@ -303,7 +368,7 @@ describe("FilterList", () => {
         />,
       );
 
-      dragFirstFilterDown();
+      await dragFirstFilterDown();
 
       expect(onFilterVisibilityChange).toHaveBeenCalledWith([
         { filterKey: "age", isVisible: true },

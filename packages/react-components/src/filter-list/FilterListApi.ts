@@ -169,6 +169,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   the rendered list.
    *
    * @default "uncontrolled"
+   * @deprecated This prop is going away and visibility will always be managed
+   * internally, i.e. today's `"uncontrolled"` behavior. Migrate off
+   * `"controlled"`: seed the initial visibility with `isVisible` on each
+   * `filterDefinitions` entry, and persist `onFilterVisibilityChange` to
+   * observe what the user shows, hides, and reorders.
    */
   addFilterMode?: "controlled" | "uncontrolled";
 
@@ -180,8 +185,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * `onFilterVisibilityChange`, which fires in both modes.
    *
    * @param filterKey The key of the added filter
+   * @param newDefinitions Deprecated. Always the `filterDefinitions` you
+   * passed in, unchanged — never the post-add state. Read
+   * `onFilterVisibilityChange` instead; this argument is going away.
    */
-  onFilterAdded?: (filterKey: FilterKey<Q>) => void;
+  onFilterAdded?: (
+    filterKey: FilterKey<Q>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
+  ) => void;
 
   /**
    * Called after a filter's remove button is clicked.
@@ -196,8 +207,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called when filter visibility or ordering changes: on drag-reorder in
-   * either mode, and on add/remove via the built-in controls in uncontrolled
-   * mode.
+   * either mode, on add/remove via the built-in controls in uncontrolled mode,
+   * and on reset in either mode once the order or visibility has drifted from
+   * `filterDefinitions`.
    *
    * Visible filters come first, in display order, followed by the hidden ones.
    * Persist this array and feed it back as the order and `isVisible` of
