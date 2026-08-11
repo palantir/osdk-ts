@@ -19,7 +19,6 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
 } from "@osdk/api";
-import type { ActionValidationError } from "@osdk/client";
 
 import type {
   FieldKey,
@@ -108,7 +107,7 @@ interface ActionFormConfigProps<
   onSuccess?: (results: ActionEditResponse | undefined) => void;
 
   /**
-   * Called when there is an error in form submission
+   * Called when action metadata fails to load or form submission fails.
    *
    * @param error the error that occurred
    */
@@ -126,7 +125,6 @@ export type FormState<Q extends ActionDefinition<unknown>> = {
  * Form error discriminated union
  */
 export type FormError =
-  | { type: "validation"; error: ActionValidationError }
   | { type: "submission"; error: unknown }
   | { type: "unknown"; error: unknown };
 
