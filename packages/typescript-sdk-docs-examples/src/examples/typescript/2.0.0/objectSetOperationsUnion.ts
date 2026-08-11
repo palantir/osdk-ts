@@ -19,8 +19,8 @@
 
 // Example: objectSetOperationsUnion
 
-// Edit this import if your client location differs
 import { Employee } from "../../../generatedNoCheck/index.js";
+// Edit this import if your client location differs
 import { client } from "./client.js";
 
 const objectSetA = client(Employee).where({
@@ -34,6 +34,4 @@ const objectSetC = client(Employee).where({
 });
 
 // Combine objectSetA, objectSetB and objectSetC
-const result = objectSetA
-  .union(objectSetB)
-  .union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)
+const result = objectSetA.union(objectSetB).union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)

@@ -17,11 +17,11 @@
 import type { Media } from "@osdk/api";
 
 import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
-import type { BaseExcelViewerProps } from "../excel-viewer/ExcelViewerApi.js";
 import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
 import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 import type { MarkdownRendererProps } from "../markdown-renderer/MarkdownRenderer.js";
 import type { PdfViewerProps } from "../pdf-viewer/types.js";
+import type { BaseSpreadsheetViewerProps } from "../spreadsheet-viewer/SpreadsheetViewerApi.js";
 import type { BaseVideoViewerProps } from "../video-viewer/VideoViewerApi.js";
 import type { BaseXmlViewerProps } from "../xml-viewer/XmlViewerApi.js";
 
@@ -31,7 +31,7 @@ export enum ViewerType {
   Image = "image",
   Video = "video",
   Markdown = "markdown",
-  Excel = "excel",
+  Spreadsheet = "spreadsheet",
   Email = "email",
   Xml = "xml",
   Unsupported = "unsupported",
@@ -63,10 +63,10 @@ export interface DocumentViewerProps {
   markdownRendererProps?: Partial<
     Omit<MarkdownRendererProps, "content" | "className">
   >;
-  /** Props forwarded to BaseExcelViewer when rendering Excel
+  /** Props forwarded to BaseSpreadsheetViewer when rendering a spreadsheet
    * @default undefined */
-  excelViewerProps?: Partial<
-    Omit<BaseExcelViewerProps, "spreadsheet" | "className">
+  spreadsheetViewerProps?: Partial<
+    Omit<BaseSpreadsheetViewerProps, "spreadsheet" | "className">
   >;
   /** Props forwarded to BaseEmailViewer when rendering EML
    * @default undefined */

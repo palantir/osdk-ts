@@ -158,6 +158,7 @@ describe("buildDevModeManifest", () => {
     expect(result.devSettings.inputSpec).toEqual(MOCK_INPUT_SPEC);
     expect(vi.mocked(getWidgetSetInputSpec)).toHaveBeenCalledWith(
       "/project/package.json",
+      "/project/resources.json",
     );
   });
 

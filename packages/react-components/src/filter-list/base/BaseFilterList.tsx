@@ -50,8 +50,6 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     showResetButton = false,
     showActiveFilterCount = false,
     canReset,
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- consumed as a backwards-compatible fallback when canReset is not provided
-    hasVisibilityChanges,
     enableSorting,
     className,
     renderAddFilterButton,
@@ -110,7 +108,6 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
               showActiveFilterCount={showActiveFilterCount}
               activeFilterCount={activeFilterCount}
               canReset={canReset}
-              hasVisibilityChanges={hasVisibilityChanges}
             />
           )}
 

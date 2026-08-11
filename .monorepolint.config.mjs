@@ -16,6 +16,11 @@
 
 // @ts-check
 
+import * as child_process from "node:child_process";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { archetypes, ifTrue } from "@monorepolint/archetypes";
 import {
   alphabeticalDependencies,
@@ -28,16 +33,12 @@ import {
   requireDependency,
   standardTsconfig,
 } from "@monorepolint/rules";
-import * as child_process from "node:child_process";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import * as semver from "semver";
 
 const rootPackageJson = JSON.parse(
   await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
-    "utf8",
+    "utf-8",
   ),
 );
 
@@ -71,34 +72,22 @@ const INTERNAL_LIBRARY_RULES = {
   private: true,
 };
 
-const archetypeRules = archetypes(
-  standardPackageRules,
-  {
-    unmatched: "error",
-  },
-)
-  .addArchetype(
-    "clientPackage",
-    [
-      "@osdk/client",
-    ],
-    {
-      ...LIBRARY_RULES,
-      checkApi: true,
-      typecheckProject: "tsconfig.typecheck.json",
-      // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
-      // config (oxcConfig) holding behavior-preserving carve-outs for the
-      // error-level Ultracite rules this hand-written package first surfaces.
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
-    },
-  )
+const archetypeRules = archetypes(standardPackageRules, {
+  unmatched: "error",
+})
+  .addArchetype("clientPackage", ["@osdk/client"], {
+    ...LIBRARY_RULES,
+    checkApi: true,
+    typecheckProject: "tsconfig.typecheck.json",
+    // Migrated to the oxc toolchain (oxlint + oxfmt). Carries a nested oxlint
+    // config (oxcConfig) holding behavior-preserving carve-outs for the
+    // error-level Ultracite rules this hand-written package first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
+  })
   .addArchetype(
     "tests and benchmarks",
-    [
-      "@osdk/tests.*",
-      "@osdk/benchmarks.*",
-    ],
+    ["@osdk/tests.*", "@osdk/benchmarks.*"],
     {
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
@@ -154,26 +143,20 @@ const archetypeRules = archetypes(
       fixedDepsOnly: true,
     },
   )
-  .addArchetype(
-    "consumerCliWithSite",
-    [
-      "@osdk/ontology-explorer-server",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-      fixedDepsOnly: true,
-      extraPublishFiles: ["build/site"],
-      // Migrated to the oxc toolchain; carries a nested oxlint config for the
-      // error-level Ultracite rules its source first surfaces.
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
+  .addArchetype("consumerCliWithSite", ["@osdk/ontology-explorer-server"], {
+    ...LIBRARY_RULES,
+    output: {
+      browser: undefined,
+      cjs: undefined,
+      esm: "bundle",
     },
-  )
+    fixedDepsOnly: true,
+    extraPublishFiles: ["build/site"],
+    // Migrated to the oxc toolchain; carries a nested oxlint config for the
+    // error-level Ultracite rules its source first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
+  })
   .addArchetype(
     "internal clis",
     [
@@ -196,11 +179,7 @@ const archetypeRules = archetypes(
   // (oxcConfig) turning them off; those that do not lint against the root config.
   .addArchetype(
     "oxc migrated internal libraries / templates with carve-outs",
-    [
-      "@osdk/cli.*",
-      "@osdk/shared.test",
-      "@osdk/shared.test.intellisense",
-    ],
+    ["@osdk/cli.*", "@osdk/shared.test", "@osdk/shared.test.intellisense"],
     {
       ...INTERNAL_LIBRARY_RULES,
       oxc: true,
@@ -228,11 +207,7 @@ const archetypeRules = archetypes(
   // rules the prior ESLint config did not enforce, so each carries a nested config.
   .addArchetype(
     "oxc migrated consumer clis",
-    [
-      "@osdk/cli",
-      "@osdk/create-app",
-      "@osdk/create-widget",
-    ],
+    ["@osdk/cli", "@osdk/create-app", "@osdk/create-widget"],
     {
       ...LIBRARY_RULES,
       output: {
@@ -324,15 +299,15 @@ const archetypeRules = archetypes(
   // checkApi (API Extractor reports). These are the core published API-surface
   // packages (@osdk/api is the core SDK type surface) that previously lived in
   // the checkApiPackages archetype before being migrated to the oxc toolchain.
-  // Each is hand-written and first surfaces error-level Ultracite rules the
-  // prior ESLint config did not enforce, so each carries a nested oxlint config
-  // (oxcConfig) turning them off to keep the migration a reformat, not a
-  // rewrite.
+  // Each first surfaces error-level Ultracite rules the prior ESLint config did
+  // not enforce, so each carries a nested oxlint config (oxcConfig) turning them
+  // off to keep the migration a reformat, not a rewrite.
   .addArchetype(
     "oxc migrated libraries with check-api",
     [
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/agents",
       "@osdk/unit-testing",
     ],
     {
@@ -342,21 +317,26 @@ const archetypeRules = archetypes(
       oxcConfig: "./oxlint.config.ts",
     },
   )
+  .addArchetype(
+    "oxc migrated libraries with check-api and a postinstall script",
+    ["@osdk/integration-testing"],
+    {
+      ...LIBRARY_RULES,
+      oxc: true,
+      checkApi: true,
+      oxcConfig: "./oxlint.config.ts",
+      extraPublishFiles: ["bin/postinstall.mjs"],
+    },
+  )
   // React packages migrated to the oxc toolchain. Same as "oxc migrated
   // libraries" but with `react: true` (happy-dom vitest env + react tsconfig).
   // @osdk/widget.client-react is the first React package on oxc, validating
   // the Ultracite React preset for the rest of the repo.
-  .addArchetype(
-    "oxc migrated react libraries",
-    [
-      "@osdk/widget.client-react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      oxc: true,
-    },
-  )
+  .addArchetype("oxc migrated react libraries", ["@osdk/widget.client-react"], {
+    ...LIBRARY_RULES,
+    react: true,
+    oxc: true,
+  })
   // React packages with CSS exports migrated to the oxc toolchain. Same as
   // "oxc migrated react libraries" but additionally carries the cssExport,
   // extraPublishFiles, and setupFiles options. @osdk/cbac-components is the
@@ -364,9 +344,7 @@ const archetypeRules = archetypes(
   // archetype path ahead of @osdk/react-components.
   .addArchetype(
     "oxc migrated react libraries with css",
-    [
-      "@osdk/cbac-components",
-    ],
+    ["@osdk/cbac-components"],
     {
       ...LIBRARY_RULES,
       react: true,
@@ -380,27 +358,19 @@ const archetypeRules = archetypes(
   // "oxc migrated react libraries" but additionally carries the extraPublishFiles
   // and customTsconfigExcludes options. @osdk/react is the React family's core
   // hooks package.
-  .addArchetype(
-    "oxc migrated react libraries with docs",
-    [
-      "@osdk/react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      oxc: true,
-      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
-      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
-    },
-  )
+  .addArchetype("oxc migrated react libraries with docs", ["@osdk/react"], {
+    ...LIBRARY_RULES,
+    react: true,
+    oxc: true,
+    extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+    customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+  })
   // ESM-only React package with CSS exports migrated to the oxc toolchain. Same
   // as "oxc migrated react libraries with css" but ESM-only output and without
   // the extra publish/setup files. @osdk/react-devtools.
   .addArchetype(
     "oxc migrated esm react libraries with css",
-    [
-      "@osdk/react-devtools",
-    ],
+    ["@osdk/react-devtools"],
     {
       ...LIBRARY_RULES,
       react: true,
@@ -443,10 +413,7 @@ const archetypeRules = archetypes(
   // `**/generated`).
   .addArchetype(
     "oxc migrated force-bundle libraries with carve-outs",
-    [
-      "@osdk/client.unstable",
-      "@osdk/client.unstable.tpsa",
-    ],
+    ["@osdk/client.unstable", "@osdk/client.unstable.tpsa"],
     {
       ...LIBRARY_RULES,
       output: OUTPUT_BUNDLE_ALL,
@@ -456,28 +423,24 @@ const archetypeRules = archetypes(
   )
   .addArchetype(
     "internal libraries / templates with modern tooling ES2023",
-    [
-      "@osdk/typescript-sdk-docs-examples",
-    ],
+    ["@osdk/typescript-sdk-docs-examples"],
     {
       ...INTERNAL_LIBRARY_RULES,
       extraTsConfigCompilerOptions: {
-        "lib": ["ES2023", "DOM", "ESNEXT.Array"],
+        lib: ["ES2023", "DOM", "ESNEXT.Array"],
       },
-      // NOT migrated to the oxc toolchain in this increment. Its `codegen` step
-      // reformats freshly-generated documentation examples via `pnpm run format`,
-      // and that step runs on every CI test-matrix leg (Node 18-24) because a
-      // generator package, @osdk/osdk-docs-context-generator, depends on this
-      // package's codegen output. oxfmt cannot load the repo's TypeScript
-      // oxfmt.config.ts on Node < 22.18, so the format step must stay on dprint
-      // (which is Node-version-independent). Migrate this package once codegen is
-      // restored from the Node-24 build cache on the matrix (see #3031 follow-up)
-      // rather than re-executed per leg.
+      // Migrated to the oxc toolchain (oxlint + oxfmt). Its `codegen` step
+      // reformats freshly-generated documentation examples via `pnpm run format`
+      // (now oxfmt), and oxfmt can't run on Node < 20.19/22.18. This is safe on
+      // CI: the test-matrix leg is the only step that runs on the older Node
+      // versions (every other job runs on Node 24), and on those legs codegen is
+      // restored from the Node-24 build cache rather than re-executed (see #3783),
+      // so its oxfmt format step never runs there.
+      oxc: true,
+      oxcConfig: "./oxlint.config.ts",
     },
   )
-  .addArchetype("publishedSandboxes", [
-    "@osdk/e2e.sandbox.catchall",
-  ], {
+  .addArchetype("publishedSandboxes", ["@osdk/e2e.sandbox.catchall"], {
     ...INTERNAL_LIBRARY_RULES,
     skipTypes: true,
     private: false,
@@ -491,6 +454,22 @@ const archetypeRules = archetypes(
   .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
     ...LIBRARY_RULES,
     skipAttw: true,
+    extraExports: {
+      "./UNSTABLE_DO_NOT_USE/ontology-metadata": {
+        import: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.mts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+        require: {
+          types:
+            "./build/types/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.d.cts",
+          default:
+            "./build/esm/generatedNoCheck/UNSTABLE_DO_NOT_USE/ontology-metadata.json",
+        },
+      },
+    },
     // Migrated to the oxc toolchain; carries a nested oxlint config (its
     // src/index.ts barrel re-exports the generated ontology, tripping
     // oxc/no-barrel-file once the module graph is resolvable).
@@ -499,9 +478,7 @@ const archetypeRules = archetypes(
   })
   .addArchetype(
     "currentlyGeneratedSdks",
-    [
-      "@osdk/e2e.generated.api-namespace.*",
-    ],
+    ["@osdk/e2e.generated.api-namespace.*"],
     {
       ...LIBRARY_RULES,
       skipAttw: true,
@@ -528,7 +505,7 @@ const archetypeRules = archetypes(
       skipTypes: true,
       react: true,
       extraTsConfigCompilerOptions: {
-        "isolatedDeclarations": false,
+        isolatedDeclarations: false,
       },
       // Migrated to the oxc toolchain; each carries a nested oxlint config for the
       // error-level Ultracite rules its source first surfaces (including the
@@ -537,73 +514,49 @@ const archetypeRules = archetypes(
       oxcConfig: "./oxlint.config.ts",
     },
   )
-  .addArchetype(
-    "viteReactAppsWithScss",
-    [
-      "@osdk/ontology-explorer-app",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-      react: true,
-      extraTsConfigCompilerOptions: {
-        "isolatedDeclarations": false,
-        "plugins": [{ "name": "typescript-plugin-css-modules" }],
-        "rootDirs": ["./src", "./build/scss-types"],
-        "allowArbitraryExtensions": true,
-      },
-      // Migrated to the oxc toolchain; carries a nested oxlint config for the
-      // error-level Ultracite rules its source first surfaces. Its .scss/.css are
-      // left to their authors (oxfmt ignores them).
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
+  .addArchetype("viteReactAppsWithScss", ["@osdk/ontology-explorer-app"], {
+    ...INTERNAL_LIBRARY_RULES,
+    skipTypes: true,
+    react: true,
+    extraTsConfigCompilerOptions: {
+      isolatedDeclarations: false,
+      plugins: [{ name: "typescript-plugin-css-modules" }],
+      rootDirs: ["./src", "./build/scss-types"],
+      allowArbitraryExtensions: true,
     },
-  )
-  .addArchetype(
-    "nodeSandboxes",
-    [
-      "@osdk/e2e.sandbox.oauth",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-      // Migrated to the oxc toolchain; surfaces no error-level rules, so it lints
-      // against the root config.
-      oxc: true,
-    },
-  )
-  .addArchetype(
-    "e2eTests",
-    [
-      "@osdk/e2e.test.foundry-sdk-generator",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      output: OUTPUT_NORMAL,
-      skipTypes: true,
-      // Migrated to the oxc toolchain; carries a nested oxlint config for the
-      // error-level Ultracite rules its source first surfaces.
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
-    },
-  )
-  .addArchetype(
-    "vitePlugin",
-    [
-      "@osdk/widget.vite-plugin",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      output: OUTPUT_ESM_ONLY,
-      extraPublishFiles: ["build/site"],
-      // Migrated to the oxc toolchain (deferred from the widget batch for churn);
-      // carries a nested oxlint config for the error-level Ultracite rules its
-      // source first surfaces.
-      oxc: true,
-      oxcConfig: "./oxlint.config.ts",
-    },
-  )
+    // Migrated to the oxc toolchain; carries a nested oxlint config for the
+    // error-level Ultracite rules its source first surfaces. Its .scss/.css are
+    // left to their authors (oxfmt ignores them).
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
+  })
+  .addArchetype("nodeSandboxes", ["@osdk/e2e.sandbox.oauth"], {
+    ...INTERNAL_LIBRARY_RULES,
+    skipTypes: true,
+    // Migrated to the oxc toolchain; surfaces no error-level rules, so it lints
+    // against the root config.
+    oxc: true,
+  })
+  .addArchetype("e2eTests", ["@osdk/e2e.test.foundry-sdk-generator"], {
+    ...INTERNAL_LIBRARY_RULES,
+    output: OUTPUT_NORMAL,
+    skipTypes: true,
+    // Migrated to the oxc toolchain; carries a nested oxlint config for the
+    // error-level Ultracite rules its source first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
+  })
+  .addArchetype("vitePlugin", ["@osdk/widget.vite-plugin"], {
+    ...LIBRARY_RULES,
+    react: true,
+    output: OUTPUT_ESM_ONLY,
+    extraPublishFiles: ["build/site"],
+    // Migrated to the oxc toolchain (deferred from the widget batch for churn);
+    // carries a nested oxlint config for the error-level Ultracite rules its
+    // source first surfaces.
+    oxc: true,
+    oxcConfig: "./oxlint.config.ts",
+  })
   // The 221-tsx component-library giant migrated to the oxc toolchain. Same
   // options as the former "reactComponentsLibrary" archetype (react + cssExport
   // + extraPublishFiles + the full experimental/* attw exclude list + the test
@@ -613,9 +566,7 @@ const archetypeRules = archetypes(
   // than the root config.
   .addArchetype(
     "oxc migrated react components library",
-    [
-      "@osdk/react-components",
-    ],
+    ["@osdk/react-components"],
     {
       ...LIBRARY_RULES,
       react: true,
@@ -629,12 +580,12 @@ const archetypeRules = archetypes(
         "./experimental/cbac-picker",
         "./experimental/document-viewer",
         "./experimental/email-viewer",
-        "./experimental/excel-viewer",
         "./experimental/filter-list",
         "./experimental/image-viewer",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/spreadsheet-viewer",
         "./experimental/theme",
         "./experimental/tiff-renderer",
         "./experimental/video-viewer",
@@ -648,17 +599,11 @@ const archetypeRules = archetypes(
       vitestPool: "threads",
     },
   )
-  .addArchetype(
-    "docs",
-    [
-      "@osdk/docs",
-    ],
-    {
-      ...LIBRARY_RULES,
-      minimalChangesOnly: true,
-      private: true,
-    },
-  );
+  .addArchetype("docs", ["@osdk/docs"], {
+    ...LIBRARY_RULES,
+    minimalChangesOnly: true,
+    private: true,
+  });
 
 /**
  * We don't want to allow `workspace:^` in our regular dependencies because our current release
@@ -704,7 +649,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               file: context.getPackageJsonPath(),
               fixer: () => {
                 // always refetch in fixer since another fixer may have already changed the file
-                let packageJson = context.getPackageJson();
+                const packageJson = context.getPackageJson();
                 if (packageJson[d]) {
                   packageJson[d] = {
                     ...packageJson[d],
@@ -728,7 +673,7 @@ const disallowWorkspaceCaret = createRuleFactory({
               `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
             file: context.getPackageJsonPath(),
             fixer: () => {
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:~") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -748,7 +693,9 @@ const disallowWorkspaceCaret = createRuleFactory({
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
             || (packageJson.name === "@osdk/functions"
               && dep === "@osdk/client")
-          ) continue;
+          ) {
+            continue;
+          }
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
@@ -756,7 +703,7 @@ const disallowWorkspaceCaret = createRuleFactory({
             file: context.getPackageJsonPath(),
             fixer: () => {
               // always refetch in fixer since another fixer may have already changed the file
-              let packageJson = context.getPackageJson();
+              const packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
                 packageJson[d] = {
                   ...packageJson[d],
@@ -826,8 +773,11 @@ const noPackageEntry = createRuleFactory({
     }
   },
   validateOptions: (options) => {
-    return typeof options === "object" && "entries" in options
-      && Array.isArray(options.entries);
+    return (
+      typeof options === "object"
+      && "entries" in options
+      && Array.isArray(options.entries)
+    );
   },
 });
 
@@ -838,7 +788,7 @@ async function dirExists(dirPath) {
   try {
     const stat = await fs.stat(dirPath);
     return stat.isDirectory();
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -847,7 +797,8 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExports?: string[]
+ *   cssExports?: string[],
+ *   extraExports?: Record<string, unknown>
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -863,10 +814,8 @@ const ourExportsConvention = createRuleFactory({
     const expectedExports = {
       exports: {
         ".": {
-          "browser": options.browser
-            ? "./build/browser/index.js"
-            : undefined,
-          "import": {
+          browser: options.browser ? "./build/browser/index.js" : undefined,
+          import: {
             // we generate the types for this in a separate task
             // than transpile so they end up in different places
             types: "./build/types/index.d.ts",
@@ -875,10 +824,8 @@ const ourExportsConvention = createRuleFactory({
 
           // for cjs, we generate the types next to the transpiled code
           // so we don't need to separate anything out. TSC infers properly
-          "require": options.cjs
-            ? "./build/cjs/index.cjs"
-            : undefined,
-          "default": `./build/${options.browser ? "browser" : "esm"}/index.js`,
+          require: options.cjs ? "./build/cjs/index.cjs" : undefined,
+          default: `./build/${options.browser ? "browser" : "esm"}/index.js`,
         },
       },
     };
@@ -886,18 +833,18 @@ const ourExportsConvention = createRuleFactory({
     function makeExport(fileName) {
       return {
         ...(options.browser
-          ? { "browser": `./build/browser/public/${fileName}.js` }
+          ? { browser: `./build/browser/public/${fileName}.js` }
           : {}),
 
-        "import": {
+        import: {
           types: `./build/types/public/${fileName}.d.ts`,
           default: `./build/esm/public/${fileName}.js`,
         },
         ...(options.cjs
-          ? { "require": `./build/cjs/public/${fileName}.cjs` }
+          ? { require: `./build/cjs/public/${fileName}.cjs` }
           : {}),
 
-        "default": `./build/${
+        default: `./build/${
           options.browser ? "browser" : "esm"
         }/public/${fileName}.js`,
       };
@@ -907,7 +854,7 @@ const ourExportsConvention = createRuleFactory({
       for (
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
-          encoding: "utf8",
+          encoding: "utf-8",
           recursive: true,
         })
       ) {
@@ -917,7 +864,7 @@ const ourExportsConvention = createRuleFactory({
         const fullPath = path.join(q.parentPath, q.name);
         const rel = path.relative(publicPath, fullPath);
         const b = rel.replace(/\.ts$/, "");
-        expectedExports.exports["./" + b] = makeExport(b);
+        expectedExports.exports[`./${b}`] = makeExport(b);
       }
     }
 
@@ -925,6 +872,16 @@ const ourExportsConvention = createRuleFactory({
     const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
       expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
+    }
+
+    // escape hatch for subpaths this convention can't derive from src/public,
+    // e.g. generated data assets. also must come before the wildcard.
+    for (
+      const [subpath, target] of Object.entries(
+        options.extraExports ?? {},
+      )
+    ) {
+      expectedExports.exports[subpath] = target;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -1007,7 +964,7 @@ const setWorkspaceDepRangeForPrereleases = createRuleFactory({
             `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
           file: packageJsonPath,
           fixer: () => {
-            let updated = context.getPackageJson();
+            const updated = context.getPackageJson();
             if (updated[depField]?.[depName] === current) {
               updated[depField][depName] = expected;
               context.host.writeJson(packageJsonPath, updated);
@@ -1033,7 +990,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
     `pnpm exec dprint fmt --stdin foo.${ext}`,
     {
       input: contents,
-      encoding: "utf8",
+      encoding: "utf-8",
       shell: true,
     },
   );
@@ -1074,16 +1031,14 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
           : {}),
         rootDir: "src",
         outDir: opts.outDir,
-        ...(
-          opts.singlePackageName
-            ? {
-              paths: {
-                [opts.singlePackageName]: ["./src"],
-              },
-            }
-            : {}
-        ),
-        ...(opts.extraTsConfigCompilerOptions ?? {}),
+        ...(opts.singlePackageName
+          ? {
+            paths: {
+              [opts.singlePackageName]: ["./src"],
+            },
+          }
+          : {}),
+        ...opts.extraTsConfigCompilerOptions,
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -1112,8 +1067,8 @@ function minimalPackageRules(shared, options) {
         entries: {
           license: "Apache-2.0",
           repository: {
-            "type": "git",
-            "url": options.repositoryUrl,
+            type: "git",
+            url: options.repositoryUrl,
           },
         },
         entriesExist: ["version"],
@@ -1170,6 +1125,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
+ * @property { Record<string, unknown> } [extraExports]
  * @property { string[] } [attwExcludeEntrypoints]
  * @property { string } [typecheckProject]
  */
@@ -1210,8 +1166,7 @@ function standardPackageRules(shared, options) {
     if (!options.output.browser) {
       return DELETE_SCRIPT_ENTRY;
     }
-    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
-      + buildCssSuffix;
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${buildCssSuffix}`;
   };
 
   if (options.minimalChangesOnly) {
@@ -1230,9 +1185,9 @@ function standardPackageRules(shared, options) {
         ...shared,
         options: {
           scripts: {
-            "build": "vite build",
-            "dev": "vite",
-            "preview": "vite preview",
+            build: "vite build",
+            dev: "vite",
+            preview: "vite preview",
           },
         },
       }),
@@ -1249,16 +1204,13 @@ function standardPackageRules(shared, options) {
     standardTsconfig({
       ...shared,
 
-      options: getTsconfigOptions(
-        `@osdk/monorepo.tsconfig/base.json`,
-        {
-          customTsconfigExcludes: options.customTsconfigExcludes,
-          skipTsconfigReferences: options.skipTsconfigReferences,
-          outDir: "build/esm",
-          react: options.react || options.vitestEnvironment === "happy-dom",
-          extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
-        },
-      ),
+      options: getTsconfigOptions(`@osdk/monorepo.tsconfig/base.json`, {
+        customTsconfigExcludes: options.customTsconfigExcludes,
+        skipTsconfigReferences: options.skipTsconfigReferences,
+        outDir: "build/esm",
+        react: options.react || options.vitestEnvironment === "happy-dom",
+        extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
+      }),
     }),
     ...(options.tsVersion
       ? [
@@ -1294,7 +1246,7 @@ function standardPackageRules(shared, options) {
               cssExports.length > 0 || options.attwExcludeEntrypoints?.length
                 ? ` --exclude-entrypoints ${
                   [
-                    ...cssExports.map(f => `./${f}`),
+                    ...cssExports.map((f) => `./${f}`),
                     ...(options.attwExcludeEntrypoints ?? []),
                   ].join(" ")
                 }`
@@ -1335,6 +1287,7 @@ function standardPackageRules(shared, options) {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
         cssExports,
+        extraExports: options.extraExports,
       },
     }),
     packageEntry({
@@ -1342,7 +1295,7 @@ function standardPackageRules(shared, options) {
       options: {
         entries: {
           publishConfig: {
-            "access": "public",
+            access: "public",
           },
           files: !options.private
             ? [
@@ -1437,14 +1390,18 @@ function standardPackageRules(shared, options) {
           }${
             options.setupFiles && options.setupFiles.length > 0
               ? `\n            setupFiles: ${
-                JSON.stringify(options.setupFiles)
+                JSON.stringify(
+                  options.setupFiles,
+                )
               },`
               : ""
           }${
             options.vitestEnv
               ? `\n            env: {\n${
                 Object.entries(options.vitestEnv)
-                  .map(([k, v]) => `              ${k}: ${JSON.stringify(v)},`)
+                  .map(
+                    ([k, v]) => `              ${k}: ${JSON.stringify(v)},`,
+                  )
                   .join("\n")
               }\n            },`
               : ""

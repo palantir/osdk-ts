@@ -24,14 +24,23 @@ import {
 import { AliasEnvironment } from "./types.js";
 import type {
   AliasesFile,
+  Dataset,
+  DatasetResource,
+  DatasetValue,
   EgressConnection,
   EgressConnectionValue,
+  Mediaset,
+  MediasetResource,
+  MediasetValue,
   Model,
   ModelResource,
   ModelValue,
   ResolvedAliases,
   ResourcesFile,
   Source,
+  Stream,
+  StreamResource,
+  StreamValue,
 } from "./types.js";
 
 let cachedPublishedAliases: ResolvedAliases | undefined;
@@ -52,6 +61,9 @@ function loadPublishedAliases(): ResolvedAliases {
     custom: loadCustom(aliasesFile.defaults.custom),
     models: loadPublishedModels(aliasesFile.defaults.models),
     sources: loadPublishedSources(aliasesFile.defaults.egressConnections),
+    datasets: loadPublishedDatasets(aliasesFile.defaults.datasets),
+    mediasets: loadPublishedMediasets(aliasesFile.defaults.mediasets),
+    streams: loadPublishedStreams(aliasesFile.defaults.streams),
   };
   return cachedPublishedAliases;
 }
@@ -69,6 +81,9 @@ function loadPreviewAliases(): ResolvedAliases {
     custom: loadCustom(resourcesFile.resources.custom),
     models: loadPreviewModels(resourcesFile.resources.models),
     sources: loadPreviewSources(resourcesFile.egress.connections),
+    datasets: loadPreviewDatasets(resourcesFile.resources.datasets),
+    mediasets: loadPreviewMediasets(resourcesFile.resources.mediasets),
+    streams: loadPreviewStreams(resourcesFile.resources.streams),
   };
 }
 
@@ -98,6 +113,39 @@ function loadPublishedSources(
   );
 }
 
+function loadPublishedDatasets(
+  datasets: Record<string, DatasetValue>,
+): Record<string, Dataset> {
+  return Object.fromEntries<Dataset>(
+    Object.entries(datasets).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ]),
+  );
+}
+
+function loadPublishedMediasets(
+  mediasets: Record<string, MediasetValue>,
+): Record<string, Mediaset> {
+  return Object.fromEntries<Mediaset>(
+    Object.entries(mediasets).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ]),
+  );
+}
+
+function loadPublishedStreams(
+  streams: Record<string, StreamValue>,
+): Record<string, Stream> {
+  return Object.fromEntries<Stream>(
+    Object.entries(streams).map(([alias, { id: identifier }]) => [
+      alias,
+      identifier,
+    ]),
+  );
+}
+
 function loadPreviewModels(models: ModelResource[]): Record<string, Model> {
   return Object.fromEntries<Model>(
     models
@@ -119,6 +167,43 @@ function loadPreviewSources(
           connection.alias != null,
       )
       .map(({ alias, rid }) => [alias, { rid }]),
+  );
+}
+
+function loadPreviewDatasets(
+  datasets: DatasetResource[],
+): Record<string, Dataset> {
+  return Object.fromEntries<Dataset>(
+    datasets
+      .filter(
+        (dataset): dataset is DatasetResource & { alias: string } =>
+          dataset.alias != null,
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
+  );
+}
+
+function loadPreviewMediasets(
+  mediasets: MediasetResource[],
+): Record<string, Mediaset> {
+  return Object.fromEntries<Mediaset>(
+    mediasets
+      .filter(
+        (mediaset): mediaset is MediasetResource & { alias: string } =>
+          mediaset.alias != null,
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
+  );
+}
+
+function loadPreviewStreams(streams: StreamResource[]): Record<string, Stream> {
+  return Object.fromEntries<Stream>(
+    streams
+      .filter(
+        (stream): stream is StreamResource & { alias: string } =>
+          stream.alias != null,
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
   );
 }
 

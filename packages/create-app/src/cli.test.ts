@@ -212,3 +212,68 @@ async function runTest({
     expect(packageJson.dependencies["@osdk/client"]).toBe(undefined);
   }
 }
+
+describe("--unstableFeatures flag", () => {
+  const argsFor = (project: string, extra: string[]): string[] => [
+    "npx",
+    "@osdk/create-app",
+    project,
+    "--overwrite",
+    "--template",
+    "template-react",
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--applicationUrl",
+    "https://app.example.palantirfoundry.com",
+    "--application",
+    "ri.third-party-applications.main.application.fake",
+    "--clientId",
+    "123",
+    "--corsProxy",
+    "false",
+    "--sdkVersion",
+    "2.x",
+    "--scopes",
+    "api:read-data",
+    "--ontology",
+    "ri.ontology.main.ontology.fake",
+    "--osdkPackage",
+    "@fake/sdk",
+    "--osdkRegistryUrl",
+    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    ...extra,
+  ];
+
+  const readProject = (project: string) => {
+    const root = path.join(process.cwd(), project);
+    const pkgPath = path.join(root, "package.json");
+    const clientPath = path.join(root, "src", "client.ts");
+    return {
+      packageJson: JSON.parse(fs.readFileSync(pkgPath, "utf-8")),
+      clientTs: fs.readFileSync(clientPath, "utf-8"),
+    };
+  };
+
+  test("wires Foundry branch support when enabled", async () => {
+    const project = "expected-unstable-on";
+    await cli(argsFor(project, ["--unstableFeatures", "true"]));
+    const { packageJson, clientTs } = readProject(project);
+
+    const postinstall = "./node_modules/.bin/osdk unstable branch sync";
+    expect(packageJson.scripts.postinstall).toBe(postinstall);
+    expect(packageJson.devDependencies["@osdk/cli"]).toBe("latest");
+    expect(clientTs).toContain('import { $branch } from "@fake/sdk";');
+    expect(clientTs).toContain("UNSTABLE_DO_NOT_USE_BRANCH: $branch");
+  });
+
+  test("omits Foundry branch support by default", async () => {
+    const project = "expected-unstable-off";
+    await cli(argsFor(project, []));
+    const { packageJson, clientTs } = readProject(project);
+
+    expect(packageJson.scripts.postinstall).toBeUndefined();
+    expect(packageJson.devDependencies?.["@osdk/cli"]).toBeUndefined();
+    expect(clientTs).not.toContain("UNSTABLE_DO_NOT_USE_BRANCH");
+    expect(clientTs).not.toContain("$branch");
+  });
+});

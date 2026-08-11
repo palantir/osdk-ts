@@ -14,6 +14,8 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+const declarationFileEndings = [".d.ts", ".d.mts", ".d.cts"];
+
 await yargs(hideBin(process.argv))
   .command("*", "default command", (argv) => {
     return argv
@@ -92,6 +94,11 @@ async function transformTypes() {
     );
     if (f.isDirectory()) continue;
     if (isTestFile(relative)) continue;
+    if (declarationFileEndings.some(e => f.name.endsWith(e))) {
+      await mkdir(path.dirname(destPathWrongExt), { recursive: true });
+      await copyFile(fullFilePath, destPathWrongExt);
+      continue;
+    }
     if (!fileEndingsToCompile.some(e => f.name.endsWith(e))) {
       continue;
     }
@@ -301,11 +308,12 @@ async function transpileWithBabel(format, target) {
   });
 
   const fileEndingsToCopy = [
-    ".d.ts",
+    ...declarationFileEndings,
     ".d.ts.map",
-    ".d.mts",
     ".d.mts.map",
+    ".d.cts.map",
     ".css",
+    ".json",
   ];
 
   const extMap = {

@@ -25,6 +25,10 @@ export interface ColumnOption {
   id: string;
   name: string;
   canSort: boolean;
+  /**
+   * The column's underlying property type, i.e. an OSDK `WirePropertyTypes` value
+   */
+  dataType?: string;
 }
 
 export interface CellIdentifier {

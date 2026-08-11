@@ -610,6 +610,8 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
     rid: "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
     titleProperty: "fullName",
     visibility: "NORMAL",
+    aliases: [],
+    datasources: [],
   },
   linkTypes: [
     {

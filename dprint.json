@@ -41,12 +41,14 @@
     "packages/react-components/",
     "packages/client.unstable/",
     "packages/client.unstable.tpsa/",
+    "packages/integration-testing/",
     "packages/client/",
     "packages/maker/",
     "packages/maker-experimental/",
     "packages/maker-import/",
     "packages/api/",
     "packages/functions/",
+    "packages/agents/",
     "packages/unit-testing/",
     "packages/aip-core/",
     "packages/foundry-config-json/",
@@ -98,7 +100,8 @@
     "packages/e2e.sandbox.officenetwork/",
     "packages/e2e.sandbox.peopleapp/",
     "packages/e2e.sandbox.todoapp/",
-    "packages/e2e.sandbox.todowidget/"
+    "packages/e2e.sandbox.todowidget/",
+    "packages/typescript-sdk-docs-examples/"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

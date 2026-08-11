@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { exit } from "process";
+import { exit } from "node:process";
+
 import type { Arguments, Argv, CommandModule } from "yargs";
+
 import { logDuration, SlsLogger } from "../logging/index.js";
 import { OntologyMetadataResolver } from "../ontologyMetadata/index.js";
 import { isValidSemver } from "../utils/index.js";
@@ -39,10 +41,14 @@ export interface generatePackageCommandArgs {
   sdkPackages?: Map<string, string>;
   packageRid?: string;
   branch?: string;
+  experimentalOntologyMetadata?: boolean;
 }
 
-export class GeneratePackageCommand
-  implements CommandModule<{}, generatePackageCommandArgs>
+export class GeneratePackageCommand implements
+  CommandModule<
+    {},
+    generatePackageCommandArgs
+  >
 {
   public command = "generatePackage";
   public describe = "Generates a new npm package which can be published";
@@ -173,11 +179,18 @@ export class GeneratePackageCommand
         hidden: true,
         coerce: (arg: string[]) => {
           return new Map(
-            arg.map((sdkPackage) =>
-              sdkPackage.split("=", 2) as [string, string]
+            arg.map(
+              (sdkPackage) => sdkPackage.split("=", 2) as [string, string],
             ),
           );
         },
+      })
+      .option("experimentalOntologyMetadata", {
+        boolean: true,
+        demandOption: false,
+        description:
+          `EXPERIMENTAL: emit the raw ontology metadata as a ./UNSTABLE_DO_NOT_USE/ontology-metadata subpath export. May change or be removed at any time.`,
+        default: false,
       })
       .strict();
   }
@@ -249,11 +262,10 @@ export class GeneratePackageCommand
         // Narrowing doesn't carry into the closure below, so extract here.
         const ontologyInfo = wireOntologyDefinition.value;
 
-        await logDuration(
-          logger,
-          "Rendering OSDK",
-          () =>
-            generatePackage(ontologyInfo, {
+        await logDuration(logger, "Rendering OSDK", () =>
+          generatePackage(
+            ontologyInfo,
+            {
               packageName: args.packageName,
               packageVersion: args.packageVersion,
               outputDir: args.outputDir,
@@ -263,8 +275,11 @@ export class GeneratePackageCommand
                   ?? false,
               packageRid: args.packageRid,
               branch: args.branch,
-            }, logger),
-        );
+              exportOntologyMetadata: args.experimentalOntologyMetadata
+                ?? false,
+            },
+            logger,
+          ));
       },
       { params: baseSafeParams, unsafeParams: baseUnsafeParams },
     );

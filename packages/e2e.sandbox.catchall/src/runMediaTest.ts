@@ -20,11 +20,7 @@ import type {
   MediaReference,
   MediaUpload,
 } from "@osdk/api";
-import {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
-  type MediaTransformation,
-} from "@osdk/api/unstable";
+import { type MediaTransformation, transformAndWait } from "@osdk/api/unstable";
 import {
   $Actions,
   $Queries,
@@ -177,9 +173,7 @@ function readUntypedMetadata(
 
 async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
   if (ref.fetchFullMetadata == null) {
-    throw new Error(
-      "Media implementation does not expose fetchFullMetadata; backing OSDK build is too old",
-    );
+    throw new Error("Media implementation does not expose fetchFullMetadata");
   }
   const { itemMetadata } = await ref.fetchFullMetadata();
 
@@ -233,43 +227,6 @@ async function runReadMediaFullMetadataTest(ref: Media): Promise<void> {
       `Full media metadata variant was incorrect: expected "imagery" and got "${itemMetadata.type}"`,
     );
   }
-}
-
-async function runCreateMediaReferenceTest(
-  data: Blob,
-): Promise<MediaReference> {
-  // should not work
-  // Won't allow property keys not of media ref type
-  await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
-    .createMediaReference({
-      data,
-      fileName: "test15.png",
-      objectType: MnayanOsdkMediaObject,
-      // @ts-expect-error
-      propertyType: "path",
-    })
-    .then((_) => {
-      throw new Error(
-        "This create media reference should not resolve as it is not being assigned to a media reference property",
-      );
-    })
-    .catch(() => {
-      console.log("Request failed as expected");
-    });
-
-  console.log("Now trying to upload directly to ephemeral ");
-  await uploadMedia(client, { fileName: "test15.png", data });
-  console.log("ephemeral upload success!");
-
-  // should work
-  return client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  ).createMediaReference({
-    data,
-    fileName: "test15.png",
-    objectType: MnayanOsdkMediaObject,
-    propertyType: "mediaReference",
-  });
 }
 
 async function runUploadMediaTest(data: Blob): Promise<void> {
@@ -395,16 +352,12 @@ const slicePdf: MediaTransformation = {
   },
 };
 
-async function runTransformAndWaitTest(
-  mediaReference: MediaReference,
-): Promise<void> {
+async function runTransformAndWaitTest(media: Media): Promise<void> {
   const transformation = imageResize;
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
-  const result = await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
-  ).transformAndWait({
-    mediaReference,
+  const result = await client(transformAndWait).transformAndWait({
+    media,
     transformation,
   });
 
@@ -442,9 +395,13 @@ export async function runMediaTest(): Promise<void> {
   await runReadMediaFullMetadataTest(result.mediaReference);
   console.log("SUCCESS: Reading Full Media Metadata");
 
-  console.log("Creating Media Reference");
-  const mediaRef: MediaReference = await runCreateMediaReferenceTest(testImage);
-  console.log("SUCCESS: Creating Media Reference");
+  console.log("Uploading Media");
+  const uploadedMedia = await uploadMedia(client, {
+    fileName: "test15.png",
+    data: testImage,
+  });
+  const mediaRef: MediaReference = uploadedMedia.getMediaReference();
+  console.log("SUCCESS: Uploading Media");
 
   // test applying via a function backed action
   console.log("Applying Media Reference via Function Backed Action");
@@ -468,7 +425,7 @@ export async function runMediaTest(): Promise<void> {
   console.log("SUCCESS: Testing Media Query");
 
   console.log("Testing transformAndWait");
-  await runTransformAndWaitTest(result.mediaReference.getMediaReference());
+  await runTransformAndWaitTest(result.mediaReference);
   console.log("SUCCESS: Testing transformAndWait");
 }
 

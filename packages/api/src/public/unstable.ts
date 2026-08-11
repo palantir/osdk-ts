@@ -16,7 +16,6 @@
 
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
-export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
@@ -65,7 +64,7 @@ export type {
 } from "../experimental/MediaTransformation.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
 export {
-  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  transformAndWait,
   type TransformOptions,
 } from "../experimental/transformAndWait.js";
 export {

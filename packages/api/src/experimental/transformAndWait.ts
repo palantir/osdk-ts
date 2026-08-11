@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MediaReference } from "../object/Media.js";
+import type { Media } from "../object/Media.js";
 import type { Experiment } from "./Experiment.js";
 import type { MediaTransformation } from "./MediaTransformation.js";
 
@@ -36,24 +36,24 @@ export interface TransformOptions {
  * Submits a transformation job for a media item, polls until completion,
  * and returns the transformed content.
  *
- * @param args.mediaReference - The media reference to transform
+ * @param args.media - The media item to transform
  * @param args.transformation - The {@link MediaTransformation} to apply
  * @param args.options - Polling options (interval and timeout)
  *
  * @returns The transformed media content as a Response
  */
-type transformAndWait = (args: {
-  mediaReference: MediaReference;
+type TransformAndWaitFn = (args: {
+  media: Media;
   transformation: MediaTransformation;
   options?: TransformOptions;
 }) => Promise<Response>;
 
-export const __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait: Experiment<
+export const transformAndWait: Experiment<
   "2.8.0",
-  "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
-  { transformAndWait: transformAndWait }
+  "transformAndWait",
+  { transformAndWait: TransformAndWaitFn }
 > = {
-  name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
+  name: "transformAndWait",
   type: "experiment",
   version: "2.8.0",
 };

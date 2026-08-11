@@ -36,6 +36,7 @@ import type {
 import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
+  isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 
@@ -170,16 +171,20 @@ export function convertOntologyDefinitionToWireBlockData(
       ),
   );
 
+  const interfacePropertyMappings = {
+    ...getImportedInterfacePropertyMappings(
+      ontologiesToScan.filter((candidate) => candidate !== ontology),
+      ridGenerator,
+    ),
+    ...getInterfacePropertyMappings(interfaceTypes, ridGenerator),
+  };
+
   // Build knownIdentifiers from ridGenerator's BiMaps
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
     ridGenerator,
     ontologiesToScan,
-  );
-  // Override interfacePropertyTypes with correct mapping derived from converted interfaces,
-  knownIdentifiers.interfacePropertyTypes = getInterfacePropertyMappings(
-    interfaceTypes,
-    ridGenerator,
+    interfacePropertyMappings,
   );
 
   return {
@@ -291,6 +296,7 @@ function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
+  interfacePropertyMappings: Record<string, string>,
 ): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
@@ -606,7 +612,7 @@ function buildKnownIdentifiers(
     interfaceActionTypeConstraints: interfaceActionTypeConstraintMappings,
     interfaceLinkTypes: interfaceLinkMappings,
     interfaceParameterConstraints: interfaceParameterConstraintMappings,
-    interfacePropertyTypes: {},
+    interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
     linkTypeIds,
     linkTypes: linkTypeRids,
@@ -658,6 +664,39 @@ function getInterfacePropertyMappings(
             );
       }
       mappings[iptRid] = ridGenerator.toBlockInternalId(readableId);
+    }
+  }
+  return mappings;
+}
+
+/**
+ * Port of Java's OntologyAsCodeBlockGenerator.getImportedInterfacePropertyMappings().
+ */
+function getImportedInterfacePropertyMappings(
+  importedOntologies: OntologyDefinition[],
+  ridGenerator: OntologyRidGenerator,
+): Record<string, string> {
+  const mappings: Record<string, string> = {};
+  for (const ontology of importedOntologies) {
+    for (const [interfaceApiName, interfaceType] of Object.entries(
+      ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    )) {
+      for (const [propertyApiName, property] of Object.entries(
+        interfaceType.propertiesV3,
+      )) {
+        if (isInterfaceSharedPropertyType(property)) continue;
+        const readableId = ReadableIdGenerator.getForInterfaceProperty(
+          interfaceApiName,
+          propertyApiName,
+        );
+        const interfacePropertyTypeRid =
+          ridGenerator.generateInterfacePropertyTypeRid(
+            propertyApiName,
+            interfaceApiName,
+          );
+        mappings[interfacePropertyTypeRid] =
+          ridGenerator.toBlockInternalId(readableId);
+      }
     }
   }
   return mappings;

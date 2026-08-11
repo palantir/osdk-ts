@@ -37,10 +37,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Employee"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ],
       "status": "ACTIVE"
     },
     "promoteEmployeeObject": {
@@ -69,10 +71,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Employee"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ],
       "status": "ACTIVE"
     },
     "createOffice": {
@@ -118,10 +122,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
-      "operations": [{
-        "type": "createObject",
-        "objectTypeApiName": "Office"
-      }],
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Office"
+        }
+      ],
       "status": "ACTIVE"
     },
     "createOfficeAndEmployee": {
@@ -209,10 +215,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Office"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Office"
+        }
+      ],
       "status": "ACTIVE"
     },
     "assignEquipment": {
@@ -252,10 +260,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Equipment"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Equipment"
+        }
+      ],
       "status": "ACTIVE"
     },
     "recordTraining": {
@@ -302,10 +312,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f4",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Employee"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ],
       "status": "ACTIVE"
     },
     "documentEquipment": {
@@ -346,10 +358,12 @@
         }
       },
       "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f5",
-      "operations": [{
-        "type": "modifyObject",
-        "objectTypeApiName": "Equipment"
-      }],
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Equipment"
+        }
+      ],
       "status": "ACTIVE"
     },
     "refreshData": {

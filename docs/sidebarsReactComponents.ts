@@ -30,7 +30,7 @@ const sidebars: SidebarsConfig = {
         "PdfViewer",
         "DocumentViewer",
         "EmailViewer",
-        "ExcelViewer",
+        "SpreadsheetViewer",
         "ImageViewer",
         "VideoViewer",
         "XmlViewer",

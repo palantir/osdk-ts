@@ -36,6 +36,7 @@ interface CliArgs {
   project?: string;
   overwrite?: boolean;
   beta?: boolean;
+  unstableFeatures?: boolean;
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
@@ -73,6 +74,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "boolean",
             describe:
               "Use templates compatible with the Beta version of the SDK",
+          })
+          .option("unstableFeatures", {
+            type: "boolean",
+            describe:
+              "Enable unstable/experimental features in the generated app.",
           })
           .option("template", {
             type: "string",
@@ -180,5 +186,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     corsProxy,
     scopes,
     ontology,
+    unstableFeatures: parsed.unstableFeatures ?? false,
   });
 }

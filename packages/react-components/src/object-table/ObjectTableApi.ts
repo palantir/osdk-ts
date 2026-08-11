@@ -639,7 +639,7 @@ export interface ObjectTableHandle<
    * Loads every row matching the object set and returns a format-agnostic
    * snapshot of the table's columns, row values, and total count. The caller
    * is responsible for turning the snapshot into a downloadable artifact
-   * (CSV, Excel, JSON, clipboard, …).
+   * (CSV, Spreadsheet, JSON, clipboard, …).
    *
    * Property, derived-property, and function-backed columns are included.
    * Function-backed cells are fetched per page during snapshot collection;
