@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
 import useProjects from "./useProjects";

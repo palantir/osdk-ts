@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-function useMediaQuery(query: string) {
+export const useDarkTheme = () => useMediaQuery("(prefers-color-scheme: dark)");
+
+const useMediaQuery = (query: string) => {
   const [matches, setMatches] = useState(false);
 
-  function handleChange(e: MediaQueryListEvent) {
-    setMatches(e.matches);
-  }
+  const handleChange = (e: MediaQueryListEvent) => setMatches(e.matches);
 
   useEffect(() => {
     const m = window.matchMedia(query);
@@ -17,8 +17,4 @@ function useMediaQuery(query: string) {
   }, [query]);
 
   return matches;
-}
-
-export function useDarkTheme() {
-  return useMediaQuery("(prefers-color-scheme: dark)");
-}
+};

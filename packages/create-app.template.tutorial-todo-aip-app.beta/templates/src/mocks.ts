@@ -53,10 +53,9 @@ const tasks: ITask[] = [
   },
 ];
 function delay(): Promise<void> {
-  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
-  return new Promise((resolve) => {
-    setTimeout(resolve, 500 + Math.random() * 1000);
-  });
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(), 500 + Math.random() * 1000),
+  );
 }
 
 // Good enough random id for mocks
@@ -129,7 +128,7 @@ async function createTask({
 }): Promise<ITask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project === undefined || project === null) {
+  if (project == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();

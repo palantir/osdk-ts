@@ -61,7 +61,7 @@ function CreateTaskDialog({
     setIsCreating(true);
     try {
       const taskId = await createTask(name, description);
-      if (taskId !== undefined && taskId !== null) {
+      if (taskId != null) {
         onTaskCreated(taskId);
       }
     } finally {

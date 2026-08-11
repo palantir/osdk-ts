@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react";
-
 import type { MockTask } from "./mocks";
-
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {

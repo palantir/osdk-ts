@@ -9,7 +9,7 @@ import ProjectSelect from "./ProjectSelect";
 import useProjects from "./useProjects";
 
 function Home() {
-  const [projectId, setProjectId] = useState<string | undefined>();
+  const [projectId, setProjectId] = useState<string | undefined>(undefined);
   const { projects } = useProjects();
 
   const project = projects?.find((p) => p.id === projectId);
@@ -20,19 +20,14 @@ function Home() {
   );
 
   useEffect(() => {
-    if (
-      (project === undefined || project === null) &&
-      projects !== undefined &&
-      projects !== null &&
-      projects.length > 0
-    ) {
+    if (project == null && projects != null && projects.length > 0) {
       setProjectId(projects[0].id);
     }
   }, [project, projects]);
 
   const handleOnProjectCreated = useCallback(
-    (createdProjectId: string | undefined) => {
-      setProjectId(createdProjectId);
+    (projectId: string | undefined) => {
+      setProjectId(projectId);
     },
     [],
   );
@@ -59,13 +54,9 @@ function Home() {
           onSelectProject={handleSelectProject}
         />
         <CreateProjectButton onProjectCreated={handleOnProjectCreated} />
-        {project !== undefined && project !== null && (
-          <DeleteProjectButton project={project} />
-        )}
+        {project != null && <DeleteProjectButton project={project} />}
       </div>
-      {project !== undefined && project !== null && (
-        <ProjectDetails project={project} />
-      )}
+      {project != null && <ProjectDetails project={project} />}
     </Layout>
   );
 }

@@ -1,6 +1,5 @@
 import todoAppLogo from "/todo-aip-app.svg";
 import React from "react";
-
 import css from "./Layout.module.css";
 
 interface LayoutProps {

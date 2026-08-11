@@ -1,15 +1,13 @@
 import { useCallback, useState } from "react";
 import { Navigate } from "react-router-dom";
-
 import client from "./client";
 import Layout from "./Layout";
-
 import css from "./Login.module.css";
 
 function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [error, setError] = useState<string | undefined>();
-  const { token } = client.auth;
+  const [error, setError] = useState<string | undefined>(undefined);
+  const token = client.auth.token;
 
   const handleLogin = useCallback(async () => {
     setIsLoggingIn(true);
@@ -18,16 +16,16 @@ function Login() {
       // Once the login has completed, the user will be redirected back to the route defined via the
       // FOUNDRY_REDIRECT_URL variable in .env.development
       await client.auth.signIn();
-    } catch (signInError: unknown) {
-      console.error(signInError);
-      setError((signInError as Error).message ?? signInError);
+    } catch (e: unknown) {
+      console.error(e);
+      setError((e as Error).message ?? e);
     } finally {
       setIsLoggingIn(false);
     }
   }, []);
 
   // If the token exists but a user tries to load /login, redirect to the home page instead
-  if (token !== undefined && token !== null) {
+  if (token != null) {
     return <Navigate to="/" replace={true} />;
   }
 

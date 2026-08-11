@@ -1,17 +1,14 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-
 import type { MockProject, MockTask } from "./mocks";
-import Mocks, { sleep } from "./mocks";
+import Mocks from "./mocks";
 
 export function useProjectTasks(project: MockProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
-    project === undefined || project === null
-      ? null
-      : `projects/${project.id}/tasks`,
+    project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
     () => {
-      if (project === undefined || project === null) {
+      if (project == null) {
         return [];
       }
       return project.tasks;
@@ -22,8 +19,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     title: string,
   ) => Promise<MockTask["$primaryKey"] | undefined> = useCallback(
     async (title) => {
-      if (project === undefined || project === null) {
-        return;
+      if (project == null) {
+        return undefined;
       }
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
@@ -38,7 +35,7 @@ export function useProjectTasks(project: MockProject | undefined) {
 
   const deleteTask: (task: MockTask) => Promise<void> = useCallback(
     async (task) => {
-      if (project === undefined || project === null) {
+      if (project == null) {
         return;
       }
       await sleep(1000);
@@ -57,4 +54,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     createTask,
     deleteTask,
   };
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

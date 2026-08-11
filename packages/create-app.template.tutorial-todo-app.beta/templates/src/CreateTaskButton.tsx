@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-
 import CreateTaskDialog from "./CreateTaskDialog";
 import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";

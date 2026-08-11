@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import type { IProject } from "./useProjects";
 import useProjects from "./useProjects";

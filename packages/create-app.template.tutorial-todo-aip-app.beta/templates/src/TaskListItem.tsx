@@ -41,7 +41,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
       />
       <div className={`${css.task} ${isDeleting ? css.checked : ""}`}>
         <span>{task.title}</span>
-        {cleanDescription !== undefined && cleanDescription !== null && (
+        {cleanDescription != null && (
           <textarea
             ref={textAreaRef}
             readOnly

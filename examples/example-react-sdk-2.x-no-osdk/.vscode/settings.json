@@ -1,6 +1,7 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.useFlatConfig": true,
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true
