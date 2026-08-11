@@ -27,15 +27,15 @@ const scopes = [{{#each scopes}}"{{this}}"{{#unless @last}}, {{/unless}}{{/each}
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
 const client = new FoundryClient({
+  url,
   auth: new PublicClientAuth({
     clientId,
+    url,
     redirectUrl,
     {{#if scopes}}
     scopes,
     {{/if}}
-    url,
   }),
-  url,
 });
 
 export default client;

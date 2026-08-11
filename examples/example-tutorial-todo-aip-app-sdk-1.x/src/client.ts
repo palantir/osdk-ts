@@ -25,13 +25,13 @@ const scopes = ["api:ontologies-read", "api:ontologies-write"];
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
 const client = new FoundryClient({
+  url,
   auth: new PublicClientAuth({
     clientId,
+    url,
     redirectUrl,
     scopes,
-    url,
   }),
-  url,
 });
 
 export default client;
