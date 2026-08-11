@@ -162,6 +162,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
+    /** @deprecated Use `onFilterVisibilityChange`. */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
