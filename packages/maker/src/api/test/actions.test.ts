@@ -6702,12 +6702,6 @@ describe("Action Types", () => {
         primaryKeyPropertyApiName: "bar",
         properties: {
           bar: { type: "string" },
-          structProp: {
-            type: {
-              type: "struct",
-              structDefinition: { simpleProperty: "string" },
-            },
-          },
           optionalProp: { type: "string" },
         },
       });

@@ -74,7 +74,6 @@ export function convertObjectPropertyType(
               ridGenerator,
               property.apiName,
               false,
-              propertyRid,
             ),
             reducers: [],
           },
@@ -84,7 +83,6 @@ export function convertObjectPropertyType(
           ridGenerator,
           property.apiName,
           false,
-          propertyRid,
         ),
     typeClasses:
       property.typeClasses ??

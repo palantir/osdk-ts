@@ -15,7 +15,6 @@
  */
 
 import type { StructFieldType, Type } from "@osdk/client.unstable";
-import type { PropertyTypeRid } from "@osdk/client.unstable/api";
 import type { PropertyTypeType } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -26,7 +25,6 @@ export function propertyTypeTypeToOntologyIrType(
   ridGenerator: OntologyRidGenerator,
   propertyApiName?: string,
   includeMainValue?: boolean,
-  propertyTypeRid?: PropertyTypeRid,
 ): Type {
   switch (true) {
     case typeof type === "object" && type.type === "marking":
@@ -43,11 +41,7 @@ export function propertyTypeTypeToOntologyIrType(
         if (typeof fieldTypeDefinition === "string") {
           field = {
             structFieldRid: propertyApiName
-              ? ridGenerator.generateStructFieldRid(
-                  propertyApiName,
-                  key,
-                  propertyTypeRid,
-                )
+              ? ridGenerator.generateStructFieldRid(propertyApiName, key)
               : ridGenerator.generateRid(`structfield.${key}`),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
@@ -58,7 +52,6 @@ export function propertyTypeTypeToOntologyIrType(
               ridGenerator,
               propertyApiName,
               undefined,
-              propertyTypeRid,
             ),
           };
         } else {
@@ -67,11 +60,7 @@ export function propertyTypeTypeToOntologyIrType(
             field = {
               ...fieldTypeDefinition,
               structFieldRid: propertyApiName
-                ? ridGenerator.generateStructFieldRid(
-                    propertyApiName,
-                    key,
-                    propertyTypeRid,
-                  )
+                ? ridGenerator.generateStructFieldRid(propertyApiName, key)
                 : ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrType(
@@ -79,7 +68,6 @@ export function propertyTypeTypeToOntologyIrType(
                 ridGenerator,
                 propertyApiName,
                 undefined,
-                propertyTypeRid,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -91,11 +79,7 @@ export function propertyTypeTypeToOntologyIrType(
           } else {
             field = {
               structFieldRid: propertyApiName
-                ? ridGenerator.generateStructFieldRid(
-                    propertyApiName,
-                    key,
-                    propertyTypeRid,
-                  )
+                ? ridGenerator.generateStructFieldRid(propertyApiName, key)
                 : ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
@@ -106,7 +90,6 @@ export function propertyTypeTypeToOntologyIrType(
                 ridGenerator,
                 propertyApiName,
                 undefined,
-                propertyTypeRid,
               ),
             };
           }

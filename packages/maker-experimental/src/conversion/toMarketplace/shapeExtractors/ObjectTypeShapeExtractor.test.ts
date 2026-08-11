@@ -78,8 +78,6 @@ function createMockRidGenerator(
     getInterfaceLinkTypeRids: () => new MockBiMap([]) as any,
     getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
     getPropertyTypeRids: () => new MockBiMap([]) as any,
-    getObjectPropertyTypeIdsToRids: () => new Map(),
-    getStructFieldRidsToApiNames: () => new Map(),
     getDatasourceLocators: () => new MockBiMap([]) as any,
     getFilesDatasourceLocators: () => new MockBiMap([]) as any,
     getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
