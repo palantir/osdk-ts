@@ -1199,6 +1199,7 @@ Styling for object set display components.
 | `--osdk-object-set-min-height`           | `30px`                                       | Minimum height         |
 | `--osdk-object-set-padding`              | `calc(var(--osdk-surface-spacing) * 1.5) 0`  | Object set padding     |
 | `--osdk-object-set-color`                | `var(--osdk-typography-color-default-rest)`  | Text color             |
+| `--osdk-object-set-icon-default-color`   | `var(--bp-palette-blue-4)`                   | Default icon color     |
 | `--osdk-object-set-placeholder-color`    | `var(--osdk-typography-color-muted)`         | Placeholder text color |
 | `--osdk-object-set-font-family`          | `var(--osdk-typography-family-default)`      | Font family            |
 | `--osdk-object-set-font-size`            | `var(--osdk-typography-size-body-medium)`    | Font size              |
