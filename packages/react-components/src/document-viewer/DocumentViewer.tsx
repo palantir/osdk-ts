@@ -100,7 +100,9 @@ export function DocumentViewer({
   imageViewerProps,
   videoViewerProps,
   tiffViewerProps,
+  tiffRendererProps,
   markdownViewerProps,
+  markdownRendererProps,
   spreadsheetViewerProps,
   emailViewerProps,
   xmlViewerProps,
@@ -113,6 +115,14 @@ export function DocumentViewer({
     [mimeType, fileName],
   );
   const rootClassName = classnames(styles.container, className);
+
+  // `tiffRendererProps` and `markdownRendererProps` are the deprecated names for
+  // `tiffViewerProps` and `markdownViewerProps`. Coalescing (rather than merging)
+  // keeps each alias behaving exactly like its replacement and avoids creating a
+  // new object identity on every render.
+  const resolvedTiffViewerProps = tiffViewerProps ?? tiffRendererProps;
+  const resolvedMarkdownViewerProps =
+    markdownViewerProps ?? markdownRendererProps;
 
   switch (viewerType) {
     case ViewerType.Pdf:
@@ -130,7 +140,7 @@ export function DocumentViewer({
             media={media}
             className={rootClassName}
             enableTiffToPdf={enableTiffToPdf}
-            tiffViewerProps={tiffViewerProps}
+            tiffViewerProps={resolvedTiffViewerProps}
             pdfViewerProps={pdfViewerProps}
           />
         );
@@ -139,7 +149,7 @@ export function DocumentViewer({
         <TiffViewer
           media={media}
           className={rootClassName}
-          {...tiffViewerProps}
+          {...resolvedTiffViewerProps}
         />
       );
     case ViewerType.Image:
@@ -163,7 +173,7 @@ export function DocumentViewer({
         <MarkdownViewer
           media={media}
           className={rootClassName}
-          {...markdownViewerProps}
+          {...resolvedMarkdownViewerProps}
         />
       );
     case ViewerType.Spreadsheet:
