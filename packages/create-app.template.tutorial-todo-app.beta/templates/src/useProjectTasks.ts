@@ -1,8 +1,10 @@
 // import { useOsdkClient } from "@osdk/react";
 import { useCallback } from "react";
 import useSWR from "swr";
+
 import Mocks from "./mocks";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
+
 export interface ITask {
   $apiName: string;
   $primaryKey: string;
@@ -15,52 +17,54 @@ export function useProjectTasks(project: IProject | undefined) {
   // Use this client variable to access the Ontology SDK.
   // const client = useOsdkClient();
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
-    project != null ? `projects/${project.id}/tasks` : null,
+    project === undefined || project === null
+      ? null
+      : `projects/${project.id}/tasks`,
     // Try to implement this with the Ontology SDK!
     async () => {
-      if (project == null) {
+      if (project === undefined || project === null) {
         return [];
       }
-      return (await Mocks.getProjectTasks(project.$primaryKey));
-    },
+      return await Mocks.getProjectTasks(project.$primaryKey);
+    }
   );
 
   const createTask: (
-    title: string,
+    title: string
   ) => Promise<ITask["$primaryKey"] | undefined> = useCallback(
     async (title) => {
-      if (project == null) {
-        return undefined;
+      if (project === undefined || project === null) {
+        return;
       }
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
-        title,
         projectId: project.$primaryKey,
+        title,
       });
       await mutate();
       return id;
     },
-    [project, mutate],
+    [project, mutate]
   );
 
   const deleteTask: (task: ITask) => Promise<void> = useCallback(
     async (task) => {
-      if (project == null) {
+      if (project === undefined || project === null) {
         return;
       }
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteTask(task.$primaryKey);
       await mutate();
     },
-    [project, mutate],
+    [project, mutate]
   );
 
   return {
-    tasks: data,
-    isLoading,
-    isValidating,
-    isError: error,
     createTask,
     deleteTask,
+    isError: error,
+    isLoading,
+    isValidating,
+    tasks: data,
   };
 }

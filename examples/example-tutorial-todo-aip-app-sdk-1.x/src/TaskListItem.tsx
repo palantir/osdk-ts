@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import type { MockTask } from "./mocks";
+
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {
@@ -41,7 +43,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
       />
       <div className={`${css.task} ${isDeleting ? css.checked : ""}`}>
         <span>{task.title}</span>
-        {cleanDescription != null && (
+        {cleanDescription !== undefined && cleanDescription !== null && (
           <textarea
             ref={textAreaRef}
             readOnly

@@ -102,6 +102,12 @@ export default defineConfig({
     // rewriting hooks to satisfy them (a rewrite risks changing render/effect
     // behavior). Other react/* and jsx-a11y rules stay at the preset's severity.
     "react-hooks/exhaustive-deps": "warn",
+    // The Rules of Hooks are correctness rules, not style: breaking them causes
+    // real state-corruption bugs. Ultracite's react preset does not enable this
+    // (it only turns on exhaustive-deps), and the prior ESLint config had it at
+    // "warn" — every React package is already clean, so error costs nothing and
+    // prevents regressions. Matches what the scaffold templates ship.
+    "react-hooks/rules-of-hooks": "error",
 
     // --- Rules whose autofix would be pure churn or would change a deliberate
     // runtime / type / API pattern. Disabled (or kept at warn) so linting does

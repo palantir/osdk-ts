@@ -1,5 +1,5 @@
-import todoAppLogo from "/todo-app.svg";
 import React from "react";
+
 import css from "./Layout.module.css";
 
 interface LayoutProps {
@@ -10,7 +10,7 @@ function Layout({ children }: LayoutProps) {
   return (
     <>
       <header className={css.header}>
-        <img src={todoAppLogo} className={css.logo} alt="Todo App logo" />
+        <img src="/todo-app.svg" className={css.logo} alt="Todo App logo" />
         <div className={css.title}>Ontology SDK Tutorial - Todo App</div>
       </header>
       {children}

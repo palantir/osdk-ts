@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { ITask } from "./useProjectTasks";
+
 import css from "./TaskListItem.module.css";
-import { ITask } from "./useProjectTasks";
 
 interface TaskListItemProps {
   task: ITask;
@@ -41,7 +43,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
       />
       <div className={`${css.task} ${isDeleting ? css.checked : ""}`}>
         <span>{task.title}</span>
-        {cleanDescription != null && (
+        {cleanDescription !== undefined && cleanDescription !== null && (
           <textarea
             ref={textAreaRef}
             readOnly

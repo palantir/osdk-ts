@@ -65,6 +65,14 @@ export default defineConfig({
         "**/*.story.tsx",
       ],
       rules: {
+        // Storybook's `render: (args) => {...}` IS mounted as a component, so
+        // calling hooks inside it is correct and idiomatic. The rule's heuristic
+        // cannot see that: the render fn is an anonymous arrow on an object
+        // property, so it is reported as "Anonymous ... neither a React function
+        // component nor a custom React Hook". Hook order is stable per story, so
+        // these are false positives. Off for story files only — real components
+        // in this package still get the rule from the root config.
+        "react-hooks/rules-of-hooks": "off",
         "storybook/await-interactions": "error",
         "storybook/context-in-play-function": "error",
         "storybook/default-exports": "error",

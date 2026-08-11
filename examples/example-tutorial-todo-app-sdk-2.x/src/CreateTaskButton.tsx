@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
+
 import CreateTaskDialog from "./CreateTaskDialog";
-import { IProject } from "./useProjects";
+import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskButtonProps {
@@ -8,9 +9,8 @@ interface CreateTaskButtonProps {
 }
 
 function CreateTaskButton({ project }: CreateTaskButtonProps) {
-  const { isLoading: isLoadingTasks, isError: isErrorTasks } = useProjectTasks(
-    project,
-  );
+  const { isLoading: isLoadingTasks, isError: isErrorTasks } =
+    useProjectTasks(project);
 
   const [isOpen, setIsOpen] = useState(false);
   const handleOpen = useCallback(() => setIsOpen(true), []);

@@ -1,4 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
 
@@ -18,7 +20,7 @@ function CreateProjectDialog({
   const [name, setName] = useState<string>("New project");
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    [],
+    []
   );
 
   useEffect(() => setName("New project"), [isOpen]);
@@ -48,7 +50,13 @@ function CreateProjectDialog({
       ]}
     >
       <label>
-        Project name: <input type="text" value={name} onChange={handleChange} />
+        Project name:{" "}
+        <input
+          type="text"
+          value={name}
+          onChange={handleChange}
+          aria-label="New project name"
+        />
       </label>
     </Dialog>
   );

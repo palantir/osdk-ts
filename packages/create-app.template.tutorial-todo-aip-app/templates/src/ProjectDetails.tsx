@@ -1,11 +1,12 @@
-import aipLogo from "/aip-icon.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import CreateTaskButton from "./CreateTaskButton";
 import type { MockProject } from "./mocks";
-import css from "./ProjectDetails.module.css";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
+
+import css from "./ProjectDetails.module.css";
 
 interface ProjectDetailsProps {
   project: MockProject;
@@ -15,15 +16,17 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [projectHasTasks, setProjectHasTasks] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const { updateProjectDescription } = useProjects();
-  const tasks = useProjectTasks(project).tasks;
+  const { tasks } = useProjectTasks(project);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setProjectHasTasks(tasks == null ? false : tasks.length > 0);
+    setProjectHasTasks(
+      tasks === undefined || tasks === null ? false : tasks.length > 0
+    );
   }, [project, tasks]);
 
   const handleProjectDescriptionRecommendation = useCallback(async () => {
-    if (project == null) {
+    if (project === undefined || project === null) {
       return;
     }
     setIsProcessing(true);
@@ -69,7 +72,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
             onClick={handleProjectDescriptionRecommendation}
           >
             <div className={css.aipText}>
-              <img src={aipLogo} alt="AIP logo" className={css.image} />
+              <img src="/aip-icon.svg" alt="AIP logo" className={css.image} />
               Get description recommendation
             </div>
           </button>

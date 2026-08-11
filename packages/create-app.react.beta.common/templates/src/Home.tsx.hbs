@@ -1,13 +1,15 @@
 import React from "react";
-{{#if osdkPackage}}
-// import { useOsdkClient } from "@osdk/react";
-{{/if}}
-import css from "./Home.module.css";
+
 import Header from "@/components/Header";
 import NextSteps from "@/components/NextSteps";
 {{#if osdkPackage}}
 import Osdk from "@/components/Osdk";
+
+// import { useOsdkClient } from "@osdk/react";
+{{else}}
+
 {{/if}}
+import css from "./Home.module.css";
 
 function Home(): React.ReactElement {
   {{#if osdkPackage}}
