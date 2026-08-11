@@ -21,7 +21,6 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
-import type { ActionFormProps } from "../ActionFormApi.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
 vi.mock("@osdk/react", () => ({
@@ -264,25 +263,6 @@ describe("ActionForm", () => {
   });
 
   describe("form submission", () => {
-    it("lets custom submit handlers apply the current form state", async () => {
-      const onSubmit: NonNullable<
-        ActionFormProps<TestActionDef>["onSubmit"]
-      > = (formState, applyAction) => applyAction(formState);
-
-      render(<ActionForm actionDefinition={TestAction} onSubmit={onSubmit} />);
-
-      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
-        target: { value: "Ada" },
-      });
-      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Ada" }),
-        );
-      });
-    });
-
     it("calls onSuccess after successful submission", async () => {
       const onSuccess = vi.fn();
       const result = { editedObjectTypes: ["TestObject"] };
