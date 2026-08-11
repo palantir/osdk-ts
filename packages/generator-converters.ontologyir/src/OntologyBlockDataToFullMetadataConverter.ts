@@ -25,6 +25,7 @@ import type {
   ObjectTypeBlockDataV2,
   ObjectTypeStatus,
   OntologyBlockDataV2,
+  OntologyIrStructFieldBaseParameterType,
   SharedPropertyTypeBlockDataV2,
   Type,
 } from "@osdk/client.unstable";
@@ -715,10 +716,33 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "string" },
           };
           break;
-        case "struct":
-          throw new Error("Struct type not supported (lazy implementation)");
-        case "structList":
-          throw new Error("Struct list type not supported");
+        case "struct": {
+          dataType = {
+            type: "struct",
+            fields: getOsdkActionStructFieldsFromBlockData(
+              action,
+              paramKey,
+              irParameter.type.struct.structFieldTypes,
+              objectTypeLookup,
+            ),
+          };
+          break;
+        }
+        case "structList": {
+          dataType = {
+            type: "array",
+            subType: {
+              type: "struct",
+              fields: getOsdkActionStructFieldsFromBlockData(
+                action,
+                paramKey,
+                irParameter.type.structList.structFieldTypes,
+                objectTypeLookup,
+              ),
+            },
+          };
+          break;
+        }
         case "timeSeriesReference":
           throw new Error("Time series reference type not supported");
         case "timestamp":
@@ -1166,6 +1190,76 @@ function isBlockDataParameterRequired(
   return action.actionType.actionTypeLogic.validation
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
+}
+
+function getOsdkActionStructFieldsFromBlockData(
+  action: ActionTypeBlockDataV2,
+  paramKey: string,
+  structFieldTypes: Record<string, OntologyIrStructFieldBaseParameterType>,
+  objectTypeLookup: BlockDataApiNameLookup | undefined,
+): Ontologies.OntologyStructField[] {
+  return Object.entries(structFieldTypes).map(([fieldApiName, fieldType]) => ({
+    name: fieldApiName,
+    fieldType: getOsdkActionStructFieldTypeFromBlockData(
+      fieldType,
+      objectTypeLookup,
+    ) as Ontologies.OntologyStructField["fieldType"],
+    required: isBlockDataStructFieldRequired(
+      action,
+      paramKey,
+      fieldApiName,
+    ),
+  }));
+}
+
+function getOsdkActionStructFieldTypeFromBlockData(
+  fieldType: OntologyIrStructFieldBaseParameterType,
+  objectTypeLookup: BlockDataApiNameLookup | undefined,
+): Ontologies.ActionParameterType {
+  switch (fieldType.type) {
+    case "boolean":
+      return { type: "boolean" };
+    case "integer":
+      return { type: "integer" };
+    case "long":
+      return { type: "long" };
+    case "double":
+      return { type: "double" };
+    case "string":
+      return { type: "string" };
+    case "geohash":
+      return { type: "geohash" };
+    case "geoshape":
+      return { type: "geoshape" };
+    case "timestamp":
+      return { type: "timestamp" };
+    case "date":
+      return { type: "date" };
+    case "objectReference": {
+      const objectTypeApiName = resolveBlockDataApiName(
+        fieldType.objectReference.objectTypeId,
+        objectTypeLookup,
+      );
+      return {
+        type: "object",
+        objectTypeApiName,
+        objectApiName: objectTypeApiName,
+      };
+    }
+    default:
+      throw new Error("Unknown struct field parameter type");
+  }
+}
+
+function isBlockDataStructFieldRequired(
+  action: ActionTypeBlockDataV2,
+  paramKey: string,
+  fieldApiName: string,
+): boolean {
+  return action.actionType.actionTypeLogic.validation.parameterValidations[
+    paramKey
+  ]?.structFieldValidations[fieldApiName]?.defaultValidation.validation.required
+    .type === "required";
 }
 
 export interface BlockDataApiNameLookup {
