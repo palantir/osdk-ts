@@ -21,29 +21,29 @@ const tasks: ITask[] = [
     $apiName: "MockTask",
     $primaryKey: "1",
     id: "1",
-    projectId: "1",
     title: "Try to",
+    projectId: "1",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "2",
     id: "2",
-    projectId: "1",
     title: "Implement this",
+    projectId: "1",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "3",
     id: "3",
-    projectId: "1",
     title: "With the Ontology SDK!",
+    projectId: "1",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "4",
     id: "4",
-    projectId: "2",
     title: "More tasks here",
+    projectId: "2",
   },
 ];
 
@@ -112,8 +112,8 @@ async function createTask({
     $apiName: "MockTask",
     $primaryKey: id,
     id,
-    projectId,
     title,
+    projectId,
   });
   return id;
 }
@@ -127,12 +127,12 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  createProject,
-  createTask,
-  deleteProject,
-  deleteTask,
-  getProjectTasks,
   getProjects,
+  createProject,
+  deleteProject,
+  getProjectTasks,
+  createTask,
+  deleteTask,
 };
 
 export default Mocks;

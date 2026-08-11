@@ -19,46 +19,46 @@ const projects: MockProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
-    description: "This is a mock description",
     id: "1",
     name: "Mock project",
+    description: "This is a mock description",
     tasks: [
       {
         $apiName: "MockTask",
         $primaryKey: "1",
-        description: "task description 1",
         id: "1",
         title: "Try to",
+        description: "task description 1",
       },
       {
         $apiName: "MockTask",
         $primaryKey: "2",
-        description: "task description 2",
         id: "2",
         title: "Implement this",
+        description: "task description 2",
       },
       {
         $apiName: "MockTask",
         $primaryKey: "3",
-        description: "task description 3",
         id: "3",
         title: "With the Ontology SDK!",
+        description: "task description 3",
       },
     ],
   },
   {
     $apiName: "MockProject",
     $primaryKey: "2",
-    description: "This is another mock description",
     id: "2",
     name: "Yet another mock project",
+    description: "This is another mock description",
     tasks: [
       {
         $apiName: "MockTask",
         $primaryKey: "4",
-        description: "More task description",
         id: "4",
         title: "More tasks here",
+        description: "More task description",
       },
     ],
   },
@@ -99,9 +99,9 @@ async function createProject({
   projects.push({
     $apiName: "MockProject",
     $primaryKey: id,
-    description,
     id,
     name,
+    description,
     tasks: [],
   });
   return id;
@@ -152,9 +152,9 @@ async function createTask({
   project.tasks.unshift({
     $apiName: "MockTask",
     $primaryKey: id,
-    description,
     id,
     title,
+    description,
   });
   return id;
 }
@@ -180,12 +180,12 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  createProject,
-  createTask,
-  deleteProject,
-  deleteTask,
   getProjects,
+  createProject,
   getRecommendedProjectDescription,
+  deleteProject,
+  createTask,
+  deleteTask,
   getRecommendedTaskDescription,
   updateProjectDescription,
 };

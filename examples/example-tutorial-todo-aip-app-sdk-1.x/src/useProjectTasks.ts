@@ -64,12 +64,12 @@ export function useProjectTasks(project: MockProject | undefined) {
     );
 
   return {
+    tasks: data,
+    isLoading,
+    isValidating,
+    isError: error,
     createTask,
     deleteTask,
     getRecommendedTaskDescription,
-    isError: error,
-    isLoading,
-    isValidating,
-    tasks: data,
   };
 }
