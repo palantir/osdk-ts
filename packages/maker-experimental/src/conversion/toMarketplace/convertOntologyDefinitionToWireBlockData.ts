@@ -291,10 +291,7 @@ function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   ontologiesToScan: OntologyDefinition[],
-): KnownMarketplaceIdentifiers & {
-  objectPropertyTypeIdsToRids: Record<string, Record<string, string>>;
-  structFieldRidsToApiNames: Record<string, Record<string, string>>;
-} {
+): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
     Array.from(ridGenerator.getInterfaceRids().inverse().entries()).map(

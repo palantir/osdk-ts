@@ -100,6 +100,7 @@ import type {
   SectionId as _api_SectionId,
   SharedPropertyType as _api_SharedPropertyType,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
+  StructFieldRid as _api_StructFieldRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
   TypeClass as _api_TypeClass,
   ValueTypeReference as _api_ValueTypeReference,
@@ -258,6 +259,10 @@ export interface KnownMarketplaceIdentifiers {
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
   markings: Record<BlockInternalId, Array<_api_MarkingId>>;
+  objectPropertyTypeIdsToRids: Record<
+    _api_ObjectTypeId,
+    Record<_api_PropertyTypeId, _api_PropertyTypeRid>
+  >;
   objectTypeIds: Record<_api_ObjectTypeId, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeRid, BlockInternalId>;
   propertyTypeIds: Record<
@@ -268,6 +273,10 @@ export interface KnownMarketplaceIdentifiers {
   shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
   shapeIdForOntologyAllowSchemaMigrations?: BlockShapeId | null | undefined;
   sharedPropertyTypes: Record<_api_SharedPropertyTypeRid, BlockInternalId>;
+  structFieldRidsToApiNames: Record<
+    _api_PropertyTypeRid,
+    Record<_api_StructFieldRid, _api_ObjectTypeFieldApiName>
+  >;
   timeSeriesSyncs: Record<_api_TimeSeriesSyncRid, BlockInternalId>;
   valueTypes: Record<
     _api_ValueTypeRid,
