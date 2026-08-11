@@ -1095,6 +1095,10 @@ describe("Experimental Test Suite", () => {
     });
 
     it("maps imported SPT-backed interface properties using the SPT API name", async () => {
+      const interfaceApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadata";
+      const sptApiName =
+        "com.palantir.core.ontology.types.sourceSystemMetadataList";
       const result = await defineOntologyV2("com.palantir.", () => {
         const spt = importSharedPropertyType({
           apiName: "sourceSystemMetadataList",
@@ -1102,7 +1106,7 @@ describe("Experimental Test Suite", () => {
           typeHint: "string",
         });
         const importedInterface: InterfaceType = {
-          apiName: "com.palantir.core.ontology.interfaces.sourceSystemMetadata",
+          apiName: interfaceApiName,
           displayMetadata: {
             displayName: "Source System Metadata",
           },
@@ -1167,6 +1171,37 @@ describe("Experimental Test Suite", () => {
       expect(country!.objectType.implementsInterfaces2[0].properties).toEqual(
         {},
       );
+
+      const interfaceReadableId =
+        ReadableIdGenerator.getForInterface(interfaceApiName);
+      const interfacePropertyReadableId =
+        ReadableIdGenerator.getForSptBackedInterfaceProperty(
+          interfaceApiName,
+          sptApiName,
+        );
+      const interfaceShape = result.shapes.inputShapes.get(interfaceReadableId);
+      const interfacePropertyShape = result.shapes.inputShapes.get(
+        interfacePropertyReadableId,
+      );
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [expect.any(String)],
+        },
+      });
+      expect(interfacePropertyShape).toMatchObject({
+        type: "interfacePropertyType",
+        interfacePropertyType: {
+          about: { fallbackTitle: sptApiName },
+          interfaceType: expect.any(String),
+          sharedPropertyType: expect.any(String),
+          requireImplementation: false,
+        },
+      });
+      expect(
+        result.importedInputPresets.get(interfacePropertyReadableId),
+      ).toEqual(apiNamePreset(sptApiName));
     });
   });
 
