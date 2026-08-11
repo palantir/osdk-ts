@@ -34,6 +34,10 @@
   color: var(--bp-typography-color-muted);
 }
 
+.muted {
+  color: var(--bp-typography-color-muted);
+}
+
 .icon {
   background-color: oklch(from var(--bp-intent-default-rest) l c h / 15%);
   border: var(--bp-surface-border-width) solid

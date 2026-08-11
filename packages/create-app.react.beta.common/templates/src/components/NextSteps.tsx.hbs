@@ -7,6 +7,7 @@ const STEPS: INextStep[] = [
   {{^if osdkPackage}}
   {
     icon: "cube",
+    id: "configure-sdks",
     title: "Configure your Ontology and Platform SDKs",
     subtitle: (
       <span>
@@ -18,9 +19,33 @@ const STEPS: INextStep[] = [
     ),
   },
   {{/if}}
+  {
+    icon: "group-item",
+    id: "react-components",
+    title: (
+      <span>
+        Develop with OSDK React components{" "}
+        <span className={css.muted}>(Optional)</span>
+      </span>
+    ),
+    subtitle: (
+      <span>
+        Use <Link
+          href="https://palantir.github.io/osdk-ts/storybook/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          OSDK React components
+        </Link>{" "}
+        (@osdk/react-components){" "}
+        to build your app with ready-made Ontology SDK components.
+      </span>
+    ),
+  },
   {{^if applicationUrl}}
   {
     icon: "cloud",
+    id: "request-subdomain",
     title: "Request a subdomain to host your application with Foundry",
     subtitle: (
       <span>
@@ -35,6 +60,7 @@ const STEPS: INextStep[] = [
   {{/if}}
   {
     icon: "rocket-slant",
+    id: "deploy-application",
     title: "Deploy your application",
     subtitle: (
       <span>
@@ -59,7 +85,7 @@ function NextSteps(): React.ReactElement {
       <H5 className={css.nextStepsHeader}>Next steps</H5>
       {STEPS.map((step) => (
         <NextStep
-          key={step.title}
+          key={step.id}
           icon={step.icon}
           title={step.title}
           subtitle={step.subtitle}
@@ -71,7 +97,8 @@ function NextSteps(): React.ReactElement {
 
 interface INextStep {
   icon: IconName;
-  title: string;
+  id: string;
+  title: React.ReactNode;
   subtitle: React.ReactElement;
 }
 
