@@ -18,7 +18,7 @@
 export { BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
 export type {
   BaseMarkdownViewerProps,
-  MarkdownViewerMediaProps,
+  MarkdownViewerProps,
 } from "../../markdown-viewer/MarkdownViewerApi.js";
 
 // MarkdownViewer (Media wrapper)

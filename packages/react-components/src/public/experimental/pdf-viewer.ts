@@ -86,16 +86,16 @@ export { usePdfViewerSync } from "../../pdf-viewer/hooks/usePdfViewerSync.js";
 export { type OutlineItem } from "../../pdf-viewer/PdfViewerApi.js";
 
 // PdfViewer context
+export type {
+  PdfViewerHandle,
+  PdfViewerInstanceOptions,
+} from "../../pdf-viewer/PdfViewerApi.js";
 export {
   type PdfViewerContextValue,
   PdfViewerProvider,
   usePdfViewerContext,
   usePdfViewerInstance,
 } from "../../pdf-viewer/PdfViewerContext.js";
-export type {
-  PdfViewerHandle,
-  PdfViewerInstanceOptions,
-} from "../../pdf-viewer/PdfViewerApi.js";
 
 // PdfViewer hooks — composition
 export {
@@ -116,4 +116,4 @@ export const PdfViewer: typeof _PdfViewer = withOsdkMetrics(
   _PdfViewer,
   "PdfViewer",
 );
-export type { PdfViewerMediaProps } from "../../pdf-viewer/PdfViewerApi.js";
+export type { PdfViewerProps } from "../../pdf-viewer/PdfViewerApi.js";

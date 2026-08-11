@@ -17,7 +17,7 @@
 import type { Media } from "@osdk/api";
 import type {
   BaseEmailViewerProps,
-  EmailViewerMediaProps,
+  EmailViewerProps,
   ParsedEmail,
 } from "@osdk/react-components/experimental/email-viewer";
 import {
@@ -124,11 +124,11 @@ const meta: Meta<BaseEmailViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<EmailViewerMediaProps> = {
+export const Default: StoryObj<EmailViewerProps> = {
   args: {
     media: createMockEmailMedia(SAMPLE_EML_CONTENT),
   },
-  render: (args: EmailViewerMediaProps) => (
+  render: (args: EmailViewerProps) => (
     <div style={{ height: "500px" }}>
       <EmailViewer {...args} />
     </div>

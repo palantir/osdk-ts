@@ -18,7 +18,7 @@
 export { BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
 export type {
   BaseTiffViewerProps,
-  TiffViewerMediaProps,
+  TiffViewerProps,
 } from "../../images/tiff-viewer/TiffViewerApi.js";
 
 // TiffViewer (Media wrapper)

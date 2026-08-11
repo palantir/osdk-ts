@@ -41,7 +41,7 @@ import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown
 | `content`   | `string` | Yes      | Markdown text to render               |
 | `className` | `string` | No       | CSS class applied to the root element |
 
-### MarkdownViewerMediaProps
+### MarkdownViewerProps
 
 | Prop        | Type     | Required | Description                                  |
 | ----------- | -------- | -------- | -------------------------------------------- |

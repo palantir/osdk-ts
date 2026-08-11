@@ -274,7 +274,7 @@ export interface BasePdfViewerProps {
 }
 
 /** Props for the {@link PdfViewer} component. */
-export interface PdfViewerMediaProps extends Omit<BasePdfViewerProps, "src"> {
+export interface PdfViewerProps extends Omit<BasePdfViewerProps, "src"> {
   /** The Media object to fetch PDF contents from */
   media: Media;
 }

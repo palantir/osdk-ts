@@ -53,7 +53,7 @@ import { BaseEmailViewer } from "@osdk/react-components/experimental/email-viewe
 | `email`     | `ParsedEmail` | Yes      | Parsed email data                     |
 | `className` | `string`      | No       | CSS class applied to the root element |
 
-### EmailViewerMediaProps
+### EmailViewerProps
 
 | Prop        | Type     | Required | Description                             |
 | ----------- | -------- | -------- | --------------------------------------- |

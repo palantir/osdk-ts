@@ -20,7 +20,7 @@ import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseMarkdownViewer } from "./BaseMarkdownViewer.js";
-import type { MarkdownViewerMediaProps } from "./MarkdownViewerApi.js";
+import type { MarkdownViewerProps } from "./MarkdownViewerApi.js";
 
 import styles from "./BaseMarkdownViewer.module.css";
 
@@ -33,7 +33,7 @@ const transformToText = async (response: Response): Promise<string> => {
 export function MarkdownViewer({
   media,
   ...baseMarkdownViewerProps
-}: MarkdownViewerMediaProps): React.ReactElement {
+}: MarkdownViewerProps): React.ReactElement {
   const {
     data: content,
     loading,

@@ -23,10 +23,7 @@ export interface BaseTiffViewerProps {
   onError?: () => void;
 }
 
-export interface TiffViewerMediaProps extends Omit<
-  BaseTiffViewerProps,
-  "content"
-> {
+export interface TiffViewerProps extends Omit<BaseTiffViewerProps, "content"> {
   /** The Media object to fetch TIFF contents from */
   media: Media;
   /** Additional CSS class name for the root element */

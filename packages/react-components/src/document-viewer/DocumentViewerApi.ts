@@ -16,14 +16,10 @@
 
 import type { Media } from "@osdk/api";
 
-import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
 import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
 import type { BaseTiffViewerProps } from "../images/tiff-viewer/TiffViewerApi.js";
-import type { BaseMarkdownViewerProps } from "../markdown-viewer/MarkdownViewerApi.js";
 import type { BasePdfViewerProps } from "../pdf-viewer/PdfViewerApi.js";
-import type { BaseSpreadsheetViewerProps } from "../spreadsheet-viewer/SpreadsheetViewerApi.js";
 import type { BaseVideoViewerProps } from "../video-viewer/VideoViewerApi.js";
-import type { BaseXmlViewerProps } from "../xml-viewer/XmlViewerApi.js";
 
 export enum ViewerType {
   Pdf = "pdf",
@@ -58,34 +54,12 @@ export interface DocumentViewerProps {
   /** Props forwarded to BaseTiffViewer when rendering TIFF
    * @default undefined */
   tiffViewerProps?: Partial<Omit<BaseTiffViewerProps, "content" | "className">>;
-  /** Alias for `tiffViewerProps`, which takes precedence if both are set.
+  /** Alias for `tiffViewerProps`, which takes precedence when set to a non-nullish value.
    * @deprecated Use `tiffViewerProps` instead.
    * @default undefined */
   tiffRendererProps?: Partial<
     Omit<BaseTiffViewerProps, "content" | "className">
   >;
-  /** Props forwarded to BaseMarkdownViewer when rendering markdown
-   * @default undefined */
-  markdownViewerProps?: Partial<
-    Omit<BaseMarkdownViewerProps, "content" | "className">
-  >;
-  /** Alias for `markdownViewerProps`, which takes precedence if both are set.
-   * @deprecated Use `markdownViewerProps` instead.
-   * @default undefined */
-  markdownRendererProps?: Partial<
-    Omit<BaseMarkdownViewerProps, "content" | "className">
-  >;
-  /** Props forwarded to BaseSpreadsheetViewer when rendering a spreadsheet
-   * @default undefined */
-  spreadsheetViewerProps?: Partial<
-    Omit<BaseSpreadsheetViewerProps, "spreadsheet" | "className">
-  >;
-  /** Props forwarded to BaseEmailViewer when rendering EML
-   * @default undefined */
-  emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email" | "className">>;
-  /** Props forwarded to BaseXmlViewer when rendering XML
-   * @default undefined */
-  xmlViewerProps?: Partial<Omit<BaseXmlViewerProps, "content" | "className">>;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
    *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream).
    * @default undefined */

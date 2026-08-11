@@ -65,7 +65,7 @@ import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 ## Props
 
-### PdfViewerMediaProps
+### PdfViewerProps
 
 | Prop    | Type    | Required | Description                                  |
 | ------- | ------- | -------- | -------------------------------------------- |
@@ -300,7 +300,7 @@ function MinimalViewer({ src }: { src: string }) {
 | Type                       | Description                                                                                                  |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `BasePdfViewerProps`       | Props for `BasePdfViewer`                                                                                    |
-| `PdfViewerMediaProps`      | Props for `PdfViewer` (extends `BasePdfViewerProps`, replaces `src` with `media`)                            |
+| `PdfViewerProps`           | Props for `PdfViewer` (extends `BasePdfViewerProps`, replaces `src` with `media`)                            |
 | `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                                                 |
 | `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                                                              |
 | `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                                                           |

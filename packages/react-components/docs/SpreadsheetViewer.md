@@ -54,7 +54,7 @@ import { BaseSpreadsheetViewer } from "@osdk/react-components/experimental/sprea
 | `spreadsheet` | `ParsedSpreadsheet` | Yes      | Parsed spreadsheet data               |
 | `className`   | `string`            | No       | CSS class applied to the root element |
 
-### SpreadsheetViewerMediaProps
+### SpreadsheetViewerProps
 
 | Prop        | Type     | Required | Description                                         |
 | ----------- | -------- | -------- | --------------------------------------------------- |

@@ -19,7 +19,7 @@ import React from "react";
 
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { BaseTiffViewer } from "./BaseTiffViewer.js";
-import type { TiffViewerMediaProps } from "./TiffViewerApi.js";
+import type { TiffViewerProps } from "./TiffViewerApi.js";
 
 import styles from "./BaseTiffViewer.module.css";
 
@@ -34,7 +34,7 @@ export function TiffViewer({
   media,
   className,
   ...baseTiffViewerProps
-}: TiffViewerMediaProps): React.ReactElement {
+}: TiffViewerProps): React.ReactElement {
   const {
     data: content,
     loading,

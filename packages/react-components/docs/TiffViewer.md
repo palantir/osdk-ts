@@ -41,7 +41,7 @@ import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-viewer"
 | `content` | `Uint8Array` | (required)  | TIFF bytes to render                |
 | `onError` | `() => void` | `undefined` | Callback fired when rendering fails |
 
-### `TiffViewerMediaProps`
+### `TiffViewerProps`
 
 | Prop        | Type         | Default     | Description                              |
 | ----------- | ------------ | ----------- | ---------------------------------------- |

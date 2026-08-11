@@ -20,7 +20,7 @@ import classnames from "classnames";
 import React, { useEffect, useState } from "react";
 
 import { BasePdfViewer } from "./BasePdfViewer.js";
-import type { PdfViewerMediaProps } from "./PdfViewerApi.js";
+import type { PdfViewerProps } from "./PdfViewerApi.js";
 
 import styles from "./BasePdfViewer.module.css";
 
@@ -33,7 +33,7 @@ export function PdfViewer({
   media,
   className,
   ...pdfViewerProps
-}: PdfViewerMediaProps): React.ReactElement {
+}: PdfViewerProps): React.ReactElement {
   const [src, setSrc] = useState<ArrayBuffer | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);

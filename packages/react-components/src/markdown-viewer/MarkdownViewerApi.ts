@@ -23,7 +23,7 @@ export interface BaseMarkdownViewerProps {
   className?: string;
 }
 
-export interface MarkdownViewerMediaProps extends Omit<
+export interface MarkdownViewerProps extends Omit<
   BaseMarkdownViewerProps,
   "content"
 > {

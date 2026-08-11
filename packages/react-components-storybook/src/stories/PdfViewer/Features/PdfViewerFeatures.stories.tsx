@@ -20,7 +20,7 @@ import type { Media } from "@osdk/api";
 import type {
   BasePdfViewerProps,
   PdfTextHighlightEvent,
-  PdfViewerMediaProps,
+  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
@@ -67,14 +67,14 @@ const mockBookmarkedMedia = createMockMedia(
   "pdf-example-bookmarks.pdf",
 );
 
-const meta: Meta<PdfViewerMediaProps> = {
+const meta: Meta<PdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Features",
   component: PdfViewer,
   tags: ["beta"],
   args: {
     media: mockMedia,
   },
-  render: (args: PdfViewerMediaProps) => (
+  render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <PdfViewer {...args} />
     </div>

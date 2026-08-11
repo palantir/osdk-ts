@@ -43,10 +43,10 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-// `markdownViewerProps` / `markdownRendererProps` are deliberately not covered:
-// `BaseMarkdownViewerProps` only declares `content` and `className`, both of which
-// DocumentViewer omits, so the forwarded type has no keys and the alias has no
-// observable effect to assert on.
+// `tiffRendererProps` is the only deprecated alias left: the markdown, spreadsheet,
+// email and XML prop bags were dropped because their Base props are just the
+// primary input plus `className`, both of which DocumentViewer omits, leaving
+// nothing left to forward.
 describe("DocumentViewer deprecated viewer props", () => {
   it("should forward the deprecated tiffRendererProps to the TIFF viewer", () => {
     const onError = vi.fn();

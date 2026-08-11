@@ -20,7 +20,7 @@ import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseEmailViewer } from "./BaseEmailViewer.js";
-import type { EmailViewerMediaProps, ParsedEmail } from "./EmailViewerApi.js";
+import type { EmailViewerProps, ParsedEmail } from "./EmailViewerApi.js";
 import { parseEmailFromResponse } from "./parseEmail.js";
 
 import styles from "./BaseEmailViewer.module.css";
@@ -29,7 +29,7 @@ export function EmailViewer({
   media,
   className,
   ...emailViewerProps
-}: EmailViewerMediaProps): React.ReactElement {
+}: EmailViewerProps): React.ReactElement {
   const {
     data: email,
     loading,
