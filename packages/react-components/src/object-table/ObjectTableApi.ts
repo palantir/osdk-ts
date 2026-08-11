@@ -48,11 +48,7 @@ export type ColumnDefinition<
   | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>
   | ReadonlyFunctionColumnDefinition<Q, RDPs, FunctionColumns>;
 
-/**
- * Locator and value source for a column whose value is derived from the row's
- * object: an object/interface property, a derived property, or a custom
- * column.
- */
+/** A column whose value comes from the row's object. */
 interface DerivableValueColumn<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -62,9 +58,8 @@ interface DerivableValueColumn<
   >,
 > {
   /**
-   * Defines what the column shows: an object/interface property, a linked
-   * object property (derived property), or a custom column — and carries that
-   * locator's configuration.
+   * What the column shows — a property, a linked object property (derived
+   * property), or a custom column — and that locator's configuration.
    */
   locator:
     | PropertyColumnLocator<Q>
@@ -72,25 +67,13 @@ interface DerivableValueColumn<
     | CustomColumnLocator;
 
   /**
-   * Derives the cell's value from the row's object.
+   * Derives the cell's value from the row's object. Without it the column
+   * reads the property named by `locator.id`, which is why a `type: "custom"`
+   * column has no value of its own.
    *
-   * Without it a column reads the property named by `locator.id`, which is why
-   * a `type: "custom"` column has no value of its own. Supply `getCellValue`
-   * to compute one — from a struct, an array, several properties combined,
-   * anything on the object.
-   *
-   * The result becomes the cell's value everywhere the table uses one: the
-   * default rendering, the third argument to `renderCell`, the editor's
-   * initial value, `oldValue` in {@link CellEditInfo}, and the `cellValue`
-   * passed to `renderCellContextMenu`.
-   *
-   * Not available on `type: "function"` columns — use the function locator's
-   * {@link FunctionColumnLocator.getValue}, which extracts from the query
-   * result while preserving its loading and error states.
-   *
-   * @param object - The row's object
-   * @param locator - This column's locator
-   * @returns The cell's value
+   * The result is the cell's value everywhere: default rendering, `renderCell`'s
+   * third argument, the editor's initial value, {@link CellEditInfo}'s
+   * `oldValue`, and `renderCellContextMenu`'s `cellValue`.
    */
   getCellValue?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -98,10 +81,7 @@ interface DerivableValueColumn<
   ) => unknown;
 }
 
-/**
- * Locator and value source for a function-backed column. The value comes from
- * the query rather than the row, so `getCellValue` is not available.
- */
+/** A column whose value comes from a function query rather than the row. */
 interface FunctionValueColumn<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -110,17 +90,12 @@ interface FunctionValueColumn<
     never
   >,
 > {
-  /**
-   * Defines what the column shows: a function column, and carries that
-   * locator's configuration.
-   */
+  /** What the column shows, and that locator's configuration. */
   locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>;
 
   /**
-   * Not available on function columns. The value arrives from the query
-   * carrying loading and error state, which `getCellValue` would discard; use
-   * the locator's {@link FunctionColumnLocator.getValue} to extract from the
-   * result while preserving them.
+   * Unavailable here: it would discard the query's loading and error states.
+   * Use the locator's {@link FunctionColumnLocator.getValue} instead.
    */
   getCellValue?: never;
 }
@@ -149,12 +124,10 @@ interface SharedColumnDefinition<
   orderable?: boolean;
 
   /**
-   * The value's wire type. Picks the default editor — number input, date
-   * picker, or text — and how committed values are parsed.
-   *
-   * Property columns read this from ontology metadata. Custom and derived
-   * columns have none, so without it they get a text input that commits
-   * strings.
+   * The value's wire type. Picks the default editor and how committed values
+   * are parsed. Property columns read it from ontology metadata; custom and
+   * derived columns have none, so without it they get a text input that
+   * commits strings.
    */
   dataType?: BaseWirePropertyTypes;
 
@@ -171,11 +144,8 @@ interface SharedColumnDefinition<
    *   state for `renderCell` to render. Use `editMode: "manual"` if you
    *   need a custom display alongside editing.
    *
-   * @param object - The row's object
-   * @param locator - This column's locator
-   * @param value - The cell's value: the result of `getCellValue` when the
-   * column defines one, otherwise the property named by `locator.id`. Saves
-   * recomputing what the table already derived.
+   * @param value - The cell's value, so there's no need to recompute what
+   * `getCellValue` (or the property lookup) already produced.
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
