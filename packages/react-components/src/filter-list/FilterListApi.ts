@@ -220,7 +220,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Reorder state is managed internally; persist `onFilterVisibilityChange` to
    * track order across remounts.
    *
-   * @default undefined (no drag handles)
+   * @default false
    */
   enableSorting?: boolean;
 
