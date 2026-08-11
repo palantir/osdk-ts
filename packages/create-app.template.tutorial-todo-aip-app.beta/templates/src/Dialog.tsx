@@ -1,4 +1,5 @@
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+
 import css from "./Dialog.module.css";
 
 interface DialogProps {
@@ -10,7 +11,7 @@ function Dialog({ children, isOpen, buttons }: PropsWithChildren<DialogProps>) {
   return (
     <dialog open={isOpen} className={css.dialog}>
       {children}
-      {buttons != null && buttons.length > 0 && (
+      {buttons !== undefined && buttons !== null && buttons.length > 0 && (
         <div className={css.buttons}>{buttons}</div>
       )}
     </dialog>

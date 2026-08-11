@@ -1,9 +1,10 @@
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import css from "./CreateProjectDialog.module.css";
 
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
+
+import css from "./CreateProjectDialog.module.css";
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ function CreateProjectDialog({
 
   const handleChangeProjectName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    [],
+    []
   );
 
   useEffect(() => setName("New project"), [isOpen]);
@@ -65,7 +66,12 @@ function CreateProjectDialog({
       <div className={css.project}>
         <label className={css.label}>
           Project name:{" "}
-          <input type="text" value={name} onChange={handleChangeProjectName} />
+          <input
+            type="text"
+            value={name}
+            onChange={handleChangeProjectName}
+            aria-label="Project name"
+          />
         </label>
       </div>
     </Dialog>

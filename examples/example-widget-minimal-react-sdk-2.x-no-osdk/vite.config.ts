@@ -4,14 +4,14 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), foundryWidgetPlugin()],
-  server: {
-    port: 8080,
-    cors: true,
-  },
   build: {
     rollupOptions: {
       input: ["./index.html"],
     },
+  },
+  plugins: [react(), foundryWidgetPlugin()],
+  server: {
+    cors: true,
+    port: 8080,
   },
 });

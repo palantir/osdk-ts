@@ -1,5 +1,5 @@
-import { IProject } from "./useProjects";
-import { ITask } from "./useProjectTasks";
+import type { IProject } from "./useProjects";
+import type { ITask } from "./useProjectTasks";
 
 const projects: IProject[] = [
   {
@@ -21,36 +21,37 @@ const tasks: ITask[] = [
     $apiName: "MockTask",
     $primaryKey: "1",
     id: "1",
-    title: "Try to",
     projectId: "1",
+    title: "Try to",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "2",
     id: "2",
-    title: "Implement this",
     projectId: "1",
+    title: "Implement this",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "3",
     id: "3",
-    title: "With the Ontology SDK!",
     projectId: "1",
+    title: "With the Ontology SDK!",
   },
   {
     $apiName: "MockTask",
     $primaryKey: "4",
     id: "4",
-    title: "More tasks here",
     projectId: "2",
+    title: "More tasks here",
   },
 ];
 
-async function delay(): Promise<void> {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(), 500 + Math.random() * 1000)
-  );
+function delay(): Promise<void> {
+  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
+  return new Promise((resolve) => {
+    setTimeout(resolve, 500 + Math.random() * 1000);
+  });
 }
 
 // Good enough random id for mocks
@@ -103,7 +104,7 @@ async function createTask({
 }): Promise<ITask["$primaryKey"]> {
   await delay();
   const task = tasks.find((t) => t.projectId === projectId);
-  if (task == null) {
+  if (task === undefined || task === null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
@@ -111,8 +112,8 @@ async function createTask({
     $apiName: "MockTask",
     $primaryKey: id,
     id,
-    title,
     projectId,
+    title,
   });
   return id;
 }
@@ -126,12 +127,12 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  getProjects,
   createProject,
-  deleteProject,
-  getProjectTasks,
   createTask,
+  deleteProject,
   deleteTask,
+  getProjectTasks,
+  getProjects,
 };
 
 export default Mocks;

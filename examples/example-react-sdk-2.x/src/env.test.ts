@@ -15,8 +15,8 @@ for (const envVar of ENV_VARS) {
       expect(env[envVar], `${envVar} should be defined`).toBeDefined();
       expect(
         env[envVar],
-        `${envVar} should not contain placeholder value`,
-      ).not.toMatch(/<.*>/);
-    },
+        `${envVar} should not contain placeholder value`
+      ).not.toMatch(/<.*>/u);
+    }
   );
 }

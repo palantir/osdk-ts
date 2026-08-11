@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+
 import client from "./client";
 
 /**
@@ -10,20 +11,25 @@ function AuthenticatedRoute() {
   const navigate = useNavigate();
   const [token, setToken] = useState(client.auth.token);
   useEffect(() => {
-    if (client.auth.token == null || client.auth.token.isExpired) {
-      client.auth
-        .refresh()
-        .then(() => {
+    async function run() {
+      if (
+        client.auth.token === undefined ||
+        client.auth.token === null ||
+        client.auth.token.isExpired
+      ) {
+        try {
+          await client.auth.refresh();
           setToken(client.auth.token);
-        })
-        .catch(() => {
+        } catch {
           // If we cannot refresh the token (i.e. the user is not logged in) we redirect to the login page
           navigate("/login");
-        });
+        }
+      }
     }
+    void run();
   }, [navigate]);
 
-  if (token == null || token.isExpired) {
+  if (token === undefined || token === null || token.isExpired) {
     return null;
   }
 

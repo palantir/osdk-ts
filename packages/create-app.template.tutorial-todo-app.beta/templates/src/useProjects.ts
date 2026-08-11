@@ -1,7 +1,9 @@
 // import { useOsdkClient } from "@osdk/react";
 import { useCallback } from "react";
 import useSWR from "swr";
+
 import Mocks from "./mocks";
+
 export interface IProject {
   $apiName: string;
   $primaryKey: string;
@@ -16,16 +18,15 @@ function useProjects() {
     "projects",
     async () => {
       // Try to implement this with the Ontology SDK!
-      const projectsList: IProject[] = (await Mocks.getProjects()).map((
-        project,
-      ) => ({
+      const fetchedProjects = await Mocks.getProjects();
+      const projectsList: IProject[] = fetchedProjects.map((project) => ({
         $apiName: project.$apiName,
         $primaryKey: project.$primaryKey,
         id: project.id,
         name: project.name || "",
       }));
       return projectsList;
-    },
+    }
   );
 
   const createProject: (name: string) => Promise<IProject["$primaryKey"]> =
@@ -36,7 +37,7 @@ function useProjects() {
         await mutate();
         return id;
       },
-      [mutate],
+      [mutate]
     );
 
   const deleteProject: (project: IProject) => Promise<void> = useCallback(
@@ -45,16 +46,16 @@ function useProjects() {
       await Mocks.deleteProject(project.$primaryKey);
       await mutate();
     },
-    [mutate],
+    [mutate]
   );
 
   return {
-    projects: data,
-    isLoading,
-    isValidating,
-    isError: error,
     createProject,
     deleteProject,
+    isError: error,
+    isLoading,
+    isValidating,
+    projects: data,
   };
 }
 

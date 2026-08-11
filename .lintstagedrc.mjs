@@ -30,6 +30,7 @@ const OXC_PACKAGES = [
   "e2e.sandbox.oauth",
   "e2e.generated.1.1.x",
   "create-app.template.expo.v2",
+  "create-app.react.beta.common",
   "create-app.template.react",
   "create-app.template.react.beta",
   "create-app.template.tutorial-todo-aip-app",
