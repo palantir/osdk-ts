@@ -90,7 +90,7 @@ interface FunctionValueColumn<
 
   /**
    * Unavailable here: it would discard the query's loading and error states.
-   * Use the locator's {@link FunctionColumnLocator.getValue} instead.
+   * Use {@link FunctionColumnLocator}'s own `getValue` instead.
    */
   getCellValue?: never;
 }
