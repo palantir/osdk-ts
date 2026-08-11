@@ -8,7 +8,7 @@ import { client } from "./client.js";
 import MainConfig from "./main.config.js";
 import { Widget } from "./Widget.js";
 
-const root = document.querySelector("#root")!;
+const root = document.getElementById("root")!;
 
 createRoot(root).render(
   <FoundryWidget config={MainConfig} client={client}>

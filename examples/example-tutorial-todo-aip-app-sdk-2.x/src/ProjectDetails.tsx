@@ -1,3 +1,4 @@
+import aipLogo from "/aip-icon.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CreateTaskButton from "./CreateTaskButton";
 import css from "./ProjectDetails.module.css";
@@ -70,7 +71,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
             onClick={handleProjectDescriptionRecommendation}
           >
             <div className={css.aipText}>
-              <img src="/aip-icon.svg" alt="AIP logo" className={css.image} />
+              <img src={aipLogo} alt="AIP logo" className={css.image} />
               Get description recommendation
             </div>
           </button>

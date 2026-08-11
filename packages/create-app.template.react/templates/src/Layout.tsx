@@ -1,3 +1,5 @@
+import palantir from "/palantir.svg";
+import react from "/react.svg";
 import React from "react";
 
 import css from "./Layout.module.css";
@@ -15,10 +17,10 @@ function Layout({ children }: LayoutProps) {
           target="_blank"
           rel="noreferrer"
         >
-          <img src="/palantir.svg" className={css.logo} alt="Palantir logo" />
+          <img src={palantir} className={css.logo} alt="Palantir logo" />
         </a>
         <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src="/react.svg" className={css.logo} alt="React logo" />
+          <img src={react} className={css.logo} alt="React logo" />
         </a>
       </div>
       {children}

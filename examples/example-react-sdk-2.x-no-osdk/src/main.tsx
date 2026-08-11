@@ -6,7 +6,7 @@ import Loading from "@/components/Loading";
 import { router } from "@/router";
 import "./index.css";
 
-const rootElement = document.querySelector("#root");
+const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");
 }
