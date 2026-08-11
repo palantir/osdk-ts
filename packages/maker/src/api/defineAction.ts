@@ -405,31 +405,11 @@ export function createStructFieldValues(
             parameter.type.type === "structList"),
         `Parameter ${parameter.id} for struct property ${parameter.id} must have a struct parameter type`,
       );
-      const expectedType = property.array ? "structList" : "struct";
-      invariant(
-        parameter.type.type === expectedType,
-        `Parameter ${parameter.id} must have type ${expectedType} to match its property`,
-      );
-
-      const propertyFieldApiNames = Object.keys(property.type.structDefinition);
-      const parameterFieldApiNames = Object.keys(
-        parameter.type.type === "struct"
-          ? parameter.type.struct.structFieldTypes
-          : parameter.type.structList.structFieldTypes,
-      );
-      invariant(
-        propertyFieldApiNames.length === parameterFieldApiNames.length &&
-          propertyFieldApiNames.every((field) =>
-            parameterFieldApiNames.includes(field),
-          ),
-        `Parameter ${parameter.id} fields must exactly match its struct property fields`,
-      );
-
       return [
         [
           parameter.id,
           Object.fromEntries(
-            propertyFieldApiNames.map((fieldApiName) => [
+            Object.keys(property.type.structDefinition).map((fieldApiName) => [
               fieldApiName,
               property.array
                 ? {

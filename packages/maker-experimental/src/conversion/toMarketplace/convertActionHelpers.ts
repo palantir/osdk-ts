@@ -39,6 +39,7 @@ import type {
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
+  ActionParameterType,
   ActionParameterValidation,
   ActionType,
   InterfaceType,
@@ -860,8 +861,20 @@ export function renderHintFromBaseType(
   parameter: ActionParameter,
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
+  return renderHintFromActionParameterType(
+    parameter.type,
+    validation?.allowedValues ?? parameter.validation.allowedValues,
+    parameter.displayName,
+  );
+}
+
+export function renderHintFromActionParameterType(
+  parameterType: ActionParameterType,
+  allowedValues: ActionParameterAllowedValues | undefined,
+  displayName: string,
+): ParameterRenderHint {
   const type =
-    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
+    typeof parameterType === "string" ? parameterType : parameterType.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -877,8 +890,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user" ||
-        validation?.allowedValues?.type === "multipassGroup"
+        allowedValues?.type === "user" ||
+        allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
@@ -899,13 +912,13 @@ export function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
+      if (allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
+      } else if (allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
-          `The allowed values for "${parameter.displayName}" are not compatible with the base parameter type`,
+          `The allowed values for "${displayName}" are not compatible with the base parameter type`,
         );
       }
     case "timeSeriesReference":

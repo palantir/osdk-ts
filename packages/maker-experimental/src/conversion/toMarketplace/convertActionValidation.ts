@@ -18,7 +18,6 @@ import type {
   ActionValidation,
   AllowedStructFieldValues,
   OntologyIrStructFieldBaseParameterType,
-  ParameterRenderHint,
   ParameterRequiredConfiguration,
   StructFieldConditionalOverride,
   StructFieldConditionalValidationBlock,
@@ -31,18 +30,35 @@ import type {
   ActionType,
   StructFieldValidationConfiguration,
 } from "@osdk/maker";
+import { extractAllowedValuesFromActionParameterType } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import {
   extractAllowedValues,
+  renderHintFromActionParameterType,
   renderHintFromBaseType,
 } from "./convertActionHelpers.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
-import { getStructFieldTypes } from "./structActionParameterUtils.js";
+import {
+  getStructFieldActionParameterType,
+  getStructFieldTypes,
+} from "./structActionParameterUtils.js";
+
+const STRUCT_FIELD_TYPES_SUPPORTING_ONE_OF: ReadonlySet<
+  OntologyIrStructFieldBaseParameterType["type"]
+> = new Set([
+  "boolean",
+  "integer",
+  "long",
+  "double",
+  "string",
+  "date",
+  "timestamp",
+]);
 
 // Helper function to recursively scan conditions and register groups
 function registerGroupsFromCondition(
@@ -261,9 +277,11 @@ function convertStructFieldValidations(
   return Object.fromEntries(
     Object.entries(structFieldTypes).map(([fieldApiName, fieldType]) => {
       const configuration = configuredValidations[fieldApiName] ?? {};
+      const actionParameterType = getStructFieldActionParameterType(fieldType);
 
       const allowedValues =
-        configuration.allowedValues ?? inferStructFieldAllowedValues(fieldType);
+        configuration.allowedValues ??
+        extractAllowedValuesFromActionParameterType(actionParameterType);
       validateStructFieldAllowedValues(
         parameter.id,
         fieldApiName,
@@ -289,7 +307,13 @@ function convertStructFieldValidations(
             display: {
               renderHint:
                 configuration.renderHint ??
-                inferStructFieldRenderHint(fieldType, allowedValues),
+                (allowedValues.type === "oneOf"
+                  ? { type: "dropdown", dropdown: {} }
+                  : renderHintFromActionParameterType(
+                      actionParameterType,
+                      allowedValues,
+                      fieldApiName,
+                    )),
               visibility: convertActionVisibility(
                 configuration.defaultVisibility,
               ),
@@ -334,91 +358,23 @@ function validateStructParameterConfiguration(
   }
 }
 
-function inferStructFieldAllowedValues(
-  fieldType: OntologyIrStructFieldBaseParameterType,
-): ActionParameterAllowedValues {
-  switch (fieldType.type) {
-    case "boolean":
-      return { type: "boolean" };
-    case "integer":
-    case "long":
-    case "double":
-      return { type: "range" };
-    case "string":
-      return { type: "text" };
-    case "date":
-    case "timestamp":
-      return { type: "datetime" };
-    case "geohash":
-      return { type: "geohash" };
-    case "geoshape":
-      return { type: "geoshape" };
-    case "objectReference":
-      return { type: "objectQuery" };
-  }
-}
-
 function validateStructFieldAllowedValues(
   parameterId: string,
   fieldApiName: string,
   fieldType: OntologyIrStructFieldBaseParameterType,
   allowedValues: ActionParameterAllowedValues,
 ): void {
-  const compatibleTypes = getCompatibleAllowedValueTypes(fieldType);
-  if (!compatibleTypes.has(allowedValues.type)) {
+  const inferredAllowedValues = extractAllowedValuesFromActionParameterType(
+    getStructFieldActionParameterType(fieldType),
+  );
+  const isCompatible =
+    allowedValues.type === inferredAllowedValues.type ||
+    (allowedValues.type === "oneOf" &&
+      STRUCT_FIELD_TYPES_SUPPORTING_ONE_OF.has(fieldType.type));
+  if (!isCompatible) {
     throw new Error(
       `Allowed values ${allowedValues.type} are not compatible with struct field ${parameterId}.${fieldApiName} of type ${fieldType.type}`,
     );
-  }
-}
-
-function getCompatibleAllowedValueTypes(
-  fieldType: OntologyIrStructFieldBaseParameterType,
-): ReadonlySet<ActionParameterAllowedValues["type"]> {
-  switch (fieldType.type) {
-    case "boolean":
-      return new Set(["boolean", "oneOf"]);
-    case "integer":
-    case "long":
-    case "double":
-      return new Set(["range", "oneOf"]);
-    case "string":
-      return new Set(["text", "oneOf"]);
-    case "date":
-    case "timestamp":
-      return new Set(["datetime", "oneOf"]);
-    case "geohash":
-      return new Set(["geohash"]);
-    case "geoshape":
-      return new Set(["geoshape"]);
-    case "objectReference":
-      return new Set(["objectQuery"]);
-  }
-}
-
-function inferStructFieldRenderHint(
-  fieldType: OntologyIrStructFieldBaseParameterType,
-  allowedValues: ActionParameterAllowedValues,
-): ParameterRenderHint {
-  if (allowedValues.type === "oneOf") {
-    return { type: "dropdown", dropdown: {} };
-  }
-  switch (fieldType.type) {
-    case "boolean":
-      return { type: "checkbox", checkbox: {} };
-    case "integer":
-    case "long":
-    case "double":
-      return { type: "numericInput", numericInput: {} };
-    case "string":
-    case "geohash":
-    case "geoshape":
-      return { type: "textInput", textInput: {} };
-    case "date":
-    case "timestamp":
-      return { type: "dateTimePicker", dateTimePicker: {} };
-    case "objectReference":
-      return { type: "dropdown", dropdown: {} };
   }
 }
 

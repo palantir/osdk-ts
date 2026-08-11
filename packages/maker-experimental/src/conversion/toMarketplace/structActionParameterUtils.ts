@@ -15,7 +15,7 @@
  */
 
 import type { OntologyIrStructFieldBaseParameterType } from "@osdk/client.unstable";
-import type { ActionParameter } from "@osdk/maker";
+import type { ActionParameter, ActionParameterType } from "@osdk/maker";
 
 export function getStructFieldTypes(
   parameter: ActionParameter,
@@ -31,4 +31,10 @@ export function getStructFieldTypes(
     default:
       return undefined;
   }
+}
+
+export function getStructFieldActionParameterType(
+  fieldType: OntologyIrStructFieldBaseParameterType,
+): ActionParameterType {
+  return fieldType.type === "objectReference" ? fieldType : fieldType.type;
 }
