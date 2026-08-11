@@ -5,13 +5,13 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter(
   [
     {
-      element: <Home />,
       path: "/",
+      element: <Home />,
     },
     {
       // This is the route defined in your application's redirect URL
-      element: <AuthCallback />,
       path: "/auth/callback",
+      element: <AuthCallback />,
     },
   ],
   { basename: import.meta.env.BASE_URL },

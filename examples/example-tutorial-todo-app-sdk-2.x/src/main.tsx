@@ -10,13 +10,13 @@ import client from "./client";
 const router = createBrowserRouter(
   [
     {
-      element: <Home />,
       path: "/",
+      element: <Home />,
     },
     {
-      element: <AuthCallback />,
       // This is the route defined in your application's redirect URL
       path: "/auth/callback",
+      element: <AuthCallback />,
     },
   ],
   { basename: import.meta.env.BASE_URL },
