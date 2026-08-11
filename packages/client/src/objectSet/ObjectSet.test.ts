@@ -1392,6 +1392,33 @@ describe("ObjectSet", () => {
       });
     });
 
+    it("accepts $defaultLoadLevel on fetchPageByRid", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRid(
+        Employee,
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+      expectTypeOf(employees.data[0].employeeProfile).toMatchTypeOf<
+        string | undefined
+      >();
+      expectTypeOf(employees.data[0].performanceScores).toMatchTypeOf<
+        number | undefined
+      >();
+    });
+
+    it("accepts $defaultLoadLevel on fetchPageByRidNoType", async () => {
+      const employees = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+      ).fetchPageByRidNoType(
+        [stubData.employee1.__rid, stubData.employee2.__rid],
+        { $defaultLoadLevel: "applyReducers" },
+      );
+      expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    });
+
     it("sends defaultLoadLevel for fetchStaticRidPage", async () => {
       const { client, fetchFn } = createMockCaptureClient();
       await fetchStaticRidPage(client, [stubData.employee1.__rid], {
