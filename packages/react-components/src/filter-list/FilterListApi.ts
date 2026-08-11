@@ -169,25 +169,18 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   the rendered list.
    *
    * @default "uncontrolled"
-   * @deprecated This prop is going away and visibility will always be managed
-   * internally, i.e. today's `"uncontrolled"` behavior. Migrate off
-   * `"controlled"`: seed the initial visibility with `isVisible` on each
-   * `filterDefinitions` entry, and persist `onFilterVisibilityChange` to
-   * observe what the user shows, hides, and reorders.
+   * @deprecated Going away; visibility will always be managed internally.
+   * Seed it with `isVisible` on each `filterDefinitions` entry and observe
+   * changes with `onFilterVisibilityChange`.
    */
   addFilterMode?: "controlled" | "uncontrolled";
 
   /**
    * Called after a filter is shown from the built-in "Add filter" popover.
    *
-   * Uncontrolled mode only — controlled mode renders no built-in popover, so
-   * nothing fires this. For the resulting visibility and order, use
-   * `onFilterVisibilityChange`, which fires in both modes.
-   *
    * @param filterKey The key of the added filter
-   * @param newDefinitions Deprecated. Always the `filterDefinitions` you
-   * passed in, unchanged — never the post-add state. Read
-   * `onFilterVisibilityChange` instead; this argument is going away.
+   * @param newDefinitions Deprecated. The `filterDefinitions` you passed in,
+   * unchanged — not the post-add state. Use `onFilterVisibilityChange`.
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
@@ -195,27 +188,21 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called after a filter's remove button is clicked.
-   *
-   * In uncontrolled mode this is a notification — the filter is already
-   * hidden and its state cleared. In controlled mode nothing is hidden for
-   * you; set `isVisible: false` in `filterDefinitions` to act on it.
+   * Called after a filter's remove button is clicked, once the filter is
+   * hidden and its state cleared.
    *
    * @param filterKey The key of the removed filter
    */
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
-   * Called when filter visibility or ordering changes: on drag-reorder in
-   * either mode, on add/remove via the built-in controls in uncontrolled mode,
-   * and on reset in either mode once the order or visibility has drifted from
-   * `filterDefinitions`.
+   * Called when filter visibility or ordering changes, i.e. when filters are
+   * reordered, added or removed via the built-in show/remove controls, or
+   * reset.
    *
    * Visible filters come first, in display order, followed by the hidden ones.
    * Persist this array and feed it back as the order and `isVisible` of
-   * `filterDefinitions` to make reordering survive a remount — in controlled
-   * mode that is the only way a drag sticks, since order is read from
-   * `filterDefinitions` on every render.
+   * `filterDefinitions` to make reordering survive a remount.
    *
    * @param newStates The filters in current display order with their visibility state
    */
@@ -230,9 +217,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Enable drag-and-drop reordering of filters. When `true`, drag handles are
    * rendered and filters can be reordered.
    *
-   * In uncontrolled mode the new order is held internally. In controlled mode
-   * `filterDefinitions` is the source of truth, so a drag reverts unless you
-   * persist `onFilterVisibilityChange` and pass the new order back.
+   * Reorder state is managed internally; persist `onFilterVisibilityChange` to
+   * track order across remounts.
    *
    * @default undefined (no drag handles)
    */
@@ -276,12 +262,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   className?: string;
 
   /**
-   * Custom render function for the "Add filter" button.
-   *
-   * - In uncontrolled mode: customizes the trigger element for the built-in
-   *   add-filter popover. The popover behavior is handled automatically.
-   * - In controlled mode: replaces the entire add-filter button area.
-   *   The consumer is responsible for all add-filter behavior.
+   * Custom render function for the "Add filter" button. Customizes the trigger
+   * element for the built-in add-filter popover; the popover behavior is
+   * handled automatically.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }
