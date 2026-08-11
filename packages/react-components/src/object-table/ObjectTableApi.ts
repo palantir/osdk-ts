@@ -43,7 +43,86 @@ export type ColumnDefinition<
   >,
 > =
   | EditableColumnDefinition<Q, RDPs, FunctionColumns>
-  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>;
+  | EditableFunctionColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyFunctionColumnDefinition<Q, RDPs, FunctionColumns>;
+
+/**
+ * Locator and value source for a column whose value is derived from the row's
+ * object: an object/interface property, a derived property, or a custom
+ * column.
+ */
+interface DerivableValueColumn<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  /**
+   * Defines what the column shows: an object/interface property, a linked
+   * object property (derived property), or a custom column — and carries that
+   * locator's configuration.
+   */
+  locator:
+    | PropertyColumnLocator<Q>
+    | RdpColumnLocator<Q, RDPs>
+    | CustomColumnLocator;
+
+  /**
+   * Derives the cell's value from the row's object.
+   *
+   * Without it a column reads the property named by `locator.id`, which is why
+   * a `type: "custom"` column has no value of its own. Supply `getCellValue`
+   * to compute one — from a struct, an array, several properties combined,
+   * anything on the object.
+   *
+   * The result becomes the cell's value everywhere the table uses one: the
+   * default rendering, the third argument to `renderCell`, the editor's
+   * initial value, `oldValue` in {@link CellEditInfo}, and the `cellValue`
+   * passed to `renderCellContextMenu`.
+   *
+   * Not available on `type: "function"` columns — use the function locator's
+   * {@link FunctionColumnLocator.getValue}, which extracts from the query
+   * result while preserving its loading and error states.
+   *
+   * @param object - The row's object
+   * @param locator - This column's locator
+   * @returns The cell's value
+   */
+  getCellValue?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+  ) => unknown;
+}
+
+/**
+ * Locator and value source for a function-backed column. The value comes from
+ * the query rather than the row, so `getCellValue` is not available.
+ */
+interface FunctionValueColumn<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  /**
+   * Defines what the column shows: a function column, and carries that
+   * locator's configuration.
+   */
+  locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>;
+
+  /**
+   * Not available on function columns. The value arrives from the query
+   * carrying loading and error state, which `getCellValue` would discard; use
+   * the locator's {@link FunctionColumnLocator.getValue} to extract from the
+   * result while preserving them.
+   */
+  getCellValue?: never;
+}
 
 interface SharedColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -53,13 +132,6 @@ interface SharedColumnDefinition<
     never
   >,
 > {
-  /**
-   * Defines what the column shows:
-   * an object/interface property, a linked object property (derived property), a function
-   * column, or a custom column — and carries that locator's configuration.
-   */
-  locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
-
   /**
    * @default true
    */
@@ -87,10 +159,17 @@ interface SharedColumnDefinition<
    *   column into a permanently-editable surface, leaving no read-only
    *   state for `renderCell` to render. Use `editMode: "manual"` if you
    *   need a custom display alongside editing.
+   *
+   * @param object - The row's object
+   * @param locator - This column's locator
+   * @param value - The cell's value: the result of `getCellValue` when the
+   * column defines one, otherwise the property named by `locator.id`. Saves
+   * recomputing what the table already derived.
    */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    value: unknown,
   ) => React.ReactNode;
 
   /**
@@ -111,14 +190,10 @@ interface SharedColumnDefinition<
   renderHeader?: () => React.ReactNode;
 }
 
-interface EditableColumnDefinition<
+interface EditableColumnOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
-> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+> {
   /**
    * `editable` can be a boolean or a predicate that receives the row's object
    * and returns whether the cell is editable
@@ -153,6 +228,33 @@ interface EditableColumnDefinition<
   validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
+interface EditableColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    EditableColumnOptions<Q, RDPs>,
+    DerivableValueColumn<Q, RDPs, FunctionColumns> {}
+
+/** Editable column backed by a function query. */
+interface EditableFunctionColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    EditableColumnOptions<Q, RDPs>,
+    FunctionValueColumn<Q, RDPs, FunctionColumns> {}
+
 /**
  * Column definition for a read-only column (default).
  * `editFieldConfig` and `validateEdit` are not available.
@@ -164,7 +266,25 @@ interface ReadonlyColumnDefinition<
     string,
     never
   >,
-> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    DerivableValueColumn<Q, RDPs, FunctionColumns> {
+  editable?: false;
+}
+
+/** Read-only column backed by a function query. */
+interface ReadonlyFunctionColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>
+  extends
+    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
+    FunctionValueColumn<Q, RDPs, FunctionColumns> {
   editable?: false;
 }
 

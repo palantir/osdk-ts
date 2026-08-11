@@ -23,7 +23,11 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import type { AccessorColumnDef } from "@tanstack/react-table";
+import type {
+  AccessorColumnDef,
+  AccessorFnColumnDef,
+  AccessorKeyColumnDef,
+} from "@tanstack/react-table";
 import { useMemo } from "react";
 
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
@@ -102,6 +106,7 @@ function getColumnsFromColumnDefinitions<
       resizable,
       orderable,
       editable,
+      getCellValue,
       renderCell,
       renderHeader,
       columnName,
@@ -122,11 +127,30 @@ function getColumnsFromColumnDefinitions<
         ? propertyMetadata.typeMetadata.markingType
         : undefined;
 
+    // `accessorFn` routes the value through `getCellValue`, so everything
+    // downstream that reads `cellContext.getValue()` — default rendering, the
+    // editor, the context menu — picks it up without further plumbing.
+    const accessor:
+      | Pick<
+          AccessorFnColumnDef<
+            Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+          >,
+          "accessorFn"
+        >
+      | Pick<
+          AccessorKeyColumnDef<
+            Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+          >,
+          "accessorKey"
+        > = getCellValue
+      ? { accessorFn: (object) => getCellValue(object, locator) }
+      : { accessorKey: colKey };
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
-      accessorKey: colKey,
+      ...accessor,
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
@@ -158,7 +182,7 @@ function getColumnsFromColumnDefinitions<
         >(editable, meta?.onCellEdit, meta?.isInEditMode);
 
         if (renderCell && !isEditable) {
-          return renderCell(object, locator);
+          return renderCell(object, locator, cellContext.getValue());
         }
 
         return renderDefaultCell(cellContext);
