@@ -1206,6 +1206,37 @@ describe("Experimental Test Suite", () => {
   });
 
   describe("Action Type Constraints", () => {
+    it("includes SPT-backed properties in both interface output reference lists", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const sharedName = defineSharedPropertyType({
+          apiName: "sharedName",
+          type: "string",
+        });
+        defineInterface({
+          apiName: "sharedPropertyInterface",
+          properties: {
+            sharedName: {
+              sharedPropertyType: sharedName,
+              required: true,
+            },
+          },
+        });
+      });
+
+      const interfaceShape = result.shapes.outputShapes.get(
+        ReadableIdGenerator.getForInterface(
+          "com.palantir.sharedPropertyInterface",
+        ),
+      );
+      expect(interfaceShape).toMatchObject({
+        type: "interfaceType",
+        interfaceType: {
+          properties: [expect.any(String)],
+          propertiesV2: [expect.any(String)],
+        },
+      });
+    });
+
     it("produces output shapes for interface with action type constraints", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const iface = defineInterface({ apiName: "MyInterface" });
