@@ -68,12 +68,7 @@ interface DerivableValueColumn<
 
   /**
    * Derives the cell's value from the row's object. Without it the column
-   * reads the property named by `locator.id`, which is why a `type: "custom"`
-   * column has no value of its own.
-   *
-   * The result is the cell's value everywhere: default rendering, `renderCell`'s
-   * third argument, the editor's initial value, {@link CellEditInfo}'s
-   * `oldValue`, and `renderCellContextMenu`'s `cellValue`.
+   * reads the property named by `locator.id`.
    */
   getCellValue?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
