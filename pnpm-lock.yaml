@@ -1670,10 +1670,13 @@ importers:
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.32
-        version: 7.26.32(@types/node@26.1.1)
+        version: 7.26.32(@types/node@18.19.124)
       '@microsoft/api-extractor':
         specifier: ^7.52.11
-        version: 7.52.11(@types/node@26.1.1)
+        version: 7.52.11(@types/node@18.19.124)
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/functions':
         specifier: workspace:~
         version: link:../functions
@@ -1683,6 +1686,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@types/node':
+        specifier: ^18.19.0
+        version: 18.19.124
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -4343,9 +4349,6 @@ importers:
       '@osdk/generator-converters.preview':
         specifier: workspace:~
         version: link:../generator-converters.preview
-      '@osdk/seed-helpers':
-        specifier: workspace:*
-        version: link:../seed-helpers
       '@osdk/unit-testing':
         specifier: workspace:~
         version: link:../unit-testing
@@ -4383,6 +4386,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/seed-helpers':
+        specifier: workspace:~
+        version: link:../seed-helpers
       '@types/node':
         specifier: ^26.1.1
         version: 26.1.1
