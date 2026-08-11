@@ -23,9 +23,9 @@ function useProjects() {
       const projectsList: IProject[] = fetchedProjects.map((project) => ({
         $apiName: project.$apiName,
         $primaryKey: project.$primaryKey,
-        description: project.description || "",
         id: project.id,
         name: project.name || "",
+        description: project.description || "",
       }));
       return projectsList;
     },

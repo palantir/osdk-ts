@@ -1,17 +1,13 @@
-{{#if osdkPackage}}
-import { OsdkProvider } from "@osdk/react";
-{{/if}}
 import { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-
 {{#if osdkPackage}}
+import { OsdkProvider } from "@osdk/react";
 import client from "@/client";
 {{/if}}
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Loading from "@/components/Loading";
 import { router } from "@/router";
-
 import "./index.css";
 
 const rootElement = document.querySelector("#root");

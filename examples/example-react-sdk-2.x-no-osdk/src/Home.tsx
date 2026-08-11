@@ -1,9 +1,7 @@
 import React from "react";
-
+import css from "./Home.module.css";
 import Header from "@/components/Header";
 import NextSteps from "@/components/NextSteps";
-
-import css from "./Home.module.css";
 
 function Home(): React.ReactElement {
   return (
