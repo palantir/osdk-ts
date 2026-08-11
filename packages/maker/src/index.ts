@@ -65,6 +65,7 @@ export { defineDeleteInterfaceLinkAction } from "./api/defineDeleteInterfaceLink
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";
+export type { InterfaceTypeDefinition } from "./api/defineInterface.js";
 export { defineInterfaceActionTypeConstraint } from "./api/defineInterfaceActionTypeConstraint.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
