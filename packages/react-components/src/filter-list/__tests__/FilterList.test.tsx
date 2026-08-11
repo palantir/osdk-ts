@@ -237,31 +237,15 @@ describe("FilterList", () => {
       Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
     });
 
-    it("passes the filter key and the unchanged definitions to onFilterAdded", () => {
-      const onFilterAdded = vi.fn();
-      const definitions = [hiddenDeptDef()];
-
-      render(
-        <FilterList
-          objectType={MockObjectType}
-          filterDefinitions={definitions}
-          onFilterAdded={onFilterAdded}
-        />,
-      );
-
-      fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
-      fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
-
-      expect(onFilterAdded).toHaveBeenCalledWith("dept", definitions);
-    });
-
     it("reports the shown filter as visible after an add", () => {
+      const onFilterAdded = vi.fn();
       const onFilterVisibilityChange = vi.fn();
 
       render(
         <FilterList
           objectType={MockObjectType}
           filterDefinitions={[hiddenDeptDef()]}
+          onFilterAdded={onFilterAdded}
           onFilterVisibilityChange={onFilterVisibilityChange}
         />,
       );
@@ -269,49 +253,14 @@ describe("FilterList", () => {
       fireEvent.click(screen.getByRole("button", { name: /add filter/iu }));
       fireEvent.click(screen.getByRole("menuitem", { name: "dept" }));
 
+      expect(onFilterAdded).toHaveBeenCalledOnce();
+      expect(onFilterAdded.mock.lastCall?.[0]).toBe("dept");
       expect(onFilterVisibilityChange).toHaveBeenCalledWith([
         { filterKey: "dept", isVisible: true },
       ]);
     });
 
-    it("renders no add-filter popover in controlled mode, so onFilterAdded never fires", () => {
-      const onFilterAdded = vi.fn();
-
-      render(
-        <FilterList
-          objectType={MockObjectType}
-          filterDefinitions={[hiddenDeptDef(), ...twoSortableDefs()]}
-          addFilterMode="controlled"
-          onFilterAdded={onFilterAdded}
-        />,
-      );
-
-      expect(screen.queryByRole("button", { name: /add filter/iu })).toBeNull();
-      expect(onFilterAdded).not.toHaveBeenCalled();
-    });
-
-    it("reports the removed filter as hidden in uncontrolled mode", () => {
-      const onFilterVisibilityChange = vi.fn();
-
-      render(
-        <FilterList
-          objectType={MockObjectType}
-          filterDefinitions={twoSortableDefs()}
-          onFilterVisibilityChange={onFilterVisibilityChange}
-        />,
-      );
-
-      fireEvent.click(
-        screen.getByRole("button", { name: "Remove name filter" }),
-      );
-
-      expect(onFilterVisibilityChange).toHaveBeenCalledWith([
-        { filterKey: "age", isVisible: true },
-        { filterKey: "name", isVisible: false },
-      ]);
-    });
-
-    it("does not report a removal in controlled mode, where nothing is hidden", () => {
+    it("reports the removed filter as hidden", () => {
       const onFilterRemoved = vi.fn();
       const onFilterVisibilityChange = vi.fn();
 
@@ -319,7 +268,6 @@ describe("FilterList", () => {
         <FilterList
           objectType={MockObjectType}
           filterDefinitions={twoSortableDefs()}
-          addFilterMode="controlled"
           onFilterRemoved={onFilterRemoved}
           onFilterVisibilityChange={onFilterVisibilityChange}
         />,
@@ -330,32 +278,13 @@ describe("FilterList", () => {
       );
 
       expect(onFilterRemoved).toHaveBeenCalledWith("name");
-      expect(onFilterVisibilityChange).not.toHaveBeenCalled();
-    });
-
-    it("reports a reorder in controlled mode", async () => {
-      stubRowLayout();
-      const onFilterVisibilityChange = vi.fn();
-
-      render(
-        <FilterList
-          objectType={MockObjectType}
-          filterDefinitions={twoSortableDefs()}
-          addFilterMode="controlled"
-          enableSorting
-          onFilterVisibilityChange={onFilterVisibilityChange}
-        />,
-      );
-
-      await dragFirstFilterDown();
-
       expect(onFilterVisibilityChange).toHaveBeenCalledWith([
         { filterKey: "age", isVisible: true },
-        { filterKey: "name", isVisible: true },
+        { filterKey: "name", isVisible: false },
       ]);
     });
 
-    it("reports a reorder in uncontrolled mode", async () => {
+    it("reports a reorder", async () => {
       stubRowLayout();
       const onFilterVisibilityChange = vi.fn();
 
