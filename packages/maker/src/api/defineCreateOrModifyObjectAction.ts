@@ -23,6 +23,7 @@ import {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
   createStructFieldValues,
   defineAction,
   kebab,
@@ -109,12 +110,7 @@ export function defineCreateOrModifyObjectAction(
         addOrModifyObjectRuleV2: {
           objectToModify: CREATE_OR_MODIFY_OBJECT_PARAMETER,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ]),
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
           structFieldValues: createStructFieldValues(def, parameters),

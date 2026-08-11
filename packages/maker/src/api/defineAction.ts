@@ -454,6 +454,23 @@ export function createStructFieldValues(
   );
 }
 
+export function createPropertyParameterValues(
+  def: ActionTypeUserDefinition,
+  parameterIds: Array<ParameterId>,
+): OntologyIrAddObjectRule["propertyValues"] {
+  return Object.fromEntries(
+    parameterIds
+      .filter((parameterId) => {
+        const property = getProperty(def.objectType, parameterId);
+        return property === undefined || !isStruct(property.type);
+      })
+      .map(
+        (parameterId) =>
+          [parameterId, { type: "parameterId", parameterId }] as const,
+      ),
+  );
+}
+
 function getTargetParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   parameterSet: Set<string>,

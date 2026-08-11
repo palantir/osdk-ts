@@ -22,6 +22,7 @@ import {
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
   createStructFieldValues,
   defineAction,
   isPropertyParameter,
@@ -105,12 +106,7 @@ export function defineModifyObjectAction(
         modifyObjectRule: {
           objectToModify: MODIFY_OBJECT_PARAMETER,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ]),
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
           structFieldValues: createStructFieldValues(def, parameters),
