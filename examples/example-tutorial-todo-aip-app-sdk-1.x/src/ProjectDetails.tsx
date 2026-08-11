@@ -15,17 +15,15 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [projectHasTasks, setProjectHasTasks] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const { updateProjectDescription } = useProjects();
-  const { tasks } = useProjectTasks(project);
+  const tasks = useProjectTasks(project).tasks;
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setProjectHasTasks(
-      tasks === undefined || tasks === null ? false : tasks.length > 0,
-    );
+    setProjectHasTasks(tasks == null ? false : tasks.length > 0);
   }, [project, tasks]);
 
   const handleProjectDescriptionRecommendation = useCallback(async () => {
-    if (project === undefined || project === null) {
+    if (project == null) {
       return;
     }
     setIsProcessing(true);

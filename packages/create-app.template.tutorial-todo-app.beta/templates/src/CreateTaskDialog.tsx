@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-
 import Dialog from "./Dialog";
 import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";

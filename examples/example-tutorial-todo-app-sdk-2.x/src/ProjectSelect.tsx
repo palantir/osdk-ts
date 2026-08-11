@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
 import { useCallback } from "react";
-
 import type { IProject } from "./useProjects";
 
 interface ProjectSelectProps {
@@ -17,7 +16,7 @@ function ProjectSelect({
   const handleSelect = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       const nextProject = projects.find((p) => `${p.id}` === e.target.value);
-      if (nextProject !== undefined && nextProject !== null) {
+      if (nextProject != null) {
         onSelectProject(nextProject);
       }
     },

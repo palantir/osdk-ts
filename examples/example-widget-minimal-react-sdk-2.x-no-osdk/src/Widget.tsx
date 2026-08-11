@@ -1,18 +1,18 @@
 import { Button, Card, Classes, H4 } from "@blueprintjs/core";
-import { useFoundryWidgetContext } from "@osdk/widget.client-react";
-import type { FoundryWidgetClientContext } from "@osdk/widget.client-react";
+import {
+  type FoundryWidgetClientContext,
+  useFoundryWidgetContext,
+} from "@osdk/widget.client-react";
 import clsx from "clsx";
-import { useCallback, useEffect } from "react";
-
+import React, { useCallback, useEffect } from "react";
 import type MainConfig from "./main.config.js";
 import { useDarkTheme } from "./useDarkTheme.js";
-
 import css from "./Widget.module.css";
 
 const useWidgetContext: () => FoundryWidgetClientContext<typeof MainConfig> =
   useFoundryWidgetContext.withTypes<typeof MainConfig>();
 
-export function Widget() {
+export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
   const greetingName = parameters.values.greetingName ?? "World";
   const counterValue = parameters.values.counterValue ?? 0;
@@ -46,4 +46,4 @@ export function Widget() {
       </Card>
     </div>
   );
-}
+};

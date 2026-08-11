@@ -1,7 +1,5 @@
-import { createClient } from "@osdk/client";
-import type { Client } from "@osdk/client";
-import { createPublicOauthClient } from "@osdk/oauth";
-import type { PublicOauthClient } from "@osdk/oauth";
+import { createClient, type Client } from "@osdk/client";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 {{#if unstableFeatures}}
 import { $branch } from "{{osdkPackage}}";
 {{/if}}
@@ -10,12 +8,15 @@ function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
   const element = elements.item(elements.length - 1);
   const value = element ? element.getAttribute("content") : null;
-  if (value === undefined || value === null || value === "") {
+  if (value == null || value === "") {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
   if (/%.+%/u.test(value)) {
     throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/gu, "")} to your .env files`,
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
+        /%/gu,
+        "",
+      )} to your .env files`,
     );
   }
   return value;

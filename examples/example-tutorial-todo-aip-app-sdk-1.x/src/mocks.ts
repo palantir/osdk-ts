@@ -64,15 +64,10 @@ const projects: MockProject[] = [
   },
 ];
 
-export function sleep(ms: number): Promise<void> {
-  // oxlint-disable-next-line promise/avoid-new -- a timer-based delay legitimately needs a new Promise
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 function delay(): Promise<void> {
-  return sleep(500 + Math.random() * 1000);
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(), 500 + Math.random() * 1000),
+  );
 }
 
 // Good enough random id for mocks
@@ -111,11 +106,7 @@ async function getRecommendedProjectDescription(
   project: MockProject,
 ): Promise<string> {
   await delay();
-  if (
-    project.tasks !== undefined &&
-    project.tasks !== null &&
-    project.tasks.length === 0
-  ) {
+  if (project.tasks != null && project.tasks.length === 0) {
     throw new Error("Project description recommendation requires tasks");
   }
   return `AIP Logic mock description for project`;
@@ -145,7 +136,7 @@ async function createTask({
 }): Promise<MockTask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project === undefined || project === null) {
+  if (project == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();

@@ -1,7 +1,6 @@
 // import { useOsdkClient } from "@osdk/react";
 import { useCallback } from "react";
 import useSWR from "swr";
-
 import Mocks from "./mocks";
 import type { IProject } from "./useProjects";
 
@@ -18,15 +17,13 @@ export function useProjectTasks(project: IProject | undefined) {
   // Use this client variable to access the Ontology SDK.
   // const client = useOsdkClient();
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
-    project !== undefined && project !== null
-      ? `projects/${project.id}/tasks`
-      : null,
+    project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
     () => {
-      if (project !== undefined && project !== null) {
-        return Mocks.getProjectTasks(project.$primaryKey);
+      if (project == null) {
+        return [];
       }
-      return [];
+      return Mocks.getProjectTasks(project.$primaryKey);
     },
   );
 
@@ -35,8 +32,8 @@ export function useProjectTasks(project: IProject | undefined) {
     description: string,
   ) => Promise<ITask["$primaryKey"] | undefined> = useCallback(
     async (title: string, description: string) => {
-      if (project === undefined || project === null) {
-        return;
+      if (project == null) {
+        return undefined;
       }
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
@@ -52,7 +49,7 @@ export function useProjectTasks(project: IProject | undefined) {
 
   const deleteTask: (task: ITask) => Promise<void> = useCallback(
     async (task) => {
-      if (project === undefined || project === null) {
+      if (project == null) {
         return;
       }
       // Try to implement this with the Ontology SDK!
