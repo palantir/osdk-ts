@@ -20,7 +20,7 @@ function CreateProjectDialog({
   const [name, setName] = useState<string>("New project");
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    []
+    [],
   );
 
   useEffect(() => setName("New project"), [isOpen]);

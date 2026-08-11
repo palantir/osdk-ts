@@ -17,7 +17,7 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const [name, setName] = useState<string>("New task");
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    []
+    [],
   );
 
   useEffect(() => setName("New task"), [isOpen]);

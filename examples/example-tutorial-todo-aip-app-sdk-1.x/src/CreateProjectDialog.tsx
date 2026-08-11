@@ -23,7 +23,7 @@ function CreateProjectDialog({
 
   const handleChangeProjectName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    []
+    [],
   );
 
   useEffect(() => setName("New project"), [isOpen]);

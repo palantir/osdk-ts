@@ -41,7 +41,7 @@ export function Widget() {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setNewTodoItem(event.target.value);
     },
-    []
+    [],
   );
 
   const isDarkTheme = useDarkTheme();

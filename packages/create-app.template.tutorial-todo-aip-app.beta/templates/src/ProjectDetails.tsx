@@ -21,7 +21,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
 
   useEffect(() => {
     setProjectHasTasks(
-      tasks === undefined || tasks === null ? false : tasks.length > 0
+      tasks === undefined || tasks === null ? false : tasks.length > 0,
     );
   }, [project, tasks]);
 

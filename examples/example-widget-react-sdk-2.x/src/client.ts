@@ -5,5 +5,5 @@ import { createFoundryWidgetTokenProvider } from "@osdk/widget.client";
 export const client = createClient(
   window.location.origin,
   $ontologyRid,
-  createFoundryWidgetTokenProvider()
+  createFoundryWidgetTokenProvider(),
 );

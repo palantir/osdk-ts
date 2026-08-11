@@ -9,7 +9,7 @@ function useProjects() {
     MockProject[]
   >("projects", () =>
     // Try to implement this with the Ontology SDK!
-    Mocks.getProjects()
+    Mocks.getProjects(),
   );
 
   const createProject: (name: string) => Promise<MockProject["$primaryKey"]> =
@@ -20,7 +20,7 @@ function useProjects() {
         await mutate();
         return id;
       },
-      [mutate]
+      [mutate],
     );
 
   const deleteProject: (project: MockProject) => Promise<void> = useCallback(
@@ -29,7 +29,7 @@ function useProjects() {
       await Mocks.deleteProject(project.$primaryKey);
       await mutate();
     },
-    [mutate]
+    [mutate],
   );
 
   return {

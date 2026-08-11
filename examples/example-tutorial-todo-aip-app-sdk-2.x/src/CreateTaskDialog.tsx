@@ -31,12 +31,12 @@ function CreateTaskDialog({
 
   const handleChangeTaskName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    []
+    [],
   );
 
   const handleChangeTaskDescription = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value),
-    []
+    [],
   );
 
   const handleTaskDescriptionRecommendation = useCallback(async () => {

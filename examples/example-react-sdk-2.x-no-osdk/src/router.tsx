@@ -15,5 +15,5 @@ export const router = createBrowserRouter(
       path: "/auth/callback",
     },
   ],
-  { basename: import.meta.env.BASE_URL }
+  { basename: import.meta.env.BASE_URL },
 );

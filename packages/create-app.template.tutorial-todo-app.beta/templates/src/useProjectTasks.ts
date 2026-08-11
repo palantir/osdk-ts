@@ -26,11 +26,11 @@ export function useProjectTasks(project: IProject | undefined) {
         return [];
       }
       return await Mocks.getProjectTasks(project.$primaryKey);
-    }
+    },
   );
 
   const createTask: (
-    title: string
+    title: string,
   ) => Promise<ITask["$primaryKey"] | undefined> = useCallback(
     async (title) => {
       if (project === undefined || project === null) {
@@ -44,7 +44,7 @@ export function useProjectTasks(project: IProject | undefined) {
       await mutate();
       return id;
     },
-    [project, mutate]
+    [project, mutate],
   );
 
   const deleteTask: (task: ITask) => Promise<void> = useCallback(
@@ -56,7 +56,7 @@ export function useProjectTasks(project: IProject | undefined) {
       await Mocks.deleteTask(task.$primaryKey);
       await mutate();
     },
-    [project, mutate]
+    [project, mutate],
   );
 
   return {

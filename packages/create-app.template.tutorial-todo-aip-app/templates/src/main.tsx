@@ -30,9 +30,9 @@ const router = createBrowserRouter(
       path: "/auth/callback",
     },
   ],
-  { basename: import.meta.env.BASE_URL }
+  { basename: import.meta.env.BASE_URL },
 );
 
 ReactDOM.createRoot(document.querySelector("#root")!).render(
-  <RouterProvider router={router} />
+  <RouterProvider router={router} />,
 );

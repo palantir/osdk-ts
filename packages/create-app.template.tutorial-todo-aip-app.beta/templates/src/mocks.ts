@@ -90,7 +90,7 @@ async function createProject({
 }
 
 async function getRecommendedProjectDescription(
-  project: IProject
+  project: IProject,
 ): Promise<string> {
   await delay();
   const projectTasks = tasks.filter((t) => t.projectId === project.id);
@@ -145,7 +145,7 @@ async function createTask({
 }
 
 async function getRecommendedTaskDescription(
-  taskName: string
+  taskName: string,
 ): Promise<string> {
   await delay();
   if (taskName.length === 0) {

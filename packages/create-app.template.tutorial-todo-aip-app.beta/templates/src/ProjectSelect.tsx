@@ -21,7 +21,7 @@ function ProjectSelect({
         onSelectProject(nextProject);
       }
     },
-    [projects, onSelectProject]
+    [projects, onSelectProject],
   );
 
   return (
