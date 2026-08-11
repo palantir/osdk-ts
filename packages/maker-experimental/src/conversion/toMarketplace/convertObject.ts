@@ -27,6 +27,7 @@ import type {
 import type {
   DerivedPropertyAggregation,
   EditsHistoryConfig,
+  InterfacePropertyType,
   InterfaceType,
   ObjectPropertyType,
   ObjectType,
@@ -36,6 +37,8 @@ import {
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
   isExotic,
+  isInterfaceSharedPropertyType,
+  withoutNamespace,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
@@ -156,20 +159,28 @@ export function convertObject(
           linksV2: {},
           propertiesV2: Object.fromEntries(
             impl.propertyMapping.map((mappings) => {
-              // TODO(): This probably won't work for importing
-              const sourceInterface = allParents.find(
-                (interfaceType, _index) => {
-                  return (
-                    interfaceType.propertiesV3[mappings.interfaceProperty] !==
-                    undefined
+              const resolvedProperty = resolveInterfaceProperty(
+                allParents,
+                mappings.interfaceProperty,
+              );
+              invariant(
+                resolvedProperty !== undefined,
+                `Interface property '${mappings.interfaceProperty}' not found on interface '${impl.implements.apiName}'`,
+              );
+              const interfacePropertyTypeRid = isInterfaceSharedPropertyType(
+                resolvedProperty.property,
+              )
+                ? ridGenerator.generateIptRidFromSptRid(
+                    ridGenerator.generateSptRid(
+                      resolvedProperty.property.sharedPropertyType.apiName,
+                    ),
+                  )
+                : ridGenerator.generateInterfacePropertyTypeRid(
+                    resolvedProperty.apiName,
+                    resolvedProperty.interfaceType.apiName,
                   );
-                },
-              )!;
               return [
-                ridGenerator.generateInterfacePropertyTypeRid(
-                  mappings.interfaceProperty,
-                  sourceInterface.apiName,
-                ),
+                interfacePropertyTypeRid,
                 {
                   type: "propertyTypeRid",
                   propertyTypeRid: ridGenerator.generatePropertyRid(
@@ -198,6 +209,43 @@ export function convertObject(
     schemaMigrations: undefined,
     writebackDatasets: [],
   } as ObjectTypeBlockDataV2;
+}
+
+function resolveInterfaceProperty(
+  interfaceTypes: InterfaceType[],
+  mappedApiName: string,
+):
+  | {
+      apiName: string;
+      interfaceType: InterfaceType;
+      property: InterfacePropertyType;
+    }
+  | undefined {
+  const properties = interfaceTypes.flatMap((interfaceType) =>
+    Object.entries(interfaceType.propertiesV3).map(([apiName, property]) => ({
+      apiName,
+      interfaceType,
+      property,
+      mappedApiName: isInterfaceSharedPropertyType(property)
+        ? property.sharedPropertyType.apiName
+        : apiName,
+    })),
+  );
+  const resolvedProperty =
+    properties.find((property) => property.mappedApiName === mappedApiName) ??
+    properties.find(
+      (property) =>
+        withoutNamespace(property.mappedApiName) ===
+        withoutNamespace(mappedApiName),
+    );
+  if (resolvedProperty === undefined) {
+    return undefined;
+  }
+  return {
+    apiName: resolvedProperty.apiName,
+    interfaceType: resolvedProperty.interfaceType,
+    property: resolvedProperty.property,
+  };
 }
 
 /**
