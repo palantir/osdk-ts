@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Media } from "@osdk/api";
 import type React from "react";
 
 /** Which sidebar panel to display when the sidebar is open. */
@@ -85,7 +86,7 @@ export interface PdfCustomAnnotation extends PdfAnnotationBase {
 /** A single annotation positioned on a specific page of the PDF. */
 export type PdfAnnotation = PdfStandardAnnotation | PdfCustomAnnotation;
 
-/** Result passed to the {@link PdfViewerProps.onDownload} callback. */
+/** Result passed to the {@link BasePdfViewerProps.onDownload} callback. */
 export type PdfDownloadResult =
   | { success: true; filename: string }
   | { success: false; error: Error };
@@ -117,7 +118,7 @@ export interface PdfViewerHandle {
 
 /**
  * Options for {@link usePdfViewerInstance}.
- * Equivalent to {@link PdfViewerProps} minus the `className` rendering concern.
+ * Equivalent to {@link BasePdfViewerProps} minus the `className` rendering concern.
  */
 export interface PdfViewerInstanceOptions {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
@@ -172,8 +173,8 @@ export interface PdfViewerInstanceOptions {
  */
 export type PdfSource = string | ArrayBuffer | Uint8Array | Blob;
 
-/** Props for the {@link PdfViewer} component. */
-export interface PdfViewerProps {
+/** Props for the {@link BasePdfViewer} component. */
+export interface BasePdfViewerProps {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
   src: PdfSource;
   /** Annotations to overlay on the PDF */
@@ -270,4 +271,10 @@ export interface PdfViewerProps {
   onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
   /** Additional CSS class name for the root element */
   className?: string;
+}
+
+/** Props for the {@link PdfViewer} component. */
+export interface PdfViewerMediaProps extends Omit<BasePdfViewerProps, "src"> {
+  /** The Media object to fetch PDF contents from */
+  media: Media;
 }

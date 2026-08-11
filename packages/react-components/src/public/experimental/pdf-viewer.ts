@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-// PdfViewer
-export { BasePdfViewer } from "../../pdf-viewer/PdfViewer.js";
+// BasePdfViewer
+export { BasePdfViewer } from "../../pdf-viewer/BasePdfViewer.js";
 export type {
   AnnotationType,
+  BasePdfViewerProps,
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
@@ -26,9 +27,8 @@ export type {
   PdfRect,
   PdfSource,
   PdfTextHighlightEvent,
-  PdfViewerProps,
   SidebarMode,
-} from "../../pdf-viewer/types.js";
+} from "../../pdf-viewer/PdfViewerApi.js";
 
 // PdfViewer building blocks
 export {
@@ -83,7 +83,7 @@ export {
   type UsePdfViewerSearchResult,
 } from "../../pdf-viewer/hooks/usePdfViewerSearch.js";
 export { usePdfViewerSync } from "../../pdf-viewer/hooks/usePdfViewerSync.js";
-export { type OutlineItem } from "../../pdf-viewer/types.js";
+export { type OutlineItem } from "../../pdf-viewer/PdfViewerApi.js";
 
 // PdfViewer context
 export {
@@ -95,7 +95,7 @@ export {
 export type {
   PdfViewerHandle,
   PdfViewerInstanceOptions,
-} from "../../pdf-viewer/types.js";
+} from "../../pdf-viewer/PdfViewerApi.js";
 
 // PdfViewer hooks — composition
 export {
@@ -110,10 +110,10 @@ export {
 } from "../../pdf-viewer/hooks/usePdfViewerState.js";
 
 // PdfViewer (Media wrapper)
-import { PdfViewer as _PdfViewer } from "../../pdf-viewer/PdfRenderer.js";
+import { PdfViewer as _PdfViewer } from "../../pdf-viewer/PdfViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 export const PdfViewer: typeof _PdfViewer = withOsdkMetrics(
   _PdfViewer,
   "PdfViewer",
 );
-export type { PdfViewerMediaProps } from "../../pdf-viewer/PdfRenderer.js";
+export type { PdfViewerMediaProps } from "../../pdf-viewer/PdfViewerApi.js";

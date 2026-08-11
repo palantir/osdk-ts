@@ -19,21 +19,16 @@ import React from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import styles from "./MarkdownRenderer.module.css";
+import type { BaseMarkdownViewerProps } from "./MarkdownViewerApi.js";
 
-export interface MarkdownRendererProps {
-  /** Markdown text to render */
-  content: string;
-  /** Additional CSS class name for the root element */
-  className?: string;
-}
+import styles from "./BaseMarkdownViewer.module.css";
 
 const REMARK_PLUGINS = [remarkGfm];
 
-export function MarkdownRenderer({
+export function BaseMarkdownViewer({
   content,
   className,
-}: MarkdownRendererProps): React.ReactElement {
+}: BaseMarkdownViewerProps): React.ReactElement {
   const rootClassName = classnames(styles.container, className);
 
   return (

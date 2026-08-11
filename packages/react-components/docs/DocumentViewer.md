@@ -50,11 +50,11 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 | `media`                  | `Media`                                                                   | **Required.** The Media object to render                                                                                                                                      |
 | `className`              | `string`                                                                  | Additional CSS class name for the root element Defaults to `undefined`.                                                                                                       |
 | `mimeTypeOverride`       | `string`                                                                  | Override the auto-detected MIME type Defaults to `undefined`.                                                                                                                 |
-| `pdfViewerProps`         | `Partial<Omit<PdfViewerProps, "src" \| "className">>`                     | Props forwarded to BasePdfViewer when rendering PDF Defaults to `undefined`.                                                                                                  |
+| `pdfViewerProps`         | `Partial<Omit<BasePdfViewerProps, "src" \| "className">>`                 | Props forwarded to BasePdfViewer when rendering PDF Defaults to `undefined`.                                                                                                  |
 | `imageViewerProps`       | `Partial<Omit<BaseImageViewerProps, "src" \| "className">>`               | Props forwarded to BaseImageViewer when rendering images Defaults to `undefined`.                                                                                             |
 | `videoViewerProps`       | `Partial<Omit<BaseVideoViewerProps, "src" \| "className">>`               | Props forwarded to BaseVideoViewer when rendering video Defaults to `undefined`.                                                                                              |
-| `tiffRendererProps`      | `Partial<Omit<TiffRendererProps, "content" \| "className">>`              | Props forwarded to TiffRenderer when rendering TIFF Defaults to `undefined`.                                                                                                  |
-| `markdownRendererProps`  | `Partial<Omit<MarkdownRendererProps, "content" \| "className">>`          | Props forwarded to MarkdownRenderer when rendering markdown Defaults to `undefined`.                                                                                          |
+| `tiffViewerProps`        | `Partial<Omit<BaseTiffViewerProps, "content" \| "className">>`            | Props forwarded to BaseTiffViewer when rendering TIFF Defaults to `undefined`.                                                                                                |
+| `markdownViewerProps`    | `Partial<Omit<BaseMarkdownViewerProps, "content" \| "className">>`        | Props forwarded to BaseMarkdownViewer when rendering markdown Defaults to `undefined`.                                                                                        |
 | `spreadsheetViewerProps` | `Partial<Omit<BaseSpreadsheetViewerProps, "spreadsheet" \| "className">>` | Props forwarded to BaseSpreadsheetViewer when rendering a spreadsheet Defaults to `undefined`.                                                                                |
 | `emailViewerProps`       | `Partial<Omit<BaseEmailViewerProps, "email" \| "className">>`             | Props forwarded to BaseEmailViewer when rendering EML Defaults to `undefined`.                                                                                                |
 | `xmlViewerProps`         | `Partial<Omit<BaseXmlViewerProps, "content" \| "className">>`             | Props forwarded to BaseXmlViewer when rendering XML Defaults to `undefined`.                                                                                                  |
@@ -68,10 +68,10 @@ import { DocumentViewer } from "@osdk/react-components/experimental/document-vie
 | MIME type                                                                          | Viewer            |
 | ---------------------------------------------------------------------------------- | ----------------- |
 | `application/pdf`                                                                  | PdfViewer         |
-| `image/tiff`                                                                       | TiffRenderer      |
+| `image/tiff`                                                                       | TiffViewer        |
 | `image/png`, `image/jpeg`, `image/gif`, `image/svg+xml`, `image/webp`, `image/bmp` | ImageViewer       |
 | `video/*`                                                                          | VideoViewer       |
-| `text/markdown`, `text/x-markdown`                                                 | MarkdownRenderer  |
+| `text/markdown`, `text/x-markdown`                                                 | MarkdownViewer    |
 | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`                | SpreadsheetViewer |
 | `message/rfc822`                                                                   | EmailViewer       |
 | `application/xml`, `text/xml`                                                      | XmlViewer         |

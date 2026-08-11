@@ -22,9 +22,9 @@ import React, { useMemo } from "react";
 
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
-import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
-import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
-import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
+import { TiffViewer } from "../images/tiff-viewer/TiffViewer.js";
+import { MarkdownViewer } from "../markdown-viewer/MarkdownViewer.js";
+import { PdfViewer } from "../pdf-viewer/PdfViewer.js";
 import { assertUnreachable } from "../shared/assertUnreachable.js";
 import { SpreadsheetViewer } from "../spreadsheet-viewer/SpreadsheetViewer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
@@ -99,8 +99,8 @@ export function DocumentViewer({
   pdfViewerProps,
   imageViewerProps,
   videoViewerProps,
-  tiffRendererProps,
-  markdownRendererProps,
+  tiffViewerProps,
+  markdownViewerProps,
   spreadsheetViewerProps,
   emailViewerProps,
   xmlViewerProps,
@@ -130,16 +130,16 @@ export function DocumentViewer({
             media={media}
             className={rootClassName}
             enableTiffToPdf={enableTiffToPdf}
-            tiffRendererProps={tiffRendererProps}
+            tiffViewerProps={tiffViewerProps}
             pdfViewerProps={pdfViewerProps}
           />
         );
       }
       return (
-        <TiffViewerMedia
+        <TiffViewer
           media={media}
           className={rootClassName}
-          {...tiffRendererProps}
+          {...tiffViewerProps}
         />
       );
     case ViewerType.Image:
@@ -160,10 +160,10 @@ export function DocumentViewer({
       );
     case ViewerType.Markdown:
       return (
-        <MarkdownViewerMedia
+        <MarkdownViewer
           media={media}
           className={rootClassName}
-          {...markdownRendererProps}
+          {...markdownViewerProps}
         />
       );
     case ViewerType.Spreadsheet:

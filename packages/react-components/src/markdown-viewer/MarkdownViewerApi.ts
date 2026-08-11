@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import { useMemo } from "react";
+import type { Media } from "@osdk/api";
 
-import type { PdfAnnotation } from "../PdfViewerApi.js";
+export interface BaseMarkdownViewerProps {
+  /** Markdown text to render */
+  content: string;
+  /** Additional CSS class name for the root element */
+  className?: string;
+}
 
-/**
- * Groups a flat array of annotations by page number for efficient per-page lookup.
- */
-export function usePdfAnnotationsByPage(
-  annotations: PdfAnnotation[],
-): Record<number, PdfAnnotation[]> {
-  return useMemo(() => {
-    const result: Record<number, PdfAnnotation[]> = {};
-    for (const ann of annotations) {
-      (result[ann.page] ??= []).push(ann);
-    }
-    return result;
-  }, [annotations]);
+export interface MarkdownViewerMediaProps extends Omit<
+  BaseMarkdownViewerProps,
+  "content"
+> {
+  /** The Media object to fetch markdown contents from */
+  media: Media;
 }

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-// MarkdownRenderer
-export {
-  MarkdownRenderer,
-  type MarkdownRendererProps,
-} from "../../markdown-renderer/MarkdownRenderer.js";
+// BaseMarkdownViewer
+export { BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
+export type {
+  BaseMarkdownViewerProps,
+  MarkdownViewerMediaProps,
+} from "../../markdown-viewer/MarkdownViewerApi.js";
 
-// MarkdownViewerMedia (Media wrapper)
-import { MarkdownViewerMedia as _MarkdownViewerMedia } from "../../markdown-renderer/MarkdownViewerMedia.js";
+// MarkdownViewer (Media wrapper)
+import { MarkdownViewer as _MarkdownViewer } from "../../markdown-viewer/MarkdownViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const MarkdownViewerMedia: typeof _MarkdownViewerMedia = withOsdkMetrics(
-  _MarkdownViewerMedia,
-  "MarkdownViewerMedia",
+export const MarkdownViewer: typeof _MarkdownViewer = withOsdkMetrics(
+  _MarkdownViewer,
+  "MarkdownViewer",
 );
-export type { MarkdownViewerMediaProps } from "../../markdown-renderer/MarkdownViewerMedia.js";

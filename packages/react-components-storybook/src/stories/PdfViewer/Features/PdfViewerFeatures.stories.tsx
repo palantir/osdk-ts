@@ -18,9 +18,9 @@
 
 import type { Media } from "@osdk/api";
 import type {
+  BasePdfViewerProps,
   PdfTextHighlightEvent,
   PdfViewerMediaProps,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
@@ -139,11 +139,11 @@ const meta: Meta<PdfViewerMediaProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithPdfUrl: StoryObj<PdfViewerProps> = {
+export const WithPdfUrl: StoryObj<BasePdfViewerProps> = {
   args: {
     src: SAMPLE_PDF_URL,
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -187,7 +187,7 @@ function BlobViewerDemo({ url }: { url: string }) {
   );
 }
 
-export const WithBlob: StoryObj<PdfViewerProps> = {
+export const WithBlob: StoryObj<BasePdfViewerProps> = {
   render: () => <BlobViewerDemo url={SAMPLE_PDF_URL} />,
   parameters: {
     docs: {
@@ -332,11 +332,11 @@ export const WithOutlineSidebar: Story = {
   },
 };
 
-export const Loading: StoryObj<PdfViewerProps> = {
+export const Loading: StoryObj<BasePdfViewerProps> = {
   args: {
     src: "/loading.pdf",
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -352,11 +352,11 @@ export const Loading: StoryObj<PdfViewerProps> = {
   },
 };
 
-export const Error: StoryObj<PdfViewerProps> = {
+export const Error: StoryObj<BasePdfViewerProps> = {
   args: {
     src: "/error.pdf",
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>
@@ -393,7 +393,7 @@ function HighlightModeDemo({
   );
 }
 
-export const WithHighlightMode: StoryObj<PdfViewerProps> = {
+export const WithHighlightMode: StoryObj<BasePdfViewerProps> = {
   args: {
     onTextHighlight: fn(),
     onHighlightDelete: fn(),
@@ -455,13 +455,13 @@ export const WithEmbeddedOutline: Story = {
   },
 };
 
-export const InteractiveForm: StoryObj<PdfViewerProps> = {
+export const InteractiveForm: StoryObj<BasePdfViewerProps> = {
   args: {
     src: `${import.meta.env.BASE_URL}interactive-form-pdf.pdf`,
     onFormSubmit: fn(),
     onFormChange: fn(),
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>

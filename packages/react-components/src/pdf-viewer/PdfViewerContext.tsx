@@ -35,7 +35,7 @@ import type {
   PdfAnnotation,
   PdfViewerInstanceOptions,
   SidebarMode,
-} from "./types.js";
+} from "./PdfViewerApi.js";
 
 /** The shape of the value provided by {@link PdfViewerProvider}. */
 export interface PdfViewerContextValue {

@@ -15,23 +15,14 @@
  */
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
-import type { Media } from "@osdk/api";
 import classnames from "classnames";
 import React from "react";
 
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
-import { MarkdownRenderer } from "./MarkdownRenderer.js";
-import type { MarkdownRendererProps } from "./MarkdownRenderer.js";
+import { BaseMarkdownViewer } from "./BaseMarkdownViewer.js";
+import type { MarkdownViewerMediaProps } from "./MarkdownViewerApi.js";
 
-import styles from "./MarkdownRenderer.module.css";
-
-export interface MarkdownViewerMediaProps extends Omit<
-  MarkdownRendererProps,
-  "content"
-> {
-  /** The Media object to fetch markdown contents from */
-  media: Media;
-}
+import styles from "./BaseMarkdownViewer.module.css";
 
 // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
@@ -39,9 +30,9 @@ const transformToText = async (response: Response): Promise<string> => {
   return response.text();
 };
 
-export function MarkdownViewerMedia({
+export function MarkdownViewer({
   media,
-  ...markdownRendererProps
+  ...baseMarkdownViewerProps
 }: MarkdownViewerMediaProps): React.ReactElement {
   const {
     data: content,
@@ -51,7 +42,7 @@ export function MarkdownViewerMedia({
 
   const rootClassName = classnames(
     styles.container,
-    markdownRendererProps.className,
+    baseMarkdownViewerProps.className,
   );
 
   return (
@@ -69,7 +60,7 @@ export function MarkdownViewerMedia({
         </div>
       )}
       {content != null && (
-        <MarkdownRenderer content={content} {...markdownRendererProps} />
+        <BaseMarkdownViewer content={content} {...baseMarkdownViewerProps} />
       )}
     </div>
   );

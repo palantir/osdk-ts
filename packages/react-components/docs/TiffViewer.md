@@ -1,4 +1,4 @@
-# TiffRenderer
+# TiffViewer
 
 A React component for rendering TIFF images from raw byte arrays. Also provides an OSDK Media wrapper for fetching TIFF contents directly from Foundry.
 
@@ -6,35 +6,35 @@ A React component for rendering TIFF images from raw byte arrays. Also provides 
 
 ```tsx
 import {
-  TiffRenderer,
-  TiffViewerMedia,
-} from "@osdk/react-components/experimental/tiff-renderer";
+  BaseTiffViewer,
+  TiffViewer,
+} from "@osdk/react-components/experimental/tiff-viewer";
 ```
 
-- **`TiffViewerMedia`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `TiffRenderer`.
-- **`TiffRenderer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
+- **`TiffViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `BaseTiffViewer`.
+- **`BaseTiffViewer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
 
 ## Usage
 
 ### With OSDK Media
 
 ```tsx
-import { TiffViewerMedia } from "@osdk/react-components/experimental/tiff-renderer";
+import { TiffViewer } from "@osdk/react-components/experimental/tiff-viewer";
 
-<TiffViewerMedia media={scan.tiffImage} />;
+<TiffViewer media={scan.tiffImage} />;
 ```
 
 ### With raw bytes
 
 ```tsx
-import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-viewer";
 
-<TiffRenderer content={tiffBytes} />;
+<BaseTiffViewer content={tiffBytes} />;
 ```
 
 ## Props
 
-### `TiffRendererProps`
+### `BaseTiffViewerProps`
 
 | Prop      | Type         | Default     | Description                         |
 | --------- | ------------ | ----------- | ----------------------------------- |

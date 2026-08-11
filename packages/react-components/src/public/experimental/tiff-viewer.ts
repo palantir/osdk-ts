@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-// TiffRenderer
-export { TiffRenderer } from "../../images/tiff-renderer/TiffRenderer.js";
-export type { TiffRendererProps } from "../../images/tiff-renderer/types.js";
+// BaseTiffViewer
+export { BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
+export type {
+  BaseTiffViewerProps,
+  TiffViewerMediaProps,
+} from "../../images/tiff-viewer/TiffViewerApi.js";
 
-// TiffViewerMedia (Media wrapper)
-import { TiffViewerMedia as _TiffViewerMedia } from "../../images/tiff-renderer/TiffViewerMedia.js";
+// TiffViewer (Media wrapper)
+import { TiffViewer as _TiffViewer } from "../../images/tiff-viewer/TiffViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const TiffViewerMedia: typeof _TiffViewerMedia = withOsdkMetrics(
-  _TiffViewerMedia,
-  "TiffViewerMedia",
+export const TiffViewer: typeof _TiffViewer = withOsdkMetrics(
+  _TiffViewer,
+  "TiffViewer",
 );
-export type { TiffViewerMediaProps } from "../../images/tiff-renderer/TiffViewerMedia.js";

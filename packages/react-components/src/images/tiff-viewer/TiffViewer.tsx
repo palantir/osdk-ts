@@ -15,24 +15,13 @@
  */
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
-import type { Media } from "@osdk/api";
 import React from "react";
 
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
-import { TiffRenderer } from "./TiffRenderer.js";
-import type { TiffRendererProps } from "./types.js";
+import { BaseTiffViewer } from "./BaseTiffViewer.js";
+import type { TiffViewerMediaProps } from "./TiffViewerApi.js";
 
-import styles from "./TiffRenderer.module.css";
-
-export interface TiffViewerMediaProps extends Omit<
-  TiffRendererProps,
-  "content"
-> {
-  /** The Media object to fetch TIFF contents from */
-  media: Media;
-  /** Additional CSS class name for the root element */
-  className?: string;
-}
+import styles from "./BaseTiffViewer.module.css";
 
 const transformToUint8Array = async (
   response: Response,
@@ -41,10 +30,10 @@ const transformToUint8Array = async (
   return new Uint8Array(buffer);
 };
 
-export function TiffViewerMedia({
+export function TiffViewer({
   media,
   className,
-  ...tiffRendererProps
+  ...baseTiffViewerProps
 }: TiffViewerMediaProps): React.ReactElement {
   const {
     data: content,
@@ -67,7 +56,7 @@ export function TiffViewerMedia({
         </div>
       )}
       {content != null && (
-        <TiffRenderer content={content} {...tiffRendererProps} />
+        <BaseTiffViewer content={content} {...baseTiffViewerProps} />
       )}
     </div>
   );

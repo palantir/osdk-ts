@@ -17,10 +17,10 @@
 /* cspell:disable */
 
 import type {
+  BasePdfViewerProps,
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
@@ -379,7 +379,7 @@ function AnnotationExplorerDemo({ src }: { src: string }): React.ReactElement {
   );
 }
 
-const meta: Meta<PdfViewerProps> = {
+const meta: Meta<BasePdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
   tags: ["beta"],
