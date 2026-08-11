@@ -147,37 +147,41 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   the rendered list.
    *
    * @default "uncontrolled"
+   * @deprecated Going away; visibility will always be managed internally.
+   * Seed it with `isVisible` on each `filterDefinitions` entry and observe
+   * changes with `onFilterVisibilityChange`.
    */
   addFilterMode?: "controlled" | "uncontrolled";
 
   /**
-   * Called when a filter is added (shown).
-   *
-   * In uncontrolled mode, this fires when a user selects a hidden filter
-   * from the "Add filter" popover.
+   * Called after a filter is shown from the built-in "Add filter" popover.
    *
    * @param filterKey The key of the added filter
-   * @param newDefinitions The current filter definitions array
+   * @param newDefinitions Deprecated. The `filterDefinitions` you passed in,
+   * unchanged — not the post-add state. Use `onFilterVisibilityChange`.
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
+    /** @deprecated Use `onFilterVisibilityChange`. */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
-   * Called when a filter is removed (hidden).
-   *
-   * In uncontrolled mode, this fires as a notification after the filter
-   * is hidden internally.
+   * Called after a filter's remove button is clicked, once the filter is
+   * hidden and its state cleared.
    *
    * @param filterKey The key of the removed filter
    */
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
-   * Called when filter visibility or ordering changes, i.e. when filters
-   * are reordered, or (in uncontrolled mode) added or
-   * removed via the built-in show/remove controls.
+   * Called when filter visibility or ordering changes, i.e. when filters are
+   * reordered, added or removed via the built-in show/remove controls, or
+   * reset.
+   *
+   * Visible filters come first, in display order, followed by the hidden ones.
+   * Persist this array and feed it back as the order and `isVisible` of
+   * `filterDefinitions` to make reordering survive a remount.
    *
    * @param newStates The filters in current display order with their visibility state
    */
@@ -189,10 +193,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Enable drag-and-drop reordering of filters.
-   * When true, drag handles are rendered and filters can be reordered.
-   * Reorder state is managed internally; consumers who need to track order
-   * should use controlled filterDefinitions.
+   * Enable drag-and-drop reordering of filters. When `true`, drag handles are
+   * rendered and filters can be reordered.
+   *
+   * Reorder state is managed internally; persist `onFilterVisibilityChange` to
+   * track order across remounts.
+   *
+   * @default false
    */
   enableSorting?: boolean;
 
@@ -234,12 +241,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   className?: string;
 
   /**
-   * Custom render function for the "Add filter" button.
-   *
-   * - In uncontrolled mode: customizes the trigger element for the built-in
-   *   add-filter popover. The popover behavior is handled automatically.
-   * - In controlled mode: replaces the entire add-filter button area.
-   *   The consumer is responsible for all add-filter behavior.
+   * Custom render function for the "Add filter" button. Customizes the trigger
+   * element for the built-in add-filter popover; the popover behavior is
+   * handled automatically.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }

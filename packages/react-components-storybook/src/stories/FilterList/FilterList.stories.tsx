@@ -233,25 +233,25 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
     onFilterAdded: {
       description:
-        "Called when a filter is added. If provided, users can add filters.",
+        "Fires after a filter is shown from the built-in Add filter popover.",
       control: false,
       table: { category: "Events" },
     },
     onFilterRemoved: {
       description:
-        "Called when a filter is removed. If provided, users can remove filters.",
+        "Fires after a filter's remove button is clicked, once the filter is hidden and its state cleared.",
       control: false,
       table: { category: "Events" },
     },
     onFilterVisibilityChange: {
       description:
-        "Called when filter visibility or ordering changes (reorder, add, remove).",
+        "Fires when filters are reordered, added or removed via the built-in controls, or reset. Visible filters first in display order, then hidden.",
       control: false,
       table: { category: "Events" },
     },
     addFilterMode: {
       description:
-        'Controls how filter add/remove is managed. "uncontrolled" manages visibility internally; "controlled" leaves it to the consumer.',
+        "Deprecated — going away; visibility will always be managed internally. Seed it with isVisible on each definition and observe changes with onFilterVisibilityChange.",
       control: "select",
       options: ["controlled", "uncontrolled"],
       table: {
