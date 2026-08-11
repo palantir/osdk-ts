@@ -7,7 +7,6 @@ const STEPS: INextStep[] = [
   {{^if osdkPackage}}
   {
     icon: "cube",
-    id: "configure-sdks",
     title: "Configure your Ontology and Platform SDKs",
     subtitle: (
       <span>
@@ -21,7 +20,6 @@ const STEPS: INextStep[] = [
   {{/if}}
   {
     icon: "group-item",
-    id: "react-components",
     title: (
       <span>
         Develop with OSDK React components{" "}
@@ -45,7 +43,6 @@ const STEPS: INextStep[] = [
   {{^if applicationUrl}}
   {
     icon: "cloud",
-    id: "request-subdomain",
     title: "Request a subdomain to host your application with Foundry",
     subtitle: (
       <span>
@@ -60,7 +57,6 @@ const STEPS: INextStep[] = [
   {{/if}}
   {
     icon: "rocket-slant",
-    id: "deploy-application",
     title: "Deploy your application",
     subtitle: (
       <span>
@@ -83,9 +79,9 @@ function NextSteps(): React.ReactElement {
   return (
     <div className={css.nextSteps}>
       <H5 className={css.nextStepsHeader}>Next steps</H5>
-      {STEPS.map((step) => (
+      {STEPS.map((step, index) => (
         <NextStep
-          key={step.id}
+          key={index}
           icon={step.icon}
           title={step.title}
           subtitle={step.subtitle}
@@ -97,7 +93,6 @@ function NextSteps(): React.ReactElement {
 
 interface INextStep {
   icon: IconName;
-  id: string;
   title: React.ReactNode;
   subtitle: React.ReactElement;
 }
