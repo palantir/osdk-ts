@@ -350,26 +350,17 @@ export const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
       }),
     },
   },
-];
-
-/**
- * Custom columns have no ontology property behind them, so they need
- * `getCellValue` to have a value at all and `dataType` to pick an editor.
- * Without `dataType` the middle column below would get a text input and
- * commit `"7"` rather than `7`.
- */
-export const customEditableColumnDefinitions: ColumnDefinition<Employee>[] = [
-  {
-    locator: { type: "property", id: "fullName" },
-  },
+  // Custom columns have no ontology property behind them, so `getCellValue`
+  // supplies the value and `dataType` picks the editor. Without `dataType`
+  // this one would get a text input and commit "12345" instead of 12345.
   {
     locator: { type: "custom", id: "reportsTo" },
-    columnName: "Reports to (#)",
-    // Not a property: falls back to the mentor when there's no lead
+    columnName: "Reports To (#)",
     getCellValue: (employee: Osdk.Instance<Employee>) =>
       employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
     dataType: "integer",
     editable: true,
+    orderable: false,
   },
   {
     locator: { type: "custom", id: "contact" },
@@ -380,6 +371,7 @@ export const customEditableColumnDefinitions: ColumnDefinition<Employee>[] = [
         .join(" · "),
     dataType: "string",
     editable: true,
+    orderable: false,
     // The third argument is what getCellValue returned, so there's no need to
     // recompute it here.
     renderCell: (

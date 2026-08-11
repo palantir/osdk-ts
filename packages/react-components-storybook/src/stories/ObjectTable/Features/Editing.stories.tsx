@@ -31,7 +31,6 @@ import {
 
 import { Employee } from "../../../types/Employee.js";
 import {
-  customEditableColumnDefinitions,
   editableColumnDefinitions,
   objectTableMeta,
   rowContaining,
@@ -137,6 +136,28 @@ export const EditableTable: Story = {
           item === false ? "No" : item === true ? "Yes" : "No Value",
       }),
     },
+  },
+  // Custom columns: getCellValue supplies the value, dataType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    dataType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    dataType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
   },
 ];
 
@@ -252,6 +273,28 @@ return (
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({ columnId: "firstFullTimeStartDate" }),
       ),
+    );
+
+    // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
+    // property, so their editors come from `dataType`: the integer column
+    // renders a number input and commits a number, not the string a
+    // dataType-less custom column would have produced.
+    const reportsToInput = within(cellsOf()[7]).getByRole("spinbutton");
+    await expect(reportsToInput).toHaveAttribute("type", "number");
+    await userEvent.click(reportsToInput);
+    await userEvent.clear(reportsToInput);
+    await userEvent.type(reportsToInput, "4242");
+    await userEvent.tab();
+    await waitFor(() =>
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: "reportsTo", newValue: 4242 }),
+      ),
+    );
+
+    // The string-typed custom column stays a text input.
+    await expect(within(cellsOf()[8]).getByRole("textbox")).toHaveAttribute(
+      "type",
+      "text",
     );
 
     // Cancel exits edit mode; the "Edit Table" button returns.
@@ -622,6 +665,28 @@ export const WithSubmitEditsButton: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, dataType picks the editor
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports To (#)",
+    getCellValue: (employee) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    dataType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    dataType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
+  },
 ];
 
 return (
@@ -813,72 +878,6 @@ return (
       expect(
         screen.queryByRole("option", { name: "Finance" }),
       ).not.toBeInTheDocument(),
-    );
-  },
-};
-
-export const CustomEditableColumns: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: customEditableColumnDefinitions,
-    editMode: "always" as const,
-    onCellValueChanged: fn(),
-  } as EmployeeTableProps,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Custom columns have no ontology property behind them. `getCellValue` " +
-          "gives them a value, and `dataType` tells the table which editor to " +
-          "use and how to parse what the user commits — without it a numeric " +
-          "custom column gets a text input and commits a string.",
-      },
-      source: {
-        code: `const columnDefinitions = [
-  { locator: { type: "property", id: "fullName" } },
-  {
-    locator: { type: "custom", id: "reportsTo" },
-    columnName: "Reports to (#)",
-    getCellValue: (employee) =>
-      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
-    dataType: "integer",
-    editable: true,
-  },
-  {
-    locator: { type: "custom", id: "contact" },
-    columnName: "Contact",
-    getCellValue: (employee) =>
-      [employee.emailPrimaryWork, employee.jobTitle]
-        .filter((part) => part != null)
-        .join(" · "),
-    dataType: "string",
-    editable: true,
-    renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
-  },
-];`,
-      },
-    },
-  },
-  // dataType: "integer" must reach the editor, so the derived column renders a
-  // number input rather than the text input every custom column got before.
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await canvas.findByText(TARGET_DATA);
-
-    const row = rowContaining(canvas.getByText(TARGET_DATA));
-    const cells = within(row).getAllByRole("cell");
-
-    await expect(cells[1]).toHaveAttribute("data-editable", "true");
-    await expect(within(cells[1]).getByRole("spinbutton")).toHaveAttribute(
-      "type",
-      "number",
-    );
-
-    // The string column stays a text input.
-    await expect(within(cells[2]).getByRole("textbox")).toHaveAttribute(
-      "type",
-      "text",
     );
   },
 };
