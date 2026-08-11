@@ -477,6 +477,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
     this.objectTypeRids = BiMapImpl.create();
+
+    Object.entries(importedTypes.OBJECT_TYPE)
+      .filter(([_apiName, object]) => object.ridHint !== undefined)
+      .map(([apiName, object]) =>
+        this.objectTypeRids.put(
+          ReadableIdGenerator.getForObjectType(object.apiName),
+          object.ridHint!,
+        ),
+      );
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
@@ -497,15 +506,6 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.linkTypeRids = BiMapImpl.create();
     this.groupIds = BiMapImpl.create();
     this.objectTypeIds = BiMapImpl.create();
-
-    Object.values(importedTypes.OBJECT_TYPE).forEach((objectType) => {
-      if (objectType.ridHint !== undefined) {
-        this.objectTypeRids.put(
-          ReadableIdGenerator.getForObjectType(objectType.apiName),
-          objectType.ridHint,
-        );
-      }
-    });
   }
 
   hashString(input: string): string {
