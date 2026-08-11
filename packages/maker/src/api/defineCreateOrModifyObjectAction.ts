@@ -49,7 +49,6 @@ export function defineCreateOrModifyObjectAction(
     (id) =>
       !Object.keys(def.nonParameterMappings ?? {}).includes(id) &&
       !def.excludedProperties?.includes(id) &&
-      !isStruct(getProperty(def.objectType, id)?.type!) &&
       id !== def.objectType.primaryKeyPropertyApiName &&
       !propertiesWithDerivedDatasources.includes(id),
   );

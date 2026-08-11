@@ -34,7 +34,6 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -49,7 +48,6 @@ export function defineCreateObjectAction(
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      !isStruct(getProperty(def.objectType, id)?.type!) &&
       !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);

@@ -18,6 +18,7 @@ import type {
   OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
+  OntologyIrStructFieldBaseParameterType,
   ParameterId,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -73,6 +74,7 @@ import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
 } from "./properties/PropertyTypeType.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
@@ -304,7 +306,6 @@ export function isPropertyParameter(
   return (
     getPropertyKeys(def.objectType).includes(name) &&
     !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
-    !isStruct(type) &&
     !def.excludedProperties?.includes(name)
   );
 }
@@ -354,8 +355,14 @@ export function createParameters(
                       )),
                 required:
                   def.parameterConfiguration?.[id].required ??
-                  propertyMetadata?.nullability?.noNulls ??
-                  false,
+                  ((propertyMetadata?.array ?? false)
+                    ? {
+                        listLength: propertyMetadata?.nullability
+                          ?.noEmptyCollections
+                          ? { min: 1 }
+                          : {},
+                      }
+                    : (propertyMetadata?.nullability?.noNulls ?? false)),
               }
             : {
                 required:
@@ -932,7 +939,7 @@ function extractAllowedValuesFromPropertyType(
         case "string":
           return { type: "text" };
         case "struct":
-          throw new Error("Structs are not supported yet");
+          return { type: "struct" };
         default:
           throw new Error("Unknown type");
       }
@@ -956,7 +963,7 @@ function extractActionParameterType(
       case "string":
         return maybeAddList("string", pt);
       case "struct":
-        throw new Error("Structs are not supported yet");
+        return extractStructActionParameterType(typeType, pt.array ?? false);
       default:
         throw new Error(`Unknown type`);
     }
@@ -979,6 +986,59 @@ function extractActionParameterType(
       return maybeAddList("geotimeSeriesReference", pt);
     default:
       throw new Error("Unknown type");
+  }
+}
+
+function extractStructActionParameterType(
+  type: PropertyTypeTypeStruct,
+  isList: boolean,
+): ActionParameterType {
+  const structFieldTypes = Object.fromEntries(
+    Object.entries(type.structDefinition).map(([apiName, fieldDefinition]) => [
+      apiName,
+      extractStructFieldParameterType(
+        typeof fieldDefinition === "object" && "fieldType" in fieldDefinition
+          ? fieldDefinition.fieldType
+          : fieldDefinition,
+      ),
+    ]),
+  );
+  return isList
+    ? { type: "structList", structList: { structFieldTypes } }
+    : { type: "struct", struct: { structFieldTypes } };
+}
+
+function extractStructFieldParameterType(
+  type: Exclude<PropertyTypeType, PropertyTypeTypeStruct>,
+): OntologyIrStructFieldBaseParameterType {
+  const typeName = typeof type === "object" ? type.type : type;
+  switch (typeName) {
+    case "boolean":
+      return { type: "boolean", boolean: {} };
+    case "byte":
+    case "integer":
+    case "short":
+      return { type: "integer", integer: {} };
+    case "long":
+      return { type: "long", long: {} };
+    case "decimal":
+    case "double":
+    case "float":
+      return { type: "double", double: {} };
+    case "string":
+      return { type: "string", string: {} };
+    case "geopoint":
+      return { type: "geohash", geohash: {} };
+    case "geoshape":
+      return { type: "geoshape", geoshape: {} };
+    case "timestamp":
+      return { type: "timestamp", timestamp: {} };
+    case "date":
+      return { type: "date", date: {} };
+    default:
+      throw new Error(
+        `Property type ${typeName} is not supported for struct action parameter fields`,
+      );
   }
 }
 

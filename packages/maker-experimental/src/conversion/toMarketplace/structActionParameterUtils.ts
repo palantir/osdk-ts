@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import type { OntologyIrStructFieldBaseParameterType } from "@osdk/client.unstable";
+import type { ActionParameter } from "@osdk/maker";
 
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { extractAllowedValues } from "./convertActionHelpers.js";
-
-describe("extractAllowedValues", () => {
-  it("converts struct allowed values", () => {
-    expect(
-      extractAllowedValues({ type: "struct" }, {} as OntologyRidGenerator),
-    ).toEqual({
-      type: "struct",
-      struct: {
-        type: "delegateToAllowedStructFieldValues",
-        delegateToAllowedStructFieldValues: {},
-      },
-    });
-  });
-});
+export function getStructFieldTypes(
+  parameter: ActionParameter,
+): Record<string, OntologyIrStructFieldBaseParameterType> | undefined {
+  if (typeof parameter.type === "string") {
+    return undefined;
+  }
+  switch (parameter.type.type) {
+    case "struct":
+      return parameter.type.struct.structFieldTypes;
+    case "structList":
+      return parameter.type.structList.structFieldTypes;
+    default:
+      return undefined;
+  }
+}

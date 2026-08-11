@@ -16,11 +16,20 @@
 
 import type {
   ActionValidation,
+  AllowedStructFieldValues,
+  OntologyIrStructFieldBaseParameterType,
+  ParameterRenderHint,
   ParameterRequiredConfiguration,
+  StructFieldConditionalOverride,
+  StructFieldConditionalValidationBlock,
+  StructFieldValidationBlockOverride,
 } from "@osdk/client.unstable";
 import type {
+  ActionParameter,
+  ActionParameterAllowedValues,
   ActionParameterRequirementConstraint,
   ActionType,
+  StructFieldValidationConfiguration,
 } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -31,7 +40,9 @@ import {
 } from "./convertActionHelpers.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
+import { convertConditionDefinition } from "./convertConditionDefinition.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
+import { getStructFieldTypes } from "./structActionParameterUtils.js";
 
 // Helper function to recursively scan conditions and register groups
 function registerGroupsFromCondition(
@@ -178,7 +189,11 @@ export function convertActionValidation(
                   action.parameters,
                 ),
               ) ?? [],
-            structFieldValidations: p.validation.structFieldValidations ?? {},
+            structFieldValidations: convertStructFieldValidations(
+              p,
+              ridGenerator,
+              action.parameters,
+            ),
           },
         ];
       }),
@@ -214,6 +229,281 @@ export function convertActionValidation(
         ]),
       ),
     },
+  };
+}
+
+function convertStructFieldValidations(
+  parameter: ActionParameter,
+  ridGenerator: OntologyRidGenerator,
+  actionParameters?: ActionParameter[],
+): Record<string, StructFieldConditionalValidationBlock> {
+  const configuredValidations =
+    parameter.validation.structFieldValidations ?? {};
+  const structFieldTypes = getStructFieldTypes(parameter);
+  if (structFieldTypes === undefined) {
+    if (Object.keys(configuredValidations).length > 0) {
+      throw new Error(
+        `Parameter ${parameter.id} defines struct field validations but is not a struct parameter`,
+      );
+    }
+    return {};
+  }
+  validateStructParameterConfiguration(parameter);
+
+  for (const fieldApiName of Object.keys(configuredValidations)) {
+    if (structFieldTypes[fieldApiName] === undefined) {
+      throw new Error(
+        `Struct field validation ${fieldApiName} does not match a field on parameter ${parameter.id}`,
+      );
+    }
+  }
+
+  return Object.fromEntries(
+    Object.entries(structFieldTypes).map(([fieldApiName, fieldType]) => {
+      const configuration = configuredValidations[fieldApiName] ?? {};
+
+      const allowedValues =
+        configuration.allowedValues ?? inferStructFieldAllowedValues(fieldType);
+      validateStructFieldAllowedValues(
+        parameter.id,
+        fieldApiName,
+        fieldType,
+        allowedValues,
+      );
+      return [
+        fieldApiName,
+        {
+          conditionalOverrides:
+            configuration.conditionalOverrides?.map((override) =>
+              convertStructFieldConditionalOverride(
+                override,
+                configuration,
+                parameter.id,
+                fieldApiName,
+                fieldType,
+                ridGenerator,
+                actionParameters,
+              ),
+            ) ?? [],
+          defaultValidation: {
+            display: {
+              renderHint:
+                configuration.renderHint ??
+                inferStructFieldRenderHint(fieldType, allowedValues),
+              visibility: convertActionVisibility(
+                configuration.defaultVisibility,
+              ),
+            },
+            validation: {
+              allowedValues: extractAllowedStructFieldValues(
+                allowedValues,
+                ridGenerator,
+              ),
+              required: convertParameterRequirementConstraint(
+                configuration.required ?? false,
+              ),
+            },
+          },
+        },
+      ];
+    }),
+  );
+}
+
+function validateStructParameterConfiguration(
+  parameter: ActionParameter,
+): void {
+  if (parameter.validation.allowedValues?.type !== "struct") {
+    throw new Error(
+      `Struct parameter ${parameter.id} must use struct allowed values`,
+    );
+  }
+  if (parameter.defaultValue !== undefined) {
+    throw new Error(
+      `Struct parameter ${parameter.id} cannot define a top-level default value; configure prefills on individual struct fields instead`,
+    );
+  }
+  if (
+    parameter.validation.conditionalOverrides?.some(
+      (override) => override.type === "defaultValue",
+    )
+  ) {
+    throw new Error(
+      `Struct parameter ${parameter.id} cannot define a top-level default value override; configure prefills on individual struct fields instead`,
+    );
+  }
+}
+
+function inferStructFieldAllowedValues(
+  fieldType: OntologyIrStructFieldBaseParameterType,
+): ActionParameterAllowedValues {
+  switch (fieldType.type) {
+    case "boolean":
+      return { type: "boolean" };
+    case "integer":
+    case "long":
+    case "double":
+      return { type: "range" };
+    case "string":
+      return { type: "text" };
+    case "date":
+    case "timestamp":
+      return { type: "datetime" };
+    case "geohash":
+      return { type: "geohash" };
+    case "geoshape":
+      return { type: "geoshape" };
+    case "objectReference":
+      return { type: "objectQuery" };
+  }
+}
+
+function validateStructFieldAllowedValues(
+  parameterId: string,
+  fieldApiName: string,
+  fieldType: OntologyIrStructFieldBaseParameterType,
+  allowedValues: ActionParameterAllowedValues,
+): void {
+  const compatibleTypes = getCompatibleAllowedValueTypes(fieldType);
+  if (!compatibleTypes.has(allowedValues.type)) {
+    throw new Error(
+      `Allowed values ${allowedValues.type} are not compatible with struct field ${parameterId}.${fieldApiName} of type ${fieldType.type}`,
+    );
+  }
+}
+
+function getCompatibleAllowedValueTypes(
+  fieldType: OntologyIrStructFieldBaseParameterType,
+): ReadonlySet<ActionParameterAllowedValues["type"]> {
+  switch (fieldType.type) {
+    case "boolean":
+      return new Set(["boolean", "oneOf"]);
+    case "integer":
+    case "long":
+    case "double":
+      return new Set(["range", "oneOf"]);
+    case "string":
+      return new Set(["text", "oneOf"]);
+    case "date":
+    case "timestamp":
+      return new Set(["datetime", "oneOf"]);
+    case "geohash":
+      return new Set(["geohash"]);
+    case "geoshape":
+      return new Set(["geoshape"]);
+    case "objectReference":
+      return new Set(["objectQuery"]);
+  }
+}
+
+function inferStructFieldRenderHint(
+  fieldType: OntologyIrStructFieldBaseParameterType,
+  allowedValues: ActionParameterAllowedValues,
+): ParameterRenderHint {
+  if (allowedValues.type === "oneOf") {
+    return { type: "dropdown", dropdown: {} };
+  }
+  switch (fieldType.type) {
+    case "boolean":
+      return { type: "checkbox", checkbox: {} };
+    case "integer":
+    case "long":
+    case "double":
+      return { type: "numericInput", numericInput: {} };
+    case "string":
+    case "geohash":
+    case "geoshape":
+      return { type: "textInput", textInput: {} };
+    case "date":
+    case "timestamp":
+      return { type: "dateTimePicker", dateTimePicker: {} };
+    case "objectReference":
+      return { type: "dropdown", dropdown: {} };
+  }
+}
+
+function extractAllowedStructFieldValues(
+  allowedValues: ActionParameterAllowedValues,
+  ridGenerator: OntologyRidGenerator,
+): AllowedStructFieldValues {
+  const converted = extractAllowedValues(allowedValues, ridGenerator);
+  switch (converted.type) {
+    case "oneOf":
+    case "range":
+    case "text":
+    case "datetime":
+    case "boolean":
+    case "geohash":
+    case "geoshape":
+    case "objectQuery":
+      return converted as unknown as AllowedStructFieldValues;
+    default:
+      throw new Error(
+        `Allowed values ${converted.type} are not supported for struct fields`,
+      );
+  }
+}
+
+function convertStructFieldConditionalOverride(
+  override: NonNullable<
+    StructFieldValidationConfiguration["conditionalOverrides"]
+  >[number],
+  configuration: StructFieldValidationConfiguration,
+  parameterId: string,
+  fieldApiName: string,
+  fieldType: OntologyIrStructFieldBaseParameterType,
+  ridGenerator: OntologyRidGenerator,
+  actionParameters?: ActionParameter[],
+): StructFieldConditionalOverride {
+  let structFieldBlockOverride: StructFieldValidationBlockOverride;
+  switch (override.type) {
+    case "required":
+      structFieldBlockOverride = {
+        type: "parameterRequired",
+        parameterRequired: {
+          required: convertParameterRequirementConstraint(
+            configuration.required !== true,
+          ),
+        },
+      };
+      break;
+    case "visibility":
+    case "disabled":
+      structFieldBlockOverride = {
+        type: "visibility",
+        visibility: {
+          visibility: convertActionVisibility(
+            override.then ??
+              (configuration.defaultVisibility === "editable"
+                ? override.type === "disabled"
+                  ? "disabled"
+                  : "hidden"
+                : "editable"),
+          ),
+        },
+      };
+      break;
+    case "constraint":
+      validateStructFieldAllowedValues(
+        parameterId,
+        fieldApiName,
+        fieldType,
+        override.constraint,
+      );
+      structFieldBlockOverride = {
+        type: "allowedValues",
+        allowedValues: {
+          allowedValues: extractAllowedStructFieldValues(
+            override.constraint,
+            ridGenerator,
+          ),
+        },
+      };
+      break;
+  }
+  return {
+    condition: convertConditionDefinition(override.condition, actionParameters),
+    structFieldBlockOverrides: [structFieldBlockOverride],
   };
 }
 

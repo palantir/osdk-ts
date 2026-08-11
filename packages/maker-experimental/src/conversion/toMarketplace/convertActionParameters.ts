@@ -16,9 +16,10 @@
 
 import type { Parameter, ParameterId } from "@osdk/client.unstable";
 import type { BaseParameterType } from "@osdk/client.unstable/api";
-import type { ActionType } from "@osdk/maker";
+import { convertToDisplayName, type ActionType } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { getStructFieldTypes } from "./structActionParameterUtils.js";
 
 const FUNCTIONS_IR_INTERFACE_TYPE_RID_REGEX =
   /^ri\.ontology-metadata\.temp\.interface-type\.[0-9a-f]+$/u;
@@ -33,7 +34,10 @@ export function convertActionParameters(
 
       if (typeof parameter.type === "string") {
         // Simple string types like "string", "integer", etc.
-        convertedType = { type: parameter.type, [parameter.type]: {} } as any;
+        convertedType = {
+          type: parameter.type,
+          [parameter.type]: {},
+        } as unknown as BaseParameterType;
       } else {
         // Complex types that need ObjectTypeId conversion
         switch (parameter.type.type) {
@@ -110,6 +114,15 @@ export function convertActionParameters(
         }
       }
 
+      const structFieldsV2 = Object.keys(
+        getStructFieldTypes(parameter) ?? {},
+      ).map((apiName) => ({
+        apiName,
+        displayName:
+          parameter.validation.structFieldValidations?.[apiName]?.displayName ??
+          convertToDisplayName(apiName),
+      }));
+
       return [
         parameter.id,
         {
@@ -124,7 +137,7 @@ export function convertActionParameters(
             description: parameter.description ?? "",
             typeClasses: [],
             structFields: {},
-            structFieldsV2: [],
+            structFieldsV2,
           },
         },
       ];

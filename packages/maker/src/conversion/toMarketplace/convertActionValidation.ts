@@ -76,9 +76,6 @@ export function convertActionValidation(
                   action.parameters,
                 ),
               ) ?? [],
-            ...(p.validation.structFieldValidations && {
-              structFieldValidations: p.validation.structFieldValidations,
-            }),
           },
         ];
       }),

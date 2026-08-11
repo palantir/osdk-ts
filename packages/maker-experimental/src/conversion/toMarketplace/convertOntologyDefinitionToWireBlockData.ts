@@ -383,56 +383,45 @@ function buildKnownIdentifiers(
     ),
   );
 
+  const objectPropertyTypeIdsToRids = Object.fromEntries(
+    Array.from(ridGenerator.getObjectPropertyTypeIdsToRids()).map(
+      ([objectTypeId, propertyTypeIdsToRids]) => [
+        objectTypeId,
+        Object.fromEntries(propertyTypeIdsToRids),
+      ],
+    ),
+  );
+
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
-  // Scan all ontologies so imported object properties are included.
-  const propertyTypeIds: Record<string, Record<string, string>> = {};
-  const objectPropertyTypeIdsToRids: Record<
-    string,
-    Record<string, string>
-  > = {};
-  const structFieldRidsToApiNames: Record<string, Record<string, string>> = {};
-  ontologiesToScan.forEach((ont) => {
-    Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
-      ([objectTypeApiName, objectType]) => {
-        const propMap: Record<string, string> = {};
-        const propertyTypeIdsToRids: Record<string, string> = {};
-        (objectType.properties ?? []).forEach((property) => {
-          const propertyTypeRid = ridGenerator.generatePropertyRid(
-            property.apiName,
-            objectTypeApiName,
-          );
-          propMap[property.apiName] = ridGenerator.toBlockInternalId(
-            ReadableIdGenerator.getForObjectProperty(
-              objectTypeApiName,
-              property.apiName,
-            ),
-          );
-          propertyTypeIdsToRids[property.apiName] = propertyTypeRid;
-          if (
-            typeof property.type === "object" &&
-            property.type.type === "struct"
-          ) {
-            structFieldRidsToApiNames[propertyTypeRid] = Object.fromEntries(
-              Object.keys(property.type.structDefinition).map(
-                (structFieldApiName) => [
-                  ridGenerator.generateStructFieldRid(
-                    property.apiName,
-                    structFieldApiName,
-                  ),
-                  structFieldApiName,
-                ],
+  const propertyTypeReadableIdsByRid = ridGenerator
+    .getPropertyTypeRids()
+    .inverse();
+  const propertyTypeIds = Object.fromEntries(
+    Array.from(ridGenerator.getObjectPropertyTypeIdsToRids()).map(
+      ([objectTypeId, propertyTypeIdsToRids]) => [
+        objectTypeId,
+        Object.fromEntries(
+          Array.from(propertyTypeIdsToRids).map(
+            ([propertyTypeId, propertyTypeRid]) => [
+              propertyTypeId,
+              ridGenerator.toBlockInternalId(
+                propertyTypeReadableIdsByRid.get(propertyTypeRid)!,
               ),
-            );
-          }
-        });
-        const objTypeId = ridGenerator
-          .getObjectTypeIds()
-          .get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
-        propertyTypeIds[objTypeId] = propMap;
-        objectPropertyTypeIdsToRids[objTypeId] = propertyTypeIdsToRids;
-      },
-    );
-  });
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  const structFieldRidsToApiNames = Object.fromEntries(
+    Array.from(ridGenerator.getStructFieldRidsToApiNames()).map(
+      ([propertyTypeRid, structFieldRidsToApiNames]) => [
+        propertyTypeRid,
+        Object.fromEntries(structFieldRidsToApiNames),
+      ],
+    ),
+  );
 
   // Property type RIDs: PropertyTypeRid -> BlockInternalId
   const propertyRids = Object.fromEntries(

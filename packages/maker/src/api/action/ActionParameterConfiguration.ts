@@ -16,7 +16,6 @@
 
 import type {
   OntologyIrParameterPrefill,
-  OntologyIrStructFieldConditionalValidationBlock,
   ParameterRenderHint,
 } from "@osdk/client.unstable";
 
@@ -29,10 +28,7 @@ export interface ActionParameterConfiguration {
   required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
-  structFieldValidations?: Record<
-    string,
-    OntologyIrStructFieldConditionalValidationBlock
-  >;
+  structFieldValidations?: Record<string, StructFieldValidationConfiguration>;
   defaultValue?: OntologyIrParameterPrefill;
   renderHint?: ParameterRenderHint;
   displayName?: string;
@@ -40,6 +36,21 @@ export interface ActionParameterConfiguration {
   // should only be used on non-property parameters
   customParameterType?: ActionParameterType;
 }
+
+export type StructFieldValidationConfiguration = Omit<
+  ActionParameterConfiguration,
+  | "conditionalOverrides"
+  | "customParameterType"
+  | "defaultValue"
+  | "description"
+  | "required"
+  | "structFieldValidations"
+> & {
+  conditionalOverrides?: Array<
+    Exclude<ActionParameterConditionalOverride, { type: "defaultValue" }>
+  >;
+  required?: boolean;
+};
 
 export type ActionParameterRequirementConstraint =
   | boolean

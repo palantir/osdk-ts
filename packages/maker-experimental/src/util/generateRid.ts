@@ -82,6 +82,14 @@ export interface OntologyRidGenerator {
   getInterfaceLinkTypeRids(): BiMap<ReadableId, InterfaceLinkTypeRid>;
   getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid>;
   getPropertyTypeRids(): BiMap<ReadableId, PropertyTypeRid>;
+  getObjectPropertyTypeIdsToRids(): ReadonlyMap<
+    string,
+    ReadonlyMap<string, PropertyTypeRid>
+  >;
+  getStructFieldRidsToApiNames(): ReadonlyMap<
+    PropertyTypeRid,
+    ReadonlyMap<StructFieldRid, string>
+  >;
   getDatasourceLocators(): BiMap<ReadableId, DatasourceLocator>;
   getFilesDatasourceLocators(): BiMap<ReadableId, FilesDatasourceLocator>;
   getGeotimeSeriesIntegrationRids(): BiMap<
@@ -153,6 +161,7 @@ export interface OntologyRidGenerator {
   generateStructFieldRid(
     propertyApiName: string,
     apiName: string,
+    propertyTypeRid?: PropertyTypeRid,
   ): StructFieldRid;
   // Datasource locator methods
   generateDatasetLocator(
@@ -452,6 +461,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   >;
   private readonly objectTypeRids: BiMap<ReadableId, ObjectTypeRid>;
   private readonly propertyTypeRids: BiMap<ReadableId, PropertyTypeRid>;
+  private readonly objectPropertyTypeIdsToRids: Map<
+    string,
+    Map<string, PropertyTypeRid>
+  >;
+  private readonly structFieldRidsToApiNames: Map<
+    PropertyTypeRid,
+    Map<StructFieldRid, string>
+  >;
   private readonly consumedValueTypeReferences: BiMap<
     ReadableId,
     ValueTypeReference
@@ -477,15 +494,6 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   constructor(importedTypes: OntologyDefinition, randomnessUuid?: string) {
     this.objectTypeRids = BiMapImpl.create();
-
-    Object.entries(importedTypes.OBJECT_TYPE)
-      .filter(([_apiName, object]) => object.ridHint !== undefined)
-      .map(([apiName, object]) =>
-        this.objectTypeRids.put(
-          ReadableIdGenerator.getForObjectType(object.apiName),
-          object.ridHint!,
-        ),
-      );
     this.randomnessUuid = randomnessUuid;
     this.geotimeSeriesIntegrationRids = BiMapImpl.create();
     this.interfaceLinkTypeRids = BiMapImpl.create();
@@ -502,10 +510,39 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.filesDatasourceLocators = BiMapImpl.create();
     this.columnShapes = BiMapImpl.create();
     this.propertyTypeRids = BiMapImpl.create();
+    this.objectPropertyTypeIdsToRids = new Map();
+    this.structFieldRidsToApiNames = new Map();
     this.timeSeriesSyncs = BiMapImpl.create();
     this.linkTypeRids = BiMapImpl.create();
     this.groupIds = BiMapImpl.create();
     this.objectTypeIds = BiMapImpl.create();
+
+    Object.values(importedTypes.OBJECT_TYPE).forEach((objectType) => {
+      if (objectType.ridHint !== undefined) {
+        this.objectTypeRids.put(
+          ReadableIdGenerator.getForObjectType(objectType.apiName),
+          objectType.ridHint,
+        );
+      }
+      (objectType.properties ?? []).forEach((property) => {
+        const propertyTypeRid = this.generatePropertyRid(
+          property.apiName,
+          objectType.apiName,
+        );
+        if (
+          typeof property.type === "object" &&
+          property.type.type === "struct"
+        ) {
+          Object.keys(property.type.structDefinition).forEach((fieldApiName) =>
+            this.generateStructFieldRid(
+              property.apiName,
+              fieldApiName,
+              propertyTypeRid,
+            ),
+          );
+        }
+      });
+    });
   }
 
   hashString(input: string): string {
@@ -587,6 +624,20 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   getPropertyTypeRids(): BiMap<ReadableId, PropertyTypeRid> {
     return this.propertyTypeRids;
+  }
+
+  getObjectPropertyTypeIdsToRids(): ReadonlyMap<
+    string,
+    ReadonlyMap<string, PropertyTypeRid>
+  > {
+    return this.objectPropertyTypeIdsToRids;
+  }
+
+  getStructFieldRidsToApiNames(): ReadonlyMap<
+    PropertyTypeRid,
+    ReadonlyMap<StructFieldRid, string>
+  > {
+    return this.structFieldRidsToApiNames;
   }
 
   getDatasourceLocators(): BiMap<ReadableId, DatasourceLocator> {
@@ -843,6 +894,14 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       ReadableIdGenerator.getForObjectProperty(objectTypeApiName, apiName),
       rid,
     );
+    const objectTypeId = this.generateObjectTypeId(objectTypeApiName);
+    let propertyTypeIdsToRids =
+      this.objectPropertyTypeIdsToRids.get(objectTypeId);
+    if (propertyTypeIdsToRids === undefined) {
+      propertyTypeIdsToRids = new Map();
+      this.objectPropertyTypeIdsToRids.set(objectTypeId, propertyTypeIdsToRids);
+    }
+    propertyTypeIdsToRids.set(apiName, rid);
     return rid;
   }
 
@@ -876,10 +935,23 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   generateStructFieldRid(
     propertyApiName: string,
     apiName: string,
+    propertyTypeRid?: PropertyTypeRid,
   ): StructFieldRid {
     const rid = `ri.ontology-metadata.temp.struct-field.${this.hashString(
       propertyApiName + "." + apiName,
     )}` as StructFieldRid;
+    if (propertyTypeRid !== undefined) {
+      let structFieldRidsToApiNames =
+        this.structFieldRidsToApiNames.get(propertyTypeRid);
+      if (structFieldRidsToApiNames === undefined) {
+        structFieldRidsToApiNames = new Map();
+        this.structFieldRidsToApiNames.set(
+          propertyTypeRid,
+          structFieldRidsToApiNames,
+        );
+      }
+      structFieldRidsToApiNames.set(rid, apiName);
+    }
     return rid;
   }
 
