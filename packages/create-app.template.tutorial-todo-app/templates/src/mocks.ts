@@ -132,11 +132,11 @@ async function deleteTask(id: string): Promise<void> {
 }
 
 const Mocks = {
-  createProject,
-  createTask,
-  deleteProject,
-  deleteTask,
   getProjects,
+  createProject,
+  deleteProject,
+  createTask,
+  deleteTask,
 };
 
 export default Mocks;

@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import CreateTaskButton from "./CreateTaskButton";
+import css from "./ProjectDetails.module.css";
 import TaskList from "./TaskList";
 import type { IProject } from "./useProjects";
 import useProjects from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";
-
-import css from "./ProjectDetails.module.css";
 
 interface ProjectDetailsProps {
   project: IProject;

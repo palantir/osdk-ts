@@ -28,9 +28,9 @@ export function useProjectTasks(project: MockProject | undefined) {
       }
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
+        title,
         description,
         projectId: project.$primaryKey,
-        title,
       });
       await mutate();
       return id;

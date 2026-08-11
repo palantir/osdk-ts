@@ -1,7 +1,6 @@
 import client from "./client";
-import Layout from "./Layout";
-
 import css from "./Home.module.css";
+import Layout from "./Layout";
 
 function Home() {
   const objectApiNames = Object.keys(client.ontology.objects);
