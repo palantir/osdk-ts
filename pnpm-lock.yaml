@@ -4349,9 +4349,6 @@ importers:
       '@osdk/generator-converters.preview':
         specifier: workspace:~
         version: link:../generator-converters.preview
-      '@osdk/seed-helpers':
-        specifier: workspace:*
-        version: link:../seed-helpers
       '@osdk/unit-testing':
         specifier: workspace:~
         version: link:../unit-testing
@@ -4389,6 +4386,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/seed-helpers':
+        specifier: workspace:~
+        version: link:../seed-helpers
       '@types/node':
         specifier: ^26.1.1
         version: 26.1.1

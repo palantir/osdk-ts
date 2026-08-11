@@ -2,4 +2,4 @@
 "@osdk/maker-experimental": patch
 ---
 
-Fix value type shapes
+Fix bug with edit only properties.

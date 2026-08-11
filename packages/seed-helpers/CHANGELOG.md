@@ -1,5 +1,17 @@
 # @osdk/seed-helpers
 
+## 0.26.0
+
+### Minor Changes
+
+- cec01e5: Introduce the `@osdk/integration-testing` package for Ontology SDK integration-testing helpers, and add `SeedClient.set` for replacing the seeded state rather than adding to it.
+
+### Patch Changes
+
+- Updated dependencies [342c492]
+  - @osdk/api@2.56.0
+  - @osdk/client@2.56.0
+
 ## 0.25.0
 
 ### Patch Changes
