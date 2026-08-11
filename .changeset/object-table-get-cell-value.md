@@ -2,4 +2,4 @@
 "@osdk/react-components": minor
 ---
 
-Add `getCellValue` to ObjectTable column definitions and pass the cell value to `renderCell`
+Add `getCellValue` and `dataType` to ObjectTable column definitions, and pass the cell value to `renderCell`

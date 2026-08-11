@@ -15,6 +15,7 @@
  */
 
 import type {
+  BaseWirePropertyTypes,
   CompileTimeMetadata,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
@@ -146,6 +147,16 @@ interface SharedColumnDefinition<
   maxWidth?: number;
   resizable?: boolean;
   orderable?: boolean;
+
+  /**
+   * The value's wire type. Picks the default editor — number input, date
+   * picker, or text — and how committed values are parsed.
+   *
+   * Property columns read this from ontology metadata. Custom and derived
+   * columns have none, so without it they get a text input that commits
+   * strings.
+   */
+  dataType?: BaseWirePropertyTypes;
 
   /**
    * Custom renderer for the cell value.

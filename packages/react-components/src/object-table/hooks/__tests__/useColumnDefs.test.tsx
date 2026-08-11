@@ -503,6 +503,66 @@ describe(useColumnDefs, () => {
       ).toBeUndefined();
     });
 
+    it("uses an explicit dataType for columns with no property metadata", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        {
+          locator: { type: "custom", id: "score" },
+          dataType: "integer",
+          editable: true,
+        },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper },
+      );
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]?.meta?.dataType).toBe("integer");
+    });
+
+    it("prefers an explicit dataType over the property's metadata type", async () => {
+      const deferred = pDefer();
+      const fakeClient = {
+        fetchMetadata: vitest.fn(() => deferred.promise),
+      } as unknown as Client;
+
+      const wrapper = createWrapper(fakeClient);
+
+      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+        {
+          // `name` is a string in metadata
+          locator: { type: "property", id: "name" as TestObjectKeys },
+          dataType: "integer",
+        },
+      ];
+
+      const { result } = renderHook(
+        () => useColumnDefs(TestObjectType, columnDefinitions),
+        { wrapper },
+      );
+
+      deferred.resolve(mockMetadata);
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.columns[0]?.meta?.dataType).toBe("integer");
+    });
+
     it("passes the cell value to renderCell as its third argument", async () => {
       const deferred = pDefer();
       const fakeClient = {

@@ -120,7 +120,9 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const dataType = getDataType(propertyMetadata);
+    // An explicit dataType wins: custom and derived columns have no ontology
+    // metadata to fall back on.
+    const dataType = col.dataType ?? getDataType(propertyMetadata);
 
     const markingType =
       propertyMetadata?.typeMetadata?.type === "marking"

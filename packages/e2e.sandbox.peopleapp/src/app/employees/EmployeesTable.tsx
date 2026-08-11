@@ -143,6 +143,42 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
+  // Custom + editable: no ontology property backs this column, so `getCellValue`
+  // supplies the value and `dataType` picks the editor. Without `dataType` the
+  // cell would get a text input and commit "12345" instead of 12345.
+  {
+    locator: {
+      type: "custom",
+      id: "reportsTo",
+    },
+    columnName: "Reports To (#)",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      object.leadEmployeeNumber ?? object.mentorEmployeeNumber,
+    dataType: "integer",
+    editable: true,
+    orderable: false,
+  },
+  // Custom + editable, string-typed, and `renderCell` reusing the value the
+  // table already derived rather than recomputing it.
+  {
+    locator: {
+      type: "custom",
+      id: "contact",
+    },
+    columnName: "Contact",
+    getCellValue: (object: Osdk.Instance<Employee>) =>
+      [object.emailPrimaryWork, object.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    dataType: "string",
+    editable: true,
+    orderable: false,
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
+  },
 ];
 
 const THEME_MODES: readonly OsdkThemeMode[] = ["light", "dark", "system"];

@@ -352,6 +352,44 @@ export const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
   },
 ];
 
+/**
+ * Custom columns have no ontology property behind them, so they need
+ * `getCellValue` to have a value at all and `dataType` to pick an editor.
+ * Without `dataType` the middle column below would get a text input and
+ * commit `"7"` rather than `7`.
+ */
+export const customEditableColumnDefinitions: ColumnDefinition<Employee>[] = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: { type: "custom", id: "reportsTo" },
+    columnName: "Reports to (#)",
+    // Not a property: falls back to the mentor when there's no lead
+    getCellValue: (employee: Osdk.Instance<Employee>) =>
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    dataType: "integer",
+    editable: true,
+  },
+  {
+    locator: { type: "custom", id: "contact" },
+    columnName: "Contact",
+    getCellValue: (employee: Osdk.Instance<Employee>) =>
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) => part != null)
+        .join(" · "),
+    dataType: "string",
+    editable: true,
+    // The third argument is what getCellValue returned, so there's no need to
+    // recompute it here.
+    renderCell: (
+      _object: Osdk.Instance<Employee>,
+      _locator: unknown,
+      value: unknown,
+    ) => <em>{(value as string) || "No value"}</em>,
+  },
+];
+
 // Query definition for the function-backed column
 export const getEmployeeSeniority: QueryDefinition<Employee> = {
   type: "query",
