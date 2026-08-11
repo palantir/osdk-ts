@@ -1,3 +1,4 @@
+import aipLogo from "/aip-icon.svg";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import css from "./CreateTaskDialog.module.css";
@@ -126,11 +127,7 @@ function CreateTaskDialog({
                   type="button"
                   onClick={handleTaskDescriptionRecommendation}
                 >
-                  <img
-                    src="/aip-icon.svg"
-                    alt="AIP logo"
-                    className={css.image}
-                  />
+                  <img src={aipLogo} alt="AIP logo" className={css.image} />
                 </button>
               </div>
             </div>

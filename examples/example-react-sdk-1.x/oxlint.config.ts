@@ -9,6 +9,12 @@ export default defineConfig({
     // Ultracite's preset steers toward function expressions; we only warn so
     // named declarations are encouraged while arrow callbacks stay idiomatic.
     "func-style": ["warn", "declaration"],
+    // Vite serves public/ assets from the root, and importing them keeps the URL
+    // base-aware: with `vite build --base=/sub/` the import resolves to
+    // "/sub/logo.svg" while a hardcoded "/logo.svg" does not. These apps set the
+    // router basename from import.meta.env.BASE_URL so they can be served from a
+    // subpath, which makes the import form load-bearing.
+    "import/no-absolute-path": "off",
     // The Rules of Hooks are React correctness rules; enable them explicitly
     // since the preset does not turn them on by default.
     "react-hooks/exhaustive-deps": "warn",
@@ -22,10 +28,13 @@ export default defineConfig({
     // is off here, matching the OSDK repo's own config.
     "sort-keys": "off",
     // The React entrypoint idiom relies on a non-null assertion
-    // (createRoot(document.querySelector("#root")!)).
+    // (createRoot(document.getElementById("root")!)).
     "typescript/no-non-null-assertion": "off",
     // React components are conventionally PascalCase (e.g. AuthCallback.tsx).
     "unicorn/filename-case": "off",
+    // getElementById is the idiomatic (and faster) lookup for the React root;
+    // rewriting it to querySelector("#root") is churn with no benefit.
+    "unicorn/prefer-query-selector": "off",
     // This project targets ES2020 (see tsconfig.json), where
     // String.prototype.replaceAll (ES2021) is not available, so keep using
     // String#replace with a global regex.
