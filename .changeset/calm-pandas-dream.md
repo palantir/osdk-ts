@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Fix ActionForm custom submit and error types.
+Fix ActionForm callback types and add a theme token for ObjectSet fallback icons.
