@@ -11,5 +11,5 @@ const root = document.querySelector("#root")!;
 createRoot(root).render(
   <FoundryWidget config={MainConfig}>
     <Widget />
-  </FoundryWidget>
+  </FoundryWidget>,
 );

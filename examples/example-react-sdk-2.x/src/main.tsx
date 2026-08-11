@@ -22,5 +22,5 @@ ReactDOM.createRoot(rootElement).render(
         <RouterProvider router={router} />
       </OsdkProvider>
     </Suspense>
-  </ErrorBoundary>
+  </ErrorBoundary>,
 );

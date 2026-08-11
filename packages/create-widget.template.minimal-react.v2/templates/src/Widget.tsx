@@ -22,12 +22,12 @@ export function Widget() {
       emitEvent("setCounterValue", {
         parameterUpdates: { counterValue: value },
       }),
-    [emitEvent]
+    [emitEvent],
   );
 
   const handleResetCounter = useCallback(
     () => setCounterValue(0),
-    [setCounterValue]
+    [setCounterValue],
   );
 
   useEffect(() => {

@@ -15,5 +15,5 @@ createRoot(root).render(
     <OsdkProvider client={client}>
       <Widget />
     </OsdkProvider>
-  </FoundryWidget>
+  </FoundryWidget>,
 );

@@ -18,5 +18,5 @@ ReactDOM.createRoot(rootElement).render(
     <Suspense fallback={<Loading />}>
       <RouterProvider router={router} />
     </Suspense>
-  </ErrorBoundary>
+  </ErrorBoundary>,
 );

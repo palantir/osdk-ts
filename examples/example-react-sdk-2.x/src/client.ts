@@ -12,7 +12,7 @@ function getMetaTagContent(tagName: string): string {
   }
   if (/%.+%/u.test(value)) {
     throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/gu, "")} to your .env files`
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/gu, "")} to your .env files`,
     );
   }
   return value;
@@ -29,7 +29,7 @@ export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
   foundryUrl,
   redirectUrl,
-  { scopes }
+  { scopes },
 );
 
 /**

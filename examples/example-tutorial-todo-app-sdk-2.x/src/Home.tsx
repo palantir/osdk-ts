@@ -18,7 +18,7 @@ function Home() {
 
   const handleSelectProject = useCallback(
     (p: IProject) => setProjectId(p.id),
-    []
+    [],
   );
 
   useEffect(() => {

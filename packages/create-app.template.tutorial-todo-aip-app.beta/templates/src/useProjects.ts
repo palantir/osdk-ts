@@ -28,7 +28,7 @@ function useProjects() {
         name: project.name || "",
       }));
       return projectsList;
-    }
+    },
   );
 
   const createProject: (name: string) => Promise<IProject["$primaryKey"]> =
@@ -39,7 +39,7 @@ function useProjects() {
         await mutate();
         return id;
       },
-      [mutate]
+      [mutate],
     );
 
   const updateProjectDescription: (project: IProject) => Promise<void> =
@@ -49,7 +49,7 @@ function useProjects() {
         await Mocks.updateProjectDescription(project);
         await mutate();
       },
-      [mutate]
+      [mutate],
     );
 
   const deleteProject: (project: IProject) => Promise<void> = useCallback(
@@ -58,7 +58,7 @@ function useProjects() {
       await Mocks.deleteProject(project.$primaryKey);
       await mutate();
     },
-    [mutate]
+    [mutate],
   );
 
   return {

@@ -108,7 +108,7 @@ async function createProject({
 }
 
 async function getRecommendedProjectDescription(
-  project: MockProject
+  project: MockProject,
 ): Promise<string> {
   await delay();
   if (
@@ -160,7 +160,7 @@ async function createTask({
 }
 
 async function getRecommendedTaskDescription(
-  taskName: string
+  taskName: string,
 ): Promise<string> {
   await delay();
   if (taskName.length === 0) {
