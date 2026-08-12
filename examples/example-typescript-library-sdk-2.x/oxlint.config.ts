@@ -13,5 +13,6 @@ export default defineConfig({
       "error",
       { fixStyle: "inline-type-imports" },
     ],
+    "typescript/no-import-type-side-effects": "error",
   },
 });

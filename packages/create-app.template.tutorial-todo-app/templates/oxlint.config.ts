@@ -22,6 +22,7 @@ export default defineConfig({
       "error",
       { fixStyle: "inline-type-imports" },
     ],
+    "typescript/no-import-type-side-effects": "error",
     // Assets in public/ are imported by absolute path so their URL respects
     // Vite's `base` (e.g. `vite build --base=/sub/`); a hardcoded "/logo.svg"
     // would not.
