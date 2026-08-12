@@ -782,6 +782,82 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  it("writes configurable descriptions to V2 block data", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      defineImportObject({
+        apiName: "importedEmployee",
+        displayName: "Imported Employee",
+        description: "An employee supplied by another ontology",
+        properties: {
+          id: {
+            type: "string",
+            displayName: "Employee ID",
+            description: "The imported employee identifier",
+          },
+        },
+      });
+
+      const department = defineObject({
+        apiName: "department",
+        displayName: "Department",
+        pluralDisplayName: "Departments",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+      const employee = defineObject({
+        apiName: "employee",
+        displayName: "Employee",
+        pluralDisplayName: "Employees",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          departmentId: { type: "string" },
+        },
+      });
+
+      defineLink({
+        apiName: "department-employees",
+        description: "Employees belonging to a department",
+        one: {
+          object: department,
+          metadata: { apiName: "department" },
+        },
+        toMany: {
+          object: employee,
+          metadata: { apiName: "employees" },
+        },
+        manyForeignKeyProperty: "departmentId",
+      });
+      defineCreateObjectAction({
+        objectType: employee,
+        description: "Create an employee",
+      });
+    });
+
+    const link = Object.values(result.ontologyIr.ontology.linkTypes)[0];
+    expect(link.linkType.description).toBe(
+      "Employees belonging to a department",
+    );
+
+    const action = Object.values(result.ontologyIr.ontology.actionTypes)[0];
+    expect(action.actionType.metadata.displayMetadata.description).toBe(
+      "Create an employee",
+    );
+
+    const importedObject = Object.values(
+      result.ontologyIr.importedOntology.objectTypes,
+    )[0].objectType;
+    expect(importedObject.displayMetadata.description).toBe(
+      "An employee supplied by another ontology",
+    );
+    expect(
+      Object.values(importedObject.propertyTypes)[0].displayMetadata
+        .description,
+    ).toBe("The imported employee identifier");
+  });
+
   describe("defineOntologyV2 import shapes", () => {
     it("generates input shapes for imported object types", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {

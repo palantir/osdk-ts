@@ -128,6 +128,7 @@ export function defineModifyInterfaceObjectAction(
     displayName:
       def.displayName ??
       `Modify ${def.interfaceType.displayMetadata.displayName}`,
+    description: def.description,
     parameters,
     status:
       def.status ??
