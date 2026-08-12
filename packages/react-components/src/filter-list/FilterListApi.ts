@@ -233,10 +233,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   defaultCollapsed?: boolean;
 
   /**
-   * Called whenever the collapsed state changes, in both controlled and
-   * uncontrolled mode. This is an event listener layered on top of the default
-   * behavior, not a controlling handler — collapse works whether or not it is
-   * supplied, and supplying it does not by itself enable the control.
+   * Called whenever the collapsed state changes.
    *
    * @param collapsed The new collapsed state
    */
