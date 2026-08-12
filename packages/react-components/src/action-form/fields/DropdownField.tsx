@@ -21,13 +21,22 @@ import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
 import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type { DropdownFieldProps } from "../FormFieldApi.js";
+import type {
+  DropdownFieldLabels,
+  DropdownFieldProps,
+} from "../FormFieldApi.js";
 
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import selectStyles from "../../base-components/select/Select.module.css";
 import dropdownStyles from "./DropdownField.module.css";
 
 const EMPTY_ARRAY: [] = [];
+const DEFAULT_DROPDOWN_FIELD_LABELS: DropdownFieldLabels = {
+  clearButtonLabel: "Clear",
+  removeButtonLabel: defaultRemoveButtonLabel,
+  searchPlaceholder: "Search…",
+  noResultsText: "No results",
+};
 
 /**
  * SelectDropdown is only used for single-select (the multi-select path
@@ -37,7 +46,7 @@ const EMPTY_ARRAY: [] = [];
  */
 interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
   DropdownFieldProps<V, Multiple>,
-  "isSearchable"
+  "isSearchable" | "labels"
 > {
   itemToStringLabel: (item: V) => string;
   renderItemLabel: (item: V) => React.ReactNode;
@@ -47,6 +56,7 @@ interface InnerSelectProps<V, Multiple extends boolean> extends Omit<
   onQueryChange?: (query: string) => void;
   onBlur?: () => void;
   modal?: boolean;
+  clearButtonLabel: string;
 }
 
 interface InnerComboboxProps<
@@ -57,6 +67,9 @@ interface InnerComboboxProps<
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
   trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
+  removeButtonLabel: (label: string) => string;
+  searchPlaceholder: string;
+  noResultsText: string;
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -77,6 +90,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   popupStatus,
   trailingItem,
   modal = true,
+  labels,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
   onBlur?: () => void;
@@ -114,6 +128,21 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         popupStatus={popupStatus}
         trailingItem={trailingItem}
         modal={modal}
+        clearButtonLabel={
+          labels?.clearButtonLabel ??
+          DEFAULT_DROPDOWN_FIELD_LABELS.clearButtonLabel
+        }
+        removeButtonLabel={
+          labels?.removeButtonLabel ??
+          DEFAULT_DROPDOWN_FIELD_LABELS.removeButtonLabel
+        }
+        searchPlaceholder={
+          labels?.searchPlaceholder ??
+          DEFAULT_DROPDOWN_FIELD_LABELS.searchPlaceholder
+        }
+        noResultsText={
+          labels?.noResultsText ?? DEFAULT_DROPDOWN_FIELD_LABELS.noResultsText
+        }
       />
     );
   }
@@ -127,6 +156,10 @@ export const DropdownField: <V, Multiple extends boolean = false>(
       renderItemLabel={resolvedRenderItemLabel}
       getKey={getKey}
       modal={modal}
+      clearButtonLabel={
+        labels?.clearButtonLabel ??
+        DEFAULT_DROPDOWN_FIELD_LABELS.clearButtonLabel
+      }
     />
   );
 });
@@ -148,6 +181,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   portalContainer,
   onBlur,
   modal = true,
+  clearButtonLabel,
   disabled,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
@@ -210,7 +244,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
           {hasValue && (
             <span
               role="button"
-              aria-label="Clear"
+              aria-label={clearButtonLabel}
               className={selectStyles.osdkSelectClear}
               aria-disabled={disabled || undefined}
               onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -277,6 +311,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   trailingItem,
   onBlur,
   modal = true,
+  clearButtonLabel,
+  removeButtonLabel,
+  searchPlaceholder,
+  noResultsText,
   disabled,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
@@ -399,7 +437,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                     {renderItemLabel(item)}
                     <span
                       role="button"
-                      aria-label={`Remove ${itemToStringLabel(item)}`}
+                      aria-label={removeButtonLabel(itemToStringLabel(item))}
                       className={comboboxStyles.osdkComboboxTriggerChipRemove}
                       aria-disabled={disabled || undefined}
                       onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -426,7 +464,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           {hasValue && (
             <span
               role="button"
-              aria-label="Clear"
+              aria-label={clearButtonLabel}
               className={comboboxStyles.osdkComboboxClear}
               aria-disabled={disabled || undefined}
               onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -450,13 +488,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             <Combobox.Popup>
               {isSearchable && (
                 <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
-                  <Combobox.SearchInput placeholder="Search…" />
+                  <Combobox.SearchInput placeholder={searchPlaceholder} />
                 </div>
               )}
               {popupStatus}
               {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
               {popupStatus == null && (
-                <Combobox.Empty>No results</Combobox.Empty>
+                <Combobox.Empty>{noResultsText}</Combobox.Empty>
               )}
               <Combobox.List>
                 <Combobox.Collection>{renderItem}</Combobox.Collection>
@@ -485,4 +523,8 @@ function defaultItemToStringLabel<V>(item: V): string {
     return item.label;
   }
   return String(item);
+}
+
+function defaultRemoveButtonLabel(label: string): string {
+  return `Remove ${label}`;
 }

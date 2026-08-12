@@ -64,6 +64,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
   isMultiple,
   portalRef,
   portalContainer,
+  labels,
   disabled,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
@@ -129,6 +130,7 @@ const ObjectSelectInner: React.NamedExoticComponent<
       itemToKey={itemToKey}
       isItemEqual={isItemEqual}
       placeholder={placeholder ?? "Search…"}
+      labels={labels}
       isMultiple={isMultiple}
       portalRef={portalRef}
       portalContainer={portalContainer}

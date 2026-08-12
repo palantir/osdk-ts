@@ -24,6 +24,7 @@ import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
+import type { BaseFormLabels } from "./BaseFormLabels.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
@@ -31,7 +32,13 @@ import { FormSection } from "./FormSection.js";
 
 import styles from "./BaseForm.module.css";
 
-export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
+export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn(
+  props: BaseFormProps,
+): React.ReactElement {
+  return <BaseFormContent {...props} />;
+});
+
+const BaseFormContent = memo(function BaseFormContentFn({
   formTitle,
   formContent,
   formState: controlledFormState,
@@ -41,15 +48,21 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
+  labels,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
+  const resolvedFormContent = useMemo(
+    () => resolveFormContentLabels(formContent, labels),
+    [formContent, labels],
+  );
+
   const allFieldDefinitions = useMemo(
-    () => flattenFieldDefinitions(formContent),
-    [formContent],
+    () => flattenFieldDefinitions(resolvedFormContent),
+    [resolvedFormContent],
   );
 
   const defaultValues = useMemo(
@@ -83,7 +96,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       ? submissionError instanceof Error
         ? submissionError.message
         : // TODO: provide better error message
-          "Submission failed"
+          (labels?.submissionFailed ?? "Submission failed")
       : undefined;
 
   const submitForm = useCallback(async () => {
@@ -118,11 +131,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
     label: labelByFieldKey.get(key) ?? key,
-    message: entry?.message ?? "Invalid",
+    message: entry?.message ?? labels?.validationError ?? "Invalid",
   }));
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
-    ? "Some fields are invalid"
+    ? (labels?.invalidFields ?? "Some fields are invalid")
     : submissionErrorMessage;
   const isFormPending = isPending || isSubmitting;
   const isSubmitButtonDisabled =
@@ -141,14 +154,14 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       {isLoading && allFieldDefinitions.length === 0 && (
         <div
           role="status"
-          aria-label="Loading form fields"
+          aria-label={labels?.loadingFields ?? "Loading form fields"}
           className={styles.osdkFormFields}
         >
           {FORM_SKELETON}
         </div>
       )}
       <div className={styles.osdkFormFields}>
-        {formContent.map((item) => {
+        {resolvedFormContent.map((item) => {
           if (item.type === "field") {
             return (
               <FieldBridge
@@ -169,6 +182,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
               key={item.key}
               definition={item.definition}
               errorCount={sectionErrorCount}
+              errorCountLabel={labels?.renderSectionErrorCount}
             >
               {item.definition.fields.map((fieldDef) => (
                 <FieldBridge
@@ -184,12 +198,16 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         })}
       </div>
       <div className={styles.osdkFormFooter}>
-        <ErrorIndicator errorEntries={errorEntries} />
+        <ErrorIndicator
+          errorEntries={errorEntries}
+          formatIssueCount={labels?.renderIssueCount}
+        />
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
             isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
+            pendingButtonText={labels?.submitting}
             buttonText={submitButtonText}
             buttonVariant={submitButtonVariant}
             onClick={submitForm}
@@ -220,6 +238,124 @@ function flattenFieldDefinitions(
     }
   }
   return result;
+}
+
+function resolveFormContentLabels(
+  formContent: ReadonlyArray<FormContentItem>,
+  labels: Partial<BaseFormLabels> | undefined,
+): ReadonlyArray<FormContentItem> {
+  return formContent.map((item): FormContentItem => {
+    if (item.type === "field") {
+      return {
+        ...item,
+        definition: resolveFieldDefinitionLabels(item.definition, labels),
+      };
+    }
+
+    return {
+      ...item,
+      definition: {
+        ...item.definition,
+        fields: item.definition.fields.map((fieldDefinition) =>
+          resolveFieldDefinitionLabels(fieldDefinition, labels),
+        ),
+      },
+    };
+  });
+}
+
+function resolveFieldDefinitionLabels(
+  fieldDefinition: RendererFieldDefinition,
+  labels: Partial<BaseFormLabels> | undefined,
+): RendererFieldDefinition {
+  fieldDefinition = {
+    ...fieldDefinition,
+    labels: mergeLabels(labels?.fieldLabels, fieldDefinition.labels),
+  };
+
+  switch (fieldDefinition.fieldComponent) {
+    case "DROPDOWN":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.DROPDOWN,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "FILE_PICKER":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.FILE_PICKER,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "NUMBER_INPUT":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.NUMBER_INPUT,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "OBJECT_SELECT":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.OBJECT_SELECT,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "OBJECT_SET":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.OBJECT_SET,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "UNSUPPORTED":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.UNSUPPORTED,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    default:
+      return fieldDefinition;
+  }
+}
+
+function mergeLabels<Labels extends object>(
+  baseLabels: Partial<Labels> | undefined,
+  fieldLabels: Partial<Labels> | undefined,
+): Partial<Labels> | undefined {
+  if (baseLabels == null) {
+    return fieldLabels;
+  }
+  if (fieldLabels == null) {
+    return baseLabels;
+  }
+  return { ...baseLabels, ...fieldLabels };
 }
 
 const SKELETON_FIELD_COUNT = 3;
@@ -254,6 +390,7 @@ interface SubmitButtonProps {
   isPending: boolean;
   isSubmitDisabled: boolean;
   errorMessage: string | undefined;
+  pendingButtonText?: string;
   buttonText: string;
   buttonVariant: "primary" | "secondary";
   onClick: () => void;
@@ -263,11 +400,12 @@ const SubmitButton = memo(function SubmitButtonFn({
   isPending,
   isSubmitDisabled,
   errorMessage,
+  pendingButtonText = "Submitting…",
   buttonText,
   buttonVariant,
   onClick,
 }: SubmitButtonProps): React.ReactElement {
-  const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
+  const buttonLabel = isPending ? pendingButtonText : buttonText;
   const button = (
     <ActionButton
       type="button"
@@ -304,11 +442,13 @@ const SubmitButton = memo(function SubmitButtonFn({
 
 interface ErrorIndicatorProps {
   errorEntries: ReadonlyArray<ErrorEntry>;
+  formatIssueCount?: (count: number) => string;
 }
 
 // memo omitted: errorEntries is always a new array (RHF reuses the same errors ref)
 function ErrorIndicator({
   errorEntries,
+  formatIssueCount = renderIssueCount,
 }: ErrorIndicatorProps): React.ReactElement | null {
   if (errorEntries.length === 0) {
     return null;
@@ -321,7 +461,7 @@ function ErrorIndicator({
       <Tooltip.Trigger>
         <span className={styles.osdkFormErrorIndicator}>
           <ErrorIcon size={14} />
-          {count === 1 ? "1 issue" : `${count} issues`}
+          {formatIssueCount(count)}
         </span>
       </Tooltip.Trigger>
       <Tooltip.Portal>
@@ -340,4 +480,8 @@ function ErrorIndicator({
       </Tooltip.Portal>
     </Tooltip.Root>
   );
+}
+
+function renderIssueCount(count: number): string {
+  return count === 1 ? "1 issue" : `${count} issues`;
 }

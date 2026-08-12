@@ -173,6 +173,26 @@ describe("ActionForm", () => {
     });
   });
 
+  describe("labels", () => {
+    it("passes label overrides to BaseForm", () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: true,
+        metadata: undefined,
+      });
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          labels={{ loadingFields: "Loading action fields" }}
+        />,
+      );
+
+      expect(
+        screen.getByRole("status", { name: "Loading action fields" }),
+      ).toBeDefined();
+    });
+  });
+
   describe("field rendering", () => {
     it("generates default fields from fetched metadata", () => {
       render(<ActionForm actionDefinition={TestAction} />);

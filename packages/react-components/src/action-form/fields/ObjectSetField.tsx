@@ -26,13 +26,20 @@ import {
 } from "../../base-components/icon/BlueprintIcon.js";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type { ObjectSetFieldProps } from "../FormFieldApi.js";
+import type {
+  ObjectSetFieldLabels,
+  ObjectSetFieldProps,
+} from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
 
 const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
+const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {
+  formatObjectSetCountLabel: defaultFormatObjectSetCountLabel,
+  loadErrorMessage: defaultLoadErrorMessage,
+};
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
   props: ObjectSetFieldProps<T>,
@@ -41,6 +48,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
 >({
   value,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  labels,
   disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
   if (value == null) {
@@ -57,13 +65,17 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
     );
   }
 
-  return <ObjectSetFieldContent objectSet={value} disabled={disabled} />;
+  return (
+    <ObjectSetFieldContent {...labels} objectSet={value} disabled={disabled} />
+  );
 });
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
   disabled,
-}: {
+  formatObjectSetCountLabel,
+  loadErrorMessage,
+}: Partial<ObjectSetFieldLabels> & {
   objectSet: ObjectSet;
   disabled: boolean | undefined;
 }): React.ReactElement {
@@ -116,6 +128,14 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
             totalCount={totalCount}
             error={objectSetError}
             isLoading={objectSetLoading}
+            formatObjectSetCountLabel={
+              formatObjectSetCountLabel ??
+              DEFAULT_OBJECT_SET_FIELD_LABELS.formatObjectSetCountLabel
+            }
+            loadErrorMessage={
+              loadErrorMessage ??
+              DEFAULT_OBJECT_SET_FIELD_LABELS.loadErrorMessage
+            }
           />
         </>
       )}
@@ -128,14 +148,16 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   totalCount,
   isLoading,
   error,
-}: {
+  formatObjectSetCountLabel,
+  loadErrorMessage,
+}: ObjectSetFieldLabels & {
   displayName: string | undefined;
   totalCount: string | undefined;
   isLoading: boolean;
   error: Error | undefined;
 }): React.ReactElement {
   const hasData = totalCount != null;
-  const label = displayName ?? (totalCount === "1" ? "object" : "objects");
+  const label = formatObjectSetCountLabel(totalCount, displayName);
   const showSkeleton = isLoading && !hasData;
   const showError = error != null && !hasData && !isLoading;
 
@@ -144,12 +166,10 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
       {showSkeleton && OBJECT_SET_LABEL_SKELETON}
       {showError && (
         <span className={styles.osdkObjectSetFieldError} role="alert">
-          {`Failed to load: ${error.message}`}
+          {loadErrorMessage(error.message)}
         </span>
       )}
-      {!showSkeleton && !showError && (
-        <span>{`${formatCount(totalCount)} ${label}`}</span>
-      )}
+      {!showSkeleton && !showError && <span>{label}</span>}
     </>
   );
 });
@@ -162,12 +182,30 @@ const OBJECT_SET_LABEL_SKELETON = (
   <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />
 );
 
+function defaultLoadErrorMessage(message: string): string {
+  return `Failed to load: ${message}`;
+}
+
+function defaultFormatObjectSetCountLabel(
+  count: string | undefined,
+  displayName: string | undefined,
+): string {
+  return `${formatCount(count)} ${displayName ?? getFallbackObjectLabel(count)}`;
+}
+
 function formatCount(count: string | undefined): string {
   if (count == null) {
     return "\u2013"; // '–' symbol
   }
-  const num = Number(count);
-  return Number.isNaN(num) ? count : num.toLocaleString();
+  try {
+    return BigInt(count).toLocaleString();
+  } catch {
+    return count;
+  }
+}
+
+function getFallbackObjectLabel(count: string | undefined): string {
+  return count === "1" ? "object" : "objects";
 }
 
 function toComponentIcon(apiIcon: { name: string; color: string }): Icon {

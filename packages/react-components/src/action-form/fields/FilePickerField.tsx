@@ -20,9 +20,14 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import type { FilePickerProps } from "../FormFieldApi.js";
+import type { FilePickerLabels, FilePickerProps } from "../FormFieldApi.js";
 
 import styles from "./FilePickerField.module.css";
+
+const DEFAULT_FILE_PICKER_LABELS: FilePickerLabels = {
+  triggerAriaLabel: "Choose file",
+  clearButtonLabel: "Clear selection",
+};
 
 export const FilePickerField: React.FC<FilePickerProps> = memo(
   function FilePickerFieldFn({
@@ -38,6 +43,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
+    labels,
     disabled,
   }): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -134,7 +140,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           )}
           onClick={openFileDialog}
           onKeyDown={handleKeyDown}
-          aria-label="Choose file"
+          aria-label={
+            labels?.triggerAriaLabel ??
+            DEFAULT_FILE_PICKER_LABELS.triggerAriaLabel
+          }
           aria-invalid={error != null || undefined}
           disabled={disabled}
         >
@@ -145,7 +154,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
             type="button"
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
-            aria-label="Clear selection"
+            aria-label={
+              labels?.clearButtonLabel ??
+              DEFAULT_FILE_PICKER_LABELS.clearButtonLabel
+            }
             disabled={disabled}
           >
             <Cross />

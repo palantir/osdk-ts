@@ -39,9 +39,6 @@ import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
-const UNSUPPORTED_FIELD_MESSAGE =
-  "Unsupported field type. Use a CUSTOM field instead";
-
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
@@ -65,11 +62,12 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, helperText, helperTextPlacement } =
+    const { label, isRequired, labels, helperText, helperTextPlacement } =
       fieldDefinition;
 
     return (
       <FormField
+        {...labels}
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
@@ -129,16 +127,18 @@ function renderFieldComponent(
           disabled={disabled}
         />
       );
-    case "UNSUPPORTED":
+    case "UNSUPPORTED": {
+      const { labels, ...props } = fieldDefinition.fieldComponentProps;
       return (
         <TextInputField
-          {...fieldDefinition.fieldComponentProps}
+          {...props}
           id={fieldDefinition.fieldKey}
-          value={UNSUPPORTED_FIELD_MESSAGE}
+          value={labels?.message ?? DEFAULT_UNSUPPORTED_FIELD_MESSAGE}
           error={error}
           disabled={true}
         />
       );
+    }
     case "TEXT_AREA":
       return (
         <TextAreaField
@@ -272,6 +272,9 @@ function renderFieldComponent(
       return assertUnreachableFieldComponent(fieldDefinition);
   }
 }
+
+const DEFAULT_UNSUPPORTED_FIELD_MESSAGE =
+  "Unsupported field type. Use a CUSTOM field instead";
 
 function resolvePortalContainer(
   fieldComponentProps: { portalContainer?: PortalContainer },

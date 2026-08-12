@@ -35,6 +35,19 @@ import type { PortalContainer } from "../shared/PortalDismissLayer.js";
 export type { PortalContainer };
 
 /**
+ * User-facing strings rendered by FormField.
+ * Supply values resolved by your i18n library to customize this copy.
+ */
+export interface FormFieldLabels {
+  /** @default "required" */
+  requiredIndicatorAriaLabel: string;
+  /** @default "Edited" */
+  editedLabel: string;
+  /** @default (label) => `Info about ${label}` */
+  renderInfoTipAriaLabel: (label: string | undefined) => string;
+}
+
+/**
  * A form field definition specifies configuration for a single field.
  * Implemented as a distributed mapped type so `fieldComponent` narrows
  * `fieldComponentProps` to the matching component prop type.
@@ -66,6 +79,12 @@ export type FormFieldDefinition<
          * Whether the field is required
          */
         isRequired?: boolean;
+
+        /**
+         * User-facing strings rendered by the field chrome.
+         * Supply values resolved by your i18n library to customize this copy.
+         */
+        labels?: Partial<FormFieldLabels>;
 
         /**
          * Placeholder text
@@ -160,10 +179,24 @@ export interface FormFieldPropsByType {
 /**
  * Dropdown field props with selectable items
  */
+export interface DropdownFieldLabels {
+  /** @default "Clear" */
+  clearButtonLabel: string;
+  /** @default (label) => `Remove ${label}` */
+  removeButtonLabel: (label: string) => string;
+  /** @default "Search…" */
+  searchPlaceholder: string;
+  /** @default "No results" */
+  noResultsText: string;
+}
+
 export interface DropdownFieldProps<
   V,
   Multiple extends boolean = false,
-> extends BaseFormFieldProps<Multiple extends true ? V[] : V> {
+> extends BaseFormFieldProps<
+  Multiple extends true ? V[] : V,
+  DropdownFieldLabels
+> {
   /**
    * Available items for the dropdown
    */
@@ -265,7 +298,17 @@ export interface DropdownFieldProps<
   modal?: boolean;
 }
 
-export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
+export interface FilePickerLabels {
+  /** @default "Choose file" */
+  triggerAriaLabel: string;
+  /** @default "Clear selection" */
+  clearButtonLabel: string;
+}
+
+export interface FilePickerProps extends BaseFormFieldProps<
+  File | File[],
+  FilePickerLabels
+> {
   /**
    * Whether multiple files can be selected
    */
@@ -338,7 +381,17 @@ export interface TextInputFieldProps
 /**
  * Number input field props
  */
-export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
+export interface NumberInputFieldLabels {
+  /** @default "Increment" */
+  incrementButtonLabel: string;
+  /** @default "Decrement" */
+  decrementButtonLabel: string;
+}
+
+export interface NumberInputFieldProps extends BaseFormFieldProps<
+  number,
+  NumberInputFieldLabels
+> {
   /**
    * Minimum allowed value.
    */
@@ -400,9 +453,22 @@ export interface Option<V> {
 /**
  * Object set field displays the summary of the count of the given object set
  */
+export interface ObjectSetFieldLabels {
+  /** @default (count, displayName) => `${count} ${displayName ?? "object(s)"}` */
+  formatObjectSetCountLabel: (
+    count: string | undefined,
+    displayName: string | undefined,
+  ) => string;
+  /** @default (message) => `Failed to load: ${message}` */
+  loadErrorMessage: (message: string) => string;
+}
+
 export interface ObjectSetFieldProps<
   T extends ObjectTypeDefinition,
-> extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled"> {
+> extends Pick<
+  BaseFormFieldProps<ObjectSet<T>, ObjectSetFieldLabels>,
+  "id" | "value" | "disabled" | "labels"
+> {
   /**
    * Message displayed when no object set is provided.
    *
@@ -437,6 +503,15 @@ type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
  * Extends DropdownFieldProps with props that ObjectSelectField
  * manages internally (items, search, filtering) omitted from the public surface.
  */
+export interface AsyncDropdownFieldLabels extends DropdownFieldLabels {
+  /** @default "Searching…" */
+  searchingText: string;
+  /** @default "Loading…" */
+  loadingText: string;
+}
+
+export interface ObjectSelectFieldLabels extends AsyncDropdownFieldLabels {}
+
 export type ObjectSelectFieldProps<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
 > = Omit<
@@ -450,8 +525,11 @@ export type ObjectSelectFieldProps<
   | "onQueryChange"
   | "disableClientSideFiltering"
   | "renderItemList"
+  | "labels"
 > &
-  ObjectSelectDataSource<Q>;
+  ObjectSelectDataSource<Q> & {
+    labels?: Partial<ObjectSelectFieldLabels>;
+  };
 
 /**
  * Custom field props for user-defined renderers
@@ -463,17 +541,25 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
 
+export interface UnsupportedFieldLabels {
+  /** @default "Unsupported field type. Use a CUSTOM field instead" */
+  message: string;
+}
+
 export interface UnsupportedFieldProps extends Pick<
-  BaseFormFieldProps<string>,
-  "id" | "error"
+  BaseFormFieldProps<string, UnsupportedFieldLabels>,
+  "id" | "error" | "labels"
 > {}
 
-export interface BaseFormFieldProps<V> {
+export interface BaseFormFieldProps<V, Labels extends object = never> {
   /**
    * The HTML `id` attribute for the field input element.
    * Used for `<label htmlFor>` association.
    */
   id?: string;
+
+  /** User-facing strings rendered by this field. */
+  labels?: Partial<Labels>;
 
   /**
    * The validation error message for this field, if any.
@@ -630,6 +716,11 @@ export type RendererFieldDefinition = {
     fieldType?: FieldType;
     label: string;
     isRequired?: boolean;
+    /**
+     * User-facing strings rendered by FormFieldRenderer.
+     * Supply values resolved by your i18n library to customize this copy.
+     */
+    labels?: Partial<FormFieldLabels>;
     placeholder?: string;
     helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";

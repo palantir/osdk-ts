@@ -18,9 +18,11 @@ import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 
+import type { FormFieldLabels } from "./FormFieldApi.js";
+
 import styles from "./FormField.module.css";
 
-interface FormFieldProps {
+interface FormFieldProps extends Partial<FormFieldLabels> {
   fieldKey: string;
   label?: string;
   isRequired?: boolean;
@@ -36,6 +38,9 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   fieldKey,
   label,
   isRequired,
+  requiredIndicatorAriaLabel = DEFAULT_FORM_FIELD_LABELS.requiredIndicatorAriaLabel,
+  editedLabel = DEFAULT_FORM_FIELD_LABELS.editedLabel,
+  renderInfoTipAriaLabel = DEFAULT_FORM_FIELD_LABELS.renderInfoTipAriaLabel,
   helperText,
   helperTextPlacement = "tooltip",
   isEdited,
@@ -53,7 +58,10 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
         {label}
         {isRequired === true && (
-          <span className={styles.osdkFormFieldRequired} aria-label="required">
+          <span
+            className={styles.osdkFormFieldRequired}
+            aria-label={requiredIndicatorAriaLabel}
+          >
             {" "}
             *
           </span>
@@ -64,9 +72,13 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
     labelElement != null || showTooltip || showEditedTag ? (
       <div className={styles.osdkFormFieldLabelRow}>
         {labelElement}
-        {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
+        {showTooltip && (
+          <InfoTip ariaLabel={renderInfoTipAriaLabel(label)}>
+            {helperText}
+          </InfoTip>
+        )}
         {showEditedTag && (
-          <span className={styles.osdkFormFieldEditedTag}>Edited</span>
+          <span className={styles.osdkFormFieldEditedTag}>{editedLabel}</span>
         )}
       </div>
     ) : null;
@@ -93,21 +105,21 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
 });
 
 interface InfoTipProps {
-  label?: string;
+  ariaLabel: string;
   children: React.ReactNode;
 }
 
 // Uses Popover (not Tooltip) because helper text may contain interactive
 // content like links that need focus management and keyboard navigation.
 // See https://base-ui.com/react/components/tooltip#infotips
-function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+function InfoTip({ ariaLabel, children }: InfoTipProps): React.ReactElement {
   return (
     <Popover.Root>
       <Popover.Trigger
         render={<span className={styles.osdkFormFieldInfoIcon} />}
         nativeButton={false}
         openOnHover={true}
-        aria-label={label != null ? `Info about ${label}` : "More information"}
+        aria-label={ariaLabel}
       >
         <InfoSign size={12} />
       </Popover.Trigger>
@@ -120,4 +132,14 @@ function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+const DEFAULT_FORM_FIELD_LABELS: FormFieldLabels = {
+  requiredIndicatorAriaLabel: "required",
+  editedLabel: "Edited",
+  renderInfoTipAriaLabel: defaultRenderInfoTipAriaLabel,
+};
+
+function defaultRenderInfoTipAriaLabel(label: string | undefined): string {
+  return label != null ? `Info about ${label}` : "More information";
 }

@@ -19,7 +19,10 @@ import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
 
-import type { NumberInputFieldProps } from "../FormFieldApi.js";
+import type {
+  NumberInputFieldLabels,
+  NumberInputFieldProps,
+} from "../FormFieldApi.js";
 
 import styles from "./NumberInputField.module.css";
 
@@ -39,6 +42,10 @@ const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/u;
 
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
+const DEFAULT_NUMBER_INPUT_FIELD_LABELS: NumberInputFieldLabels = {
+  incrementButtonLabel: "Increment",
+  decrementButtonLabel: "Decrement",
+};
 
 export function NumberInputField({
   id,
@@ -49,6 +56,7 @@ export function NumberInputField({
   min,
   max,
   step,
+  labels,
   disabled,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
@@ -129,7 +137,10 @@ export function NumberInputField({
       <div className={styles.osdkNumberInputStepper}>
         <Button
           className={styles.osdkNumberInputStepButton}
-          aria-label="Increment"
+          aria-label={
+            labels?.incrementButtonLabel ??
+            DEFAULT_NUMBER_INPUT_FIELD_LABELS.incrementButtonLabel
+          }
           tabIndex={-1}
           disabled={disabled}
           onClick={handleStepUp}
@@ -138,7 +149,10 @@ export function NumberInputField({
         </Button>
         <Button
           className={styles.osdkNumberInputStepButton}
-          aria-label="Decrement"
+          aria-label={
+            labels?.decrementButtonLabel ??
+            DEFAULT_NUMBER_INPUT_FIELD_LABELS.decrementButtonLabel
+          }
           tabIndex={-1}
           disabled={disabled}
           onClick={handleStepDown}

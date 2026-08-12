@@ -30,17 +30,30 @@ export type {
 } from "../../action-form/ActionFormApi.js";
 export { BaseForm } from "../../action-form/BaseForm.js";
 export type {
+  BaseFormLabels,
+  BaseFormDirectLabels,
+  FieldComponentLabels,
+  FieldLabelsByType,
+} from "../../action-form/BaseFormLabels.js";
+export type {
   ActionParameters,
+  AsyncDropdownFieldLabels,
   BaseFormFieldProps,
   CustomFieldProps,
+  DropdownFieldLabels,
   DropdownFieldProps,
   FieldComponent,
   FieldValueType,
+  FilePickerLabels,
   FilePickerProps,
   FormFieldDefinition,
+  FormFieldLabels,
   FormFieldPropsByType,
   NumberInputFieldProps,
+  NumberInputFieldLabels,
+  ObjectSelectFieldLabels,
   ObjectSelectFieldProps,
+  ObjectSetFieldLabels,
   ObjectSetFieldProps,
   Option,
   PortalContainer,
@@ -48,6 +61,7 @@ export type {
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
+  UnsupportedFieldLabels,
   UnsupportedFieldProps,
   ValidationError,
 } from "../../action-form/FormFieldApi.js";

@@ -20,6 +20,7 @@ import type {
   ActionValidationResponse,
 } from "@osdk/api";
 
+import type { BaseFormLabels } from "./BaseFormLabels.js";
 import type {
   FieldKey,
   FieldValueType,
@@ -58,7 +59,7 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
 
 interface ActionFormConfigProps<
   Q extends ActionDefinition<unknown>,
-> extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled"> {
+> extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled" | "labels"> {
   /**
    * The OSDK action definition. Its parameters drive the rendered fields
    * and the submission.
@@ -200,6 +201,11 @@ interface BaseFormCommonProps {
   isLoading?: boolean;
   /** Additional CSS class name for the root element. */
   className?: string;
+  /**
+   * Overrides user-facing strings in the form and its fields. Unspecified
+   * labels use built-in English defaults. See {@link BaseFormLabels}.
+   */
+  labels?: Partial<BaseFormLabels>;
   /** Label for the submit button. Default `"Submit"`. */
   submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
