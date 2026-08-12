@@ -470,12 +470,6 @@ export function buildScenarioClient(
     getEditedEntities: {
       value: getEditedEntities,
     },
-    getConflictingObjects: {
-      value: getConflictingObjects,
-    },
-    conflictingObjectsAsyncIter: {
-      value: conflictingObjectsAsyncIter,
-    },
     editedEntitiesAsyncIter: {
       value: editedEntitiesAsyncIter,
     },
@@ -487,6 +481,12 @@ export function buildScenarioClient(
     },
     editedLinksAsyncIter: {
       value: editedLinksAsyncIter,
+    },
+    getConflictingObjects: {
+      value: getConflictingObjects,
+    },
+    conflictingObjectsAsyncIter: {
+      value: conflictingObjectsAsyncIter,
     },
   }) as EXPERIMENTAL_ScenarioClient;
 }
