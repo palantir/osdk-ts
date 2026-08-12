@@ -21,9 +21,9 @@ import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
 import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type {
-  DropdownFieldLabels,
-  DropdownFieldProps,
+import {
+  DEFAULT_DROPDOWN_FIELD_LABELS,
+  type DropdownFieldProps,
 } from "../FormFieldApi.js";
 
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -31,13 +31,6 @@ import selectStyles from "../../base-components/select/Select.module.css";
 import dropdownStyles from "./DropdownField.module.css";
 
 const EMPTY_ARRAY: [] = [];
-const DEFAULT_DROPDOWN_FIELD_LABELS: DropdownFieldLabels = {
-  clearButtonLabel: "Clear",
-  renderRemoveButtonLabel: defaultRenderRemoveButtonLabel,
-  searchPlaceholder: "Search…",
-  noResultsText: "No results",
-};
-
 /**
  * SelectDropdown is only used for single-select (the multi-select path
  * always routes to ComboboxDropdown). We keep the `Multiple` generic so
@@ -525,8 +518,4 @@ function defaultItemToStringLabel<V>(item: V): string {
     return item.label;
   }
   return String(item);
-}
-
-function defaultRenderRemoveButtonLabel(label: string): string {
-  return `Remove ${label}`;
 }

@@ -18,7 +18,10 @@ import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 
-import type { FormFieldLabels } from "./FormFieldApi.js";
+import {
+  DEFAULT_FORM_FIELD_LABELS,
+  type FormFieldLabels,
+} from "./FormFieldApi.js";
 
 import styles from "./FormField.module.css";
 
@@ -134,14 +137,4 @@ function InfoTip({ ariaLabel, children }: InfoTipProps): React.ReactElement {
       </Popover.Portal>
     </Popover.Root>
   );
-}
-
-const DEFAULT_FORM_FIELD_LABELS: FormFieldLabels = {
-  requiredIndicatorAriaLabel: "required",
-  editedLabel: "Edited",
-  renderInfoTipAriaLabel: defaultRenderInfoTipAriaLabel,
-};
-
-function defaultRenderInfoTipAriaLabel(label: string | undefined): string {
-  return label != null ? `Info about ${label}` : "More information";
 }

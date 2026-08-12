@@ -19,10 +19,10 @@ import React, { useMemo } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type {
-  AsyncDropdownFieldLabels,
-  DropdownFieldLabels,
-  DropdownFieldProps,
+import {
+  DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS,
+  type AsyncDropdownFieldLabels,
+  type DropdownFieldProps,
 } from "../FormFieldApi.js";
 import { DropdownField } from "./DropdownField.js";
 
@@ -56,16 +56,6 @@ export interface AsyncDropdownFieldProps<
    */
   labels?: Partial<AsyncDropdownFieldLabels>;
 }
-
-type AsyncDropdownFieldOwnedLabels = Omit<
-  AsyncDropdownFieldLabels,
-  keyof DropdownFieldLabels
->;
-
-const DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS: AsyncDropdownFieldOwnedLabels = {
-  searchingText: "Searching…",
-  loadingText: "Loading…",
-};
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   props: AsyncDropdownFieldProps<V, Multiple>,

@@ -43,9 +43,16 @@ export interface FormFieldLabels {
   requiredIndicatorAriaLabel: string;
   /** @default "Edited" */
   editedLabel: string;
-  /** @default (label) => `Info about ${label}` */
+  /** @default (label) => label != null ? `Info about ${label}` : "More information" */
   renderInfoTipAriaLabel: (label: string | undefined) => string;
 }
+
+export const DEFAULT_FORM_FIELD_LABELS: FormFieldLabels = {
+  requiredIndicatorAriaLabel: "required",
+  editedLabel: "Edited",
+  renderInfoTipAriaLabel: (label) =>
+    label != null ? `Info about ${label}` : "More information",
+};
 
 /**
  * A form field definition specifies configuration for a single field.
@@ -182,13 +189,20 @@ export interface FormFieldPropsByType {
 export interface DropdownFieldLabels {
   /** @default "Clear" */
   clearButtonLabel: string;
-  /** @default (label) => `Remove ${label}` */
-  renderRemoveButtonLabel: (label: string) => string;
   /** @default "Search…" */
   searchPlaceholder: string;
   /** @default "No results" */
   noResultsText: string;
+  /** @default (label) => `Remove ${label}` */
+  renderRemoveButtonLabel: (label: string) => string;
 }
+
+export const DEFAULT_DROPDOWN_FIELD_LABELS: DropdownFieldLabels = {
+  clearButtonLabel: "Clear",
+  searchPlaceholder: "Search…",
+  noResultsText: "No results",
+  renderRemoveButtonLabel: (label) => `Remove ${label}`,
+};
 
 export interface DropdownFieldProps<
   V,
@@ -305,6 +319,11 @@ export interface FilePickerLabels {
   clearButtonLabel: string;
 }
 
+export const DEFAULT_FILE_PICKER_LABELS: FilePickerLabels = {
+  triggerAriaLabel: "Choose file",
+  clearButtonLabel: "Clear selection",
+};
+
 export interface FilePickerProps extends BaseFormFieldProps<
   File | File[],
   FilePickerLabels
@@ -388,6 +407,11 @@ export interface NumberInputFieldLabels {
   decrementButtonLabel: string;
 }
 
+export const DEFAULT_NUMBER_INPUT_FIELD_LABELS: NumberInputFieldLabels = {
+  incrementButtonLabel: "Increment",
+  decrementButtonLabel: "Decrement",
+};
+
 export interface NumberInputFieldProps extends BaseFormFieldProps<
   number,
   NumberInputFieldLabels
@@ -463,6 +487,23 @@ export interface ObjectSetFieldLabels {
   renderLoadErrorMessage: (message: string) => string;
 }
 
+export const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {
+  renderObjectSetCountLabel: (count, displayName) =>
+    `${formatObjectSetCount(count)} ${displayName ?? (count === "1" ? "object" : "objects")}`,
+  renderLoadErrorMessage: (message) => `Failed to load: ${message}`,
+};
+
+function formatObjectSetCount(count: string | undefined): string {
+  if (count == null) {
+    return "\u2013"; // '–' symbol
+  }
+  try {
+    return BigInt(count).toLocaleString();
+  } catch {
+    return count;
+  }
+}
+
 export interface ObjectSetFieldProps<
   T extends ObjectTypeDefinition,
 > extends Pick<
@@ -510,6 +551,14 @@ export interface AsyncDropdownFieldLabels extends DropdownFieldLabels {
   loadingText: string;
 }
 
+export const DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS: Omit<
+  AsyncDropdownFieldLabels,
+  keyof DropdownFieldLabels
+> = {
+  searchingText: "Searching…",
+  loadingText: "Loading…",
+};
+
 export interface ObjectSelectFieldLabels extends AsyncDropdownFieldLabels {}
 
 export type ObjectSelectFieldProps<
@@ -545,6 +594,10 @@ export interface UnsupportedFieldLabels {
   /** @default "Unsupported field type. Use a CUSTOM field instead" */
   message: string;
 }
+
+export const DEFAULT_UNSUPPORTED_FIELD_LABELS: UnsupportedFieldLabels = {
+  message: "Unsupported field type. Use a CUSTOM field instead",
+};
 
 export interface UnsupportedFieldProps extends Pick<
   BaseFormFieldProps<string, UnsupportedFieldLabels>,

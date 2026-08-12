@@ -25,6 +25,7 @@ import {
 } from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
+  DEFAULT_UNSUPPORTED_FIELD_LABELS,
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
@@ -133,7 +134,7 @@ function renderFieldComponent(
         <TextInputField
           {...props}
           id={fieldDefinition.fieldKey}
-          value={labels?.message ?? DEFAULT_UNSUPPORTED_FIELD_MESSAGE}
+          value={labels?.message ?? DEFAULT_UNSUPPORTED_FIELD_LABELS.message}
           error={error}
           disabled={true}
         />
@@ -272,9 +273,6 @@ function renderFieldComponent(
       return assertUnreachableFieldComponent(fieldDefinition);
   }
 }
-
-const DEFAULT_UNSUPPORTED_FIELD_MESSAGE =
-  "Unsupported field type. Use a CUSTOM field instead";
 
 function resolvePortalContainer(
   fieldComponentProps: { portalContainer?: PortalContainer },

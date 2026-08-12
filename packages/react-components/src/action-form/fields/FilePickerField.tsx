@@ -20,14 +20,12 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
 
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
-import type { FilePickerLabels, FilePickerProps } from "../FormFieldApi.js";
+import {
+  DEFAULT_FILE_PICKER_LABELS,
+  type FilePickerProps,
+} from "../FormFieldApi.js";
 
 import styles from "./FilePickerField.module.css";
-
-const DEFAULT_FILE_PICKER_LABELS: FilePickerLabels = {
-  triggerAriaLabel: "Choose file",
-  clearButtonLabel: "Clear selection",
-};
 
 export const FilePickerField: React.FC<FilePickerProps> = memo(
   function FilePickerFieldFn({

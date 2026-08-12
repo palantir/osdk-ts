@@ -26,9 +26,10 @@ import {
 } from "../../base-components/icon/BlueprintIcon.js";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type {
-  ObjectSetFieldLabels,
-  ObjectSetFieldProps,
+import {
+  DEFAULT_OBJECT_SET_FIELD_LABELS,
+  type ObjectSetFieldLabels,
+  type ObjectSetFieldProps,
 } from "../FormFieldApi.js";
 
 import styles from "./ObjectSetField.module.css";
@@ -39,11 +40,6 @@ const DEFAULT_OBJECT_ICON: Icon = {
 };
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
-const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {
-  renderObjectSetCountLabel: defaultRenderObjectSetCountLabel,
-  renderLoadErrorMessage: defaultRenderLoadErrorMessage,
-};
-
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
   props: ObjectSetFieldProps<T>,
 ) => React.ReactElement = typedReactMemo(function ObjectSetFieldFn<
@@ -184,32 +180,6 @@ const OBJECT_SET_ICON_SKELETON = (
 const OBJECT_SET_LABEL_SKELETON = (
   <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />
 );
-
-function defaultRenderLoadErrorMessage(message: string): string {
-  return `Failed to load: ${message}`;
-}
-
-function defaultRenderObjectSetCountLabel(
-  count: string | undefined,
-  displayName: string | undefined,
-): string {
-  return `${formatCount(count)} ${displayName ?? getFallbackObjectLabel(count)}`;
-}
-
-function formatCount(count: string | undefined): string {
-  if (count == null) {
-    return "\u2013"; // '–' symbol
-  }
-  try {
-    return BigInt(count).toLocaleString();
-  } catch {
-    return count;
-  }
-}
-
-function getFallbackObjectLabel(count: string | undefined): string {
-  return count === "1" ? "object" : "objects";
-}
 
 function toComponentIcon(apiIcon: { name: string; color: string }): Icon {
   return { name: apiIcon.name as IconName, color: apiIcon.color };

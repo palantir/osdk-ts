@@ -19,9 +19,9 @@ import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
 
-import type {
-  NumberInputFieldLabels,
-  NumberInputFieldProps,
+import {
+  DEFAULT_NUMBER_INPUT_FIELD_LABELS,
+  type NumberInputFieldProps,
 } from "../FormFieldApi.js";
 
 import styles from "./NumberInputField.module.css";
@@ -42,11 +42,6 @@ const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/u;
 
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
-const DEFAULT_NUMBER_INPUT_FIELD_LABELS: NumberInputFieldLabels = {
-  incrementButtonLabel: "Increment",
-  decrementButtonLabel: "Decrement",
-};
-
 export function NumberInputField({
   id,
   value,
