@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.57.0
+
+### Minor Changes
+
+- 8ce066f: Support map, media reference and inline object literal types on TypeScript function signatures
+- 3bfccdb: Emit struct field rids as valid five-component resource identifiers with a UUID locator
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+
 ## 2.56.0
 
 ### Patch Changes

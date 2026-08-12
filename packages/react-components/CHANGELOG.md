@@ -1,5 +1,13 @@
 # @osdk/react-components
 
+## 0.49.0
+
+### Minor Changes
+
+- 3370c61: Type ActionForm's `onSubmit` `applyAction` argument as `FormState<Q>`, remove the never-emitted `"validation"` variant from `FormError`, and add a theme token for ObjectSet fallback icons.
+- a129672: FilterList: fire `onFilterVisibilityChange` on drag-reorder in controlled mode, not just uncontrolled. Previously a drag in `addFilterMode="controlled"` fired no callback at all and the row snapped back, so reordering was impossible to observe or persist. Deprecate `addFilterMode`: it is going away, and visibility will always be managed internally, i.e. today's `"uncontrolled"` behavior. Deprecate the `newDefinitions` argument of `onFilterAdded`, which is the caller's own unchanged `filterDefinitions` rather than the post-add state — it is still passed, so existing handlers keep working, but read `onFilterVisibilityChange` for the resulting visibility and order instead. No breaking changes.
+- 4e85b63: Add `getCellValue` and `cellValueType` to ObjectTable column definitions, pass the cell value to `renderCell`, and type `getCellValue`'s return against the declared `cellValueType`. `cellValueType` is now required whenever `getCellValue` is provided. The `RDPs` type parameter of the object-table types now defaults to `{}`, matching the rest of the SDK.
+
 ## 0.48.0
 
 ### Minor Changes

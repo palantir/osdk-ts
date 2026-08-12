@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.57.0
+
+### Patch Changes
+
+- Updated dependencies [e9d7ffa]
+  - @osdk/client.unstable@2.57.0
+  - @osdk/api@2.57.0
+  - @osdk/generator-converters@2.57.0
+  - @osdk/shared.test@2.38.0
+
 ## 2.56.0
 
 ### Patch Changes
