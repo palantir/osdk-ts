@@ -8,5 +8,10 @@ export default defineConfig({
     // Prefer named `function f() {}` declarations for top-level functions, but
     // only warn: arrow functions still work, and inline callbacks are untouched.
     "func-style": ["warn", "declaration"],
+    "import/consistent-type-specifier-style": "off",
+    "typescript/consistent-type-imports": [
+      "error",
+      { fixStyle: "inline-type-imports" },
+    ],
   },
 });

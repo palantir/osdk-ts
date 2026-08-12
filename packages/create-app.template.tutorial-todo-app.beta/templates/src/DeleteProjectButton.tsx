@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import DeleteProjectDialog from "./DeleteProjectDialog";
-import type { IProject } from "./useProjects";
-import useProjects from "./useProjects";
+import useProjects, { type IProject } from "./useProjects";
 
 interface DeleteProjectButtonProps {
   project: IProject;

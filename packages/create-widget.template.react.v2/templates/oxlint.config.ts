@@ -18,6 +18,10 @@ export default defineConfig({
     "func-style": ["warn", "declaration"],
     // `import { type X }` and `import type { X }` are both fine.
     "import/consistent-type-specifier-style": "off",
+    "typescript/consistent-type-imports": [
+      "error",
+      { fixStyle: "inline-type-imports" },
+    ],
     // Assets in public/ are imported by absolute path so their URL respects
     // Vite's `base` (e.g. `vite build --base=/sub/`); a hardcoded "/logo.svg"
     // would not.

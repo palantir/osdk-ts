@@ -5,8 +5,7 @@ import css from "./Home.module.css";
 import Layout from "./Layout";
 import { ProjectDetails } from "./ProjectDetails";
 import ProjectSelect from "./ProjectSelect";
-import type { IProject } from "./useProjects";
-import useProjects from "./useProjects";
+import useProjects, { type IProject } from "./useProjects";
 
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
