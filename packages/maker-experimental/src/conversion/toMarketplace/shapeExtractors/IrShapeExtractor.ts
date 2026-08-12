@@ -827,6 +827,13 @@ function getPropertiesForDatasource(datasourceDef: {
   return new Set(propertyMapping ? Object.keys(propertyMapping) : []);
 }
 
+function getMarkingType(type: Type): "CBAC" | "MANDATORY" | undefined {
+  if (type.type === "array") {
+    return getMarkingType(type.array.subtype);
+  }
+  return type.type === "marking" ? type.marking.markingType : undefined;
+}
+
 /**
  * Extract marking shapes from the ontology block data.
  * Port of Java's MarkingShapeExtractor.getMarkingShapes().
@@ -854,11 +861,8 @@ function getMarkingShapes(
     for (const [propertyRid, propertyType] of Object.entries(
       objectType.objectType.propertyTypes,
     )) {
-      if (propertyType.type.type === "marking") {
-        const markingData = (
-          propertyType.type as { marking?: { markingType?: string } }
-        ).marking;
-        const markingType = markingData?.markingType;
+      const markingType = getMarkingType(propertyType.type);
+      if (markingType) {
         const propertyApiName =
           propertyType.apiName ?? propertyType.displayMetadata?.displayName;
         if (propertyApiName) {

@@ -307,7 +307,7 @@ function convertStructFieldValidations(
             display: {
               renderHint:
                 configuration.renderHint ??
-                (allowedValues.type === "oneOf"
+                (allowedValues.type === "oneOf" || fieldType.type === "boolean"
                   ? { type: "dropdown", dropdown: {} }
                   : renderHintFromActionParameterType(
                       actionParameterType,
