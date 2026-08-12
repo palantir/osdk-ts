@@ -20296,13 +20296,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  374 | }
-  375 |
-&gt; 376 | const meta = {
+  360 | }
+  361 |
+&gt; 362 | const meta = {
       | ^
-  377 |   title: &quot;Components/ActionForm/Usage&quot;,
-  378 |   component: UpdateEmployeeActionFormStory,
-  379 |   tags: [&quot;beta&quot;],
+  363 |   title: &quot;Components/ActionForm/Usage&quot;,
+  364 |   component: UpdateEmployeeActionFormStory,
+  365 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/ActionForm.stories.tsx:
 /*
@@ -20499,35 +20499,21 @@ function applyUpdateEmployeeStoryAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
   applyAction: UpdateEmployeeApplyAction,
 ): ReturnType&lt;UpdateEmployeeApplyAction&gt; {
-  // ActionForm passes coerced form values to custom submit handlers at runtime.
-  // The callback type currently exposes metadata-shaped ActionParameters, so the
-  // story uses the callback&#39;s parameter type to keep the example wired to the
-  // real apply path while preserving type safety.
-  return applyAction(
-    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState&lt;typeof generatedFieldsActionDefinition&gt;,
   applyAction: GeneratedFieldsApplyAction,
 ): ReturnType&lt;GeneratedFieldsApplyAction&gt; {
-  // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
-  // using the same applyAction path even though the callback type is metadata-shaped.
-  return applyAction(
-    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState&lt;typeof unsupportedFieldsActionDefinition&gt;,
   applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType&lt;UnsupportedFieldsApplyAction&gt; {
-  // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
-  // through the real applyAction path so the response panel shows true results.
-  return applyAction(
-    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 const handleCustomSubmit: NonNullable&lt;
@@ -36763,13 +36749,13 @@ export const WithErrorCallback: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  374 | }
-  375 |
-&gt; 376 | const meta = {
+  360 | }
+  361 |
+&gt; 362 | const meta = {
       | ^
-  377 |   title: &quot;Components/ActionForm/Usage&quot;,
-  378 |   component: UpdateEmployeeActionFormStory,
-  379 |   tags: [&quot;beta&quot;],
+  363 |   title: &quot;Components/ActionForm/Usage&quot;,
+  364 |   component: UpdateEmployeeActionFormStory,
+  365 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/ActionForm.stories.tsx:
 /*
@@ -36966,35 +36952,21 @@ function applyUpdateEmployeeStoryAction(
   formState: FormState&lt;typeof actionDefinition&gt;,
   applyAction: UpdateEmployeeApplyAction,
 ): ReturnType&lt;UpdateEmployeeApplyAction&gt; {
-  // ActionForm passes coerced form values to custom submit handlers at runtime.
-  // The callback type currently exposes metadata-shaped ActionParameters, so the
-  // story uses the callback&#39;s parameter type to keep the example wired to the
-  // real apply path while preserving type safety.
-  return applyAction(
-    formState as unknown as Parameters&lt;UpdateEmployeeApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState&lt;typeof generatedFieldsActionDefinition&gt;,
   applyAction: GeneratedFieldsApplyAction,
 ): ReturnType&lt;GeneratedFieldsApplyAction&gt; {
-  // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
-  // using the same applyAction path even though the callback type is metadata-shaped.
-  return applyAction(
-    formState as unknown as Parameters&lt;GeneratedFieldsApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState&lt;typeof unsupportedFieldsActionDefinition&gt;,
   applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType&lt;UnsupportedFieldsApplyAction&gt; {
-  // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
-  // through the real applyAction path so the response panel shows true results.
-  return applyAction(
-    formState as unknown as Parameters&lt;UnsupportedFieldsApplyAction&gt;[0],
-  );
+  return applyAction(formState);
 }
 
 const handleCustomSubmit: NonNullable&lt;
