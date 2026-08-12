@@ -33,8 +33,8 @@ export default defineConfig({
     "import/no-absolute-path": "off",
     // See eqeqeq above.
     "no-eq-null": "off",
-    // Stylistic; inverting conditions is not always clearer. The repo disables
-    // both the eslint and unicorn variants.
+    // Stylistic; inverting conditions is not always clearer. Both the eslint and
+    // unicorn variants are off, matching the OSDK repo.
     "no-negated-condition": "off",
     // Returning from a Promise executor is a real smell but was not previously
     // enforced, and the mock helpers rely on the terse form.
@@ -69,6 +69,7 @@ export default defineConfig({
     "unicorn/filename-case": "off",
     // `(await getThing()).prop` is clear enough.
     "unicorn/no-await-expression-member": "off",
+    // See no-negated-condition above.
     "unicorn/no-negated-condition": "off",
     // Explicit `return undefined` is often clearer than a bare `return`.
     "unicorn/no-useless-undefined": "off",
