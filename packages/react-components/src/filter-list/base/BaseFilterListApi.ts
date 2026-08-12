@@ -50,10 +50,10 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
   onOrderChange?: (orderedKeys: string[]) => void;
 
   /**
-   * Opts into the collapse/expand control. When `false` the panel is always
-   * expanded, no collapse control is rendered, and `collapsed` /
+   * Whether the collapse/expand control is available. When `false` the panel is
+   * always expanded, no collapse control is rendered, and `collapsed` /
    * `defaultCollapsed` are ignored.
-   * @default false
+   * @default true
    */
   enableCollapse?: boolean;
 
@@ -63,7 +63,7 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
    * re-render with a new value in response to `onCollapsedChange`.
    *
    * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
-   * precedence. Requires `enableCollapse`.
+   * precedence. Ignored when `enableCollapse` is `false`.
    */
   collapsed?: boolean;
 
@@ -73,7 +73,7 @@ export interface BaseFilterListProps<D extends FilterDefinitionControls> {
    * prop are ignored.
    *
    * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
-   * precedence. Requires `enableCollapse`.
+   * precedence. Ignored when `enableCollapse` is `false`.
    * @default false
    */
   defaultCollapsed?: boolean;

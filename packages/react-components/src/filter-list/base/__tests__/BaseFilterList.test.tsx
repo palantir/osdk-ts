@@ -84,37 +84,27 @@ function getExpandButton(): HTMLElement {
 }
 
 describe("BaseFilterList", () => {
-  describe("collapse is opt-in", () => {
-    it("renders no header or collapse control by default", () => {
+  describe("collapse is available by default", () => {
+    it("renders the collapse control with no collapse props supplied", () => {
       renderBase();
-      expect(screen.queryByRole("button")).toBeNull();
+      expect(getCollapseButton()).toBeDefined();
       expect(isCollapsed()).toBe(false);
     });
 
-    it("stays expanded when defaultCollapsed is set without enableCollapse", () => {
+    it("starts collapsed when defaultCollapsed is set", () => {
       renderBase({ defaultCollapsed: true });
-      expect(isCollapsed()).toBe(false);
-    });
-
-    it("stays expanded when collapsed is set without enableCollapse", () => {
-      renderBase({ collapsed: true });
-      expect(isCollapsed()).toBe(false);
-    });
-  });
-
-  describe("collapse without onCollapsedChange", () => {
-    it("renders collapsed when defaultCollapsed is set and no handler is supplied", () => {
-      renderBase({ enableCollapse: true, defaultCollapsed: true });
       expect(isCollapsed()).toBe(true);
     });
 
-    it("renders the collapse button when no handler is supplied", () => {
-      renderBase({ enableCollapse: true });
-      expect(getCollapseButton()).toBeDefined();
+    it("starts collapsed when collapsed is set", () => {
+      renderBase({ collapsed: true });
+      expect(isCollapsed()).toBe(true);
     });
+  });
 
+  describe("uncontrolled mode", () => {
     it("collapses and expands on its own with no handler supplied", () => {
-      renderBase({ enableCollapse: true });
+      renderBase();
       expect(isCollapsed()).toBe(false);
 
       fireEvent.click(getCollapseButton());
@@ -123,12 +113,10 @@ describe("BaseFilterList", () => {
       fireEvent.click(getExpandButton());
       expect(isCollapsed()).toBe(false);
     });
-  });
 
-  describe("onCollapsedChange as an observer", () => {
-    it("fires on collapse and expand while the component owns the state", () => {
+    it("fires onCollapsedChange while still owning the state", () => {
       const onCollapsedChange = vi.fn();
-      renderBase({ enableCollapse: true, onCollapsedChange });
+      renderBase({ onCollapsedChange });
 
       fireEvent.click(getCollapseButton());
       expect(onCollapsedChange).toHaveBeenLastCalledWith(true);
@@ -140,10 +128,7 @@ describe("BaseFilterList", () => {
     });
 
     it("ignores a changed defaultCollapsed after mount", () => {
-      const { rerender } = renderBase({
-        enableCollapse: true,
-        defaultCollapsed: true,
-      });
+      const { rerender } = renderBase({ defaultCollapsed: true });
       expect(isCollapsed()).toBe(true);
 
       rerender(
@@ -154,7 +139,6 @@ describe("BaseFilterList", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           activeFilterCount={0}
-          enableCollapse={true}
           defaultCollapsed={false}
         />,
       );
@@ -164,13 +148,13 @@ describe("BaseFilterList", () => {
 
   describe("controlled mode", () => {
     it("renders the value from the collapsed prop", () => {
-      renderBase({ enableCollapse: true, collapsed: true });
+      renderBase({ collapsed: true });
       expect(isCollapsed()).toBe(true);
     });
 
     it("does not move on its own when the caller ignores the callback", () => {
       const onCollapsedChange = vi.fn();
-      renderBase({ enableCollapse: true, collapsed: false, onCollapsedChange });
+      renderBase({ collapsed: false, onCollapsedChange });
 
       fireEvent.click(getCollapseButton());
 
@@ -180,17 +164,14 @@ describe("BaseFilterList", () => {
 
     it("fires the callback even with no controlled value change", () => {
       const onCollapsedChange = vi.fn();
-      renderBase({ enableCollapse: true, collapsed: true, onCollapsedChange });
+      renderBase({ collapsed: true, onCollapsedChange });
 
       fireEvent.click(getExpandButton());
       expect(onCollapsedChange).toHaveBeenCalledWith(false);
     });
 
     it("follows the caller re-rendering with a new value", () => {
-      const { rerender } = renderBase({
-        enableCollapse: true,
-        collapsed: false,
-      });
+      const { rerender } = renderBase({ collapsed: false });
       expect(isCollapsed()).toBe(false);
 
       rerender(
@@ -201,7 +182,6 @@ describe("BaseFilterList", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           activeFilterCount={0}
-          enableCollapse={true}
           collapsed={true}
         />,
       );
@@ -209,16 +189,12 @@ describe("BaseFilterList", () => {
     });
 
     it("takes precedence over defaultCollapsed", () => {
-      renderBase({
-        enableCollapse: true,
-        collapsed: false,
-        defaultCollapsed: true,
-      });
+      renderBase({ collapsed: false, defaultCollapsed: true });
       expect(isCollapsed()).toBe(false);
     });
 
     it("works without onCollapsedChange, which is only a listener", () => {
-      renderBase({ enableCollapse: true, collapsed: true });
+      renderBase({ collapsed: true });
       expect(isCollapsed()).toBe(true);
       expect(getExpandButton()).toBeDefined();
     });
@@ -237,7 +213,17 @@ describe("BaseFilterList", () => {
       ).toBeNull();
     });
 
-    it("still renders a header for other reasons when collapse is disabled", () => {
+    it("ignores a controlled collapsed value when disabled", () => {
+      renderBase({ enableCollapse: false, collapsed: true });
+      expect(isCollapsed()).toBe(false);
+    });
+
+    it("renders no header at all when disabled and nothing else needs one", () => {
+      renderBase({ enableCollapse: false });
+      expect(screen.queryByRole("button")).toBeNull();
+    });
+
+    it("still renders a header for other reasons when disabled", () => {
       renderBase({ enableCollapse: false, title: "Filters" });
       expect(screen.getByText("Filters")).toBeDefined();
       expect(
@@ -247,17 +233,17 @@ describe("BaseFilterList", () => {
   });
 
   describe("onCollapsedChange does not gate the control", () => {
-    it("renders the collapse button with no handler in either mode", () => {
-      renderBase({ enableCollapse: true });
+    it("renders the collapse button in both modes with no handler", () => {
+      renderBase();
       expect(getCollapseButton()).toBeDefined();
       cleanup();
 
-      renderBase({ enableCollapse: true, collapsed: false });
+      renderBase({ collapsed: false });
       expect(getCollapseButton()).toBeDefined();
     });
 
-    it("does not render the control when only the handler is supplied", () => {
-      renderBase({ onCollapsedChange: vi.fn() });
+    it("omits the control when disabled even with a handler supplied", () => {
+      renderBase({ enableCollapse: false, onCollapsedChange: vi.fn() });
       expect(
         screen.queryByRole("button", { name: "Collapse filters" }),
       ).toBeNull();

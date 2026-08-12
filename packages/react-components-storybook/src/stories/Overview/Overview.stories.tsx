@@ -318,7 +318,6 @@ function DataTab(): React.ReactElement {
           filterDefinitions={FILTER_DEFINITIONS}
           onFilterClauseChanged={setFilterClause}
           title="Employee Filters"
-          enableCollapse={true}
           onCollapsedChange={setCollapsed}
           showActiveFilterCount={true}
         />

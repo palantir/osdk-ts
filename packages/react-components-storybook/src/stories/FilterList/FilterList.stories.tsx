@@ -207,18 +207,18 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
     enableCollapse: {
       description:
-        "Opts into the collapse/expand control. When false the panel is always expanded.",
+        "Whether the collapse/expand control is available. When false the panel is always expanded.",
       control: "boolean",
-      table: { defaultValue: { summary: "false" } },
+      table: { defaultValue: { summary: "true" } },
     },
     collapsed: {
       description:
-        "Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed. Requires enableCollapse.",
+        "Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed.",
       control: "boolean",
     },
     defaultCollapsed: {
       description:
-        "Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount. Requires enableCollapse.",
+        "Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount.",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
@@ -687,15 +687,14 @@ function CollapsiblePanelStory(args: Partial<EmployeeFilterListProps>) {
 export const CollapsiblePanel: Story = {
   args: {
     title: "Employee Filters",
-    enableCollapse: true,
     showActiveFilterCount: true,
   },
   parameters: {
     docs: {
       description: {
         story:
-          "Opt in with `enableCollapse`, then click the collapse button to " +
-          "minimize the panel. Collapse is uncontrolled — no state wiring " +
+          "Click the collapse button to minimize the panel. Collapse is " +
+          "available by default and uncontrolled here — no state wiring " +
           "required. Active filter count is shown in the collapsed state.",
       },
       source: {
@@ -703,7 +702,6 @@ export const CollapsiblePanel: Story = {
   objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
-  enableCollapse={true}
   showActiveFilterCount={true}
 />`,
       },
@@ -736,7 +734,6 @@ function ControlledCollapseStory(args: Partial<EmployeeFilterListProps>) {
 export const ControlledCollapse: Story = {
   args: {
     title: "Employee Filters",
-    enableCollapse: true,
   },
   parameters: {
     docs: {
@@ -753,7 +750,6 @@ export const ControlledCollapse: Story = {
   objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
-  enableCollapse={true}
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
 />`,
@@ -1842,7 +1838,6 @@ export const FullFeatured: Story = {
   name: "Full Featured",
   args: {
     title: "Employee Filters",
-    enableCollapse: true,
     showResetButton: true,
     showActiveFilterCount: true,
     enableSorting: true,
@@ -1863,7 +1858,6 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title="Employee Filters"
   titleIcon={<FilterIcon />}
-  enableCollapse={true}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}

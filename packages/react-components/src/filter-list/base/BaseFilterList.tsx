@@ -33,7 +33,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   const {
     title,
     titleIcon,
-    enableCollapse = false,
+    enableCollapse = true,
     collapsed,
     defaultCollapsed,
     onCollapsedChange,
