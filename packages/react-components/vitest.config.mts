@@ -26,7 +26,27 @@ export default defineConfig({
       TZ: "UTC",
       LANG: "en_US.UTF-8",
     },
+    // Env-driven so these are not turbo `--` args; see .circleci/README.md.
+    // classnameTemplate prefixes the package directory, because
+    // CircleCI keys a test on (classname, name) and vitest's default
+    // classname is package-relative, so `src/junk.test.ts` collides
+    // across packages.
+    reporters: process.env.CI
+      ? [
+        "default",
+        [
+          "junit",
+          {
+            classnameTemplate: (v) =>
+              v.filepath.split("/packages/").pop() ?? v.filepath,
+          },
+        ],
+      ]
+      : ["default"],
+    outputFile: { junit: "reports/junit.xml" },
     coverage: {
+      enabled: process.env.COVERAGE === "true",
+      reporter: ["json"],
       include: ["src/**"],
       // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [

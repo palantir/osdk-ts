@@ -25,7 +25,12 @@ export default defineConfig({
       },
     },
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    // Hand-maintained: monorepolint's excludePackages skips this file.
+    reporters: process.env.CI ? ["default", "junit"] : ["default"],
+    outputFile: { junit: "reports/junit.xml" },
     coverage: {
+      enabled: process.env.COVERAGE === "true",
+      reporter: ["json"],
       include: ["src/**"],
       // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [
