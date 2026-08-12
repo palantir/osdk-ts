@@ -12,7 +12,7 @@
     "dev": "vite",
     "fix": "ultracite fix",
     "format": "oxfmt .",
-    "lint": "ultracite check",
+    "lint": "ultracite check --report-unused-disable-directives-severity=error",
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
