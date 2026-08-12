@@ -80,10 +80,7 @@ export interface CustomFilterDefinition<
   defaultFilterState?: State;
 
   /**
-   * @deprecated Rename to `defaultFilterState`; the value is unchanged. This
-   * field does not seed filter state — it only supplies the state handed to
-   * `renderInput` before the filter is touched, so it never reaches
-   * `toWhereClause`. Still honoured there, after `defaultFilterState`.
+   * @deprecated Rename to `defaultFilterState`.
    */
   filterState?: State;
   /**

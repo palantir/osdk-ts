@@ -87,9 +87,7 @@ export interface HasLinkFilterDefinition<
   defaultFilterState?: HasLinkFilterState;
 
   /**
-   * @deprecated Use `defaultFilterState`. This field was required but never
-   * read: a value here has never had any effect, and still has none. It is
-   * optional now, so it can simply be deleted.
+   * @deprecated Use `defaultFilterState`.
    */
   filterState?: HasLinkFilterState;
 }
@@ -132,14 +130,12 @@ export interface LinkedPropertyFilterDefinition<
   filterComponent?: LinkedC;
 
   /**
-   * @deprecated Rename to `filterComponent`; the value is unchanged. Still
-   * honoured as a fallback — `filterComponent` wins when both are set.
+   * @deprecated Rename to `filterComponent`.
    */
   linkedFilterComponent?: LinkedC;
 
   /**
-   * Seeds the state of the filter on the *linked* property — the inner state,
-   * not the `linkedProperty` wrapper; FilterList wraps it. FilterList owns the
+   * Seeds the state of the filter on the *linked* property. FilterList owns the
    * state from then on. `onFilterStateChanged` fires with the wrapper.
    *
    * @default undefined (filter starts empty)
@@ -147,25 +143,17 @@ export interface LinkedPropertyFilterDefinition<
   defaultFilterState?: FilterStateByComponentType[LinkedC];
 
   /**
-   * @deprecated Rename to `defaultFilterState`; the value is unchanged (both
-   * take the inner state). Still honoured as a fallback —
-   * `defaultFilterState` wins when both are set.
+   * @deprecated Rename to `defaultFilterState`.
    */
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
 
   /**
-   * @deprecated Use `defaultFilterState`, which takes this same inner state.
-   * This field was required but never read: a value here has never had any
-   * effect, and still has none. It is optional now, so it can simply be
-   * deleted.
+   * @deprecated Use `defaultFilterState`.
    */
   linkedFilterState?: FilterStateByComponentType[LinkedC];
 
   /**
-   * @deprecated Use `defaultFilterState`, which takes the inner state and is
-   * wrapped for you. This field was required but never read: a value here has
-   * never had any effect, and still has none. It is optional now, so it can
-   * simply be deleted.
+   * @deprecated Use `defaultFilterState`.
    */
   filterState?: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
 

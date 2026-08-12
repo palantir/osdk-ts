@@ -163,6 +163,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
     /** @deprecated Use `onFilterVisibilityChange`. */
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
@@ -214,16 +215,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Seeds filter states from external storage, keyed by
-   * `getFilterKey(definition)`. Merged over each definition's
-   * `defaultFilterState` on mount; FilterList owns the state from then on.
-   * Use `onFilterStateChanged` to persist changes back out.
+   * Initial filter states for hydrating from external storage.
+   * These states are merged over definition defaults on mount.
+   * Use onFilterStateChanged to persist state changes externally.
    */
   defaultFilterStates?: Map<string, FilterState>;
 
   /**
-   * @deprecated Rename to `defaultFilterStates`; the value is unchanged. Still
-   * honoured as a fallback — `defaultFilterStates` wins when both are set.
+   * @deprecated Rename to `defaultFilterStates`.
    */
   initialFilterStates?: Map<string, FilterState>;
 

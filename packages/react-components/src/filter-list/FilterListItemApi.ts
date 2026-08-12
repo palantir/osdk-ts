@@ -310,10 +310,7 @@ interface PropertyFilterDefinitionBase<
   defaultFilterState?: FilterStateByComponentType[C];
 
   /**
-   * @deprecated Rename to `defaultFilterState`; the value is unchanged. This
-   * field was documented as putting the filter in controlled mode, but it has
-   * only ever been read once, on mount, to seed uncontrolled state. Still
-   * honoured as a fallback — `defaultFilterState` wins when both are set.
+   * @deprecated Rename to `defaultFilterState`.
    */
   filterState?: FilterStateByComponentType[C];
 

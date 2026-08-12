@@ -64,9 +64,7 @@ export interface KeywordSearchFilterDefinition<
   defaultFilterState?: KeywordSearchFilterState;
 
   /**
-   * @deprecated Use `defaultFilterState`. This field is accepted but never
-   * read: a value here has never had any effect, and still has none. Setting
-   * `defaultFilterState` instead will start seeding the filter.
+   * @deprecated Use `defaultFilterState`.
    */
   filterState?: KeywordSearchFilterState;
 }

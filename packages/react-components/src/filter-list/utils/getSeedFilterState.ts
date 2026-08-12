@@ -60,6 +60,9 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     case "CUSTOM":
       return definition.defaultFilterState;
 
+    // The only kind whose definition and stored state differ in shape: the
+    // definition takes the inner state, the map holds a `linkedProperty`
+    // wrapper around it.
     case "LINKED_PROPERTY": {
       const innerState =
         definition.defaultFilterState ??
