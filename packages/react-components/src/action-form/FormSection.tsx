@@ -20,6 +20,7 @@ import classNames from "classnames";
 import React, { memo } from "react";
 
 import type { FormSectionDefinition } from "./ActionFormApi.js";
+import { DEFAULT_BASE_FORM_DIRECT_LABELS } from "./BaseFormLabels.js";
 
 import styles from "./FormSection.module.css";
 
@@ -35,7 +36,7 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
     definition,
     errorCount,
     children,
-    renderErrorCountLabel = defaultRenderErrorCountLabel,
+    renderErrorCountLabel = DEFAULT_BASE_FORM_DIRECT_LABELS.renderSectionErrorCount,
   }: FormSectionProps): React.ReactElement {
     const {
       title,
@@ -108,10 +109,6 @@ export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
     );
   },
 );
-
-function defaultRenderErrorCountLabel(count: number): string {
-  return count === 1 ? "1 error" : `${count} errors`;
-}
 
 interface MinimalSectionProps {
   title: string;

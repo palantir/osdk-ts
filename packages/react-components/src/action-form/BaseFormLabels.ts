@@ -56,6 +56,17 @@ export interface BaseFormDirectLabels {
   renderSectionErrorCount: (count: number) => string;
 }
 
+export const DEFAULT_BASE_FORM_DIRECT_LABELS: BaseFormDirectLabels = {
+  loadingFields: "Loading form fields",
+  submissionFailed: "Submission failed",
+  validationError: "Invalid",
+  invalidFields: "Some fields are invalid",
+  renderIssueCount: (count) => (count === 1 ? "1 issue" : `${count} issues`),
+  submitting: "Submitting…",
+  renderSectionErrorCount: (count) =>
+    count === 1 ? "1 error" : `${count} errors`,
+};
+
 /** All user-facing strings rendered by BaseForm and its field renderers. */
 export interface BaseFormLabels extends BaseFormDirectLabels {
   /** User-facing strings rendered by each FormField chrome. */

@@ -24,7 +24,10 @@ import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
-import type { BaseFormLabels } from "./BaseFormLabels.js";
+import {
+  DEFAULT_BASE_FORM_DIRECT_LABELS,
+  type BaseFormLabels,
+} from "./BaseFormLabels.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
@@ -96,7 +99,8 @@ const BaseFormContent = memo(function BaseFormContentFn({
       ? submissionError instanceof Error
         ? submissionError.message
         : // TODO: provide better error message
-          (labels?.submissionFailed ?? "Submission failed")
+          (labels?.submissionFailed ??
+          DEFAULT_BASE_FORM_DIRECT_LABELS.submissionFailed)
       : undefined;
 
   const submitForm = useCallback(async () => {
@@ -131,11 +135,14 @@ const BaseFormContent = memo(function BaseFormContentFn({
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
     label: labelByFieldKey.get(key) ?? key,
-    message: entry?.message ?? labels?.validationError ?? "Invalid",
+    message:
+      entry?.message ??
+      labels?.validationError ??
+      DEFAULT_BASE_FORM_DIRECT_LABELS.validationError,
   }));
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
-    ? (labels?.invalidFields ?? "Some fields are invalid")
+    ? (labels?.invalidFields ?? DEFAULT_BASE_FORM_DIRECT_LABELS.invalidFields)
     : submissionErrorMessage;
   const isFormPending = isPending || isSubmitting;
   const isSubmitButtonDisabled =
@@ -154,7 +161,10 @@ const BaseFormContent = memo(function BaseFormContentFn({
       {isLoading && allFieldDefinitions.length === 0 && (
         <div
           role="status"
-          aria-label={labels?.loadingFields ?? "Loading form fields"}
+          aria-label={
+            labels?.loadingFields ??
+            DEFAULT_BASE_FORM_DIRECT_LABELS.loadingFields
+          }
           className={styles.osdkFormFields}
         >
           {FORM_SKELETON}
@@ -182,7 +192,10 @@ const BaseFormContent = memo(function BaseFormContentFn({
               key={item.key}
               definition={item.definition}
               errorCount={sectionErrorCount}
-              renderErrorCountLabel={labels?.renderSectionErrorCount}
+              renderErrorCountLabel={
+                labels?.renderSectionErrorCount ??
+                DEFAULT_BASE_FORM_DIRECT_LABELS.renderSectionErrorCount
+              }
             >
               {item.definition.fields.map((fieldDef) => (
                 <FieldBridge
@@ -200,14 +213,19 @@ const BaseFormContent = memo(function BaseFormContentFn({
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator
           errorEntries={errorEntries}
-          formatIssueCount={labels?.renderIssueCount}
+          renderIssueCount={
+            labels?.renderIssueCount ??
+            DEFAULT_BASE_FORM_DIRECT_LABELS.renderIssueCount
+          }
         />
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
             isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
-            pendingButtonText={labels?.submitting}
+            pendingButtonText={
+              labels?.submitting ?? DEFAULT_BASE_FORM_DIRECT_LABELS.submitting
+            }
             buttonText={submitButtonText}
             buttonVariant={submitButtonVariant}
             onClick={submitForm}
@@ -390,7 +408,7 @@ interface SubmitButtonProps {
   isPending: boolean;
   isSubmitDisabled: boolean;
   errorMessage: string | undefined;
-  pendingButtonText?: string;
+  pendingButtonText: string;
   buttonText: string;
   buttonVariant: "primary" | "secondary";
   onClick: () => void;
@@ -400,7 +418,7 @@ const SubmitButton = memo(function SubmitButtonFn({
   isPending,
   isSubmitDisabled,
   errorMessage,
-  pendingButtonText = "Submitting…",
+  pendingButtonText,
   buttonText,
   buttonVariant,
   onClick,
@@ -442,13 +460,13 @@ const SubmitButton = memo(function SubmitButtonFn({
 
 interface ErrorIndicatorProps {
   errorEntries: ReadonlyArray<ErrorEntry>;
-  formatIssueCount?: (count: number) => string;
+  renderIssueCount: (count: number) => string;
 }
 
 // memo omitted: errorEntries is always a new array (RHF reuses the same errors ref)
 function ErrorIndicator({
   errorEntries,
-  formatIssueCount = renderIssueCount,
+  renderIssueCount,
 }: ErrorIndicatorProps): React.ReactElement | null {
   if (errorEntries.length === 0) {
     return null;
@@ -461,7 +479,7 @@ function ErrorIndicator({
       <Tooltip.Trigger>
         <span className={styles.osdkFormErrorIndicator}>
           <ErrorIcon size={14} />
-          {formatIssueCount(count)}
+          {renderIssueCount(count)}
         </span>
       </Tooltip.Trigger>
       <Tooltip.Portal>
@@ -480,8 +498,4 @@ function ErrorIndicator({
       </Tooltip.Portal>
     </Tooltip.Root>
   );
-}
-
-function renderIssueCount(count: number): string {
-  return count === 1 ? "1 issue" : `${count} issues`;
 }
