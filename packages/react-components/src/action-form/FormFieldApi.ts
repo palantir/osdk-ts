@@ -182,7 +182,11 @@ type FormFieldComponentPropsByActionParameter<
           ? P extends ActionMetadata.DataType.Object<infer T>
             ? ObjectSelectFieldProps<T>
             : never
-          : FormFieldPropsByType[C];
+          : C extends "OBJECT_SET"
+            ? P extends ActionMetadata.DataType.ObjectSet<infer T>
+              ? ObjectSetFieldProps<T>
+              : never
+            : FormFieldPropsByType[C];
 };
 
 /**

@@ -17,10 +17,15 @@
 import type {
   ActionDefinition,
   ActionMetadata,
+  BaseObjectSet,
+  ObjectSet,
   ObjectTypeDefinition,
 } from "@osdk/api";
 
-import type { FormFieldDefinition } from "../../public/experimental/action-form.js";
+import type {
+  FieldValueType,
+  FormFieldDefinition,
+} from "../../public/experimental/action-form.js";
 
 const EMPLOYEE_TYPE = {
   type: "object",
@@ -32,6 +37,50 @@ const OFFICE_TYPE = {
   apiName: "Office",
 } as const satisfies ObjectTypeDefinition;
 
+const GENERATED_OFFICE_TYPE = {
+  type: "object",
+  apiName: "GeneratedOffice",
+  primaryKeyApiName: "officeId",
+  primaryKeyType: "integer",
+} as const satisfies ObjectTypeDefinition;
+
+interface GeneratedEmployeeObjectSet extends ObjectSet<
+  GeneratedEmployee,
+  GeneratedEmployeeObjectSet
+> {}
+
+interface GeneratedEmployee extends ObjectTypeDefinition {
+  apiName: "GeneratedEmployee";
+  primaryKeyApiName: "employeeId";
+  primaryKeyType: "string";
+  __DefinitionMetadata?: {
+    objectSet: GeneratedEmployeeObjectSet;
+    props: { employeeId: string };
+    linksType: {};
+    strictProps: { employeeId: string };
+    apiName: "GeneratedEmployee";
+    description: string;
+    displayName: string;
+    icon: undefined;
+    implements: [];
+    interfaceMap: {};
+    inverseInterfaceMap: {};
+    links: {};
+    pluralDisplayName: string;
+    primaryKeyApiName: "employeeId";
+    primaryKeyType: "string";
+    properties: { employeeId: { type: "string" } };
+    rid: string;
+    status: undefined;
+    titleProperty: "employeeId";
+    type: "object";
+    visibility: undefined;
+  };
+}
+
+declare const generatedEmployeeObjectSet: GeneratedEmployeeObjectSet;
+declare const generatedOfficeObjectSet: ObjectSet<typeof GENERATED_OFFICE_TYPE>;
+
 interface UpdateProfileAction extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
     signatures: unknown;
@@ -39,6 +88,9 @@ interface UpdateProfileAction extends ActionDefinition<unknown> {
       enabled: { type: "boolean" };
       employee: {
         type: ActionMetadata.DataType.Object<typeof EMPLOYEE_TYPE>;
+      };
+      employees: {
+        type: ActionMetadata.DataType.ObjectSet<GeneratedEmployee>;
       };
       title: { type: "string" };
     };
@@ -48,6 +100,13 @@ interface UpdateProfileAction extends ActionDefinition<unknown> {
     rid: string;
   };
 }
+
+generatedEmployeeObjectSet satisfies ObjectSet<GeneratedEmployee>;
+generatedEmployeeObjectSet satisfies BaseObjectSet<GeneratedEmployee>;
+generatedEmployeeObjectSet satisfies FieldValueType<
+  UpdateProfileAction,
+  "employees"
+>;
 
 const booleanDropdown: FormFieldDefinition<UpdateProfileAction> = {
   fieldKey: "enabled",
@@ -119,6 +178,29 @@ const invalidEmployeeObjectSelect: FormFieldDefinition<UpdateProfileAction> = {
   },
 };
 invalidEmployeeObjectSelect satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const generatedEmployeeObjectSetField: FormFieldDefinition<UpdateProfileAction> =
+  {
+    fieldKey: "employees",
+    fieldComponent: "OBJECT_SET",
+    label: "Employees",
+    fieldComponentProps: {
+      value: generatedEmployeeObjectSet,
+    },
+  };
+generatedEmployeeObjectSetField satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const invalidGeneratedOfficeObjectSetField: FormFieldDefinition<UpdateProfileAction> =
+  {
+    fieldKey: "employees",
+    fieldComponent: "OBJECT_SET",
+    label: "Employees",
+    fieldComponentProps: {
+      // @ts-expect-error Object-set fields require the action parameter's object type
+      value: generatedOfficeObjectSet,
+    },
+  };
+invalidGeneratedOfficeObjectSetField satisfies FormFieldDefinition<UpdateProfileAction>;
 
 // @ts-expect-error Boolean action parameters do not support text inputs
 const invalidBooleanTextInput: FormFieldDefinition<UpdateProfileAction> = {
