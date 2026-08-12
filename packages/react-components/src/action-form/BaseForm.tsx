@@ -182,7 +182,7 @@ const BaseFormContent = memo(function BaseFormContentFn({
               key={item.key}
               definition={item.definition}
               errorCount={sectionErrorCount}
-              errorCountLabel={labels?.renderSectionErrorCount}
+              renderErrorCountLabel={labels?.renderSectionErrorCount}
             >
               {item.definition.fields.map((fieldDef) => (
                 <FieldBridge
