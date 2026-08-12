@@ -51,6 +51,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
               propertyApiName,
+              undefined,
             ),
           };
         } else {
@@ -66,6 +67,7 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
                 propertyApiName,
+                undefined,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata ?? {
                 displayName: key,
@@ -87,6 +89,7 @@ export function propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
                 propertyApiName,
+                undefined,
               ),
             };
           }

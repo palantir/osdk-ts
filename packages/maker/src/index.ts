@@ -24,6 +24,7 @@ export type { ActionParameterConditionalOverride } from "./api/action/ActionPara
 export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
+  StructFieldValidationConfiguration,
 } from "./api/action/ActionParameterConfiguration.js";
 export type { ActionParameterType } from "./api/action/ActionParameterType.js";
 export { isActionParameterTypePrimitive } from "./api/action/ActionParameterType.js";

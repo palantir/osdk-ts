@@ -23,6 +23,8 @@ import {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   createDefaultParameterOrdering,
   createParameters,
+  createPropertyParameterValues,
+  createStructFieldValues,
   defineAction,
   kebab,
   validateActionParameters,
@@ -48,7 +50,6 @@ export function defineCreateOrModifyObjectAction(
     (id) =>
       !Object.keys(def.nonParameterMappings ?? {}).includes(id) &&
       !def.excludedProperties?.includes(id) &&
-      !isStruct(getProperty(def.objectType, id)?.type!) &&
       id !== def.objectType.primaryKeyPropertyApiName &&
       !propertiesWithDerivedDatasources.includes(id),
   );
@@ -79,7 +80,8 @@ export function defineCreateOrModifyObjectAction(
   );
   parameters.forEach((p) => {
     // create prefilled parameters for object type properties unless overridden
-    if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
+    const property = getProperty(def.objectType, p.id);
+    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
       p.defaultValue = {
         type: "objectParameterPropertyValue",
         objectParameterPropertyValue: {
@@ -108,15 +110,10 @@ export function defineCreateOrModifyObjectAction(
         addOrModifyObjectRuleV2: {
           objectToModify: CREATE_OR_MODIFY_OBJECT_PARAMETER,
           propertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map((p) => [
-                p,
-                { type: "parameterId", parameterId: p },
-              ]),
-            ),
+            ...createPropertyParameterValues(def, propertyParameters),
             ...mappings,
           },
-          structFieldValues: {},
+          structFieldValues: createStructFieldValues(def, parameters),
         },
       },
     ],
