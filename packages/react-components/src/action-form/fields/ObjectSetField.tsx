@@ -33,7 +33,10 @@ import type {
 
 import styles from "./ObjectSetField.module.css";
 
-const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
+const DEFAULT_OBJECT_ICON: Icon = {
+  name: "cube",
+  color: "var(--osdk-object-set-icon-default-color)",
+};
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {

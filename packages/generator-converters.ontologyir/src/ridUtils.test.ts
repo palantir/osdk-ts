@@ -15,7 +15,10 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { toUuid } from "./ridUtils.js";
+import { toStructFieldRid, toUuid } from "./ridUtils.js";
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 describe("ridUtils", () => {
   describe("toUuid", () => {
@@ -23,9 +26,7 @@ describe("ridUtils", () => {
       const result = toUuid("test-string");
       // UUID format: xxxxxxxx-xxxx-Vxxx-Nxxx-xxxxxxxxxxxx // cspell:disable-line
       // V = version (5), N = variant (8, 9, a, or b for RFC 4122)
-      expect(result).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
-      );
+      expect(result).toMatch(UUID_PATTERN);
     });
 
     it("is deterministic - same input produces same output", () => {
@@ -43,8 +44,38 @@ describe("ridUtils", () => {
 
     it("handles empty string", () => {
       const result = toUuid("");
-      expect(result).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+      expect(result).toMatch(UUID_PATTERN);
+    });
+  });
+
+  describe("toStructFieldRid", () => {
+    it("has five components and a UUID locator", () => {
+      const rid = toStructFieldRid("{\"type\":\"struct\"}", "length");
+      const [ri, service, instance, type, ...locator] = rid.split(".");
+      expect([ri, service, instance, type]).toEqual([
+        "ri",
+        "ontology",
+        "main",
+        "struct-field",
+      ]);
+      expect(locator.join(".")).toMatch(UUID_PATTERN);
+    });
+
+    it("is deterministic", () => {
+      expect(toStructFieldRid("identity", "length")).toBe(
+        toStructFieldRid("identity", "length"),
+      );
+    });
+
+    it("distinguishes fields of the same struct", () => {
+      expect(toStructFieldRid("identity", "length")).not.toBe(
+        toStructFieldRid("identity", "width"),
+      );
+    });
+
+    it("distinguishes the same field name across different structs", () => {
+      expect(toStructFieldRid("identity-a", "length")).not.toBe(
+        toStructFieldRid("identity-b", "length"),
       );
     });
   });

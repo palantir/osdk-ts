@@ -34,6 +34,7 @@ import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
 const EMPTY_WHERE = {};
+const EMPTY_DEFINITIONS: Array<never> = [];
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -100,10 +101,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
-  } = useFilterVisibility(
-    filterDefinitions,
-    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
-  );
+  } = useFilterVisibility(filterDefinitions, handleVisibilityChange);
 
   const canReset = hasChangesFromInitial || hasVisibilityChanges;
 
@@ -140,7 +138,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      onFilterAdded?.(filterKey, filterDefinitions ?? []);
+      onFilterAdded?.(filterKey, filterDefinitions ?? EMPTY_DEFINITIONS);
     },
     [showFilter, onFilterAdded, filterDefinitions],
   );

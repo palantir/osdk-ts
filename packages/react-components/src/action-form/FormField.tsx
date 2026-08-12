@@ -92,6 +92,8 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       {children}
       <div
         className={styles.osdkFormFieldErrorSlot}
+        // Used for testing because we want to make sure the slot is rendered to
+        // verify that validation errors do not shift the layout.
         data-osdk-form-field-error-slot=""
       >
         {error != null && (

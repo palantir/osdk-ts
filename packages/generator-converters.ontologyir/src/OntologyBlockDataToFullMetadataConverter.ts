@@ -30,9 +30,9 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
-import { hash } from "node:crypto";
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import { toStructFieldRid } from "./ridUtils.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
@@ -1046,9 +1046,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         return { type: "timestamp" };
       case "struct": {
         const value = type.struct;
-        const ridBase = `ri.ontology-metadata.temp.struct.${
-          hash("sha256", JSON.stringify(type)).slice(0, 10)
-        }`;
+        const structIdentity = JSON.stringify(type);
         return {
           type: "struct",
           structFieldTypes: value.structFields.map(field => {
@@ -1062,7 +1060,7 @@ export class OntologyBlockDataToFullMetadataConverter {
             }
             return {
               apiName: field.apiName,
-              rid: `${ridBase}.${field.apiName}`,
+              rid: toStructFieldRid(structIdentity, field.apiName),
               dataType: fieldDataType,
               typeClasses: [],
             };

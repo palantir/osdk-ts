@@ -272,7 +272,9 @@ export class ObjectTypeShapeExtractor {
           columnReadableIds,
           dsDefinition.datasetV2.datasetRid,
           dsDefinition.datasetV2.branchId,
-          dsDefinition.datasetV2.propertyMapping,
+          this.filterToRelevantColumnMappings(
+            dsDefinition.datasetV2.propertyMapping,
+          ),
           ridGenerator,
         );
       case "datasetV3":
@@ -284,7 +286,9 @@ export class ObjectTypeShapeExtractor {
           columnReadableIds,
           dsDefinition.datasetV3.datasetRid,
           dsDefinition.datasetV3.branchId,
-          dsDefinition.datasetV3.propertyMapping,
+          this.filterToRelevantColumnMappings(
+            dsDefinition.datasetV3.propertyMapping,
+          ),
           ridGenerator,
         );
       case "derived":
@@ -317,7 +321,9 @@ export class ObjectTypeShapeExtractor {
           propertyOutputShapeMap,
           columnReadableIds,
           dsDefinition.restrictedViewV2.restrictedViewRid,
-          dsDefinition.restrictedViewV2.propertyMapping,
+          this.filterToRelevantColumnMappings(
+            dsDefinition.restrictedViewV2.propertyMapping,
+          ),
           ridGenerator,
         );
       case "stream":
@@ -377,6 +383,16 @@ export class ObjectTypeShapeExtractor {
       default:
         return new Map();
     }
+  }
+
+  private filterToRelevantColumnMappings(
+    propertyMappings: Record<PropertyTypeRid, PropertyTypeMappingInfo>,
+  ): Record<PropertyTypeRid, PropertyTypeMappingInfo> {
+    return Object.fromEntries(
+      Object.entries(propertyMappings).filter(
+        ([, mapping]) => mapping.type === "column" || mapping.type === "struct",
+      ),
+    );
   }
 
   private getShapesFromGeotimeSeriesIntegration(
