@@ -39,8 +39,8 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     title,
     titleIcon,
     enableCollapse = false,
+    collapsed,
     defaultCollapsed,
-    collapsed: deprecatedCollapsed,
     onCollapsedChange,
     filterDefinitions,
     filterStates,
@@ -66,19 +66,23 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     null,
   );
 
+  // The collapsed state in uncontrolled mode.
   const [internalCollapsed, setInternalCollapsed] = useState(
-    () => defaultCollapsed ?? deprecatedCollapsed ?? false,
+    () => defaultCollapsed ?? false,
   );
+
+  const isCollapsedControlled = collapsed !== undefined;
+  const collapsedState = isCollapsedControlled ? collapsed : internalCollapsed;
 
   if (
     process.env.NODE_ENV !== "production" &&
     !enableCollapse &&
-    (defaultCollapsed === true || deprecatedCollapsed === true)
+    (collapsed !== undefined || defaultCollapsed !== undefined)
   ) {
     // eslint-disable-next-line no-console
     console.warn(
       "[FilterList] `" +
-        (defaultCollapsed === true ? "defaultCollapsed" : "collapsed") +
+        (isCollapsedControlled ? "collapsed" : "defaultCollapsed") +
         "` was set but collapse is disabled, so the panel renders expanded. " +
         "Pass `enableCollapse` to opt into the collapse control.",
     );
@@ -95,17 +99,19 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
 
   const setCollapsed = useCallback(
     (next: boolean) => {
-      setInternalCollapsed(next);
+      if (!isCollapsedControlled) {
+        setInternalCollapsed(next);
+      }
       onCollapsedChange?.(next);
     },
-    [onCollapsedChange],
+    [isCollapsedControlled, onCollapsedChange],
   );
 
   const handleExpand = useCallback(() => {
     setCollapsed(false);
   }, [setCollapsed]);
 
-  const isCollapsed = enableCollapse && internalCollapsed;
+  const isCollapsed = enableCollapse && collapsedState;
 
   return (
     <div className={classnames(styles.filterList, className)}>

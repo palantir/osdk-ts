@@ -151,7 +151,6 @@ const meta: Meta<EmployeeFilterListProps> = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    defaultCollapsed: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
     onFilterAdded: fn(),
@@ -212,15 +211,20 @@ const meta: Meta<EmployeeFilterListProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
+    collapsed: {
+      description:
+        "Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed. Requires enableCollapse.",
+      control: "boolean",
+    },
     defaultCollapsed: {
       description:
-        "Seeds the panel's initial collapsed state. Requires enableCollapse. The component owns the state after mount.",
+        "Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount. Requires enableCollapse.",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
     onCollapsedChange: {
       description:
-        "Called whenever the collapsed state changes. Observer only — collapse works without it.",
+        "Called whenever the collapsed state changes, in both modes. An event listener — it neither controls the state nor enables the control.",
       control: false,
       table: { category: "Events" },
     },
@@ -706,6 +710,57 @@ export const CollapsiblePanel: Story = {
     },
   },
   render: (args) => <CollapsiblePanelStory {...args} />,
+};
+
+function ControlledCollapseStory(args: Partial<EmployeeFilterListProps>) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={sharedFilterDefinitions}
+          {...args}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+        />
+      </div>
+      <button type="button" onClick={() => setCollapsed((prev) => !prev)}>
+        {collapsed ? "Expand from outside" : "Collapse from outside"}
+      </button>
+    </div>
+  );
+}
+
+export const ControlledCollapse: Story = {
+  args: {
+    title: "Employee Filters",
+    enableCollapse: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Controlled mode: `collapsed` is the source of truth, so the panel " +
+          "only moves when the caller re-renders with a new value. The " +
+          "external button drives the same state as the header control.",
+      },
+      source: {
+        code: `const [collapsed, setCollapsed] = useState(false);
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  title="Employee Filters"
+  enableCollapse={true}
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+/>`,
+      },
+    },
+  },
+  render: (args) => <ControlledCollapseStory {...args} />,
 };
 
 export const KeywordSearch: Story = {

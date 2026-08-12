@@ -82,10 +82,10 @@ Type parameters: `Q extends ObjectTypeDefinition`
 | `onFilterRemoved`          | `(filterKey: FilterKey<Q>) => void`                                                  | Called after a filter's remove button is clicked, once the filter is hidden and its state cleared.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `onFilterVisibilityChange` | `(newStates: Array<{ filterKey: FilterKey<Q>; isVisible: boolean; }>) => void`       | Called when filter visibility or ordering changes, i.e. when filters are reordered, added or removed via the built-in show/remove controls, or reset.<br /><br />Visible filters come first, in display order, followed by the hidden ones. Persist this array and feed it back as the order and `isVisible` of `filterDefinitions` to make reordering survive a remount.                                                                                                                                                                                                                                                                                  |
 | `enableSorting`            | `boolean`                                                                            | Enable drag-and-drop reordering of filters. When `true`, drag handles are rendered and filters can be reordered.<br /><br />Reorder state is managed internally; persist `onFilterVisibilityChange` to track order across remounts. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `enableCollapse`           | `boolean`                                                                            | Opts into the collapse/expand control. When `false` the panel is always expanded, no collapse control is rendered, and `defaultCollapsed` is ignored (which warns in development). Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `defaultCollapsed`         | `boolean`                                                                            | Uncontrolled mode. Seeds the panel's internal collapsed state; the component continues to own the state after mount, so later changes to this prop are ignored. `onCollapsedChange` still fires.<br /><br />Requires `enableCollapse` — without it there is no collapse control and this is ignored. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                  |
-| `collapsed`                | `boolean`                                                                            | **Deprecated** — Renamed to `defaultCollapsed`. Read once on mount as the initial value and ignored thereafter — collapse is uncontrolled, so this prop never tracked its own value. `defaultCollapsed` wins if both are set.                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `onCollapsedChange`        | `(collapsed: boolean) => void`                                                       | Called whenever the collapsed state changes, including when the user toggles it. Purely an observer — the component owns the state either way, and collapse works whether or not this is supplied.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `enableCollapse`           | `boolean`                                                                            | Opts into the collapse/expand control. When `false` the panel is always expanded, no collapse control is rendered, and `collapsed` / `defaultCollapsed` are ignored (which warns in development). Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `collapsed`                | `boolean`                                                                            | Controlled mode. When supplied, this prop is the source of truth for whether the panel is collapsed and the component keeps no internal state; re-render with a new value in response to `onCollapsedChange`.<br /><br />If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes precedence. Requires `enableCollapse`.                                                                                                                                                                                                                                                                                                                 |
+| `defaultCollapsed`         | `boolean`                                                                            | Uncontrolled mode. Seeds the panel's internal collapsed state; the component continues to own the state after mount, so later changes to this prop are ignored.<br /><br />If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes precedence. Requires `enableCollapse`. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                          |
+| `onCollapsedChange`        | `(collapsed: boolean) => void`                                                       | Called whenever the collapsed state changes, in both controlled and uncontrolled mode. This is an event listener layered on top of the default behavior, not a controlling handler — collapse works whether or not it is supplied, and supplying it does not by itself enable the control.                                                                                                                                                                                                                                                                                                                                                                 |
 | `initialFilterStates`      | `Map<string, FilterState>`                                                           | Initial filter states for hydrating from external storage. These states are merged over definition defaults on mount. Use onFilterStateChanged to persist state changes externally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `showResetButton`          | `boolean`                                                                            | Show reset filters button in header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `onReset`                  | `() => void`                                                                         | Called when reset button is clicked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -592,10 +592,10 @@ wiring required:
 />;
 ```
 
-Start collapsed with `defaultCollapsed`, and observe changes with
-`onCollapsedChange` when the surrounding layout needs to react. The callback
-does not take over the state — it is a listener on top of the built-in
-behavior, so the panel keeps collapsing and expanding on its own:
+Start collapsed with `defaultCollapsed`. `onCollapsedChange` fires in both
+modes; in uncontrolled mode it is purely a listener on top of the built-in
+behavior, so the panel keeps collapsing and expanding on its own. Use it when
+the surrounding layout needs to react:
 
 ```typescript
 import { useState } from "react";
@@ -620,9 +620,33 @@ function CollapsibleFilters() {
 }
 ```
 
+To own the state yourself, pass `collapsed` instead of `defaultCollapsed`. That
+switches the feature into controlled mode: the prop is the source of truth, the
+component keeps no internal state, and the panel only moves when you re-render
+with a new value in response to `onCollapsedChange`. If both are supplied,
+`collapsed` wins.
+
+```typescript
+const [collapsed, setCollapsed] = useState(false);
+
+<FilterList
+  objectSet={client(Employee)}
+  title="Filters"
+  enableCollapse={true}
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
+  ]}
+/>;
+```
+
+`onCollapsedChange` is only an event listener — it never enables the control and
+never takes over the state. Availability is governed by `enableCollapse` alone.
+
 Omitting `enableCollapse` leaves the panel pinned open with no collapse control,
-which is the default. `defaultCollapsed` requires `enableCollapse` — setting it
-alone logs a development warning and the panel renders expanded.
+which is the default. Both `collapsed` and `defaultCollapsed` require it —
+setting either alone logs a development warning and the panel renders expanded.
 
 ### Drag-and-Drop Sorting
 

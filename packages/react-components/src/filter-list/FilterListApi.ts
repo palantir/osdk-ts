@@ -205,34 +205,38 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Opts into the collapse/expand control. When `false` the panel is always
-   * expanded, no collapse control is rendered, and `defaultCollapsed` is
-   * ignored (which warns in development).
+   * expanded, no collapse control is rendered, and `collapsed` /
+   * `defaultCollapsed` are ignored (which warns in development).
    * @default false
    */
   enableCollapse?: boolean;
 
   /**
+   * Controlled mode. When supplied, this prop is the source of truth for
+   * whether the panel is collapsed and the component keeps no internal state;
+   * re-render with a new value in response to `onCollapsedChange`.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Requires `enableCollapse`.
+   */
+  collapsed?: boolean;
+
+  /**
    * Uncontrolled mode. Seeds the panel's internal collapsed state; the
    * component continues to own the state after mount, so later changes to this
-   * prop are ignored. `onCollapsedChange` still fires.
+   * prop are ignored.
    *
-   * Requires `enableCollapse` — without it there is no collapse control and
-   * this is ignored.
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Requires `enableCollapse`.
    * @default false
    */
   defaultCollapsed?: boolean;
 
   /**
-   * @deprecated Renamed to `defaultCollapsed`. Read once on mount as the
-   * initial value and ignored thereafter — collapse is uncontrolled, so this
-   * prop never tracked its own value. `defaultCollapsed` wins if both are set.
-   */
-  collapsed?: boolean;
-
-  /**
-   * Called whenever the collapsed state changes, including when the user
-   * toggles it. Purely an observer — the component owns the state either way,
-   * and collapse works whether or not this is supplied.
+   * Called whenever the collapsed state changes, in both controlled and
+   * uncontrolled mode. This is an event listener layered on top of the default
+   * behavior, not a controlling handler — collapse works whether or not it is
+   * supplied, and supplying it does not by itself enable the control.
    *
    * @param collapsed The new collapsed state
    */

@@ -2,4 +2,4 @@
 "@osdk/react-components": minor
 ---
 
-FilterList: make collapse an uncontrolled feature. Collapse is opted into with the new `enableCollapse` prop, and from then on the component owns the state: the control works without `onCollapsedChange`, which becomes a pure observer. Adds `defaultCollapsed` to seed the initial state, and deprecates `collapsed`, which previously did nothing at all unless `onCollapsedChange` was also supplied. Setting `defaultCollapsed` without `enableCollapse` now warns in development instead of doing nothing.
+FilterList: support both controlled and uncontrolled collapse. The collapse control is opted into with the new `enableCollapse` prop and no longer depends on `onCollapsedChange`, which is now purely an event listener that fires in both modes. Pass `collapsed` for controlled mode or the new `defaultCollapsed` to seed uncontrolled mode; `collapsed` takes precedence when both are given, matching `ObjectTable`'s `orderBy`/`defaultOrderBy`. Previously `collapsed` did nothing unless `onCollapsedChange` was also supplied, and setting a collapse prop without `enableCollapse` now warns in development instead of being silently ignored.
