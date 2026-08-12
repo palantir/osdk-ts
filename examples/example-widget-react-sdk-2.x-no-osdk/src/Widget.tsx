@@ -1,6 +1,3 @@
-{{#if osdkPackage}}
-import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
-{{/if}}
 import {
   Box,
   Button,
@@ -10,27 +7,14 @@ import {
   Heading,
   Skeleton,
   Table,
-{{#if osdkPackage}}
-  Text,
-{{/if}}
   TextField,
   Theme,
 } from "@radix-ui/themes";
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 import { useDarkTheme } from "./useDarkTheme.js";
-{{#if osdkPackage}}
-// import { useOsdkClient } from "@osdk/react";
-// View the API documentation for your widget set to learn how to use the Ontology SDK.
-{{/if}}
 
 export const Widget: React.FC = () => {
-{{#if osdkPackage}}
-  // See Ontology and Platform SDK docs in Developer Console on how to
-  // use the client object to access Ontology resources and platform APIs
-  // const client = useOsdkClient();
-
-{{/if}}
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
@@ -53,12 +37,6 @@ export const Widget: React.FC = () => {
 
   const isDarkTheme = useDarkTheme();
 
-{{#if osdkPackage}}
-  const objectApiNames = Object.keys($Objects);
-  const actionApiNames = Object.keys($Actions);
-  const queryApiNames = Object.keys($Queries);
-
-{{/if}}
   return (
     <Theme appearance={isDarkTheme ? "dark" : "light"}>
       <Box p="2">
@@ -70,7 +48,7 @@ export const Widget: React.FC = () => {
                 parameters.state === "not-started" ? (
                   <Skeleton>Hello, world!</Skeleton>
                 ) : (
-                  headerText ?? "{{project}}"
+                  headerText ?? "example-widget-react-sdk-2.x-no-osdk"
                 )}
               </Heading>
 
@@ -139,39 +117,6 @@ export const Widget: React.FC = () => {
                 </Table.Body>
               </Table.Root>
             </Flex>
-{{#if osdkPackage}}
-            <Box>
-              <Flex direction="column" gap="2">
-                <Text>
-                  Try any of the following methods from your Ontology SDK
-                </Text>
-                <Flex direction="column" gap="1">
-                  <Heading size="4">Objects ({objectApiNames.length})</Heading>
-                  <pre>
-                    {objectApiNames.map((objectApiName) => (
-                      <div key={objectApiName}>client({objectApiName})</div>
-                    ))}
-                  </pre>
-                </Flex>
-                <Flex direction="column" gap="1">
-                  <Heading size="4">Actions ({actionApiNames.length})</Heading>
-                  <pre>
-                    {actionApiNames.map((actionApiName) => (
-                      <div key={actionApiName}>client({actionApiName})</div>
-                    ))}
-                  </pre>
-                </Flex>
-                <Flex direction="column" gap="1">
-                  <Heading size="4">Queries ({queryApiNames.length})</Heading>
-                  <pre>
-                    {queryApiNames.map((queryApiName) => (
-                      <div key={queryApiName}>client({queryApiName})</div>
-                    ))}
-                  </pre>
-                </Flex>
-              </Flex>
-            </Box>
-{{/if}}
           </Flex>
         </Container>
       </Box>

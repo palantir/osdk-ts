@@ -1,0 +1,34 @@
+import { defineConfig } from "@osdk/widget.client";
+
+// Updates to the widget configuration in this file require reapplying dev mode
+// to preview the changes. When developing locally, open the setup URL printed
+// in your terminal again. When developing in Code Workspaces, refresh the
+// preview panel.
+
+export default defineConfig({
+  id: "widgetId",
+  name: "Custom Widget",
+  description: "An example custom widget implementation",
+  type: "workshop",
+  parameters: {
+    headerText: {
+      displayName: "Widget title",
+      type: "string",
+    },
+    todoItems: {
+      displayName: "Todo items",
+      type: "array",
+      subType: "string",
+    },
+  },
+  events: {
+    updateHeader: {
+      displayName: "Update header",
+      parameterUpdateIds: ["headerText"],
+    },
+    updateTodoItems: {
+      displayName: "Update todo items",
+      parameterUpdateIds: ["todoItems"],
+    },
+  },
+});
