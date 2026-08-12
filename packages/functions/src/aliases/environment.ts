@@ -20,6 +20,12 @@ export const ALIASES_JSON_FILE_ENV_VAR = "ALIASES_JSON_FILE";
 export const RESOURCES_JSON_FILE_ENV_VAR = "RESOURCES_JSON_FILE";
 
 export function detectEnvironment(): AliasEnvironment {
+  // Dev Console apps run in a browser, where there is no process.env to read.
+  // Detect that first so we never touch process in a browser context.
+  if (typeof document !== "undefined") {
+    return AliasEnvironment.BROWSER;
+  }
+
   const aliasesFileSet = ALIASES_JSON_FILE_ENV_VAR in process.env;
   const resourcesFileSet = RESOURCES_JSON_FILE_ENV_VAR in process.env;
 
