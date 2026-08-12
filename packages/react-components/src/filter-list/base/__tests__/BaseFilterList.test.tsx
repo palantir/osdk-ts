@@ -84,19 +84,59 @@ function getExpandButton(): HTMLElement {
 }
 
 describe("BaseFilterList", () => {
+  describe("collapse is opt-in", () => {
+    it("renders no header or collapse control by default", () => {
+      renderBase();
+      expect(screen.queryByRole("button")).toBeNull();
+      expect(isCollapsed()).toBe(false);
+    });
+
+    it("stays expanded and warns when defaultCollapsed is set without enableCollapse", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      renderBase({ defaultCollapsed: true });
+
+      expect(isCollapsed()).toBe(false);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "`defaultCollapsed` was set but collapse is disabled",
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("warns naming the deprecated prop when collapsed is set without enableCollapse", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      renderBase({ collapsed: true });
+
+      expect(isCollapsed()).toBe(false);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("`collapsed` was set but collapse is disabled"),
+      );
+      warn.mockRestore();
+    });
+
+    it("does not warn when collapse is disabled and no seed is supplied", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      renderBase({ defaultCollapsed: false });
+
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+  });
+
   describe("collapse without onCollapsedChange", () => {
     it("renders collapsed when defaultCollapsed is set and no handler is supplied", () => {
-      renderBase({ defaultCollapsed: true });
+      renderBase({ enableCollapse: true, defaultCollapsed: true });
       expect(isCollapsed()).toBe(true);
     });
 
     it("renders the collapse button when no handler is supplied", () => {
-      renderBase();
+      renderBase({ enableCollapse: true });
       expect(getCollapseButton()).toBeDefined();
     });
 
     it("collapses and expands on its own with no handler supplied", () => {
-      renderBase();
+      renderBase({ enableCollapse: true });
       expect(isCollapsed()).toBe(false);
 
       fireEvent.click(getCollapseButton());
@@ -110,7 +150,7 @@ describe("BaseFilterList", () => {
   describe("onCollapsedChange as an observer", () => {
     it("fires on collapse and expand while the component owns the state", () => {
       const onCollapsedChange = vi.fn();
-      renderBase({ onCollapsedChange });
+      renderBase({ enableCollapse: true, onCollapsedChange });
 
       fireEvent.click(getCollapseButton());
       expect(onCollapsedChange).toHaveBeenLastCalledWith(true);
@@ -122,7 +162,10 @@ describe("BaseFilterList", () => {
     });
 
     it("does not defer to the caller re-rendering with a new value", () => {
-      const { rerender } = renderBase({ defaultCollapsed: true });
+      const { rerender } = renderBase({
+        enableCollapse: true,
+        defaultCollapsed: true,
+      });
       expect(isCollapsed()).toBe(true);
 
       rerender(
@@ -133,6 +176,7 @@ describe("BaseFilterList", () => {
           getFilterKey={getFilterKey}
           getFilterLabel={getFilterLabel}
           activeFilterCount={0}
+          enableCollapse={true}
           defaultCollapsed={false}
         />,
       );
@@ -141,8 +185,10 @@ describe("BaseFilterList", () => {
   });
 
   describe("enableCollapse", () => {
-    it("omits the collapse button and stays expanded when disabled", () => {
+    it("omits the collapse button and stays expanded when explicitly disabled", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
       renderBase({ enableCollapse: false, defaultCollapsed: true });
+
       expect(isCollapsed()).toBe(false);
       expect(
         screen.queryByRole("button", { name: "Collapse filters" }),
@@ -150,22 +196,30 @@ describe("BaseFilterList", () => {
       expect(
         screen.queryByRole("button", { name: "Expand filters" }),
       ).toBeNull();
+      warn.mockRestore();
     });
 
-    it("renders no header at all when collapse is disabled and nothing else needs one", () => {
-      renderBase({ enableCollapse: false });
-      expect(screen.queryByRole("button")).toBeNull();
+    it("still renders a header for other reasons when collapse is disabled", () => {
+      renderBase({ enableCollapse: false, title: "Filters" });
+      expect(screen.getByText("Filters")).toBeDefined();
+      expect(
+        screen.queryByRole("button", { name: "Collapse filters" }),
+      ).toBeNull();
     });
   });
 
   describe("deprecated collapsed prop", () => {
     it("seeds the initial state when defaultCollapsed is absent", () => {
-      renderBase({ collapsed: true });
+      renderBase({ enableCollapse: true, collapsed: true });
       expect(isCollapsed()).toBe(true);
     });
 
     it("loses to defaultCollapsed when both are supplied", () => {
-      renderBase({ collapsed: true, defaultCollapsed: false });
+      renderBase({
+        enableCollapse: true,
+        collapsed: true,
+        defaultCollapsed: false,
+      });
       expect(isCollapsed()).toBe(false);
     });
   });

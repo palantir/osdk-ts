@@ -208,13 +208,13 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
     enableCollapse: {
       description:
-        "Whether the collapse/expand control is available. When false the panel is always expanded.",
+        "Opts into the collapse/expand control. When false the panel is always expanded.",
       control: "boolean",
-      table: { defaultValue: { summary: "true" } },
+      table: { defaultValue: { summary: "false" } },
     },
     defaultCollapsed: {
       description:
-        "Seeds the panel's initial collapsed state. The component owns the state after mount.",
+        "Seeds the panel's initial collapsed state. Requires enableCollapse. The component owns the state after mount.",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
@@ -683,21 +683,23 @@ function CollapsiblePanelStory(args: Partial<EmployeeFilterListProps>) {
 export const CollapsiblePanel: Story = {
   args: {
     title: "Employee Filters",
+    enableCollapse: true,
     showActiveFilterCount: true,
   },
   parameters: {
     docs: {
       description: {
         story:
-          "Click the collapse button to minimize the filter panel. Collapse is " +
-          "uncontrolled — no state wiring required. Active filter count is " +
-          "shown in the collapsed state.",
+          "Opt in with `enableCollapse`, then click the collapse button to " +
+          "minimize the panel. Collapse is uncontrolled — no state wiring " +
+          "required. Active filter count is shown in the collapsed state.",
       },
       source: {
         code: `<FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
+  enableCollapse={true}
   showActiveFilterCount={true}
 />`,
       },
@@ -1785,6 +1787,7 @@ export const FullFeatured: Story = {
   name: "Full Featured",
   args: {
     title: "Employee Filters",
+    enableCollapse: true,
     showResetButton: true,
     showActiveFilterCount: true,
     enableSorting: true,
@@ -1805,6 +1808,7 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title="Employee Filters"
   titleIcon={<FilterIcon />}
+  enableCollapse={true}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}

@@ -204,10 +204,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   enableSorting?: boolean;
 
   /**
-   * Whether the collapse/expand control is available. When `false` the panel
-   * is always expanded, no collapse control is rendered, and
-   * `defaultCollapsed` is ignored.
-   * @default true
+   * Opts into the collapse/expand control. When `false` the panel is always
+   * expanded, no collapse control is rendered, and `defaultCollapsed` is
+   * ignored (which warns in development).
+   * @default false
    */
   enableCollapse?: boolean;
 
@@ -215,6 +215,9 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Uncontrolled mode. Seeds the panel's internal collapsed state; the
    * component continues to own the state after mount, so later changes to this
    * prop are ignored. `onCollapsedChange` still fires.
+   *
+   * Requires `enableCollapse` — without it there is no collapse control and
+   * this is ignored.
    * @default false
    */
   defaultCollapsed?: boolean;

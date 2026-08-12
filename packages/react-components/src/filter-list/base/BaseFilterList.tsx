@@ -27,13 +27,18 @@ import { FilterListHeader } from "./FilterListHeader.js";
 
 import styles from "./FilterList.module.css";
 
+// Declared locally because the CJS dts build type-checks this file without Node
+// globals. Kept as a literal `process.env.NODE_ENV` read so bundlers can still
+// substitute it and drop the warning from production builds.
+declare const process: { env: { NODE_ENV?: string } };
+
 export function BaseFilterList<D extends FilterDefinitionControls>(
   props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
     titleIcon,
-    enableCollapse = true,
+    enableCollapse = false,
     defaultCollapsed,
     collapsed: deprecatedCollapsed,
     onCollapsedChange,
@@ -64,6 +69,20 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   const [internalCollapsed, setInternalCollapsed] = useState(
     () => defaultCollapsed ?? deprecatedCollapsed ?? false,
   );
+
+  if (
+    process.env.NODE_ENV !== "production" &&
+    !enableCollapse &&
+    (defaultCollapsed === true || deprecatedCollapsed === true)
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "[FilterList] `" +
+        (defaultCollapsed === true ? "defaultCollapsed" : "collapsed") +
+        "` was set but collapse is disabled, so the panel renders expanded. " +
+        "Pass `enableCollapse` to opt into the collapse control.",
+    );
+  }
 
   const showHeader =
     title ||
