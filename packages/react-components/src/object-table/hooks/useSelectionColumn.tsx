@@ -39,7 +39,7 @@ export interface UseSelectionColumnProps {
 
 export const useSelectionColumn = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   selectionMode,
   isAllSelected,

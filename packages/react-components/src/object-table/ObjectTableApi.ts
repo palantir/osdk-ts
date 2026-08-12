@@ -23,6 +23,7 @@ import type {
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  PropertyValueWireToClient,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
@@ -37,7 +38,7 @@ export type { EditFieldConfig } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -49,14 +50,14 @@ export type ColumnDefinition<
   | ReadonlyFunctionColumnDefinition<Q, RDPs, FunctionColumns>;
 
 /** A column whose value comes from the row's object. */
-interface DerivableValueColumn<
+type DerivableValueColumn<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
-> {
+> = {
   /**
    * What the column shows — a property, a linked object property (derived
    * property), or a custom column — and that locator's configuration.
@@ -65,21 +66,70 @@ interface DerivableValueColumn<
     | PropertyColumnLocator<Q>
     | RdpColumnLocator<Q, RDPs>
     | CustomColumnLocator;
+} & CellValueOverride<Q, RDPs, FunctionColumns>;
 
-  /**
-   * Derives the cell's value from the row's object. Without it the column
-   * reads the property named by `locator.id`.
-   */
-  getCellValue?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
-  ) => unknown;
-}
+/**
+ * The cell's value and the type it's declared to have.
+ *
+ * Declaring `cellValueType` constrains what `getCellValue` may return, so a
+ * column can't advertise one type and hand the cell a value of another.
+ */
+type CellValueOverride<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> =
+  | {
+      [T in BaseWirePropertyTypes]: {
+        /**
+         * The cell value's data type. Constrains what `getCellValue` may
+         * return, and selects the editor for an `editable` column.
+         */
+        cellValueType: T;
+
+        /**
+         * Derives the cell's value from the row's object. Without it the column
+         * reads the property named by `locator.id`.
+         *
+         * Use this to change what the cell's value *is* — what it returns is
+         * the value the table renders, edits, and passes on to `renderCell`.
+         * Use `renderCell` to change only how that value is displayed. The two
+         * can be combined.
+         */
+        getCellValue?: (
+          object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+          locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+        ) => PropertyValueWireToClient[T] | null | undefined;
+      };
+    }[BaseWirePropertyTypes]
+  | {
+      cellValueType?: undefined;
+
+      /**
+       * Derives the cell's value from the row's object. Without it the column
+       * reads the property named by `locator.id`.
+       *
+       * Use this to change what the cell's value *is* — what it returns is the
+       * value the table renders, edits, and passes on to `renderCell`. Use
+       * `renderCell` to change only how that value is displayed. The two can be
+       * combined.
+       *
+       * Set `cellValueType` alongside it to declare the type of value returned;
+       * the return type is then checked against it.
+       */
+      getCellValue?: (
+        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+      ) => unknown;
+    };
 
 /** A column whose value comes from a function query rather than the row. */
 interface FunctionValueColumn<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -87,6 +137,9 @@ interface FunctionValueColumn<
 > {
   /** What the column shows, and that locator's configuration. */
   locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>;
+
+  /** The cell value's data type. */
+  cellValueType?: BaseWirePropertyTypes;
 
   /**
    * Use {@link FunctionColumnLocator}'s own `getValue` instead.
@@ -96,7 +149,7 @@ interface FunctionValueColumn<
 
 interface SharedColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -118,12 +171,12 @@ interface SharedColumnDefinition<
   orderable?: boolean;
 
   /**
-   * The cell value's data type.
-   */
-  cellValueType?: BaseWirePropertyTypes;
-
-  /**
    * Custom renderer for the cell value.
+   *
+   * This changes only how the cell's value is displayed; the value itself is
+   * unchanged. To change the value, use `getCellValue` (and declare its
+   * `cellValueType`) — `renderCell` then receives that value as its third
+   * argument. The two can be combined.
    *
    * Interaction with `editable` columns:
    * - When `editMode: "manual"` (default), `renderCell` is used while the
@@ -164,7 +217,7 @@ interface SharedColumnDefinition<
 
 interface EditableColumnOptions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * `editable` can be a boolean or a predicate that receives the row's object
@@ -200,23 +253,21 @@ interface EditableColumnOptions<
   validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
-interface EditableColumnDefinition<
+type EditableColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
->
-  extends
-    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
-    EditableColumnOptions<Q, RDPs>,
-    DerivableValueColumn<Q, RDPs, FunctionColumns> {}
+> = SharedColumnDefinition<Q, RDPs, FunctionColumns> &
+  EditableColumnOptions<Q, RDPs> &
+  DerivableValueColumn<Q, RDPs, FunctionColumns>;
 
 /** Editable column backed by a function query. */
 interface EditableFunctionColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -231,24 +282,20 @@ interface EditableFunctionColumnDefinition<
  * Column definition for a read-only column (default).
  * `editFieldConfig` and `validateEdit` are not available.
  */
-interface ReadonlyColumnDefinition<
+type ReadonlyColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
->
-  extends
-    SharedColumnDefinition<Q, RDPs, FunctionColumns>,
-    DerivableValueColumn<Q, RDPs, FunctionColumns> {
-  editable?: false;
-}
+> = SharedColumnDefinition<Q, RDPs, FunctionColumns> &
+  DerivableValueColumn<Q, RDPs, FunctionColumns> & { editable?: false };
 
 /** Read-only column backed by a function query. */
 interface ReadonlyFunctionColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -338,7 +385,7 @@ interface FunctionColumnLocatorForKey<
  */
 export type FunctionColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -351,7 +398,7 @@ export type FunctionColumnLocator<
 
 export interface RdpColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   type: "rdp";
   id: keyof RDPs;
@@ -365,7 +412,7 @@ export interface CustomColumnLocator {
 
 export type ColumnDefinitionLocator<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -378,7 +425,7 @@ export type ColumnDefinitionLocator<
 
 export interface ObjectTableProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -725,7 +772,7 @@ export interface ObjectTableProps<
  */
 export interface ObjectTableHandle<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Loads every row matching the object set and returns a format-agnostic
@@ -774,7 +821,7 @@ export interface ObjectTableSnapshotOptions {
  */
 export interface ObjectTableSnapshot<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   columns: ObjectTableDataColumn[];
   rows: ObjectTableDataRow<Q, RDPs>[];
@@ -801,7 +848,7 @@ export interface ObjectTableDataColumn {
  */
 export interface ObjectTableDataRow<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /** Row id (the underlying object's `$primaryKey` rendered as a string). */
   id: string;
@@ -822,7 +869,7 @@ export interface ObjectTableDataRow<
  */
 export interface RowSelectionChange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Loaded row instances currently selected. When `isSelectAll` is true,

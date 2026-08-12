@@ -36,7 +36,7 @@ import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
 export interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -52,7 +52,7 @@ export interface UseColumnDefsResult<
  */
 export function useColumnDefs<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -84,7 +84,7 @@ export function useColumnDefs<
 
 function getColumnsFromColumnDefinitions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -197,7 +197,7 @@ function getColumnsFromColumnDefinitions<
 
 function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
