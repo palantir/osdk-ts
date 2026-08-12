@@ -25,6 +25,7 @@ import invariant from "tiny-invariant";
 import type {
   MockClient,
   ObjectSetStubCallback,
+  QueryReturnTypeFromDef,
   StubPatternCallback,
 } from "../api/MockClient.js";
 import type { QueryStubBuilder, StubBuilderFor } from "../api/StubBuilders.js";
@@ -167,8 +168,8 @@ export function createMockClient(): MockClient {
     } as unknown as StubBuilderFor<T>;
   };
 
-  mockClient.whenQuery = ((
-    query: QueryDefinition,
+  mockClient.whenQuery = (<Q extends QueryDefinition>(
+    query: Q,
     params?: unknown,
   ): QueryStubBuilder<unknown> | void => {
     if (typeof params === "function") {
@@ -180,7 +181,7 @@ export function createMockClient(): MockClient {
       return;
     }
     return {
-      thenReturn: (result: unknown) => {
+      thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
         queryStubs.push({
           queryApiName: query.apiName,
           type: "params",
