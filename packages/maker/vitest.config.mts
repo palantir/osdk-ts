@@ -25,8 +25,20 @@ export default defineConfig({
       },
     },
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    // Classnames are package-prefixed: test paths repeat across packages.
     // Hand-maintained: monorepolint's excludePackages skips this file.
-    reporters: process.env.CI ? ["default", "junit"] : ["default"],
+    reporters: process.env.CI
+      ? [
+        "default",
+        [
+          "junit",
+          {
+            classnameTemplate: (v) =>
+              v.filepath.split("/packages/").pop() ?? v.filepath,
+          },
+        ],
+      ]
+      : ["default"],
     outputFile: { junit: "reports/junit.xml" },
     coverage: {
       enabled: process.env.COVERAGE === "true",

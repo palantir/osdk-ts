@@ -1406,11 +1406,7 @@ function standardPackageRules(shared, options) {
               }\n            },`
               : ""
           }
-              // Env-driven so these are not turbo \`--\` args; see .circleci/README.md.
-              // classnameTemplate prefixes the package directory, because
-              // CircleCI keys a test on (classname, name) and vitest's default
-              // classname is package-relative, so \`src/junk.test.ts\` collides
-              // across packages.
+              // Classnames are package-prefixed: test paths repeat across packages.
               reporters: process.env.CI
                 ? [
                   "default",
