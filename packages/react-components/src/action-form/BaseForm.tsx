@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
+import { assertUnreachable } from "../shared/assertUnreachable.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
 import {
@@ -35,13 +36,7 @@ import { FormSection } from "./FormSection.js";
 
 import styles from "./BaseForm.module.css";
 
-export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn(
-  props: BaseFormProps,
-): React.ReactElement {
-  return <BaseFormContent {...props} />;
-});
-
-const BaseFormContent = memo(function BaseFormContentFn({
+export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
   formContent,
   formState: controlledFormState,
@@ -133,12 +128,11 @@ const BaseFormContent = memo(function BaseFormContentFn({
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
+  const defaultErrorMessage =
+    labels?.validationError ?? DEFAULT_BASE_FORM_DIRECT_LABELS.validationError;
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
     label: labelByFieldKey.get(key) ?? key,
-    message:
-      entry?.message ??
-      labels?.validationError ??
-      DEFAULT_BASE_FORM_DIRECT_LABELS.validationError,
+    message: entry?.message ?? defaultErrorMessage,
   }));
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
@@ -263,22 +257,25 @@ function resolveFormContentLabels(
   labels: Partial<BaseFormLabels> | undefined,
 ): ReadonlyArray<FormContentItem> {
   return formContent.map((item): FormContentItem => {
-    if (item.type === "field") {
-      return {
-        ...item,
-        definition: resolveFieldDefinitionLabels(item.definition, labels),
-      };
+    switch (item.type) {
+      case "field":
+        return {
+          ...item,
+          definition: resolveFieldDefinitionLabels(item.definition, labels),
+        };
+      case "section":
+        return {
+          ...item,
+          definition: {
+            ...item.definition,
+            fields: item.definition.fields.map((fieldDefinition) =>
+              resolveFieldDefinitionLabels(fieldDefinition, labels),
+            ),
+          },
+        };
+      default:
+        return assertUnreachable(item);
     }
-
-    return {
-      ...item,
-      definition: {
-        ...item.definition,
-        fields: item.definition.fields.map((fieldDefinition) =>
-          resolveFieldDefinitionLabels(fieldDefinition, labels),
-        ),
-      },
-    };
   });
 }
 
@@ -363,6 +360,10 @@ function resolveFieldDefinitionLabels(
   }
 }
 
+/**
+ * Merges form-level labels with field-level overrides without allocating when
+ * either source is absent, preserving the existing label bag's reference.
+ */
 function mergeLabels<Labels extends object>(
   baseLabels: Partial<Labels> | undefined,
   fieldLabels: Partial<Labels> | undefined,

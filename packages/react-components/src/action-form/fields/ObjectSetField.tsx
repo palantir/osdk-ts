@@ -72,8 +72,7 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
   disabled,
-  renderObjectSetCountLabel,
-  renderLoadErrorMessage,
+  ...labels
 }: Partial<ObjectSetFieldLabels> & {
   objectSet: ObjectSet;
   disabled: boolean | undefined;
@@ -127,14 +126,7 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
             totalCount={totalCount}
             error={objectSetError}
             isLoading={objectSetLoading}
-            renderObjectSetCountLabel={
-              renderObjectSetCountLabel ??
-              DEFAULT_OBJECT_SET_FIELD_LABELS.renderObjectSetCountLabel
-            }
-            renderLoadErrorMessage={
-              renderLoadErrorMessage ??
-              DEFAULT_OBJECT_SET_FIELD_LABELS.renderLoadErrorMessage
-            }
+            {...labels}
           />
         </>
       )}
@@ -147,9 +139,9 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   totalCount,
   isLoading,
   error,
-  renderObjectSetCountLabel,
-  renderLoadErrorMessage,
-}: ObjectSetFieldLabels & {
+  renderObjectSetCountLabel = DEFAULT_OBJECT_SET_FIELD_LABELS.renderObjectSetCountLabel,
+  renderLoadErrorMessage = DEFAULT_OBJECT_SET_FIELD_LABELS.renderLoadErrorMessage,
+}: Partial<ObjectSetFieldLabels> & {
   displayName: string | undefined;
   totalCount: string | undefined;
   isLoading: boolean;

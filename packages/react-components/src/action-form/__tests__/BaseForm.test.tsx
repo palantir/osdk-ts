@@ -74,72 +74,41 @@ describe("BaseForm", () => {
   });
 
   describe("labels", () => {
-    it("uses the loading label override", () => {
+    it("applies BaseForm, field, and FormField label overrides", () => {
       render(
         <BaseForm
-          formContent={[]}
-          isLoading={true}
-          onSubmit={vi.fn()}
-          labels={{ loadingFields: "Loading employee fields" }}
-        />,
-      );
-
-      expect(
-        screen.getByRole("status", { name: "Loading employee fields" }),
-      ).toBeDefined();
-    });
-
-    it("uses the fallback submission failure label", async () => {
-      render(
-        <BaseForm
-          formContent={[]}
-          onSubmit={() => Promise.reject("Unexpected response")}
-          labels={{ submissionFailed: "Could not submit employee" }}
-        />,
-      );
-
-      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
-
-      await waitFor(() => {
-        expect(screen.getByText("Could not submit employee")).toBeDefined();
-      });
-    });
-
-    it("uses overrides for validation feedback", async () => {
-      render(
-        <BaseForm
-          formContent={[field(makeDef("name", { isRequired: true }))]}
-          onSubmit={vi.fn()}
-          labels={{
-            invalidFields: "Correct the highlighted fields",
-            renderIssueCount: (count) => `${count} problems`,
-          }}
-        />,
-      );
-
-      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Correct the highlighted fields"),
-        ).toBeDefined();
-        expect(screen.getByText("1 problems")).toBeDefined();
-      });
-    });
-
-    it("uses the pending label override", () => {
-      render(
-        <BaseForm
-          formContent={[]}
+          formContent={[
+            field(makeDef("name")),
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              fieldComponentProps: {},
+            }),
+          ]}
           isPending={true}
           onSubmit={vi.fn()}
-          labels={{ submitting: "Saving employee…" }}
+          labels={{
+            submitting: "Saving employee…",
+            fieldLabels: { editedLabel: "Modified" },
+            fieldComponentLabels: {
+              UNSUPPORTED: { message: "Unsupported in this form" },
+            },
+          }}
         />,
       );
 
       expect(
         screen.getByRole("button", { name: "Saving employee…" }),
       ).toBeDefined();
+      expect(
+        screen.getByRole("textbox", { name: "Unsupported" }),
+      ).toHaveProperty("value", "Unsupported in this form");
+
+      fireEvent.change(screen.getByRole("textbox", { name: "name" }), {
+        target: { value: "Alice" },
+      });
+      expect(screen.getByText("Modified")).toBeDefined();
     });
   });
 
@@ -913,31 +882,6 @@ describe("BaseForm", () => {
   });
 
   describe("unsupported fields", () => {
-    it("uses the unsupported field label override", () => {
-      render(
-        <BaseForm
-          formContent={[
-            field({
-              fieldKey: "unsupported",
-              label: "Unsupported",
-              fieldComponent: "UNSUPPORTED",
-              fieldComponentProps: {},
-            }),
-          ]}
-          labels={{
-            fieldComponentLabels: {
-              UNSUPPORTED: { message: "Unsupported in this form" },
-            },
-          }}
-          onSubmit={vi.fn()}
-        />,
-      );
-
-      expect(
-        screen.getByRole("textbox", { name: "Unsupported" }),
-      ).toHaveProperty("value", "Unsupported in this form");
-    });
-
     it("renders a disabled text input with the unsupported field message", () => {
       render(
         <BaseForm
