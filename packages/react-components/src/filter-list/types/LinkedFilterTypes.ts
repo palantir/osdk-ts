@@ -87,7 +87,7 @@ export interface HasLinkFilterDefinition<
   defaultFilterState?: HasLinkFilterState;
 
   /**
-   * @deprecated Use `defaultFilterState`.
+   * @deprecated Has no effect, remove it.
    */
   filterState?: HasLinkFilterState;
 }
@@ -122,11 +122,11 @@ export interface LinkedPropertyFilterDefinition<
    * compatible with the linked property's type, see
    * ValidComponentsForPropertyType.
    *
-   * Optional only so that the deprecated `linkedFilterComponent` spelling
-   * keeps compiling; set one or the other. A definition with neither renders
-   * as unsupported.
+   * Required in practice — a definition that sets neither this nor
+   * `linkedFilterComponent` renders as unsupported.
    */
-  // TODO: make this required when `linkedFilterComponent` is removed.
+  // TODO: make this required, and drop the note above, when
+  // `linkedFilterComponent` is removed.
   filterComponent?: LinkedC;
 
   /**
@@ -148,12 +148,12 @@ export interface LinkedPropertyFilterDefinition<
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
 
   /**
-   * @deprecated Use `defaultFilterState`.
+   * @deprecated Has no effect, remove it.
    */
   linkedFilterState?: FilterStateByComponentType[LinkedC];
 
   /**
-   * @deprecated Use `defaultFilterState`.
+   * @deprecated Has no effect, remove it.
    */
   filterState?: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
 

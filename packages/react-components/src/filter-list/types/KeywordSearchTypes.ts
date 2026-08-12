@@ -64,7 +64,7 @@ export interface KeywordSearchFilterDefinition<
   defaultFilterState?: KeywordSearchFilterState;
 
   /**
-   * @deprecated Use `defaultFilterState`.
+   * @deprecated Has no effect, remove it.
    */
   filterState?: KeywordSearchFilterState;
 }

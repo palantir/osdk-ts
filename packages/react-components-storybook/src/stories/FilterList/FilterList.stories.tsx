@@ -2608,8 +2608,8 @@ function ResetGateMirror({
   const initialMirror = useMemo<Map<string, FilterState>>(() => {
     const map = new Map<string, FilterState>();
     for (const def of RESET_GATE_DEFINITIONS) {
-      if (def.type === "PROPERTY" && def.filterState) {
-        map.set(getFilterKey(def), def.filterState);
+      if (def.type === "PROPERTY" && def.defaultFilterState) {
+        map.set(getFilterKey(def), def.defaultFilterState);
       }
     }
     if (defaultFilterStates) {

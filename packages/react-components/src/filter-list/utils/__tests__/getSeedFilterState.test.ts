@@ -161,6 +161,35 @@ describe("getSeedFilterState", () => {
     it("returns undefined when the definition seeds nothing", () => {
       expect(getSeedFilterState(linkedDef({}))).toBeUndefined();
     });
+
+    it("seeds from the deprecated linkedFilterComponent spelling", () => {
+      expect(
+        getSeedFilterState(
+          def({
+            type: "LINKED_PROPERTY",
+            linkName: "primaryOffice",
+            linkedPropertyKey: "name",
+            linkedFilterComponent: "LISTOGRAM",
+            defaultFilterState: EXACT_A,
+          }),
+        ),
+      ).toEqual({ type: "linkedProperty", linkedFilterState: EXACT_A });
+    });
+
+    // Such a definition renders as unsupported, so seeding it would narrow the
+    // object set off a filter the user can neither see nor clear.
+    it("does not seed when neither component field is set", () => {
+      expect(
+        getSeedFilterState(
+          def({
+            type: "LINKED_PROPERTY",
+            linkName: "primaryOffice",
+            linkedPropertyKey: "name",
+            defaultFilterState: EXACT_A,
+          }),
+        ),
+      ).toBeUndefined();
+    });
   });
 });
 

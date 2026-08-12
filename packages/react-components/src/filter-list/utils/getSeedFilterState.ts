@@ -21,52 +21,50 @@ import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { BaseFilterState, FilterState } from "../FilterListItemApi.js";
 import type { CustomFilterDefinition } from "../types/CustomRendererTypes.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
+import { getLinkedFilterComponent } from "./getLinkedFilterComponent.js";
 
 /**
  * Resolves the state a definition seeds its filter with, preferring
- * `defaultFilterState` over the deprecated spellings.
+ * `defaultFilterState` over the deprecated spellings, which differ per kind.
  *
- * This is the single place the deprecation fallbacks live — callers that need
- * the seed should come through here rather than re-deriving the chain, since
- * which spellings are honoured differs per definition kind.
+ * The other two deprecation fallbacks live in `useFilterListState`
+ * (`initialFilterStates`) and `getLinkedFilterComponent`; all three go together.
  *
- * For LINKED_PROPERTY the result is the stored `linkedProperty` wrapper, not
- * the inner state, matching what the filter-state map holds.
- *
- * TODO: when the deprecated spellings are removed, every case but
- * LINKED_PROPERTY collapses to `definition.defaultFilterState`. Keep the
- * function for the wrapper — that is a real shape difference between the
- * definition and the state map, not a deprecation artifact.
+ * TODO: without the deprecated spellings this collapses to
+ * `definition.defaultFilterState` everywhere but LINKED_PROPERTY, which keeps
+ * the wrapper — a real shape difference, not a deprecation artifact.
  */
 export function getSeedFilterState<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
 ): FilterState | undefined {
   switch (definition.type) {
-    // `filterState` is the pre-rename spelling of the seed on these two, so it
-    // stays honoured as a fallback.
+    // `filterState` is the pre-rename seed here.
     case "PROPERTY":
     case "STATIC_VALUES":
       return (
         definition.defaultFilterState ??
-        // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename field
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
         definition.filterState
       );
 
-    // `filterState` never seeded anything on these three, and deliberately
-    // still doesn't — starting to read it would silently activate filters in
-    // existing apps, since it used to be required and so is set everywhere.
+    // `filterState` has never seeded these, and must not start: it is set on
+    // nearly every existing definition, so reading it would activate filters
+    // nobody asked for.
     case "HAS_LINK":
     case "KEYWORD_SEARCH":
     case "CUSTOM":
       return definition.defaultFilterState;
 
-    // The only kind whose definition and stored state differ in shape: the
-    // definition takes the inner state, the map holds a `linkedProperty`
-    // wrapper around it.
+    // Definition holds the inner state; the map holds a `linkedProperty` wrapper.
     case "LINKED_PROPERTY": {
+      // No component renders as unsupported, so seeding would narrow
+      // `objectSet` off a filter the user can neither see nor clear.
+      if (getLinkedFilterComponent(definition) == null) {
+        return undefined;
+      }
       const innerState =
         definition.defaultFilterState ??
-        // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename field
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
         definition.defaultLinkedFilterState;
       return innerState == null
         ? undefined
@@ -82,18 +80,14 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
 }
 
 /**
- * Resolves the state handed to a custom filter's `renderInput` before the
- * filter has been touched.
+ * Resolves the state handed to an untouched custom filter's `renderInput`.
  *
- * Deliberately a wider chain than {@link getSeedFilterState}: CUSTOM's
- * deprecated `filterState` is honoured here but not as a seed, because it has
- * only ever fed the renderer. A value there shows up in the input without
- * reaching `toWhereClause` or the active filter count.
+ * Wider than {@link getSeedFilterState} on purpose: CUSTOM's deprecated
+ * `filterState` feeds the renderer without seeding, so a value there shows in
+ * the input without filtering anything.
  *
- * TODO: delete this helper when CUSTOM's deprecated `filterState` is removed.
- * That asymmetry is the only reason it is separate from
- * {@link getSeedFilterState}; the body becomes `defaultFilterState ??
- * emptyState`, which can be inlined into its single caller.
+ * TODO: delete with CUSTOM's `filterState`. The body then becomes
+ * `defaultFilterState ?? emptyState` and this function is not needed.
  */
 export function getCustomRenderInputState<
   Q extends ObjectTypeDefinition,
@@ -101,7 +95,7 @@ export function getCustomRenderInputState<
 >(definition: CustomFilterDefinition<Q, State>, emptyState: State): State {
   return (
     definition.defaultFilterState ??
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename field
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
     definition.filterState ??
     emptyState
   );

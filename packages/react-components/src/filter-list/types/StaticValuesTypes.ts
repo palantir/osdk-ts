@@ -69,8 +69,7 @@ export interface StaticValuesFilterDefinition<
   defaultFilterState?: FilterStateByComponentType[C];
 
   /**
-   * @deprecated Rename to `defaultFilterState`; the value is unchanged. Still
-   * honoured as a fallback — `defaultFilterState` wins when both are set.
+   * @deprecated Rename to `defaultFilterState`.
    */
   filterState?: FilterStateByComponentType[C];
 
