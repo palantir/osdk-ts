@@ -16,8 +16,12 @@ export default defineConfig({
     // Prefer named `function f() {}` declarations for top-level functions, but
     // only warn: arrow functions still work, and inline callbacks are untouched.
     "func-style": ["warn", "declaration"],
-    // `import { type X }` and `import type { X }` are both fine.
+    // Type-only imports are not policed here. Neither marking them
+    // (`import type { X }`) nor the placement of the `type` keyword is enforced,
+    // so write whichever reads better. Note: if you turn on TypeScript's
+    // `verbatimModuleSyntax`, it will require type-only imports to be marked.
     "import/consistent-type-specifier-style": "off",
+    "typescript/consistent-type-imports": "off",
     // Assets in public/ are imported by absolute path so their URL respects
     // Vite's `base` (e.g. `vite build --base=/sub/`); a hardcoded "/logo.svg"
     // would not.

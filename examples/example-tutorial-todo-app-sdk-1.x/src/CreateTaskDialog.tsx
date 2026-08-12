@@ -1,5 +1,4 @@
-import type { ChangeEvent } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
