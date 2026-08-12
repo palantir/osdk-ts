@@ -47,7 +47,7 @@ export interface UsePropertyAggregationOptions<
   where?: WhereClause<Q>;
   sortBy?: "count" | "value";
   /** Selected values to include in results even when they have zero matching
-   *  rows (e.g. saved filter selections from initialFilterStates). */
+   *  rows (e.g. saved filter selections from defaultFilterStates). */
   activeValues?: string[];
 }
 

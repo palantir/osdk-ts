@@ -214,9 +214,16 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Initial filter states for hydrating from external storage.
-   * These states are merged over definition defaults on mount.
-   * Use onFilterStateChanged to persist state changes externally.
+   * Seeds filter states from external storage, keyed by
+   * `getFilterKey(definition)`. Merged over each definition's
+   * `defaultFilterState` on mount; FilterList owns the state from then on.
+   * Use `onFilterStateChanged` to persist changes back out.
+   */
+  defaultFilterStates?: Map<string, FilterState>;
+
+  /**
+   * @deprecated Rename to `defaultFilterStates`; the value is unchanged. Still
+   * honoured as a fallback — `defaultFilterStates` wins when both are set.
    */
   initialFilterStates?: Map<string, FilterState>;
 

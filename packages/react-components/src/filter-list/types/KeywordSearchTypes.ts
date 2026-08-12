@@ -50,10 +50,6 @@ export interface KeywordSearchFilterDefinition<
 > extends FilterDefinitionControls {
   type: "KEYWORD_SEARCH";
   /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
-  /**
    * Properties to search within
    * - "all": Search all string properties
    * - K[]: Search specific string properties
@@ -61,20 +57,16 @@ export interface KeywordSearchFilterDefinition<
   properties: "all" | K[];
   label?: string;
   /**
-   * Controlled state for the filter.
-   * When provided, the filter becomes controlled and changes should be
-   * handled via onFilterStateChanged callback.
-   */
-  filterState?: KeywordSearchFilterState;
-  /**
-   * Default state for uncontrolled mode.
-   * Used when filterState is not provided.
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
   defaultFilterState?: KeywordSearchFilterState;
+
   /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
+   * @deprecated Use `defaultFilterState`. This field is accepted but never
+   * read: a value here has never had any effect, and still has none. Setting
+   * `defaultFilterState` instead will start seeding the filter.
    */
-  isVisible?: boolean;
+  filterState?: KeywordSearchFilterState;
 }

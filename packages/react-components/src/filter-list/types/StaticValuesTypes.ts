@@ -45,12 +45,6 @@ export interface StaticValuesFilterDefinition<
   type: "STATIC_VALUES";
 
   /**
-   * Optional unique identifier for stable keying across filter reorders.
-   * If provided, takes precedence over `key` for state keying.
-   */
-  id?: string;
-
-  /**
    * Key used for state management and auto WHERE clause generation.
    * When `toWhereClause` is not provided, this is used as the property key
    * in the generated WHERE clause.
@@ -68,9 +62,17 @@ export interface StaticValuesFilterDefinition<
   filterComponent: C;
 
   /**
-   * The current state of the filter
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  filterState: FilterStateByComponentType[C];
+  defaultFilterState?: FilterStateByComponentType[C];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`; the value is unchanged. Still
+   * honoured as a fallback — `defaultFilterState` wins when both are set.
+   */
+  filterState?: FilterStateByComponentType[C];
 
   /**
    * The static list of values to display in the filter component.
@@ -119,11 +121,4 @@ export interface StaticValuesFilterDefinition<
    * from the `key` and filter state.
    */
   toWhereClause?: (state: FilterState) => WhereClause<Q> | undefined;
-
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }

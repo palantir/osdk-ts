@@ -67,18 +67,25 @@ export interface CustomFilterDefinition<
 > extends FilterDefinitionControls {
   type: "CUSTOM";
   /**
-   * Optional unique identifier for stable keying across filter reorders.
-   * If provided, takes precedence over `key` for state keying.
-   */
-  id?: string;
-  /**
    * Unique key for this custom filter
    */
   key: string;
   label?: string;
   filterComponent: "CUSTOM";
-  filterState: State;
+  /**
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
+   */
   defaultFilterState?: State;
+
+  /**
+   * @deprecated Rename to `defaultFilterState`; the value is unchanged. This
+   * field does not seed filter state — it only supplies the state handed to
+   * `renderInput` before the filter is touched, so it never reaches
+   * `toWhereClause`. Still honoured there, after `defaultFilterState`.
+   */
+  filterState?: State;
   /**
    * Render the input portion of the filter
    * Used when rendering within a filter item wrapper
@@ -94,10 +101,4 @@ export interface CustomFilterDefinition<
    * Required for the filter to affect the object set
    */
   toWhereClause: (state: State) => WhereClause<Q> | undefined;
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }
