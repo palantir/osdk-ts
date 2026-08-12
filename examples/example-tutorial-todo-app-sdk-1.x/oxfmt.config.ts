@@ -19,9 +19,6 @@ export default defineConfig({
   sortImports: false,
   // Override Ultracite's `trailingComma: "es5"`. "all" adds trailing commas to
   // every multi-line comma-separated structure, function params and arguments
-  // included, matching this repo's own oxfmt config and current conventions.
-  //
-  // NOTE: keys here are alphabetical because oxlint's sort-keys rule checks this
-  // very file.
+  // included, matching the OSDK repo's own formatting.
   trailingComma: "all",
 });
