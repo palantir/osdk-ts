@@ -23,7 +23,11 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import type { AccessorColumnDef } from "@tanstack/react-table";
+import type {
+  AccessorColumnDef,
+  AccessorFnColumnDef,
+  AccessorKeyColumnDef,
+} from "@tanstack/react-table";
 import { useMemo } from "react";
 
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
@@ -32,7 +36,7 @@ import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
 export interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -48,7 +52,7 @@ export interface UseColumnDefsResult<
  */
 export function useColumnDefs<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -80,7 +84,7 @@ export function useColumnDefs<
 
 function getColumnsFromColumnDefinitions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -102,6 +106,7 @@ function getColumnsFromColumnDefinitions<
       resizable,
       orderable,
       editable,
+      getCellValue,
       renderCell,
       renderHeader,
       columnName,
@@ -115,18 +120,39 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const dataType = getDataType(propertyMetadata);
+    // An explicit cellValueType wins: custom and derived columns have no
+    // ontology metadata to fall back on.
+    const dataType = col.cellValueType ?? getDataType(propertyMetadata);
 
     const markingType =
       propertyMetadata?.typeMetadata?.type === "marking"
         ? propertyMetadata.typeMetadata.markingType
         : undefined;
 
+    // `accessorFn` routes the value through `getCellValue`, so everything
+    // downstream that reads `cellContext.getValue()` — default rendering, the
+    // editor, the context menu — picks it up without further plumbing.
+    const accessor:
+      | Pick<
+          AccessorFnColumnDef<
+            Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+          >,
+          "accessorFn"
+        >
+      | Pick<
+          AccessorKeyColumnDef<
+            Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+          >,
+          "accessorKey"
+        > = getCellValue
+      ? { accessorFn: (object) => getCellValue(object, locator) }
+      : { accessorKey: colKey };
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
-      accessorKey: colKey,
+      ...accessor,
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
@@ -158,7 +184,7 @@ function getColumnsFromColumnDefinitions<
         >(editable, meta?.onCellEdit, meta?.isInEditMode);
 
         if (renderCell && !isEditable) {
-          return renderCell(object, locator);
+          return renderCell(object, locator, cellContext.getValue());
         }
 
         return renderDefaultCell(cellContext);
@@ -171,7 +197,7 @@ function getColumnsFromColumnDefinitions<
 
 function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<

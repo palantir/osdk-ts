@@ -152,6 +152,22 @@ describe("resolveProps", () => {
     expect(byName.onlyB.forcedOptional).toBe(true);
   });
 
+  it("documents a distributed mapped type once, with the key constraint in place of the parameter", () => {
+    const code = `
+      type Keys = "a" | "b";
+      type Props =
+        | { [T in Keys]: { kind: T; value?: (arg: T) => Lookup[T] } }[Keys]
+        | { kind?: undefined; value?: (arg: string) => unknown };
+    `;
+    const entries = resolveProps(parse(code), "Props").entries;
+    expect(entries.map((e) => e.name)).toEqual(["kind", "value"]);
+    const rows = buildRows(entries);
+    expect(rows[0]).toContain("`Keys`");
+    expect(rows[1]).toContain("`(arg: Keys) => Lookup[Keys]`");
+    // Absent from the fallback branch, so it can't be reported as required.
+    expect(entries[0].forcedOptional).toBe(true);
+  });
+
   it("honours Pick and Omit", () => {
     const base = `interface Base { a: string; b: number; c: boolean; }`;
     expect(propNames(`${base}\ntype Props = Pick<Base, "a" | "c">;`)).toEqual([
