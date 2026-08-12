@@ -5,10 +5,8 @@ export default defineConfig({
   extends: [core],
   ignorePatterns: core.ignorePatterns,
   rules: {
-    // Ultracite's preset forces function expressions (`const f = () => ...`).
-    // We steer toward named function declarations (`function f() { ... }`) but
-    // only warn, so arrow functions remain allowed. Inline arrow callbacks are
-    // unaffected (and still preferred, see prefer-arrow-callback).
+    // Prefer named `function f() {}` declarations for top-level functions, but
+    // only warn: arrow functions still work, and inline callbacks are untouched.
     "func-style": ["warn", "declaration"],
   },
 });

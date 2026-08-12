@@ -13,8 +13,9 @@ export default defineConfig({
     "arrow-body-style": "off",
     // Allow `x == null` as the coercion-free "is null or undefined" check.
     eqeqeq: ["error", "always", { null: "never" }],
-    // Either `function f() {}` or `const f = () => {}` is fine.
-    "func-style": "off",
+    // Prefer named `function f() {}` declarations for top-level functions, but
+    // only warn: arrow functions still work, and inline callbacks are untouched.
+    "func-style": ["warn", "declaration"],
     // `import { type X }` and `import type { X }` are both fine.
     "import/consistent-type-specifier-style": "off",
     // Assets in public/ are imported by absolute path so their URL respects
