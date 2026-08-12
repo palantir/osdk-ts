@@ -192,35 +192,21 @@ function applyUpdateEmployeeStoryAction(
   formState: FormState<typeof actionDefinition>,
   applyAction: UpdateEmployeeApplyAction,
 ): ReturnType<UpdateEmployeeApplyAction> {
-  // ActionForm passes coerced form values to custom submit handlers at runtime.
-  // The callback type currently exposes metadata-shaped ActionParameters, so the
-  // story uses the callback's parameter type to keep the example wired to the
-  // real apply path while preserving type safety.
-  return applyAction(
-    formState as unknown as Parameters<UpdateEmployeeApplyAction>[0],
-  );
+  return applyAction(formState);
 }
 
 function applyGeneratedFieldsStoryAction(
   formState: FormState<typeof generatedFieldsActionDefinition>,
   applyAction: GeneratedFieldsApplyAction,
 ): ReturnType<GeneratedFieldsApplyAction> {
-  // See applyUpdateEmployeeStoryAction: this keeps the generated-fields story
-  // using the same applyAction path even though the callback type is metadata-shaped.
-  return applyAction(
-    formState as unknown as Parameters<GeneratedFieldsApplyAction>[0],
-  );
+  return applyAction(formState);
 }
 
 function applyUnsupportedFieldsStoryAction(
   formState: FormState<typeof unsupportedFieldsActionDefinition>,
   applyAction: UnsupportedFieldsApplyAction,
 ): ReturnType<UnsupportedFieldsApplyAction> {
-  // See applyUpdateEmployeeStoryAction: unsupported-field stories still submit
-  // through the real applyAction path so the response panel shows true results.
-  return applyAction(
-    formState as unknown as Parameters<UnsupportedFieldsApplyAction>[0],
-  );
+  return applyAction(formState);
 }
 
 const handleCustomSubmit: NonNullable<

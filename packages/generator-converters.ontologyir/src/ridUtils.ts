@@ -33,3 +33,22 @@ export function toUuid(str: string): string {
     hex.slice(16, 20)
   }-${hex.slice(20, 32)}`;
 }
+
+/**
+ * Generate a struct field rid, which the ontology IR does not carry.
+ *
+ * Both components of the shape are load bearing. Consumers parse these with Conjure, which
+ * requires all five `ri.<service>.<instance>.<type>.<locator>` components, and Foundry's local
+ * ontology server embeds the rid in literal SQL when it indexes the property, which it refuses
+ * unless the locator is a UUID.
+ *
+ * `structIdentity` distinguishes fields that share an api name across different struct types.
+ */
+export function toStructFieldRid(
+  structIdentity: string,
+  fieldApiName: string,
+): string {
+  return `ri.ontology.main.struct-field.${
+    toUuid(`${structIdentity}.${fieldApiName}`)
+  }`;
+}
