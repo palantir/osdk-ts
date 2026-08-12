@@ -37,7 +37,7 @@ interface StatusUpdatesFiltersProps {
     newStates: Array<{ filterKey: string; isVisible: boolean }>,
   ) => void;
   onReset?: () => void;
-  initialFilterStates?: Map<string, FilterState>;
+  defaultFilterStates?: Map<string, FilterState>;
   className?: string;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -52,7 +52,7 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
     onFilterStateChanged,
     onFilterVisibilityChange,
     onReset,
-    initialFilterStates,
+    defaultFilterStates,
     className,
     collapsed,
     onCollapsedChange,
@@ -67,7 +67,7 @@ export const StatusUpdatesFilters = React.memo<StatusUpdatesFiltersProps>(
         onFilterStateChanged={onFilterStateChanged}
         onFilterVisibilityChange={onFilterVisibilityChange}
         onReset={onReset}
-        initialFilterStates={initialFilterStates}
+        defaultFilterStates={defaultFilterStates}
         title="Filters"
         collapsed={collapsed}
         onCollapsedChange={onCollapsedChange}

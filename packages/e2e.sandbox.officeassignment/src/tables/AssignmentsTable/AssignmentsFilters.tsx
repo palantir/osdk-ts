@@ -37,7 +37,7 @@ interface AssignmentsFiltersProps {
     newStates: Array<{ filterKey: string; isVisible: boolean }>,
   ) => void;
   onReset?: () => void;
-  initialFilterStates?: Map<string, FilterState>;
+  defaultFilterStates?: Map<string, FilterState>;
   className?: string;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -55,7 +55,7 @@ export const AssignmentsFilters = React.memo<AssignmentsFiltersProps>(
     onFilterStateChanged,
     onFilterVisibilityChange,
     onReset,
-    initialFilterStates,
+    defaultFilterStates,
     className,
     collapsed,
     onCollapsedChange,
@@ -70,7 +70,7 @@ export const AssignmentsFilters = React.memo<AssignmentsFiltersProps>(
         onFilterStateChanged={onFilterStateChanged}
         onFilterVisibilityChange={onFilterVisibilityChange}
         onReset={onReset}
-        initialFilterStates={initialFilterStates}
+        defaultFilterStates={defaultFilterStates}
         title="Filters"
         collapsed={collapsed}
         onCollapsedChange={onCollapsedChange}

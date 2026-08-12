@@ -22,7 +22,9 @@ interface ListProps<T extends ObjectTypeDefinition> {
 
   header: ReactNode;
 
-  items: UseOsdkListResult<T>;
+  // Narrowed to the fields actually read, so callers can pass either a
+  // `useOsdkObjects` or a `useObjectSet` result.
+  items: Pick<UseOsdkListResult<T>, "data" | "isLoading" | "error">;
 }
 
 export function List<T extends ObjectTypeDefinition>({

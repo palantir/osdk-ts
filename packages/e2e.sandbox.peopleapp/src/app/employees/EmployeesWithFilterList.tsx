@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
-import { useOsdkObjects } from "@osdk/react";
+import type { ObjectSet, WhereClause } from "@osdk/api";
+import { useObjectSet } from "@osdk/react";
 
 import "@osdk/react-components/styles.css";
-import {
-  type FilterDefinitionUnion,
-  FilterList,
-} from "@osdk/react-components/experimental/filter-list";
-import { useState } from "react";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { useMemo, useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
+import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
+import { EMPLOYEE_FILTER_CATALOG } from "../filters/employeeFilterCatalog.js";
 
 interface EmployeeListItemProps {
   item: Employee.OsdkInstance;
@@ -62,36 +61,18 @@ interface EmployeesWithFilterListProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-const INITIAL_FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
-  {
-    type: "PROPERTY",
-    id: "department",
-    key: "department",
-    label: "Department",
-    filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
-  },
-  {
-    type: "LINKED_PROPERTY",
-    id: "lead-department",
-    linkName: "lead",
-    reverseLinkName: "peeps",
-    linkedPropertyKey: "department",
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
-    label: "Lead's Department",
-  },
-];
-
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
+  // LINKED_PROPERTY filters pivot off an object set, so they render empty
+  // without one — `objectType` alone is not enough for them.
+  const employeeObjectSet = useMemo(() => $(Employee), []);
+  const [effectiveObjectSet, setEffectiveObjectSet] =
+    useState<ObjectSet<Employee>>();
 
-  const employees = useOsdkObjects(Employee, {
-    where: whereClause,
+  // The effective object set already folds in `whereClause`, and unlike it also
+  // carries the LINKED_PROPERTY narrowing, which never appears in a where
+  // clause. Falling back to the unfiltered set avoids an empty first paint.
+  const employees = useObjectSet(effectiveObjectSet ?? employeeObjectSet, {
     orderBy: { fullName: "asc" },
     pageSize: 50,
   });
@@ -102,8 +83,10 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
         <div>
           <FilterList
             objectType={Employee}
-            filterDefinitions={INITIAL_FILTER_DEFINITIONS}
+            objectSet={employeeObjectSet}
+            filterDefinitions={EMPLOYEE_FILTER_CATALOG}
             onFilterClauseChanged={setWhereClause}
+            onEffectiveObjectSet={setEffectiveObjectSet}
             enableSorting={true}
             title="Filters"
             showActiveFilterCount={true}
@@ -128,6 +111,10 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             <pre style={{ fontSize: 10, marginTop: 8 }}>
               Where: {JSON.stringify(whereClause, null, 2)}
             </pre>
+            <div style={{ fontSize: 10, color: "#666" }}>
+              Linked filters never appear above — they narrow the list through
+              the object set instead.
+            </div>
           </div>
 
           <List<Employee>

@@ -1,4 +1,4 @@
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import type {
   ActionDefinition,
   ActionParam,
@@ -11,7 +11,6 @@ import type {
   FormFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { ActionForm } from "@osdk/react-components/experimental/action-form";
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
@@ -20,6 +19,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { EMPLOYEE_FILTER_CATALOG } from "../filters/employeeFilterCatalog.js";
 
 import "./page.css";
 
@@ -52,49 +52,6 @@ interface ModifyEmployeeDepartmentSignatures {
 // parameter shape while the real sandbox action metadata catches up.
 const modifyEmployeeDepartment =
   modifyEmployee as unknown as ModifyEmployeeDepartmentAction;
-
-const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
-  {
-    type: "PROPERTY",
-    id: "department",
-    key: "department",
-    label: "Department",
-    filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
-  },
-  {
-    type: "PROPERTY",
-    id: "locationCity",
-    key: "locationCity",
-    label: "Location city",
-    filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
-  },
-  {
-    type: "PROPERTY",
-    id: "workerType",
-    key: "workerType",
-    label: "Worker type",
-    filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
-  },
-  {
-    type: "PROPERTY",
-    id: "team",
-    key: "team",
-    label: "Team contains",
-    filterComponent: "CONTAINS_TEXT",
-    filterState: { type: "CONTAINS_TEXT", value: "" },
-  },
-  {
-    type: "PROPERTY",
-    id: "firstFullTimeStartDate",
-    key: "firstFullTimeStartDate",
-    label: "Full-time start date",
-    filterComponent: "DATE_RANGE",
-    filterState: { type: "DATE_RANGE" },
-  },
-];
 
 const EMPLOYEE_COLUMNS: Array<ColumnDefinition<Employee>> = [
   {
@@ -166,10 +123,11 @@ interface StatusMessage {
 
 export const EmployeeActionFormFilterListReproPage = React.memo(
   function EmployeeActionFormFilterListReproPageFn() {
-    const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [statusMessage, setStatusMessage] = useState<StatusMessage>();
     const employeeObjectSet = useMemo(() => $(Employee), []);
+    const [effectiveObjectSet, setEffectiveObjectSet] =
+      useState<ObjectSet<Employee>>();
 
     const openDialog = useCallback(function openDialog() {
       setIsDialogOpen(true);
@@ -228,18 +186,23 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
           <FilterList
             objectType={Employee}
             objectSet={employeeObjectSet}
-            filterDefinitions={EMPLOYEE_FILTERS}
-            onFilterClauseChanged={setFilterClause}
+            filterDefinitions={EMPLOYEE_FILTER_CATALOG}
+            onEffectiveObjectSet={setEffectiveObjectSet}
             title="Employee filters"
             showActiveFilterCount={true}
             showResetButton={true}
             enableSorting={true}
           />
 
+          {/*
+            Fetch through the effective object set rather than `filter`, so the
+            linked filters above actually narrow the table — they never appear
+            in a where clause. It already folds in the direct filters too.
+          */}
           <ObjectTable
             objectType={Employee}
+            objectSet={effectiveObjectSet ?? employeeObjectSet}
             columnDefinitions={EMPLOYEE_COLUMNS}
-            filter={filterClause}
             defaultOrderBy={DEFAULT_ORDER_BY}
             pageSize={50}
           />

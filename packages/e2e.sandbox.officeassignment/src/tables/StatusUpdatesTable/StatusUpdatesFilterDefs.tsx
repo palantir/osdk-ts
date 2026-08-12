@@ -27,7 +27,7 @@ export const STATUS_UPDATE_FILTER_DEFS: Array<
     key: "type",
     label: "Type",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -35,7 +35,7 @@ export const STATUS_UPDATE_FILTER_DEFS: Array<
     key: "value",
     label: "Value",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -43,6 +43,6 @@ export const STATUS_UPDATE_FILTER_DEFS: Array<
     key: "isExcluded",
     label: "Excluded",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
 ];

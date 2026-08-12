@@ -28,7 +28,7 @@ export const ASSIGNMENT_FILTER_DEFS: Array<IdentifiedFilterDef<Assignment>> = [
     key: "title",
     label: "Title",
     filterComponent: "CONTAINS_TEXT",
-    filterState: { type: "CONTAINS_TEXT" },
+    defaultFilterState: { type: "CONTAINS_TEXT" },
   },
   {
     type: "PROPERTY",
@@ -36,7 +36,7 @@ export const ASSIGNMENT_FILTER_DEFS: Array<IdentifiedFilterDef<Assignment>> = [
     key: "function",
     label: "Function",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -44,7 +44,7 @@ export const ASSIGNMENT_FILTER_DEFS: Array<IdentifiedFilterDef<Assignment>> = [
     key: "assignmentType",
     label: "Type",
     filterComponent: "MULTI_SELECT",
-    filterState: { type: "SELECT", selectedValues: [] },
+    defaultFilterState: { type: "SELECT", selectedValues: [] },
   },
   {
     type: "PROPERTY",
@@ -52,7 +52,7 @@ export const ASSIGNMENT_FILTER_DEFS: Array<IdentifiedFilterDef<Assignment>> = [
     key: "startDate",
     label: "Start date",
     filterComponent: "DATE_RANGE",
-    filterState: { type: "DATE_RANGE" },
+    defaultFilterState: { type: "DATE_RANGE" },
   },
   {
     type: "PROPERTY",
@@ -60,6 +60,6 @@ export const ASSIGNMENT_FILTER_DEFS: Array<IdentifiedFilterDef<Assignment>> = [
     key: "tenureDays",
     label: "Tenure (days)",
     filterComponent: "NUMBER_RANGE",
-    filterState: { type: "NUMBER_RANGE" },
+    defaultFilterState: { type: "NUMBER_RANGE" },
   },
 ];
