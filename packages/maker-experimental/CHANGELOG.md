@@ -1,5 +1,24 @@
 # @osdk/maker-experimental
 
+## 0.47.0
+
+### Minor Changes
+
+- 519e448: Fix bug with edit only properties.
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+- bd9e86a: Fix spt-backed interface property shapes
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+- Updated dependencies [e9d7ffa]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/client.unstable@2.57.0
+  - @osdk/maker@0.55.0
+  - @osdk/generator-converters.preview@0.35.0
+  - @osdk/api@2.57.0
+
 ## 0.46.0
 
 ### Minor Changes

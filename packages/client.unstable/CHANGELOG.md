@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.57.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
 ## 2.56.0
 
 ## 2.55.0

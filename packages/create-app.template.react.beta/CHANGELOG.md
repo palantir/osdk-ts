@@ -1,5 +1,12 @@
 # @osdk/create-app.template.react
 
+## 2.57.0
+
+### Minor Changes
+
+- ff0ef7e: Add React components guidance to generated React applications.
+- 212eb8c: Polish generated React Next steps card alignment and spacing.
+
 ## 2.56.0
 
 ## 2.55.0

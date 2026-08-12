@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.55.0
+
+### Minor Changes
+
+- e9d7ffa: Add struct action parameter validation types and serialization support.
+
+### Patch Changes
+
+- Updated dependencies [8ce066f]
+- Updated dependencies [3bfccdb]
+  - @osdk/generator-converters.ontologyir@2.57.0
+  - @osdk/api@2.57.0
+
 ## 0.54.0
 
 ### Patch Changes
