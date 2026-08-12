@@ -47,11 +47,10 @@ export interface BaseFormDirectLabels {
   validationError: string;
   /** @default "Some fields are invalid" */
   invalidFields: string;
-  /** @default (count) => count === 1 ? "1 issue" : `${count} issues` */
-  renderIssueCount: (count: number) => string;
   /** @default "Submitting…" */
   submitting: string;
-
+  /** @default (count) => count === 1 ? "1 issue" : `${count} issues` */
+  renderIssueCount: (count: number) => string;
   /** @default (count) => count === 1 ? "1 error" : `${count} errors` */
   renderSectionErrorCount: (count: number) => string;
 }
@@ -61,8 +60,8 @@ export const DEFAULT_BASE_FORM_DIRECT_LABELS: BaseFormDirectLabels = {
   submissionFailed: "Submission failed",
   validationError: "Invalid",
   invalidFields: "Some fields are invalid",
-  renderIssueCount: (count) => (count === 1 ? "1 issue" : `${count} issues`),
   submitting: "Submitting…",
+  renderIssueCount: (count) => (count === 1 ? "1 issue" : `${count} issues`),
   renderSectionErrorCount: (count) =>
     count === 1 ? "1 error" : `${count} errors`,
 };

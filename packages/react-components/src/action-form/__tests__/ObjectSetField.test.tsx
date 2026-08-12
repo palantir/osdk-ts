@@ -251,6 +251,44 @@ describe("ObjectSetField", () => {
       expect(screen.getByText("1,000 Employees")).toBeDefined();
     });
 
+    it("preserves precision for counts above Number.MAX_SAFE_INTEGER", () => {
+      mockUseOsdkMetadata.mockReturnValue({
+        loading: false,
+        metadata: {
+          type: "object",
+          apiName: "Employee",
+          displayName: "Employee",
+          pluralDisplayName: "Employees",
+          description: undefined,
+          properties: {},
+          rid: "rid.a.b.c",
+          primaryKeyApiName: "id",
+          titleProperty: "name",
+          links: {},
+          primaryKeyType: "string",
+          icon: undefined,
+          visibility: undefined,
+          status: undefined,
+          interfaceMap: {},
+          inverseInterfaceMap: {},
+        },
+      });
+      mockUseObjectSet.mockReturnValue({
+        data: [],
+        isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
+        error: undefined,
+        fetchMore: undefined,
+        refetch: vi.fn(),
+        objectSet: createMockObjectSet(),
+        totalCount: "9007199254740993",
+      });
+
+      render(<ObjectSetField value={createMockObjectSet()} />);
+      expect(screen.getByText("9,007,199,254,740,993 Employees")).toBeDefined();
+    });
+
     it("falls back to 'objects' when metadata has no pluralDisplayName", () => {
       mockUseOsdkMetadata.mockReturnValue({
         loading: false,

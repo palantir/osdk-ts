@@ -497,8 +497,11 @@ function formatObjectSetCount(count: string | undefined): string {
   if (count == null) {
     return "\u2013"; // '–' symbol
   }
-  const num = Number(count);
-  return Number.isNaN(num) ? count : num.toLocaleString();
+  try {
+    return BigInt(count).toLocaleString();
+  } catch {
+    return count;
+  }
 }
 
 export interface ObjectSetFieldProps<
