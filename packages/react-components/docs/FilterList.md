@@ -82,8 +82,10 @@ Type parameters: `Q extends ObjectTypeDefinition`
 | `onFilterRemoved`          | `(filterKey: FilterKey<Q>) => void`                                                  | Called after a filter's remove button is clicked, once the filter is hidden and its state cleared.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `onFilterVisibilityChange` | `(newStates: Array<{ filterKey: FilterKey<Q>; isVisible: boolean; }>) => void`       | Called when filter visibility or ordering changes, i.e. when filters are reordered, added or removed via the built-in show/remove controls, or reset.<br /><br />Visible filters come first, in display order, followed by the hidden ones. Persist this array and feed it back as the order and `isVisible` of `filterDefinitions` to make reordering survive a remount.                                                                                                                                                                                                                                                                                  |
 | `enableSorting`            | `boolean`                                                                            | Enable drag-and-drop reordering of filters. When `true`, drag handles are rendered and filters can be reordered.<br /><br />Reorder state is managed internally; persist `onFilterVisibilityChange` to track order across remounts. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `collapsed`                | `boolean`                                                                            | Whether the filter list panel is collapsed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `onCollapsedChange`        | `(collapsed: boolean) => void`                                                       | Called when the collapsed state changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `enableCollapse`           | `boolean`                                                                            | Whether the collapse/expand control is available. When `false` the panel is always expanded, no collapse control is rendered, and `defaultCollapsed` is ignored. Defaults to `true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `defaultCollapsed`         | `boolean`                                                                            | Uncontrolled mode. Seeds the panel's internal collapsed state; the component continues to own the state after mount, so later changes to this prop are ignored. `onCollapsedChange` still fires. Defaults to `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `collapsed`                | `boolean`                                                                            | **Deprecated** — Renamed to `defaultCollapsed`. Read once on mount as the initial value and ignored thereafter — collapse is uncontrolled, so this prop never tracked its own value. `defaultCollapsed` wins if both are set.                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `onCollapsedChange`        | `(collapsed: boolean) => void`                                                       | Called whenever the collapsed state changes, including when the user toggles it. Purely an observer — the component owns the state either way, and collapse works whether or not this is supplied.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `initialFilterStates`      | `Map<string, FilterState>`                                                           | Initial filter states for hydrating from external storage. These states are merged over definition defaults on mount. Use onFilterStateChanged to persist state changes externally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `showResetButton`          | `boolean`                                                                            | Show reset filters button in header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `onReset`                  | `() => void`                                                                         | Called when reset button is clicked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -575,7 +577,24 @@ By default, LISTOGRAM filters show at most 5 items with a "View all" link. Overr
 
 ### Collapsible Panel
 
-Make the filter list collapsible:
+The panel is collapsible out of the box — the header's collapse control is
+always present and `FilterList` owns the collapsed state. No wiring required:
+
+```typescript
+<FilterList
+  objectSet={client(Employee)}
+  title="Filters"
+  showActiveFilterCount={true}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
+  ]}
+/>;
+```
+
+Start collapsed with `defaultCollapsed`, and observe changes with
+`onCollapsedChange` when the surrounding layout needs to react. The callback
+does not take over the state — it is a listener on top of the built-in
+behavior, so the panel keeps collapsing and expanding on its own:
 
 ```typescript
 import { useState } from "react";
@@ -584,19 +603,23 @@ function CollapsibleFilters() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <FilterList
-      objectSet={client(Employee)}
-      title="Filters"
-      collapsed={collapsed}
-      onCollapsedChange={setCollapsed}
-      showActiveFilterCount={true}
-      filterDefinitions={[
-        { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
-      ]}
-    />
+    <div style={{ width: collapsed ? "auto" : 280 }}>
+      <FilterList
+        objectSet={client(Employee)}
+        title="Filters"
+        defaultCollapsed={false}
+        onCollapsedChange={setCollapsed}
+        filterDefinitions={[
+          { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
+        ]}
+      />
+    </div>
   );
 }
 ```
+
+Pass `enableCollapse={false}` to remove the control entirely and pin the panel
+open.
 
 ### Drag-and-Drop Sorting
 

@@ -33,7 +33,9 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   const {
     title,
     titleIcon,
-    collapsed = false,
+    enableCollapse = true,
+    defaultCollapsed,
+    collapsed: deprecatedCollapsed,
     onCollapsedChange,
     filterDefinitions,
     filterStates,
@@ -59,20 +61,32 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
     null,
   );
 
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    () => defaultCollapsed ?? deprecatedCollapsed ?? false,
+  );
+
   const showHeader =
     title ||
     titleIcon ||
     showResetButton ||
     showActiveFilterCount ||
-    onCollapsedChange;
+    enableCollapse;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
-  const handleExpand = useCallback(() => {
-    onCollapsedChange?.(false);
-  }, [onCollapsedChange]);
+  const setCollapsed = useCallback(
+    (next: boolean) => {
+      setInternalCollapsed(next);
+      onCollapsedChange?.(next);
+    },
+    [onCollapsedChange],
+  );
 
-  const isCollapsed = collapsed && onCollapsedChange != null;
+  const handleExpand = useCallback(() => {
+    setCollapsed(false);
+  }, [setCollapsed]);
+
+  const isCollapsed = enableCollapse && internalCollapsed;
 
   return (
     <div className={classnames(styles.filterList, className)}>
@@ -101,8 +115,9 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
             <FilterListHeader
               title={title}
               titleIcon={titleIcon}
-              collapsed={collapsed}
-              onCollapsedChange={onCollapsedChange}
+              showCollapseButton={enableCollapse}
+              collapsed={isCollapsed}
+              onCollapsedChange={setCollapsed}
               showResetButton={showResetButton}
               onReset={onReset}
               showActiveFilterCount={showActiveFilterCount}

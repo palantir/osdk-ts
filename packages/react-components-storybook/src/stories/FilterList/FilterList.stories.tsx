@@ -29,7 +29,6 @@ import type { ColumnDefinition } from "@osdk/react-components/experimental/objec
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
-import { useArgs } from "storybook/preview-api";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
@@ -152,7 +151,7 @@ const meta: Meta<EmployeeFilterListProps> = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    collapsed: false,
+    defaultCollapsed: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
     onFilterAdded: fn(),
@@ -207,12 +206,21 @@ const meta: Meta<EmployeeFilterListProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
-    collapsed: {
-      description: "Whether the filter list panel is collapsed",
+    enableCollapse: {
+      description:
+        "Whether the collapse/expand control is available. When false the panel is always expanded.",
       control: "boolean",
+      table: { defaultValue: { summary: "true" } },
+    },
+    defaultCollapsed: {
+      description:
+        "Seeds the panel's initial collapsed state. The component owns the state after mount.",
+      control: "boolean",
+      table: { defaultValue: { summary: "false" } },
     },
     onCollapsedChange: {
-      description: "Called when the collapsed state changes",
+      description:
+        "Called whenever the collapsed state changes. Observer only — collapse works without it.",
       control: false,
       table: { category: "Events" },
     },
@@ -660,11 +668,7 @@ export const WithSorting: Story = {
   },
 };
 
-function CollapsiblePanelStory(
-  args: Partial<EmployeeFilterListProps> & {
-    onCollapsedChange?: (collapsed: boolean) => void;
-  },
-) {
+function CollapsiblePanelStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
@@ -685,40 +689,21 @@ export const CollapsiblePanel: Story = {
     docs: {
       description: {
         story:
-          "Click the collapse button to minimize the filter panel. " +
-          "Active filter count is shown in the collapsed state.",
+          "Click the collapse button to minimize the filter panel. Collapse is " +
+          "uncontrolled — no state wiring required. Active filter count is " +
+          "shown in the collapsed state.",
       },
       source: {
-        code: `const [collapsed, setCollapsed] = useState(false);
-
-<FilterList
+        code: `<FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
-  collapsed={collapsed}
-  onCollapsedChange={setCollapsed}
   showActiveFilterCount={true}
 />`,
       },
     },
   },
-  render: (args) => {
-    const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      <CollapsiblePanelStory
-        {...args}
-        onCollapsedChange={handleCollapsedChange}
-      />
-    );
-  },
+  render: (args) => <CollapsiblePanelStory {...args} />,
 };
 
 export const KeywordSearch: Story = {
@@ -1737,11 +1722,7 @@ export const WithStaticValues: Story = {
   render: (args) => <WithStaticValuesStory {...args} />,
 };
 
-function FullFeaturedStory(
-  args: Partial<EmployeeFilterListProps> & {
-    onCollapsedChange?: (collapsed: boolean) => void;
-  },
-) {
+function FullFeaturedStory(args: Partial<EmployeeFilterListProps>) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -1824,8 +1805,6 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title="Employee Filters"
   titleIcon={<FilterIcon />}
-  collapsed={collapsed}
-  onCollapsedChange={setCollapsed}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}
@@ -1836,20 +1815,7 @@ export const FullFeatured: Story = {
       },
     },
   },
-  render: (args) => {
-    const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      <FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} />
-    );
-  },
+  render: (args) => <FullFeaturedStory {...args} />,
 };
 
 function WithLinkedPropertyFiltersStory(
