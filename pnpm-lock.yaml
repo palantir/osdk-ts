@@ -5223,6 +5223,12 @@ importers:
         specifier: ^17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  compileSeedData,
-  mergeSeedOutputs,
-  validateSeedOutput,
-} from "./compileSeedData.js";
-export { schemaFromMetadata } from "./schema.js";
-export type { ObjectTypeSchema, SchemaMap } from "./schema.js";
+export { compileSeedData } from "./compileSeedData.js";
