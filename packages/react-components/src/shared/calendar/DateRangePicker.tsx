@@ -32,7 +32,7 @@ import {
 } from "../PortalDismissLayer.js";
 import { stopPropagation } from "./calendarShared.js";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
-import { TimePicker } from "./TimePicker.js";
+import { TimePicker, type TimePickerLabels } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
 import commonStyles from "./DatePickerCommon.module.css";
@@ -46,6 +46,39 @@ export type DateRange = readonly [Date | null, Date | null];
 
 /** Default empty range — both bounds are null. */
 export const EMPTY_RANGE: DateRange = [null, null];
+
+export interface DateRangePickerLabels extends Omit<
+  TimePickerLabels,
+  "timePickerAriaLabel"
+> {
+  /** @default "Start date" */
+  startDateAriaLabel: string;
+  /** @default "End date" */
+  endDateAriaLabel: string;
+  /** @default "Start time" */
+  startTimeAriaLabel: string;
+  /** @default "End time" */
+  endTimeAriaLabel: string;
+  /** @default "date range picker" */
+  dialogAriaLabel: string;
+  /** @default "Start of date range picker dialog" */
+  startFocusBoundaryAriaLabel: string;
+  /** @default "End of date range picker dialog" */
+  endFocusBoundaryAriaLabel: string;
+}
+
+export const DEFAULT_DATE_RANGE_PICKER_LABELS: Omit<
+  DateRangePickerLabels,
+  keyof TimePickerLabels
+> = {
+  startDateAriaLabel: "Start date",
+  endDateAriaLabel: "End date",
+  startTimeAriaLabel: "Start time",
+  endTimeAriaLabel: "End time",
+  dialogAriaLabel: "date range picker",
+  startFocusBoundaryAriaLabel: "Start of date range picker dialog",
+  endFocusBoundaryAriaLabel: "End of date range picker dialog",
+};
 
 /**
  * Props for the shared DateRangePicker. Used by filter-list's date-range
@@ -110,6 +143,12 @@ export interface DateRangePickerProps {
   portalContainer?: PortalContainer;
 
   /**
+   * User-facing strings rendered by the date range picker.
+   * Supply values resolved by your i18n library to customize this copy.
+   */
+  labels?: Partial<DateRangePickerLabels>;
+
+  /**
    * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
    * inside the calendar and renders a transparent dismiss layer over the
    * page. Pass `false` when nesting this picker inside another popover so
@@ -147,6 +186,7 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
     formatDate,
     parseDate,
     portalContainer,
+    labels,
     modal = "trap-focus",
     disabled = false,
   }: DateRangePickerProps) {
@@ -531,14 +571,22 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
     const timeFooter = showTime ? (
       <>
         <TimePicker
+          {...labels}
           value={activeStartDateValue ?? null}
           onChange={handleStartTimeChange}
-          label="Start time"
+          timePickerAriaLabel={
+            labels?.startTimeAriaLabel ??
+            DEFAULT_DATE_RANGE_PICKER_LABELS.startTimeAriaLabel
+          }
         />
         <TimePicker
+          {...labels}
           value={activeEndDateValue ?? null}
           onChange={handleEndTimeChange}
-          label="End time"
+          timePickerAriaLabel={
+            labels?.endTimeAriaLabel ??
+            DEFAULT_DATE_RANGE_PICKER_LABELS.endTimeAriaLabel
+          }
         />
       </>
     ) : undefined;
@@ -586,7 +634,10 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
                   onKeyDown={handleStartKeyDown}
                   placeholder={placeholderStart}
                   aria-expanded={isPopoverOpen && activeBoundary === "start"}
-                  aria-label="Start date"
+                  aria-label={
+                    labels?.startDateAriaLabel ??
+                    DEFAULT_DATE_RANGE_PICKER_LABELS.startDateAriaLabel
+                  }
                   aria-invalid={startInvalid || undefined}
                   {...sharedInputProps}
                 />
@@ -616,7 +667,10 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
                   onPointerDown={handleEndPointerDown}
                   placeholder={placeholderEnd}
                   aria-expanded={isPopoverOpen && activeBoundary === "end"}
-                  aria-label="End date"
+                  aria-label={
+                    labels?.endDateAriaLabel ??
+                    DEFAULT_DATE_RANGE_PICKER_LABELS.endDateAriaLabel
+                  }
                   aria-invalid={endInvalid || undefined}
                   {...sharedInputProps}
                 />
@@ -641,7 +695,10 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               className={commonStyles.osdkDatePickerPopover}
               id={popoverId}
               role="dialog"
-              aria-label="date range picker"
+              aria-label={
+                labels?.dialogAriaLabel ??
+                DEFAULT_DATE_RANGE_PICKER_LABELS.dialogAriaLabel
+              }
               // Disable base-ui's automatic focus restoration to the trigger on close.
               // We manage focus ourselves via closePopover() which blurs the inputs.
               finalFocus={false}
@@ -649,7 +706,10 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleStartFocusBoundary}
                 tabIndex={0}
-                aria-label="Start of date range picker dialog"
+                aria-label={
+                  labels?.startFocusBoundaryAriaLabel ??
+                  DEFAULT_DATE_RANGE_PICKER_LABELS.startFocusBoundaryAriaLabel
+                }
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
               <LazyDateRangeCalendar
@@ -662,7 +722,10 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
               <div
                 onFocus={handleEndFocusBoundary}
                 tabIndex={0}
-                aria-label="End of date range picker dialog"
+                aria-label={
+                  labels?.endFocusBoundaryAriaLabel ??
+                  DEFAULT_DATE_RANGE_PICKER_LABELS.endFocusBoundaryAriaLabel
+                }
                 className={commonStyles.osdkDatePickerFocusBoundary}
               />
             </Popover.Popup>

@@ -292,6 +292,28 @@ function resolveFieldDefinitionLabels(
   };
 
   switch (fieldDefinition.fieldComponent) {
+    case "DATE_RANGE_INPUT":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.DATE_RANGE_INPUT,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
+    case "DATETIME_PICKER":
+      return {
+        ...fieldDefinition,
+        fieldComponentProps: {
+          ...fieldDefinition.fieldComponentProps,
+          labels: mergeLabels(
+            labels?.fieldComponentLabels?.DATETIME_PICKER,
+            fieldDefinition.fieldComponentProps.labels,
+          ),
+        },
+      };
     case "DROPDOWN":
       return {
         ...fieldDefinition,

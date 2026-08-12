@@ -78,6 +78,50 @@ describe("DateRangePicker", () => {
       expect(startInput.value).toBe("");
       expect(endInput.value).toBe("");
     });
+
+    it("uses supplied labels", () => {
+      render(
+        <DateRangePicker
+          value={[null, null]}
+          onChange={vi.fn()}
+          showTime={true}
+          labels={{
+            startDateAriaLabel: "Custom start date",
+            endDateAriaLabel: "Custom end date",
+            startTimeAriaLabel: "Custom start time",
+            endTimeAriaLabel: "Custom end time",
+            renderTimePickerHourAriaLabel: (label) =>
+              label === "Custom start time"
+                ? "Custom start hours"
+                : "Custom end hours",
+            renderTimePickerMinuteAriaLabel: (label) =>
+              label === "Custom start time"
+                ? "Custom start minutes"
+                : "Custom end minutes",
+            dialogAriaLabel: "Custom date range picker",
+            startFocusBoundaryAriaLabel: "Start custom date range picker",
+            endFocusBoundaryAriaLabel: "End custom date range picker",
+          }}
+        />,
+      );
+
+      fireEvent.focus(screen.getByLabelText("Custom start date"));
+
+      expect(screen.getByLabelText("Custom end date")).toBeDefined();
+      expect(screen.getByLabelText("Custom start hours")).toBeDefined();
+      expect(screen.getByLabelText("Custom start minutes")).toBeDefined();
+      expect(screen.getByLabelText("Custom end hours")).toBeDefined();
+      expect(screen.getByLabelText("Custom end minutes")).toBeDefined();
+      expect(
+        screen.getByRole("dialog", { name: "Custom date range picker" }),
+      ).toBeDefined();
+      expect(
+        screen.getByLabelText("Start custom date range picker"),
+      ).toBeDefined();
+      expect(
+        screen.getByLabelText("End custom date range picker"),
+      ).toBeDefined();
+    });
   });
 
   describe("focus and popover", () => {

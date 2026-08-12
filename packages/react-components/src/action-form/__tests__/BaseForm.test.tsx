@@ -74,11 +74,23 @@ describe("BaseForm", () => {
   });
 
   describe("labels", () => {
-    it("applies BaseForm, field, and FormField label overrides", () => {
+    it("applies BaseForm, field, and FormField label overrides", async () => {
       render(
         <BaseForm
           formContent={[
             field(makeDef("name")),
+            field({
+              fieldKey: "date",
+              label: "Date",
+              fieldComponent: "DATETIME_PICKER",
+              fieldComponentProps: {},
+            }),
+            field({
+              fieldKey: "dateRange",
+              label: "Date range",
+              fieldComponent: "DATE_RANGE_INPUT",
+              fieldComponentProps: {},
+            }),
             field({
               fieldKey: "unsupported",
               label: "Unsupported",
@@ -93,6 +105,8 @@ describe("BaseForm", () => {
             submitting: "Saving employee…",
             fieldLabels: { editedLabel: "Modified" },
             fieldComponentLabels: {
+              DATETIME_PICKER: { todayButtonText: "Choose today" },
+              DATE_RANGE_INPUT: { startDateAriaLabel: "Range start" },
               UNSUPPORTED: { message: "Unsupported in this form" },
             },
           }}
@@ -105,11 +119,18 @@ describe("BaseForm", () => {
       expect(
         screen.getByRole("textbox", { name: "Unsupported" }),
       ).toHaveProperty("value", "Unsupported in this form");
-
       fireEvent.change(screen.getByRole("textbox", { name: "name" }), {
         target: { value: "Alice" },
       });
       expect(screen.getByText("Modified")).toBeDefined();
+
+      fireEvent.focus(screen.getByRole("combobox", { name: "Date" }));
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Choose today" }),
+        ).toBeDefined();
+      });
+      expect(screen.getByLabelText("Range start")).toBeDefined();
     });
   });
 

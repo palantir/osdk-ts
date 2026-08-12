@@ -79,6 +79,42 @@ describe("DatePicker", () => {
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.placeholder).toBe("Pick a date");
     });
+
+    it("uses supplied labels", () => {
+      render(
+        <DatePicker
+          value={null}
+          onChange={vi.fn()}
+          showTime={true}
+          labels={{
+            todayButtonText: "Custom today",
+            clearButtonText: "Custom clear",
+            timePickerAriaLabel: "Custom time",
+            renderTimePickerHourAriaLabel: () => "Custom hours",
+            renderTimePickerMinuteAriaLabel: () => "Minutes",
+            dialogAriaLabel: "Custom date picker",
+            startFocusBoundaryAriaLabel: "Start custom date picker",
+            endFocusBoundaryAriaLabel: "End custom date picker",
+          }}
+        />,
+      );
+
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      expect(
+        screen.getByRole("button", { name: "Custom today" }),
+      ).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Custom clear" }),
+      ).toBeDefined();
+      expect(screen.getByLabelText("Custom hours")).toBeDefined();
+      expect(screen.getByLabelText("Minutes")).toBeDefined();
+      expect(
+        screen.getByRole("dialog", { name: "Custom date picker" }),
+      ).toBeDefined();
+      expect(screen.getByLabelText("Start custom date picker")).toBeDefined();
+      expect(screen.getByLabelText("End custom date picker")).toBeDefined();
+    });
   });
 
   describe("calendar interaction", () => {
