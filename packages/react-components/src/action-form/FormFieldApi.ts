@@ -689,7 +689,7 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
               : P extends "boolean"
                 ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
                 : P extends "string"
-                  ? "TEXT_INPUT" | "TEXT_AREA"
+                  ? "TEXT_INPUT" | "TEXT_AREA" | "DROPDOWN" | "RADIO_BUTTONS"
                   : P extends "datetime" | "timestamp"
                     ? "DATETIME_PICKER"
                     : P extends

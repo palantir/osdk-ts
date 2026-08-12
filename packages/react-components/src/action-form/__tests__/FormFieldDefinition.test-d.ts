@@ -80,6 +80,7 @@ if (booleanRadioButtons.fieldComponent === "RADIO_BUTTONS") {
     | undefined;
 }
 
+// @ts-expect-error Boolean action parameters require boolean option values
 const invalidBooleanRadioButtons: FormFieldDefinition<UpdateProfileAction> = {
   fieldKey: "enabled",
   fieldComponent: "RADIO_BUTTONS",
@@ -88,7 +89,6 @@ const invalidBooleanRadioButtons: FormFieldDefinition<UpdateProfileAction> = {
     options: [
       {
         label: "Enabled",
-        // @ts-expect-error Boolean action parameters require boolean option values
         value: "enabled",
       },
     ],
@@ -129,18 +129,78 @@ const invalidBooleanTextInput: FormFieldDefinition<UpdateProfileAction> = {
 };
 invalidBooleanTextInput satisfies FormFieldDefinition<UpdateProfileAction>;
 
+const stringTextInput: FormFieldDefinition<UpdateProfileAction> = {
+  fieldKey: "title",
+  fieldComponent: "TEXT_INPUT",
+  label: "Title",
+  defaultValue: "Engineer",
+  validate: (value) => {
+    value satisfies string;
+    return Promise.resolve(undefined);
+  },
+  fieldComponentProps: {},
+};
+stringTextInput satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const stringDropdown: FormFieldDefinition<UpdateProfileAction> = {
+  fieldKey: "title",
+  fieldComponent: "DROPDOWN",
+  label: "Title",
+  defaultValue: "Engineer",
+  validate: (value) => {
+    value satisfies string;
+    return Promise.resolve(undefined);
+  },
+  fieldComponentProps: {
+    items: ["Engineer", "Manager"],
+    itemToStringLabel: (item) => {
+      item satisfies string;
+      return item;
+    },
+    isItemEqual: (left, right) => {
+      left satisfies string;
+      right satisfies string;
+      return left === right;
+    },
+  },
+};
+stringDropdown satisfies FormFieldDefinition<UpdateProfileAction>;
+
+// @ts-expect-error String action parameters require string dropdown items
 const invalidStringDropdown: FormFieldDefinition<UpdateProfileAction> = {
   fieldKey: "title",
   fieldComponent: "DROPDOWN",
   label: "Title",
   fieldComponentProps: {
-    // @ts-expect-error String dropdowns are not enabled by this preparatory change
-    items: ["Engineer", "Manager"],
+    items: [true],
   },
 };
 invalidStringDropdown satisfies FormFieldDefinition<UpdateProfileAction>;
 
-declare const fieldDefinition: FormFieldDefinition<UpdateProfileAction>;
-if (fieldDefinition.fieldComponent === "DROPDOWN") {
-  fieldDefinition.fieldComponentProps.items[0] satisfies boolean | undefined;
+const stringRadioButtons: FormFieldDefinition<UpdateProfileAction> = {
+  fieldKey: "title",
+  fieldComponent: "RADIO_BUTTONS",
+  label: "Title",
+  fieldComponentProps: {
+    options: [
+      { label: "Engineer", value: "Engineer" },
+      { label: "Manager", value: "Manager" },
+    ],
+  },
+};
+if (stringRadioButtons.fieldComponent === "RADIO_BUTTONS") {
+  stringRadioButtons.fieldComponentProps.options[0]?.value satisfies
+    | string
+    | undefined;
 }
+
+// @ts-expect-error String action parameters require string radio-button option values
+const invalidStringRadioButtons: FormFieldDefinition<UpdateProfileAction> = {
+  fieldKey: "title",
+  fieldComponent: "RADIO_BUTTONS",
+  label: "Title",
+  fieldComponentProps: {
+    options: [{ label: "Engineer", value: true }],
+  },
+};
+invalidStringRadioButtons satisfies FormFieldDefinition<UpdateProfileAction>;
