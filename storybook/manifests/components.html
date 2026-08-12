@@ -9515,6 +9515,28 @@ export const EditableTable: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;reportsTo&quot; },
+    columnName: &quot;Reports To (#)&quot;,
+    getCellValue: (employee) =&gt;
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: &quot;integer&quot;,
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;contact&quot; },
+    columnName: &quot;Contact&quot;,
+    getCellValue: (employee) =&gt;
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) =&gt; part != null)
+        .join(&quot; · &quot;),
+    cellValueType: &quot;string&quot;,
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) =&gt; &lt;em&gt;{value || &quot;No value&quot;}&lt;/em&gt;,
+  },
 ];
 
 return (
@@ -9629,6 +9651,28 @@ return (
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; }),
       ),
+    );
+
+    // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
+    // property, so their editors come from `cellValueType`: the integer column
+    // renders a number input and commits a number, not the string it would
+    // have produced without one.
+    const reportsToInput = within(cellsOf()[7]).getByRole(&quot;spinbutton&quot;);
+    await expect(reportsToInput).toHaveAttribute(&quot;type&quot;, &quot;number&quot;);
+    await userEvent.click(reportsToInput);
+    await userEvent.clear(reportsToInput);
+    await userEvent.type(reportsToInput, &quot;4242&quot;);
+    await userEvent.tab();
+    await waitFor(() =&gt;
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: &quot;reportsTo&quot;, newValue: 4242 }),
+      ),
+    );
+
+    // The string-typed custom column stays a text input.
+    await expect(within(cellsOf()[8]).getByRole(&quot;textbox&quot;)).toHaveAttribute(
+      &quot;type&quot;,
+      &quot;text&quot;,
     );
 
     // Cancel exits edit mode; the &quot;Edit Table&quot; button returns.
@@ -9998,6 +10042,28 @@ export const WithSubmitEditsButton: Story = {
           item === false ? &quot;No&quot; : item === true ? &quot;Yes&quot; : &quot;No Value&quot;,
       }),
     },
+  },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;reportsTo&quot; },
+    columnName: &quot;Reports To (#)&quot;,
+    getCellValue: (employee) =&gt;
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: &quot;integer&quot;,
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;contact&quot; },
+    columnName: &quot;Contact&quot;,
+    getCellValue: (employee) =&gt;
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) =&gt; part != null)
+        .join(&quot; · &quot;),
+    cellValueType: &quot;string&quot;,
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) =&gt; &lt;em&gt;{value || &quot;No value&quot;}&lt;/em&gt;,
   },
 ];
 
@@ -39865,6 +39931,28 @@ export const EditableTable: Story = {
       }),
     },
   },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;reportsTo&quot; },
+    columnName: &quot;Reports To (#)&quot;,
+    getCellValue: (employee) =&gt;
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: &quot;integer&quot;,
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;contact&quot; },
+    columnName: &quot;Contact&quot;,
+    getCellValue: (employee) =&gt;
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) =&gt; part != null)
+        .join(&quot; · &quot;),
+    cellValueType: &quot;string&quot;,
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) =&gt; &lt;em&gt;{value || &quot;No value&quot;}&lt;/em&gt;,
+  },
 ];
 
 return (
@@ -39979,6 +40067,28 @@ return (
       expect(args.onCellValueChanged).toHaveBeenCalledWith(
         expect.objectContaining({ columnId: &quot;firstFullTimeStartDate&quot; }),
       ),
+    );
+
+    // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
+    // property, so their editors come from `cellValueType`: the integer column
+    // renders a number input and commits a number, not the string it would
+    // have produced without one.
+    const reportsToInput = within(cellsOf()[7]).getByRole(&quot;spinbutton&quot;);
+    await expect(reportsToInput).toHaveAttribute(&quot;type&quot;, &quot;number&quot;);
+    await userEvent.click(reportsToInput);
+    await userEvent.clear(reportsToInput);
+    await userEvent.type(reportsToInput, &quot;4242&quot;);
+    await userEvent.tab();
+    await waitFor(() =&gt;
+      expect(args.onCellValueChanged).toHaveBeenCalledWith(
+        expect.objectContaining({ columnId: &quot;reportsTo&quot;, newValue: 4242 }),
+      ),
+    );
+
+    // The string-typed custom column stays a text input.
+    await expect(within(cellsOf()[8]).getByRole(&quot;textbox&quot;)).toHaveAttribute(
+      &quot;type&quot;,
+      &quot;text&quot;,
     );
 
     // Cancel exits edit mode; the &quot;Edit Table&quot; button returns.
@@ -40348,6 +40458,28 @@ export const WithSubmitEditsButton: Story = {
           item === false ? &quot;No&quot; : item === true ? &quot;Yes&quot; : &quot;No Value&quot;,
       }),
     },
+  },
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;reportsTo&quot; },
+    columnName: &quot;Reports To (#)&quot;,
+    getCellValue: (employee) =&gt;
+      employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
+    cellValueType: &quot;integer&quot;,
+    editable: true,
+    orderable: false,
+  },
+  {
+    locator: { type: &quot;custom&quot;, id: &quot;contact&quot; },
+    columnName: &quot;Contact&quot;,
+    getCellValue: (employee) =&gt;
+      [employee.emailPrimaryWork, employee.jobTitle]
+        .filter((part) =&gt; part != null)
+        .join(&quot; · &quot;),
+    cellValueType: &quot;string&quot;,
+    editable: true,
+    orderable: false,
+    renderCell: (object, locator, value) =&gt; &lt;em&gt;{value || &quot;No value&quot;}&lt;/em&gt;,
   },
 ];
 
