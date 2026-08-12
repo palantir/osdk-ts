@@ -48,6 +48,7 @@ interface UpdateEmployeeActionFormStoryProps {
   >;
   formTitle?: string;
   isSubmitDisabled?: boolean;
+  labels?: ActionFormProps<typeof actionDefinition>["labels"];
   onSubmit?: ActionFormProps<typeof actionDefinition>["onSubmit"];
   showFormTitle?: boolean;
 }
@@ -286,6 +287,7 @@ function UpdateEmployeeActionFormStory({
   formFieldDefinitions,
   formTitle,
   isSubmitDisabled,
+  labels,
   onSubmit,
   showFormTitle,
 }: UpdateEmployeeActionFormStoryProps): React.ReactElement {
@@ -309,6 +311,7 @@ function UpdateEmployeeActionFormStory({
         formFieldDefinitions={formFieldDefinitions}
         formTitle={formTitle}
         isSubmitDisabled={isSubmitDisabled}
+        labels={labels}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={showFormTitle}
@@ -387,6 +390,11 @@ const meta = {
     isSubmitDisabled: {
       control: "boolean",
       description: "Disables the submit button before validation runs.",
+    },
+    labels: {
+      control: false,
+      description:
+        "Overrides user-facing strings in BaseForm, FormField, and built-in field components.",
     },
     onSubmit: {
       control: false,
@@ -797,6 +805,40 @@ export const WithFieldOverrides: Story = {
   actionDefinition={updateEmployeeStoryAction}
   formFieldDefinitions={fields}
 />`,
+      },
+    },
+  },
+};
+
+export const WithLabels: Story = {
+  args: {
+    formFieldDefinitions: actionFormOverrideFields,
+    onSubmit: handleSlowSubmit,
+    labels: {
+      submitting: "Saving employee…",
+      fieldLabels: {
+        editedLabel: "Changed",
+        requiredIndicatorAriaLabel: "Required field",
+        renderInfoTipAriaLabel: (label) =>
+          label == null ? "Field details" : `Details about ${label}`,
+      },
+      fieldComponentLabels: {
+        DROPDOWN: {
+          clearButtonLabel: "Clear employment type",
+          renderRemoveButtonLabel: (label) => `Remove ${label}`,
+        },
+        NUMBER_INPUT: {
+          incrementButtonLabel: "Increase experience",
+          decrementButtonLabel: "Decrease experience",
+        },
+      },
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows form-level, FormField, and leaf-field label overrides. Change a field to see the edited label, inspect the info-tip and stepper buttons for their accessible labels, then submit to see the pending button copy.",
       },
     },
   },

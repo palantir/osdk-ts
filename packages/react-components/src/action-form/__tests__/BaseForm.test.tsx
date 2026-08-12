@@ -86,6 +86,7 @@ describe("BaseForm", () => {
               fieldComponentProps: {},
             }),
           ]}
+          // Mark the form as pending to show the submitting label
           isPending={true}
           onSubmit={vi.fn()}
           labels={{
