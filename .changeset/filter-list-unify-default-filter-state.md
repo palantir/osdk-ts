@@ -8,8 +8,9 @@ Nothing is removed. Every old field is optional and `@deprecated`, and still hon
 
 To migrate:
 
-- `PROPERTY`, `STATIC_VALUES`: rename `filterState` to `defaultFilterState`.
+- `PROPERTY`, `STATIC_VALUES`, `CUSTOM`: rename `filterState` to `defaultFilterState`.
 - `LINKED_PROPERTY`: rename `defaultLinkedFilterState` to `defaultFilterState`, and `linkedFilterComponent` to `filterComponent`.
-- `CUSTOM`: rename `filterState` to `defaultFilterState`. The value now seeds the filter, so it also reaches `toWhereClause` and the active filter count; before it only reached `renderInput`.
 - Top level: rename `initialFilterStates` to `defaultFilterStates`.
-- Delete rather than rename `filterState` on `HAS_LINK`, `KEYWORD_SEARCH` and `LINKED_PROPERTY`, and `linkedFilterState` on `LINKED_PROPERTY`. These have never been read, so renaming them would silently activate filters that were never active.
+- Delete rather than rename `filterState` on `HAS_LINK`, `KEYWORD_SEARCH` and `LINKED_PROPERTY`, and `linkedFilterState` on `LINKED_PROPERTY`. These have no effect, so renaming them would silently activate filters that were never active.
+
+Also fixes the active filter count for `CUSTOM` filters, which previously counted any custom state as active. A custom filter now counts only when its own `toWhereClause` produces a clause, matching the clause FilterList actually applies.

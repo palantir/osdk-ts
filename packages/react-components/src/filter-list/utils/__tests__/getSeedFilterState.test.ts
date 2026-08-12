@@ -18,12 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import type { MockObjectType } from "../../__tests__/testUtils.js";
 import type { FilterDefinitionUnion } from "../../FilterListApi.js";
-import type { FilterState } from "../../FilterListItemApi.js";
-import type { CustomFilterDefinition } from "../../types/CustomRendererTypes.js";
-import {
-  getCustomRenderInputState,
-  getSeedFilterState,
-} from "../getSeedFilterState.js";
+import { getSeedFilterState } from "../getSeedFilterState.js";
 
 type Def = FilterDefinitionUnion<typeof MockObjectType>;
 
@@ -40,6 +35,16 @@ function propertyDef(fields: Record<string, unknown>): Def {
     type: "PROPERTY",
     key: "name",
     filterComponent: "LISTOGRAM",
+    ...fields,
+  });
+}
+
+function customDef(fields: Record<string, unknown>): Def {
+  return def({
+    type: "CUSTOM",
+    key: "custom",
+    filterComponent: "CUSTOM",
+    toWhereClause: () => ({}),
     ...fields,
   });
 }
@@ -79,6 +84,26 @@ describe("getSeedFilterState", () => {
     it("returns undefined when the definition seeds nothing", () => {
       expect(getSeedFilterState(propertyDef({}))).toBeUndefined();
     });
+
+    // CUSTOM seeds from the same two fields as PROPERTY/STATIC_VALUES, so the
+    // deprecated rename is behavior-preserving here too.
+    it.each([
+      ["defaultFilterState", { defaultFilterState: EMPTY_CUSTOM }],
+      ["the deprecated filterState", { filterState: EMPTY_CUSTOM }],
+    ])("seeds CUSTOM from %s", (_label, fields) => {
+      expect(getSeedFilterState(customDef(fields))).toEqual(EMPTY_CUSTOM);
+    });
+
+    it("prefers defaultFilterState over filterState on CUSTOM", () => {
+      expect(
+        getSeedFilterState(
+          customDef({
+            defaultFilterState: EMPTY_CUSTOM,
+            filterState: { type: "custom", customState: { v: "loses" } },
+          }),
+        ),
+      ).toEqual(EMPTY_CUSTOM);
+    });
   });
 
   describe("kinds where filterState has never seeded", () => {
@@ -101,16 +126,6 @@ describe("getSeedFilterState", () => {
           searchTerm: "stray",
           operator: "AND",
         },
-      ],
-      [
-        "CUSTOM",
-        {
-          type: "CUSTOM",
-          key: "custom",
-          filterComponent: "CUSTOM",
-          toWhereClause: () => ({}),
-        },
-        EMPTY_CUSTOM,
       ],
     ])("ignores filterState on %s", (_kind, base, filterState) => {
       expect(getSeedFilterState(def({ ...base, filterState }))).toBeUndefined();
@@ -190,60 +205,5 @@ describe("getSeedFilterState", () => {
         ),
       ).toBeUndefined();
     });
-  });
-});
-
-describe("getCustomRenderInputState", () => {
-  function customDef(
-    fields: Record<string, unknown>,
-  ): CustomFilterDefinition<typeof MockObjectType> {
-    return {
-      type: "CUSTOM",
-      key: "custom",
-      filterComponent: "CUSTOM",
-      toWhereClause: () => ({}),
-      ...fields,
-    } as CustomFilterDefinition<typeof MockObjectType>;
-  }
-
-  const CUSTOM_A = { type: "custom", customState: { v: "a" } } as const;
-  const CUSTOM_B = { type: "custom", customState: { v: "b" } } as const;
-
-  it("reads defaultFilterState", () => {
-    expect(
-      getCustomRenderInputState(
-        customDef({ defaultFilterState: CUSTOM_A }),
-        EMPTY_CUSTOM,
-      ),
-    ).toEqual(CUSTOM_A);
-  });
-
-  it("honours the deprecated filterState, which never reaches the seed", () => {
-    const definition = customDef({ filterState: CUSTOM_A });
-
-    expect(getCustomRenderInputState(definition, EMPTY_CUSTOM)).toEqual(
-      CUSTOM_A,
-    );
-    // Same definition, no seed — this is the split that makes the two helpers
-    // distinct rather than one shared chain.
-    expect(getSeedFilterState(definition as Def)).toBeUndefined();
-  });
-
-  it("prefers defaultFilterState over the deprecated filterState", () => {
-    expect(
-      getCustomRenderInputState(
-        customDef({ defaultFilterState: CUSTOM_A, filterState: CUSTOM_B }),
-        EMPTY_CUSTOM,
-      ),
-    ).toEqual(CUSTOM_A);
-  });
-
-  it("falls back to the supplied empty state", () => {
-    expect(
-      getCustomRenderInputState(
-        customDef({}),
-        EMPTY_CUSTOM satisfies FilterState,
-      ),
-    ).toEqual(EMPTY_CUSTOM);
   });
 });

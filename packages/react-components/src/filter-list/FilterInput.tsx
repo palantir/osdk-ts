@@ -28,12 +28,11 @@ import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { LinkedFilter } from "./types/LinkedFilterTypes.js";
-import { getCustomRenderInputState } from "./utils/getSeedFilterState.js";
 
 /**
- * Handed to a custom filter's `renderInput` when the filter has no stored state
- * and its definition declares no `defaultFilterState`, so renderers can rely on
- * always receiving a state object.
+ * Handed to a custom filter's `renderInput` whenever the filter has no stored
+ * state, so renderers can rely on always receiving a state object. Definitions
+ * seed their state via `defaultFilterState`, not from here.
  */
 const EMPTY_CUSTOM_STATE: CustomFilterState = {
   type: "custom",
@@ -122,9 +121,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         );
       }
       const customFilterState =
-        filterState?.type === "custom"
-          ? filterState
-          : getCustomRenderInputState(definition, EMPTY_CUSTOM_STATE);
+        filterState?.type === "custom" ? filterState : EMPTY_CUSTOM_STATE;
       return (
         <>
           {definition.renderInput({

@@ -80,8 +80,7 @@ export interface CustomFilterDefinition<
   defaultFilterState?: State;
 
   /**
-   * @deprecated Only pre-fills `renderInput`, it does not filter. Remove it, or
-   * rename it to `defaultFilterState` to also filter the object set.
+   * @deprecated Rename to `defaultFilterState`.
    */
   filterState?: State;
   /**

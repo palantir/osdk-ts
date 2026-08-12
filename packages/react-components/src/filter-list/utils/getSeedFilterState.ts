@@ -18,8 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type { BaseFilterState, FilterState } from "../FilterListItemApi.js";
-import type { CustomFilterDefinition } from "../types/CustomRendererTypes.js";
+import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { getLinkedFilterComponent } from "./getLinkedFilterComponent.js";
 
@@ -41,6 +40,7 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     // `filterState` is the pre-rename seed here.
     case "PROPERTY":
     case "STATIC_VALUES":
+    case "CUSTOM":
       return (
         definition.defaultFilterState ??
         // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
@@ -52,7 +52,6 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     // nobody asked for.
     case "HAS_LINK":
     case "KEYWORD_SEARCH":
-    case "CUSTOM":
       return definition.defaultFilterState;
 
     // Definition holds the inner state; the map holds a `linkedProperty` wrapper.
@@ -77,26 +76,4 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     default:
       return assertUnreachable(definition);
   }
-}
-
-/**
- * Resolves the state handed to an untouched custom filter's `renderInput`.
- *
- * Wider than {@link getSeedFilterState} on purpose: CUSTOM's deprecated
- * `filterState` feeds the renderer without seeding, so a value there shows in
- * the input without filtering anything.
- *
- * TODO: delete with CUSTOM's `filterState`. The body then becomes
- * `defaultFilterState ?? emptyState` and this function is not needed.
- */
-export function getCustomRenderInputState<
-  Q extends ObjectTypeDefinition,
-  State extends BaseFilterState,
->(definition: CustomFilterDefinition<Q, State>, emptyState: State): State {
-  return (
-    definition.defaultFilterState ??
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
-    definition.filterState ??
-    emptyState
-  );
 }

@@ -89,43 +89,27 @@ describe("FilterInput", () => {
       expect(receivedState()).toEqual(customState("stored"));
     });
 
-    it("falls back to defaultFilterState when nothing is stored", () => {
-      renderCustomFilter({ defaultFilterState: customState("default") });
-
-      expect(receivedState()).toEqual(customState("default"));
-    });
-
-    it("falls back to the deprecated filterState", () => {
-      renderCustomFilter({ filterState: customState("legacy") });
-
-      expect(receivedState()).toEqual(customState("legacy"));
-    });
-
-    it("prefers defaultFilterState over the deprecated filterState", () => {
-      renderCustomFilter({
-        defaultFilterState: customState("wins"),
-        filterState: customState("loses"),
-      });
-
-      expect(receivedState()).toEqual(customState("wins"));
-    });
-
-    it("hands renderInput an empty custom state when the definition seeds nothing", () => {
+    it("hands renderInput an empty custom state when nothing is stored", () => {
       renderCustomFilter({});
 
       expect(receivedState()).toEqual({ type: "custom", customState: {} });
     });
 
-    it("ignores a stored state that is not a custom state", () => {
-      renderCustomFilter(
-        { defaultFilterState: customState("default") },
-        {
-          type: "EXACT_MATCH",
-          values: ["stray"],
-        },
-      );
+    // `defaultFilterState` reaches the input by seeding the state map, the same
+    // way it does for every other filter kind — see useFilterListState tests.
+    it("does not read the definition's seed fields directly", () => {
+      renderCustomFilter({
+        defaultFilterState: customState("default"),
+        filterState: customState("legacy"),
+      });
 
-      expect(receivedState()).toEqual(customState("default"));
+      expect(receivedState()).toEqual({ type: "custom", customState: {} });
+    });
+
+    it("ignores a stored state that is not a custom state", () => {
+      renderCustomFilter({}, { type: "EXACT_MATCH", values: ["stray"] });
+
+      expect(receivedState()).toEqual({ type: "custom", customState: {} });
     });
 
     it("renders an unsupported marker when renderInput is missing", () => {
