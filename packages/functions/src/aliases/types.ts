@@ -52,6 +52,29 @@ export interface ResolvedAliases {
 export enum AliasEnvironment {
   PUBLISHED = "PUBLISHED",
   LIVE_PREVIEW = "LIVE_PREVIEW",
+  // Dev Console applications run in the browser, where there is no filesystem
+  // or process.env. Resolved aliases are fetched from the served deployment
+  // config file instead. Use the "@osdk/functions/browser-aliases" subpath.
+  BROWSER = "BROWSER",
+}
+
+// Browser mode types (deployment.config.json)
+
+/**
+ * Shape of the deployment config file that Foundry website hosting serves at
+ * {@link ../public/browser-aliases}'s default path. It is a flat map of
+ * strings; resolved custom aliases are packed under `aliases` as a stringified
+ * JSON object (a `Record<string, string>`) so they cannot collide with the
+ * reserved system keys.
+ */
+export interface DeploymentConfig {
+  clientId?: string;
+  redirectUrl?: string;
+  foundryUrl?: string;
+  ontologyRid?: string;
+  ontologyApiName?: string;
+  /** Stringified JSON `Record<string, string>` of resolved custom alias values. */
+  aliases?: string;
 }
 
 // Live preview mode types (resources.json)

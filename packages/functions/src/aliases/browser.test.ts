@@ -1,0 +1,143 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { custom, initAliases, resetAliasesCache } from "./browser.js";
+
+interface FakeResponseInit {
+  ok?: boolean;
+  status?: number;
+  statusText?: string;
+  body?: unknown;
+}
+
+function fakeResponse(init: FakeResponseInit): Response {
+  return {
+    ok: init.ok ?? true,
+    status: init.status ?? 200,
+    statusText: init.statusText ?? "OK",
+    json: () => Promise.resolve(init.body),
+  } as unknown as Response;
+}
+
+function mockFetch(init: FakeResponseInit): typeof globalThis.fetch {
+  return vi.fn(() =>
+    Promise.resolve(fakeResponse(init)),
+  ) as unknown as typeof fetch;
+}
+
+const CONFIG_WITH_ALIASES = {
+  clientId: "client-123",
+  foundryUrl: "https://foundry.example.com",
+  aliases: JSON.stringify({
+    apiBaseUrl: "https://api.prod.internal",
+    featureXEnabled: "false",
+  }),
+};
+
+describe("browser aliases", () => {
+  afterEach(() => {
+    resetAliasesCache();
+  });
+
+  describe("custom", () => {
+    it("returns a resolved alias after init", async () => {
+      const fetchImpl = mockFetch({ body: CONFIG_WITH_ALIASES });
+      await initAliases({ fetch: fetchImpl });
+
+      expect(custom("apiBaseUrl")).toBe("https://api.prod.internal");
+      expect(custom("featureXEnabled")).toBe("false");
+    });
+
+    it("throws before init", () => {
+      expect(() => custom("apiBaseUrl")).toThrow(
+        "Aliases have not been initialized",
+      );
+    });
+
+    it("throws on unknown alias with available list", async () => {
+      await initAliases({ fetch: mockFetch({ body: CONFIG_WITH_ALIASES }) });
+
+      expect(() => custom("nonexistent")).toThrow(
+        "Custom alias 'nonexistent' not found. Available aliases: " +
+          "[apiBaseUrl, featureXEnabled]",
+      );
+    });
+
+    it("treats a config with no aliases key as empty", async () => {
+      await initAliases({
+        fetch: mockFetch({ body: { clientId: "client-123" } }),
+      });
+
+      expect(() => custom("anything")).toThrow(
+        "Custom alias 'anything' not found. Available aliases: []",
+      );
+    });
+  });
+
+  describe("initAliases", () => {
+    it("fetches only once across repeated calls", async () => {
+      const fetchImpl = mockFetch({ body: CONFIG_WITH_ALIASES });
+      await initAliases({ fetch: fetchImpl });
+      await initAliases({ fetch: fetchImpl });
+      custom("apiBaseUrl");
+
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+    });
+
+    it("deduplicates concurrent calls into a single fetch", async () => {
+      const fetchImpl = mockFetch({ body: CONFIG_WITH_ALIASES });
+      await Promise.all([
+        initAliases({ fetch: fetchImpl }),
+        initAliases({ fetch: fetchImpl }),
+        initAliases({ fetch: fetchImpl }),
+      ]);
+
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+    });
+
+    it("re-fetches after resetAliasesCache", async () => {
+      const fetchImpl = mockFetch({ body: CONFIG_WITH_ALIASES });
+      await initAliases({ fetch: fetchImpl });
+      resetAliasesCache();
+      await initAliases({ fetch: fetchImpl });
+
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it("throws and allows retry on a non-ok response", async () => {
+      const failing = mockFetch({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+      await expect(initAliases({ fetch: failing })).rejects.toThrow(
+        "Failed to load aliases",
+      );
+
+      // A subsequent successful init should work (in-flight was cleared).
+      await initAliases({ fetch: mockFetch({ body: CONFIG_WITH_ALIASES }) });
+      expect(custom("apiBaseUrl")).toBe("https://api.prod.internal");
+    });
+
+    it("throws when the aliases blob is not valid JSON", async () => {
+      await expect(
+        initAliases({ fetch: mockFetch({ body: { aliases: "{not json" } }) }),
+      ).rejects.toThrow("Failed to parse resolved aliases");
+    });
+  });
+});
