@@ -2,12 +2,61 @@
 "@osdk/react-components": minor
 ---
 
-Normalize viewer component naming so every viewer follows the `<X>Viewer` / `Base<X>Viewer` pattern: `MarkdownViewerMedia`/`TiffViewerMedia` are now `MarkdownViewer`/`TiffViewer`, `MarkdownRenderer`/`TiffRenderer` are now `BaseMarkdownViewer`/`BaseTiffViewer`, `MarkdownRendererProps`/`TiffRendererProps` are now `BaseMarkdownViewerProps`/`BaseTiffViewerProps`, and the `experimental/markdown-viewer` and `experimental/tiff-viewer` subpaths replace `experimental/markdown-renderer` and `experimental/tiff-renderer`.
+Normalize viewer component naming so every viewer follows the `<X>Viewer` / `Base<X>Viewer` pattern, and drop the `Media` suffix from the media-wrapper prop types.
 
-The old subpaths keep working and are marked deprecated. `experimental/markdown-renderer` and `experimental/tiff-renderer` re-export the very same component instances under their previous names, so existing imports from those paths continue to work unchanged. `DocumentViewer`'s `tiffRendererProps` is likewise kept as a deprecated alias for `tiffViewerProps`, taking precedence when set to a non-nullish value.
+The `experimental/markdown-renderer` and `experimental/tiff-renderer` import paths are unchanged. They get renamed later, when the `experimental/` prefix is dropped, so consumers change import paths once rather than twice.
 
-Breaking: the `Media` suffix is dropped from every media-wrapper prop type, so `EmailViewerMediaProps`, `ImageViewerMediaProps`, `MarkdownViewerMediaProps`, `PdfViewerMediaProps`, `SpreadsheetViewerMediaProps`, `TiffViewerMediaProps`, `VideoViewerMediaProps` and `XmlViewerMediaProps` are now `EmailViewerProps`, `ImageViewerProps`, `MarkdownViewerProps`, `PdfViewerProps`, `SpreadsheetViewerProps`, `TiffViewerProps`, `VideoViewerProps` and `XmlViewerProps`. Note that `PdfViewerProps` therefore changes meaning: it used to describe `BasePdfViewer` (taking `src`) and now describes `PdfViewer` (taking `media`), with the former renamed to `BasePdfViewerProps`. Code that referenced `PdfViewerProps` for the base component will fail to compile rather than silently change behavior, since `src` and `media` are not interchangeable. Only `markdown-renderer` and `tiff-renderer` keep deprecated aliases for their old prop-type names, via their deprecated subpaths.
+The renamed components keep `@deprecated` aliases, so no import of a component needs to change yet. The prop-type renames do not: dropping the `Media` suffix is a clean break across all eight viewers. It cannot be aliased for pdf, where `PdfViewerProps` was reused for a different type, and aliasing seven of eight would be more confusing than none. Deprecated aliases are cleared in one pass once a migration script is available.
 
-Breaking: `DocumentViewer`'s `markdownViewerProps`, `spreadsheetViewerProps`, `emailViewerProps` and `xmlViewerProps` are removed. Each resolved to `{}` and could never carry a value, because those Base props consist only of the primary input plus `className`, both of which `DocumentViewer` omits when forwarding.
+Renamed components, all with deprecated aliases:
 
-Breaking: the previous names are no longer re-exported from the aggregate `@osdk/react-components/experimental` entry point, so imports of `MarkdownRenderer`, `MarkdownRendererProps`, `MarkdownViewerMedia`, `TiffRenderer`, `TiffRendererProps` or `TiffViewerMedia` from there need to either move to the matching deprecated subpath or adopt the new names. The `--osdk-markdown-renderer-*` CSS tokens are renamed to `--osdk-markdown-viewer-*` with no fallback, and the component names reported to metrics change from `TiffViewerMedia`/`MarkdownViewerMedia` to `TiffViewer`/`MarkdownViewer`.
+```
+MarkdownRenderer     -> BaseMarkdownViewer
+MarkdownViewerMedia  -> MarkdownViewer
+TiffRenderer         -> BaseTiffViewer
+TiffViewerMedia      -> TiffViewer
+```
+
+Renamed prop types, none of which keep an alias:
+
+```
+MarkdownRendererProps        -> BaseMarkdownViewerProps
+TiffRendererProps            -> BaseTiffViewerProps
+PdfViewerProps               -> BasePdfViewerProps
+EmailViewerMediaProps        -> EmailViewerProps
+ImageViewerMediaProps        -> ImageViewerProps
+MarkdownViewerMediaProps     -> MarkdownViewerProps
+PdfViewerMediaProps          -> PdfViewerProps
+SpreadsheetViewerMediaProps  -> SpreadsheetViewerProps
+TiffViewerMediaProps         -> TiffViewerProps
+VideoViewerMediaProps        -> VideoViewerProps
+XmlViewerMediaProps          -> XmlViewerProps
+```
+
+Note that `PdfViewerProps` appears on both sides: it used to describe `BasePdfViewer` (which takes `src`) and now describes `PdfViewer` (which takes `media`). Pdf is the only viewer affected, because it was the only one whose base props were not already `Base`-prefixed. Code that used `PdfViewerProps` for the base component fails to compile rather than silently changing behavior, since `src` and `media` are not interchangeable, and should move to `BasePdfViewerProps`.
+
+Renamed props:
+
+```
+DocumentViewer's tiffRendererProps  -> tiffViewerProps
+usePdfViewerInstance's highlightEnabled -> enableHighlight
+```
+
+Removed props, each of which resolved to `{}` and could never carry a value, because those Base props consist only of the primary input plus `className`, both of which `DocumentViewer` omits when forwarding:
+
+```
+DocumentViewer's markdownViewerProps     -> delete
+DocumentViewer's spreadsheetViewerProps  -> delete
+DocumentViewer's emailViewerProps        -> delete
+DocumentViewer's xmlViewerProps          -> delete
+```
+
+Renamed CSS custom properties, which have no fallback and need updating in any consumer theme:
+
+```
+--osdk-markdown-renderer-*  -> --osdk-markdown-viewer-*
+```
+
+Component names reported to metrics also change from `TiffViewerMedia` and `MarkdownViewerMedia` to `TiffViewer` and `MarkdownViewer`, so dashboards keyed on the old names need updating.
+
+`PdfViewerInstanceOptions` is now derived from `BasePdfViewerProps` instead of restating it, so the two cannot drift apart. This adds `enableHighlight` (the deprecated `highlightEnabled` still works) and drops `downloadFileName`, which was never implemented by the hooks tier.

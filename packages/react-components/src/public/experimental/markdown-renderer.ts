@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-// Compatibility shim for the former `experimental/markdown-renderer` subpath.
-// Everything here aliases the identical value exported from
-// `experimental/markdown-viewer`, so the two subpaths hand out the same
-// component instances (including the same `withOsdkMetrics` wrapper) rather
-// than parallel copies. Deliberately not re-exported from
-// `src/public/experimental.ts`: that barrel already star-exports
-// `markdown-viewer.js`, and adding this file would make the shared names
-// ambiguous star exports.
+// This subpath keeps its `markdown-renderer` name for now even though the
+// components it exports are named `MarkdownViewer`. It gets renamed when the
+// `experimental/` prefix is dropped, so consumers change import paths once
+// rather than twice.
 
-import { BaseMarkdownViewer, MarkdownViewer } from "./markdown-viewer.js";
-import type {
+import { BaseMarkdownViewer as _BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
+import { MarkdownViewer as _MarkdownViewer } from "../../markdown-viewer/MarkdownViewer.js";
+import type { BaseMarkdownViewerProps as _BaseMarkdownViewerProps } from "../../markdown-viewer/MarkdownViewerApi.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+
+// BaseMarkdownViewer
+export { BaseMarkdownViewer } from "../../markdown-viewer/BaseMarkdownViewer.js";
+export type {
   BaseMarkdownViewerProps,
   MarkdownViewerProps,
-} from "./markdown-viewer.js";
+} from "../../markdown-viewer/MarkdownViewerApi.js";
 
-/**
- * @deprecated Use `BaseMarkdownViewer` from
- * `@osdk/react-components/experimental/markdown-viewer` instead.
- */
-export const MarkdownRenderer: typeof BaseMarkdownViewer = BaseMarkdownViewer;
+// MarkdownViewer (Media wrapper)
+export const MarkdownViewer: typeof _MarkdownViewer = withOsdkMetrics(
+  _MarkdownViewer,
+  "MarkdownViewer",
+);
 
-/**
- * @deprecated Use `BaseMarkdownViewerProps` from
- * `@osdk/react-components/experimental/markdown-viewer` instead.
- */
-export type MarkdownRendererProps = BaseMarkdownViewerProps;
+// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
+// `MarkdownViewerMediaProps` has none: the `Media` drop is a uniform break
+// because pdf's old name was reused for a different type.
 
-/**
- * @deprecated Use `MarkdownViewer` from
- * `@osdk/react-components/experimental/markdown-viewer` instead.
- */
+/** @deprecated Use `BaseMarkdownViewer` instead. */
+export const MarkdownRenderer: typeof _BaseMarkdownViewer = _BaseMarkdownViewer;
+
+/** @deprecated Use `BaseMarkdownViewerProps` instead. */
+export type MarkdownRendererProps = _BaseMarkdownViewerProps;
+
+/** @deprecated Use `MarkdownViewer` instead. */
 export const MarkdownViewerMedia: typeof MarkdownViewer = MarkdownViewer;
-
-/**
- * @deprecated Use `MarkdownViewerProps` from
- * `@osdk/react-components/experimental/markdown-viewer` instead.
- */
-export type MarkdownViewerMediaProps = MarkdownViewerProps;

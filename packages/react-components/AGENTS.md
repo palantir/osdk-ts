@@ -42,8 +42,8 @@ Components are imported from their individual entry points under `@osdk/react-co
 - `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
 - `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
 - `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
-- `@osdk/react-components/experimental/tiff-viewer` — TiffViewer, BaseTiffViewer
-- `@osdk/react-components/experimental/markdown-viewer` — MarkdownViewer, BaseMarkdownViewer
+- `@osdk/react-components/experimental/tiff-renderer` — TiffViewer, BaseTiffViewer
+- `@osdk/react-components/experimental/markdown-renderer` — MarkdownViewer, BaseMarkdownViewer
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
 - `@osdk/react-components/experimental/document-viewer` — DocumentViewer
 - `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer

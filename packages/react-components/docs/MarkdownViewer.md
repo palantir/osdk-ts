@@ -8,7 +8,7 @@ A React component for rendering markdown content using [react-markdown](https://
 import {
   BaseMarkdownViewer,
   MarkdownViewer,
-} from "@osdk/react-components/experimental/markdown-viewer";
+} from "@osdk/react-components/experimental/markdown-renderer";
 ```
 
 - **`MarkdownViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the markdown text, and renders via `BaseMarkdownViewer`.
@@ -19,7 +19,7 @@ import {
 ### With OSDK Media
 
 ```tsx
-import { MarkdownViewer } from "@osdk/react-components/experimental/markdown-viewer";
+import { MarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
 <MarkdownViewer media={document.readme} />;
 ```
@@ -27,7 +27,7 @@ import { MarkdownViewer } from "@osdk/react-components/experimental/markdown-vie
 ### With a string
 
 ```tsx
-import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-viewer";
+import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
 <BaseMarkdownViewer content="# Hello World\n\nThis is **bold** text." />;
 ```

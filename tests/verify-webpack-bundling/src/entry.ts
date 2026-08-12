@@ -10,10 +10,10 @@ import * as ReactComponents from "@osdk/react-components";
 import * as ReactComponentsExperimental from "@osdk/react-components/experimental";
 import * as ReactComponentsActionForm from "@osdk/react-components/experimental/action-form";
 import * as ReactComponentsFilterList from "@osdk/react-components/experimental/filter-list";
-import * as ReactComponentsMarkdown from "@osdk/react-components/experimental/markdown-viewer";
+import * as ReactComponentsMarkdown from "@osdk/react-components/experimental/markdown-renderer";
 import * as ReactComponentsObjectTable from "@osdk/react-components/experimental/object-table";
 import * as ReactComponentsPdfViewer from "@osdk/react-components/experimental/pdf-viewer";
-import * as ReactComponentsTiffViewer from "@osdk/react-components/experimental/tiff-viewer";
+import * as ReactComponentsTiffViewer from "@osdk/react-components/experimental/tiff-renderer";
 import * as ReactComponentsPrimitives from "@osdk/react-components/primitives";
 import * as WidgetClientReact from "@osdk/widget.client-react";
 

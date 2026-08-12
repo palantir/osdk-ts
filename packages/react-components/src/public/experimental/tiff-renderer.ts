@@ -14,37 +14,38 @@
  * limitations under the License.
  */
 
-// Compatibility shim for the former `experimental/tiff-renderer` subpath.
-// Everything here aliases the identical value exported from
-// `experimental/tiff-viewer`, so the two subpaths hand out the same component
-// instances (including the same `withOsdkMetrics` wrapper) rather than parallel
-// copies. Deliberately not re-exported from `src/public/experimental.ts`: that
-// barrel already star-exports `tiff-viewer.js`, and adding this file would make
-// the shared names ambiguous star exports.
+// This subpath keeps its `tiff-renderer` name for now even though the
+// components it exports are named `TiffViewer`. It gets renamed when the
+// `experimental/` prefix is dropped, so consumers change import paths once
+// rather than twice.
 
-import { BaseTiffViewer, TiffViewer } from "./tiff-viewer.js";
-import type { BaseTiffViewerProps, TiffViewerProps } from "./tiff-viewer.js";
+import { BaseTiffViewer as _BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
+import { TiffViewer as _TiffViewer } from "../../images/tiff-viewer/TiffViewer.js";
+import type { BaseTiffViewerProps as _BaseTiffViewerProps } from "../../images/tiff-viewer/TiffViewerApi.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 
-/**
- * @deprecated Use `BaseTiffViewer` from
- * `@osdk/react-components/experimental/tiff-viewer` instead.
- */
-export const TiffRenderer: typeof BaseTiffViewer = BaseTiffViewer;
+// BaseTiffViewer
+export { BaseTiffViewer } from "../../images/tiff-viewer/BaseTiffViewer.js";
+export type {
+  BaseTiffViewerProps,
+  TiffViewerProps,
+} from "../../images/tiff-viewer/TiffViewerApi.js";
 
-/**
- * @deprecated Use `BaseTiffViewerProps` from
- * `@osdk/react-components/experimental/tiff-viewer` instead.
- */
-export type TiffRendererProps = BaseTiffViewerProps;
+// TiffViewer (Media wrapper)
+export const TiffViewer: typeof _TiffViewer = withOsdkMetrics(
+  _TiffViewer,
+  "TiffViewer",
+);
 
-/**
- * @deprecated Use `TiffViewer` from
- * `@osdk/react-components/experimental/tiff-viewer` instead.
- */
+// Deprecated `Renderer` aliases of the same values, cleared in a later pass.
+// `TiffViewerMediaProps` has none: the `Media` drop is a uniform break because
+// pdf's old name was reused for a different type.
+
+/** @deprecated Use `BaseTiffViewer` instead. */
+export const TiffRenderer: typeof _BaseTiffViewer = _BaseTiffViewer;
+
+/** @deprecated Use `BaseTiffViewerProps` instead. */
+export type TiffRendererProps = _BaseTiffViewerProps;
+
+/** @deprecated Use `TiffViewer` instead. */
 export const TiffViewerMedia: typeof TiffViewer = TiffViewer;
-
-/**
- * @deprecated Use `TiffViewerProps` from
- * `@osdk/react-components/experimental/tiff-viewer` instead.
- */
-export type TiffViewerMediaProps = TiffViewerProps;

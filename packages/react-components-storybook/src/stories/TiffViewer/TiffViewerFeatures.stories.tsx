@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseTiffViewerProps } from "@osdk/react-components/experimental/tiff-viewer";
-import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-viewer";
+import type { BaseTiffViewerProps } from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -133,7 +133,7 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-viewer";
+        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
 <BaseTiffViewer content={tiffBytes} />`,
       },
@@ -148,7 +148,7 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-viewer";
+        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
 <BaseTiffViewer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },
