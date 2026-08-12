@@ -89,7 +89,6 @@ interface FunctionValueColumn<
   locator: FunctionColumnLocator<Q, RDPs, FunctionColumns>;
 
   /**
-   * Unavailable here: it would discard the query's loading and error states.
    * Use {@link FunctionColumnLocator}'s own `getValue` instead.
    */
   getCellValue?: never;
@@ -119,12 +118,9 @@ interface SharedColumnDefinition<
   orderable?: boolean;
 
   /**
-   * The value's wire type. Picks the default editor and how committed values
-   * are parsed. Property columns read it from ontology metadata; custom and
-   * derived columns have none, so without it they get a text input that
-   * commits strings.
+   * The cell value's data type.
    */
-  dataType?: BaseWirePropertyTypes;
+  cellValueType?: BaseWirePropertyTypes;
 
   /**
    * Custom renderer for the cell value.

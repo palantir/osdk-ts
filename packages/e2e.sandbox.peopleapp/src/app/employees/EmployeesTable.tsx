@@ -144,7 +144,7 @@ const columnDefinitions: Array<
     orderable: false,
   },
   // Custom + editable: no ontology property backs this column, so `getCellValue`
-  // supplies the value and `dataType` picks the editor. Without `dataType` the
+  // supplies the value and `cellValueType` picks the editor. Without it the
   // cell would get a text input and commit "12345" instead of 12345.
   {
     locator: {
@@ -154,7 +154,7 @@ const columnDefinitions: Array<
     columnName: "Reports To (#)",
     getCellValue: (object: Osdk.Instance<Employee>) =>
       object.leadEmployeeNumber ?? object.mentorEmployeeNumber,
-    dataType: "integer",
+    cellValueType: "integer",
     editable: true,
     orderable: false,
   },
@@ -170,7 +170,7 @@ const columnDefinitions: Array<
       [object.emailPrimaryWork, object.jobTitle]
         .filter((part) => part != null)
         .join(" · "),
-    dataType: "string",
+    cellValueType: "string",
     editable: true,
     orderable: false,
     renderCell: (

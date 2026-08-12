@@ -94,6 +94,21 @@ For every state change with a built-in default behavior (sort, filter, select, e
 - **`enable*` boolean flags default to `true`** when the feature is part of the out-of-the-box experience
 - **Document defaults inline** with `@default` JSDoc on every optional prop. Use `@param` / `@returns` for callbacks
 - **Define the API in its own file**: `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types. Base props live inline in `Base<Name>.tsx`
+- **JSDoc on public API describes the contract, not the implementation.** Write what the caller passes, gets back, and can rely on. Do not name internal helpers, hooks, fields, or libraries; do not explain how the component computes the result or which internal branch a value ends up in. These leak into the generated props tables in `docs/`, tie published docs to internals that are free to change, and go stale silently. Put the "how" in a code comment at the implementation site instead.
+
+  ```ts
+  // Bad — describes internals, and every claim breaks if the implementation moves
+  /**
+   * Picks the editor. Property columns read it from ontology metadata; custom
+   * and derived columns have none, so without it they fall through to
+   * `renderDefaultCell`'s text input and commit strings.
+   */
+  cellValueType?: BaseWirePropertyTypes;
+
+  // Good — the caller-visible contract
+  /** The cell value's data type. */
+  cellValueType?: BaseWirePropertyTypes;
+  ```
 
 ## CSS Styling
 

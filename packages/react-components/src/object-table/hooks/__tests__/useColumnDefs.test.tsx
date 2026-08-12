@@ -514,7 +514,7 @@ describe(useColumnDefs, () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: { type: "custom", id: "score" },
-          dataType: "integer",
+          cellValueType: "integer",
           editable: true,
         },
       ];
@@ -545,7 +545,7 @@ describe(useColumnDefs, () => {
         {
           // `name` is a string in metadata
           locator: { type: "property", id: "name" as TestObjectKeys },
-          dataType: "integer",
+          cellValueType: "integer",
         },
       ];
 

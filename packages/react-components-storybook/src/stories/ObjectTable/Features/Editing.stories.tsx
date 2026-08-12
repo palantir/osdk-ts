@@ -137,13 +137,13 @@ export const EditableTable: Story = {
       }),
     },
   },
-  // Custom columns: getCellValue supplies the value, dataType picks the editor
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
   {
     locator: { type: "custom", id: "reportsTo" },
     columnName: "Reports To (#)",
     getCellValue: (employee) =>
       employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
-    dataType: "integer",
+    cellValueType: "integer",
     editable: true,
     orderable: false,
   },
@@ -154,7 +154,7 @@ export const EditableTable: Story = {
       [employee.emailPrimaryWork, employee.jobTitle]
         .filter((part) => part != null)
         .join(" · "),
-    dataType: "string",
+    cellValueType: "string",
     editable: true,
     orderable: false,
     renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
@@ -276,9 +276,9 @@ return (
     );
 
     // Custom columns (reportsTo, column 7; contact, column 8) have no ontology
-    // property, so their editors come from `dataType`: the integer column
-    // renders a number input and commits a number, not the string a
-    // dataType-less custom column would have produced.
+    // property, so their editors come from `cellValueType`: the integer column
+    // renders a number input and commits a number, not the string it would
+    // have produced without one.
     const reportsToInput = within(cellsOf()[7]).getByRole("spinbutton");
     await expect(reportsToInput).toHaveAttribute("type", "number");
     await userEvent.click(reportsToInput);
@@ -665,13 +665,13 @@ export const WithSubmitEditsButton: Story = {
       }),
     },
   },
-  // Custom columns: getCellValue supplies the value, dataType picks the editor
+  // Custom columns: getCellValue supplies the value, cellValueType picks the editor
   {
     locator: { type: "custom", id: "reportsTo" },
     columnName: "Reports To (#)",
     getCellValue: (employee) =>
       employee.leadEmployeeNumber ?? employee.mentorEmployeeNumber,
-    dataType: "integer",
+    cellValueType: "integer",
     editable: true,
     orderable: false,
   },
@@ -682,7 +682,7 @@ export const WithSubmitEditsButton: Story = {
       [employee.emailPrimaryWork, employee.jobTitle]
         .filter((part) => part != null)
         .join(" · "),
-    dataType: "string",
+    cellValueType: "string",
     editable: true,
     orderable: false,
     renderCell: (object, locator, value) => <em>{value || "No value"}</em>,
