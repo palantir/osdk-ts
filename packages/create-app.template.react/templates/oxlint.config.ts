@@ -2,82 +2,64 @@ import { defineConfig } from "oxlint";
 import core from "ultracite/oxlint/core";
 import react from "ultracite/oxlint/react";
 
-// Ultracite's preset is strict opt-out. The ESLint config this replaced was
-// deliberately mild for scaffolded projects: eslint/recommended +
-// typescript-eslint/recommended + react and jsx-a11y recommended, plus a handful
-// of import rules. The rules turned off below are ones that (a) the previous
-// config did not enforce, so enabling them would raise the bar for existing
-// users, and (b) the OSDK repo also relaxes for its own source. Rules that the
-// OSDK repo does enforce are left on even where they are new here, so scaffolds
-// match the standards the SDK itself is held to.
+// Ultracite is strict by default. The rules below are relaxed because they are
+// stylistic, or because they conflict with how this app is set up. Remove any
+// of them to opt back in.
 export default defineConfig({
   extends: [core, react],
   ignorePatterns: core.ignorePatterns,
   rules: {
-    // Stylistic; the previous config allowed either form.
+    // Stylistic.
     "arrow-body-style": "off",
-    // `==`/`!=` are banned except against null, so the coercion-free
-    // `x == null` ("null or undefined") idiom stays available. Mirrors the OSDK
-    // repo, which documents this as an intentional idiom.
+    // Allow `x == null` as the coercion-free "is null or undefined" check.
     eqeqeq: ["error", "always", { null: "never" }],
-    // Not enforced previously, and off in the OSDK repo too: both `function f()`
-    // and `const f = () => {}` are fine.
+    // Either `function f() {}` or `const f = () => {}` is fine.
     "func-style": "off",
-    // `import { type X }` vs `import type { X }` is stylistic.
+    // `import { type X }` and `import type { X }` are both fine.
     "import/consistent-type-specifier-style": "off",
-    // Vite serves public/ assets from the root, and importing them keeps the URL
-    // base-aware: with `vite build --base=/sub/` the import resolves to
-    // "/sub/logo.svg" while a hardcoded "/logo.svg" does not. These apps set the
-    // router basename from import.meta.env.BASE_URL so they can be served from a
-    // subpath, which makes the import form load-bearing.
+    // Assets in public/ are imported by absolute path so their URL respects
+    // Vite's `base` (e.g. `vite build --base=/sub/`); a hardcoded "/logo.svg"
+    // would not.
     "import/no-absolute-path": "off",
-    // See eqeqeq above.
+    // See eqeqeq.
     "no-eq-null": "off",
-    // Stylistic; inverting conditions is not always clearer. Both the eslint and
-    // unicorn variants are off, matching the OSDK repo.
+    // Stylistic; the negated form is often the clearer one.
     "no-negated-condition": "off",
-    // Returning from a Promise executor is a real smell but was not previously
-    // enforced, and the mock helpers rely on the terse form.
+    // The mock helpers use the terse `new Promise((r) => setTimeout(r, n))`.
     "no-promise-executor-return": "off",
-    // Shadowing is worth surfacing but not worth failing a build over.
+    // Worth knowing about, not worth failing a build over.
     "no-shadow": "warn",
-    // Would force reordering declarations; hoisted functions are fine.
+    // Hoisted functions may be declared after they are used.
     "no-use-before-define": "off",
     // Stylistic.
     "prefer-destructuring": "off",
-    // A timer-based delay legitimately needs `new Promise`.
+    // See no-promise-executor-return.
     "promise/avoid-new": "off",
-    // Promise chains are readable and were not previously discouraged.
+    // Promise chains are fine where they read better than async/await.
     "promise/prefer-await-to-then": "off",
-    // The Rules of Hooks are React correctness rules; enable them explicitly
-    // since the preset does not turn them on by default.
+    // Hook correctness rules, which the preset does not enable by default.
     "react-hooks/exhaustive-deps": "warn",
     "react-hooks/rules-of-hooks": "error",
-    // Keep React Fast Refresh working: warn when a module exports more than
-    // components (constants are still allowed).
+    // Keeps React Fast Refresh working; constants may still be exported.
     "react/only-export-components": ["warn", { allowConstantExport: true }],
-    // Purely cosmetic and high-churn: it fires on almost every object literal
-    // and would force alphabetical keys on your own code (e.g. a route's `path`
-    // must follow `element`).
+    // Would force alphabetical keys everywhere, e.g. a route's `path` after its
+    // `element`.
     "sort-keys": "off",
-    // The React entrypoint idiom relies on a non-null assertion
-    // (createRoot(document.getElementById("root")!)).
+    // The entrypoint uses `createRoot(document.getElementById("root")!)`.
     "typescript/no-non-null-assertion": "off",
     // `catch (e)` is fine.
     "unicorn/catch-error-name": "off",
-    // React components are conventionally PascalCase (e.g. AuthCallback.tsx).
+    // Components are PascalCase (e.g. AuthCallback.tsx).
     "unicorn/filename-case": "off",
     // `(await getThing()).prop` is clear enough.
     "unicorn/no-await-expression-member": "off",
-    // See no-negated-condition above.
+    // See no-negated-condition.
     "unicorn/no-negated-condition": "off",
-    // Explicit `return undefined` is often clearer than a bare `return`.
+    // An explicit `return undefined` is often clearer than a bare `return`.
     "unicorn/no-useless-undefined": "off",
-    // getElementById is the idiomatic (and faster) lookup for the React root.
+    // getElementById is the idiomatic lookup for the React root.
     "unicorn/prefer-query-selector": "off",
-    // This project targets ES2020 (see tsconfig.json), where
-    // String.prototype.replaceAll (ES2021) is not available, so keep using
-    // String#replace with a global regex.
+    // This project targets ES2020; String.prototype.replaceAll is ES2021.
     "unicorn/prefer-string-replace-all": "off",
   },
 });
