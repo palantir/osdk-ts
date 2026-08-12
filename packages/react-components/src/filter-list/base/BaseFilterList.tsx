@@ -27,11 +27,6 @@ import { FilterListHeader } from "./FilterListHeader.js";
 
 import styles from "./FilterList.module.css";
 
-// Declared locally because the CJS dts build type-checks this file without Node
-// globals. Kept as a literal `process.env.NODE_ENV` read so bundlers can still
-// substitute it and drop the warning from production builds.
-declare const process: { env: { NODE_ENV?: string } };
-
 export function BaseFilterList<D extends FilterDefinitionControls>(
   props: BaseFilterListProps<D>,
 ): React.ReactElement {
@@ -74,20 +69,6 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   const isCollapsedControlled = collapsed !== undefined;
   const collapsedState = isCollapsedControlled ? collapsed : internalCollapsed;
 
-  if (
-    process.env.NODE_ENV !== "production" &&
-    !enableCollapse &&
-    (collapsed !== undefined || defaultCollapsed !== undefined)
-  ) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[FilterList] `" +
-        (isCollapsedControlled ? "collapsed" : "defaultCollapsed") +
-        "` was set but collapse is disabled, so the panel renders expanded. " +
-        "Pass `enableCollapse` to opt into the collapse control.",
-    );
-  }
-
   const showHeader =
     title ||
     titleIcon ||
@@ -97,7 +78,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
-  const setCollapsed = useCallback(
+  const handleCollapsedChange = useCallback(
     (next: boolean) => {
       if (!isCollapsedControlled) {
         setInternalCollapsed(next);
@@ -108,8 +89,8 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
   );
 
   const handleExpand = useCallback(() => {
-    setCollapsed(false);
-  }, [setCollapsed]);
+    handleCollapsedChange(false);
+  }, [handleCollapsedChange]);
 
   const isCollapsed = enableCollapse && collapsedState;
 
@@ -142,7 +123,7 @@ export function BaseFilterList<D extends FilterDefinitionControls>(
               titleIcon={titleIcon}
               showCollapseButton={enableCollapse}
               collapsed={isCollapsed}
-              onCollapsedChange={setCollapsed}
+              onCollapsedChange={handleCollapsedChange}
               showResetButton={showResetButton}
               onReset={onReset}
               showActiveFilterCount={showActiveFilterCount}

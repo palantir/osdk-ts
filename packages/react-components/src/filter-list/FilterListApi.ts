@@ -206,7 +206,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Opts into the collapse/expand control. When `false` the panel is always
    * expanded, no collapse control is rendered, and `collapsed` /
-   * `defaultCollapsed` are ignored (which warns in development).
+   * `defaultCollapsed` are ignored.
    * @default false
    */
   enableCollapse?: boolean;

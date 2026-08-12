@@ -91,46 +91,14 @@ describe("BaseFilterList", () => {
       expect(isCollapsed()).toBe(false);
     });
 
-    it("stays expanded and warns when defaultCollapsed is set without enableCollapse", () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    it("stays expanded when defaultCollapsed is set without enableCollapse", () => {
       renderBase({ defaultCollapsed: true });
-
       expect(isCollapsed()).toBe(false);
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          "`defaultCollapsed` was set but collapse is disabled",
-        ),
-      );
-      warn.mockRestore();
     });
 
-    it("warns naming the deprecated prop when collapsed is set without enableCollapse", () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    it("stays expanded when collapsed is set without enableCollapse", () => {
       renderBase({ collapsed: true });
-
       expect(isCollapsed()).toBe(false);
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining("`collapsed` was set but collapse is disabled"),
-      );
-      warn.mockRestore();
-    });
-
-    it("warns even when the ignored value is false, since it is still inert", () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-      renderBase({ collapsed: false });
-
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining("`collapsed` was set but collapse is disabled"),
-      );
-      warn.mockRestore();
-    });
-
-    it("does not warn when no collapse props are supplied at all", () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-      renderBase();
-
-      expect(warn).not.toHaveBeenCalled();
-      warn.mockRestore();
     });
   });
 
@@ -258,7 +226,6 @@ describe("BaseFilterList", () => {
 
   describe("enableCollapse", () => {
     it("omits the collapse button and stays expanded when explicitly disabled", () => {
-      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
       renderBase({ enableCollapse: false, defaultCollapsed: true });
 
       expect(isCollapsed()).toBe(false);
@@ -268,7 +235,6 @@ describe("BaseFilterList", () => {
       expect(
         screen.queryByRole("button", { name: "Expand filters" }),
       ).toBeNull();
-      warn.mockRestore();
     });
 
     it("still renders a header for other reasons when collapse is disabled", () => {
