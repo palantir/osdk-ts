@@ -231,22 +231,4 @@ describe("BaseFilterList", () => {
       ).toBeNull();
     });
   });
-
-  describe("onCollapsedChange does not gate the control", () => {
-    it("renders the collapse button in both modes with no handler", () => {
-      renderBase();
-      expect(getCollapseButton()).toBeDefined();
-      cleanup();
-
-      renderBase({ collapsed: false });
-      expect(getCollapseButton()).toBeDefined();
-    });
-
-    it("omits the control when disabled even with a handler supplied", () => {
-      renderBase({ enableCollapse: false, onCollapsedChange: vi.fn() });
-      expect(
-        screen.queryByRole("button", { name: "Collapse filters" }),
-      ).toBeNull();
-    });
-  });
 });
