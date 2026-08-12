@@ -441,6 +441,7 @@ describe(useColumnDefs, () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: { type: "custom", id: "attributes" },
+          cellValueType: "string",
           getCellValue: (object) =>
             (object as unknown as { attrs: string[] }).attrs.join(", "),
         },
@@ -576,6 +577,7 @@ describe(useColumnDefs, () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: { type: "custom", id: "attributes" },
+          cellValueType: "string",
           getCellValue: () => "red, blue",
           renderCell: customRenderCell,
         },

@@ -71,8 +71,11 @@ type DerivableValueColumn<
 /**
  * The cell's value and the type it's declared to have.
  *
- * Declaring `cellValueType` constrains what `getCellValue` may return, so a
- * column can't advertise one type and hand the cell a value of another.
+ * `cellValueType` is required whenever `getCellValue` is provided — declaring
+ * the type constrains what `getCellValue` may return, so a column can't
+ * advertise one type and hand the cell a value of another. `cellValueType` may
+ * also be declared on its own to pick the editor without transforming the
+ * value.
  */
 type CellValueOverride<
   Q extends ObjectOrInterfaceDefinition,
@@ -82,6 +85,7 @@ type CellValueOverride<
     never
   >,
 > =
+  // Use cellValueType + typed getCellValue together
   | {
       [T in BaseWirePropertyTypes]: {
         /**
@@ -99,31 +103,23 @@ type CellValueOverride<
          * Use `renderCell` to change only how that value is displayed. The two
          * can be combined.
          */
-        getCellValue?: (
+        getCellValue: (
           object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
           locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
         ) => PropertyValueWireToClient[T] | null | undefined;
       };
     }[BaseWirePropertyTypes]
+  // Using cellValueType alone.
+  | {
+      [T in BaseWirePropertyTypes]: {
+        cellValueType: T;
+        getCellValue?: never;
+      };
+    }[BaseWirePropertyTypes]
+  // Neither
   | {
       cellValueType?: undefined;
-
-      /**
-       * Derives the cell's value from the row's object. Without it the column
-       * reads the property named by `locator.id`.
-       *
-       * Use this to change what the cell's value *is* — what it returns is the
-       * value the table renders, edits, and passes on to `renderCell`. Use
-       * `renderCell` to change only how that value is displayed. The two can be
-       * combined.
-       *
-       * Set `cellValueType` alongside it to declare the type of value returned;
-       * the return type is then checked against it.
-       */
-      getCellValue?: (
-        object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-        locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
-      ) => unknown;
+      getCellValue?: never;
     };
 
 /** A column whose value comes from a function query rather than the row. */

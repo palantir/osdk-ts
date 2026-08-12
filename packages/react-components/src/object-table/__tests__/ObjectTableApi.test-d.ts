@@ -57,11 +57,12 @@ const mistypedLongColumn: ColumnDefinition<TestObject> = {
 };
 mistypedLongColumn satisfies ColumnDefinition<TestObject>;
 
-const untypedColumn: ColumnDefinition<TestObject> = {
+const untypedGetCellValueColumn: ColumnDefinition<TestObject> = {
   locator: { type: "custom", id: "anything" },
+  // @ts-expect-error getCellValue requires cellValueType
   getCellValue: () => ({ arbitrary: "shape" }),
 };
-untypedColumn satisfies ColumnDefinition<TestObject>;
+untypedGetCellValueColumn satisfies ColumnDefinition<TestObject>;
 
 const declaredTypeOnlyColumn: ColumnDefinition<TestObject> = {
   locator: { type: "custom", id: "count" },
