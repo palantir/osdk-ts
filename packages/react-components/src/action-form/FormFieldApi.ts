@@ -183,7 +183,7 @@ export interface DropdownFieldLabels {
   /** @default "Clear" */
   clearButtonLabel: string;
   /** @default (label) => `Remove ${label}` */
-  removeButtonLabel: (label: string) => string;
+  renderRemoveButtonLabel: (label: string) => string;
   /** @default "Search…" */
   searchPlaceholder: string;
   /** @default "No results" */
@@ -455,12 +455,12 @@ export interface Option<V> {
  */
 export interface ObjectSetFieldLabels {
   /** @default (count, displayName) => `${count} ${displayName ?? "object(s)"}` */
-  formatObjectSetCountLabel: (
+  renderObjectSetCountLabel: (
     count: string | undefined,
     displayName: string | undefined,
   ) => string;
   /** @default (message) => `Failed to load: ${message}` */
-  loadErrorMessage: (message: string) => string;
+  renderLoadErrorMessage: (message: string) => string;
 }
 
 export interface ObjectSetFieldProps<

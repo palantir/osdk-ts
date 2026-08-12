@@ -26,16 +26,16 @@ import styles from "./FormSection.module.css";
 export interface FormSectionProps {
   definition: FormSectionDefinition;
   errorCount: number;
-  renderErrorCountLabel?: (count: number) => string;
   children: React.ReactNode;
+  renderErrorCountLabel?: (count: number) => string;
 }
 
 export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
   function FormSectionFn({
     definition,
     errorCount,
-    renderErrorCountLabel = defaultRenderErrorCountLabel,
     children,
+    renderErrorCountLabel = defaultRenderErrorCountLabel,
   }: FormSectionProps): React.ReactElement {
     const {
       title,

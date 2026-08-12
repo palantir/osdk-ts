@@ -33,7 +33,7 @@ import dropdownStyles from "./DropdownField.module.css";
 const EMPTY_ARRAY: [] = [];
 const DEFAULT_DROPDOWN_FIELD_LABELS: DropdownFieldLabels = {
   clearButtonLabel: "Clear",
-  removeButtonLabel: defaultRemoveButtonLabel,
+  renderRemoveButtonLabel: defaultRenderRemoveButtonLabel,
   searchPlaceholder: "Search…",
   noResultsText: "No results",
 };
@@ -67,7 +67,7 @@ interface InnerComboboxProps<
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
   trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
-  removeButtonLabel: (label: string) => string;
+  renderRemoveButtonLabel: (label: string) => string;
   searchPlaceholder: string;
   noResultsText: string;
 }
@@ -132,9 +132,9 @@ export const DropdownField: <V, Multiple extends boolean = false>(
           labels?.clearButtonLabel ??
           DEFAULT_DROPDOWN_FIELD_LABELS.clearButtonLabel
         }
-        removeButtonLabel={
-          labels?.removeButtonLabel ??
-          DEFAULT_DROPDOWN_FIELD_LABELS.removeButtonLabel
+        renderRemoveButtonLabel={
+          labels?.renderRemoveButtonLabel ??
+          DEFAULT_DROPDOWN_FIELD_LABELS.renderRemoveButtonLabel
         }
         searchPlaceholder={
           labels?.searchPlaceholder ??
@@ -312,7 +312,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   onBlur,
   modal = true,
   clearButtonLabel,
-  removeButtonLabel,
+  renderRemoveButtonLabel,
   searchPlaceholder,
   noResultsText,
   disabled,
@@ -437,7 +437,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                     {renderItemLabel(item)}
                     <span
                       role="button"
-                      aria-label={removeButtonLabel(itemToStringLabel(item))}
+                      aria-label={renderRemoveButtonLabel(
+                        itemToStringLabel(item),
+                      )}
                       className={comboboxStyles.osdkComboboxTriggerChipRemove}
                       aria-disabled={disabled || undefined}
                       onMouseDown={disabled ? undefined : preventTriggerOpen}
@@ -525,6 +527,6 @@ function defaultItemToStringLabel<V>(item: V): string {
   return String(item);
 }
 
-function defaultRemoveButtonLabel(label: string): string {
+function defaultRenderRemoveButtonLabel(label: string): string {
   return `Remove ${label}`;
 }

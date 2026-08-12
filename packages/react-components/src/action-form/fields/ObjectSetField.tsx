@@ -40,8 +40,8 @@ const DEFAULT_OBJECT_ICON: Icon = {
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {
-  formatObjectSetCountLabel: defaultFormatObjectSetCountLabel,
-  loadErrorMessage: defaultLoadErrorMessage,
+  renderObjectSetCountLabel: defaultRenderObjectSetCountLabel,
+  renderLoadErrorMessage: defaultRenderLoadErrorMessage,
 };
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
@@ -76,8 +76,8 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
   disabled,
-  formatObjectSetCountLabel,
-  loadErrorMessage,
+  renderObjectSetCountLabel,
+  renderLoadErrorMessage,
 }: Partial<ObjectSetFieldLabels> & {
   objectSet: ObjectSet;
   disabled: boolean | undefined;
@@ -131,13 +131,13 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
             totalCount={totalCount}
             error={objectSetError}
             isLoading={objectSetLoading}
-            formatObjectSetCountLabel={
-              formatObjectSetCountLabel ??
-              DEFAULT_OBJECT_SET_FIELD_LABELS.formatObjectSetCountLabel
+            renderObjectSetCountLabel={
+              renderObjectSetCountLabel ??
+              DEFAULT_OBJECT_SET_FIELD_LABELS.renderObjectSetCountLabel
             }
-            loadErrorMessage={
-              loadErrorMessage ??
-              DEFAULT_OBJECT_SET_FIELD_LABELS.loadErrorMessage
+            renderLoadErrorMessage={
+              renderLoadErrorMessage ??
+              DEFAULT_OBJECT_SET_FIELD_LABELS.renderLoadErrorMessage
             }
           />
         </>
@@ -151,8 +151,8 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   totalCount,
   isLoading,
   error,
-  formatObjectSetCountLabel,
-  loadErrorMessage,
+  renderObjectSetCountLabel,
+  renderLoadErrorMessage,
 }: ObjectSetFieldLabels & {
   displayName: string | undefined;
   totalCount: string | undefined;
@@ -160,7 +160,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   error: Error | undefined;
 }): React.ReactElement {
   const hasData = totalCount != null;
-  const label = formatObjectSetCountLabel(totalCount, displayName);
+  const label = renderObjectSetCountLabel(totalCount, displayName);
   const showSkeleton = isLoading && !hasData;
   const showError = error != null && !hasData && !isLoading;
 
@@ -169,7 +169,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
       {showSkeleton && OBJECT_SET_LABEL_SKELETON}
       {showError && (
         <span className={styles.osdkObjectSetFieldError} role="alert">
-          {loadErrorMessage(error.message)}
+          {renderLoadErrorMessage(error.message)}
         </span>
       )}
       {!showSkeleton && !showError && <span>{label}</span>}
@@ -185,11 +185,11 @@ const OBJECT_SET_LABEL_SKELETON = (
   <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />
 );
 
-function defaultLoadErrorMessage(message: string): string {
+function defaultRenderLoadErrorMessage(message: string): string {
   return `Failed to load: ${message}`;
 }
 
-function defaultFormatObjectSetCountLabel(
+function defaultRenderObjectSetCountLabel(
   count: string | undefined,
   displayName: string | undefined,
 ): string {
