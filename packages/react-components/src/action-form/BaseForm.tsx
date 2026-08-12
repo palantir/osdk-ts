@@ -256,6 +256,9 @@ function resolveFormContentLabels(
   formContent: ReadonlyArray<FormContentItem>,
   labels: Partial<BaseFormLabels> | undefined,
 ): ReadonlyArray<FormContentItem> {
+  if (labels == null) {
+    return formContent;
+  }
   return formContent.map((item): FormContentItem => {
     switch (item.type) {
       case "field":
