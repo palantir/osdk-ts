@@ -14,15 +14,16 @@ const STEPS: INextStep[] = [
     ),
     subtitle: (
       <span>
-        Use <Link
+        Use{" "}
+        <Link
           href="https://palantir.github.io/osdk-ts/storybook/"
           target="_blank"
           rel="noreferrer"
         >
           OSDK React components
         </Link>{" "}
-        (@osdk/react-components){" "}
-        to build your app with ready-made Ontology SDK components.
+        (@osdk/react-components) to build your app with ready-made Ontology SDK
+        components.
       </span>
     ),
   },
