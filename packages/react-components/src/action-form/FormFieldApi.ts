@@ -118,7 +118,10 @@ export type FormFieldDefinition<
          * Excludes runtime props (value, onChange) which are managed by ActionForm.
          */
         fieldComponentProps: DistributiveOmit<
-          FormFieldPropsByType[C],
+          FormFieldComponentPropsByActionParameter<
+            FieldDescriptorType<Q, K>,
+            FieldValueType<Q, K>
+          >[C],
           FormManagedProps<C>
         >;
       };
@@ -156,6 +159,31 @@ export interface FormFieldPropsByType {
   CUSTOM: CustomFieldProps<unknown>;
   UNSUPPORTED: UnsupportedFieldProps;
 }
+
+/**
+ * Maps the components supported by an action parameter to props that preserve
+ * the parameter's value type and, where applicable, the object type referenced
+ * by the parameter.
+ * Components without action-specific props reuse the renderer-facing mapping.
+ */
+type FormFieldComponentPropsByActionParameter<
+  P extends FieldDescriptorType,
+  V,
+> = {
+  // Preserve existing single- and multi-select configurations because the
+  // field descriptor describes the data type, not parameter multiplicity.
+  [C in ValidFormFieldForPropertyType<P>]: C extends "DROPDOWN"
+    ? DropdownFieldProps<V, boolean>
+    : C extends "RADIO_BUTTONS"
+      ? RadioButtonsFieldProps<V>
+      : C extends "CUSTOM"
+        ? CustomFieldProps<V>
+        : C extends "OBJECT_SELECT"
+          ? P extends ActionMetadata.DataType.Object<infer T>
+            ? ObjectSelectFieldProps<T>
+            : never
+          : FormFieldPropsByType[C];
+};
 
 /**
  * Dropdown field props with selectable items
