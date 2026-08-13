@@ -63,12 +63,12 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, labels, helperText, helperTextPlacement } =
+    const { label, isRequired, editedLabel, helperText, helperTextPlacement } =
       fieldDefinition;
 
     return (
       <FormField
-        {...labels}
+        editedLabel={editedLabel}
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
@@ -129,12 +129,12 @@ function renderFieldComponent(
         />
       );
     case "UNSUPPORTED": {
-      const { labels, ...props } = fieldDefinition.fieldComponentProps;
+      const { message, ...props } = fieldDefinition.fieldComponentProps;
       return (
         <TextInputField
           {...props}
           id={fieldDefinition.fieldKey}
-          value={labels?.message ?? DEFAULT_UNSUPPORTED_FIELD_LABELS.message}
+          value={message ?? DEFAULT_UNSUPPORTED_FIELD_LABELS.message}
           error={error}
           disabled={true}
         />

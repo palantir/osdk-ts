@@ -39,20 +39,15 @@ export {
   default as DateRangeCalendar,
 } from "./DateRangeCalendar.js";
 export {
-  type DateRange,
-  DEFAULT_DATE_RANGE_PICKER_LABELS,
   DateRangePicker,
+  type DateRange,
   type DateRangePickerLabels,
   type DateRangePickerProps,
   EMPTY_RANGE,
 } from "./DateRangePicker.js";
 export { LazyDateCalendar } from "./LazyDateCalendar.js";
 export { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
-export {
-  DEFAULT_TIME_PICKER_LABELS,
-  TimePicker,
-  type TimePickerLabels,
-} from "./TimePicker.js";
+export { TimePicker, type TimePickerProps } from "./TimePicker.js";
 export {
   useDateEditState,
   type UseDateEditStateConfig,

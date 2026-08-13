@@ -28,13 +28,13 @@ import { DropdownField } from "./DropdownField.js";
 
 import styles from "./AsyncDropdownField.module.css";
 
-export interface AsyncDropdownFieldProps<
-  V,
-  Multiple extends boolean = false,
-> extends Omit<
-  DropdownFieldProps<V, Multiple>,
-  "labels" | "popupStatus" | "trailingItem"
-> {
+export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
+  extends
+    Omit<
+      DropdownFieldProps<V, Multiple>,
+      keyof AsyncDropdownFieldLabels | "popupStatus" | "trailingItem"
+    >,
+    Partial<AsyncDropdownFieldLabels> {
   /** Whether the data source is currently loading. */
   isLoading: boolean;
   /** Whether the data source is currently searching. */
@@ -51,10 +51,6 @@ export interface AsyncDropdownFieldProps<
    * The error from the most recent failed fetch, if any.
    */
   fetchError?: Error;
-  /**
-   * Labels for the async dropdown field.
-   */
-  labels?: Partial<AsyncDropdownFieldLabels>;
 }
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
@@ -68,7 +64,8 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   isSearching,
   onFetchMore,
   fetchError,
-  labels,
+  searchingText = DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS.searchingText,
+  loadingText = DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS.loadingText,
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
   const itemCount = dropdownProps.items.length;
@@ -82,20 +79,14 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     }
     if (isSearching) {
       return (
-        <div className={styles.osdkAsyncDropdownStatus}>
-          {labels?.searchingText ??
-            DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS.searchingText}
-        </div>
+        <div className={styles.osdkAsyncDropdownStatus}>{searchingText}</div>
       );
     }
     // Show "Loading…" during the initial fetch before any data arrives,
     // so the user doesn't see a misleading "No results" message.
     if (isLoading && itemCount === 0) {
       return (
-        <div className={styles.osdkAsyncDropdownStatus}>
-          {labels?.loadingText ??
-            DEFAULT_ASYNC_DROPDOWN_FIELD_LABELS.loadingText}
-        </div>
+        <div className={styles.osdkAsyncDropdownStatus}>{loadingText}</div>
       );
     }
     // "No results" is handled by Combobox.Empty inside DropdownField
@@ -105,8 +96,8 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     isSearching,
     isLoading,
     itemCount,
-    labels?.loadingText,
-    labels?.searchingText,
+    loadingText,
+    searchingText,
   ]);
 
   const infiniteScrollRef = useInfiniteScroll({
@@ -117,7 +108,6 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   return (
     <DropdownField
       {...dropdownProps}
-      labels={labels}
       isSearchable={true}
       popupStatus={popupStatus}
       trailingItem={

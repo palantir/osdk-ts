@@ -20,7 +20,6 @@ import type {
   ActionValidationResponse,
 } from "@osdk/api";
 
-import type { BaseFormLabels } from "./BaseFormLabels.js";
 import type {
   FieldKey,
   FieldValueType,
@@ -57,9 +56,10 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
       ) => void;
     });
 
-interface ActionFormConfigProps<
-  Q extends ActionDefinition<unknown>,
-> extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled" | "labels"> {
+interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
+  extends
+    Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">,
+    Partial<BaseFormLabels> {
   /**
    * The OSDK action definition. Its parameters drive the rendered fields
    * and the submission.
@@ -186,7 +186,20 @@ export type BaseFormProps = BaseFormCommonProps &
       }
   );
 
-interface BaseFormCommonProps {
+/** User-facing strings rendered directly by BaseForm. */
+export interface BaseFormLabels {
+  /** @default "Submit" */
+  submitButtonText: string;
+  /** @default "Submitting…" */
+  submittingText: string;
+}
+
+export const DEFAULT_BASE_FORM_LABELS: BaseFormLabels = {
+  submitButtonText: "Submit",
+  submittingText: "Submitting…",
+};
+
+interface BaseFormCommonProps extends Partial<BaseFormLabels> {
   /** Title shown in the form header. Omit to hide the header. */
   formTitle?: string;
   /** The fields and sections to render, in order. */
@@ -201,13 +214,6 @@ interface BaseFormCommonProps {
   isLoading?: boolean;
   /** Additional CSS class name for the root element. */
   className?: string;
-  /**
-   * Overrides user-facing strings in the form and its fields. Unspecified
-   * labels use built-in English defaults. See {@link BaseFormLabels}.
-   */
-  labels?: Partial<BaseFormLabels>;
-  /** Label for the submit button. Default `"Submit"`. */
-  submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
   submitButtonVariant?: "primary" | "secondary";
 }

@@ -39,9 +39,8 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     // not here. Silently dropping oversized files would leave the user with
     // no indication of why their selection disappeared.
     maxSize: _maxSize,
-    text = "No file chosen",
-    buttonText = "Browse",
-    labels,
+    text = DEFAULT_FILE_PICKER_LABELS.text,
+    buttonText = DEFAULT_FILE_PICKER_LABELS.buttonText,
     disabled,
   }): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -138,10 +137,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           )}
           onClick={openFileDialog}
           onKeyDown={handleKeyDown}
-          aria-label={
-            labels?.triggerAriaLabel ??
-            DEFAULT_FILE_PICKER_LABELS.triggerAriaLabel
-          }
+          aria-label="Choose file"
           aria-invalid={error != null || undefined}
           disabled={disabled}
         >
@@ -152,10 +148,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
             type="button"
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
-            aria-label={
-              labels?.clearButtonLabel ??
-              DEFAULT_FILE_PICKER_LABELS.clearButtonLabel
-            }
+            aria-label="Clear selection"
             disabled={disabled}
           >
             <Cross />

@@ -55,6 +55,19 @@ describe("FilePickerField", () => {
 
       expect(screen.getByText("Browse")).toBeDefined();
     });
+
+    it("renders custom empty and browse text", () => {
+      render(
+        <FilePickerField
+          value={null}
+          text="No attachment selected"
+          buttonText="Select attachment"
+        />,
+      );
+
+      expect(screen.getByText("No attachment selected")).toBeDefined();
+      expect(screen.getByText("Select attachment")).toBeDefined();
+    });
   });
 
   describe("clear button", () => {

@@ -27,6 +27,7 @@ import type {
 import type React from "react";
 
 import type {
+  DatePickerLabels,
   DatePickerProps,
   DateRangePickerProps,
 } from "../shared/calendar/index.js";
@@ -39,19 +40,12 @@ export type { PortalContainer };
  * Supply values resolved by your i18n library to customize this copy.
  */
 export interface FormFieldLabels {
-  /** @default "required" */
-  requiredIndicatorAriaLabel: string;
   /** @default "Edited" */
   editedLabel: string;
-  /** @default (label) => label != null ? `Info about ${label}` : "More information" */
-  renderInfoTipAriaLabel: (label: string | undefined) => string;
 }
 
 export const DEFAULT_FORM_FIELD_LABELS: FormFieldLabels = {
-  requiredIndicatorAriaLabel: "required",
   editedLabel: "Edited",
-  renderInfoTipAriaLabel: (label) =>
-    label != null ? `Info about ${label}` : "More information",
 };
 
 /**
@@ -86,12 +80,6 @@ export type FormFieldDefinition<
          * Whether the field is required
          */
         isRequired?: boolean;
-
-        /**
-         * User-facing strings rendered by the field chrome.
-         * Supply values resolved by your i18n library to customize this copy.
-         */
-        labels?: Partial<FormFieldLabels>;
 
         /**
          * Placeholder text
@@ -147,7 +135,7 @@ export type FormFieldDefinition<
           FormFieldPropsByType[C],
           FormManagedProps<C>
         >;
-      };
+      } & Partial<FormFieldLabels>;
     }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
   : never;
 
@@ -187,30 +175,21 @@ export interface FormFieldPropsByType {
  * Dropdown field props with selectable items
  */
 export interface DropdownFieldLabels {
-  /** @default "Clear" */
-  clearButtonLabel: string;
   /** @default "Search…" */
   searchPlaceholder: string;
   /** @default "No results" */
   noResultsText: string;
-  /** @default (label) => `Remove ${label}` */
-  renderRemoveButtonLabel: (label: string) => string;
 }
 
 export const DEFAULT_DROPDOWN_FIELD_LABELS: DropdownFieldLabels = {
-  clearButtonLabel: "Clear",
   searchPlaceholder: "Search…",
   noResultsText: "No results",
-  renderRemoveButtonLabel: (label) => `Remove ${label}`,
 };
 
-export interface DropdownFieldProps<
-  V,
-  Multiple extends boolean = false,
-> extends BaseFormFieldProps<
-  Multiple extends true ? V[] : V,
-  DropdownFieldLabels
-> {
+export interface DropdownFieldProps<V, Multiple extends boolean = false>
+  extends
+    BaseFormFieldProps<Multiple extends true ? V[] : V>,
+    Partial<DropdownFieldLabels> {
   /**
    * Available items for the dropdown
    */
@@ -313,21 +292,19 @@ export interface DropdownFieldProps<
 }
 
 export interface FilePickerLabels {
-  /** @default "Choose file" */
-  triggerAriaLabel: string;
-  /** @default "Clear selection" */
-  clearButtonLabel: string;
+  /** @default "No file chosen" */
+  text: string;
+  /** @default "Browse" */
+  buttonText: string;
 }
 
 export const DEFAULT_FILE_PICKER_LABELS: FilePickerLabels = {
-  triggerAriaLabel: "Choose file",
-  clearButtonLabel: "Clear selection",
+  text: "No file chosen",
+  buttonText: "Browse",
 };
 
-export interface FilePickerProps extends BaseFormFieldProps<
-  File | File[],
-  FilePickerLabels
-> {
+export interface FilePickerProps
+  extends BaseFormFieldProps<File | File[]>, Partial<FilePickerLabels> {
   /**
    * Whether multiple files can be selected
    */
@@ -400,22 +377,7 @@ export interface TextInputFieldProps
 /**
  * Number input field props
  */
-export interface NumberInputFieldLabels {
-  /** @default "Increment" */
-  incrementButtonLabel: string;
-  /** @default "Decrement" */
-  decrementButtonLabel: string;
-}
-
-export const DEFAULT_NUMBER_INPUT_FIELD_LABELS: NumberInputFieldLabels = {
-  incrementButtonLabel: "Increment",
-  decrementButtonLabel: "Decrement",
-};
-
-export interface NumberInputFieldProps extends BaseFormFieldProps<
-  number,
-  NumberInputFieldLabels
-> {
+export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
   /**
    * Minimum allowed value.
    */
@@ -478,19 +440,20 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldLabels {
+  /** @default "Object set is not defined" */
+  emptyMessage: string;
+
   /** @default (count, displayName) => `${count} ${displayName ?? "object(s)"}` */
-  renderObjectSetCountLabel: (
+  getObjectSetCountLabel: (
     count: string | undefined,
     displayName: string | undefined,
   ) => string;
-  /** @default (message) => `Failed to load: ${message}` */
-  renderLoadErrorMessage: (message: string) => string;
 }
 
 export const DEFAULT_OBJECT_SET_FIELD_LABELS: ObjectSetFieldLabels = {
-  renderObjectSetCountLabel: (count, displayName) =>
+  emptyMessage: "Object set is not defined",
+  getObjectSetCountLabel: (count, displayName) =>
     `${formatObjectSetCount(count)} ${displayName ?? (count === "1" ? "object" : "objects")}`,
-  renderLoadErrorMessage: (message) => `Failed to load: ${message}`,
 };
 
 function formatObjectSetCount(count: string | undefined): string {
@@ -504,19 +467,10 @@ function formatObjectSetCount(count: string | undefined): string {
   }
 }
 
-export interface ObjectSetFieldProps<
-  T extends ObjectTypeDefinition,
-> extends Pick<
-  BaseFormFieldProps<ObjectSet<T>, ObjectSetFieldLabels>,
-  "id" | "value" | "disabled" | "labels"
-> {
-  /**
-   * Message displayed when no object set is provided.
-   *
-   * @default "Object set is not defined"
-   */
-  emptyMessage?: string;
-}
+export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
+  extends
+    Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value" | "disabled">,
+    Partial<ObjectSetFieldLabels> {}
 
 type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
   | {
@@ -574,11 +528,9 @@ export type ObjectSelectFieldProps<
   | "onQueryChange"
   | "disableClientSideFiltering"
   | "renderItemList"
-  | "labels"
 > &
-  ObjectSelectDataSource<Q> & {
-    labels?: Partial<ObjectSelectFieldLabels>;
-  };
+  ObjectSelectDataSource<Q> &
+  Partial<ObjectSelectFieldLabels>;
 
 /**
  * Custom field props for user-defined renderers
@@ -599,20 +551,17 @@ export const DEFAULT_UNSUPPORTED_FIELD_LABELS: UnsupportedFieldLabels = {
   message: "Unsupported field type. Use a CUSTOM field instead",
 };
 
-export interface UnsupportedFieldProps extends Pick<
-  BaseFormFieldProps<string, UnsupportedFieldLabels>,
-  "id" | "error" | "labels"
-> {}
+export interface UnsupportedFieldProps
+  extends
+    Pick<BaseFormFieldProps<string>, "id" | "error">,
+    Partial<UnsupportedFieldLabels> {}
 
-export interface BaseFormFieldProps<V, Labels extends object = never> {
+export interface BaseFormFieldProps<V> {
   /**
    * The HTML `id` attribute for the field input element.
    * Used for `<label htmlFor>` association.
    */
   id?: string;
-
-  /** User-facing strings rendered by this field. */
-  labels?: Partial<Labels>;
 
   /**
    * The validation error message for this field, if any.
@@ -769,11 +718,6 @@ export type RendererFieldDefinition = {
     fieldType?: FieldType;
     label: string;
     isRequired?: boolean;
-    /**
-     * User-facing strings rendered by FormFieldRenderer.
-     * Supply values resolved by your i18n library to customize this copy.
-     */
-    labels?: Partial<FormFieldLabels>;
     placeholder?: string;
     helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
@@ -784,7 +728,7 @@ export type RendererFieldDefinition = {
       FormFieldPropsByType[K],
       FormManagedProps<K>
     >;
-  };
+  } & Partial<FormFieldLabels>;
 }[FieldComponent];
 
 /**

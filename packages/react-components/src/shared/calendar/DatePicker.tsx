@@ -31,31 +31,21 @@ import {
   PortalDismissLayer,
 } from "../PortalDismissLayer.js";
 import { stopPropagation } from "./calendarShared.js";
-import type { DateCalendarLabels } from "./DateCalendar.js";
+import {
+  DEFAULT_DATE_CALENDAR_LABELS,
+  type DateCalendarLabels,
+} from "./DateCalendar.js";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-import type { TimePickerLabels } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
 import styles from "./DatePicker.module.css";
 import commonStyles from "./DatePickerCommon.module.css";
 
-/** User-facing strings rendered by DatePicker. */
-export interface DatePickerLabels extends DateCalendarLabels, TimePickerLabels {
-  /** @default "Date picker" */
-  dialogAriaLabel: string;
-  /** @default "Start of date picker dialog" */
-  startFocusBoundaryAriaLabel: string;
-  /** @default "End of date picker dialog" */
-  endFocusBoundaryAriaLabel: string;
-}
+/** Visible user-facing strings rendered by DatePicker. */
+export interface DatePickerLabels extends DateCalendarLabels {}
 
-export const DEFAULT_DATE_PICKER_LABELS: Omit<
-  DatePickerLabels,
-  keyof DateCalendarLabels | keyof TimePickerLabels
-> = {
-  dialogAriaLabel: "Date picker",
-  startFocusBoundaryAriaLabel: "Start of date picker dialog",
-  endFocusBoundaryAriaLabel: "End of date picker dialog",
+export const DEFAULT_DATE_PICKER_LABELS: DatePickerLabels = {
+  ...DEFAULT_DATE_CALENDAR_LABELS,
 };
 
 /**
@@ -67,7 +57,7 @@ export const DEFAULT_DATE_PICKER_LABELS: Omit<
  * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD /
  * YYYY-MM-DD HH:mm).
  */
-export interface DatePickerProps {
+export interface DatePickerProps extends Partial<DatePickerLabels> {
   /**
    * The HTML `id` attribute for the input element. Used for `<label htmlFor>`
    * association in form contexts. Optional in non-form contexts.
@@ -143,12 +133,6 @@ export interface DatePickerProps {
   ariaLabel?: string;
 
   /**
-   * User-facing strings rendered by the date picker.
-   * Supply values resolved by your i18n library to customize this copy.
-   */
-  labels?: Partial<DatePickerLabels>;
-
-  /**
    * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
    * inside the calendar and renders a transparent dismiss layer over the
    * page. Pass `false` when nesting this picker inside another popover so
@@ -175,7 +159,8 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
     portalRef,
     portalContainer,
     ariaLabel,
-    labels,
+    todayButtonText = DEFAULT_DATE_PICKER_LABELS.todayButtonText,
+    clearButtonText = DEFAULT_DATE_PICKER_LABELS.clearButtonText,
     modal = "trap-focus",
     disabled = false,
   }: DatePickerProps) {
@@ -499,10 +484,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
               className={commonStyles.osdkDatePickerPopover}
               id={popoverId}
               role="dialog"
-              aria-label={
-                labels?.dialogAriaLabel ??
-                DEFAULT_DATE_PICKER_LABELS.dialogAriaLabel
-              }
+              aria-label="Date picker"
               // Disable base-ui's automatic focus restoration to the trigger on close.
               // We manage focus ourselves via closePopover() which blurs the input.
               finalFocus={false}
@@ -511,15 +493,13 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
                 <div
                   onFocus={handleStartFocusBoundary}
                   tabIndex={0}
-                  aria-label={
-                    labels?.startFocusBoundaryAriaLabel ??
-                    DEFAULT_DATE_PICKER_LABELS.startFocusBoundaryAriaLabel
-                  }
+                  aria-label="Start of date picker dialog"
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}
               <LazyDateCalendar
-                {...labels}
+                todayButtonText={todayButtonText}
+                clearButtonText={clearButtonText}
                 dateSelected={activeDateValue}
                 onSelect={handleCalendarSelect}
                 onTimeChange={showTime ? handleTimeChange : undefined}
@@ -533,10 +513,7 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
                 <div
                   onFocus={handleEndFocusBoundary}
                   tabIndex={0}
-                  aria-label={
-                    labels?.endFocusBoundaryAriaLabel ??
-                    DEFAULT_DATE_PICKER_LABELS.endFocusBoundaryAriaLabel
-                  }
+                  aria-label="End of date picker dialog"
                   className={commonStyles.osdkDatePickerFocusBoundary}
                 />
               )}

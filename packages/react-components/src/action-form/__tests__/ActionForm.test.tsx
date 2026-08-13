@@ -52,28 +52,10 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
-interface BooleanActionDef extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      enabled: { type: "boolean" };
-    };
-    type: "action";
-    apiName: "BooleanAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
 } as TestActionDef;
-
-const BooleanAction: BooleanActionDef = {
-  type: "action",
-  apiName: "BooleanAction",
-} as BooleanActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -174,21 +156,16 @@ describe("ActionForm", () => {
   });
 
   describe("labels", () => {
-    it("passes label overrides to BaseForm", () => {
+    it("uses the internal loading status label", () => {
       vi.mocked(useOsdkMetadata).mockReturnValue({
         loading: true,
         metadata: undefined,
       });
 
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          labels={{ loadingFields: "Loading action fields" }}
-        />,
-      );
+      render(<ActionForm actionDefinition={TestAction} />);
 
       expect(
-        screen.getByRole("status", { name: "Loading action fields" }),
+        screen.getByRole("status", { name: "Loading form fields" }),
       ).toBeDefined();
     });
   });
@@ -267,6 +244,19 @@ describe("ActionForm", () => {
       expect(screen.getByRole("button", { name: /submit/iu }).textContent).toBe(
         "Submit",
       );
+    });
+
+    it("renders custom submit button text", () => {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          submitButtonText="Save employee"
+        />,
+      );
+
+      expect(
+        screen.getByRole("button", { name: "Save employee" }),
+      ).toBeDefined();
     });
 
     it("disables submit button when action is pending", () => {

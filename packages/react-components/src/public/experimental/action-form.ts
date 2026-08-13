@@ -22,6 +22,7 @@ export const ActionForm: typeof _ActionForm = withOsdkMetrics(
 );
 export type {
   ActionFormProps,
+  BaseFormLabels,
   BaseFormProps,
   FormContentItem,
   FormError,
@@ -29,12 +30,6 @@ export type {
   FormState,
 } from "../../action-form/ActionFormApi.js";
 export { BaseForm } from "../../action-form/BaseForm.js";
-export type {
-  BaseFormLabels,
-  BaseFormDirectLabels,
-  FieldComponentLabels,
-  FieldLabelsByType,
-} from "../../action-form/BaseFormLabels.js";
 export type {
   ActionParameters,
   AsyncDropdownFieldLabels,
@@ -50,7 +45,6 @@ export type {
   FormFieldLabels,
   FormFieldPropsByType,
   NumberInputFieldProps,
-  NumberInputFieldLabels,
   ObjectSelectFieldLabels,
   ObjectSelectFieldProps,
   ObjectSetFieldLabels,

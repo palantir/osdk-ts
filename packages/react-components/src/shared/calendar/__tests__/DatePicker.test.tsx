@@ -80,22 +80,14 @@ describe("DatePicker", () => {
       expect(input.placeholder).toBe("Pick a date");
     });
 
-    it("uses supplied labels", () => {
+    it("uses supplied visible copy and default accessible names", () => {
       render(
         <DatePicker
           value={null}
           onChange={vi.fn()}
           showTime={true}
-          labels={{
-            todayButtonText: "Custom today",
-            clearButtonText: "Custom clear",
-            timePickerAriaLabel: "Custom time",
-            renderTimePickerHourAriaLabel: () => "Custom hours",
-            renderTimePickerMinuteAriaLabel: () => "Minutes",
-            dialogAriaLabel: "Custom date picker",
-            startFocusBoundaryAriaLabel: "Start custom date picker",
-            endFocusBoundaryAriaLabel: "End custom date picker",
-          }}
+          todayButtonText="Custom today"
+          clearButtonText="Custom clear"
         />,
       );
 
@@ -107,13 +99,13 @@ describe("DatePicker", () => {
       expect(
         screen.getByRole("button", { name: "Custom clear" }),
       ).toBeDefined();
-      expect(screen.getByLabelText("Custom hours")).toBeDefined();
-      expect(screen.getByLabelText("Minutes")).toBeDefined();
+      expect(screen.getByLabelText("Time hours")).toBeDefined();
+      expect(screen.getByLabelText("Time minutes")).toBeDefined();
+      expect(screen.getByRole("dialog", { name: "Date picker" })).toBeDefined();
       expect(
-        screen.getByRole("dialog", { name: "Custom date picker" }),
+        screen.getByLabelText("Start of date picker dialog"),
       ).toBeDefined();
-      expect(screen.getByLabelText("Start custom date picker")).toBeDefined();
-      expect(screen.getByLabelText("End custom date picker")).toBeDefined();
+      expect(screen.getByLabelText("End of date picker dialog")).toBeDefined();
     });
   });
 

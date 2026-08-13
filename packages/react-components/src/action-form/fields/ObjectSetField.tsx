@@ -39,15 +39,14 @@ const DEFAULT_OBJECT_ICON: Icon = {
   color: "var(--osdk-object-set-icon-default-color)",
 };
 const ICON_SIZE = IconSize.STANDARD;
-const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
   props: ObjectSetFieldProps<T>,
 ) => React.ReactElement = typedReactMemo(function ObjectSetFieldFn<
   T extends ObjectTypeDefinition,
 >({
   value,
-  emptyMessage = DEFAULT_EMPTY_MESSAGE,
-  labels,
+  emptyMessage = DEFAULT_OBJECT_SET_FIELD_LABELS.emptyMessage,
+  getObjectSetCountLabel,
   disabled,
 }: ObjectSetFieldProps<T>): React.ReactElement {
   if (value == null) {
@@ -65,7 +64,11 @@ export const ObjectSetField: <T extends ObjectTypeDefinition>(
   }
 
   return (
-    <ObjectSetFieldContent {...labels} objectSet={value} disabled={disabled} />
+    <ObjectSetFieldContent
+      objectSet={value}
+      disabled={disabled}
+      getObjectSetCountLabel={getObjectSetCountLabel}
+    />
   );
 });
 
@@ -139,8 +142,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   totalCount,
   isLoading,
   error,
-  renderObjectSetCountLabel = DEFAULT_OBJECT_SET_FIELD_LABELS.renderObjectSetCountLabel,
-  renderLoadErrorMessage = DEFAULT_OBJECT_SET_FIELD_LABELS.renderLoadErrorMessage,
+  getObjectSetCountLabel = DEFAULT_OBJECT_SET_FIELD_LABELS.getObjectSetCountLabel,
 }: Partial<ObjectSetFieldLabels> & {
   displayName: string | undefined;
   totalCount: string | undefined;
@@ -148,7 +150,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   error: Error | undefined;
 }): React.ReactElement {
   const hasData = totalCount != null;
-  const label = renderObjectSetCountLabel(totalCount, displayName);
+  const label = getObjectSetCountLabel(totalCount, displayName);
   const showSkeleton = isLoading && !hasData;
   const showError = error != null && !hasData && !isLoading;
 
@@ -157,7 +159,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
       {showSkeleton && OBJECT_SET_LABEL_SKELETON}
       {showError && (
         <span className={styles.osdkObjectSetFieldError} role="alert">
-          {renderLoadErrorMessage(error.message)}
+          Failed to load: {error.message}
         </span>
       )}
       {!showSkeleton && !showError && <span>{label}</span>}

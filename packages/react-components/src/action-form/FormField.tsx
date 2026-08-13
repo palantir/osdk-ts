@@ -41,9 +41,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   fieldKey,
   label,
   isRequired,
-  requiredIndicatorAriaLabel = DEFAULT_FORM_FIELD_LABELS.requiredIndicatorAriaLabel,
   editedLabel = DEFAULT_FORM_FIELD_LABELS.editedLabel,
-  renderInfoTipAriaLabel = DEFAULT_FORM_FIELD_LABELS.renderInfoTipAriaLabel,
   helperText,
   helperTextPlacement = "tooltip",
   isEdited,
@@ -61,10 +59,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
         {label}
         {isRequired === true && (
-          <span
-            className={styles.osdkFormFieldRequired}
-            aria-label={requiredIndicatorAriaLabel}
-          >
+          <span className={styles.osdkFormFieldRequired} aria-label="required">
             {" "}
             *
           </span>
@@ -76,7 +71,11 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
       <div className={styles.osdkFormFieldLabelRow}>
         {labelElement}
         {showTooltip && (
-          <InfoTip ariaLabel={renderInfoTipAriaLabel(label)}>
+          <InfoTip
+            ariaLabel={
+              label != null ? `Info about ${label}` : "More information"
+            }
+          >
             {helperText}
           </InfoTip>
         )}

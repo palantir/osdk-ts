@@ -31,6 +31,7 @@ describe("TimePicker", () => {
       <TimePicker value={new Date(2024, 0, 15, 9, 5)} onChange={vi.fn()} />,
     );
 
+    expect(screen.getByRole("group", { name: "Time" })).toBeDefined();
     expect(
       (screen.getByLabelText("Time hours") as HTMLInputElement).value,
     ).toBe("9");

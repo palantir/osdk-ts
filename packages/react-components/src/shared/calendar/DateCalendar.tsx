@@ -27,7 +27,7 @@ import {
   DEFAULT_FROM_YEAR,
   DEFAULT_TO_YEAR,
 } from "./calendarShared.js";
-import { TimePicker, type TimePickerLabels } from "./TimePicker.js";
+import { TimePicker } from "./TimePicker.js";
 
 import styles from "./DateCalendar.module.css";
 
@@ -87,7 +87,7 @@ export const DEFAULT_DATE_CALENDAR_LABELS: DateCalendarLabels = {
   clearButtonText: "Clear",
 };
 
-export interface DateCalendarProps extends Partial<TimePickerLabels> {
+export interface DateCalendarProps extends Partial<DateCalendarLabels> {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   onTimeChange?: (date: Date) => void;
@@ -96,8 +96,6 @@ export interface DateCalendarProps extends Partial<TimePickerLabels> {
   onMonthChange?: (month: Date) => void;
   min?: Date;
   max?: Date;
-  todayButtonText?: string;
-  clearButtonText?: string;
 }
 
 export default function DateCalendar({
@@ -111,7 +109,6 @@ export default function DateCalendar({
   max,
   todayButtonText = DEFAULT_DATE_CALENDAR_LABELS.todayButtonText,
   clearButtonText = DEFAULT_DATE_CALENDAR_LABELS.clearButtonText,
-  ...timePickerProps
 }: DateCalendarProps): React.ReactElement {
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
   const showTime = onTimeChange != null;
@@ -162,11 +159,7 @@ export default function DateCalendar({
     <>
       {showTime && (
         <div className={styles.calendarTimeFooter}>
-          <TimePicker
-            {...timePickerProps}
-            value={dateSelected ?? null}
-            onChange={onTimeChange}
-          />
+          <TimePicker value={dateSelected ?? null} onChange={onTimeChange} />
         </div>
       )}
       <div className={styles.calendarActionBar}>
