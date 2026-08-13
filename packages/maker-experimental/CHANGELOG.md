@@ -1,5 +1,16 @@
 # @osdk/maker-experimental
 
+## 0.49.0
+
+### Minor Changes
+
+- a035a89: Allow empty collections for marking props
+
+### Patch Changes
+
+- Updated dependencies [b28235f]
+  - @osdk/maker@0.57.0
+
 ## 0.48.0
 
 ### Minor Changes

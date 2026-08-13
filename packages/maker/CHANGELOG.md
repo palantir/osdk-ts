@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.57.0
+
+### Minor Changes
+
+- b28235f: check for duplicate links
+
 ## 0.56.0
 
 ### Minor Changes
