@@ -15095,13 +15095,13 @@ export const Default: StoryObj&lt;ImageViewerProps&gt; = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
-  42 | import type { EmployeeTableProps } from &quot;../objectTableStoryHelpers.js&quot;;
-  43 |
-&gt; 44 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+  43 | import type { EmployeeTableProps } from &quot;../objectTableStoryHelpers.js&quot;;
+  44 |
+&gt; 45 | const meta: Meta&lt;EmployeeTableProps&gt; = {
      | ^
-  45 |   ...objectTableMeta,
-  46 |   title: &quot;Components/ObjectTable/Features/Interactions &amp; events&quot;,
-  47 | };
+  46 |   ...objectTableMeta,
+  47 |   title: &quot;Components/ObjectTable/Features/Interactions &amp; events&quot;,
+  48 | };
 
 ./src/stories/ObjectTable/Features/Interactions.stories.tsx:
 /*
@@ -15120,6 +15120,7 @@ export const Default: StoryObj&lt;ImageViewerProps&gt; = {
  * limitations under the License.
  */
 
+import type { LoadedObjectsChange } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
@@ -15241,6 +15242,7 @@ export const EventListeners: Story = {
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
     onFocusedRowChanged: fn(),
+    onLoadedObjectsChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -15274,6 +15276,9 @@ export const EventListeners: Story = {
   onColumnResize={(columnId, newWidth) =&gt; {
     console.log(&quot;Column resized:&quot;, columnId, newWidth);
   }}
+  onLoadedObjectsChanged={({ loadedObjects, totalCount }) =&gt; {
+    console.log(\`Loaded \${loadedObjects.length} of \${totalCount} employees\`);
+  }}
 /&gt;`,
       },
     },
@@ -15290,6 +15295,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState&lt;string&gt;(&quot;&quot;);
+    const [loadedCount, setLoadedCount] = useState&lt;number&gt;(0);
+    const [totalCount, setTotalCount] = useState&lt;string | undefined&gt;(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) =&gt; {
@@ -15352,6 +15359,16 @@ export const EventListeners: Story = {
       [args],
     );
 
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange&lt;typeof Employee&gt;) =&gt; {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent(&quot;onLoadedObjectsChanged&quot;);
+      },
+      [args],
+    );
+
     return (
       &lt;div&gt;
         &lt;div
@@ -15381,18 +15398,25 @@ export const EventListeners: Story = {
             &lt;strong&gt;Selected rows:&lt;/strong&gt;{&quot; &quot;}
             {isSelectAll ? &quot;All employees&quot; : `${selectedRows.length} employees`}
           &lt;/div&gt;
-          &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+          &lt;div style={{ marginBottom: &quot;8px&quot;, fontSize: &quot;12px&quot; }}&gt;
             &lt;strong&gt;Current sort:&lt;/strong&gt;{&quot; &quot;}
             {orderBy?.[0]
               ? `${orderBy[0].property} (${orderBy[0].direction})`
               : &quot;None&quot;}
           &lt;/div&gt;
+          &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+            &lt;strong&gt;Loaded objects:&lt;/strong&gt;{&quot; &quot;}
+            &lt;code&gt;
+              {loadedCount} of {totalCount ?? &quot;unknown&quot;}
+            &lt;/code&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
-        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;300px&quot; }}&gt;
           &lt;ObjectTable
             {...args}
             selectedRows={selectedRows}
             orderBy={orderBy}
+            pageSize={10}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
             onRowSelectionChanged={handleRowSelectionChanged}
@@ -15400,6 +15424,7 @@ export const EventListeners: Story = {
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
             onColumnResize={handleColumnResize}
+            onLoadedObjectsChanged={handleLoadedObjectsChanged}
           /&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -15411,6 +15436,15 @@ export const EventListeners: Story = {
     const rowCheckboxes = findRowCheckboxes(canvas);
 
     await canvas.findByText(TARGET_DATA);
+
+    // onLoadedObjectsChanged: fires from the initial load, no interaction needed.
+    await waitFor(() =&gt;
+      expect(args.onLoadedObjectsChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loadedObjects: expect.arrayContaining([expect.anything()]),
+        }),
+      ),
+    );
 
     // onRowClick + onFocusedRowChanged: clicking a row body fires both.
     await userEvent.click(canvas.getByText(TARGET_DATA));
@@ -15539,6 +15573,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState&lt;string&gt;(&quot;&quot;);
+    const [loadedCount, setLoadedCount] = useState&lt;number&gt;(0);
+    const [totalCount, setTotalCount] = useState&lt;string | undefined&gt;(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) =&gt; {
@@ -15601,6 +15637,16 @@ export const EventListeners: Story = {
       [args],
     );
 
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange&lt;typeof Employee&gt;) =&gt; {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent(&quot;onLoadedObjectsChanged&quot;);
+      },
+      [args],
+    );
+
     return (
         &lt;div&gt;
             &lt;div
@@ -15628,24 +15674,32 @@ export const EventListeners: Story = {
                     &lt;strong&gt;Selected rows:&lt;/strong&gt;{&quot; &quot;}
                     {isSelectAll ? &quot;All employees&quot; : `${selectedRows.length} employees`}
                 &lt;/div&gt;
-                &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+                &lt;div style={{ marginBottom: &quot;8px&quot;, fontSize: &quot;12px&quot; }}&gt;
                     &lt;strong&gt;Current sort:&lt;/strong&gt;{&quot; &quot;}
                     {orderBy?.[0]
                       ? `${orderBy[0].property} (${orderBy[0].direction})`
                       : &quot;None&quot;}
                 &lt;/div&gt;
+                &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+                    &lt;strong&gt;Loaded objects:&lt;/strong&gt;{&quot; &quot;}
+                    &lt;code&gt;
+                        {loadedCount}of {totalCount ?? &quot;unknown&quot;}
+                    &lt;/code&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+            &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;300px&quot; }}&gt;
                 &lt;ObjectTable
                     selectedRows={selectedRows}
                     orderBy={orderBy}
+                    pageSize={10}
                     onRowClick={handleRowClick}
                     onColumnHeaderClick={handleColumnHeaderClick}
                     onRowSelectionChanged={handleRowSelectionChanged}
                     onOrderByChanged={handleOrderByChanged}
                     onColumnVisibilityChanged={handleColumnVisibilityChanged}
                     onColumnsPinnedChanged={handleColumnsPinnedChanged}
-                    onColumnResize={handleColumnResize} /&gt;
+                    onColumnResize={handleColumnResize}
+                    onLoadedObjectsChanged={handleLoadedObjectsChanged} /&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     );
@@ -40738,13 +40792,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>We could not detect the component from your story file. Specify meta.component.
-  42 | import type { EmployeeTableProps } from &quot;../objectTableStoryHelpers.js&quot;;
-  43 |
-&gt; 44 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+  43 | import type { EmployeeTableProps } from &quot;../objectTableStoryHelpers.js&quot;;
+  44 |
+&gt; 45 | const meta: Meta&lt;EmployeeTableProps&gt; = {
      | ^
-  45 |   ...objectTableMeta,
-  46 |   title: &quot;Components/ObjectTable/Features/Interactions &amp; events&quot;,
-  47 | };
+  46 |   ...objectTableMeta,
+  47 |   title: &quot;Components/ObjectTable/Features/Interactions &amp; events&quot;,
+  48 | };
 
 ./src/stories/ObjectTable/Features/Interactions.stories.tsx:
 /*
@@ -40763,6 +40817,7 @@ return (
  * limitations under the License.
  */
 
+import type { LoadedObjectsChange } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useState } from &quot;react&quot;;
@@ -40884,6 +40939,7 @@ export const EventListeners: Story = {
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
     onFocusedRowChanged: fn(),
+    onLoadedObjectsChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -40917,6 +40973,9 @@ export const EventListeners: Story = {
   onColumnResize={(columnId, newWidth) =&gt; {
     console.log(&quot;Column resized:&quot;, columnId, newWidth);
   }}
+  onLoadedObjectsChanged={({ loadedObjects, totalCount }) =&gt; {
+    console.log(\`Loaded \${loadedObjects.length} of \${totalCount} employees\`);
+  }}
 /&gt;`,
       },
     },
@@ -40933,6 +40992,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState&lt;string&gt;(&quot;&quot;);
+    const [loadedCount, setLoadedCount] = useState&lt;number&gt;(0);
+    const [totalCount, setTotalCount] = useState&lt;string | undefined&gt;(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) =&gt; {
@@ -40995,6 +41056,16 @@ export const EventListeners: Story = {
       [args],
     );
 
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange&lt;typeof Employee&gt;) =&gt; {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent(&quot;onLoadedObjectsChanged&quot;);
+      },
+      [args],
+    );
+
     return (
       &lt;div&gt;
         &lt;div
@@ -41024,18 +41095,25 @@ export const EventListeners: Story = {
             &lt;strong&gt;Selected rows:&lt;/strong&gt;{&quot; &quot;}
             {isSelectAll ? &quot;All employees&quot; : `${selectedRows.length} employees`}
           &lt;/div&gt;
-          &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+          &lt;div style={{ marginBottom: &quot;8px&quot;, fontSize: &quot;12px&quot; }}&gt;
             &lt;strong&gt;Current sort:&lt;/strong&gt;{&quot; &quot;}
             {orderBy?.[0]
               ? `${orderBy[0].property} (${orderBy[0].direction})`
               : &quot;None&quot;}
           &lt;/div&gt;
+          &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+            &lt;strong&gt;Loaded objects:&lt;/strong&gt;{&quot; &quot;}
+            &lt;code&gt;
+              {loadedCount} of {totalCount ?? &quot;unknown&quot;}
+            &lt;/code&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
-        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;300px&quot; }}&gt;
           &lt;ObjectTable
             {...args}
             selectedRows={selectedRows}
             orderBy={orderBy}
+            pageSize={10}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
             onRowSelectionChanged={handleRowSelectionChanged}
@@ -41043,6 +41121,7 @@ export const EventListeners: Story = {
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
             onColumnResize={handleColumnResize}
+            onLoadedObjectsChanged={handleLoadedObjectsChanged}
           /&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -41054,6 +41133,15 @@ export const EventListeners: Story = {
     const rowCheckboxes = findRowCheckboxes(canvas);
 
     await canvas.findByText(TARGET_DATA);
+
+    // onLoadedObjectsChanged: fires from the initial load, no interaction needed.
+    await waitFor(() =&gt;
+      expect(args.onLoadedObjectsChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loadedObjects: expect.arrayContaining([expect.anything()]),
+        }),
+      ),
+    );
 
     // onRowClick + onFocusedRowChanged: clicking a row body fires both.
     await userEvent.click(canvas.getByText(TARGET_DATA));
@@ -41182,6 +41270,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState&lt;string&gt;(&quot;&quot;);
+    const [loadedCount, setLoadedCount] = useState&lt;number&gt;(0);
+    const [totalCount, setTotalCount] = useState&lt;string | undefined&gt;(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) =&gt; {
@@ -41244,6 +41334,16 @@ export const EventListeners: Story = {
       [args],
     );
 
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange&lt;typeof Employee&gt;) =&gt; {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent(&quot;onLoadedObjectsChanged&quot;);
+      },
+      [args],
+    );
+
     return (
         &lt;div&gt;
             &lt;div
@@ -41271,24 +41371,32 @@ export const EventListeners: Story = {
                     &lt;strong&gt;Selected rows:&lt;/strong&gt;{&quot; &quot;}
                     {isSelectAll ? &quot;All employees&quot; : `${selectedRows.length} employees`}
                 &lt;/div&gt;
-                &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+                &lt;div style={{ marginBottom: &quot;8px&quot;, fontSize: &quot;12px&quot; }}&gt;
                     &lt;strong&gt;Current sort:&lt;/strong&gt;{&quot; &quot;}
                     {orderBy?.[0]
                       ? `${orderBy[0].property} (${orderBy[0].direction})`
                       : &quot;None&quot;}
                 &lt;/div&gt;
+                &lt;div style={{ fontSize: &quot;12px&quot; }}&gt;
+                    &lt;strong&gt;Loaded objects:&lt;/strong&gt;{&quot; &quot;}
+                    &lt;code&gt;
+                        {loadedCount}of {totalCount ?? &quot;unknown&quot;}
+                    &lt;/code&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+            &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;300px&quot; }}&gt;
                 &lt;ObjectTable
                     selectedRows={selectedRows}
                     orderBy={orderBy}
+                    pageSize={10}
                     onRowClick={handleRowClick}
                     onColumnHeaderClick={handleColumnHeaderClick}
                     onRowSelectionChanged={handleRowSelectionChanged}
                     onOrderByChanged={handleOrderByChanged}
                     onColumnVisibilityChanged={handleColumnVisibilityChanged}
                     onColumnsPinnedChanged={handleColumnsPinnedChanged}
-                    onColumnResize={handleColumnResize} /&gt;
+                    onColumnResize={handleColumnResize}
+                    onLoadedObjectsChanged={handleLoadedObjectsChanged} /&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     );
