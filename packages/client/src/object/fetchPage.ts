@@ -246,6 +246,8 @@ export async function fetchStaticRidPage<
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
       loadPropertySecurities: shouldLoadPropertySecurities,
+      loadOntologyDefinedDerivedProperties:
+        args.$loadOntologyDefinedDerivedProperties,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
