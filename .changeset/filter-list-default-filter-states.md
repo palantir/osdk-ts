@@ -13,4 +13,4 @@ To migrate:
 - `PROPERTY`, `STATIC_VALUES`: rename `filterState` to `defaultFilterState`. The seed is now optional, so a `filterState` that only held an empty state (`{ type: "EXACT_MATCH", values: [] }` and friends) can be deleted instead — the filter starts empty either way.
 - Top level: rename `initialFilterStates` to `defaultFilterStates`.
 - Delete rather than rename `filterState` on `HAS_LINK` and `KEYWORD_SEARCH`. It has no effect, so renaming it would silently activate filters that were never active.
-- `CUSTOM`: `filterState` is deprecated but still only pre-fills `renderInput`; it does not filter. Moving the value to `defaultFilterState` makes it filter the object set and count towards the active filter count, so rename it only if that is what you want. A `CUSTOM` definition may now set neither field, in which case `renderInput` receives an empty custom state.
+- `CUSTOM`: leave `filterState` where it is to keep the current behavior. Renaming it to `defaultFilterState` starts filtering the object set.
