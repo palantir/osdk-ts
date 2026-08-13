@@ -186,7 +186,6 @@ export type BaseFormProps = BaseFormCommonProps &
       }
   );
 
-/** User-facing strings rendered directly by BaseForm. */
 export interface BaseFormLabels {
   /** Label for the submit button. Default `"Submit"`. */
   submitButtonText: string;

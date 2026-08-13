@@ -77,7 +77,7 @@ describe("BaseForm", () => {
     it("uses direct form and field label props", () => {
       render(
         <BaseForm
-          formContent={[field(makeDef("name", { editedLabel: "Modified" }))]}
+          formContent={[field(makeDef("name", { editedText: "Modified" }))]}
           // Mark the form as pending to show the submitting label
           isPending={true}
           onSubmit={vi.fn()}

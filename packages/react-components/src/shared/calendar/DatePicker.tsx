@@ -31,10 +31,7 @@ import {
   PortalDismissLayer,
 } from "../PortalDismissLayer.js";
 import { stopPropagation } from "./calendarShared.js";
-import {
-  DEFAULT_DATE_CALENDAR_LABELS,
-  type DateCalendarLabels,
-} from "./DateCalendar.js";
+import { type DateCalendarLabels } from "./DateCalendar.js";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -152,8 +149,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
     portalRef,
     portalContainer,
     ariaLabel,
-    todayButtonText = DEFAULT_DATE_CALENDAR_LABELS.todayButtonText,
-    clearButtonText = DEFAULT_DATE_CALENDAR_LABELS.clearButtonText,
     modal = "trap-focus",
     disabled = false,
   }: DatePickerProps) {
@@ -491,8 +486,6 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
                 />
               )}
               <LazyDateCalendar
-                todayButtonText={todayButtonText}
-                clearButtonText={clearButtonText}
                 dateSelected={activeDateValue}
                 onSelect={handleCalendarSelect}
                 onTimeChange={showTime ? handleTimeChange : undefined}

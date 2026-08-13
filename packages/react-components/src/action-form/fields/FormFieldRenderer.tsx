@@ -65,12 +65,12 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, editedLabel, helperText, helperTextPlacement } =
+    const { label, isRequired, editedText, helperText, helperTextPlacement } =
       fieldDefinition;
 
     return (
       <FormField
-        editedLabel={editedLabel}
+        editedText={editedText}
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}

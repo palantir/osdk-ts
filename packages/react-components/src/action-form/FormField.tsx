@@ -41,7 +41,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   fieldKey,
   label,
   isRequired,
-  editedLabel = DEFAULT_FORM_FIELD_LABELS.editedLabel,
+  editedText = DEFAULT_FORM_FIELD_LABELS.editedText,
   helperText,
   helperTextPlacement = "tooltip",
   isEdited,
@@ -72,7 +72,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
         {labelElement}
         {showTooltip && <InfoTip label={label}>{helperText}</InfoTip>}
         {showEditedTag && (
-          <span className={styles.osdkFormFieldEditedTag}>{editedLabel}</span>
+          <span className={styles.osdkFormFieldEditedTag}>{editedText}</span>
         )}
       </div>
     ) : null;

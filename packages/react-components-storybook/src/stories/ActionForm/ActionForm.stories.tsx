@@ -50,8 +50,6 @@ interface UpdateEmployeeActionFormStoryProps {
   isSubmitDisabled?: boolean;
   onSubmit?: ActionFormProps<typeof actionDefinition>["onSubmit"];
   showFormTitle?: boolean;
-  submitButtonText?: string;
-  submittingText?: string;
 }
 
 type UpdateEmployeeApplyAction = Parameters<
@@ -290,8 +288,6 @@ function UpdateEmployeeActionFormStory({
   isSubmitDisabled,
   onSubmit,
   showFormTitle,
-  submitButtonText,
-  submittingText,
 }: UpdateEmployeeActionFormStoryProps): React.ReactElement {
   const { handleStoryError, handleStorySubmit, submission } =
     useActionFormSubmission({
@@ -316,8 +312,6 @@ function UpdateEmployeeActionFormStory({
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={showFormTitle}
-        submitButtonText={submitButtonText}
-        submittingText={submittingText}
       />
     </FormStoryLayout>
   );
@@ -393,14 +387,6 @@ const meta = {
     isSubmitDisabled: {
       control: "boolean",
       description: "Disables the submit button before validation runs.",
-    },
-    submitButtonText: {
-      control: "text",
-      description: "Text displayed on the submit button.",
-    },
-    submittingText: {
-      control: "text",
-      description: "Text displayed while the form is submitting.",
     },
     onSubmit: {
       control: false,
@@ -811,22 +797,6 @@ export const WithFieldOverrides: Story = {
   actionDefinition={updateEmployeeStoryAction}
   formFieldDefinitions={fields}
 />`,
-      },
-    },
-  },
-};
-
-export const WithLabels: Story = {
-  args: {
-    formFieldDefinitions: actionFormOverrideFields,
-    onSubmit: handleSlowSubmit,
-    submitButtonText: "Save employee",
-    submittingText: "Saving employee…",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "Shows custom submit and pending button copy.",
       },
     },
   },

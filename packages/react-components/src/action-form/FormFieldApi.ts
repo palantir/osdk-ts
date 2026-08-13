@@ -39,12 +39,12 @@ export type { PortalContainer };
  * Supply values resolved by your i18n library to customize this copy.
  */
 export interface FormFieldLabels {
-  /** Label shown after the field is edited. Default `"Edited"`. */
-  editedLabel: string;
+  /** Text shown after the field is edited. Default `"Edited"`. */
+  editedText: string;
 }
 
 export const DEFAULT_FORM_FIELD_LABELS: FormFieldLabels = {
-  editedLabel: "Edited",
+  editedText: "Edited",
 };
 
 /**
