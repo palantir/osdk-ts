@@ -29,11 +29,9 @@ const EMPTY_ROWS: never[] = [];
 
 /**
  * Function-backed columns resolve in a sliding window of concurrent queries,
- * and streamed updates arrive in pushes, so the rows churn in tight bursts
- * rather than at a steady rate. Coalescing a burst is lossless here: each
+ * and streamed updates arrive in pushes. Coalescing a burst is lossless here: each
  * payload is the whole current state, so the last one supersedes the rest.
- * Leading keeps the first report — the one callers actually wait on —
- * immediate.
+ * Leading keeps the first report immediate.
  */
 const DEBOUNCE_MS = 50;
 const DEBOUNCE_OPTIONS = { leading: true, trailing: true };
