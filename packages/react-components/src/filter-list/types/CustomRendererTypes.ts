@@ -72,8 +72,18 @@ export interface CustomFilterDefinition<
   key: string;
   label?: string;
   filterComponent: "CUSTOM";
-  filterState: State;
+
+  /**
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
+   */
   defaultFilterState?: State;
+
+  /**
+   * @deprecated Use `defaultFilterState`.
+   */
+  filterState?: State;
   /**
    * Render the input portion of the filter
    * Used when rendering within a filter item wrapper
