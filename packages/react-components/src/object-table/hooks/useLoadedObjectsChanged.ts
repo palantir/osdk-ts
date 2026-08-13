@@ -22,10 +22,21 @@ import type {
 } from "@osdk/api";
 import { useEffect } from "react";
 
-import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
+import { useDebouncedCallback } from "../../shared/hooks/useDebouncedCallback.js";
 import type { LoadedObjectsChange } from "../ObjectTableApi.js";
 
 const EMPTY_ROWS: never[] = [];
+
+/**
+ * Function-backed columns resolve in a sliding window of concurrent queries,
+ * and streamed updates arrive in pushes, so the rows churn in tight bursts
+ * rather than at a steady rate. Coalescing a burst is lossless here: each
+ * payload is the whole current state, so the last one supersedes the rest.
+ * Leading keeps the first report — the one callers actually wait on —
+ * immediate.
+ */
+const DEBOUNCE_MS = 50;
+const DEBOUNCE_OPTIONS = { leading: true, trailing: true };
 
 export interface UseLoadedObjectsChangedProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -54,10 +65,12 @@ export function useLoadedObjectsChanged<
   isLoading,
   onLoadedObjectsChanged,
 }: UseLoadedObjectsChangedProps<Q, RDPs>): void {
-  const fireChanged = useEventCallback(
+  const fireChanged = useDebouncedCallback(
     (change: LoadedObjectsChange<Q, RDPs>) => {
       onLoadedObjectsChanged?.(change);
     },
+    DEBOUNCE_MS,
+    DEBOUNCE_OPTIONS,
   );
 
   useEffect(() => {

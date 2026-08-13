@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
-import { renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useLoadedObjectsChanged } from "../useLoadedObjectsChanged.js";
 
@@ -47,7 +47,22 @@ function createMockData(count: number): TestInstance[] {
   );
 }
 
+/** Pushes past the burst-coalescing window so a pending trailing call runs. */
+function flushDebounce() {
+  act(() => {
+    vi.advanceTimersByTime(100);
+  });
+}
+
 describe("useLoadedObjectsChanged", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("does not fire while the first page is still loading", () => {
     const onLoadedObjectsChanged = vi.fn();
 
@@ -85,6 +100,7 @@ describe("useLoadedObjectsChanged", () => {
     );
 
     rerender({ loadedObjects: firstPage, totalCount: "10", isLoading: false });
+    flushDebounce();
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
     expect(onLoadedObjectsChanged).toHaveBeenCalledWith({
@@ -110,6 +126,7 @@ describe("useLoadedObjectsChanged", () => {
     );
 
     rerender({ loadedObjects: bothPages });
+    flushDebounce();
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
     expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
@@ -134,6 +151,7 @@ describe("useLoadedObjectsChanged", () => {
     );
 
     rerender({ totalCount: "10" });
+    flushDebounce();
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
     expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
@@ -157,6 +175,7 @@ describe("useLoadedObjectsChanged", () => {
 
     rerender();
     rerender();
+    flushDebounce();
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
   });
@@ -176,6 +195,7 @@ describe("useLoadedObjectsChanged", () => {
     );
 
     rerender();
+    flushDebounce();
 
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -247,6 +267,7 @@ describe("useLoadedObjectsChanged", () => {
     );
 
     rerender({ loadedObjects: firstPage, totalCount: "10", isLoading: false });
+    flushDebounce();
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
     expect(onLoadedObjectsChanged).toHaveBeenCalledWith({
@@ -255,7 +276,7 @@ describe("useLoadedObjectsChanged", () => {
     });
   });
 
-  it("keeps reporting once settled, even while a later page is in flight", () => {
+  it("holds off while a later page is in flight, then reports once it settles", () => {
     const onLoadedObjectsChanged = vi.fn();
     const firstPage = createMockData(2);
     const bothPages = createMockData(4);
@@ -271,12 +292,79 @@ describe("useLoadedObjectsChanged", () => {
       { initialProps: { loadedObjects: firstPage, isLoading: false } },
     );
 
-    rerender({ loadedObjects: bothPages, isLoading: true });
+    onLoadedObjectsChanged.mockClear();
 
-    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
+    rerender({ loadedObjects: firstPage, isLoading: true });
+    flushDebounce();
+
+    expect(onLoadedObjectsChanged).not.toHaveBeenCalled();
+
+    rerender({ loadedObjects: bothPages, isLoading: false });
+    flushDebounce();
+
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
     expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
       loadedObjects: bothPages,
       totalCount: "10",
     });
+  });
+
+  it("coalesces a burst of changes into a leading and a single trailing report", () => {
+    const onLoadedObjectsChanged = vi.fn();
+    const pages = [2, 3, 4, 5, 6].map((n) => createMockData(n));
+
+    const { rerender } = renderHook(
+      ({ loadedObjects }) =>
+        useLoadedObjectsChanged<TestObject, Record<string, never>>({
+          loadedObjects,
+          totalCount: "10",
+          isLoading: false,
+          onLoadedObjectsChanged,
+        }),
+      { initialProps: { loadedObjects: pages[0] } },
+    );
+
+    // Five rapid changes inside one coalescing window, as a batch of
+    // function-column queries resolving together would produce.
+    for (const loadedObjects of pages.slice(1)) {
+      rerender({ loadedObjects });
+    }
+
+    // Leading edge only so far.
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
+
+    flushDebounce();
+
+    // One trailing report, carrying the newest rows rather than a stale page.
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
+    expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
+      loadedObjects: pages[pages.length - 1],
+      totalCount: "10",
+    });
+  });
+
+  it("does not report after unmount when a trailing call is pending", () => {
+    const onLoadedObjectsChanged = vi.fn();
+    const firstPage = createMockData(2);
+    const bothPages = createMockData(4);
+
+    const { rerender, unmount } = renderHook(
+      ({ loadedObjects }) =>
+        useLoadedObjectsChanged<TestObject, Record<string, never>>({
+          loadedObjects,
+          totalCount: "10",
+          isLoading: false,
+          onLoadedObjectsChanged,
+        }),
+      { initialProps: { loadedObjects: firstPage } },
+    );
+
+    rerender({ loadedObjects: bothPages });
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
+
+    unmount();
+    flushDebounce();
+
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
   });
 });
