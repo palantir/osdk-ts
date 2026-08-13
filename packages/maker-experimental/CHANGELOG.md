@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.48.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+- 240964f: Convert recursive security conditions
+
+### Patch Changes
+
+- Updated dependencies [cea978e]
+  - @osdk/maker@0.56.0
+
 ## 0.47.0
 
 ### Minor Changes
