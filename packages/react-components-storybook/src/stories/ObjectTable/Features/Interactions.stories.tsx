@@ -305,11 +305,12 @@ export const EventListeners: Story = {
             </code>
           </div>
         </div>
-        <div className="object-table-container" style={{ height: "600px" }}>
+        <div className="object-table-container" style={{ height: "300px" }}>
           <ObjectTable
             {...args}
             selectedRows={selectedRows}
             orderBy={orderBy}
+            pageSize={10}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
             onRowSelectionChanged={handleRowSelectionChanged}
