@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.56.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+
 ## 0.55.0
 
 ### Minor Changes
