@@ -274,16 +274,9 @@
          arg on purpose: turbo folds passthrough args into its *global* hash, so
          passing them makes every task in the run a cache miss, not just this
          one. That cost the test job its entire build cache. */
-      /* COVERAGE is hashed for the same reason as CI: the vitest config
-         switches on it, so a cache entry from a non-coverage run must not be
-         restored into one that is meant to emit coverage. */
-      "env": ["FORCE_COLOR", "CI", "COVERAGE"],
+      "env": ["FORCE_COLOR", "CI"],
       "dependsOn": ["^transpileEsm"],
-      /* Declaring the outputs is what makes a cache hit restore these files;
-         without it turbo replays the logs and writes nothing. coverage/** being
-         declared is also what would let scripts/coverage/collect.sh drop its
-         --force, which only exists because the output was undeclared. */
-      "outputs": ["reports/**", "coverage/**"]
+      "outputs": ["reports/**"]
     },
 
     "updateSnapshots": {

@@ -1,16 +1,12 @@
 version: 2.1
 
-# The pull-request half of .github/workflows/ci.yml, running alongside it.
-# Actions stays the source of truth for releases and required checks; nothing
-# here publishes. See .circleci/README.md for the reasoning behind the shape.
-
 aliases:
   - &ci-environment
     DO_NOT_TRACK: "1"
     TURBO_TELEMETRY_DISABLED: "1"
     PNPM_STORE_DIR: /home/circleci/.pnpm-store
 
-  # Packages that need Node 20+, so they sit out the Node 18 leg.
+  # Packages that need Node 20+
   - &node-18-excludes >-
     --filter=!@osdk/create-app.template.*
     --filter=!@osdk/create-widget.template.*
@@ -46,7 +42,7 @@ executors:
 
 commands:
   activate-pnpm:
-    description: Make the repo's pinned pnpm available on PATH.
+    description: Make PNPM available on PATH.
     steps:
       - run:
           name: Install pnpm
@@ -55,7 +51,7 @@ commands:
             pnpm --version
 
   install-deps:
-    description: Restore the pnpm store and install the workspace.
+    description: Restore the pnpm store + install deps.
     steps:
       - restore_cache:
           name: Restore pnpm store
@@ -75,7 +71,7 @@ commands:
           at: .
 
   prepare:
-    description: Check out, put pnpm on PATH, and attach the workspace.
+    description: Checkout, put pnpm on PATH, and attach the workspace.
     steps:
       - checkout
       - activate-pnpm
@@ -141,13 +137,6 @@ commands:
             fi
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Checks that gate a pull request
-  # ---------------------------------------------------------------------------
-
-  # The only job that installs; everything else attaches the result. One install
-  # serves all four Node legs — see README "Performance shape" for why that is
-  # safe.
   install:
     executor:
       name: node
@@ -160,12 +149,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            # Every workspace package needs its own node_modules: that is where
-            # pnpm puts the .bin symlinks for its direct dependencies, so
-            # missing one means "command not found" downstream. Keep in sync
-            # with `packages:` in pnpm-workspace.yaml, which also lists
-            # examples-extra/basic/* — omitted because it does not exist yet and
-            # a glob matching nothing fails the step.
+            # Every workspace package needs its own node_modules
             - node_modules
             - packages/*/node_modules
             - examples/*/node_modules
@@ -190,9 +174,7 @@ jobs:
             git fetch origin "+refs/heads/main:refs/remotes/origin/main"
             pnpm exec changeset status --since=origin/main
 
-  # Built once on a single Node version: the build target comes from
-  # tsconfig/tsup rather than the runtime, so a matrix would emit the same bytes
-  # four times. Node 18 compatibility is proven by the test matrix instead.
+  # Build on Node24 only (output tested on Node18-24)
   build:
     executor:
       name: node
@@ -207,15 +189,11 @@ jobs:
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: build
-      # The turbo cache travels rather than the raw build/ directories: same
-      # artifacts compressed, and it keeps `turbo run` a cache hit downstream.
+      # Persist turbo cache for future restoration
       - persist_to_workspace:
           root: .
           paths:
             - .turbo/cache
-
-  # Split across three jobs rather than one because on a single container these
-  # contend for CPU and serialize.
 
   typecheck:
     executor:
@@ -226,8 +204,6 @@ jobs:
       - restore-turbo-cache:
           scope: typecheck
       - run:
-          # Materialize build/{esm,cjs,browser,types} before check-attw packs
-          # them, so it cannot race the tasks that produce them.
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes
       - run:
@@ -246,8 +222,6 @@ jobs:
       - restore-turbo-cache:
           scope: lint
       - run:
-          # lint dependsOn ^transpileTypes for type-aware rules, so the
-          # dependencies' .d.ts files have to exist first.
           name: Restore build artifacts from cache
           command: pnpm exec turbo run transpile transpileTypes
       - run:
@@ -265,12 +239,10 @@ jobs:
     steps:
       - prepare
       - run:
-          # Whole-repo pass, which supersedes the per-package check-spelling task.
           name: Check spelling
           command: pnpm exec turbo run ci:cspell
 
-  # Runs the suites against the build job's artifacts under every supported Node
-  # version. This is what proves the published packages run on Node 18 and up.
+  # Runs the suites against the build job's artifacts under every supported Nodde version (18-24)
   test:
     parameters:
       node-version:
@@ -279,8 +251,6 @@ jobs:
       name: node
       node-version: << parameters.node-version >>
       resource-class: xlarge
-    # Container 1 runs @osdk/react-components alone; see README "Performance
-    # shape".
     parallelism: 2
     environment:
       NODE_18_EXCLUDES: *node-18-excludes
@@ -293,8 +263,6 @@ jobs:
       - run:
           name: Select package filters for this Node version
           command: |
-            # Match the major only: the matrix pins MAJOR.MINOR, so an equality
-            # test against "18" stops matching the moment the minor moves.
             case "<< parameters.node-version >>" in
               18 | 18.*)
                 echo "export TURBO_FILTERS=\"$NODE_18_EXCLUDES\"" >> "$BASH_ENV"
@@ -303,10 +271,6 @@ jobs:
                 echo "export TURBO_FILTERS=" >> "$BASH_ENV"
                 ;;
             esac
-
-            # Coverage is OFF, and re-enabling it is one `export COVERAGE=true`
-            # here — but not until the workspace agrees on a vitest major. See
-            # README "Coverage".
       - run:
           # Some suites consume their dependencies' cjs/browser output too
           # (verify-cjs/esm, the webpack bundling test), not just ^transpileEsm.
@@ -317,9 +281,9 @@ jobs:
           # which makes every task in the run a cache miss. The JUnit reporter
           # lives in each package's vitest config instead.
           #
-          # The exit code is deferred to the last step of the job so the uploads
-          # below still run on a failing suite. `when: always` cannot do that —
-          # store_test_results and store_artifacts do not accept it.
+          # The exit code is deferred to the last step of the job so the upload
+          # below still runs on a failing suite. `when: always` cannot do that —
+          # store_test_results does not accept it.
           name: Run this container's share of the tests
           command: |
             set +e
@@ -349,30 +313,9 @@ jobs:
           command: .circleci/scripts/collect-test-results.sh /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
-      - run:
-          # Merged in-job because there is no separate coverage job, so each
-          # container reports only on the packages it ran. Non-fatal: a merge
-          # problem should not turn a passing test run red.
-          name: Merge coverage
-          when: always
-          command: |
-            mkdir -p /tmp/coverage
-            if [ "${COVERAGE:-}" != "true" ]; then
-              echo "Not the coverage leg; nothing to merge."
-              exit 0
-            fi
-            if pnpm run coverage:merge; then
-              cp -R coverage "/tmp/coverage/container-$CIRCLE_NODE_INDEX"
-            else
-              echo "Coverage merge failed; leaving the artifact empty." >&2
-            fi
-      - store_artifacts:
-          path: /tmp/coverage
-          destination: coverage
       - save-turbo-cache:
           scope: test-node<< parameters.node-version >>
       - run:
-          # Last step, so everything above has uploaded first.
           name: Fail the job if the tests failed
           command: |
             status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
@@ -431,28 +374,19 @@ jobs:
           name: Faux publish
           command: pnpm publish -r --no-git-checks
 
-  # ---------------------------------------------------------------------------
-  # Storybook
-  # ---------------------------------------------------------------------------
-
   # Built once and stored as a navigable artifact, which is the PR preview.
   build-storybook:
     executor:
       name: node
       resource-class: large
     environment:
-      # Relative, because CircleCI serves artifacts under a path prefix: an
-      # absolute base (vite's default, and .storybook/main.ts's gh-pages one)
-      # makes index.html request /assets/... from the host root and 404.
+      # Relative, because CircleCI serves artifacts under a path prefix
       STORYBOOK_BASE_PATH: ./
     steps:
       - prepare
       - restore-turbo-cache:
           scope: storybook
       - run:
-          # The storybook package's turbo `build` only declares
-          # @osdk/react-components#transpileBrowser, so the graph does not
-          # cascade to the other workspace deps the stories import.
           name: Restore story dependencies from cache
           command: pnpm exec turbo run transpileBrowser --filter='@osdk/react-components-storybook^...'
       - run:
@@ -469,16 +403,14 @@ jobs:
     executor:
       name: node
       # The -browsers variant ships Chromium's system libraries, so
-      # `playwright install` does not need --with-deps. It does not ship
-      # Playwright's own build, which is what the cache below is for.
+      # `playwright install` does not need --with-deps.
       node-version: "24.19-browsers"
       resource-class: xlarge
     steps:
       - prepare
       - run:
           # Asks turbo's package graph rather than matching paths, so a change
-          # to @osdk/client that reaches a story is caught. Needs node_modules,
-          # so it cannot run before the attach like the other guards.
+          # to @osdk/client that reaches a story is caught.
           name: Skip unless Storybook's dependency graph changed
           command: |
             if ! .circleci/scripts/is-affected.sh @osdk/react-components-storybook; then
@@ -489,11 +421,9 @@ jobs:
       - restore-turbo-cache:
           scope: storybook
       - run:
-          # The stories import the browser build of the packages they render.
           name: Transpile story dependencies
           command: pnpm exec turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
-      # Keyed on the lockfile because that pins the playwright version. Restored
-      # after the halt guard so a skipped run does not pay for it.
+      # Keyed on the lockfile because that pins the playwright version.
       - restore_cache:
           name: Restore the Playwright browser cache
           keys:
@@ -508,9 +438,6 @@ jobs:
           paths:
             - /home/circleci/.cache/ms-playwright
       - run:
-          # Arguments follow the script name directly: pnpm 10 does not forward
-          # anything after a `--` separator.
-          #
           # Exit code deferred as in the test matrix. This is the flakiest suite
           # here, so losing its report on a red run is the worst case.
           name: Run interaction tests
@@ -537,10 +464,6 @@ jobs:
             status="$(cat /tmp/test-exit-code 2>/dev/null || echo 1)"
             exit "$status"
 
-  # ---------------------------------------------------------------------------
-  # PR-only reporting and guards
-  # ---------------------------------------------------------------------------
-
   bundle-size:
     executor:
       name: node
@@ -562,14 +485,11 @@ jobs:
           name: Stash the CI scripts
           command: cp -R .circleci /tmp/ci
       - run:
-          # Written to a file because cache keys cannot interpolate a runtime
-          # value, but they can checksum a file.
           name: Resolve the base commit
           command: |
             .circleci/scripts/base-ref.sh > /tmp/base-sha
             echo "Comparing against $(cat /tmp/base-sha)"
       - restore_cache:
-          # Identical for every push to a PR, so only the first pays for it.
           name: Restore the base-branch measurement
           keys:
             - size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
@@ -586,8 +506,6 @@ jobs:
             pnpm exec turbo transpile
             npx size-limit --json > /tmp/base.json || true
       - save_cache:
-          # An empty file means the measurement failed; -s above rejects it next
-          # run, so a bad result cannot pin itself in place.
           name: Save the base-branch measurement
           key: size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
           paths:
@@ -598,9 +516,6 @@ jobs:
             node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
             /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
 
-
-  # Single fan-in check. CircleCI skips a job whose upstream failed, so unlike
-  # the Actions equivalent this needs no per-job result inspection.
   ci-all:
     executor:
       name: node
@@ -614,10 +529,6 @@ workflows:
   ci:
     jobs:
       - install
-      # Both of these only mean something on a PR, so they are filtered out of
-      # the trunk branches rather than started and halted. Neither gates
-      # `ci-all`, which is what makes filtering them safe: a filtered-out job
-      # would otherwise block anything requiring it.
       - changesets:
           requires: [install]
           filters:
@@ -631,8 +542,6 @@ workflows:
           requires: [install]
       - e2e:
           requires: [install]
-      # Requires `build` because it runs `turbo transpile` itself, on top of the
-      # cold base-branch build it already pays for.
       - bundle-size:
           requires: [build]
           filters:
@@ -654,8 +563,6 @@ workflows:
       - test:
           matrix:
             parameters:
-              # Every LTS since the 2.0 GA. MAJOR.MINOR because cimg/node
-              # publishes no bare major tags.
               node-version: ["18.20", "20.20", "22.23", "24.19"]
           requires: [build]
       - build-storybook:

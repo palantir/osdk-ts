@@ -41,8 +41,6 @@ export default defineConfig({
       : ["default"],
     outputFile: { junit: "reports/junit.xml" },
     coverage: {
-      enabled: process.env.COVERAGE === "true",
-      reporter: ["json"],
       include: ["src/**"],
       // Exclude tests, generated code, and index.ts barrels (no logic).
       exclude: [

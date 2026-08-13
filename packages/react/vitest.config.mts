@@ -35,20 +35,6 @@ export default defineConfig({
       ]
       : ["default"],
     outputFile: { junit: "reports/junit.xml" },
-    coverage: {
-      enabled: process.env.COVERAGE === "true",
-      reporter: ["json"],
-      include: ["src/**"],
-      // Exclude tests, generated code, and index.ts barrels (no logic).
-      exclude: [
-        "**/*.test.*",
-        "**/__tests__/**",
-        "**/__mocks__/**",
-        "**/generatedNoCheck/**",
-        "**/*.d.ts",
-        "**/index.ts",
-      ],
-    },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
