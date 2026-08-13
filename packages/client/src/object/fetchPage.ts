@@ -246,8 +246,6 @@ export async function fetchStaticRidPage<
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
       loadPropertySecurities: shouldLoadPropertySecurities,
-      loadOntologyDefinedDerivedProperties:
-        args.$UNSTABLE_loadOntologyDefinedDerivedProperties,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
@@ -632,6 +630,7 @@ async function applyFetchArgs<
     pageToken?: PageToken;
     pageSize?: PageSize;
     loadPropertySecurities?: boolean;
+    loadOntologyDefinedDerivedProperties?: boolean;
   },
 >(
   args: FetchPageArgs<
@@ -659,6 +658,11 @@ async function applyFetchArgs<
 
   if (args?.$loadPropertySecurityMetadata) {
     body.loadPropertySecurities = true;
+  }
+
+  if (args?.$UNSTABLE_loadOntologyDefinedDerivedProperties != null) {
+    body.loadOntologyDefinedDerivedProperties =
+      args.$UNSTABLE_loadOntologyDefinedDerivedProperties;
   }
 
   const orderBy = args?.$orderBy;
