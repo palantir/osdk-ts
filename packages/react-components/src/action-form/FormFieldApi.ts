@@ -27,7 +27,6 @@ import type {
 import type React from "react";
 
 import type {
-  DatePickerLabels,
   DatePickerProps,
   DateRangePickerProps,
 } from "../shared/calendar/index.js";
@@ -40,7 +39,7 @@ export type { PortalContainer };
  * Supply values resolved by your i18n library to customize this copy.
  */
 export interface FormFieldLabels {
-  /** @default "Edited" */
+  /** Label shown after the field is edited. Default `"Edited"`. */
   editedLabel: string;
 }
 
@@ -175,9 +174,9 @@ export interface FormFieldPropsByType {
  * Dropdown field props with selectable items
  */
 export interface DropdownFieldLabels {
-  /** @default "Search…" */
+  /** Placeholder for the search input. Default `"Search…"`. */
   searchPlaceholder: string;
-  /** @default "No results" */
+  /** Message shown when there are no matching items. Default `"No results"`. */
   noResultsText: string;
 }
 
@@ -292,9 +291,9 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
 }
 
 export interface FilePickerLabels {
-  /** @default "No file chosen" */
+  /** Text shown when no file is selected. Default `"No file chosen"`. */
   text: string;
-  /** @default "Browse" */
+  /** Label for the browse button. Default `"Browse"`. */
   buttonText: string;
 }
 
@@ -440,10 +439,10 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldLabels {
-  /** @default "Object set is not defined" */
+  /** Message shown when no object set is provided. Default `"Object set is not defined"`. */
   emptyMessage: string;
 
-  /** @default (count, displayName) => `${count} ${displayName ?? "object(s)"}` */
+  /** Returns the object set summary label. Defaults to the formatted count and object type display name. */
   getObjectSetCountLabel: (
     count: string | undefined,
     displayName: string | undefined,
@@ -499,9 +498,9 @@ type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
  * manages internally (items, search, filtering) omitted from the public surface.
  */
 export interface AsyncDropdownFieldLabels extends DropdownFieldLabels {
-  /** @default "Searching…" */
+  /** Message shown while searching. Default `"Searching…"`. */
   searchingText: string;
-  /** @default "Loading…" */
+  /** Message shown while loading. Default `"Loading…"`. */
   loadingText: string;
 }
 
@@ -542,19 +541,10 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
 
-export interface UnsupportedFieldLabels {
-  /** @default "Unsupported field type. Use a CUSTOM field instead" */
-  message: string;
-}
-
-export const DEFAULT_UNSUPPORTED_FIELD_LABELS: UnsupportedFieldLabels = {
-  message: "Unsupported field type. Use a CUSTOM field instead",
-};
-
-export interface UnsupportedFieldProps
-  extends
-    Pick<BaseFormFieldProps<string>, "id" | "error">,
-    Partial<UnsupportedFieldLabels> {}
+export interface UnsupportedFieldProps extends Pick<
+  BaseFormFieldProps<string>,
+  "id" | "error"
+> {}
 
 export interface BaseFormFieldProps<V> {
   /**

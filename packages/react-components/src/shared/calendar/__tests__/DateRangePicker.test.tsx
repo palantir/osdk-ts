@@ -37,7 +37,7 @@ afterEach(cleanup);
 
 describe("DateRangePicker", () => {
   describe("rendering", () => {
-    it("uses supplied labels", () => {
+    it("renders two inputs with placeholders", () => {
       render(
         <DateRangePicker
           value={[null, null]}
@@ -77,31 +77,6 @@ describe("DateRangePicker", () => {
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
       expect(startInput.value).toBe("");
       expect(endInput.value).toBe("");
-    });
-
-    it("uses default accessible names", () => {
-      render(
-        <DateRangePicker
-          value={[null, null]}
-          onChange={vi.fn()}
-          showTime={true}
-        />,
-      );
-
-      fireEvent.focus(screen.getByLabelText("Start date"));
-
-      expect(screen.getByLabelText("End date")).toBeDefined();
-      expect(screen.getAllByLabelText("Time hours")).toHaveLength(2);
-      expect(screen.getAllByLabelText("Time minutes")).toHaveLength(2);
-      expect(
-        screen.getByRole("dialog", { name: "date range picker" }),
-      ).toBeDefined();
-      expect(
-        screen.getByLabelText("Start of date range picker dialog"),
-      ).toBeDefined();
-      expect(
-        screen.getByLabelText("End of date range picker dialog"),
-      ).toBeDefined();
     });
   });
 
@@ -570,8 +545,10 @@ describe("DateRangePicker", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      expect(screen.getAllByLabelText("Time hours")).toHaveLength(2);
-      expect(screen.getAllByLabelText("Time minutes")).toHaveLength(2);
+      expect(screen.getByLabelText("Start time hours")).toBeDefined();
+      expect(screen.getByLabelText("Start time minutes")).toBeDefined();
+      expect(screen.getByLabelText("End time hours")).toBeDefined();
+      expect(screen.getByLabelText("End time minutes")).toBeDefined();
     });
 
     it("does not render time inputs when showTime is false", () => {
@@ -584,7 +561,8 @@ describe("DateRangePicker", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      expect(screen.queryByLabelText("Time hours")).toBeNull();
+      expect(screen.queryByLabelText("Start time hours")).toBeNull();
+      expect(screen.queryByLabelText("End time hours")).toBeNull();
     });
 
     it("calls onChange with updated start time when valid time segments blur", () => {
@@ -599,13 +577,13 @@ describe("DateRangePicker", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const hourInput = screen.getAllByLabelText("Time hours")[0];
+      const hourInput = screen.getByLabelText("Start time hours");
       fireEvent.change(hourInput, {
         target: { value: "14" },
       });
       fireEvent.blur(hourInput);
 
-      const minuteInput = screen.getAllByLabelText("Time minutes")[0];
+      const minuteInput = screen.getByLabelText("Start time minutes");
       fireEvent.change(minuteInput, {
         target: { value: "30" },
       });
@@ -629,7 +607,7 @@ describe("DateRangePicker", () => {
       );
       fireEvent.focus(screen.getByLabelText("Start date"));
 
-      fireEvent.change(screen.getAllByLabelText("Time hours")[0], {
+      fireEvent.change(screen.getByLabelText("Start time hours"), {
         target: { value: "14" },
       });
 
@@ -648,13 +626,13 @@ describe("DateRangePicker", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const hourInput = screen.getAllByLabelText("Time hours")[1];
+      const hourInput = screen.getByLabelText("End time hours");
       fireEvent.change(hourInput, {
         target: { value: "16" },
       });
       fireEvent.blur(hourInput);
 
-      const minuteInput = screen.getAllByLabelText("Time minutes")[1];
+      const minuteInput = screen.getByLabelText("End time minutes");
       fireEvent.change(minuteInput, {
         target: { value: "45" },
       });

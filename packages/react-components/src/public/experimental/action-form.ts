@@ -22,7 +22,6 @@ export const ActionForm: typeof _ActionForm = withOsdkMetrics(
 );
 export type {
   ActionFormProps,
-  BaseFormLabels,
   BaseFormProps,
   FormContentItem,
   FormError,
@@ -32,22 +31,16 @@ export type {
 export { BaseForm } from "../../action-form/BaseForm.js";
 export type {
   ActionParameters,
-  AsyncDropdownFieldLabels,
   BaseFormFieldProps,
   CustomFieldProps,
-  DropdownFieldLabels,
   DropdownFieldProps,
   FieldComponent,
   FieldValueType,
-  FilePickerLabels,
   FilePickerProps,
   FormFieldDefinition,
-  FormFieldLabels,
   FormFieldPropsByType,
   NumberInputFieldProps,
-  ObjectSelectFieldLabels,
   ObjectSelectFieldProps,
-  ObjectSetFieldLabels,
   ObjectSetFieldProps,
   Option,
   PortalContainer,
@@ -55,7 +48,6 @@ export type {
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
-  UnsupportedFieldLabels,
   UnsupportedFieldProps,
   ValidationError,
 } from "../../action-form/FormFieldApi.js";

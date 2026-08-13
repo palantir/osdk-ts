@@ -76,9 +76,9 @@ export const CALENDAR_COMPONENTS: {
 } = { IconLeft, IconRight };
 
 export interface DateCalendarLabels {
-  /** @default "Today" */
+  /** Label for the button that selects today. Default `"Today"`. */
   todayButtonText: string;
-  /** @default "Clear" */
+  /** Label for the button that clears the selected date. Default `"Clear"`. */
   clearButtonText: string;
 }
 

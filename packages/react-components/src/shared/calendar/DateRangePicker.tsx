@@ -536,10 +536,12 @@ export const DateRangePicker: React.NamedExoticComponent<DateRangePickerProps> =
         <TimePicker
           value={activeStartDateValue ?? null}
           onChange={handleStartTimeChange}
+          label="Start time"
         />
         <TimePicker
           value={activeEndDateValue ?? null}
           onChange={handleEndTimeChange}
+          label="End time"
         />
       </>
     ) : undefined;

@@ -79,34 +79,6 @@ describe("DatePicker", () => {
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.placeholder).toBe("Pick a date");
     });
-
-    it("uses supplied visible copy and default accessible names", () => {
-      render(
-        <DatePicker
-          value={null}
-          onChange={vi.fn()}
-          showTime={true}
-          todayButtonText="Custom today"
-          clearButtonText="Custom clear"
-        />,
-      );
-
-      fireEvent.focus(screen.getByRole("combobox"));
-
-      expect(
-        screen.getByRole("button", { name: "Custom today" }),
-      ).toBeDefined();
-      expect(
-        screen.getByRole("button", { name: "Custom clear" }),
-      ).toBeDefined();
-      expect(screen.getByLabelText("Time hours")).toBeDefined();
-      expect(screen.getByLabelText("Time minutes")).toBeDefined();
-      expect(screen.getByRole("dialog", { name: "Date picker" })).toBeDefined();
-      expect(
-        screen.getByLabelText("Start of date picker dialog"),
-      ).toBeDefined();
-      expect(screen.getByLabelText("End of date picker dialog")).toBeDefined();
-    });
   });
 
   describe("calendar interaction", () => {

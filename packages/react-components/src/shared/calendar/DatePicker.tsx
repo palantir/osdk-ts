@@ -41,13 +41,6 @@ import { useDateEditState } from "./useDateEditState.js";
 import styles from "./DatePicker.module.css";
 import commonStyles from "./DatePickerCommon.module.css";
 
-/** Visible user-facing strings rendered by DatePicker. */
-export interface DatePickerLabels extends DateCalendarLabels {}
-
-export const DEFAULT_DATE_PICKER_LABELS: DatePickerLabels = {
-  ...DEFAULT_DATE_CALENDAR_LABELS,
-};
-
 /**
  * Props for the shared DatePicker. Used directly by filter-list and
  * object-table; wrapped by action-form's FormFieldRenderer for the
@@ -57,7 +50,7 @@ export const DEFAULT_DATE_PICKER_LABELS: DatePickerLabels = {
  * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD /
  * YYYY-MM-DD HH:mm).
  */
-export interface DatePickerProps extends Partial<DatePickerLabels> {
+export interface DatePickerProps extends Partial<DateCalendarLabels> {
   /**
    * The HTML `id` attribute for the input element. Used for `<label htmlFor>`
    * association in form contexts. Optional in non-form contexts.
@@ -159,8 +152,8 @@ export const DatePicker: React.NamedExoticComponent<DatePickerProps> =
     portalRef,
     portalContainer,
     ariaLabel,
-    todayButtonText = DEFAULT_DATE_PICKER_LABELS.todayButtonText,
-    clearButtonText = DEFAULT_DATE_PICKER_LABELS.clearButtonText,
+    todayButtonText = DEFAULT_DATE_CALENDAR_LABELS.todayButtonText,
+    clearButtonText = DEFAULT_DATE_CALENDAR_LABELS.clearButtonText,
     modal = "trap-focus",
     disabled = false,
   }: DatePickerProps) {

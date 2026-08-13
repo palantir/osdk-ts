@@ -22,6 +22,7 @@ import styles from "./TimePicker.module.css";
 export interface TimePickerProps {
   value: Date | null;
   onChange?: (newTime: Date) => void;
+  label?: string;
 }
 
 type TimeSegment = "hours" | "minutes";
@@ -38,6 +39,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
   React.memo(function TimePickerFn({
     value,
     onChange,
+    label = "Time",
   }: TimePickerProps): React.ReactElement {
     const valueTimestamp = value?.getTime() ?? null;
     const valueSegments = useMemo(
@@ -128,7 +130,11 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
     );
 
     return (
-      <div className={styles.osdkTimePickerRoot} role="group" aria-label="Time">
+      <div
+        className={styles.osdkTimePickerRoot}
+        role="group"
+        aria-label={label}
+      >
         <Input
           type="text"
           inputMode="numeric"
@@ -137,7 +143,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
           onValueChange={handleHourChange}
           onBlur={handleHourBlur}
           className={styles.osdkTimePickerInput}
-          aria-label="Time hours"
+          aria-label={`${label} hours`}
           aria-invalid={hourInvalid || undefined}
         />
         <span className={styles.osdkTimePickerSeparator} aria-hidden="true">
@@ -151,7 +157,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> =
           onValueChange={handleMinuteChange}
           onBlur={handleMinuteBlur}
           className={styles.osdkTimePickerInput}
-          aria-label="Time minutes"
+          aria-label={`${label} minutes`}
           aria-invalid={minuteInvalid || undefined}
         />
       </div>

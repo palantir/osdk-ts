@@ -21,7 +21,6 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
-import type { ActionFormProps } from "../ActionFormApi.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
 vi.mock("@osdk/react", () => ({
@@ -152,21 +151,6 @@ describe("ActionForm", () => {
       render(<ActionForm actionDefinition={TestAction} showFormTitle={true} />);
 
       expect(screen.getByRole("heading").textContent).toBe("TestAction");
-    });
-  });
-
-  describe("labels", () => {
-    it("uses the internal loading status label", () => {
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: true,
-        metadata: undefined,
-      });
-
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      expect(
-        screen.getByRole("status", { name: "Loading form fields" }),
-      ).toBeDefined();
     });
   });
 

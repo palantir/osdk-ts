@@ -48,9 +48,10 @@ interface UpdateEmployeeActionFormStoryProps {
   >;
   formTitle?: string;
   isSubmitDisabled?: boolean;
-  labels?: ActionFormProps<typeof actionDefinition>["labels"];
   onSubmit?: ActionFormProps<typeof actionDefinition>["onSubmit"];
   showFormTitle?: boolean;
+  submitButtonText?: string;
+  submittingText?: string;
 }
 
 type UpdateEmployeeApplyAction = Parameters<
@@ -287,9 +288,10 @@ function UpdateEmployeeActionFormStory({
   formFieldDefinitions,
   formTitle,
   isSubmitDisabled,
-  labels,
   onSubmit,
   showFormTitle,
+  submitButtonText,
+  submittingText,
 }: UpdateEmployeeActionFormStoryProps): React.ReactElement {
   const { handleStoryError, handleStorySubmit, submission } =
     useActionFormSubmission({
@@ -311,10 +313,11 @@ function UpdateEmployeeActionFormStory({
         formFieldDefinitions={formFieldDefinitions}
         formTitle={formTitle}
         isSubmitDisabled={isSubmitDisabled}
-        labels={labels}
         onError={handleStoryError}
         onSubmit={handleStorySubmit}
         showFormTitle={showFormTitle}
+        submitButtonText={submitButtonText}
+        submittingText={submittingText}
       />
     </FormStoryLayout>
   );
@@ -391,10 +394,13 @@ const meta = {
       control: "boolean",
       description: "Disables the submit button before validation runs.",
     },
-    labels: {
-      control: false,
-      description:
-        "Overrides user-facing strings in BaseForm, FormField, and built-in field components.",
+    submitButtonText: {
+      control: "text",
+      description: "Text displayed on the submit button.",
+    },
+    submittingText: {
+      control: "text",
+      description: "Text displayed while the form is submitting.",
     },
     onSubmit: {
       control: false,
@@ -814,31 +820,13 @@ export const WithLabels: Story = {
   args: {
     formFieldDefinitions: actionFormOverrideFields,
     onSubmit: handleSlowSubmit,
-    labels: {
-      submitting: "Saving employee…",
-      fieldLabels: {
-        editedLabel: "Changed",
-        requiredIndicatorAriaLabel: "Required field",
-        renderInfoTipAriaLabel: (label) =>
-          label == null ? "Field details" : `Details about ${label}`,
-      },
-      fieldComponentLabels: {
-        DROPDOWN: {
-          clearButtonLabel: "Clear employment type",
-          renderRemoveButtonLabel: (label) => `Remove ${label}`,
-        },
-        NUMBER_INPUT: {
-          incrementButtonLabel: "Increase experience",
-          decrementButtonLabel: "Decrease experience",
-        },
-      },
-    },
+    submitButtonText: "Save employee",
+    submittingText: "Saving employee…",
   },
   parameters: {
     docs: {
       description: {
-        story:
-          "Shows form-level, FormField, and leaf-field label overrides. Change a field to see the edited label, inspect the info-tip and stepper buttons for their accessible labels, then submit to see the pending button copy.",
+        story: "Shows custom submit and pending button copy.",
       },
     },
   },

@@ -23,31 +23,23 @@ export {
 export {
   CALENDAR_COMPONENTS,
   CLASS_NAMES,
-  DEFAULT_DATE_CALENDAR_LABELS,
-  type DateCalendarLabels,
   type DateCalendarProps,
   default as DateCalendar,
 } from "./DateCalendar.js";
-export {
-  DEFAULT_DATE_PICKER_LABELS,
-  DatePicker,
-  type DatePickerLabels,
-  type DatePickerProps,
-} from "./DatePicker.js";
+export { DatePicker, type DatePickerProps } from "./DatePicker.js";
 export {
   type DateRangeCalendarProps,
   default as DateRangeCalendar,
 } from "./DateRangeCalendar.js";
 export {
-  DateRangePicker,
   type DateRange,
-  type DateRangePickerLabels,
+  DateRangePicker,
   type DateRangePickerProps,
   EMPTY_RANGE,
 } from "./DateRangePicker.js";
 export { LazyDateCalendar } from "./LazyDateCalendar.js";
 export { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
-export { TimePicker, type TimePickerProps } from "./TimePicker.js";
+export { TimePicker } from "./TimePicker.js";
 export {
   useDateEditState,
   type UseDateEditStateConfig,

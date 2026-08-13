@@ -74,63 +74,24 @@ describe("BaseForm", () => {
   });
 
   describe("labels", () => {
-    it("applies BaseForm, field, and FormField label overrides", async () => {
+    it("uses direct form and field label props", () => {
       render(
         <BaseForm
-          formContent={[
-            field(makeDef("name")),
-            field({
-              fieldKey: "date",
-              label: "Date",
-              fieldComponent: "DATETIME_PICKER",
-              fieldComponentProps: {},
-            }),
-            field({
-              fieldKey: "dateRange",
-              label: "Date range",
-              fieldComponent: "DATE_RANGE_INPUT",
-              fieldComponentProps: {},
-            }),
-            field({
-              fieldKey: "unsupported",
-              label: "Unsupported",
-              fieldComponent: "UNSUPPORTED",
-              fieldComponentProps: {},
-            }),
-          ]}
+          formContent={[field(makeDef("name", { editedLabel: "Modified" }))]}
           // Mark the form as pending to show the submitting label
           isPending={true}
           onSubmit={vi.fn()}
-          labels={{
-            submitting: "Saving employee…",
-            fieldLabels: { editedLabel: "Modified" },
-            fieldComponentLabels: {
-              DATETIME_PICKER: { todayButtonText: "Choose today" },
-              DATE_RANGE_INPUT: { startDateAriaLabel: "Range start" },
-              UNSUPPORTED: { message: "Unsupported in this form" },
-            },
-          }}
+          submittingText="Saving employee…"
         />,
       );
 
       expect(
         screen.getByRole("button", { name: "Saving employee…" }),
       ).toBeDefined();
-      expect(
-        screen.getByRole("textbox", { name: "Unsupported" }),
-      ).toHaveProperty("value", "Unsupported in this form");
       fireEvent.change(screen.getByRole("textbox", { name: "name" }), {
         target: { value: "Alice" },
       });
       expect(screen.getByText("Modified")).toBeDefined();
-
-      fireEvent.focus(screen.getByRole("combobox", { name: "Date" }));
-      await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: "Choose today" }),
-        ).toBeDefined();
-      });
-      expect(screen.getByLabelText("Range start")).toBeDefined();
     });
   });
 

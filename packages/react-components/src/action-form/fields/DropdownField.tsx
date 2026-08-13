@@ -410,7 +410,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                     {renderItemLabel(item)}
                     <span
                       role="button"
-                      aria-label={`Remove ${renderItemLabel(item)}`}
+                      aria-label={`Remove ${itemToStringLabel(item)}`}
                       className={comboboxStyles.osdkComboboxTriggerChipRemove}
                       aria-disabled={disabled || undefined}
                       onMouseDown={disabled ? undefined : preventTriggerOpen}

@@ -25,7 +25,6 @@ import {
 } from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
-  DEFAULT_UNSUPPORTED_FIELD_LABELS,
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
@@ -39,6 +38,9 @@ import { RadioButtonsField } from "./RadioButtonsField.js";
 import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
+
+const UNSUPPORTED_FIELD_MESSAGE =
+  "Unsupported field type. Use a CUSTOM field instead";
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -128,18 +130,16 @@ function renderFieldComponent(
           disabled={disabled}
         />
       );
-    case "UNSUPPORTED": {
-      const { message, ...props } = fieldDefinition.fieldComponentProps;
+    case "UNSUPPORTED":
       return (
         <TextInputField
-          {...props}
+          {...fieldDefinition.fieldComponentProps}
           id={fieldDefinition.fieldKey}
-          value={message ?? DEFAULT_UNSUPPORTED_FIELD_LABELS.message}
+          value={UNSUPPORTED_FIELD_MESSAGE}
           error={error}
           disabled={true}
         />
       );
-    }
     case "TEXT_AREA":
       return (
         <TextAreaField
