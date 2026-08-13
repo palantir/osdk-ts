@@ -27,14 +27,20 @@ import type { LoadedObjectsChange } from "../ObjectTableApi.js";
 
 const EMPTY_ROWS: never[] = [];
 
-const DEBOUNCE_MS = 50;
+const DEBOUNCE_MS = 100;
+const DEBOUNCE_MAX_WAIT_MS = 250;
 
 /**
  * Function-backed columns and streamed updates may result in a burst of changes.
  * Setting leading so the first report is immediate,
  * and trailing to report the latest state.
+ * `maxWait` caps latency during long streams so slow-drip updates still land.
  */
-const DEBOUNCE_OPTIONS = { leading: true, trailing: true };
+const DEBOUNCE_OPTIONS = {
+  leading: true,
+  trailing: true,
+  maxWait: DEBOUNCE_MAX_WAIT_MS,
+};
 
 export interface UseLoadedObjectsChangedProps<
   Q extends ObjectOrInterfaceDefinition,

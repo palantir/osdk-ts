@@ -50,7 +50,7 @@ function createMockData(count: number): TestInstance[] {
 /** Pushes past the burst-coalescing window so a pending trailing call runs. */
 function flushDebounce() {
   act(() => {
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(300);
   });
 }
 
