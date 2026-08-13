@@ -637,11 +637,6 @@ export interface ObjectTableProps<
    * streamed updates arrive, and after a refetch — with a
    * {@link LoadedObjectsChange} payload.
    *
-   * Purely a listener; it does not take over loading. Fires once the first
-   * page has loaded — never before there are rows to report — and again
-   * whenever the loaded rows or the total count change. Also refires as
-   * function-backed column values fill in.
-   *
    * @param change The loaded rows and the total count. See
    * {@link LoadedObjectsChange}.
    */

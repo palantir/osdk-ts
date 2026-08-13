@@ -27,13 +27,13 @@ import type { LoadedObjectsChange } from "../ObjectTableApi.js";
 
 const EMPTY_ROWS: never[] = [];
 
-/**
- * Function-backed columns resolve in a sliding window of concurrent queries,
- * and streamed updates arrive in pushes. Coalescing a burst is lossless here: each
- * payload is the whole current state, so the last one supersedes the rest.
- * Leading keeps the first report immediate.
- */
 const DEBOUNCE_MS = 50;
+
+/**
+ * Function-backed columns and streamed updates may result in a burst of changes.
+ * Setting leading so the first report is immediate,
+ * and trailing to report the latest state.
+ */
 const DEBOUNCE_OPTIONS = { leading: true, trailing: true };
 
 export interface UseLoadedObjectsChangedProps<
