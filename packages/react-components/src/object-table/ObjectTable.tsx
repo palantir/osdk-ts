@@ -124,6 +124,7 @@ export function ObjectTable<
   useLoadedObjectsChanged<Q, RDPs>({
     loadedObjects: data,
     totalCount,
+    isLoading,
     onLoadedObjectsChanged,
   });
 

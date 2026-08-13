@@ -55,6 +55,7 @@ describe("useLoadedObjectsChanged", () => {
       useLoadedObjectsChanged<TestObject, Record<string, never>>({
         loadedObjects: undefined,
         totalCount: undefined,
+        isLoading: true,
         onLoadedObjectsChanged,
       }),
     );
@@ -67,21 +68,23 @@ describe("useLoadedObjectsChanged", () => {
     const firstPage = createMockData(2);
 
     const { rerender } = renderHook(
-      ({ loadedObjects, totalCount }) =>
+      ({ loadedObjects, totalCount, isLoading }) =>
         useLoadedObjectsChanged<TestObject, Record<string, never>>({
           loadedObjects,
           totalCount,
+          isLoading,
           onLoadedObjectsChanged,
         }),
       {
         initialProps: {
           loadedObjects: undefined as TestInstance[] | undefined,
           totalCount: undefined as string | undefined,
+          isLoading: true,
         },
       },
     );
 
-    rerender({ loadedObjects: firstPage, totalCount: "10" });
+    rerender({ loadedObjects: firstPage, totalCount: "10", isLoading: false });
 
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
     expect(onLoadedObjectsChanged).toHaveBeenCalledWith({
@@ -100,6 +103,7 @@ describe("useLoadedObjectsChanged", () => {
         useLoadedObjectsChanged<TestObject, Record<string, never>>({
           loadedObjects,
           totalCount: "10",
+          isLoading: false,
           onLoadedObjectsChanged,
         }),
       { initialProps: { loadedObjects: firstPage } },
@@ -123,6 +127,7 @@ describe("useLoadedObjectsChanged", () => {
         useLoadedObjectsChanged<TestObject, Record<string, never>>({
           loadedObjects,
           totalCount,
+          isLoading: false,
           onLoadedObjectsChanged,
         }),
       { initialProps: { totalCount: undefined as string | undefined } },
@@ -145,6 +150,7 @@ describe("useLoadedObjectsChanged", () => {
       useLoadedObjectsChanged<TestObject, Record<string, never>>({
         loadedObjects,
         totalCount: "10",
+        isLoading: false,
         onLoadedObjectsChanged,
       }),
     );
@@ -163,6 +169,7 @@ describe("useLoadedObjectsChanged", () => {
       useLoadedObjectsChanged<TestObject, Record<string, never>>({
         loadedObjects,
         totalCount: "10",
+        isLoading: false,
         // Deliberately not memoized, mimicking an inline arrow at the call site.
         onLoadedObjectsChanged: (change) => spy(change),
       }),
@@ -180,6 +187,7 @@ describe("useLoadedObjectsChanged", () => {
       useLoadedObjectsChanged<TestObject, Record<string, never>>({
         loadedObjects: [],
         totalCount: "0",
+        isLoading: false,
         onLoadedObjectsChanged,
       }),
     );
@@ -196,8 +204,79 @@ describe("useLoadedObjectsChanged", () => {
         useLoadedObjectsChanged<TestObject, Record<string, never>>({
           loadedObjects: createMockData(2),
           totalCount: "10",
+          isLoading: false,
         }),
       ),
     ).not.toThrow();
+  });
+
+  it("does not fire for the empty count-less payload emitted before the first page resolves", () => {
+    const onLoadedObjectsChanged = vi.fn();
+
+    renderHook(() =>
+      useLoadedObjectsChanged<TestObject, Record<string, never>>({
+        loadedObjects: [],
+        totalCount: undefined,
+        isLoading: true,
+        onLoadedObjectsChanged,
+      }),
+    );
+
+    expect(onLoadedObjectsChanged).not.toHaveBeenCalled();
+  });
+
+  it("fires once with the settled rows and count, not with the pre-load payload", () => {
+    const onLoadedObjectsChanged = vi.fn();
+    const firstPage = createMockData(2);
+
+    const { rerender } = renderHook(
+      ({ loadedObjects, totalCount, isLoading }) =>
+        useLoadedObjectsChanged<TestObject, Record<string, never>>({
+          loadedObjects,
+          totalCount,
+          isLoading,
+          onLoadedObjectsChanged,
+        }),
+      {
+        initialProps: {
+          loadedObjects: [] as TestInstance[],
+          totalCount: undefined as string | undefined,
+          isLoading: true,
+        },
+      },
+    );
+
+    rerender({ loadedObjects: firstPage, totalCount: "10", isLoading: false });
+
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
+    expect(onLoadedObjectsChanged).toHaveBeenCalledWith({
+      loadedObjects: firstPage,
+      totalCount: "10",
+    });
+  });
+
+  it("keeps reporting once settled, even while a later page is in flight", () => {
+    const onLoadedObjectsChanged = vi.fn();
+    const firstPage = createMockData(2);
+    const bothPages = createMockData(4);
+
+    const { rerender } = renderHook(
+      ({ loadedObjects, isLoading }) =>
+        useLoadedObjectsChanged<TestObject, Record<string, never>>({
+          loadedObjects,
+          totalCount: "10",
+          isLoading,
+          onLoadedObjectsChanged,
+        }),
+      { initialProps: { loadedObjects: firstPage, isLoading: false } },
+    );
+
+    rerender({ loadedObjects: bothPages, isLoading: true });
+
+    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
+    expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
+      loadedObjects: bothPages,
+      totalCount: "10",
+    });
   });
 });

@@ -20,10 +20,12 @@ import type {
   PropertyKeys,
   SimplePropertyDef,
 } from "@osdk/api";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { useEventCallback } from "../../shared/hooks/useEventCallback.js";
 import type { LoadedObjectsChange } from "../ObjectTableApi.js";
+
+const EMPTY_ROWS: never[] = [];
 
 export interface UseLoadedObjectsChangedProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -38,6 +40,8 @@ export interface UseLoadedObjectsChangedProps<
     | undefined;
   /** Total objects matching the object set, if the API reported one. */
   totalCount: string | undefined;
+  /** Whether the underlying query is currently fetching. */
+  isLoading: boolean;
   onLoadedObjectsChanged?: (change: LoadedObjectsChange<Q, RDPs>) => void;
 }
 
@@ -55,6 +59,7 @@ export function useLoadedObjectsChanged<
 >({
   loadedObjects,
   totalCount,
+  isLoading,
   onLoadedObjectsChanged,
 }: UseLoadedObjectsChangedProps<Q, RDPs>): void {
   // Wrapped so a callback prop that isn't memoized doesn't re-run the effect
@@ -65,9 +70,18 @@ export function useLoadedObjectsChanged<
     },
   );
 
-  useEffect(() => {
-    if (loadedObjects === undefined) return;
+  // The query emits an empty, count-less payload before the first page
+  // resolves. Hold off until it settles once, otherwise every caller sees a
+  // spurious `[]` / `undefined` ahead of the real data. After that first
+  // settle, report every change — including while later pages are in flight.
+  const hasSettled = useRef(false);
 
-    fireChanged({ loadedObjects, totalCount });
-  }, [loadedObjects, totalCount, fireChanged]);
+  useEffect(() => {
+    if (!hasSettled.current) {
+      if (isLoading || loadedObjects === undefined) return;
+      hasSettled.current = true;
+    }
+
+    fireChanged({ loadedObjects: loadedObjects ?? EMPTY_ROWS, totalCount });
+  }, [loadedObjects, totalCount, isLoading, fireChanged]);
 }
