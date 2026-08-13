@@ -31,11 +31,9 @@ export type ModuleImportFiles = Map<
 export interface Template {
   id: string;
   label: string;
-  envPrefix: string;
   buildDirectory: string;
   supportsOsdk: boolean;
   hidden?: boolean;
-  isBeta?: boolean;
   files: {
     [K in SdkVersion]?: () => Promise<ModuleImportFiles>;
   };

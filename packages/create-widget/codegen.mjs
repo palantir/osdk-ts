@@ -26,14 +26,12 @@ export const TEMPLATES = [
   {
     id: "react",
     label: "OSDK React",
-    envPrefix: "VITE_",
     buildDirectory: "./dist",
     supportsOsdk: true,
   },
   {
     id: "minimal-react",
     label: "Minimal React",
-    envPrefix: "VITE_",
     buildDirectory: "./dist",
     supportsOsdk: false,
     hidden: true,
@@ -75,7 +73,6 @@ fs.writeFileSync(
           {
             id: "template-widget-${template.id}",
             label: "${template.label}",
-            envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
             supportsOsdk: ${template.supportsOsdk},
             hidden: ${template.hidden ?? false},

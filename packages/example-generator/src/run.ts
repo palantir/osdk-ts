@@ -34,6 +34,13 @@ import { promisify } from "node:util";
 import * as tmp from "tmp";
 import { gitIgnoreFilter } from "./gitIgnoreFilter.js";
 
+/**
+ * The template metadata the shared example helpers actually need. Kept to a
+ * subset so both the create-app and create-widget `Template` types satisfy it,
+ * as they only overlap on the fields used for naming and file lookup.
+ */
+type ExampleTemplate = Pick<Template, "id" | "files">;
+
 interface RunArgs {
   outputDirectory: string;
   check: boolean;
@@ -262,7 +269,7 @@ async function generateCreateWidgetExamplesWithoutOsdk(
 async function mutateFiles(
   tmpDir: tmp.DirResult,
   exampleId: string,
-  template: Template | WidgetTemplate,
+  template: ExampleTemplate,
   sdkVersion: SdkVersion,
   isUsingOsdk: boolean = true,
 ) {
@@ -342,7 +349,7 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
 function checkExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
-  templatesWithSdkVersion: (readonly [Template, SdkVersion])[],
+  templatesWithSdkVersion: (readonly [ExampleTemplate, SdkVersion])[],
   isUsingOsdk: boolean,
 ): void {
   for (
@@ -417,7 +424,7 @@ function getContents(aPath: string | null) {
 function copyExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
-  templatesWithSdkVersion: (readonly [Template, SdkVersion])[],
+  templatesWithSdkVersion: (readonly [ExampleTemplate, SdkVersion])[],
   isUsingOsdk: boolean,
 ): void {
   consola.info("Copying generated packages to output directory");
@@ -441,7 +448,7 @@ function copyExamples(
 interface Mutator {
   filePattern: string;
   mutate: (
-    template: Template,
+    template: ExampleTemplate,
     existingContent: string,
     sdkVersion: SdkVersion,
     isUsingOsdk: boolean,
@@ -544,23 +551,23 @@ const MUTATORS: Mutator[] = [
   UPDATE_README,
 ];
 
-function templateCanonicalId(template: Template): string {
+function templateCanonicalId(template: ExampleTemplate): string {
   return template.id.replace(/^template-/, "");
 }
 
 function sdkVersionedTemplateCanonicalId(
-  template: Template,
+  template: ExampleTemplate,
   sdkVersion: SdkVersion,
 ): string {
   return `${templateCanonicalId(template)}-sdk-${sdkVersion}`;
 }
 
-function templateExampleId(template: Template): string {
+function templateExampleId(template: ExampleTemplate): string {
   return `example-${templateCanonicalId(template)}`;
 }
 
 function sdkVersionedTemplateExampleId(
-  template: Template,
+  template: ExampleTemplate,
   sdkVersion: SdkVersion,
   isUsingOsdk: boolean,
 ): string {
@@ -570,7 +577,7 @@ function sdkVersionedTemplateExampleId(
 }
 
 function readme(
-  template: Template,
+  template: ExampleTemplate,
   sdkVersion: SdkVersion,
   isUsingOsdk: boolean = true,
 ): string {
