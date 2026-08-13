@@ -15,25 +15,14 @@
  */
 
 import fs from "node:fs";
-import path, { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import { dirSync } from "tmp";
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { cli } from "./cli.js";
 import { TEMPLATES } from "./generatedNoCheck/templates.js";
 import type { Template } from "./templates.js";
-
-let createWidgetVersion: string;
-beforeAll(() => {
-  createWidgetVersion = JSON.parse(
-    fs.readFileSync(
-      path.join(dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
-      "utf-8",
-    ),
-  ).version;
-});
 
 beforeEach(() => {
   const tmpDir = dirSync({ unsafeCleanup: true });
