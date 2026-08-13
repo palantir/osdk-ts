@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">40/40 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">40/40 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/191 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">40/40 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">40/40 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/192 story errors</a></div>
   </div>
 </header>
 <main>
@@ -7828,13 +7828,13 @@ export const WithCustomRenderers: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  517 | }
-  518 |
-&gt; 519 | const meta: Meta = {
+  514 | }
+  515 |
+&gt; 516 | const meta: Meta = {
       | ^
-  520 |   title: &quot;Components/Overview&quot;,
-  521 |   component: ComponentOverview,
-  522 |   tags: [&quot;beta&quot;],
+  517 |   title: &quot;Components/Overview&quot;,
+  518 |   component: ComponentOverview,
+  519 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -7932,7 +7932,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -7940,7 +7939,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;team&quot;,
     label: &quot;Team&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -7948,7 +7946,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;fullName&quot;,
     label: &quot;Full Name&quot;,
     filterComponent: &quot;CONTAINS_TEXT&quot;,
-    filterState: { type: &quot;CONTAINS_TEXT&quot; },
   },
 ];
 
@@ -10945,7 +10942,7 @@ return (
       <div class="badges">
         <label for="c-17-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-17-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-17-components-filterlist-stories" class="badge ok as-toggle">29 stories</label>
+        <label for="c-17-components-filterlist-stories" class="badge ok as-toggle">30 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -10967,13 +10964,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  143 | );
-  144 |
-&gt; 145 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  136 | );
+  137 |
+&gt; 138 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  146 |   title: &quot;Components/FilterList&quot;,
-  147 |   component: FilterList,
-  148 |   tags: [&quot;beta&quot;],
+  139 |   title: &quot;Components/FilterList&quot;,
+  140 |   component: FilterList,
+  141 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -11020,7 +11017,6 @@ const departmentFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const teamFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -11029,7 +11025,6 @@ const teamFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;team&quot;,
   label: &quot;Team&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const fullNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -11038,7 +11033,6 @@ const fullNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;fullName&quot;,
   label: &quot;Full Name&quot;,
   filterComponent: &quot;CONTAINS_TEXT&quot;,
-  filterState: { type: &quot;CONTAINS_TEXT&quot; },
 };
 
 const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -11047,7 +11041,6 @@ const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;firstFullTimeStartDate&quot;,
   label: &quot;Start Date&quot;,
   filterComponent: &quot;DATE_RANGE&quot;,
-  filterState: { type: &quot;DATE_RANGE&quot; },
   clickToFilter: true,
   formatDate: (date) =&gt;
     date.toLocaleDateString(&quot;en-US&quot;, {
@@ -11063,7 +11056,6 @@ const employeeNumberFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;employeeNumber&quot;,
   label: &quot;Employee Number&quot;,
   filterComponent: &quot;NUMBER_RANGE&quot;,
-  filterState: { type: &quot;NUMBER_RANGE&quot; },
   clickToFilter: true,
 };
 
@@ -11073,7 +11065,6 @@ const locationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const jobTitleMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -11082,7 +11073,6 @@ const jobTitleMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;jobTitle&quot;,
   label: &quot;Job Title&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const sharedFilterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -11254,7 +11244,7 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       control: false,
       table: { category: &quot;Advanced&quot; },
     },
-    initialFilterStates: {
+    defaultFilterStates: {
       description:
         &quot;Initial filter states for hydrating from external storage. Merged over definition defaults on mount.&quot;,
       control: false,
@@ -11277,8 +11267,8 @@ export const Default: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -11325,7 +11315,6 @@ export const IntegerNumberRangeRounding: Story = {
       key: &quot;employeeNumber&quot;,
       label: &quot;Employee Number&quot;,
       filterComponent: &quot;NUMBER_RANGE&quot;,
-      filterState: { type: &quot;NUMBER_RANGE&quot; },
       clickToFilter: true,
     },
   ]}
@@ -11394,8 +11383,8 @@ const objectSet = client(Employee).where({ department: &quot;Marketing&quot; });
   objectType={Employee}
   objectSet={objectSet}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -11449,12 +11438,12 @@ export const AddFilterMode: Story = {
     docs: {
       source: {
         code: `const filterDefinitions = [
-  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Full Name&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;firstFullTimeStartDate&quot;, label: &quot;Start Date&quot;, filterComponent: &quot;DATE_RANGE&quot;, filterState: { type: &quot;DATE_RANGE&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;employeeNumber&quot;, label: &quot;Employee Number&quot;, filterComponent: &quot;NUMBER_RANGE&quot;, filterState: { type: &quot;NUMBER_RANGE&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] }, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Full Name&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;firstFullTimeStartDate&quot;, label: &quot;Start Date&quot;, filterComponent: &quot;DATE_RANGE&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;employeeNumber&quot;, label: &quot;Employee Number&quot;, filterComponent: &quot;NUMBER_RANGE&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, isVisible: false },
 ];
 
 &lt;FilterList
@@ -11743,8 +11732,8 @@ export const KeywordSearch: Story = {
       source: {
         code: `const filterDefinitions = [
   { type: &quot;KEYWORD_SEARCH&quot;, properties: [&quot;fullName&quot;, &quot;department&quot;, &quot;jobTitle&quot;, &quot;locationCity&quot;], label: &quot;Search&quot; },
-  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
 ];
 
 &lt;FilterList objectType={Employee} filterDefinitions={filterDefinitions} /&gt;`,
@@ -11786,7 +11775,6 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (default colors)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -11799,7 +11787,6 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (custom colors)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         colorMap: {
           Marketing: &quot;#e74c3c&quot;,
           Operations: &quot;#2ecc71&quot;,
@@ -11844,7 +11831,6 @@ const filterDefinitions = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     colorMap: {
       Marketing: &quot;#e74c3c&quot;,
       Operations: &quot;#2ecc71&quot;,
@@ -11877,7 +11863,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (default)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -11890,7 +11875,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (custom render)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         renderValue: (value: string) =&gt; DEPARTMENT_LABELS[value] ?? value,
       },
       {
@@ -11899,7 +11883,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (custom render)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         renderValue: (value: string) =&gt; value.toUpperCase(),
       },
     ],
@@ -11949,7 +11932,6 @@ const filterDefinitions = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     renderValue: (value) =&gt; DEPARTMENT_LABELS[value] ?? value,
   },
 ];
@@ -12001,7 +11983,6 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         key: &quot;department&quot;,
         label: &quot;Department (JSX)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         renderValue: (value) =&gt; &lt;DepartmentSwatch value={value} /&gt;,
       },
       {
@@ -12010,7 +11991,6 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         key: &quot;team&quot;,
         label: &quot;Team (anchor JSX)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         renderValue: (value) =&gt; (
           &lt;a
             href={`#/team/${encodeURIComponent(value)}`}
@@ -12054,7 +12034,6 @@ export const WithRenderValueAsReactNode: Story = {
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     renderValue: (value) =&gt; &lt;DepartmentSwatch value={value} /&gt;,
   },
 ];
@@ -12077,7 +12056,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;full: label + bar + count&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;full&quot; },
       },
     ],
@@ -12091,7 +12069,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;count: label + count (no bar)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;count&quot; },
       },
     ],
@@ -12105,7 +12082,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;minimal: label only&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
     ],
@@ -12157,7 +12133,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;full: label + bar + count&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;full&quot; },
     }]}
   /&gt;
@@ -12168,7 +12143,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;count: label + count (no bar)&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;count&quot; },
     }]}
   /&gt;
@@ -12179,7 +12153,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;minimal: label only&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;minimal&quot; },
     }]}
   /&gt;
@@ -12199,7 +12172,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (counts visible)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
       {
         type: &quot;PROPERTY&quot;,
@@ -12207,7 +12179,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (counts visible)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
     ],
     [],
@@ -12220,7 +12191,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (counts hidden)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         showCount: false,
       },
       {
@@ -12229,7 +12199,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (counts hidden)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         showCount: false,
       },
     ],
@@ -12288,7 +12257,6 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
       {
         type: &quot;PROPERTY&quot;,
@@ -12296,7 +12264,6 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -12326,8 +12293,8 @@ export const WithCheckbox: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -12394,7 +12361,7 @@ function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt
         // &quot;Sales&quot; sorts below the collapsed fold, so seeding it as selected
         // exercises the tail-append path: it stays visible, appended after the
         // head rows, without being hoisted above the fold.
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
+        defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
       },
     ],
     [],
@@ -12425,7 +12392,7 @@ export const WithBelowFoldSelection: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
   ]}
 /&gt;`,
       },
@@ -12601,7 +12568,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Department (static)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
         values: [&quot;Marketing&quot;, &quot;Operations&quot;, &quot;Finance&quot;, &quot;Product&quot;],
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
       {
@@ -12610,7 +12576,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Office Location&quot;,
         filterComponent: &quot;SINGLE_SELECT&quot;,
         values: [&quot;New York&quot;, &quot;San Francisco&quot;, &quot;London&quot;, &quot;Tokyo&quot;],
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
       {
         type: &quot;STATIC_VALUES&quot;,
@@ -12618,7 +12583,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Team (multi-select)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
         values: [&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;],
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
       {
         type: &quot;STATIC_VALUES&quot;,
@@ -12627,7 +12591,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Status (custom clause)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
         values: [&quot;Active&quot;, &quot;Inactive&quot;],
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
         toWhereClause: (state: FilterState) =&gt; {
           if (state.type !== &quot;EXACT_MATCH&quot; || state.values.length === 0) {
@@ -12706,7 +12669,6 @@ export const WithStaticValues: Story = {
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
     values: [&quot;Marketing&quot;, &quot;Operations&quot;, &quot;Finance&quot;, &quot;Product&quot;],
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     listogramConfig: { displayMode: &quot;minimal&quot; },
   },
   {
@@ -12715,7 +12677,6 @@ export const WithStaticValues: Story = {
     label: &quot;Office Location&quot;,
     filterComponent: &quot;SINGLE_SELECT&quot;,
     values: [&quot;New York&quot;, &quot;San Francisco&quot;, &quot;London&quot;, &quot;Tokyo&quot;],
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
   {
     type: &quot;STATIC_VALUES&quot;,
@@ -12723,7 +12684,6 @@ export const WithStaticValues: Story = {
     label: &quot;Team&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     values: [&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;],
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
   {
     type: &quot;STATIC_VALUES&quot;,
@@ -12731,7 +12691,6 @@ export const WithStaticValues: Story = {
     label: &quot;Status&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
     values: [&quot;Active&quot;, &quot;Inactive&quot;],
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     toWhereClause: (state) =&gt; {
       // Custom WHERE clause mapping
       if (state.type === &quot;EXACT_MATCH&quot; &amp;&amp; state.values.includes(&quot;Active&quot;)) {
@@ -12864,7 +12823,6 @@ function WithLinkedPropertyFiltersStory(
         type: &quot;HAS_LINK&quot;,
         linkName: &quot;lead&quot;,
         label: &quot;Has Manager&quot;,
-        filterState: { type: &quot;hasLink&quot;, hasLink: false },
       },
       {
         type: &quot;LINKED_PROPERTY&quot;,
@@ -12872,7 +12830,6 @@ function WithLinkedPropertyFiltersStory(
         reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
@@ -12931,7 +12888,6 @@ const filterDefinitions = [
     type: &quot;HAS_LINK&quot;,
     linkName: &quot;lead&quot;,
     label: &quot;Has Manager&quot;,
-    filterState: { type: &quot;hasLink&quot;, hasLink: false },
   },
   {
     type: &quot;LINKED_PROPERTY&quot;,
@@ -12939,7 +12895,6 @@ const filterDefinitions = [
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     label: &quot;Manager Department&quot;,
   },
 ];
@@ -12965,7 +12920,6 @@ const combinedDepartmentFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const combinedLocationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -12974,7 +12928,6 @@ const combinedLocationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -12984,7 +12937,6 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   searchField: false,
   label: &quot;Manager Name&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
@@ -13080,7 +13032,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     searchField: false,
     label: &quot;Manager Name&quot;,
   },
@@ -13090,7 +13041,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -13098,7 +13048,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     key: &quot;locationCity&quot;,
     label: &quot;Location City&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
 ];
 
@@ -13323,7 +13272,6 @@ const departmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const departmentSingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -13332,7 +13280,6 @@ const departmentSingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department (single)&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const NO_VALUE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -13364,28 +13311,24 @@ export const NoValueRendering: Story = {
       key: &quot;department&quot;,
       label: &quot;Department&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;department&quot;,
       label: &quot;Department&quot;,
       filterComponent: &quot;MULTI_SELECT&quot;,
-      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;department&quot;,
       label: &quot;Department (single)&quot;,
       filterComponent: &quot;SINGLE_SELECT&quot;,
-      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;employeeNumber&quot;,
       label: &quot;Employee Number&quot;,
       filterComponent: &quot;NUMBER_RANGE&quot;,
-      filterState: { type: &quot;NUMBER_RANGE&quot; },
       clickToFilter: true,
     },
   ]}
@@ -13404,7 +13347,206 @@ export const NoValueRendering: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// Hydrating saved filter state via initialFilterStates
+// Seeding a filter from its own definition via defaultFilterState
+// ---------------------------------------------------------------------------
+
+const SEEDED_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
+  {
+    type: &quot;KEYWORD_SEARCH&quot;,
+    properties: [&quot;fullName&quot;, &quot;jobTitle&quot;],
+    label: &quot;Search&quot;,
+    defaultFilterState: {
+      type: &quot;keywordSearch&quot;,
+      searchTerm: &quot;manager&quot;,
+      operator: &quot;AND&quot;,
+    },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Engineering&quot;] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;locationCity&quot;,
+    label: &quot;Location City&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: {
+      type: &quot;SELECT&quot;,
+      selectedValues: [&quot;New York&quot;, &quot;Tokyo&quot;],
+    },
+  },
+  {
+    type: &quot;STATIC_VALUES&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team (static)&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    values: [&quot;Content&quot;, &quot;Platform&quot;, &quot;Treasury&quot;, &quot;Legal&quot;],
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Platform&quot;] },
+  },
+  {
+    type: &quot;HAS_LINK&quot;,
+    linkName: &quot;lead&quot;,
+    label: &quot;Has a manager&quot;,
+    defaultFilterState: { type: &quot;hasLink&quot;, hasLink: true },
+  },
+  {
+    type: &quot;CUSTOM&quot;,
+    key: &quot;custom-name-contains&quot;,
+    label: &quot;Name Contains&quot;,
+    filterComponent: &quot;CUSTOM&quot;,
+    defaultFilterState: {
+      type: &quot;custom&quot;,
+      customState: { value: &quot;man&quot; },
+    },
+    renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+      &lt;CustomNameContainsFilter
+        filterState={
+          filterState as {
+            type: &quot;custom&quot;;
+            customState: { value: string };
+          }
+        }
+        onFilterStateChanged={onFilterStateChanged}
+      /&gt;
+    ),
+    toWhereClause: (state) =&gt; {
+      const value = (state.customState as { value?: string })?.value;
+      if (!value) return undefined;
+      return {
+        fullName: { $containsAnyTerm: value },
+      };
+    },
+  },
+];
+
+function WithDefaultFilterStateStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+    },
+    [],
+  );
+
+  return (
+    &lt;div style={FLEX_ROW_STYLE}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          {...args}
+          objectType={Employee}
+          filterDefinitions={SEEDED_FILTER_DEFINITIONS}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={FLEX_FILL_STYLE}&gt;
+        &lt;h4&gt;Where clause&lt;/h4&gt;
+        &lt;pre style={PRE_STYLE}&gt;
+          {filterClause ? JSON.stringify(filterClause, null, 2) : &quot;(none)&quot;}
+        &lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const WithDefaultFilterState: Story = {
+  name: &quot;With Default Filter State Per Filter&quot;,
+  args: {
+    showActiveFilterCount: true,
+    showResetButton: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Give a definition a `defaultFilterState` to start that filter off &quot; +
+          &quot;with a value. Every kind spells it the same way, and the seeded &quot; +
+          &quot;value applies on mount — the where clause is already populated on &quot; +
+          &quot;first render and the seeded filters count towards the active &quot; +
+          &quot;filter count. FilterList owns the state from then on, so editing &quot; +
+          &quot;a filter does not write back to the definition. The seed is also &quot; +
+          &quot;the baseline the reset button returns to, which is why reset &quot; +
+          &quot;starts disabled here and re-enables once you change something.\n\n&quot; +
+          &quot;To hydrate from saved state keyed by filter instead (localStorage, &quot; +
+          &#39;URL params), use the `defaultFilterStates` map — see &quot;With &#39; +
+          &#39;initial filter states&quot;.&#39;,
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: &quot;KEYWORD_SEARCH&quot;,
+    properties: [&quot;fullName&quot;, &quot;jobTitle&quot;],
+    label: &quot;Search&quot;,
+    defaultFilterState: { type: &quot;keywordSearch&quot;, searchTerm: &quot;manager&quot;, operator: &quot;AND&quot; },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Engineering&quot;] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;locationCity&quot;,
+    label: &quot;Location City&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;New York&quot;, &quot;Tokyo&quot;] },
+  },
+  {
+    type: &quot;STATIC_VALUES&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team (static)&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    values: [&quot;Content&quot;, &quot;Platform&quot;, &quot;Treasury&quot;, &quot;Legal&quot;],
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Platform&quot;] },
+  },
+  {
+    type: &quot;HAS_LINK&quot;,
+    linkName: &quot;lead&quot;,
+    label: &quot;Has a manager&quot;,
+    defaultFilterState: { type: &quot;hasLink&quot;, hasLink: true },
+  },
+  {
+    type: &quot;CUSTOM&quot;,
+    key: &quot;custom-name-contains&quot;,
+    label: &quot;Name Contains&quot;,
+    filterComponent: &quot;CUSTOM&quot;,
+    defaultFilterState: { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } },
+    renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+      &lt;CustomNameContainsFilter
+        filterState={filterState}
+        onFilterStateChanged={onFilterStateChanged}
+      /&gt;
+    ),
+    toWhereClause: (state) =&gt; {
+      const value = state.customState?.value;
+      if (!value) return undefined;
+      return { fullName: { $containsAnyTerm: value } };
+    },
+  },
+];
+
+&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  showActiveFilterCount
+  showResetButton
+  onFilterClauseChanged={handleFilterClauseChanged}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;WithDefaultFilterStateStory {...args} /&gt;,
+};
+
+// ---------------------------------------------------------------------------
+// Hydrating saved filter state via defaultFilterStates
 // ---------------------------------------------------------------------------
 
 const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -13413,7 +13555,6 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City (single)&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -13422,7 +13563,6 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager Department (linked multi)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -13432,7 +13572,6 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -13506,7 +13645,7 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
           objectType={Employee}
           objectSet={objectSet}
           filterDefinitions={INITIAL_STATE_FILTER_DEFINITIONS}
-          initialFilterStates={SAVED_FILTER_STATES}
+          defaultFilterStates={SAVED_FILTER_STATES}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -13521,12 +13660,12 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
 }
 
 export const WithInitialFilterStates: Story = {
-  name: &quot;With initial filter states&quot;,
+  name: &quot;With Top-level Default Filter States&quot;,
   parameters: {
     docs: {
       description: {
         story:
-          &quot;Pass `initialFilterStates` to hydrate filters from saved state &quot; +
+          &quot;Pass `defaultFilterStates` to hydrate filters from saved state &quot; +
           &quot;(e.g. localStorage or URL params). Selections are restored on &quot; +
           &quot;mount, including values that currently have zero matching rows &quot; +
           &quot;— they appear with a count of 0 so users can see and clear them. &quot; +
@@ -13556,7 +13695,7 @@ const savedStates = new Map([
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  initialFilterStates={savedStates}
+  defaultFilterStates={savedStates}
   onFilterClauseChanged={handleFilterClauseChanged}
 /&gt;`,
       },
@@ -13594,28 +13733,28 @@ function serializeFilterStates(states: Map&lt;string, FilterState&gt;): string {
 }
 
 interface ResetGateMirrorProps {
-  initialFilterStates?: Map&lt;string, FilterState&gt;;
+  defaultFilterStates?: Map&lt;string, FilterState&gt;;
   storyArgs: Partial&lt;EmployeeFilterListProps&gt;;
 }
 
 function ResetGateMirror({
-  initialFilterStates,
+  defaultFilterStates,
   storyArgs,
 }: ResetGateMirrorProps) {
   const initialMirror = useMemo&lt;Map&lt;string, FilterState&gt;&gt;(() =&gt; {
     const map = new Map&lt;string, FilterState&gt;();
     for (const def of RESET_GATE_DEFINITIONS) {
-      if (def.type === &quot;PROPERTY&quot; &amp;&amp; def.filterState) {
-        map.set(getFilterKey(def), def.filterState);
+      if (def.type === &quot;PROPERTY&quot; &amp;&amp; def.defaultFilterState) {
+        map.set(getFilterKey(def), def.defaultFilterState);
       }
     }
-    if (initialFilterStates) {
-      for (const [key, state] of initialFilterStates) {
+    if (defaultFilterStates) {
+      for (const [key, state] of defaultFilterStates) {
         map.set(key, state);
       }
     }
     return map;
-  }, [initialFilterStates]);
+  }, [defaultFilterStates]);
 
   const [mirror, setMirror] = useState&lt;Map&lt;string, FilterState&gt;&gt;(
     () =&gt; new Map(initialMirror),
@@ -13647,7 +13786,7 @@ function ResetGateMirror({
           {...storyArgs}
           objectType={Employee}
           filterDefinitions={RESET_GATE_DEFINITIONS}
-          initialFilterStates={initialFilterStates}
+          defaultFilterStates={defaultFilterStates}
           showResetButton={true}
           onFilterStateChanged={handleFilterStateChanged}
           onReset={handleReset}
@@ -13704,7 +13843,7 @@ function WithResetButtonNonEmptyInitialStory(
   return (
     &lt;ResetGateMirror
       storyArgs={args}
-      initialFilterStates={RESET_GATE_INITIAL_STATES}
+      defaultFilterStates={RESET_GATE_INITIAL_STATES}
     /&gt;
   );
 }
@@ -13731,7 +13870,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  initialFilterStates={savedStates}
+  defaultFilterStates={savedStates}
   showResetButton={true}
 /&gt;`,
       },
@@ -14357,7 +14496,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With initial filter states</span>
+                <span class="ex-name">With Default Filter State Per Filter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultFilterState = () =&gt; &lt;WithDefaultFilterStateStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Top-level Default Filter States</span>
                 <span class="badge ok">story ok</span>
               </div>
               
@@ -14453,13 +14612,13 @@ export const WithResetButtonNonEmptyInitial: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;HorizontalFilterToolbar&quot; component.
-  260 | }
-  261 |
-&gt; 262 | const meta: Meta&lt;typeof HorizontalFilterToolbar&gt; = {
+  257 | }
+  258 |
+&gt; 259 | const meta: Meta&lt;typeof HorizontalFilterToolbar&gt; = {
       | ^
-  263 |   title: &quot;Components/FilterList/Recipes&quot;,
-  264 |   component: HorizontalFilterToolbar,
-  265 |   tags: [&quot;beta&quot;],
+  260 |   title: &quot;Components/FilterList/Recipes&quot;,
+  261 |   component: HorizontalFilterToolbar,
+  262 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx:
 /*
@@ -14506,7 +14665,6 @@ const sitesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Sites&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -14515,7 +14673,6 @@ const specialtiesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Specialties&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -14524,7 +14681,6 @@ const consultantsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;fullName&quot;,
   label: &quot;Consultants&quot;,
   filterComponent: &quot;CONTAINS_TEXT&quot;,
-  filterState: { type: &quot;CONTAINS_TEXT&quot; },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -14796,9 +14952,9 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
 &lt;HorizontalFilterToolbar
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; } },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot; },
   ]}
 /&gt;`,
       },
@@ -28083,13 +28239,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  517 | }
-  518 |
-&gt; 519 | const meta: Meta = {
+  514 | }
+  515 |
+&gt; 516 | const meta: Meta = {
       | ^
-  520 |   title: &quot;Components/Overview&quot;,
-  521 |   component: ComponentOverview,
-  522 |   tags: [&quot;beta&quot;],
+  517 |   title: &quot;Components/Overview&quot;,
+  518 |   component: ComponentOverview,
+  519 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -28187,7 +28343,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -28195,7 +28350,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;team&quot;,
     label: &quot;Team&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -28203,7 +28357,6 @@ const FILTER_DEFINITIONS: Array&lt;FilterDefinitionUnion&lt;Employee&gt;&gt; = [
     key: &quot;fullName&quot;,
     label: &quot;Full Name&quot;,
     filterComponent: &quot;CONTAINS_TEXT&quot;,
-    filterState: { type: &quot;CONTAINS_TEXT&quot; },
   },
 ];
 
@@ -29293,7 +29446,7 @@ export const WithPdfViewerProps: Story = {
       <div class="badges">
         <label for="c-error-13-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-13-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-13-components-filterlist-stories" class="badge ok as-toggle">29 stories</label>
+        <label for="c-error-13-components-filterlist-stories" class="badge ok as-toggle">30 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -29315,13 +29468,13 @@ export const WithPdfViewerProps: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  143 | );
-  144 |
-&gt; 145 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  136 | );
+  137 |
+&gt; 138 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  146 |   title: &quot;Components/FilterList&quot;,
-  147 |   component: FilterList,
-  148 |   tags: [&quot;beta&quot;],
+  139 |   title: &quot;Components/FilterList&quot;,
+  140 |   component: FilterList,
+  141 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -29368,7 +29521,6 @@ const departmentFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const teamFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -29377,7 +29529,6 @@ const teamFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;team&quot;,
   label: &quot;Team&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const fullNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -29386,7 +29537,6 @@ const fullNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;fullName&quot;,
   label: &quot;Full Name&quot;,
   filterComponent: &quot;CONTAINS_TEXT&quot;,
-  filterState: { type: &quot;CONTAINS_TEXT&quot; },
 };
 
 const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -29395,7 +29545,6 @@ const startDateFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;firstFullTimeStartDate&quot;,
   label: &quot;Start Date&quot;,
   filterComponent: &quot;DATE_RANGE&quot;,
-  filterState: { type: &quot;DATE_RANGE&quot; },
   clickToFilter: true,
   formatDate: (date) =&gt;
     date.toLocaleDateString(&quot;en-US&quot;, {
@@ -29411,7 +29560,6 @@ const employeeNumberFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;employeeNumber&quot;,
   label: &quot;Employee Number&quot;,
   filterComponent: &quot;NUMBER_RANGE&quot;,
-  filterState: { type: &quot;NUMBER_RANGE&quot; },
   clickToFilter: true,
 };
 
@@ -29421,7 +29569,6 @@ const locationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const jobTitleMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -29430,7 +29577,6 @@ const jobTitleMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;jobTitle&quot;,
   label: &quot;Job Title&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const sharedFilterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -29602,7 +29748,7 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       control: false,
       table: { category: &quot;Advanced&quot; },
     },
-    initialFilterStates: {
+    defaultFilterStates: {
       description:
         &quot;Initial filter states for hydrating from external storage. Merged over definition defaults on mount.&quot;,
       control: false,
@@ -29625,8 +29771,8 @@ export const Default: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -29673,7 +29819,6 @@ export const IntegerNumberRangeRounding: Story = {
       key: &quot;employeeNumber&quot;,
       label: &quot;Employee Number&quot;,
       filterComponent: &quot;NUMBER_RANGE&quot;,
-      filterState: { type: &quot;NUMBER_RANGE&quot; },
       clickToFilter: true,
     },
   ]}
@@ -29742,8 +29887,8 @@ const objectSet = client(Employee).where({ department: &quot;Marketing&quot; });
   objectType={Employee}
   objectSet={objectSet}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -29797,12 +29942,12 @@ export const AddFilterMode: Story = {
     docs: {
       source: {
         code: `const filterDefinitions = [
-  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Full Name&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;firstFullTimeStartDate&quot;, label: &quot;Start Date&quot;, filterComponent: &quot;DATE_RANGE&quot;, filterState: { type: &quot;DATE_RANGE&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;employeeNumber&quot;, label: &quot;Employee Number&quot;, filterComponent: &quot;NUMBER_RANGE&quot;, filterState: { type: &quot;NUMBER_RANGE&quot; }, isVisible: false },
-  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] }, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Full Name&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;firstFullTimeStartDate&quot;, label: &quot;Start Date&quot;, filterComponent: &quot;DATE_RANGE&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;employeeNumber&quot;, label: &quot;Employee Number&quot;, filterComponent: &quot;NUMBER_RANGE&quot;, isVisible: false },
+  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, isVisible: false },
 ];
 
 &lt;FilterList
@@ -30091,8 +30236,8 @@ export const KeywordSearch: Story = {
       source: {
         code: `const filterDefinitions = [
   { type: &quot;KEYWORD_SEARCH&quot;, properties: [&quot;fullName&quot;, &quot;department&quot;, &quot;jobTitle&quot;, &quot;locationCity&quot;], label: &quot;Search&quot; },
-  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+  { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+  { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Location City&quot;, filterComponent: &quot;LISTOGRAM&quot; },
 ];
 
 &lt;FilterList objectType={Employee} filterDefinitions={filterDefinitions} /&gt;`,
@@ -30134,7 +30279,6 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (default colors)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -30147,7 +30291,6 @@ function WithColorMapStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (custom colors)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         colorMap: {
           Marketing: &quot;#e74c3c&quot;,
           Operations: &quot;#2ecc71&quot;,
@@ -30192,7 +30335,6 @@ const filterDefinitions = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     colorMap: {
       Marketing: &quot;#e74c3c&quot;,
       Operations: &quot;#2ecc71&quot;,
@@ -30225,7 +30367,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (default)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -30238,7 +30379,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (custom render)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         renderValue: (value: string) =&gt; DEPARTMENT_LABELS[value] ?? value,
       },
       {
@@ -30247,7 +30387,6 @@ function WithRenderValueStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (custom render)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         renderValue: (value: string) =&gt; value.toUpperCase(),
       },
     ],
@@ -30297,7 +30436,6 @@ const filterDefinitions = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     renderValue: (value) =&gt; DEPARTMENT_LABELS[value] ?? value,
   },
 ];
@@ -30349,7 +30487,6 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         key: &quot;department&quot;,
         label: &quot;Department (JSX)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         renderValue: (value) =&gt; &lt;DepartmentSwatch value={value} /&gt;,
       },
       {
@@ -30358,7 +30495,6 @@ function WithRenderValueReactNodeStory(args: Partial&lt;EmployeeFilterListProps&
         key: &quot;team&quot;,
         label: &quot;Team (anchor JSX)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         renderValue: (value) =&gt; (
           &lt;a
             href={`#/team/${encodeURIComponent(value)}`}
@@ -30402,7 +30538,6 @@ export const WithRenderValueAsReactNode: Story = {
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     renderValue: (value) =&gt; &lt;DepartmentSwatch value={value} /&gt;,
   },
 ];
@@ -30425,7 +30560,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;full: label + bar + count&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;full&quot; },
       },
     ],
@@ -30439,7 +30573,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;count: label + count (no bar)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;count&quot; },
       },
     ],
@@ -30453,7 +30586,6 @@ function WithListogramDisplayModesStory(
         key: &quot;department&quot;,
         label: &quot;minimal: label only&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
     ],
@@ -30505,7 +30637,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;full: label + bar + count&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;full&quot; },
     }]}
   /&gt;
@@ -30516,7 +30647,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;count: label + count (no bar)&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;count&quot; },
     }]}
   /&gt;
@@ -30527,7 +30657,6 @@ export const WithListogramDisplayModes: Story = {
       key: &quot;department&quot;,
       label: &quot;minimal: label only&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       listogramConfig: { displayMode: &quot;minimal&quot; },
     }]}
   /&gt;
@@ -30547,7 +30676,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (counts visible)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
       {
         type: &quot;PROPERTY&quot;,
@@ -30555,7 +30683,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (counts visible)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
     ],
     [],
@@ -30568,7 +30695,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department (counts hidden)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         showCount: false,
       },
       {
@@ -30577,7 +30703,6 @@ function WithHiddenCountsStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team (counts hidden)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         showCount: false,
       },
     ],
@@ -30636,7 +30761,6 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;department&quot;,
         label: &quot;Department&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
       {
         type: &quot;PROPERTY&quot;,
@@ -30644,7 +30768,6 @@ function WithCheckboxStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         key: &quot;team&quot;,
         label: &quot;Team&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
       },
     ],
     [],
@@ -30674,8 +30797,8 @@ export const WithCheckbox: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;team&quot;, label: &quot;Team&quot;, filterComponent: &quot;LISTOGRAM&quot; },
   ]}
 /&gt;`,
       },
@@ -30742,7 +30865,7 @@ function WithBelowFoldSelectionStory(args: Partial&lt;EmployeeFilterListProps&gt
         // &quot;Sales&quot; sorts below the collapsed fold, so seeding it as selected
         // exercises the tail-append path: it stays visible, appended after the
         // head rows, without being hoisted above the fold.
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
+        defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] },
       },
     ],
     [],
@@ -30773,7 +30896,7 @@ export const WithBelowFoldSelection: Story = {
         code: `&lt;FilterList
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, filterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Department&quot;, filterComponent: &quot;LISTOGRAM&quot;, defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Sales&quot;] } },
   ]}
 /&gt;`,
       },
@@ -30949,7 +31072,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Department (static)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
         values: [&quot;Marketing&quot;, &quot;Operations&quot;, &quot;Finance&quot;, &quot;Product&quot;],
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
       },
       {
@@ -30958,7 +31080,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Office Location&quot;,
         filterComponent: &quot;SINGLE_SELECT&quot;,
         values: [&quot;New York&quot;, &quot;San Francisco&quot;, &quot;London&quot;, &quot;Tokyo&quot;],
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
       {
         type: &quot;STATIC_VALUES&quot;,
@@ -30966,7 +31087,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Team (multi-select)&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
         values: [&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;],
-        filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
       },
       {
         type: &quot;STATIC_VALUES&quot;,
@@ -30975,7 +31095,6 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
         label: &quot;Status (custom clause)&quot;,
         filterComponent: &quot;LISTOGRAM&quot;,
         values: [&quot;Active&quot;, &quot;Inactive&quot;],
-        filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
         listogramConfig: { displayMode: &quot;minimal&quot; },
         toWhereClause: (state: FilterState) =&gt; {
           if (state.type !== &quot;EXACT_MATCH&quot; || state.values.length === 0) {
@@ -31054,7 +31173,6 @@ export const WithStaticValues: Story = {
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
     values: [&quot;Marketing&quot;, &quot;Operations&quot;, &quot;Finance&quot;, &quot;Product&quot;],
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     listogramConfig: { displayMode: &quot;minimal&quot; },
   },
   {
@@ -31063,7 +31181,6 @@ export const WithStaticValues: Story = {
     label: &quot;Office Location&quot;,
     filterComponent: &quot;SINGLE_SELECT&quot;,
     values: [&quot;New York&quot;, &quot;San Francisco&quot;, &quot;London&quot;, &quot;Tokyo&quot;],
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
   {
     type: &quot;STATIC_VALUES&quot;,
@@ -31071,7 +31188,6 @@ export const WithStaticValues: Story = {
     label: &quot;Team&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
     values: [&quot;Alpha&quot;, &quot;Beta&quot;, &quot;Gamma&quot;, &quot;Delta&quot;],
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
   {
     type: &quot;STATIC_VALUES&quot;,
@@ -31079,7 +31195,6 @@ export const WithStaticValues: Story = {
     label: &quot;Status&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
     values: [&quot;Active&quot;, &quot;Inactive&quot;],
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     toWhereClause: (state) =&gt; {
       // Custom WHERE clause mapping
       if (state.type === &quot;EXACT_MATCH&quot; &amp;&amp; state.values.includes(&quot;Active&quot;)) {
@@ -31212,7 +31327,6 @@ function WithLinkedPropertyFiltersStory(
         type: &quot;HAS_LINK&quot;,
         linkName: &quot;lead&quot;,
         label: &quot;Has Manager&quot;,
-        filterState: { type: &quot;hasLink&quot;, hasLink: false },
       },
       {
         type: &quot;LINKED_PROPERTY&quot;,
@@ -31220,7 +31334,6 @@ function WithLinkedPropertyFiltersStory(
         reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
         filterComponent: &quot;MULTI_SELECT&quot;,
-        defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
@@ -31279,7 +31392,6 @@ const filterDefinitions = [
     type: &quot;HAS_LINK&quot;,
     linkName: &quot;lead&quot;,
     label: &quot;Has Manager&quot;,
-    filterState: { type: &quot;hasLink&quot;, hasLink: false },
   },
   {
     type: &quot;LINKED_PROPERTY&quot;,
@@ -31287,7 +31399,6 @@ const filterDefinitions = [
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     label: &quot;Manager Department&quot;,
   },
 ];
@@ -31313,7 +31424,6 @@ const combinedDepartmentFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;LISTOGRAM&quot;,
-  filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
 };
 
 const combinedLocationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -31322,7 +31432,6 @@ const combinedLocationCityFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -31332,7 +31441,6 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   searchField: false,
   label: &quot;Manager Name&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
@@ -31428,7 +31536,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     searchField: false,
     label: &quot;Manager Name&quot;,
   },
@@ -31438,7 +31545,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     key: &quot;department&quot;,
     label: &quot;Department&quot;,
     filterComponent: &quot;LISTOGRAM&quot;,
-    filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
   },
   {
     type: &quot;PROPERTY&quot;,
@@ -31446,7 +31552,6 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     key: &quot;locationCity&quot;,
     label: &quot;Location City&quot;,
     filterComponent: &quot;MULTI_SELECT&quot;,
-    filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   },
 ];
 
@@ -31671,7 +31776,6 @@ const departmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const departmentSingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -31680,7 +31784,6 @@ const departmentSingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Department (single)&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const NO_VALUE_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -31712,28 +31815,24 @@ export const NoValueRendering: Story = {
       key: &quot;department&quot;,
       label: &quot;Department&quot;,
       filterComponent: &quot;LISTOGRAM&quot;,
-      filterState: { type: &quot;EXACT_MATCH&quot;, values: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;department&quot;,
       label: &quot;Department&quot;,
       filterComponent: &quot;MULTI_SELECT&quot;,
-      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;department&quot;,
       label: &quot;Department (single)&quot;,
       filterComponent: &quot;SINGLE_SELECT&quot;,
-      filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     },
     {
       type: &quot;PROPERTY&quot;,
       key: &quot;employeeNumber&quot;,
       label: &quot;Employee Number&quot;,
       filterComponent: &quot;NUMBER_RANGE&quot;,
-      filterState: { type: &quot;NUMBER_RANGE&quot; },
       clickToFilter: true,
     },
   ]}
@@ -31752,7 +31851,206 @@ export const NoValueRendering: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// Hydrating saved filter state via initialFilterStates
+// Seeding a filter from its own definition via defaultFilterState
+// ---------------------------------------------------------------------------
+
+const SEEDED_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
+  {
+    type: &quot;KEYWORD_SEARCH&quot;,
+    properties: [&quot;fullName&quot;, &quot;jobTitle&quot;],
+    label: &quot;Search&quot;,
+    defaultFilterState: {
+      type: &quot;keywordSearch&quot;,
+      searchTerm: &quot;manager&quot;,
+      operator: &quot;AND&quot;,
+    },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Engineering&quot;] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;locationCity&quot;,
+    label: &quot;Location City&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: {
+      type: &quot;SELECT&quot;,
+      selectedValues: [&quot;New York&quot;, &quot;Tokyo&quot;],
+    },
+  },
+  {
+    type: &quot;STATIC_VALUES&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team (static)&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    values: [&quot;Content&quot;, &quot;Platform&quot;, &quot;Treasury&quot;, &quot;Legal&quot;],
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Platform&quot;] },
+  },
+  {
+    type: &quot;HAS_LINK&quot;,
+    linkName: &quot;lead&quot;,
+    label: &quot;Has a manager&quot;,
+    defaultFilterState: { type: &quot;hasLink&quot;, hasLink: true },
+  },
+  {
+    type: &quot;CUSTOM&quot;,
+    key: &quot;custom-name-contains&quot;,
+    label: &quot;Name Contains&quot;,
+    filterComponent: &quot;CUSTOM&quot;,
+    defaultFilterState: {
+      type: &quot;custom&quot;,
+      customState: { value: &quot;man&quot; },
+    },
+    renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+      &lt;CustomNameContainsFilter
+        filterState={
+          filterState as {
+            type: &quot;custom&quot;;
+            customState: { value: string };
+          }
+        }
+        onFilterStateChanged={onFilterStateChanged}
+      /&gt;
+    ),
+    toWhereClause: (state) =&gt; {
+      const value = (state.customState as { value?: string })?.value;
+      if (!value) return undefined;
+      return {
+        fullName: { $containsAnyTerm: value },
+      };
+    },
+  },
+];
+
+function WithDefaultFilterStateStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [filterClause, setFilterClause] = useState&lt;
+    WhereClause&lt;Employee&gt; | undefined
+  &gt;(undefined);
+
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+    },
+    [],
+  );
+
+  return (
+    &lt;div style={FLEX_ROW_STYLE}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          {...args}
+          objectType={Employee}
+          filterDefinitions={SEEDED_FILTER_DEFINITIONS}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        /&gt;
+      &lt;/div&gt;
+      &lt;div style={FLEX_FILL_STYLE}&gt;
+        &lt;h4&gt;Where clause&lt;/h4&gt;
+        &lt;pre style={PRE_STYLE}&gt;
+          {filterClause ? JSON.stringify(filterClause, null, 2) : &quot;(none)&quot;}
+        &lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const WithDefaultFilterState: Story = {
+  name: &quot;With Default Filter State Per Filter&quot;,
+  args: {
+    showActiveFilterCount: true,
+    showResetButton: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Give a definition a `defaultFilterState` to start that filter off &quot; +
+          &quot;with a value. Every kind spells it the same way, and the seeded &quot; +
+          &quot;value applies on mount — the where clause is already populated on &quot; +
+          &quot;first render and the seeded filters count towards the active &quot; +
+          &quot;filter count. FilterList owns the state from then on, so editing &quot; +
+          &quot;a filter does not write back to the definition. The seed is also &quot; +
+          &quot;the baseline the reset button returns to, which is why reset &quot; +
+          &quot;starts disabled here and re-enables once you change something.\n\n&quot; +
+          &quot;To hydrate from saved state keyed by filter instead (localStorage, &quot; +
+          &#39;URL params), use the `defaultFilterStates` map — see &quot;With &#39; +
+          &#39;initial filter states&quot;.&#39;,
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: &quot;KEYWORD_SEARCH&quot;,
+    properties: [&quot;fullName&quot;, &quot;jobTitle&quot;],
+    label: &quot;Search&quot;,
+    defaultFilterState: { type: &quot;keywordSearch&quot;, searchTerm: &quot;manager&quot;, operator: &quot;AND&quot; },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;department&quot;,
+    label: &quot;Department&quot;,
+    filterComponent: &quot;LISTOGRAM&quot;,
+    defaultFilterState: { type: &quot;EXACT_MATCH&quot;, values: [&quot;Engineering&quot;] },
+  },
+  {
+    type: &quot;PROPERTY&quot;,
+    key: &quot;locationCity&quot;,
+    label: &quot;Location City&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;New York&quot;, &quot;Tokyo&quot;] },
+  },
+  {
+    type: &quot;STATIC_VALUES&quot;,
+    key: &quot;team&quot;,
+    label: &quot;Team (static)&quot;,
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    values: [&quot;Content&quot;, &quot;Platform&quot;, &quot;Treasury&quot;, &quot;Legal&quot;],
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [&quot;Platform&quot;] },
+  },
+  {
+    type: &quot;HAS_LINK&quot;,
+    linkName: &quot;lead&quot;,
+    label: &quot;Has a manager&quot;,
+    defaultFilterState: { type: &quot;hasLink&quot;, hasLink: true },
+  },
+  {
+    type: &quot;CUSTOM&quot;,
+    key: &quot;custom-name-contains&quot;,
+    label: &quot;Name Contains&quot;,
+    filterComponent: &quot;CUSTOM&quot;,
+    defaultFilterState: { type: &quot;custom&quot;, customState: { value: &quot;man&quot; } },
+    renderInput: ({ filterState, onFilterStateChanged }) =&gt; (
+      &lt;CustomNameContainsFilter
+        filterState={filterState}
+        onFilterStateChanged={onFilterStateChanged}
+      /&gt;
+    ),
+    toWhereClause: (state) =&gt; {
+      const value = state.customState?.value;
+      if (!value) return undefined;
+      return { fullName: { $containsAnyTerm: value } };
+    },
+  },
+];
+
+&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  showActiveFilterCount
+  showResetButton
+  onFilterClauseChanged={handleFilterClauseChanged}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;WithDefaultFilterStateStory {...args} /&gt;,
+};
+
+// ---------------------------------------------------------------------------
+// Hydrating saved filter state via defaultFilterStates
 // ---------------------------------------------------------------------------
 
 const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -31761,7 +32059,6 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Location City (single)&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -31770,7 +32067,6 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager Department (linked multi)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -31780,7 +32076,6 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
   filterComponent: &quot;SINGLE_SELECT&quot;,
-  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -31854,7 +32149,7 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
           objectType={Employee}
           objectSet={objectSet}
           filterDefinitions={INITIAL_STATE_FILTER_DEFINITIONS}
-          initialFilterStates={SAVED_FILTER_STATES}
+          defaultFilterStates={SAVED_FILTER_STATES}
           onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
@@ -31869,12 +32164,12 @@ function WithInitialFilterStatesStory(args: Partial&lt;EmployeeFilterListProps&g
 }
 
 export const WithInitialFilterStates: Story = {
-  name: &quot;With initial filter states&quot;,
+  name: &quot;With Top-level Default Filter States&quot;,
   parameters: {
     docs: {
       description: {
         story:
-          &quot;Pass `initialFilterStates` to hydrate filters from saved state &quot; +
+          &quot;Pass `defaultFilterStates` to hydrate filters from saved state &quot; +
           &quot;(e.g. localStorage or URL params). Selections are restored on &quot; +
           &quot;mount, including values that currently have zero matching rows &quot; +
           &quot;— they appear with a count of 0 so users can see and clear them. &quot; +
@@ -31904,7 +32199,7 @@ const savedStates = new Map([
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  initialFilterStates={savedStates}
+  defaultFilterStates={savedStates}
   onFilterClauseChanged={handleFilterClauseChanged}
 /&gt;`,
       },
@@ -31942,28 +32237,28 @@ function serializeFilterStates(states: Map&lt;string, FilterState&gt;): string {
 }
 
 interface ResetGateMirrorProps {
-  initialFilterStates?: Map&lt;string, FilterState&gt;;
+  defaultFilterStates?: Map&lt;string, FilterState&gt;;
   storyArgs: Partial&lt;EmployeeFilterListProps&gt;;
 }
 
 function ResetGateMirror({
-  initialFilterStates,
+  defaultFilterStates,
   storyArgs,
 }: ResetGateMirrorProps) {
   const initialMirror = useMemo&lt;Map&lt;string, FilterState&gt;&gt;(() =&gt; {
     const map = new Map&lt;string, FilterState&gt;();
     for (const def of RESET_GATE_DEFINITIONS) {
-      if (def.type === &quot;PROPERTY&quot; &amp;&amp; def.filterState) {
-        map.set(getFilterKey(def), def.filterState);
+      if (def.type === &quot;PROPERTY&quot; &amp;&amp; def.defaultFilterState) {
+        map.set(getFilterKey(def), def.defaultFilterState);
       }
     }
-    if (initialFilterStates) {
-      for (const [key, state] of initialFilterStates) {
+    if (defaultFilterStates) {
+      for (const [key, state] of defaultFilterStates) {
         map.set(key, state);
       }
     }
     return map;
-  }, [initialFilterStates]);
+  }, [defaultFilterStates]);
 
   const [mirror, setMirror] = useState&lt;Map&lt;string, FilterState&gt;&gt;(
     () =&gt; new Map(initialMirror),
@@ -31995,7 +32290,7 @@ function ResetGateMirror({
           {...storyArgs}
           objectType={Employee}
           filterDefinitions={RESET_GATE_DEFINITIONS}
-          initialFilterStates={initialFilterStates}
+          defaultFilterStates={defaultFilterStates}
           showResetButton={true}
           onFilterStateChanged={handleFilterStateChanged}
           onReset={handleReset}
@@ -32052,7 +32347,7 @@ function WithResetButtonNonEmptyInitialStory(
   return (
     &lt;ResetGateMirror
       storyArgs={args}
-      initialFilterStates={RESET_GATE_INITIAL_STATES}
+      defaultFilterStates={RESET_GATE_INITIAL_STATES}
     /&gt;
   );
 }
@@ -32079,7 +32374,7 @@ export const WithResetButtonNonEmptyInitial: Story = {
 &lt;FilterList
   objectType={Employee}
   filterDefinitions={filterDefinitions}
-  initialFilterStates={savedStates}
+  defaultFilterStates={savedStates}
   showResetButton={true}
 /&gt;`,
       },
@@ -32705,7 +33000,27 @@ export const WithResetButtonNonEmptyInitial: Story = {
             </div>
             <div class="note ok">
               <div class="row">
-                <span class="ex-name">With initial filter states</span>
+                <span class="ex-name">With Default Filter State Per Filter</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultFilterState = () =&gt; &lt;WithDefaultFilterStateStory
+    title=&quot;Filters&quot;
+    enableSorting={false}
+    showResetButton
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Top-level Default Filter States</span>
                 <span class="badge ok">story ok</span>
               </div>
               
@@ -32801,13 +33116,13 @@ export const WithResetButtonNonEmptyInitial: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;HorizontalFilterToolbar&quot; component.
-  260 | }
-  261 |
-&gt; 262 | const meta: Meta&lt;typeof HorizontalFilterToolbar&gt; = {
+  257 | }
+  258 |
+&gt; 259 | const meta: Meta&lt;typeof HorizontalFilterToolbar&gt; = {
       | ^
-  263 |   title: &quot;Components/FilterList/Recipes&quot;,
-  264 |   component: HorizontalFilterToolbar,
-  265 |   tags: [&quot;beta&quot;],
+  260 |   title: &quot;Components/FilterList/Recipes&quot;,
+  261 |   component: HorizontalFilterToolbar,
+  262 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/Recipes/HorizontalToolbar.stories.tsx:
 /*
@@ -32854,7 +33169,6 @@ const sitesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;locationCity&quot;,
   label: &quot;Sites&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -32863,7 +33177,6 @@ const specialtiesFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;department&quot;,
   label: &quot;Specialties&quot;,
   filterComponent: &quot;MULTI_SELECT&quot;,
-  filterState: { type: &quot;SELECT&quot;, selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
@@ -32872,7 +33185,6 @@ const consultantsFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   key: &quot;fullName&quot;,
   label: &quot;Consultants&quot;,
   filterComponent: &quot;CONTAINS_TEXT&quot;,
-  filterState: { type: &quot;CONTAINS_TEXT&quot; },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion&lt;Employee&gt;[] = [
@@ -33144,9 +33456,9 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
 &lt;HorizontalFilterToolbar
   objectType={Employee}
   filterDefinitions={[
-    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot;, filterState: { type: &quot;SELECT&quot;, selectedValues: [] } },
-    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot;, filterState: { type: &quot;CONTAINS_TEXT&quot; } },
+    { type: &quot;PROPERTY&quot;, key: &quot;locationCity&quot;, label: &quot;Sites&quot;, filterComponent: &quot;MULTI_SELECT&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;department&quot;, label: &quot;Specialties&quot;, filterComponent: &quot;MULTI_SELECT&quot; },
+    { type: &quot;PROPERTY&quot;, key: &quot;fullName&quot;, label: &quot;Consultants&quot;, filterComponent: &quot;CONTAINS_TEXT&quot; },
   ]}
 /&gt;`,
       },
