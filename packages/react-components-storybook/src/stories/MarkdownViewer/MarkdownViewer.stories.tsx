@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { MarkdownRendererProps } from "@osdk/react-components/experimental/markdown-renderer";
-import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
+import type { BaseMarkdownViewerProps } from "@osdk/react-components/experimental/markdown-renderer";
+import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const SAMPLE_MARKDOWN = `# Sample Document
 
 ## Introduction
 
-This is a **sample markdown** document that demonstrates the *MarkdownRenderer* component.
+This is a **sample markdown** document that demonstrates the *BaseMarkdownViewer* component.
 
 ### Features
 
@@ -39,10 +39,10 @@ This is a **sample markdown** document that demonstrates the *MarkdownRenderer* 
 ## Code Example
 
 \`\`\`typescript
-import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
+import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
 function App() {
-  return <MarkdownRenderer content="# Hello World" />;
+  return <BaseMarkdownViewer content="# Hello World" />;
 }
 \`\`\`
 
@@ -97,16 +97,16 @@ You can also use explicit links like [GitHub](https://github.com).
 *End of document.*
 `;
 
-const meta: Meta<MarkdownRendererProps> = {
-  title: "Components/DocumentViewer/Renderers/MarkdownRenderer",
-  component: MarkdownRenderer,
+const meta: Meta<BaseMarkdownViewerProps> = {
+  title: "Components/DocumentViewer/Renderers/MarkdownViewer",
+  component: BaseMarkdownViewer,
   tags: ["beta"],
   args: {
     content: SAMPLE_MARKDOWN,
   },
-  render: (args: MarkdownRendererProps) => (
+  render: (args: BaseMarkdownViewerProps) => (
     <div style={{ height: "600px" }}>
-      <MarkdownRenderer {...args} />
+      <BaseMarkdownViewer {...args} />
     </div>
   ),
   parameters: {
@@ -135,17 +135,17 @@ export const MinimalContent: Story = {
   args: {
     content: "# Hello World\n\nA simple paragraph with **bold** and *italic*.",
   },
-  render: (args: MarkdownRendererProps) => (
+  render: (args: BaseMarkdownViewerProps) => (
     <div style={{ height: "300px" }}>
-      <MarkdownRenderer {...args} />
+      <BaseMarkdownViewer {...args} />
     </div>
   ),
   parameters: {
     docs: {
       source: {
-        code: `import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
+        code: `import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
-<MarkdownRenderer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
+<BaseMarkdownViewer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
       },
     },
   },

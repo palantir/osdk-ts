@@ -20,9 +20,9 @@ import { Error as ErrorIcon } from "@blueprintjs/icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
 
-import type { TiffRendererProps } from "./types.js";
+import type { BaseTiffViewerProps } from "./TiffViewerApi.js";
 
-import styles from "./TiffRenderer.module.css";
+import styles from "./BaseTiffViewer.module.css";
 
 // 25 MB limit — TIFF decoding expands compressed data into a full RGBA bitmap
 // in memory, so capping the input size prevents the browser from allocating an
@@ -120,7 +120,7 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
     );
   });
 
-export const TiffRenderer: React.FunctionComponent<TiffRendererProps> =
+export const BaseTiffViewer: React.FunctionComponent<BaseTiffViewerProps> =
   React.memo(({ content, onError }) => {
     const [result, setResult] = useState<DecodeResult | undefined>(undefined);
     const onErrorRef = useRef(onError);

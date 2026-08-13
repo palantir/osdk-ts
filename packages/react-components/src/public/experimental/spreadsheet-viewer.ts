@@ -20,7 +20,7 @@ export type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
   SheetData,
-  SpreadsheetViewerMediaProps,
+  SpreadsheetViewerProps,
 } from "../../spreadsheet-viewer/SpreadsheetViewerApi.js";
 
 // SpreadsheetViewer (Media wrapper)

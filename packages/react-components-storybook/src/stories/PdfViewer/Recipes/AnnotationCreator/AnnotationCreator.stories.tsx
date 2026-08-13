@@ -15,10 +15,10 @@
  */
 
 import type {
+  BasePdfViewerProps,
   PdfAnnotation,
   PdfRect,
   PdfViewerHandle,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -316,7 +316,7 @@ function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
   );
 }
 
-const meta: Meta<PdfViewerProps> = {
+const meta: Meta<BasePdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
   tags: ["beta"],

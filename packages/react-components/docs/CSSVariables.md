@@ -33,7 +33,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Form Section](#form-section)
   - [Input](#input)
   - [Number Input](#number-input)
-  - [Markdown Renderer](#markdown-renderer)
+  - [Markdown Viewer](#markdown-viewer)
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
@@ -1228,25 +1228,25 @@ Styling for the stepper (increment / decrement button group) beside the number i
 | `--osdk-number-input-stepper-border-color` | `var(--osdk-button-border-color)`                                                                                                    | Stepper border color |
 | `--osdk-number-input-stepper-shadow`       | `0 var(--osdk-number-input-stepper-border-width) var(--osdk-number-input-stepper-border-width) var(--osdk-button-drop-shadow-color)` | Stepper drop shadow  |
 
-### Markdown Renderer
+### Markdown Viewer
 
-Styling for markdown renderer components.
+Styling for markdown viewer components.
 
-| Variable                                             | Default Value                               | Description               |
-| ---------------------------------------------------- | ------------------------------------------- | ------------------------- |
-| `--osdk-markdown-renderer-bg`                        | `var(--osdk-background-primary)`            | Container background      |
-| `--osdk-markdown-renderer-border`                    | `var(--osdk-surface-border)`                | Container border          |
-| `--osdk-markdown-renderer-padding`                   | `calc(var(--osdk-surface-spacing) * 3)`     | Container padding         |
-| `--osdk-markdown-renderer-line-height`               | `1.6`                                       | Content line height       |
-| `--osdk-markdown-renderer-heading-margin-top`        | `1.5em`                                     | Heading top margin        |
-| `--osdk-markdown-renderer-heading-margin-bottom`     | `0.5em`                                     | Heading bottom margin     |
-| `--osdk-markdown-renderer-paragraph-spacing`         | `1em`                                       | Paragraph spacing         |
-| `--osdk-markdown-renderer-code-bg`                   | `var(--osdk-background-secondary)`          | Code block background     |
-| `--osdk-markdown-renderer-code-inline-padding`       | `2px 6px`                                   | Inline code padding       |
-| `--osdk-markdown-renderer-code-inline-border-radius` | `3px`                                       | Inline code border radius |
-| `--osdk-markdown-renderer-blockquote-border`         | `3px solid var(--osdk-intent-primary-rest)` | Blockquote border         |
-| `--osdk-markdown-renderer-link-color`                | `var(--osdk-intent-primary-rest)`           | Link color                |
-| `--osdk-markdown-renderer-table-border`              | `var(--osdk-surface-border-color)`          | Table border color        |
+| Variable                                           | Default Value                               | Description               |
+| -------------------------------------------------- | ------------------------------------------- | ------------------------- |
+| `--osdk-markdown-viewer-bg`                        | `var(--osdk-background-primary)`            | Container background      |
+| `--osdk-markdown-viewer-border`                    | `var(--osdk-surface-border)`                | Container border          |
+| `--osdk-markdown-viewer-padding`                   | `calc(var(--osdk-surface-spacing) * 3)`     | Container padding         |
+| `--osdk-markdown-viewer-line-height`               | `1.6`                                       | Content line height       |
+| `--osdk-markdown-viewer-heading-margin-top`        | `1.5em`                                     | Heading top margin        |
+| `--osdk-markdown-viewer-heading-margin-bottom`     | `0.5em`                                     | Heading bottom margin     |
+| `--osdk-markdown-viewer-paragraph-spacing`         | `1em`                                       | Paragraph spacing         |
+| `--osdk-markdown-viewer-code-bg`                   | `var(--osdk-background-secondary)`          | Code block background     |
+| `--osdk-markdown-viewer-code-inline-padding`       | `2px 6px`                                   | Inline code padding       |
+| `--osdk-markdown-viewer-code-inline-border-radius` | `3px`                                       | Inline code border radius |
+| `--osdk-markdown-viewer-blockquote-border`         | `3px solid var(--osdk-intent-primary-rest)` | Blockquote border         |
+| `--osdk-markdown-viewer-link-color`                | `var(--osdk-intent-primary-rest)`           | Link color                |
+| `--osdk-markdown-viewer-table-border`              | `var(--osdk-surface-border-color)`          | Table border color        |
 
 ### Object Set
 

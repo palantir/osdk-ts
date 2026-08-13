@@ -18,7 +18,7 @@ import { act, cleanup, render, screen } from "@testing-library/react";
 import type { IFD } from "utif";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { TiffRenderer } from "../TiffRenderer.js";
+import { BaseTiffViewer } from "../BaseTiffViewer.js";
 
 vi.mock("utif", () => ({
   decode: vi.fn(),
@@ -40,7 +40,7 @@ function createMockImage(width: number, height: number) {
   return { width, height } as IFD;
 }
 
-describe("TiffRenderer", () => {
+describe("BaseTiffViewer", () => {
   it("should render a canvas when given valid TIFF data", async () => {
     const mockImage = createMockImage(100, 50);
     mockedDecode.mockReturnValue([mockImage]);
@@ -50,7 +50,7 @@ describe("TiffRenderer", () => {
     const content = new Uint8Array(100);
     let container: HTMLElement;
     await act(() => {
-      ({ container } = render(<TiffRenderer content={content} />));
+      ({ container } = render(<BaseTiffViewer content={content} />));
     });
 
     const canvas = container!.querySelector("canvas");
@@ -63,7 +63,7 @@ describe("TiffRenderer", () => {
     const largeContent = new Uint8Array(26_000_000);
 
     await act(() => {
-      render(<TiffRenderer content={largeContent} />);
+      render(<BaseTiffViewer content={largeContent} />);
     });
 
     expect(screen.getByText(/exceeds maximum size/u)).toBeTruthy();
@@ -77,7 +77,7 @@ describe("TiffRenderer", () => {
     const onError = vi.fn();
     const content = new Uint8Array(100);
     await act(() => {
-      render(<TiffRenderer content={content} onError={onError} />);
+      render(<BaseTiffViewer content={content} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("TiffRenderer", () => {
     const onError = vi.fn();
     const content = new Uint8Array(100);
     await act(() => {
-      render(<TiffRenderer content={content} onError={onError} />);
+      render(<BaseTiffViewer content={content} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe("TiffRenderer", () => {
     const onError = vi.fn();
     const content = new Uint8Array(100);
     await act(() => {
-      render(<TiffRenderer content={content} onError={onError} />);
+      render(<BaseTiffViewer content={content} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe("TiffRenderer", () => {
     const onError = vi.fn();
 
     await act(() => {
-      render(<TiffRenderer content={largeContent} onError={onError} />);
+      render(<BaseTiffViewer content={largeContent} onError={onError} />);
     });
 
     expect(mockedDecode).not.toHaveBeenCalled();

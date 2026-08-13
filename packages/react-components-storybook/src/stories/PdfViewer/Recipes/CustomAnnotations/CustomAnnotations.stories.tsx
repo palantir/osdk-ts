@@ -15,9 +15,9 @@
  */
 
 import type {
+  BasePdfViewerProps,
   PdfAnnotation,
   PdfAnnotationRenderProps,
-  PdfViewerProps,
 } from "@osdk/react-components/experimental/pdf-viewer";
 import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -105,7 +105,7 @@ const CUSTOM_ANNOTATIONS: PdfAnnotation[] = [
   },
 ];
 
-const meta: Meta<PdfViewerProps> = {
+const meta: Meta<BasePdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer/Recipes",
   component: BasePdfViewer,
   tags: ["beta"],
@@ -114,7 +114,7 @@ const meta: Meta<PdfViewerProps> = {
     annotations: CUSTOM_ANNOTATIONS,
     onAnnotationClick: fn(),
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: BasePdfViewerProps) => (
     <div style={{ height: "600px" }}>
       <BasePdfViewer {...args} />
     </div>

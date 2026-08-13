@@ -39,10 +39,7 @@ export interface BaseEmailViewerProps {
   className?: string;
 }
 
-export interface EmailViewerMediaProps extends Omit<
-  BaseEmailViewerProps,
-  "email"
-> {
+export interface EmailViewerProps extends Omit<BaseEmailViewerProps, "email"> {
   /** The Media object to fetch EML contents from */
   media: Media;
 }

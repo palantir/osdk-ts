@@ -18,7 +18,7 @@
 export { BaseImageViewer } from "../../images/image-viewer/BaseImageViewer.js";
 export type {
   BaseImageViewerProps,
-  ImageViewerMediaProps,
+  ImageViewerProps,
 } from "../../images/image-viewer/ImageViewerApi.js";
 
 // ImageViewer (Media wrapper)

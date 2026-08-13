@@ -18,7 +18,7 @@
 export { BaseXmlViewer } from "../../xml-viewer/BaseXmlViewer.js";
 export type {
   BaseXmlViewerProps,
-  XmlViewerMediaProps,
+  XmlViewerProps,
 } from "../../xml-viewer/XmlViewerApi.js";
 
 // XmlViewer (Media wrapper)

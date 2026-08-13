@@ -15,14 +15,14 @@
  */
 
 import { useOsdkObject } from "@osdk/react";
-import type { PdfViewerMediaProps } from "@osdk/react-components/experimental/pdf-viewer";
+import type { PdfViewerProps } from "@osdk/react-components/experimental/pdf-viewer";
 import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
-const meta: Meta<PdfViewerMediaProps> = {
+const meta: Meta<PdfViewerProps> = {
   title: "Components/DocumentViewer/Renderers/PdfViewer",
   component: PdfViewer,
   tags: ["beta"],

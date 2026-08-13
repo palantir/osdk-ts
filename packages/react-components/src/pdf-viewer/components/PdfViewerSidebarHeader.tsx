@@ -19,7 +19,7 @@ import { ToggleGroup } from "@base-ui/react/toggle-group";
 import { GridView, Properties } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
 
-import type { SidebarMode } from "../types.js";
+import type { SidebarMode } from "../PdfViewerApi.js";
 
 import styles from "./PdfViewerSidebarHeader.module.css";
 

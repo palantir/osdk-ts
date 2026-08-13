@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-export interface TiffRendererProps {
+import type { Media } from "@osdk/api";
+
+export interface BaseTiffViewerProps {
   /** TIFF bytes to render */
   content: Uint8Array;
   /** Callback fired when rendering fails */
   onError?: () => void;
+}
+
+export interface TiffViewerProps extends Omit<BaseTiffViewerProps, "content"> {
+  /** The Media object to fetch TIFF contents from */
+  media: Media;
+  /** Additional CSS class name for the root element */
+  className?: string;
 }

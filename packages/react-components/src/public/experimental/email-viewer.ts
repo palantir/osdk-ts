@@ -19,7 +19,7 @@ export { BaseEmailViewer } from "../../email-viewer/BaseEmailViewer.js";
 export type {
   BaseEmailViewerProps,
   EmailAddress,
-  EmailViewerMediaProps,
+  EmailViewerProps,
   ParsedEmail,
 } from "../../email-viewer/EmailViewerApi.js";
 

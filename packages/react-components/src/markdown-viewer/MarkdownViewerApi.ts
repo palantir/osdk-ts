@@ -14,35 +14,19 @@
  * limitations under the License.
  */
 
-import classnames from "classnames";
-import React from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import type { Media } from "@osdk/api";
 
-import styles from "./MarkdownRenderer.module.css";
-
-export interface MarkdownRendererProps {
+export interface BaseMarkdownViewerProps {
   /** Markdown text to render */
   content: string;
   /** Additional CSS class name for the root element */
   className?: string;
 }
 
-const REMARK_PLUGINS = [remarkGfm];
-
-export function MarkdownRenderer({
-  content,
-  className,
-}: MarkdownRendererProps): React.ReactElement {
-  const rootClassName = classnames(styles.container, className);
-
-  return (
-    <div className={rootClassName}>
-      <div className={styles.documentWrapper}>
-        <div className={styles.document}>
-          <Markdown remarkPlugins={REMARK_PLUGINS}>{content}</Markdown>
-        </div>
-      </div>
-    </div>
-  );
+export interface MarkdownViewerProps extends Omit<
+  BaseMarkdownViewerProps,
+  "content"
+> {
+  /** The Media object to fetch markdown contents from */
+  media: Media;
 }

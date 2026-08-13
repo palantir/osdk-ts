@@ -349,7 +349,7 @@ export const TiffWithPdfConversion: Story = {
         code: `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 
 // Multi-page TIFFs are detected and converted to PDF via MIO transform API
-// Falls back to TiffRenderer if transform fails or for single-page TIFFs
+// Falls back to TiffViewer if transform fails or for single-page TIFFs
 <DocumentViewer media={myMedia} enableTiffToPdf fileName="scan.tiff" />`,
       },
     },

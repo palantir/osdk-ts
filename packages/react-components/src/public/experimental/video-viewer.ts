@@ -18,7 +18,7 @@
 export { BaseVideoViewer } from "../../video-viewer/BaseVideoViewer.js";
 export type {
   BaseVideoViewerProps,
-  VideoViewerMediaProps,
+  VideoViewerProps,
 } from "../../video-viewer/VideoViewerApi.js";
 
 // VideoViewer (Media wrapper)

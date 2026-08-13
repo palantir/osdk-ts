@@ -20,7 +20,7 @@ import React from "react";
 
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { BaseImageViewer } from "./BaseImageViewer.js";
-import type { ImageViewerMediaProps } from "./ImageViewerApi.js";
+import type { ImageViewerProps } from "./ImageViewerApi.js";
 
 import styles from "./BaseImageViewer.module.css";
 
@@ -37,7 +37,7 @@ export function ImageViewer({
   media,
   className,
   ...imageViewerProps
-}: ImageViewerMediaProps): React.ReactElement {
+}: ImageViewerProps): React.ReactElement {
   const {
     data: src,
     loading,
