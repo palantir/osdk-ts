@@ -71,7 +71,6 @@
     "packages/create-app.template.typescript-library.beta/",
     "packages/create-app.template.vue/",
     "packages/create-app.template.vue.v2/",
-    "packages/create-widget.template.minimal-react.v2/",
     "packages/create-widget.template.react.v2/",
     "packages/cli/",
     "packages/cli.common/",

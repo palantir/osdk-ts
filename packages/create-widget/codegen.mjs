@@ -36,6 +36,11 @@ export const TEMPLATES = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     supportsOsdk: false,
+    hidden: true,
+    // minimal-react template is now replaced by the react template rendered
+    // without OSDK. We continue to support it as a hidden template for
+    // compatibility with existing CLI snippets.
+    aliasTemplateId: "react",
   },
 ];
 
@@ -55,14 +60,15 @@ fs.writeFileSync(
 
   export const TEMPLATES: readonly Template[] = [
   ${TEMPLATES.map((template) => {
+    const packageId = template.aliasTemplateId ?? template.id;
     const v1Name = findPackageName([
-      `@osdk/create-widget.template.${template.id}.v1`,
-      `@osdk/create-widget.template.${template.id}`,
+      `@osdk/create-widget.template.${packageId}.v1`,
+      `@osdk/create-widget.template.${packageId}`,
     ]);
     const v2Name = findPackageName([
-      `@osdk/create-widget.template.${template.id}.v2`,
-      `@osdk/create-widget.template.${template.id}.beta`,
-      `@osdk/create-widget.template.${template.id}`,
+      `@osdk/create-widget.template.${packageId}.v2`,
+      `@osdk/create-widget.template.${packageId}.beta`,
+      `@osdk/create-widget.template.${packageId}`,
     ]);
     return dedent`
           // ${template.label}
@@ -72,6 +78,7 @@ fs.writeFileSync(
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
             supportsOsdk: ${template.supportsOsdk},
+            hidden: ${template.hidden ?? false},
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
