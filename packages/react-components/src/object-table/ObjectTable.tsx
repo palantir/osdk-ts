@@ -83,7 +83,6 @@ export function ObjectTable<
   focusedRow,
   onFocusedRowChanged,
   tableRef,
-  labels,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -301,7 +300,6 @@ export function ObjectTable<
         focusedRow == null ? focusedRow : getRowIdFromPrimaryKey<Q>(focusedRow)
       }
       onFocusedRowChanged={onFocusedRowChanged}
-      labels={labels}
     />
   );
 }
