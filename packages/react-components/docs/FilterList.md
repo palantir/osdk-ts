@@ -227,7 +227,6 @@ Type parameters: `Q extends ObjectTypeDefinition`, `L extends LinkNames<Q>`, `Li
   reverseLinkName: "directReports", // Manager → Employee (back-link)
   linkedPropertyKey: "fullName",
   filterComponent: "MULTI_SELECT",
-  defaultFilterState: { type: "SELECT", selectedValues: [] },
 }
 ```
 
@@ -240,7 +239,6 @@ Type parameters: `Q extends ObjectTypeDefinition`, `L extends LinkNames<Q>`, `Li
   // no reverseLinkName — FilterList won't narrow objectSet on this filter
   linkedPropertyKey: "fullName",
   filterComponent: "MULTI_SELECT",
-  defaultFilterState: { type: "SELECT", selectedValues: [] },
 }
 ```
 
@@ -380,21 +378,18 @@ const filterDefinitions = [
     key: "department",
     label: "Department",
     filterComponent: "LISTOGRAM",
-    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
     key: "team",
     label: "Team",
     filterComponent: "LISTOGRAM",
-    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
     key: "fullName",
     label: "Full Name",
     filterComponent: "CONTAINS_TEXT",
-    defaultFilterState: { type: "CONTAINS_TEXT" },
     isVisible: false,
   },
   {
@@ -402,7 +397,6 @@ const filterDefinitions = [
     key: "startDate",
     label: "Start Date",
     filterComponent: "DATE_RANGE",
-    defaultFilterState: { type: "DATE_RANGE" },
     isVisible: false,
   },
 ];
@@ -673,7 +667,6 @@ LISTOGRAM and TEXT_TAGS filters support an exclude/include toggle. Hover a filte
       type: "PROPERTY",
       key: "department",
       filterComponent: "LISTOGRAM",
-      defaultFilterState: { type: "EXACT_MATCH", values: [] },
     },
   ]}
 />;
