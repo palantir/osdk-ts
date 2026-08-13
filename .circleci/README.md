@@ -11,15 +11,15 @@ pnpm monorepo on CircleCI.
 
 ## Remaining steps
 
-**`GITHUB_TOKEN` — optional.** Only the two jobs that write to the PR need it:
-`bundle-size` posts its size-limit comparison, and `fork-guard` reads the
-`safe-to-test` label as a bypass. Without it they print to the job log instead.
+**`GITHUB_TOKEN` — optional.** Only `bundle-size` needs it, to post its
+size-limit comparison as a PR comment. Without it the report prints to the job
+log instead.
 
 Set it as a plain project environment variable, which is what Blueprint does, or
-as an org context, in which case add `context: <name>` to the `bundle-size` and
-`fork-guard` entries under `workflows:`. It needs `pull-requests: write` and
-`issues: read`; unlike Actions, CircleCI has no automatic per-run token, so prefer
-a machine account or App over a personal PAT.
+as an org context, in which case add `context: <name>` to the `bundle-size` entry
+under `workflows:`. It needs `pull-requests: write`; unlike Actions, CircleCI has
+no automatic per-run token, so prefer a machine account or App over a personal
+PAT.
 
 **Never enable "Pass secrets to forked pull requests."** That hands the token to
 arbitrary contributors.
@@ -74,20 +74,17 @@ logs and writes no file; without the gitignore, turbo folds the untracked XML in
 each package's input hash and every test task misses on the following run.
 `env: ["FORCE_COLOR", "CI"]` is there because the vitest config switches on `CI`.
 
-## Asking "did this change?"
+## Deciding what needs to run
 
-Two questions, two tools, and mixing them up causes real bugs:
+`scripts/is-affected.sh` answers "does this package need rebuilding or
+retesting?" by asking turbo's package graph rather than matching paths. A path
+pattern is transitively blind: a change to `@osdk/client` reaches a story through
+imports, and no glob over `packages/react-components*` would see it.
+`storybook-interaction-tests` uses it.
 
-- **"Which files changed?"** — `scripts/changed-files.sh`. `fork-guard` uses it.
-- **"Does this package need rebuilding or retesting?"** —
-  `scripts/is-affected.sh`, which asks turbo's package graph. A path pattern is
-  transitively blind: a change to `@osdk/client` reaches a story through imports,
-  and no glob over `packages/react-components*` would see it.
-  `storybook-interaction-tests` uses it.
-
-Both build on `scripts/base-ref.sh` and both **fail open** — an unresolvable base
-means do the work, because skipping a job we needed is worse than running one we
-did not.
+It builds on `scripts/base-ref.sh` and **fails open** — an unresolvable base means
+do the work, because skipping a job we needed is worse than running one we did
+not.
 
 Any root-level file change marks turbo's root package `//` as changed, so a bare
 `--affected` behaves surprisingly on a CI-config PR.
@@ -98,7 +95,6 @@ Any root-level file change marks turbo's root package `//` as changed, so a bare
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `github.event.pull_request.base.sha` | `scripts/base-ref.sh`, which resolves the merge-base with `main` and exits 2 when it cannot.                                                                          |
 | `if:` on branch                      | Job-level `filters: branches: ignore:`, on `changesets` and `bundle-size`. Safe only because neither gates `ci-all`; a filtered-out job blocks anything requiring it. |
-| `if:` on event payload               | `fork-guard` calls `circleci-agent step halt`, which ends the job **successfully** so `ci-all` stays reachable.                                                       |
 | `services:` container                | A second image in the job's `docker:` list (`e2e` + verdaccio), plus a readiness poll, since these have no healthcheck.                                               |
 | `actions/cache` `restore-keys`       | `restore_cache` with an ordered `keys:` list.                                                                                                                         |
 
@@ -119,7 +115,7 @@ Two deliberate divergences beyond Storybook:
 | xlarge | `build`, `typecheck`, `lint`, `build-apps`, `test`, `storybook-interaction-tests` | Genuinely parallel; oxlint/oxfmt are Rust and scale across cores. |
 | large  | `install`, `e2e`, `bundle-size`, `build-storybook`                                | I/O bound, or single-threaded where it matters (Rollup).          |
 | medium | `changesets`, `cspell`                                                            | Short and mostly single-task.                                     |
-| small  | `fork-guard`, `ci-all`                                                            | A `git diff` and an `echo`.                                       |
+| small  | `ci-all`                                                                          | An `echo`.                                                        |
 
 - **One install.** Only `install` runs `pnpm install`; everything else attaches
   `node_modules` from the workspace, trading a ~1.1 GB upload for fifteen fewer

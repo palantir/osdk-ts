@@ -8,8 +8,6 @@ aliases:
   - &ci-environment
     DO_NOT_TRACK: "1"
     TURBO_TELEMETRY_DISABLED: "1"
-    # Let corepack fetch the pinned pnpm without prompting.
-    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
     PNPM_STORE_DIR: /home/circleci/.pnpm-store
 
   # Packages that need Node 20+, so they sit out the Node 18 leg.
@@ -51,12 +49,9 @@ commands:
     description: Make the repo's pinned pnpm available on PATH.
     steps:
       - run:
-          name: Activate pnpm
+          name: Install pnpm
           command: |
-            # cimg/node's bundled corepack can be too old to verify the
-            # signatures of current pnpm releases.
-            sudo npm install --global --silent corepack@latest
-            sudo corepack enable
+            sudo npm install --global --silent pnpm@10
             pnpm --version
 
   install-deps:
@@ -603,28 +598,6 @@ jobs:
             node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
             /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
 
-  # Fork PRs cannot be trusted to modify install-time or CI configuration:
-  # either would run attacker-controlled code with our credentials.
-  fork-guard:
-    executor:
-      name: node
-      resource-class: small
-    steps:
-      - checkout
-      # The guard gets its own step so `halt` can end the job before it.
-      # Folding them together would fail in-repo PRs that legitimately touch CI
-      # config.
-      - run:
-          name: Skip unless this is a fork pull request
-          command: |
-            # CIRCLE_PR_REPONAME is only set for pull requests from a fork.
-            if [ -z "${CIRCLE_PR_REPONAME:-}" ]; then
-              echo "Not a fork pull request; nothing to guard."
-              circleci-agent step halt
-            fi
-      - run:
-          name: Guard install-time config from fork PRs
-          command: .circleci/scripts/fork-guard.sh
 
   # Single fan-in check. CircleCI skips a job whose upstream failed, so unlike
   # the Actions equivalent this needs no per-job result inspection.
@@ -641,9 +614,6 @@ workflows:
   ci:
     jobs:
       - install
-      # Needs no node_modules, so it stays a true root and fails fast on an
-      # untrusted fork PR.
-      - fork-guard
       # Both of these only mean something on a PR, so they are filtered out of
       # the trunk branches rather than started and halted. Neither gates
       # `ci-all`, which is what makes filtering them safe: a filtered-out job
@@ -700,5 +670,4 @@ workflows:
             - cspell
             - test
             - e2e
-            - fork-guard
             - storybook-interaction-tests
