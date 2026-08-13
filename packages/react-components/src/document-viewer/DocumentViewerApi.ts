@@ -53,12 +53,14 @@ export interface DocumentViewerProps {
   videoViewerProps?: Partial<Omit<BaseVideoViewerProps, "src" | "className">>;
   /** Props forwarded to BaseTiffViewer when rendering TIFF
    * @default undefined */
-  tiffViewerProps?: Partial<Omit<BaseTiffViewerProps, "content" | "className">>;
+  tiffViewerProps?: Partial<
+    Omit<BaseTiffViewerProps, "src" | "content" | "className">
+  >;
   /** Alias for `tiffViewerProps`, which takes precedence when set to a non-nullish value.
    * @deprecated Use `tiffViewerProps` instead.
    * @default undefined */
   tiffRendererProps?: Partial<
-    Omit<BaseTiffViewerProps, "content" | "className">
+    Omit<BaseTiffViewerProps, "src" | "content" | "className">
   >;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
    *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream).

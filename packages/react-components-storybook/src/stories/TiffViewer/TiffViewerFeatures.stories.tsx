@@ -101,7 +101,7 @@ const meta: Meta<BaseTiffViewerProps> = {
   component: BaseTiffViewer,
   tags: ["beta"],
   args: {
-    content: sampleTiffBytes,
+    src: sampleTiffBytes,
   },
   render: (args: BaseTiffViewerProps) => (
     <div style={{ height: "400px" }}>
@@ -114,7 +114,7 @@ const meta: Meta<BaseTiffViewerProps> = {
     },
   },
   argTypes: {
-    content: {
+    src: {
       description: "TIFF bytes to render",
       control: false,
     },
@@ -135,7 +135,7 @@ export const WithContent: Story = {
       source: {
         code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
-<BaseTiffViewer content={tiffBytes} />`,
+<BaseTiffViewer src={tiffBytes} />`,
       },
     },
   },
@@ -150,7 +150,7 @@ export const WithErrorCallback: Story = {
       source: {
         code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
-<BaseTiffViewer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
+<BaseTiffViewer src={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },
     },
   },

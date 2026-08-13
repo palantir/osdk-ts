@@ -29,7 +29,7 @@ import { TiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 ```tsx
 import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
-<BaseTiffViewer content={tiffBytes} />;
+<BaseTiffViewer src={tiffBytes} />;
 ```
 
 ## Props
@@ -38,7 +38,8 @@ import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-rendere
 
 | Prop      | Type         | Default     | Description                         |
 | --------- | ------------ | ----------- | ----------------------------------- |
-| `content` | `Uint8Array` | (required)  | TIFF bytes to render                |
+| `src`     | `Uint8Array` | `undefined` | TIFF bytes to render                |
+| `content` | `Uint8Array` | `undefined` | **Deprecated** — rename to `src`    |
 | `onError` | `() => void` | `undefined` | Callback fired when rendering fails |
 
 ### `TiffViewerProps`

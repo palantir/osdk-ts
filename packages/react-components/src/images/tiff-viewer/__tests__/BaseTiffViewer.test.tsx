@@ -47,10 +47,10 @@ describe("BaseTiffViewer", () => {
     mockedDecodeImage.mockReturnValue(undefined);
     mockedToRGBA8.mockReturnValue(new Uint8Array(100 * 50 * 4));
 
-    const content = new Uint8Array(100);
+    const bytes = new Uint8Array(100);
     let container: HTMLElement;
     await act(() => {
-      ({ container } = render(<BaseTiffViewer content={content} />));
+      ({ container } = render(<BaseTiffViewer src={bytes} />));
     });
 
     const canvas = container!.querySelector("canvas");
@@ -60,10 +60,10 @@ describe("BaseTiffViewer", () => {
   });
 
   it("should show error when TIFF exceeds max size", async () => {
-    const largeContent = new Uint8Array(26_000_000);
+    const largeBytes = new Uint8Array(26_000_000);
 
     await act(() => {
-      render(<BaseTiffViewer content={largeContent} />);
+      render(<BaseTiffViewer src={largeBytes} />);
     });
 
     expect(screen.getByText(/exceeds maximum size/u)).toBeTruthy();
@@ -75,9 +75,9 @@ describe("BaseTiffViewer", () => {
     });
 
     const onError = vi.fn();
-    const content = new Uint8Array(100);
+    const bytes = new Uint8Array(100);
     await act(() => {
-      render(<BaseTiffViewer content={content} onError={onError} />);
+      render(<BaseTiffViewer src={bytes} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
@@ -87,9 +87,9 @@ describe("BaseTiffViewer", () => {
     mockedDecode.mockReturnValue([]);
 
     const onError = vi.fn();
-    const content = new Uint8Array(100);
+    const bytes = new Uint8Array(100);
     await act(() => {
-      render(<BaseTiffViewer content={content} onError={onError} />);
+      render(<BaseTiffViewer src={bytes} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
@@ -106,23 +106,72 @@ describe("BaseTiffViewer", () => {
     mockedToRGBA8.mockReturnValue(new Uint8Array(0));
 
     const onError = vi.fn();
-    const content = new Uint8Array(100);
+    const bytes = new Uint8Array(100);
     await act(() => {
-      render(<BaseTiffViewer content={content} onError={onError} />);
+      render(<BaseTiffViewer src={bytes} onError={onError} />);
     });
 
     expect(onError).toHaveBeenCalled();
   });
 
-  it("should not decode when content exceeds max size", async () => {
-    const largeContent = new Uint8Array(26_000_000);
+  it("should not decode when src exceeds max size", async () => {
+    const largeBytes = new Uint8Array(26_000_000);
     const onError = vi.fn();
 
     await act(() => {
-      render(<BaseTiffViewer content={largeContent} onError={onError} />);
+      render(<BaseTiffViewer src={largeBytes} onError={onError} />);
     });
 
     expect(mockedDecode).not.toHaveBeenCalled();
     expect(onError).toHaveBeenCalled();
+  });
+
+  it("should render from the deprecated content prop", async () => {
+    const mockImage = createMockImage(100, 50);
+    mockedDecode.mockReturnValue([mockImage]);
+    mockedDecodeImage.mockReturnValue(undefined);
+    mockedToRGBA8.mockReturnValue(new Uint8Array(100 * 50 * 4));
+
+    const bytes = new Uint8Array(100);
+    let container: HTMLElement;
+    await act(() => {
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- covers the pre-rename fallback
+      ({ container } = render(<BaseTiffViewer content={bytes} />));
+    });
+
+    expect(container!.querySelector("canvas")).not.toBeNull();
+    expect(mockedDecode).toHaveBeenCalledWith(bytes.buffer);
+  });
+
+  it("should prefer src over the deprecated content prop", async () => {
+    const mockImage = createMockImage(100, 50);
+    mockedDecode.mockReturnValue([mockImage]);
+    mockedDecodeImage.mockReturnValue(undefined);
+    mockedToRGBA8.mockReturnValue(new Uint8Array(100 * 50 * 4));
+
+    const fromSrc = new Uint8Array(100);
+    const fromContent = new Uint8Array(200);
+    await act(() => {
+      render(
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- covers the pre-rename fallback
+        <BaseTiffViewer src={fromSrc} content={fromContent} />,
+      );
+    });
+
+    // Only `src` is decoded. The two inputs are distinguished by byte length
+    // rather than identity, because both are zero-filled.
+    expect(mockedDecode).toHaveBeenCalledTimes(1);
+    const decoded = mockedDecode.mock.calls[0]![0] as ArrayBuffer;
+    expect(decoded.byteLength).toBe(fromSrc.byteLength);
+  });
+
+  it("should render nothing when neither prop is set", async () => {
+    let container: HTMLElement;
+    await act(() => {
+      ({ container } = render(<BaseTiffViewer />));
+    });
+
+    expect(container!.querySelector("canvas")).toBeNull();
+    expect(mockedDecode).not.toHaveBeenCalled();
   });
 });

@@ -121,18 +121,25 @@ const TiffCanvas: React.FunctionComponent<{ imageData: TiffImageData }> =
   });
 
 export const BaseTiffViewer: React.FunctionComponent<BaseTiffViewerProps> =
-  React.memo(({ content, onError }) => {
+  React.memo(({ src, content, onError }) => {
     const [result, setResult] = useState<DecodeResult | undefined>(undefined);
     const onErrorRef = useRef(onError);
     onErrorRef.current = onError;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
+    const bytes = src ?? content;
+
     useEffect(() => {
-      const decodeResult = decodeTiff(content);
+      if (bytes == null) {
+        setResult(undefined);
+        return;
+      }
+      const decodeResult = decodeTiff(bytes);
       setResult(decodeResult);
       if (decodeResult.status === "error") {
         onErrorRef.current?.();
       }
-    }, [content]);
+    }, [bytes]);
 
     if (result == null) {
       return null;
