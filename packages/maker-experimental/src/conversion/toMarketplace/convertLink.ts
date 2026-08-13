@@ -187,6 +187,9 @@ export function convertLink(
   return {
     linkType: {
       definition,
+      ...(linkType.description !== undefined && {
+        description: linkType.description,
+      }),
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status, ridGenerator),

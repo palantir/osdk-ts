@@ -41,9 +41,18 @@ import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfM
 type DeleteInterfaceLinkActionBaseDefinition = {
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
-  sourceParameter?: { id?: string; displayName?: string };
-  targetParameter?: { id?: string; displayName?: string };
+  sourceParameter?: {
+    id?: string;
+    displayName?: string;
+    description?: string;
+  };
+  targetParameter?: {
+    id?: string;
+    displayName?: string;
+    description?: string;
+  };
   actionLevelValidation?: ActionLevelValidationDefinition;
   sections?: Array<ActionSection>;
   defaultFormat?: DefaultFormat;
@@ -118,6 +127,7 @@ export function defineDeleteInterfaceLinkAction(
     id: sourceId,
     displayName:
       def.sourceParameter?.displayName ?? from.displayMetadata.displayName,
+    description: def.sourceParameter?.description,
     type: {
       type: "interfaceReference",
       interfaceReference: { interfaceTypeRid: from.apiName },
@@ -131,6 +141,7 @@ export function defineDeleteInterfaceLinkAction(
     id: targetId,
     displayName:
       def.targetParameter?.displayName ?? withoutNamespace(targetApiName),
+    description: def.targetParameter?.description,
     type: {
       type: "interfaceReference",
       interfaceReference: { interfaceTypeRid: targetApiName },
@@ -150,6 +161,7 @@ export function defineDeleteInterfaceLinkAction(
       )}`,
     displayName:
       def.displayName ?? `Delete ${from.displayMetadata.displayName} link`,
+    description: def.description,
     status: def.status ?? "active",
     entities: {
       affectedInterfaceTypes: [from.apiName, targetApiName],

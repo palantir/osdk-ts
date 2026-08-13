@@ -98,6 +98,7 @@ export function defineModifyObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     rules: [

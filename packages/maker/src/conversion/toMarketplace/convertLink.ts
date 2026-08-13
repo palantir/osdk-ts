@@ -175,6 +175,9 @@ export function convertLink(linkType: LinkType): OntologyIrLinkTypeBlockDataV2 {
   return {
     linkType: {
       definition,
+      ...(linkType.description !== undefined && {
+        description: linkType.description,
+      }),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status),
       redacted: linkType.redacted ?? false,

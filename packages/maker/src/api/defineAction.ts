@@ -95,6 +95,7 @@ export type ActionTypeUserDefinition = {
   objectType: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
@@ -117,6 +118,7 @@ export type InterfaceActionTypeUserDefinition = {
   objectType?: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
+  description?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
