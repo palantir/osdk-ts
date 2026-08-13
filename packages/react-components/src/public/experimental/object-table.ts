@@ -27,6 +27,7 @@ export type {
   CustomColumnLocator,
   EditFieldConfig,
   FunctionColumnLocator,
+  LoadedObjectsChange,
   ObjectTableDataColumn,
   ObjectTableDataRow,
   ObjectTableHandle,
@@ -111,6 +112,10 @@ export {
   type UseFocusedRowProps,
   type UseFocusedRowResult,
 } from "../../object-table/hooks/useFocusedRow.js";
+export {
+  useLoadedObjectsChanged,
+  type UseLoadedObjectsChangedProps,
+} from "../../object-table/hooks/useLoadedObjectsChanged.js";
 export {
   useRowSelection,
   type UseRowSelectionChange,
