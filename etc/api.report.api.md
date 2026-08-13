@@ -2203,7 +2203,7 @@ export interface SelectArg<
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
-    $loadOntologyDefinedDerivedProperties?: boolean;
+    $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
     	// (undocumented)
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)

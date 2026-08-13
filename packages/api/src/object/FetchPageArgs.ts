@@ -82,7 +82,7 @@ export interface SelectArg<
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
-  $loadOntologyDefinedDerivedProperties?: boolean;
+  $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 export interface OrderByArg<
