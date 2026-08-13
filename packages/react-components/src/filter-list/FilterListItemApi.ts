@@ -38,8 +38,7 @@ export type PropertyTypeFromKey<
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
 /**
- * Common mix-in for filter definitions: opt-out flag for the header search
- * monocle.
+ * Fields shared by every filter definition, regardless of kind.
  */
 export interface FilterDefinitionControls {
   /**
@@ -50,6 +49,26 @@ export interface FilterDefinitionControls {
    * @default true
    */
   searchField?: boolean;
+
+  /**
+   *
+   * Optional unique identifier for stable keying across filter reorders.
+   * Set it explicitly when that derived value would collide, e.g. two filters on the
+   * same property.
+   *
+   * This is the key used in `defaultFilterStates`; `getFilterKey(definition)`
+   * returns it.
+   *
+   * @default a value derived from the definition (its `key`, or its link and property names)
+   */
+  id?: string;
+
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
 }
 
 /**
@@ -268,11 +287,6 @@ interface PropertyFilterDefinitionBase<
   type: "PROPERTY";
 
   /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
-
-  /**
    * The property key to filter on
    */
   key: K;
@@ -289,10 +303,16 @@ interface PropertyFilterDefinitionBase<
   filterComponent: C;
 
   /**
-   * The current state of the filter.
-   * If provided, the filter is controlled.
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  filterState: FilterStateByComponentType[C];
+  defaultFilterState?: FilterStateByComponentType[C];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`.
+   */
+  filterState?: FilterStateByComponentType[C];
 
   /**
    * Maps filter values to colors for visual differentiation.
@@ -342,13 +362,6 @@ interface PropertyFilterDefinitionBase<
    * @default false
    */
   clickToFilter?: boolean;
-
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }
 
 /**

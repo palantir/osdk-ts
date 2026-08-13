@@ -76,20 +76,20 @@ export interface HasLinkFilterDefinition<
   L extends LinkNames<Q> = LinkNames<Q>,
 > extends FilterDefinitionControls {
   type: "HAS_LINK";
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
   linkName: L;
   label?: string;
-  filterState: HasLinkFilterState;
-  defaultFilterState?: HasLinkFilterState;
+
   /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
+   * Seeds the filter's state on mount, FilterList owns the state from then on
+   *
+   * @default undefined (filter starts empty)
    */
-  isVisible?: boolean;
+  defaultFilterState?: HasLinkFilterState;
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  filterState?: HasLinkFilterState;
 }
 
 /**
@@ -105,10 +105,6 @@ export interface LinkedPropertyFilterDefinition<
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
 > extends FilterDefinitionControls {
   type: "LINKED_PROPERTY";
-  /**
-   * Optional unique identifier for stable keying across filter reorders.
-   */
-  id?: string;
   linkName: L;
   /**
    * Set this to make the filter narrow `objectSet`; the result is emitted
@@ -178,11 +174,4 @@ export interface LinkedPropertyFilterDefinition<
    * back to the raw value.
    */
   renderValue?: (value: string) => ReactNode;
-
-  /**
-   * Controls whether this filter is rendered.
-   * When false, the filter is hidden but its state is preserved.
-   * @default true
-   */
-  isVisible?: boolean;
 }

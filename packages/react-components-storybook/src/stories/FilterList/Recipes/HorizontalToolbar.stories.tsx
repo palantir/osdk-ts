@@ -42,7 +42,7 @@ const sitesFilter: FilterDefinitionUnion<Employee> = {
   key: "locationCity",
   label: "Sites",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
+  defaultFilterState: { type: "SELECT", selectedValues: [] },
 };
 
 const specialtiesFilter: FilterDefinitionUnion<Employee> = {
@@ -51,7 +51,7 @@ const specialtiesFilter: FilterDefinitionUnion<Employee> = {
   key: "department",
   label: "Specialties",
   filterComponent: "MULTI_SELECT",
-  filterState: { type: "SELECT", selectedValues: [] },
+  defaultFilterState: { type: "SELECT", selectedValues: [] },
 };
 
 const consultantsFilter: FilterDefinitionUnion<Employee> = {
@@ -60,7 +60,7 @@ const consultantsFilter: FilterDefinitionUnion<Employee> = {
   key: "fullName",
   label: "Consultants",
   filterComponent: "CONTAINS_TEXT",
-  filterState: { type: "CONTAINS_TEXT" },
+  defaultFilterState: { type: "CONTAINS_TEXT" },
 };
 
 const TOOLBAR_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -332,9 +332,9 @@ function HorizontalFilterToolbar({ objectType, filterDefinitions }) {
 <HorizontalFilterToolbar
   objectType={Employee}
   filterDefinitions={[
-    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" } },
+    { type: "PROPERTY", key: "locationCity", label: "Sites", filterComponent: "MULTI_SELECT", defaultFilterState: { type: "SELECT", selectedValues: [] } },
+    { type: "PROPERTY", key: "department", label: "Specialties", filterComponent: "MULTI_SELECT", defaultFilterState: { type: "SELECT", selectedValues: [] } },
+    { type: "PROPERTY", key: "fullName", label: "Consultants", filterComponent: "CONTAINS_TEXT", defaultFilterState: { type: "CONTAINS_TEXT" } },
   ]}
 />`,
       },
