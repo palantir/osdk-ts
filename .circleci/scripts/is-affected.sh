@@ -43,11 +43,10 @@ selected="$(
 )"
 status=$?
 
-# Any failure at all — turbo erroring, unparseable output — means we do not
-# know, and "do not know" has to mean "run it".
+# Any failure at all, we fail
 if [ "$status" -ne 0 ]; then
   echo "Could not determine the affected set (exit $status); treating $pkg as affected."
-  exit 0
+  exit 1
 fi
 
 if [ -z "$selected" ]; then
