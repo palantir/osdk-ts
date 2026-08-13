@@ -13,4 +13,4 @@ To migrate:
 - `PROPERTY`, `STATIC_VALUES`: rename `filterState` to `defaultFilterState`. The seed is now optional, so a `filterState` that only held an empty state (`{ type: "EXACT_MATCH", values: [] }` and friends) can be deleted instead — the filter starts empty either way.
 - Top level: rename `initialFilterStates` to `defaultFilterStates`.
 - Delete rather than rename `filterState` on `HAS_LINK` and `KEYWORD_SEARCH`. It has no effect, so renaming it would silently activate filters that were never active.
-- `CUSTOM`: leave `filterState` where it is to keep the current behavior. Renaming it to `defaultFilterState` starts filtering the object set.
+- `CUSTOM`: rename `filterState` to `defaultFilterState` to start filtering the object set.
