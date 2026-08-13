@@ -93,30 +93,27 @@ describe("FilterInput", () => {
       expect(receivedCustomState()).toEqual({ value: "stored" });
     });
 
-    it("falls back to the deprecated filterState", () => {
-      renderCustomFilter({ filterState: customState("definition") });
-
-      expect(receivedCustomState()).toEqual({ value: "definition" });
-    });
-
-    // `filterState` is optional now, so a definition can seed nothing at all.
-    // `renderInput` still has to receive a state object.
-    it("hands renderInput an empty custom state when the definition seeds nothing", () => {
+    it("hands renderInput an empty custom state when nothing is stored", () => {
       renderCustomFilter({});
 
       expect(receivedCustomState()).toEqual({});
     });
 
-    it("ignores a stored state that is not a custom state", () => {
-      renderCustomFilter(
-        { filterState: customState("definition") },
-        {
-          type: "EXACT_MATCH",
-          values: ["stray"],
-        },
-      );
+    // Both seed fields reach the input by seeding the state map, the same way
+    // they do for every other kind — see the useFilterListState tests.
+    it("does not read the definition's seed fields directly", () => {
+      renderCustomFilter({
+        defaultFilterState: customState("default"),
+        filterState: customState("deprecated"),
+      });
 
-      expect(receivedCustomState()).toEqual({ value: "definition" });
+      expect(receivedCustomState()).toEqual({});
+    });
+
+    it("ignores a stored state that is not a custom state", () => {
+      renderCustomFilter({}, { type: "EXACT_MATCH", values: ["stray"] });
+
+      expect(receivedCustomState()).toEqual({});
     });
 
     it("renders an unsupported marker when renderInput is missing", () => {

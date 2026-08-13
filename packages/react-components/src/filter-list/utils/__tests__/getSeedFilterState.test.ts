@@ -81,6 +81,21 @@ describe("getSeedFilterState", () => {
     it("returns undefined when the definition seeds nothing", () => {
       expect(getSeedFilterState(PROPERTY_BASE)).toBeUndefined();
     });
+
+    // CUSTOM reads the same two fields, so the deprecated rename preserves the
+    // value here too.
+    it("seeds CUSTOM from either spelling, preferring defaultFilterState", () => {
+      expect(getSeedFilterState(CUSTOM_BASE)).toEqual(CUSTOM_STATE);
+      expect(
+        getSeedFilterState({
+          ...CUSTOM_BASE,
+          defaultFilterState: CUSTOM_STATE,
+        }),
+      ).toEqual(CUSTOM_STATE);
+      expect(
+        getSeedFilterState({ ...CUSTOM_BASE, filterState: undefined }),
+      ).toBeUndefined();
+    });
   });
 
   // Reading `filterState` on these would silently activate filters in existing
@@ -114,12 +129,6 @@ describe("getSeedFilterState", () => {
         defaultFilterState: KEYWORD_STATE,
       },
       KEYWORD_STATE,
-    ],
-    [
-      "CUSTOM",
-      CUSTOM_BASE,
-      { ...CUSTOM_BASE, defaultFilterState: CUSTOM_STATE },
-      CUSTOM_STATE,
     ],
   ];
 

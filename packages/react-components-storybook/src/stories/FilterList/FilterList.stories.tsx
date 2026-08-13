@@ -2188,7 +2188,7 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
         key: "custom-name-contains",
         label: "Name Contains",
         filterComponent: "CUSTOM",
-        filterState: { type: "custom", customState: { value: "" } },
+        defaultFilterState: { type: "custom", customState: { value: "" } },
         renderInput: ({ filterState, onFilterStateChanged }) => (
           <CustomNameContainsFilter
             filterState={
@@ -2259,7 +2259,7 @@ const nameContainsFilter = {
   key: "custom-name-contains",
   label: "Name Contains",
   filterComponent: "CUSTOM",
-  filterState: { type: "custom", customState: { value: "" } },
+  defaultFilterState: { type: "custom", customState: { value: "" } },
   renderInput: ({ filterState, onFilterStateChanged }) => (
     <input
       type="text"
