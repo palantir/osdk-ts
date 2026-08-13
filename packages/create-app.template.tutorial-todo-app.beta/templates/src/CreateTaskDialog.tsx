@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import type { IProject } from "./useProjects";
 import { useProjectTasks } from "./useProjectTasks";

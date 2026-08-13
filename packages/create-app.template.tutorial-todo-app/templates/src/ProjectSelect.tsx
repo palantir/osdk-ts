@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback } from "react";
+import { type ChangeEvent, useCallback } from "react";
 import type { MockProject } from "./mocks";
 
 interface ProjectSelectProps {

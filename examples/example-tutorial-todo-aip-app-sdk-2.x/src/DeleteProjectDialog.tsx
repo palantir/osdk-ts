@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import css from "./DeleteProjectDialog.module.css";
 import Dialog from "./Dialog";
-import useProjects, { IProject } from "./useProjects";
+import useProjects, { type IProject } from "./useProjects";
 
 interface DeleteProjectDialogProps {
   project: IProject;

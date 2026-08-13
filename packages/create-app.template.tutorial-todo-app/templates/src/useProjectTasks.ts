@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks, { MockProject, MockTask } from "./mocks";
+import Mocks, { type MockProject, type MockTask } from "./mocks";
 
 export function useProjectTasks(project: MockProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
