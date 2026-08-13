@@ -92,6 +92,7 @@ interface UpdateProfileAction extends ActionDefinition<unknown> {
       employees: {
         type: ActionMetadata.DataType.ObjectSet<GeneratedEmployee>;
       };
+      tags: { type: "string"; multiplicity: true };
       title: { type: "string" };
     };
     type: "action";
@@ -167,6 +168,30 @@ const booleanCustomField: FormFieldDefinition<UpdateProfileAction> = {
   },
 };
 booleanCustomField satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const repeatedStringCustomField: FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+> = {
+  fieldKey: "tags",
+  fieldComponent: "CUSTOM",
+  label: "Tags",
+  defaultValue: ["Engineer"],
+  validate: (value) => {
+    value satisfies string[];
+    return Promise.resolve(undefined);
+  },
+  fieldComponentProps: {
+    customRenderer: (props) => {
+      props.value satisfies string[] | null;
+      return null;
+    },
+  },
+};
+repeatedStringCustomField satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+>;
 
 const invalidEmployeeObjectSelect: FormFieldDefinition<UpdateProfileAction> = {
   fieldKey: "employee",
@@ -247,6 +272,75 @@ const stringDropdown: FormFieldDefinition<UpdateProfileAction> = {
   },
 };
 stringDropdown satisfies FormFieldDefinition<UpdateProfileAction>;
+
+const repeatedStringDropdown: FormFieldDefinition<UpdateProfileAction, "tags"> =
+  {
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: ["Engineer", "Manager"],
+      isMultiple: true,
+      itemToStringLabel: (item) => {
+        item satisfies string;
+        return item;
+      },
+    },
+  };
+repeatedStringDropdown satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+>;
+
+const invalidSingleSelectForRepeatedString: FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+> = {
+  fieldKey: "tags",
+  fieldComponent: "DROPDOWN",
+  label: "Tags",
+  // @ts-expect-error Repeated action parameters require multi-select dropdowns
+  fieldComponentProps: {
+    items: ["Engineer", "Manager"],
+  },
+};
+invalidSingleSelectForRepeatedString satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+>;
+
+const invalidTextInputForRepeatedString: FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+> = {
+  fieldKey: "tags",
+  // @ts-expect-error Repeated string parameters require an array-capable field
+  fieldComponent: "TEXT_INPUT",
+  label: "Tags",
+  fieldComponentProps: { customRenderer: () => null },
+};
+invalidTextInputForRepeatedString satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "tags"
+>;
+
+const invalidMultiStringDropdown: FormFieldDefinition<
+  UpdateProfileAction,
+  "title"
+> = {
+  fieldKey: "title",
+  fieldComponent: "DROPDOWN",
+  label: "Title",
+  fieldComponentProps: {
+    items: ["Engineer", "Manager"],
+    // @ts-expect-error Scalar action parameters cannot use multi-select dropdowns
+    isMultiple: true,
+  },
+};
+invalidMultiStringDropdown satisfies FormFieldDefinition<
+  UpdateProfileAction,
+  "title"
+>;
 
 // @ts-expect-error String action parameters require string dropdown items
 const invalidStringDropdown: FormFieldDefinition<UpdateProfileAction> = {

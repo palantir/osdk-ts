@@ -14,26 +14,43 @@
  * limitations under the License.
  */
 
+import type { ActionMetadata } from "@osdk/api";
+
 import type { FieldType } from "../FormFieldApi.js";
 
 /**
- * Coerces a raw form field value to match the expected type for the given
- * field type. Returns `undefined` when coercion fails
+ * Coerces a raw form field value to match the given action parameter.
+ * Returns `undefined` when coercion fails
  * (e.g. non-numeric string for a number field).
  *
  * Complex types (object, objectSet, struct, interface) are passed through
  * unchanged since they cannot be meaningfully coerced.
  */
 export function coerceFieldValue(
-  parameterType: FieldType | undefined,
+  parameter: ActionMetadata.Parameter | undefined,
   rawValue: unknown,
 ): unknown {
   if (rawValue == null) {
     return undefined;
   }
 
-  if (parameterType == null) {
+  if (parameter == null) {
     return rawValue;
+  }
+
+  if (parameter.multiplicity === true) {
+    return rawValue;
+  }
+
+  return coerceScalarFieldValue(parameter.type, rawValue);
+}
+
+function coerceScalarFieldValue(
+  parameterType: FieldType,
+  rawValue: unknown,
+): unknown {
+  if (rawValue == null) {
+    return undefined;
   }
 
   // TODO: Handle complex object types later
