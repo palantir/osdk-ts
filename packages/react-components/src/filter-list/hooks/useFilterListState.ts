@@ -33,6 +33,7 @@ import {
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getLinkedFilterComponent } from "../utils/getLinkedFilterComponent.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 import { useStableMapEntries } from "./useStableMapEntries.js";
 
@@ -89,7 +90,15 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         break;
       }
       case "LINKED_PROPERTY": {
-        const innerState = definition.defaultLinkedFilterState;
+        // No component renders as unsupported, so seeding would narrow
+        // `objectSet` off a filter the user can neither see nor clear.
+        if (getLinkedFilterComponent(definition) == null) {
+          break;
+        }
+        const innerState =
+          definition.defaultFilterState ??
+          // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
+          definition.defaultLinkedFilterState;
         if (innerState) {
           const state: LinkedPropertyFilterState = {
             type: "linkedProperty",

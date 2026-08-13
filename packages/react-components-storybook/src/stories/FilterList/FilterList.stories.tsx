@@ -1874,12 +1874,8 @@ function WithLinkedPropertyFiltersStory(
         linkName: "lead",
         reverseLinkName: "peeps",
         linkedPropertyKey: "department",
-        linkedFilterComponent: "MULTI_SELECT",
-        linkedFilterState: { type: "SELECT", selectedValues: [] },
-        filterState: {
-          type: "linkedProperty",
-          linkedFilterState: { type: "SELECT", selectedValues: [] },
-        },
+        filterComponent: "MULTI_SELECT",
+        defaultFilterState: { type: "SELECT", selectedValues: [] },
         label: "Manager Department",
       } as FilterDefinitionUnion<Employee>,
     ],
@@ -1945,12 +1941,8 @@ const filterDefinitions = [
     linkName: "lead",
     reverseLinkName: "peeps",
     linkedPropertyKey: "department",
-    linkedFilterComponent: "MULTI_SELECT",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "SELECT", selectedValues: [] },
-    },
+    filterComponent: "MULTI_SELECT",
+    defaultFilterState: { type: "SELECT", selectedValues: [] },
     label: "Manager Department",
   },
 ];
@@ -1994,12 +1986,8 @@ const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
   linkName: "lead",
   reverseLinkName: "peeps",
   linkedPropertyKey: "fullName",
-  linkedFilterComponent: "MULTI_SELECT",
-  linkedFilterState: { type: "SELECT", selectedValues: [] },
-  filterState: {
-    type: "linkedProperty",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-  },
+  filterComponent: "MULTI_SELECT",
+  defaultFilterState: { type: "SELECT", selectedValues: [] },
   searchField: false,
   label: "Manager Name",
 } as FilterDefinitionUnion<Employee>;
@@ -2094,12 +2082,8 @@ const filterDefinitions: FilterDefinitionUnion<Employee>[] = [
     linkName: "lead",
     reverseLinkName: "peeps",
     linkedPropertyKey: "fullName",
-    linkedFilterComponent: "MULTI_SELECT",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "SELECT", selectedValues: [] },
-    },
+    filterComponent: "MULTI_SELECT",
+    defaultFilterState: { type: "SELECT", selectedValues: [] },
     searchField: false,
     label: "Manager Name",
   },
@@ -2440,12 +2424,8 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
   linkName: "lead",
   reverseLinkName: "peeps",
   linkedPropertyKey: "department",
-  linkedFilterComponent: "MULTI_SELECT",
-  linkedFilterState: { type: "SELECT", selectedValues: [] },
-  filterState: {
-    type: "linkedProperty",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-  },
+  filterComponent: "MULTI_SELECT",
+  defaultFilterState: { type: "SELECT", selectedValues: [] },
   label: "Manager Department (linked multi)",
 } as FilterDefinitionUnion<Employee>;
 
@@ -2454,12 +2434,8 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
   linkName: "lead",
   reverseLinkName: "peeps",
   linkedPropertyKey: "locationCity",
-  linkedFilterComponent: "SINGLE_SELECT",
-  linkedFilterState: { type: "SELECT", selectedValues: [] },
-  filterState: {
-    type: "linkedProperty",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
-  },
+  filterComponent: "SINGLE_SELECT",
+  defaultFilterState: { type: "SELECT", selectedValues: [] },
   label: "Manager City (linked single)",
 } as FilterDefinitionUnion<Employee>;
 

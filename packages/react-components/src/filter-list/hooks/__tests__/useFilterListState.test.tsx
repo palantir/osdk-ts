@@ -35,7 +35,10 @@ function createExactMatchState(
 ): ExactMatchFilterState<string> {
   return { type: "EXACT_MATCH", values };
 }
-import type { FilterListProps } from "../../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../../FilterListApi.js";
 import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
 
@@ -73,6 +76,72 @@ describe("useFilterListState", () => {
     expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
       initialState,
     );
+  });
+
+  describe("LINKED_PROPERTY seeding", () => {
+    it("wraps a LINKED_PROPERTY seed in a linkedProperty state", () => {
+      const linkedDef = createLinkedPropertyFilterDef("primaryOffice", "name");
+      const props = createProps({ filterDefinitions: [linkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.get(getFilterKey(linkedDef))).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    it("seeds a LINKED_PROPERTY filter from the deprecated defaultLinkedFilterState", () => {
+      const legacyLinkedDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        defaultFilterState: undefined,
+        defaultLinkedFilterState: createExactMatchState(["Legacy"]),
+      };
+      const props = createProps({ filterDefinitions: [legacyLinkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(
+        result.current.filterStates.get(getFilterKey(legacyLinkedDef)),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: createExactMatchState(["Legacy"]),
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    it("prefers defaultFilterState over the deprecated defaultLinkedFilterState", () => {
+      // Cast for the same reason testUtils casts: spreading the definition
+      // union widens both seed fields past the LINKED_PROPERTY member.
+      const bothLinkedDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        defaultFilterState: createExactMatchState(["Wins"]),
+        defaultLinkedFilterState: createExactMatchState(["Loses"]),
+      } as FilterDefinitionUnion<typeof MockObjectType>;
+      const props = createProps({ filterDefinitions: [bothLinkedDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(
+        result.current.filterStates.get(getFilterKey(bothLinkedDef)),
+      ).toEqual({
+        type: "linkedProperty",
+        linkedFilterState: createExactMatchState(["Wins"]),
+      } satisfies LinkedPropertyFilterState);
+    });
+
+    // Such a definition renders as unsupported, so seeding it would narrow the
+    // object set off a filter the user can neither see nor clear.
+    it("does not seed when neither component field is set", () => {
+      const noComponentDef = {
+        ...createLinkedPropertyFilterDef("primaryOffice", "name"),
+        filterComponent: undefined,
+      } as FilterDefinitionUnion<typeof MockObjectType>;
+      const props = createProps({ filterDefinitions: [noComponentDef] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(0);
+    });
   });
 
   it("updates filter state via setFilterState", () => {
