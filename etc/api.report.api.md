@@ -2203,6 +2203,8 @@ export interface SelectArg<
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
+    $loadOntologyDefinedDerivedProperties?: boolean;
+    	// (undocumented)
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
