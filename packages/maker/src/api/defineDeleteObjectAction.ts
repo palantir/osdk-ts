@@ -36,6 +36,7 @@ export function defineDeleteObjectAction(
         def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
       )}`,
     displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
+    description: def.description,
     parameters: createParameters(def, {}, new Set([DELETE_OBJECT_PARAMETER])),
     status: def.status ?? "active",
     rules: [

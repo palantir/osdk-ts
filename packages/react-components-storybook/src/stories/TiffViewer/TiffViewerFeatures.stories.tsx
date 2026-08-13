@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { TiffRendererProps } from "@osdk/react-components/experimental/tiff-renderer";
-import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+import type { BaseTiffViewerProps } from "@osdk/react-components/experimental/tiff-renderer";
+import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
@@ -96,16 +96,16 @@ function createSampleTiffBytes(): Uint8Array {
 
 const sampleTiffBytes = createSampleTiffBytes();
 
-const meta: Meta<TiffRendererProps> = {
-  title: "Components/DocumentViewer/Renderers/TiffRenderer",
-  component: TiffRenderer,
+const meta: Meta<BaseTiffViewerProps> = {
+  title: "Components/DocumentViewer/Renderers/TiffViewer",
+  component: BaseTiffViewer,
   tags: ["beta"],
   args: {
     content: sampleTiffBytes,
   },
-  render: (args: TiffRendererProps) => (
+  render: (args: BaseTiffViewerProps) => (
     <div style={{ height: "400px" }}>
-      <TiffRenderer {...args} />
+      <BaseTiffViewer {...args} />
     </div>
   ),
   parameters: {
@@ -133,9 +133,9 @@ export const WithContent: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
-<TiffRenderer content={tiffBytes} />`,
+<BaseTiffViewer content={tiffBytes} />`,
       },
     },
   },
@@ -148,9 +148,9 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+        code: `import { BaseTiffViewer } from "@osdk/react-components/experimental/tiff-renderer";
 
-<TiffRenderer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
+<BaseTiffViewer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },
     },
   },

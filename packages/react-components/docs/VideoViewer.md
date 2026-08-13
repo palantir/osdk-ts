@@ -43,7 +43,7 @@ import { BaseVideoViewer } from "@osdk/react-components/experimental/video-viewe
 | `className` | `string`     | No       | CSS class applied to the root element |
 | `onError`   | `() => void` | No       | Callback when the video fails to load |
 
-### VideoViewerMediaProps
+### VideoViewerProps
 
 | Prop        | Type         | Required | Description                                             |
 | ----------- | ------------ | -------- | ------------------------------------------------------- |

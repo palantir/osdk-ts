@@ -44,6 +44,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     objectSet,
     title,
     titleIcon,
+    enableCollapse,
+    defaultCollapsed,
     collapsed,
     onCollapsedChange,
     filterDefinitions,
@@ -222,6 +224,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     <BaseFilterList
       title={title}
       titleIcon={titleIcon}
+      enableCollapse={enableCollapse}
+      defaultCollapsed={defaultCollapsed}
       collapsed={collapsed}
       onCollapsedChange={onCollapsedChange}
       filterDefinitions={effectiveVisibleDefinitions}

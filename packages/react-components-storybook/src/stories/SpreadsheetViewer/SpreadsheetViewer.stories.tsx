@@ -20,7 +20,7 @@ import type { Media } from "@osdk/api";
 import type {
   BaseSpreadsheetViewerProps,
   ParsedSpreadsheet,
-  SpreadsheetViewerMediaProps,
+  SpreadsheetViewerProps,
 } from "@osdk/react-components/experimental/spreadsheet-viewer";
 import {
   BaseSpreadsheetViewer,
@@ -189,11 +189,11 @@ const meta: Meta<BaseSpreadsheetViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: StoryObj<SpreadsheetViewerMediaProps> = {
+export const Default: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockSpreadsheetMedia(),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "500px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>
@@ -229,14 +229,14 @@ export const SingleSheet: Story = {
   },
 };
 
-export const WithRealFile: StoryObj<SpreadsheetViewerMediaProps> = {
+export const WithRealFile: StoryObj<SpreadsheetViewerProps> = {
   args: {
     media: createMockMediaFromUrl(
       SAMPLE_SPREADSHEET_URL,
       "notional-spreadsheet-example.xlsx",
     ),
   },
-  render: (args: SpreadsheetViewerMediaProps) => (
+  render: (args: SpreadsheetViewerProps) => (
     <div style={{ height: "600px" }}>
       <SpreadsheetViewer media={args.media} />
     </div>

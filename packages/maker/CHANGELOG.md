@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.57.0
+
+### Minor Changes
+
+- b28235f: check for duplicate links
+
+## 0.56.0
+
+### Minor Changes
+
+- cea978e: Add configurable missing descriptions to all entities
+
 ## 0.55.0
 
 ### Minor Changes

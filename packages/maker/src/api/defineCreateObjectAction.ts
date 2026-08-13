@@ -82,6 +82,7 @@ export function defineCreateObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     entities: {

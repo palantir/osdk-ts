@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Media } from "@osdk/api";
 import type React from "react";
 
 /** Which sidebar panel to display when the sidebar is open. */
@@ -85,7 +86,7 @@ export interface PdfCustomAnnotation extends PdfAnnotationBase {
 /** A single annotation positioned on a specific page of the PDF. */
 export type PdfAnnotation = PdfStandardAnnotation | PdfCustomAnnotation;
 
-/** Result passed to the {@link PdfViewerProps.onDownload} callback. */
+/** Result passed to the {@link BasePdfViewerProps.onDownload} callback. */
 export type PdfDownloadResult =
   | { success: true; filename: string }
   | { success: false; error: Error };
@@ -117,50 +118,23 @@ export interface PdfViewerHandle {
 
 /**
  * Options for {@link usePdfViewerInstance}.
- * Equivalent to {@link PdfViewerProps} minus the `className` rendering concern.
+ *
+ * Derived from {@link BasePdfViewerProps} rather than restated, so the two
+ * cannot drift. `className` is excluded as a rendering concern, and
+ * `downloadFileName` because the hooks tier does not render the toolbar that
+ * would use it.
  */
-export interface PdfViewerInstanceOptions {
-  /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
-  src: PdfSource;
-  /** Annotations to overlay on the PDF */
-  annotations?: PdfAnnotation[];
-  /** Callback fired when an annotation is clicked */
-  onAnnotationClick?: (annotation: PdfAnnotation) => void;
-  /** Callback fired when a download completes or fails */
-  onDownload?: (result: PdfDownloadResult) => void;
-  /** Whether the highlight toggle button is shown in the toolbar */
-  highlightEnabled?: boolean;
-  /** Callback fired when the user creates a text highlight */
-  onTextHighlight?: (event: PdfTextHighlightEvent) => void;
-  /** Callback fired when the user deletes a highlight */
-  onHighlightDelete?: (event: PdfTextHighlightEvent) => void;
-  /** Initial form field values keyed by field name */
-  formData?: Record<string, PdfFormFieldValue>;
-  /** Callback fired when the user clicks the save button */
-  onFormSubmit?: (data: Record<string, PdfFormFieldValue>) => void;
-  /** Callback fired when any form field value changes */
-  onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
-  /** Initial page number (1-indexed, default 1) */
-  initialPage?: number;
-  /** Initial zoom scale (default 1.0) */
-  initialScale?: number;
+export type PdfViewerInstanceOptions = Omit<
+  BasePdfViewerProps,
+  "className" | "downloadFileName"
+> & {
   /**
-   * Whether auto-size (fit to width) is initially enabled.
-   * When enabled, the PDF scales to fit the container width and
-   * re-fits automatically on resize. Manual zoom disables auto-size.
-   * Takes precedence over {@link initialScale} when enabled.
-   * @default false
+   * Whether the highlight toggle button is shown in the toolbar.
+   * @deprecated Use `enableHighlight` instead, which matches
+   * {@link BasePdfViewerProps}. Ignored when `enableHighlight` is set.
    */
-  initialAutoSize?: boolean;
-  /** Whether the sidebar is initially open (default false) */
-  initialSidebarOpen?: boolean;
-  /** Whether the download button is shown in the toolbar */
-  enableDownload?: boolean;
-  /** Which sidebar panel to show: thumbnails or document outline */
-  sidebarMode?: SidebarMode;
-  /** Custom icon components for each outline depth level (0-indexed) */
-  outlineIcons?: Partial<Record<number, React.ComponentType>>;
-}
+  highlightEnabled?: boolean;
+};
 
 /**
  * PDF source input.
@@ -172,8 +146,8 @@ export interface PdfViewerInstanceOptions {
  */
 export type PdfSource = string | ArrayBuffer | Uint8Array | Blob;
 
-/** Props for the {@link PdfViewer} component. */
-export interface PdfViewerProps {
+/** Props for the {@link BasePdfViewer} component. */
+export interface BasePdfViewerProps {
   /** PDF source — URL string, ArrayBuffer, Uint8Array, or Blob */
   src: PdfSource;
   /** Annotations to overlay on the PDF */
@@ -270,4 +244,10 @@ export interface PdfViewerProps {
   onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
   /** Additional CSS class name for the root element */
   className?: string;
+}
+
+/** Props for the {@link PdfViewer} component. */
+export interface PdfViewerProps extends Omit<BasePdfViewerProps, "src"> {
+  /** The Media object to fetch PDF contents from */
+  media: Media;
 }

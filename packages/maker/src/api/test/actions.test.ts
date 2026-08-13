@@ -11418,8 +11418,8 @@ describe("Action Types", () => {
                     "parameters": {
                       "objectToDeleteParameter": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Delete object",
+                          "description": "Description",
+                          "displayName": "Chose managers to delete",
                           "typeClasses": [],
                         },
                         "id": "objectToDeleteParameter",

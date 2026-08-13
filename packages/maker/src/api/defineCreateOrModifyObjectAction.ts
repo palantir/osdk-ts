@@ -102,6 +102,7 @@ export function defineCreateOrModifyObjectAction(
     apiName: actionApiName,
     displayName:
       def.displayName ?? `Create or Modify ${def.objectType.displayName}`,
+    description: def.description,
     parameters,
     status: def.status ?? "active",
     rules: [

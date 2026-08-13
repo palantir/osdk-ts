@@ -36,7 +36,7 @@ export interface BaseSpreadsheetViewerProps {
   className?: string;
 }
 
-export interface SpreadsheetViewerMediaProps extends Omit<
+export interface SpreadsheetViewerProps extends Omit<
   BaseSpreadsheetViewerProps,
   "spreadsheet"
 > {

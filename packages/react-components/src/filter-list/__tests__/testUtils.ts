@@ -55,13 +55,13 @@ export function createPropertyFilterDef<
 >(
   key: K,
   filterComponent: C,
-  filterState: FilterState,
+  defaultFilterState: FilterState,
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
     type: "PROPERTY",
     key,
     filterComponent,
-    filterState,
+    defaultFilterState,
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -74,7 +74,7 @@ export function createHasLinkFilterDef(
   return {
     type: "HAS_LINK",
     linkName,
-    filterState: { type: "hasLink", hasLink: false },
+    defaultFilterState: { type: "hasLink", hasLink: false },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -99,12 +99,8 @@ export function createLinkedPropertyFilterDef(
     linkName,
     ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
+    filterComponent: "LISTOGRAM",
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -117,7 +113,11 @@ export function createKeywordSearchFilterDef(
   return {
     type: "KEYWORD_SEARCH",
     properties,
-    filterState: { type: "keywordSearch", searchTerm: "", operator: "AND" },
+    defaultFilterState: {
+      type: "keywordSearch",
+      searchTerm: "",
+      operator: "AND",
+    },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -221,7 +221,7 @@ export function createStaticValuesFilterDef(
   key: string,
   filterComponent: StaticValuesComponentType,
   values: string[],
-  filterState: FilterState,
+  defaultFilterState: FilterState,
   options?: {
     toWhereClause?: (
       state: FilterState,
@@ -233,7 +233,7 @@ export function createStaticValuesFilterDef(
     key,
     filterComponent,
     values,
-    filterState,
+    defaultFilterState,
     toWhereClause: options?.toWhereClause,
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }

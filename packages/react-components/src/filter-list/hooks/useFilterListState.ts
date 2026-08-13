@@ -19,13 +19,9 @@ import { useOsdkMetadata } from "@osdk/react";
 import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type {
-  LinkedFilter,
-  LinkedPropertyFilterState,
-} from "../types/LinkedFilterTypes.js";
+import type { LinkedFilter } from "../types/LinkedFilterTypes.js";
 import {
   buildWhereClause,
   getActiveLinkedFilters,
@@ -33,6 +29,7 @@ import {
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getSeedFilterState } from "../utils/getSeedFilterState.js";
 import { narrowObjectSet } from "../utils/narrowObjectSet.js";
 import { useStableMapEntries } from "./useStableMapEntries.js";
 
@@ -63,44 +60,9 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   }
 
   for (const definition of definitions) {
-    const key = getFilterKey(definition);
-    switch (definition.type) {
-      case "PROPERTY": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "HAS_LINK":
-      case "KEYWORD_SEARCH":
-      case "CUSTOM": {
-        const state = definition.defaultFilterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "STATIC_VALUES": {
-        const state = definition.filterState;
-        if (state) {
-          states.set(key, state);
-        }
-        break;
-      }
-      case "LINKED_PROPERTY": {
-        const innerState = definition.defaultLinkedFilterState;
-        if (innerState) {
-          const state: LinkedPropertyFilterState = {
-            type: "linkedProperty",
-            linkedFilterState: innerState,
-          };
-          states.set(key, state);
-        }
-        break;
-      }
-      default:
-        assertUnreachable(definition);
+    const state = getSeedFilterState(definition);
+    if (state) {
+      states.set(getFilterKey(definition), state);
     }
   }
 
@@ -117,8 +79,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onFilterStateChanged,
     onFilterClauseChanged,
     onEffectiveObjectSet,
+    defaultFilterStates,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- back-compat fallback for the pre-rename prop
     initialFilterStates,
   } = props;
+  const seededFilterStates = defaultFilterStates ?? initialFilterStates;
   const { metadata } = useOsdkMetadata(objectType);
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
@@ -148,8 +113,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const [initialFilterStatesSnapshot] = useState<Map<string, FilterState>>(
     () => {
       const snapshot = buildInitialStates(filterDefinitions);
-      if (initialFilterStates) {
-        for (const [key, state] of initialFilterStates) {
+      if (seededFilterStates) {
+        for (const [key, state] of seededFilterStates) {
           snapshot.set(key, state);
         }
       }

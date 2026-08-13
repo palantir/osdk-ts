@@ -163,6 +163,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
     /** @deprecated Use `onFilterVisibilityChange`. */
+    /* eslint-disable-next-line @typescript-eslint/no-deprecated */
     newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
@@ -204,19 +205,54 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   enableSorting?: boolean;
 
   /**
-   * Whether the filter list panel is collapsed
+   * Whether the collapse/expand control is available. When `false` the panel is
+   * always expanded, no collapse control is rendered, and `collapsed` /
+   * `defaultCollapsed` are ignored.
+   * @default true
+   */
+  enableCollapse?: boolean;
+
+  /**
+   * Controlled mode. When supplied, this prop is the source of truth for
+   * whether the panel is collapsed and the component keeps no internal state;
+   * re-render with a new value in response to `onCollapsedChange`.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
    */
   collapsed?: boolean;
 
   /**
-   * Called when the collapsed state changes
+   * Uncontrolled mode. Seeds the panel's internal collapsed state; the
+   * component continues to own the state after mount, so later changes to this
+   * prop are ignored.
+   *
+   * If both `collapsed` and `defaultCollapsed` are provided, `collapsed` takes
+   * precedence. Ignored when `enableCollapse` is `false`.
+   * @default false
+   */
+  defaultCollapsed?: boolean;
+
+  /**
+   * Called whenever the collapsed state changes.
+   *
+   * @param collapsed The new collapsed state
    */
   onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
-   * Initial filter states for hydrating from external storage.
-   * These states are merged over definition defaults on mount.
-   * Use onFilterStateChanged to persist state changes externally.
+   * Seeds filter states from external storage, keyed by `getFilterKey`.
+   * Applied over the per-definition `defaultFilterState` seeds on mount, and
+   * FilterList owns the states from then on. Also the state the reset button
+   * restores to.
+   * Use `onFilterStateChanged` to persist changes back out.
+   *
+   * @default undefined (filters seed from their definitions alone)
+   */
+  defaultFilterStates?: Map<string, FilterState>;
+
+  /**
+   * @deprecated Rename to `defaultFilterStates`.
    */
   initialFilterStates?: Map<string, FilterState>;
 

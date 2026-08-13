@@ -58,8 +58,8 @@ function createFilterStates(
 ): Map<string, FilterState> {
   const map = new Map<string, FilterState>();
   for (const def of definitions) {
-    if (def.filterState) {
-      map.set(getFilterKey(def), def.filterState);
+    if (def.defaultFilterState) {
+      map.set(getFilterKey(def), def.defaultFilterState);
     }
   }
   return map;
@@ -161,7 +161,7 @@ describe("FilterList drag and drop", () => {
   it("preserves filter state references after providing reorder callback", async () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
-    const stateRef = definitions[0].filterState;
+    const stateRef = definitions[0].defaultFilterState;
 
     render(
       <FilterListContent

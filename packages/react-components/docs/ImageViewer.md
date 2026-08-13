@@ -43,7 +43,7 @@ import { BaseImageViewer } from "@osdk/react-components/experimental/image-viewe
 | `className` | `string`     | No       | CSS class applied to the root element |
 | `onError`   | `() => void` | No       | Callback when the image fails to load |
 
-### ImageViewerMediaProps
+### ImageViewerProps
 
 | Prop        | Type         | Required | Description                               |
 | ----------- | ------------ | -------- | ----------------------------------------- |

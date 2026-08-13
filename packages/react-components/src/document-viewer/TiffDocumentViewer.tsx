@@ -18,10 +18,10 @@ import { Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import React from "react";
 
-import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
-import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
-import { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
-import type { PdfViewerProps } from "../pdf-viewer/types.js";
+import { TiffViewer } from "../images/tiff-viewer/TiffViewer.js";
+import type { BaseTiffViewerProps } from "../images/tiff-viewer/TiffViewerApi.js";
+import { BasePdfViewer } from "../pdf-viewer/BasePdfViewer.js";
+import type { BasePdfViewerProps } from "../pdf-viewer/PdfViewerApi.js";
 import { ViewerType } from "./DocumentViewerApi.js";
 import { useTiffToPdf } from "./hooks/useTiffToPdf.js";
 
@@ -31,15 +31,15 @@ interface TiffDocumentViewerProps {
   media: Media;
   className: string;
   enableTiffToPdf: boolean;
-  tiffRendererProps?: Partial<Omit<TiffRendererProps, "content">>;
-  pdfViewerProps?: Partial<Omit<PdfViewerProps, "src">>;
+  tiffViewerProps?: Partial<Omit<BaseTiffViewerProps, "content">>;
+  pdfViewerProps?: Partial<Omit<BasePdfViewerProps, "src">>;
 }
 
 export function TiffDocumentViewer({
   media,
   className,
   enableTiffToPdf,
-  tiffRendererProps,
+  tiffViewerProps,
   pdfViewerProps,
 }: TiffDocumentViewerProps): React.ReactElement {
   const { viewerType, pdfData, loading } = useTiffToPdf(media, enableTiffToPdf);
@@ -62,10 +62,6 @@ export function TiffDocumentViewer({
   }
 
   return (
-    <TiffViewerMedia
-      media={media}
-      className={className}
-      {...tiffRendererProps}
-    />
+    <TiffViewer media={media} className={className} {...tiffViewerProps} />
   );
 }

@@ -1,4 +1,4 @@
-# MarkdownRenderer
+# MarkdownViewer
 
 A React component for rendering markdown content using [react-markdown](https://github.com/remarkjs/react-markdown). Supports headings, code blocks, tables, links, images, blockquotes, and lists with themeable styling via CSS custom properties. Also provides an OSDK Media wrapper for fetching markdown contents directly from Foundry.
 
@@ -6,42 +6,42 @@ A React component for rendering markdown content using [react-markdown](https://
 
 ```tsx
 import {
-  MarkdownRenderer,
-  MarkdownViewerMedia,
+  BaseMarkdownViewer,
+  MarkdownViewer,
 } from "@osdk/react-components/experimental/markdown-renderer";
 ```
 
-- **`MarkdownViewerMedia`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the markdown text, and renders via `MarkdownRenderer`.
-- **`MarkdownRenderer`** — Lower-level component that accepts a markdown string directly.
+- **`MarkdownViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the markdown text, and renders via `BaseMarkdownViewer`.
+- **`BaseMarkdownViewer`** — Lower-level component that accepts a markdown string directly.
 
 ## Usage
 
 ### With OSDK Media
 
 ```tsx
-import { MarkdownViewerMedia } from "@osdk/react-components/experimental/markdown-renderer";
+import { MarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
-<MarkdownViewerMedia media={document.readme} />;
+<MarkdownViewer media={document.readme} />;
 ```
 
 ### With a string
 
 ```tsx
-import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
+import { BaseMarkdownViewer } from "@osdk/react-components/experimental/markdown-renderer";
 
-<MarkdownRenderer content="# Hello World\n\nThis is **bold** text." />;
+<BaseMarkdownViewer content="# Hello World\n\nThis is **bold** text." />;
 ```
 
 ## Props
 
-### MarkdownRendererProps
+### BaseMarkdownViewerProps
 
 | Prop        | Type     | Required | Description                           |
 | ----------- | -------- | -------- | ------------------------------------- |
 | `content`   | `string` | Yes      | Markdown text to render               |
 | `className` | `string` | No       | CSS class applied to the root element |
 
-### MarkdownViewerMediaProps
+### MarkdownViewerProps
 
 | Prop        | Type     | Required | Description                                  |
 | ----------- | -------- | -------- | -------------------------------------------- |
@@ -68,14 +68,14 @@ All colors and sizes are driven by CSS custom properties defined in `./CSSVariab
 
 ```css
 :root {
-  --osdk-markdown-renderer-bg: #ffffff;
-  --osdk-markdown-renderer-border: 1px solid #e0e0e0;
-  --osdk-markdown-renderer-padding: 24px;
-  --osdk-markdown-renderer-line-height: 1.6;
-  --osdk-markdown-renderer-heading-margin-top: 1.5em;
-  --osdk-markdown-renderer-heading-margin-bottom: 0.5em;
-  --osdk-markdown-renderer-paragraph-spacing: 1em;
-  --osdk-markdown-renderer-code-bg: #f5f5f5;
-  --osdk-markdown-renderer-table-border: #e0e0e0;
+  --osdk-markdown-viewer-bg: #ffffff;
+  --osdk-markdown-viewer-border: 1px solid #e0e0e0;
+  --osdk-markdown-viewer-padding: 24px;
+  --osdk-markdown-viewer-line-height: 1.6;
+  --osdk-markdown-viewer-heading-margin-top: 1.5em;
+  --osdk-markdown-viewer-heading-margin-bottom: 0.5em;
+  --osdk-markdown-viewer-paragraph-spacing: 1em;
+  --osdk-markdown-viewer-code-bg: #f5f5f5;
+  --osdk-markdown-viewer-table-border: #e0e0e0;
 }
 ```
