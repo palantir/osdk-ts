@@ -2426,6 +2426,159 @@ export const NoValueRendering: Story = {
 };
 
 // ---------------------------------------------------------------------------
+// Seeding a filter from its own definition via defaultFilterState
+// ---------------------------------------------------------------------------
+
+const SEEDED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "KEYWORD_SEARCH",
+    properties: ["fullName", "jobTitle"],
+    label: "Search",
+    defaultFilterState: {
+      type: "keywordSearch",
+      searchTerm: "manager",
+      operator: "AND",
+    },
+  },
+  {
+    type: "PROPERTY",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    defaultFilterState: { type: "EXACT_MATCH", values: ["Engineering"] },
+  },
+  {
+    type: "PROPERTY",
+    key: "locationCity",
+    label: "Location City",
+    filterComponent: "MULTI_SELECT",
+    defaultFilterState: {
+      type: "SELECT",
+      selectedValues: ["New York", "Tokyo"],
+    },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "team",
+    label: "Team (static)",
+    filterComponent: "MULTI_SELECT",
+    values: ["Content", "Platform", "Treasury", "Legal"],
+    defaultFilterState: { type: "SELECT", selectedValues: ["Platform"] },
+  },
+  {
+    type: "HAS_LINK",
+    linkName: "lead",
+    label: "Has a manager",
+    defaultFilterState: { type: "hasLink", hasLink: true },
+  },
+];
+
+function WithDefaultFilterStateStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+    },
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          {...args}
+          objectType={Employee}
+          filterDefinitions={SEEDED_FILTER_DEFINITIONS}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <h4>Where clause</h4>
+        <pre style={PRE_STYLE}>
+          {filterClause ? JSON.stringify(filterClause, null, 2) : "(none)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithDefaultFilterState: Story = {
+  name: "With Default Filter State Per Filter",
+  args: {
+    showActiveFilterCount: true,
+    showResetButton: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Give a definition a `defaultFilterState` to start that filter off " +
+          "with a value. Every kind spells it the same way, and the seeded " +
+          "value applies on mount — the where clause is already populated on " +
+          "first render and the seeded filters count towards the active " +
+          "filter count. FilterList owns the state from then on, so editing " +
+          "a filter does not write back to the definition. The seed is also " +
+          "the baseline the reset button returns to, which is why reset " +
+          "starts disabled here and re-enables once you change something.\n\n" +
+          "To hydrate from saved state keyed by filter instead (localStorage, " +
+          'URL params), use the `defaultFilterStates` map — see "With ' +
+          'initial filter states".',
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: "KEYWORD_SEARCH",
+    properties: ["fullName", "jobTitle"],
+    label: "Search",
+    defaultFilterState: { type: "keywordSearch", searchTerm: "manager", operator: "AND" },
+  },
+  {
+    type: "PROPERTY",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    defaultFilterState: { type: "EXACT_MATCH", values: ["Engineering"] },
+  },
+  {
+    type: "PROPERTY",
+    key: "locationCity",
+    label: "Location City",
+    filterComponent: "MULTI_SELECT",
+    defaultFilterState: { type: "SELECT", selectedValues: ["New York", "Tokyo"] },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "team",
+    label: "Team (static)",
+    filterComponent: "MULTI_SELECT",
+    values: ["Content", "Platform", "Treasury", "Legal"],
+    defaultFilterState: { type: "SELECT", selectedValues: ["Platform"] },
+  },
+  {
+    type: "HAS_LINK",
+    linkName: "lead",
+    label: "Has a manager",
+    defaultFilterState: { type: "hasLink", hasLink: true },
+  },
+];
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  showActiveFilterCount
+  showResetButton
+  onFilterClauseChanged={handleFilterClauseChanged}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithDefaultFilterStateStory {...args} />,
+};
+
+// ---------------------------------------------------------------------------
 // Hydrating saved filter state via defaultFilterStates
 // ---------------------------------------------------------------------------
 
@@ -2543,7 +2696,7 @@ function WithInitialFilterStatesStory(args: Partial<EmployeeFilterListProps>) {
 }
 
 export const WithInitialFilterStates: Story = {
-  name: "With initial filter states",
+  name: "With Top-level Default Filter States",
   parameters: {
     docs: {
       description: {
