@@ -12871,12 +12871,8 @@ function WithLinkedPropertyFiltersStory(
         linkName: &quot;lead&quot;,
         reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
-        linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-        linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-        filterState: {
-          type: &quot;linkedProperty&quot;,
-          linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-        },
+        filterComponent: &quot;MULTI_SELECT&quot;,
+        defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
@@ -12942,12 +12938,8 @@ const filterDefinitions = [
     linkName: &quot;lead&quot;,
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
-    linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    filterState: {
-      type: &quot;linkedProperty&quot;,
-      linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    },
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     label: &quot;Manager Department&quot;,
   },
 ];
@@ -12991,12 +12983,8 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
-  linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;MULTI_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   searchField: false,
   label: &quot;Manager Name&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
@@ -13091,12 +13079,8 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     linkName: &quot;lead&quot;,
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
-    linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    filterState: {
-      type: &quot;linkedProperty&quot;,
-      linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    },
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     searchField: false,
     label: &quot;Manager Name&quot;,
   },
@@ -13437,12 +13421,8 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
-  linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;MULTI_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager Department (linked multi)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -13451,12 +13431,8 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
-  linkedFilterComponent: &quot;SINGLE_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;SINGLE_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -31189,12 +31165,8 @@ function WithLinkedPropertyFiltersStory(
         linkName: &quot;lead&quot;,
         reverseLinkName: &quot;peeps&quot;,
         linkedPropertyKey: &quot;department&quot;,
-        linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-        linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-        filterState: {
-          type: &quot;linkedProperty&quot;,
-          linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-        },
+        filterComponent: &quot;MULTI_SELECT&quot;,
+        defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
         label: &quot;Manager Department&quot;,
       } as FilterDefinitionUnion&lt;Employee&gt;,
     ],
@@ -31260,12 +31232,8 @@ const filterDefinitions = [
     linkName: &quot;lead&quot;,
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;department&quot;,
-    linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    filterState: {
-      type: &quot;linkedProperty&quot;,
-      linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    },
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     label: &quot;Manager Department&quot;,
   },
 ];
@@ -31309,12 +31277,8 @@ const combinedLeadNameFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;fullName&quot;,
-  linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;MULTI_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   searchField: false,
   label: &quot;Manager Name&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
@@ -31409,12 +31373,8 @@ const filterDefinitions: FilterDefinitionUnion&lt;Employee&gt;[] = [
     linkName: &quot;lead&quot;,
     reverseLinkName: &quot;peeps&quot;,
     linkedPropertyKey: &quot;fullName&quot;,
-    linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    filterState: {
-      type: &quot;linkedProperty&quot;,
-      linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-    },
+    filterComponent: &quot;MULTI_SELECT&quot;,
+    defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
     searchField: false,
     label: &quot;Manager Name&quot;,
   },
@@ -31755,12 +31715,8 @@ const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion&lt;Employee&gt; =
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;department&quot;,
-  linkedFilterComponent: &quot;MULTI_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;MULTI_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager Department (linked multi)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
@@ -31769,12 +31725,8 @@ const linkedCitySingleSelectFilter: FilterDefinitionUnion&lt;Employee&gt; = {
   linkName: &quot;lead&quot;,
   reverseLinkName: &quot;peeps&quot;,
   linkedPropertyKey: &quot;locationCity&quot;,
-  linkedFilterComponent: &quot;SINGLE_SELECT&quot;,
-  linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  filterState: {
-    type: &quot;linkedProperty&quot;,
-    linkedFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
-  },
+  filterComponent: &quot;SINGLE_SELECT&quot;,
+  defaultFilterState: { type: &quot;SELECT&quot;, selectedValues: [] },
   label: &quot;Manager City (linked single)&quot;,
 } as FilterDefinitionUnion&lt;Employee&gt;;
 
