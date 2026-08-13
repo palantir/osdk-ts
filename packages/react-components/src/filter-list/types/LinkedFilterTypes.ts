@@ -120,10 +120,47 @@ export interface LinkedPropertyFilterDefinition<
    */
   reverseLinkName?: LinkNames<LinkedQ>;
   linkedPropertyKey: LinkedK;
-  linkedFilterComponent: LinkedC;
-  linkedFilterState: FilterStateByComponentType[LinkedC];
+
+  /**
+   * The filter component to render for the linked property. Must be
+   * compatible with the linked property's type, see
+   * ValidComponentsForPropertyType.
+   *
+   * Required in practice — a definition that sets neither this nor
+   * `linkedFilterComponent` renders as unsupported.
+   */
+  // TODO: make this required, and drop the note above, when
+  // `linkedFilterComponent` is removed.
+  filterComponent?: LinkedC;
+
+  /**
+   * @deprecated Rename to `filterComponent`.
+   */
+  linkedFilterComponent?: LinkedC;
+
+  /**
+   * Seeds the state of the filter on the *linked* property. FilterList owns the
+   * state from then on. `onFilterStateChanged` fires with the wrapper.
+   *
+   * @default undefined (filter starts empty)
+   */
+  defaultFilterState?: FilterStateByComponentType[LinkedC];
+
+  /**
+   * @deprecated Rename to `defaultFilterState`.
+   */
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
-  filterState: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  linkedFilterState?: FilterStateByComponentType[LinkedC];
+
+  /**
+   * @deprecated Has no effect, remove it.
+   */
+  filterState?: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
+
   label?: string;
 
   /**

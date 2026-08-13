@@ -99,12 +99,8 @@ export function createLinkedPropertyFilterDef(
     linkName,
     ...(reverseLinkName !== undefined ? { reverseLinkName } : {}),
     linkedPropertyKey,
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
+    filterComponent: "LISTOGRAM",
+    defaultFilterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 

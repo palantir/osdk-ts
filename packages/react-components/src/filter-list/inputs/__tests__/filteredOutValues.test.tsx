@@ -311,7 +311,7 @@ describe("linked-filter filtered-out rendering (showFilteredOutValues)", () => {
       linkName: "manager",
       reverseLinkName: "peeps",
       linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
-      linkedFilterComponent: "LISTOGRAM",
+      filterComponent: "LISTOGRAM",
       linkedFilterState: { type: "EXACT_MATCH", values: [] },
       filterState: {
         type: "linkedProperty",
