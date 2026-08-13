@@ -280,13 +280,13 @@ export function TableHeaderWithPopover<TData extends RowData>({
                   <>
                     <HeaderMenuItem
                       onClick={handleSortAscending}
-                      icon={SortAlphabetical}
+                      icon={SortAscendingIcon}
                       label="Sort ascending"
                       active={isSorted === "asc"}
                     />
                     <HeaderMenuItem
                       onClick={handleSortDescending}
-                      icon={SortAlphabeticalDesc}
+                      icon={SortDescendingIcon}
                       label="Sort descending"
                       active={isSorted === "desc"}
                     />
