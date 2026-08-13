@@ -155,7 +155,7 @@ describe("STATIC_VALUES filters", () => {
       key: "department",
       filterComponent: "LISTOGRAM",
       values: ["Marketing", "Operations"],
-      filterState: { type: "EXACT_MATCH", values: [] },
+      defaultFilterState: { type: "EXACT_MATCH", values: [] },
     } satisfies StaticValuesFilterDefinition<
       typeof MockObjectType,
       "LISTOGRAM"
@@ -164,7 +164,7 @@ describe("STATIC_VALUES filters", () => {
     render(
       <StaticValuesFilterInput
         definition={definition}
-        filterState={definition.filterState}
+        filterState={definition.defaultFilterState}
         onFilterStateChanged={vi.fn()}
       />,
     );
@@ -187,7 +187,7 @@ describe("STATIC_VALUES filters", () => {
       key: "team",
       filterComponent: "MULTI_SELECT",
       values: ["Alpha", "Beta"],
-      filterState: { type: "SELECT", selectedValues: [] },
+      defaultFilterState: { type: "SELECT", selectedValues: [] },
     } satisfies StaticValuesFilterDefinition<
       typeof MockObjectType,
       "MULTI_SELECT"
@@ -196,7 +196,7 @@ describe("STATIC_VALUES filters", () => {
     render(
       <StaticValuesFilterInput
         definition={definition}
-        filterState={definition.filterState}
+        filterState={definition.defaultFilterState}
         onFilterStateChanged={vi.fn()}
         layout="inline"
       />,

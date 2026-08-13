@@ -93,7 +93,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "department",
     label: "Department",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -101,7 +100,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "team",
     label: "Team",
     filterComponent: "LISTOGRAM",
-    filterState: { type: "EXACT_MATCH", values: [] },
   },
   {
     type: "PROPERTY",
@@ -109,7 +107,6 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     key: "fullName",
     label: "Full Name",
     filterComponent: "CONTAINS_TEXT",
-    filterState: { type: "CONTAINS_TEXT" },
   },
 ];
 
