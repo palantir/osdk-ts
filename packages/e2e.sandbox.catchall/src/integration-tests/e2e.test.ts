@@ -10,9 +10,9 @@ import {
   Todo,
 } from "@osdk/e2e.generated.catchall";
 import { checkFoundryCliVersion } from "@osdk/integration-testing";
-import { expect } from "vitest";
+import { beforeEach, describe, expect } from "vitest";
 
-import { createSeed, test } from "./test.fixture.js";
+import { createSeed, type IntegrationFixtures, test } from "./test.fixture.js";
 
 const foundryProbeResult = await checkFoundryCliVersion();
 
@@ -57,10 +57,10 @@ const baseSeed = createSeed((seed) => {
   return { alice, bob, charlie, todoItem1, todoItem2, game1, book1 };
 });
 
-test.describe.runIf(foundryProbeResult.type === "installed")(
+describe.runIf(foundryProbeResult.type === "installed")(
   "Local ontology integration tests",
   () => {
-    test.beforeEach(async ({ seed }) => {
+    beforeEach<IntegrationFixtures>(async ({ seed }) => {
       await seed.set(baseSeed.output);
     });
     test("List all people", async ({ client }) => {
