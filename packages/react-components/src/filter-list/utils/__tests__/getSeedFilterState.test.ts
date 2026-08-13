@@ -18,154 +18,173 @@ import { describe, expect, it } from "vitest";
 
 import type { MockObjectType } from "../../__tests__/testUtils.js";
 import type { FilterDefinitionUnion } from "../../FilterListApi.js";
+import type { FilterState } from "../../FilterListItemApi.js";
 import { getSeedFilterState } from "../getSeedFilterState.js";
 
 type Def = FilterDefinitionUnion<typeof MockObjectType>;
 
-const EXACT_A = { type: "EXACT_MATCH", values: ["a"] } as const;
-const EXACT_B = { type: "EXACT_MATCH", values: ["b"] } as const;
-const EMPTY_CUSTOM = { type: "custom", customState: {} } as const;
+const EXACT_A = { type: "EXACT_MATCH", values: ["a"] } satisfies FilterState;
+const EXACT_B = { type: "EXACT_MATCH", values: ["b"] } satisfies FilterState;
+const HAS_LINK_STATE = { type: "hasLink", hasLink: true } satisfies FilterState;
+const KEYWORD_STATE = {
+  type: "keywordSearch",
+  searchTerm: "stray",
+  operator: "AND",
+} satisfies FilterState;
+const CUSTOM_STATE = { type: "custom", customState: {} } satisfies FilterState;
 
-function def(fields: Record<string, unknown>): Def {
-  return fields as unknown as Def;
-}
+const PROPERTY_BASE = {
+  type: "PROPERTY",
+  key: "name",
+  filterComponent: "LISTOGRAM",
+} satisfies Def;
 
-function propertyDef(fields: Record<string, unknown>): Def {
-  return def({
-    type: "PROPERTY",
-    key: "name",
-    filterComponent: "LISTOGRAM",
-    ...fields,
-  });
-}
+const LINKED_BASE = {
+  type: "LINKED_PROPERTY",
+  linkName: "primaryOffice",
+  linkedPropertyKey: "name",
+  filterComponent: "LISTOGRAM",
+} satisfies Def;
 
 const CUSTOM_BASE = {
   type: "CUSTOM",
   key: "custom",
   filterComponent: "CUSTOM",
   toWhereClause: () => ({}),
-};
-
-function linkedDef(fields: Record<string, unknown>): Def {
-  return def({
-    type: "LINKED_PROPERTY",
-    linkName: "primaryOffice",
-    linkedPropertyKey: "name",
-    filterComponent: "LISTOGRAM",
-    ...fields,
-  });
-}
+  filterState: CUSTOM_STATE,
+} satisfies Def;
 
 describe("getSeedFilterState", () => {
   describe("kinds that store the state directly", () => {
     it("reads defaultFilterState", () => {
       expect(
-        getSeedFilterState(propertyDef({ defaultFilterState: EXACT_A })),
+        getSeedFilterState({ ...PROPERTY_BASE, defaultFilterState: EXACT_A }),
       ).toEqual(EXACT_A);
     });
 
     it("falls back to the deprecated filterState", () => {
-      expect(getSeedFilterState(propertyDef({ filterState: EXACT_A }))).toEqual(
-        EXACT_A,
-      );
+      expect(
+        getSeedFilterState({ ...PROPERTY_BASE, filterState: EXACT_A }),
+      ).toEqual(EXACT_A);
     });
 
     it("prefers defaultFilterState when both are set", () => {
       expect(
-        getSeedFilterState(
-          propertyDef({ defaultFilterState: EXACT_A, filterState: EXACT_B }),
-        ),
+        getSeedFilterState({
+          ...PROPERTY_BASE,
+          defaultFilterState: EXACT_A,
+          filterState: EXACT_B,
+        }),
       ).toEqual(EXACT_A);
     });
 
     it("returns undefined when the definition seeds nothing", () => {
-      expect(getSeedFilterState(propertyDef({}))).toBeUndefined();
+      expect(getSeedFilterState(PROPERTY_BASE)).toBeUndefined();
     });
   });
 
+  // Reading `filterState` on these would silently activate filters in existing
+  // apps, since it used to be required and so is set on essentially every
+  // definition.
+  const IGNORED_FILTER_STATE_CASES: Array<[string, Def, Def, FilterState]> = [
+    [
+      "HAS_LINK",
+      {
+        type: "HAS_LINK",
+        linkName: "primaryOffice",
+        filterState: HAS_LINK_STATE,
+      },
+      {
+        type: "HAS_LINK",
+        linkName: "primaryOffice",
+        defaultFilterState: HAS_LINK_STATE,
+      },
+      HAS_LINK_STATE,
+    ],
+    [
+      "KEYWORD_SEARCH",
+      {
+        type: "KEYWORD_SEARCH",
+        properties: "all",
+        filterState: KEYWORD_STATE,
+      },
+      {
+        type: "KEYWORD_SEARCH",
+        properties: "all",
+        defaultFilterState: KEYWORD_STATE,
+      },
+      KEYWORD_STATE,
+    ],
+    [
+      "CUSTOM",
+      CUSTOM_BASE,
+      { ...CUSTOM_BASE, defaultFilterState: CUSTOM_STATE },
+      CUSTOM_STATE,
+    ],
+  ];
+
   describe("kinds where filterState has never seeded", () => {
-    // Reading it would silently activate filters in existing apps, since it
-    // used to be required and so is set on essentially every definition.
-    it.each([
-      [
-        "HAS_LINK",
-        { type: "HAS_LINK", linkName: "primaryOffice" },
-        {
-          type: "hasLink",
-          hasLink: true,
-        },
-      ],
-      [
-        "KEYWORD_SEARCH",
-        { type: "KEYWORD_SEARCH", properties: ["name"] },
-        {
-          type: "keywordSearch",
-          searchTerm: "stray",
-          operator: "AND",
-        },
-      ],
-      ["CUSTOM", CUSTOM_BASE, EMPTY_CUSTOM],
-    ])("ignores filterState on %s", (_kind, base, filterState) => {
-      expect(getSeedFilterState(def({ ...base, filterState }))).toBeUndefined();
-      expect(
-        getSeedFilterState(def({ ...base, defaultFilterState: filterState })),
-      ).toEqual(filterState);
-    });
+    it.each(IGNORED_FILTER_STATE_CASES)(
+      "ignores filterState on %s",
+      (_kind, seedsFilterStateOnly, seedsDefault, expected) => {
+        expect(getSeedFilterState(seedsFilterStateOnly)).toBeUndefined();
+        expect(getSeedFilterState(seedsDefault)).toEqual(expected);
+      },
+    );
   });
 
   describe("LINKED_PROPERTY", () => {
     it("wraps the inner defaultFilterState", () => {
       expect(
-        getSeedFilterState(linkedDef({ defaultFilterState: EXACT_A })),
+        getSeedFilterState({ ...LINKED_BASE, defaultFilterState: EXACT_A }),
       ).toEqual({ type: "linkedProperty", linkedFilterState: EXACT_A });
     });
 
     it("falls back to the deprecated defaultLinkedFilterState", () => {
       expect(
-        getSeedFilterState(linkedDef({ defaultLinkedFilterState: EXACT_A })),
+        getSeedFilterState({
+          ...LINKED_BASE,
+          defaultLinkedFilterState: EXACT_A,
+        }),
       ).toEqual({ type: "linkedProperty", linkedFilterState: EXACT_A });
     });
 
     it("prefers defaultFilterState over defaultLinkedFilterState", () => {
       expect(
-        getSeedFilterState(
-          linkedDef({
-            defaultFilterState: EXACT_A,
-            defaultLinkedFilterState: EXACT_B,
-          }),
-        ),
+        getSeedFilterState({
+          ...LINKED_BASE,
+          defaultFilterState: EXACT_A,
+          defaultLinkedFilterState: EXACT_B,
+        }),
       ).toEqual({ type: "linkedProperty", linkedFilterState: EXACT_A });
     });
 
     it("ignores linkedFilterState and the wrapper-shaped filterState", () => {
       expect(
-        getSeedFilterState(linkedDef({ linkedFilterState: EXACT_A })),
+        getSeedFilterState({ ...LINKED_BASE, linkedFilterState: EXACT_A }),
       ).toBeUndefined();
 
       expect(
-        getSeedFilterState(
-          linkedDef({
-            filterState: { type: "linkedProperty", linkedFilterState: EXACT_A },
-          }),
-        ),
+        getSeedFilterState({
+          ...LINKED_BASE,
+          filterState: { type: "linkedProperty", linkedFilterState: EXACT_A },
+        }),
       ).toBeUndefined();
     });
 
     it("returns undefined when the definition seeds nothing", () => {
-      expect(getSeedFilterState(linkedDef({}))).toBeUndefined();
+      expect(getSeedFilterState(LINKED_BASE)).toBeUndefined();
     });
 
     it("seeds from the deprecated linkedFilterComponent spelling", () => {
       expect(
-        getSeedFilterState(
-          def({
-            type: "LINKED_PROPERTY",
-            linkName: "primaryOffice",
-            linkedPropertyKey: "name",
-            linkedFilterComponent: "LISTOGRAM",
-            defaultFilterState: EXACT_A,
-          }),
-        ),
+        getSeedFilterState({
+          type: "LINKED_PROPERTY",
+          linkName: "primaryOffice",
+          linkedPropertyKey: "name",
+          linkedFilterComponent: "LISTOGRAM",
+          defaultFilterState: EXACT_A,
+        }),
       ).toEqual({ type: "linkedProperty", linkedFilterState: EXACT_A });
     });
 
@@ -173,14 +192,12 @@ describe("getSeedFilterState", () => {
     // object set off a filter the user can neither see nor clear.
     it("does not seed when neither component field is set", () => {
       expect(
-        getSeedFilterState(
-          def({
-            type: "LINKED_PROPERTY",
-            linkName: "primaryOffice",
-            linkedPropertyKey: "name",
-            defaultFilterState: EXACT_A,
-          }),
-        ),
+        getSeedFilterState({
+          type: "LINKED_PROPERTY",
+          linkName: "primaryOffice",
+          linkedPropertyKey: "name",
+          defaultFilterState: EXACT_A,
+        }),
       ).toBeUndefined();
     });
   });

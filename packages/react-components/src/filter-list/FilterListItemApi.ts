@@ -51,7 +51,6 @@ export interface FilterDefinitionControls {
   searchField?: boolean;
 
   /**
-   *
    * Optional unique identifier for stable keying across filter reorders.
    * Set it explicitly when that derived value would collide, e.g. two filters on the
    * same property.
