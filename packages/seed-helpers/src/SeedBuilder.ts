@@ -83,7 +83,10 @@ export class SeedBuilder {
    */
   #objectType(apiName: string): Ontology.ObjectTypeV2 {
     const full = this.#metadata.objectTypes[apiName];
-    invariant(full, "Object not found in metadata");
+    invariant(
+      full,
+      () => `Object type '${apiName}' is not defined in the ontology`,
+    );
     return full.objectType;
   }
 

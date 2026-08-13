@@ -198,13 +198,13 @@ describe("SeedBuilder", () => {
   it("throws when the object type is not in the schema, for create/update/delete", () => {
     const sb = new SeedBuilder(makeMetadata({}));
     expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
-      "Object not found in metadata",
+      "Object type 'Employee' is not defined in the ontology",
     );
     expect(() => sb.update(employeeRef(1), { fullName: "x" })).toThrow(
-      "Object not found in metadata",
+      "Object type 'Employee' is not defined in the ontology",
     );
     expect(() => sb.delete(employeeRef(1))).toThrow(
-      "Object not found in metadata",
+      "Object type 'Employee' is not defined in the ontology",
     );
   });
 
