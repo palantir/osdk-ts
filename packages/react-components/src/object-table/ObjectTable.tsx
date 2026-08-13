@@ -30,6 +30,7 @@ import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
+import { useLoadedObjectsChanged } from "./hooks/useLoadedObjectsChanged.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useObjectTableSnapshot } from "./hooks/useObjectTableSnapshot.js";
 import type { UseRowSelectionChange } from "./hooks/useRowSelection.js";
@@ -67,6 +68,7 @@ export function ObjectTable<
   onColumnsPinnedChanged,
   onColumnResize,
   onRowSelectionChanged,
+  onLoadedObjectsChanged,
   onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
@@ -116,6 +118,13 @@ export function ObjectTable<
     dedupeIntervalMs,
     pageSize,
     streamUpdates,
+  });
+
+  useLoadedObjectsChanged<Q, RDPs>({
+    loadedObjects: data,
+    totalCount,
+    isLoading,
+    onLoadedObjectsChanged,
   });
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

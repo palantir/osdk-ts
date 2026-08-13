@@ -632,6 +632,16 @@ export interface ObjectTableProps<
   onRowSelectionChanged?: (change: RowSelectionChange<Q, RDPs>) => void;
 
   /**
+   * Called when the set of loaded rows changes — as pages are fetched, when
+   * streamed updates arrive, and after a refetch — with a
+   * {@link LoadedObjectsChange} payload.
+   *
+   * @param change The loaded rows and the total count. See
+   * {@link LoadedObjectsChange}.
+   */
+  onLoadedObjectsChanged?: (change: LoadedObjectsChange<Q, RDPs>) => void;
+
+  /**
    * The primary key of the row to render as visually focused (the
    * "last interacted" row). When provided, focus state is controlled by
    * the caller.
@@ -846,6 +856,36 @@ export interface ObjectTableDataRow<
    * failed surface the thrown `Error` instance as their value.
    */
   getValue: (columnId: string) => unknown;
+}
+
+/**
+ * Payload for {@link ObjectTableProps.onLoadedObjectsChanged}.
+ */
+export interface LoadedObjectsChange<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * The rows loaded into the table so far, in display order. Rows on pages
+   * the user hasn't scrolled to yet are absent — compare `loadedObjects.length`
+   * against `totalCount` to tell whether more remain.
+   *
+   * Each row carries the values of its function-backed columns alongside its
+   * properties, so those cells are readable from the payload.
+   */
+  loadedObjects: Osdk.Instance<
+    Q,
+    "$allBaseProperties",
+    PropertyKeys<Q>,
+    RDPs
+  >[];
+
+  /**
+   * Total number of objects matching the underlying object set, as reported
+   * by the API. `undefined` when the API did not provide a count. Encoded as
+   * a string to match the underlying list-payload representation.
+   */
+  totalCount: string | undefined;
 }
 
 /**

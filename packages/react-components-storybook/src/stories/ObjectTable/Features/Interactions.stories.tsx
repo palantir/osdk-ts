@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { LoadedObjectsChange } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
@@ -135,6 +136,7 @@ export const EventListeners: Story = {
     onColumnsPinnedChanged: fn(),
     onColumnResize: fn(),
     onFocusedRowChanged: fn(),
+    onLoadedObjectsChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
@@ -168,6 +170,9 @@ export const EventListeners: Story = {
   onColumnResize={(columnId, newWidth) => {
     console.log("Column resized:", columnId, newWidth);
   }}
+  onLoadedObjectsChanged={({ loadedObjects, totalCount }) => {
+    console.log(\`Loaded \${loadedObjects.length} of \${totalCount} employees\`);
+  }}
 />`,
       },
     },
@@ -184,6 +189,8 @@ export const EventListeners: Story = {
       },
     ]);
     const [lastEvent, setLastEvent] = useState<string>("");
+    const [loadedCount, setLoadedCount] = useState<number>(0);
+    const [totalCount, setTotalCount] = useState<string | undefined>(undefined);
 
     const handleRowClick = useCallback(
       (employee: any) => {
@@ -246,6 +253,16 @@ export const EventListeners: Story = {
       [args],
     );
 
+    const handleLoadedObjectsChanged = useCallback(
+      (change: LoadedObjectsChange<typeof Employee>) => {
+        args.onLoadedObjectsChanged?.(change);
+        setLoadedCount(change.loadedObjects.length);
+        setTotalCount(change.totalCount);
+        setLastEvent("onLoadedObjectsChanged");
+      },
+      [args],
+    );
+
     return (
       <div>
         <div
@@ -275,18 +292,25 @@ export const EventListeners: Story = {
             <strong>Selected rows:</strong>{" "}
             {isSelectAll ? "All employees" : `${selectedRows.length} employees`}
           </div>
-          <div style={{ fontSize: "12px" }}>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
             <strong>Current sort:</strong>{" "}
             {orderBy?.[0]
               ? `${orderBy[0].property} (${orderBy[0].direction})`
               : "None"}
           </div>
+          <div style={{ fontSize: "12px" }}>
+            <strong>Loaded objects:</strong>{" "}
+            <code>
+              {loadedCount} of {totalCount ?? "unknown"}
+            </code>
+          </div>
         </div>
-        <div className="object-table-container" style={{ height: "600px" }}>
+        <div className="object-table-container" style={{ height: "300px" }}>
           <ObjectTable
             {...args}
             selectedRows={selectedRows}
             orderBy={orderBy}
+            pageSize={10}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
             onRowSelectionChanged={handleRowSelectionChanged}
@@ -294,6 +318,7 @@ export const EventListeners: Story = {
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
             onColumnResize={handleColumnResize}
+            onLoadedObjectsChanged={handleLoadedObjectsChanged}
           />
         </div>
       </div>
@@ -305,6 +330,15 @@ export const EventListeners: Story = {
     const rowCheckboxes = findRowCheckboxes(canvas);
 
     await canvas.findByText(TARGET_DATA);
+
+    // onLoadedObjectsChanged: fires from the initial load, no interaction needed.
+    await waitFor(() =>
+      expect(args.onLoadedObjectsChanged).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loadedObjects: expect.arrayContaining([expect.anything()]),
+        }),
+      ),
+    );
 
     // onRowClick + onFocusedRowChanged: clicking a row body fires both.
     await userEvent.click(canvas.getByText(TARGET_DATA));
