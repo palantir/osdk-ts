@@ -135,31 +135,6 @@ describe("useLoadedObjectsChanged", () => {
     });
   });
 
-  it("fires when the total count arrives after the rows", () => {
-    const onLoadedObjectsChanged = vi.fn();
-    const loadedObjects = createMockData(2);
-
-    const { rerender } = renderHook(
-      ({ totalCount }) =>
-        useLoadedObjectsChanged<TestObject, Record<string, never>>({
-          loadedObjects,
-          totalCount,
-          isLoading: false,
-          onLoadedObjectsChanged,
-        }),
-      { initialProps: { totalCount: undefined as string | undefined } },
-    );
-
-    rerender({ totalCount: "10" });
-    flushDebounce();
-
-    expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(2);
-    expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
-      loadedObjects,
-      totalCount: "10",
-    });
-  });
-
   it("does not refire when neither the rows nor the count changed", () => {
     const onLoadedObjectsChanged = vi.fn();
     const loadedObjects = createMockData(2);
@@ -332,6 +307,10 @@ describe("useLoadedObjectsChanged", () => {
 
     // Leading edge only so far.
     expect(onLoadedObjectsChanged).toHaveBeenCalledTimes(1);
+    expect(onLoadedObjectsChanged).toHaveBeenLastCalledWith({
+      loadedObjects: pages[0],
+      totalCount: "10",
+    });
 
     flushDebounce();
 
