@@ -2417,6 +2417,34 @@ const SEEDED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     label: "Has a manager",
     defaultFilterState: { type: "hasLink", hasLink: true },
   },
+  {
+    type: "CUSTOM",
+    key: "custom-name-contains",
+    label: "Name Contains",
+    filterComponent: "CUSTOM",
+    defaultFilterState: {
+      type: "custom",
+      customState: { value: "man" },
+    },
+    renderInput: ({ filterState, onFilterStateChanged }) => (
+      <CustomNameContainsFilter
+        filterState={
+          filterState as {
+            type: "custom";
+            customState: { value: string };
+          }
+        }
+        onFilterStateChanged={onFilterStateChanged}
+      />
+    ),
+    toWhereClause: (state) => {
+      const value = (state.customState as { value?: string })?.value;
+      if (!value) return undefined;
+      return {
+        fullName: { $containsAnyTerm: value },
+      };
+    },
+  },
 ];
 
 function WithDefaultFilterStateStory(args: Partial<EmployeeFilterListProps>) {
@@ -2508,6 +2536,24 @@ export const WithDefaultFilterState: Story = {
     linkName: "lead",
     label: "Has a manager",
     defaultFilterState: { type: "hasLink", hasLink: true },
+  },
+  {
+    type: "CUSTOM",
+    key: "custom-name-contains",
+    label: "Name Contains",
+    filterComponent: "CUSTOM",
+    defaultFilterState: { type: "custom", customState: { value: "man" } },
+    renderInput: ({ filterState, onFilterStateChanged }) => (
+      <CustomNameContainsFilter
+        filterState={filterState}
+        onFilterStateChanged={onFilterStateChanged}
+      />
+    ),
+    toWhereClause: (state) => {
+      const value = state.customState?.value;
+      if (!value) return undefined;
+      return { fullName: { $containsAnyTerm: value } };
+    },
   },
 ];
 
