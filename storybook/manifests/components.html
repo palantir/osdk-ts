@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">40/40 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">40/40 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/191 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">40/40 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">40/40 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">13/192 story errors</a></div>
   </div>
 </header>
 <main>
@@ -7398,13 +7398,13 @@ export const WithCustomRenderers: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  518 | }
-  519 |
-&gt; 520 | const meta: Meta = {
+  517 | }
+  518 |
+&gt; 519 | const meta: Meta = {
       | ^
-  521 |   title: &quot;Components/Overview&quot;,
-  522 |   component: ComponentOverview,
-  523 |   tags: [&quot;beta&quot;],
+  520 |   title: &quot;Components/Overview&quot;,
+  521 |   component: ComponentOverview,
+  522 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -7727,7 +7727,6 @@ function DataTab(): React.ReactElement {
           filterDefinitions={FILTER_DEFINITIONS}
           onFilterClauseChanged={setFilterClause}
           title=&quot;Employee Filters&quot;
-          collapsed={collapsed}
           onCollapsedChange={setCollapsed}
           showActiveFilterCount={true}
         /&gt;
@@ -10516,7 +10515,7 @@ return (
       <div class="badges">
         <label for="c-15-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-15-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-15-components-filterlist-stories" class="badge ok as-toggle">28 stories</label>
+        <label for="c-15-components-filterlist-stories" class="badge ok as-toggle">29 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -10538,13 +10537,13 @@ return (
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  144 | );
-  145 |
-&gt; 146 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  143 | );
+  144 |
+&gt; 145 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  147 |   title: &quot;Components/FilterList&quot;,
-  148 |   component: FilterList,
-  149 |   tags: [&quot;beta&quot;],
+  146 |   title: &quot;Components/FilterList&quot;,
+  147 |   component: FilterList,
+  148 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -10578,7 +10577,6 @@ import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/
 import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
-import { useArgs } from &quot;storybook/preview-api&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -10701,7 +10699,6 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    collapsed: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
     onFilterAdded: fn(),
@@ -10756,12 +10753,26 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       control: &quot;boolean&quot;,
       table: { defaultValue: { summary: &quot;false&quot; } },
     },
+    enableCollapse: {
+      description:
+        &quot;Whether the collapse/expand control is available. When false the panel is always expanded.&quot;,
+      control: &quot;boolean&quot;,
+      table: { defaultValue: { summary: &quot;true&quot; } },
+    },
     collapsed: {
-      description: &quot;Whether the filter list panel is collapsed&quot;,
+      description:
+        &quot;Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed.&quot;,
       control: &quot;boolean&quot;,
     },
+    defaultCollapsed: {
+      description:
+        &quot;Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount.&quot;,
+      control: &quot;boolean&quot;,
+      table: { defaultValue: { summary: &quot;false&quot; } },
+    },
     onCollapsedChange: {
-      description: &quot;Called when the collapsed state changes&quot;,
+      description:
+        &quot;Called whenever the collapsed state changes, in both modes. An event listener — it neither controls the state nor enables the control.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -11209,11 +11220,7 @@ export const WithSorting: Story = {
   },
 };
 
-function CollapsiblePanelStory(
-  args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
-    onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  },
-) {
+function CollapsiblePanelStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
@@ -11234,8 +11241,55 @@ export const CollapsiblePanel: Story = {
     docs: {
       description: {
         story:
-          &quot;Click the collapse button to minimize the filter panel. &quot; +
-          &quot;Active filter count is shown in the collapsed state.&quot;,
+          &quot;Click the collapse button to minimize the panel. Collapse is &quot; +
+          &quot;available by default and uncontrolled here — no state wiring &quot; +
+          &quot;required. Active filter count is shown in the collapsed state.&quot;,
+      },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  title=&quot;Employee Filters&quot;
+  showActiveFilterCount={true}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;CollapsiblePanelStory {...args} /&gt;,
+};
+
+function ControlledCollapseStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, gap: 16, alignItems: &quot;flex-start&quot; }}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={sharedFilterDefinitions}
+          {...args}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+        /&gt;
+      &lt;/div&gt;
+      &lt;button type=&quot;button&quot; onClick={() =&gt; setCollapsed((prev) =&gt; !prev)}&gt;
+        {collapsed ? &quot;Expand from outside&quot; : &quot;Collapse from outside&quot;}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const ControlledCollapse: Story = {
+  args: {
+    title: &quot;Employee Filters&quot;,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Controlled mode: `collapsed` is the source of truth, so the panel &quot; +
+          &quot;only moves when the caller re-renders with a new value. The &quot; +
+          &quot;external button drives the same state as the header control.&quot;,
       },
       source: {
         code: `const [collapsed, setCollapsed] = useState(false);
@@ -11246,28 +11300,11 @@ export const CollapsiblePanel: Story = {
   title=&quot;Employee Filters&quot;
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
-  showActiveFilterCount={true}
 /&gt;`,
       },
     },
   },
-  render: (args) =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      &lt;CollapsiblePanelStory
-        {...args}
-        onCollapsedChange={handleCollapsedChange}
-      /&gt;
-    );
-  },
+  render: (args) =&gt; &lt;ControlledCollapseStory {...args} /&gt;,
 };
 
 export const KeywordSearch: Story = {
@@ -12286,11 +12323,7 @@ export const WithStaticValues: Story = {
   render: (args) =&gt; &lt;WithStaticValuesStory {...args} /&gt;,
 };
 
-function FullFeaturedStory(
-  args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
-    onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  },
-) {
+function FullFeaturedStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
   const [filterClause, setFilterClause] = useState&lt;
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
@@ -12373,8 +12406,6 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title=&quot;Employee Filters&quot;
   titleIcon={&lt;FilterIcon /&gt;}
-  collapsed={collapsed}
-  onCollapsedChange={setCollapsed}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}
@@ -12385,20 +12416,7 @@ export const FullFeatured: Story = {
       },
     },
   },
-  render: (args) =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-  },
+  render: (args) =&gt; &lt;FullFeaturedStory {...args} /&gt;,
 };
 
 function WithLinkedPropertyFiltersStory(
@@ -13365,7 +13383,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13399,7 +13416,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13423,7 +13439,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13444,7 +13459,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13465,7 +13479,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13492,7 +13505,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13516,7 +13528,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13542,7 +13553,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13571,7 +13581,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13590,33 +13599,38 @@ export const WithResetButtonNonEmptyInitial: Story = {
               </div>
               
               
-              <pre><code>const CollapsiblePanel = () =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-
-    return (
-        &lt;CollapsiblePanelStory
-            title=&quot;Employee Filters&quot;
-            enableSorting={false}
-            showResetButton={false}
-            showActiveFilterCount
-            collapsed={false}
-            onFilterClauseChanged={fn()}
-            onFilterStateChanged={fn()}
-            onFilterAdded={fn()}
-            onFilterRemoved={fn()}
-            onFilterVisibilityChange={fn()}
-            onReset={fn()}
-            onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-};</code></pre>
+              <pre><code>const CollapsiblePanel = () =&gt; &lt;CollapsiblePanelStory
+    title=&quot;Employee Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Collapse</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledCollapse = () =&gt; &lt;ControlledCollapseStory
+    title=&quot;Employee Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -13648,7 +13662,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -13672,7 +13685,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13693,7 +13705,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13714,7 +13725,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13735,7 +13745,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13756,7 +13765,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13777,7 +13785,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13798,7 +13805,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13819,7 +13825,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13840,7 +13845,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13856,33 +13860,18 @@ export const WithResetButtonNonEmptyInitial: Story = {
               </div>
               
               
-              <pre><code>const FullFeatured = () =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-
-    return (
-        &lt;FullFeaturedStory
-            title=&quot;Employee Filters&quot;
-            enableSorting
-            showResetButton
-            showActiveFilterCount
-            collapsed={false}
-            onFilterClauseChanged={fn()}
-            onFilterStateChanged={fn()}
-            onFilterAdded={fn()}
-            onFilterRemoved={fn()}
-            onFilterVisibilityChange={fn()}
-            onReset={fn()}
-            onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-};</code></pre>
+              <pre><code>const FullFeatured = () =&gt; &lt;FullFeaturedStory
+    title=&quot;Employee Filters&quot;
+    enableSorting
+    showResetButton
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -13896,7 +13885,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13917,7 +13905,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13938,7 +13925,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13975,7 +13961,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -13996,7 +13981,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -14017,7 +14001,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -27707,13 +27690,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;ComponentOverview&quot; component.
-  518 | }
-  519 |
-&gt; 520 | const meta: Meta = {
+  517 | }
+  518 |
+&gt; 519 | const meta: Meta = {
       | ^
-  521 |   title: &quot;Components/Overview&quot;,
-  522 |   component: ComponentOverview,
-  523 |   tags: [&quot;beta&quot;],
+  520 |   title: &quot;Components/Overview&quot;,
+  521 |   component: ComponentOverview,
+  522 |   tags: [&quot;beta&quot;],
 
 ./src/stories/Overview/Overview.stories.tsx:
 /*
@@ -28036,7 +28019,6 @@ function DataTab(): React.ReactElement {
           filterDefinitions={FILTER_DEFINITIONS}
           onFilterClauseChanged={setFilterClause}
           title=&quot;Employee Filters&quot;
-          collapsed={collapsed}
           onCollapsedChange={setCollapsed}
           showActiveFilterCount={true}
         /&gt;
@@ -28918,7 +28900,7 @@ export const WithPdfViewerProps: Story = {
       <div class="badges">
         <label for="c-error-11-components-filterlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-11-components-filterlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-11-components-filterlist-stories" class="badge ok as-toggle">28 stories</label>
+        <label for="c-error-11-components-filterlist-stories" class="badge ok as-toggle">29 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/FilterList/FilterList.stories.tsx">components-filterlist · ./src/stories/FilterList/FilterList.stories.tsx</div>
@@ -28940,13 +28922,13 @@ export const WithPdfViewerProps: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  144 | );
-  145 |
-&gt; 146 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  143 | );
+  144 |
+&gt; 145 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  147 |   title: &quot;Components/FilterList&quot;,
-  148 |   component: FilterList,
-  149 |   tags: [&quot;beta&quot;],
+  146 |   title: &quot;Components/FilterList&quot;,
+  147 |   component: FilterList,
+  148 |   tags: [&quot;beta&quot;],
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -28980,7 +28962,6 @@ import type { ColumnDefinition } from &quot;@osdk/react-components/experimental/
 import { ObjectTable } from &quot;@osdk/react-components/experimental/object-table&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
-import { useArgs } from &quot;storybook/preview-api&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
@@ -29103,7 +29084,6 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    collapsed: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
     onFilterAdded: fn(),
@@ -29158,12 +29138,26 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       control: &quot;boolean&quot;,
       table: { defaultValue: { summary: &quot;false&quot; } },
     },
+    enableCollapse: {
+      description:
+        &quot;Whether the collapse/expand control is available. When false the panel is always expanded.&quot;,
+      control: &quot;boolean&quot;,
+      table: { defaultValue: { summary: &quot;true&quot; } },
+    },
     collapsed: {
-      description: &quot;Whether the filter list panel is collapsed&quot;,
+      description:
+        &quot;Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed.&quot;,
       control: &quot;boolean&quot;,
     },
+    defaultCollapsed: {
+      description:
+        &quot;Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount.&quot;,
+      control: &quot;boolean&quot;,
+      table: { defaultValue: { summary: &quot;false&quot; } },
+    },
     onCollapsedChange: {
-      description: &quot;Called when the collapsed state changes&quot;,
+      description:
+        &quot;Called whenever the collapsed state changes, in both modes. An event listener — it neither controls the state nor enables the control.&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -29611,11 +29605,7 @@ export const WithSorting: Story = {
   },
 };
 
-function CollapsiblePanelStory(
-  args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
-    onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  },
-) {
+function CollapsiblePanelStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
@@ -29636,8 +29626,55 @@ export const CollapsiblePanel: Story = {
     docs: {
       description: {
         story:
-          &quot;Click the collapse button to minimize the filter panel. &quot; +
-          &quot;Active filter count is shown in the collapsed state.&quot;,
+          &quot;Click the collapse button to minimize the panel. Collapse is &quot; +
+          &quot;available by default and uncontrolled here — no state wiring &quot; +
+          &quot;required. Active filter count is shown in the collapsed state.&quot;,
+      },
+      source: {
+        code: `&lt;FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  title=&quot;Employee Filters&quot;
+  showActiveFilterCount={true}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; &lt;CollapsiblePanelStory {...args} /&gt;,
+};
+
+function ControlledCollapseStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    &lt;div style={{ display: &quot;flex&quot;, gap: 16, alignItems: &quot;flex-start&quot; }}&gt;
+      &lt;div style={SIDEBAR_STYLE}&gt;
+        &lt;FilterList
+          objectType={Employee}
+          filterDefinitions={sharedFilterDefinitions}
+          {...args}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+        /&gt;
+      &lt;/div&gt;
+      &lt;button type=&quot;button&quot; onClick={() =&gt; setCollapsed((prev) =&gt; !prev)}&gt;
+        {collapsed ? &quot;Expand from outside&quot; : &quot;Collapse from outside&quot;}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export const ControlledCollapse: Story = {
+  args: {
+    title: &quot;Employee Filters&quot;,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Controlled mode: `collapsed` is the source of truth, so the panel &quot; +
+          &quot;only moves when the caller re-renders with a new value. The &quot; +
+          &quot;external button drives the same state as the header control.&quot;,
       },
       source: {
         code: `const [collapsed, setCollapsed] = useState(false);
@@ -29648,28 +29685,11 @@ export const CollapsiblePanel: Story = {
   title=&quot;Employee Filters&quot;
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
-  showActiveFilterCount={true}
 /&gt;`,
       },
     },
   },
-  render: (args) =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      &lt;CollapsiblePanelStory
-        {...args}
-        onCollapsedChange={handleCollapsedChange}
-      /&gt;
-    );
-  },
+  render: (args) =&gt; &lt;ControlledCollapseStory {...args} /&gt;,
 };
 
 export const KeywordSearch: Story = {
@@ -30688,11 +30708,7 @@ export const WithStaticValues: Story = {
   render: (args) =&gt; &lt;WithStaticValuesStory {...args} /&gt;,
 };
 
-function FullFeaturedStory(
-  args: Partial&lt;EmployeeFilterListProps&gt; &amp; {
-    onCollapsedChange?: (collapsed: boolean) =&gt; void;
-  },
-) {
+function FullFeaturedStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
   const [filterClause, setFilterClause] = useState&lt;
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
@@ -30775,8 +30791,6 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title=&quot;Employee Filters&quot;
   titleIcon={&lt;FilterIcon /&gt;}
-  collapsed={collapsed}
-  onCollapsedChange={setCollapsed}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}
@@ -30787,20 +30801,7 @@ export const FullFeatured: Story = {
       },
     },
   },
-  render: (args) =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-  },
+  render: (args) =&gt; &lt;FullFeaturedStory {...args} /&gt;,
 };
 
 function WithLinkedPropertyFiltersStory(
@@ -31767,7 +31768,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -31801,7 +31801,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -31825,7 +31824,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -31846,7 +31844,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -31867,7 +31864,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -31894,7 +31890,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -31918,7 +31913,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -31944,7 +31938,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -31973,7 +31966,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -31992,33 +31984,38 @@ export const WithResetButtonNonEmptyInitial: Story = {
               </div>
               
               
-              <pre><code>const CollapsiblePanel = () =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-
-    return (
-        &lt;CollapsiblePanelStory
-            title=&quot;Employee Filters&quot;
-            enableSorting={false}
-            showResetButton={false}
-            showActiveFilterCount
-            collapsed={false}
-            onFilterClauseChanged={fn()}
-            onFilterStateChanged={fn()}
-            onFilterAdded={fn()}
-            onFilterRemoved={fn()}
-            onFilterVisibilityChange={fn()}
-            onReset={fn()}
-            onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-};</code></pre>
+              <pre><code>const CollapsiblePanel = () =&gt; &lt;CollapsiblePanelStory
+    title=&quot;Employee Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Collapse</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledCollapse = () =&gt; &lt;ControlledCollapseStory
+    title=&quot;Employee Filters&quot;
+    enableSorting={false}
+    showResetButton={false}
+    showActiveFilterCount={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -32050,7 +32047,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false}
                 onFilterClauseChanged={fn()}
                 onFilterStateChanged={fn()}
                 onFilterAdded={fn()}
@@ -32074,7 +32070,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32095,7 +32090,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32116,7 +32110,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32137,7 +32130,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32158,7 +32150,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32179,7 +32170,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32200,7 +32190,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32221,7 +32210,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32242,7 +32230,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32258,33 +32245,18 @@ export const WithResetButtonNonEmptyInitial: Story = {
               </div>
               
               
-              <pre><code>const FullFeatured = () =&gt; {
-    const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-
-    return (
-        &lt;FullFeaturedStory
-            title=&quot;Employee Filters&quot;
-            enableSorting
-            showResetButton
-            showActiveFilterCount
-            collapsed={false}
-            onFilterClauseChanged={fn()}
-            onFilterStateChanged={fn()}
-            onFilterAdded={fn()}
-            onFilterRemoved={fn()}
-            onFilterVisibilityChange={fn()}
-            onReset={fn()}
-            onCollapsedChange={handleCollapsedChange} /&gt;
-    );
-};</code></pre>
+              <pre><code>const FullFeatured = () =&gt; &lt;FullFeaturedStory
+    title=&quot;Employee Filters&quot;
+    enableSorting
+    showResetButton
+    showActiveFilterCount
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -32298,7 +32270,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32319,7 +32290,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32340,7 +32310,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32377,7 +32346,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32398,7 +32366,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
@@ -32419,7 +32386,6 @@ export const WithResetButtonNonEmptyInitial: Story = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false}
     onFilterClauseChanged={fn()}
     onFilterStateChanged={fn()}
     onFilterAdded={fn()}
