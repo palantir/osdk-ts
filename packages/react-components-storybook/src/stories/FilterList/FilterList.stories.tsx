@@ -29,7 +29,6 @@ import type { ColumnDefinition } from "@osdk/react-components/experimental/objec
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
-import { useArgs } from "storybook/preview-api";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
@@ -152,7 +151,6 @@ const meta: Meta<EmployeeFilterListProps> = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    collapsed: false,
     onFilterClauseChanged: fn(),
     onFilterStateChanged: fn(),
     onFilterAdded: fn(),
@@ -207,12 +205,26 @@ const meta: Meta<EmployeeFilterListProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
+    enableCollapse: {
+      description:
+        "Whether the collapse/expand control is available. When false the panel is always expanded.",
+      control: "boolean",
+      table: { defaultValue: { summary: "true" } },
+    },
     collapsed: {
-      description: "Whether the filter list panel is collapsed",
+      description:
+        "Controlled mode. Source of truth for the collapsed state; takes precedence over defaultCollapsed.",
       control: "boolean",
     },
+    defaultCollapsed: {
+      description:
+        "Uncontrolled mode. Seeds the initial collapsed state; the component owns it after mount.",
+      control: "boolean",
+      table: { defaultValue: { summary: "false" } },
+    },
     onCollapsedChange: {
-      description: "Called when the collapsed state changes",
+      description:
+        "Called whenever the collapsed state changes, in both modes. An event listener — it neither controls the state nor enables the control.",
       control: false,
       table: { category: "Events" },
     },
@@ -660,11 +672,7 @@ export const WithSorting: Story = {
   },
 };
 
-function CollapsiblePanelStory(
-  args: Partial<EmployeeFilterListProps> & {
-    onCollapsedChange?: (collapsed: boolean) => void;
-  },
-) {
+function CollapsiblePanelStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
@@ -685,8 +693,55 @@ export const CollapsiblePanel: Story = {
     docs: {
       description: {
         story:
-          "Click the collapse button to minimize the filter panel. " +
-          "Active filter count is shown in the collapsed state.",
+          "Click the collapse button to minimize the panel. Collapse is " +
+          "available by default and uncontrolled here — no state wiring " +
+          "required. Active filter count is shown in the collapsed state.",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  title="Employee Filters"
+  showActiveFilterCount={true}
+/>`,
+      },
+    },
+  },
+  render: (args) => <CollapsiblePanelStory {...args} />,
+};
+
+function ControlledCollapseStory(args: Partial<EmployeeFilterListProps>) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={sharedFilterDefinitions}
+          {...args}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+        />
+      </div>
+      <button type="button" onClick={() => setCollapsed((prev) => !prev)}>
+        {collapsed ? "Expand from outside" : "Collapse from outside"}
+      </button>
+    </div>
+  );
+}
+
+export const ControlledCollapse: Story = {
+  args: {
+    title: "Employee Filters",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Controlled mode: `collapsed` is the source of truth, so the panel " +
+          "only moves when the caller re-renders with a new value. The " +
+          "external button drives the same state as the header control.",
       },
       source: {
         code: `const [collapsed, setCollapsed] = useState(false);
@@ -697,28 +752,11 @@ export const CollapsiblePanel: Story = {
   title="Employee Filters"
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
-  showActiveFilterCount={true}
 />`,
       },
     },
   },
-  render: (args) => {
-    const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      <CollapsiblePanelStory
-        {...args}
-        onCollapsedChange={handleCollapsedChange}
-      />
-    );
-  },
+  render: (args) => <ControlledCollapseStory {...args} />,
 };
 
 export const KeywordSearch: Story = {
@@ -1737,11 +1775,7 @@ export const WithStaticValues: Story = {
   render: (args) => <WithStaticValuesStory {...args} />,
 };
 
-function FullFeaturedStory(
-  args: Partial<EmployeeFilterListProps> & {
-    onCollapsedChange?: (collapsed: boolean) => void;
-  },
-) {
+function FullFeaturedStory(args: Partial<EmployeeFilterListProps>) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -1824,8 +1858,6 @@ export const FullFeatured: Story = {
   filterDefinitions={definitions}
   title="Employee Filters"
   titleIcon={<FilterIcon />}
-  collapsed={collapsed}
-  onCollapsedChange={setCollapsed}
   showResetButton={true}
   showActiveFilterCount={true}
   onReset={handleReset}
@@ -1836,20 +1868,7 @@ export const FullFeatured: Story = {
       },
     },
   },
-  render: (args) => {
-    const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
-    const argsOnCollapsedChange = args.onCollapsedChange;
-    const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => {
-        updateArgs({ collapsed });
-        argsOnCollapsedChange?.(collapsed);
-      },
-      [updateArgs, argsOnCollapsedChange],
-    );
-    return (
-      <FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} />
-    );
-  },
+  render: (args) => <FullFeaturedStory {...args} />,
 };
 
 function WithLinkedPropertyFiltersStory(
