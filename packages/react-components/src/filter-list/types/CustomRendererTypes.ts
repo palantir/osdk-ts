@@ -81,7 +81,7 @@ export interface CustomFilterDefinition<
   defaultFilterState?: State;
 
   /**
-   * @deprecated Use `defaultFilterState`.
+   * @deprecated Rename to `defaultFilterState`.
    */
   filterState?: State;
   /**

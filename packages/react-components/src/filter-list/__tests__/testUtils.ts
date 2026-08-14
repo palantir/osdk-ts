@@ -132,7 +132,7 @@ export function createCustomFilterDef(
     type: "CUSTOM",
     key,
     filterComponent: "CUSTOM",
-    filterState: { type: "custom", customState: {} },
+    defaultFilterState: { type: "custom", customState: {} },
     renderInput: () => null,
     toWhereClause: () => ({}),
   } as FilterDefinitionUnion<typeof MockObjectType>;

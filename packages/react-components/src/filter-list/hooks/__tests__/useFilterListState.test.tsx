@@ -22,6 +22,7 @@ vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
 }));
 import {
+  createCustomFilterDef,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
   createLinkedPropertyFilterDef,
@@ -90,13 +91,20 @@ describe("useFilterListState", () => {
       );
       const hasLinkDef = createHasLinkFilterDef("primaryOffice");
       const keywordDef = createKeywordSearchFilterDef(["name"]);
+      const customDef = createCustomFilterDef("custom");
       const staticDef = createStaticValuesFilterDef(
         "region",
         "LISTOGRAM",
         ["East"],
         createExactMatchState(["East"]),
       );
-      const definitions = [propertyDef, hasLinkDef, keywordDef, staticDef];
+      const definitions = [
+        propertyDef,
+        hasLinkDef,
+        keywordDef,
+        customDef,
+        staticDef,
+      ];
       const props = createProps({ filterDefinitions: definitions });
 
       const { result } = renderHook(() => useFilterListState(props));
@@ -120,6 +128,61 @@ describe("useFilterListState", () => {
 
       expect(result.current.filterStates.size).toBe(0);
       expect(result.current.activeFilterCount).toBe(0);
+    });
+  });
+
+  describe("activeFilterCount for CUSTOM filters", () => {
+    function customDefWithClause(
+      state: unknown,
+      toWhereClause: (s: { customState: Record<string, unknown> }) => unknown,
+    ) {
+      return {
+        type: "CUSTOM" as const,
+        key: "custom",
+        filterComponent: "CUSTOM" as const,
+        defaultFilterState: state,
+        renderInput: () => null,
+        toWhereClause,
+      } as unknown as FilterDefinitionUnion<typeof MockObjectType>;
+    }
+
+    // A seeded custom filter is only "active" if its own `toWhereClause` turns
+    // that state into a clause — the state itself is opaque to FilterList.
+    it("does not count a seeded filter whose toWhereClause returns undefined", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "all" } },
+        () => undefined,
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.filterStates.size).toBe(1);
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("does not count a seeded filter whose toWhereClause returns an empty clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: {} },
+        () => ({}),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("counts a seeded filter that produces a clause", () => {
+      const definition = customDefWithClause(
+        { type: "custom", customState: { value: "located" } },
+        () => ({ name: { $isNull: false } }),
+      );
+      const props = createProps({ filterDefinitions: [definition] });
+
+      const { result } = renderHook(() => useFilterListState(props));
+
+      expect(result.current.activeFilterCount).toBe(1);
     });
   });
 

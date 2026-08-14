@@ -40,6 +40,7 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     // `filterState` is the pre-rename seed here.
     case "PROPERTY":
     case "STATIC_VALUES":
+    case "CUSTOM":
       return (
         definition.defaultFilterState ??
         // eslint-disable-next-line @typescript-eslint/no-deprecated -- pre-rename fallback
@@ -51,7 +52,6 @@ export function getSeedFilterState<Q extends ObjectTypeDefinition>(
     // nobody asked for.
     case "HAS_LINK":
     case "KEYWORD_SEARCH":
-    case "CUSTOM":
       return definition.defaultFilterState;
 
     // Definition holds the inner state; the map holds a `linkedProperty` wrapper.
