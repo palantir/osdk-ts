@@ -4,7 +4,6 @@ aliases:
   - &ci-environment
     DO_NOT_TRACK: "1"
     TURBO_TELEMETRY_DISABLED: "1"
-    PNPM_STORE_DIR: /home/circleci/.pnpm-store
 
   # Packages that need Node 20+
   - &node-18-excludes >-
@@ -28,9 +27,16 @@ executors:
       resource-class:
         type: string
         default: large
+      working-directory:
+        description: >
+          Must be the same path for every job: pnpm bakes an absolute NODE_PATH
+          into each node_modules/.bin shim at install time.
+        type: string
+        default: /mnt/ramdisk/project
     docker:
       - image: cimg/node:<< parameters.node-version >>
     resource_class: << parameters.resource-class >>
+    working_directory: << parameters.working-directory >>
     environment: *ci-environment
 
   node-with-verdaccio:
@@ -55,6 +61,7 @@ executors:
             YAML
             exec verdaccio --config /tmp/verdaccio.yaml --listen 0.0.0.0:4873
     resource_class: large
+    working_directory: /mnt/ramdisk/project
     environment: *ci-environment
 
 commands:
@@ -68,16 +75,11 @@ commands:
             pnpm --version
 
   install-deps:
-    description: Restore the pnpm store + install deps.
+    description: Install deps.
     steps:
-      - restore_cache:
-          name: Restore pnpm store
-          keys:
-            - v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
-            - v1-pnpm-store-{{ arch }}-
       - run:
           name: Install dependencies
-          command: pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+          command: pnpm install --frozen-lockfile
 
   attach-deps:
     description: >
@@ -94,20 +96,6 @@ commands:
       - activate-pnpm
       - attach-deps
 
-  save-pnpm-store:
-    description: >
-      Only the install job does this: the key is content addressed by the
-      lockfile, so one writer per pipeline is enough.
-    steps:
-      - run:
-          name: Prune pnpm store
-          command: pnpm store prune --store-dir "$PNPM_STORE_DIR"
-      - save_cache:
-          name: Save pnpm store
-          key: v1-pnpm-store-{{ arch }}-{{ checksum "pnpm-lock.yaml" }}
-          paths:
-            - /home/circleci/.pnpm-store
-
   restore-turbo-cache:
     description: >
       Keys carry CIRCLE_NODE_INDEX because a save_cache against an existing key
@@ -120,11 +108,11 @@ commands:
       - restore_cache:
           name: Restore turbo cache (<< parameters.scope >>)
           keys:
-            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
-            - turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+            - turbo-v3-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+            - turbo-v3-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
             # `build` is never parallel, so its cache is always at index 0.
-            - turbo-{{ arch }}-build-0-{{ .Revision }}
-            - turbo-{{ arch }}-build-0-
+            - turbo-v3-{{ arch }}-build-0-{{ .Revision }}
+            - turbo-v3-{{ arch }}-build-0-
 
   save-turbo-cache:
     parameters:
@@ -133,7 +121,7 @@ commands:
     steps:
       - save_cache:
           name: Save turbo cache (<< parameters.scope >>)
-          key: turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+          key: turbo-v3-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
           paths:
             - .turbo/cache
 
@@ -162,7 +150,6 @@ jobs:
       - checkout
       - activate-pnpm
       - install-deps
-      - save-pnpm-store
       - persist_to_workspace:
           root: .
           paths:
@@ -339,7 +326,7 @@ jobs:
   build-apps:
     executor:
       name: node
-      resource-class: xlarge
+      resource-class: 2xlarge
     steps:
       - prepare
       - restore-turbo-cache:
@@ -350,7 +337,6 @@ jobs:
       - verify-working-tree-clean
       - save-turbo-cache:
           scope: apps
-
 
   e2e:
     executor: node-with-verdaccio
@@ -514,7 +500,7 @@ jobs:
             fi
             git checkout --detach --force "$(cat /tmp/base-sha)"
             pnpm exec turbo clean
-            pnpm install --frozen-lockfile --store-dir "$PNPM_STORE_DIR"
+            pnpm install --frozen-lockfile
             pnpm exec turbo transpile
             npx size-limit --json > /tmp/base.json || true
       - save_cache:
