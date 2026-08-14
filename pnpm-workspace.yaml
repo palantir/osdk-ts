@@ -33,20 +33,20 @@ catalogs:
     "@osdk/foundry.thirdpartyapplications": 2.70.0
     "@osdk/internal.foundry.ontologies": 2.70.0
 allowBuilds:
-    - "@parcel/watcher": true
-    - "less": true
-    - "@swc/core": true
-    - "@tailwindcss/oxide": true
-    - "canvas": true
-    - "core-js": true
-    - "core-js-pure": true
-    - "dprint": true
-    - "esbuild": true
-    - "msw": true
-    - "oxfmt": true
-    - "oxlint": true
-    - "oxlint-tsgolint": true
-    - "unrs-resolver": true
+    "@parcel/watcher": true
+    "less": true
+    "@swc/core": true
+    "@tailwindcss/oxide": true
+    "canvas": true
+    "core-js": true
+    "core-js-pure": true
+    "dprint": true
+    "esbuild": true
+    "msw": true
+    "oxfmt": true
+    "oxlint": true
+    "oxlint-tsgolint": true
+    "unrs-resolver": true
 overrides:
     "trim@0.0.1": "0.0.3"
     "cookie@0.6.0": "0.7.2"
