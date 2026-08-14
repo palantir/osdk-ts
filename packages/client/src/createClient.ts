@@ -42,6 +42,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
@@ -162,12 +163,17 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
+      | Experiment<"2.17.0">
       | Experiment<"2.8.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
+    : T extends
+        | Experiment<"2.0.8">
+        | Experiment<"2.1.0">
+        | Experiment<"2.17.0">
+        | Experiment<"2.8.0">
       ? { invoke: ExperimentFns<T> }
     : never
   {
@@ -202,6 +208,20 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 objs,
                 linkTypes,
               );
+            },
+          } as any;
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__linkSubscriptions.name:
+          return {
+            subscribeToLinks: (args: any) => {
+              const pendingSubscription = import(
+                "./objectSet/LinkSubscriptionWebsocket.js"
+              ).then(({ LinkSubscriptionWebsocket }) =>
+                new LinkSubscriptionWebsocket(clientCtx, args).subscribe()
+              );
+              return {
+                unsubscribe: async () =>
+                  (await pendingSubscription).unsubscribe(),
+              };
             },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:

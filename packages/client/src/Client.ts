@@ -126,6 +126,7 @@ export interface Client extends SharedClient, OldSharedClient {
     Q extends
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
+      | Experiment<"2.17.0">
       | Experiment<"2.2.0">
       | Experiment<"2.8.0">,
   >(
